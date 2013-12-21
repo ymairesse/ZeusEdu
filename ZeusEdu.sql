@@ -182,7 +182,7 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
 ('pad', 'Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
 ('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
-('delibeEduc', 'Délibérations 5E/6E', 'delibeEduc', 'delib56E.png', 1, 12),
+('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 12),
 ('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
 ('infirmerie', 'Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
 ('bullISND', 'Bulletin', 'bullISND', 'bullISND.png', 1, 14);
