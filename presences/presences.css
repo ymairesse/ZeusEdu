@@ -1,0 +1,60 @@
+.eleveActif {
+	background-color: #FFE37F;
+}
+
+.tableauPresences td {
+	cursor: pointer;
+	}
+
+.up, .down {
+	cursor:pointer;
+	padding: 0 1em;
+	font-weight: bold;
+	}
+	
+.up:hover, .down:hover {
+	background-color: orange;
+	color: white;
+	
+}
+
+.abs {
+	background-color: orange !important;
+	}
+
+.abs0 {
+    background-color:#FDF2C1;
+	}
+	
+input[type="submit"] {
+	// display: inline-block; 
+	padding: 0.3em; 
+	font-size: 120%; 
+	border: 1px solid black; 
+	color: black; 
+	text-decoration: none; 
+	border-radius:5px;
+	background: #fbdf93;
+	background: -moz-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fbdf93), color-stop(49%,#f8b500), color-stop(50%,#fccd4d), color-stop(100%,#fceabb));
+	background: -webkit-linear-gradient(top, #fbdf93 0%,#f8b500 49%,#fccd4d 50%,#fceabb 100%);
+	background: -o-linear-gradient(top, #fbdf93 0%,#f8b500 49%,#fccd4d 50%,#fceabb 100%);
+	background: -ms-linear-gradient(top, #fbdf93 0%,#f8b500 49%,#fccd4d 50%,#fceabb 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbdf93', endColorstr='#fceabb',GradientType=0 );
+	background: linear-gradient(top, #fbdf93 0%,#f8b500 49%,#fccd4d 50%,#fceabb 100%);
+
+}
+
+.absent {
+    color: red;
+    font-weight: bolder;
+}
+.present {
+    color: #AAAAAA;
+    padding: 0 1px;
+}
+
+.size150 {
+	font-size: 150%;
+}
+
