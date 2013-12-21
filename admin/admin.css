@@ -1,0 +1,15 @@
+.table {
+    text-align:center;
+    background-color:  #FED5D4
+}
+
+.inactif {
+    background-color:#F6CDC2;
+    
+}
+
+.code {
+  font-weight: bolder; 
+  font-size: 14pt;
+  font-family:'Courier New', Courier, monospace
+}

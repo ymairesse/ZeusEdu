@@ -1,0 +1,1 @@
+<h3 style="clear: both">Licences</h3>

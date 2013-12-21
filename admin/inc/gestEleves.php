@@ -1,0 +1,113 @@
+<?php
+require_once (INSTALL_DIR."/inc/classes/classEleve.inc.php");
+
+$Ecole = new Ecole();
+// liste de plusieurs classes à grouper = $classes
+// une seule classe venant d'une liste de sélection = $selectClasse
+// un groupe reprenant plusieurs classes = $groupe
+// un élève = $matricule
+
+$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
+$groupe = isset($_POST['groupe'])?$_POST['groupe']:Null;
+$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
+$classes = isset($_POST['classes'])?$_POST['classes']:Null;
+$laClasse = isset($_POST['laClasse'])?$_POST['laClasse']:Null;
+
+$listeClasses = $Ecole->listeClasses();
+$smarty->assign("listeClasses", $listeClasses);
+$smarty->assign("laClasse", $laClasse);
+if ($laClasse != '') {
+	$listeEleves = $Ecole->listeEleves($laClasse,'classe');
+	$smarty->assign("listeEleves", $listeEleves);
+	}
+if (isset($matricule))
+	$Eleve = new Eleve($matricule);
+	
+switch ($mode) {
+	case 'addEleve':
+		$smarty->assign('eleve',Null);
+		$smarty->assign("action",$action);
+		$smarty->assign("mode","save");
+		$smarty->assign("recordingType","new");
+		$smarty->assign("corpsPage", "inputEleve");
+		break;
+	case 'modifEleve':
+		switch ($etape) {
+			case 'showEleve':
+				$smarty->assign("eleve",$Eleve->getDetailsEleve());
+				$smarty->assign("info", $Ecole->getUserPasswdEleve($matricule));
+				$smarty->assign("matricule", $matricule);
+				$smarty->assign("selecteur","selectClasseEleve");
+				$smarty->assign("action","gestEleves");
+				$smarty->assign("mode", "save");
+				// on ouvre le formulaire en modification
+				$smarty->assign("recordingType","modif");
+				$smarty->assign("corpsPage", "inputEleve");				
+				break;
+			default:
+				// choix de l'élève
+				$smarty->assign("selecteur","selectClasseEleve");
+				break;
+		}
+		break;
+	case 'save':
+		$nbModifications = $Eleve->enregistrer($_POST);
+		$smarty->assign("laClasse", $laClasse);
+		$smarty->assign("message", array(
+				'title'=>'Information', 
+				'texte'=>"$nbModifications modifications"));
+		$smarty->assign('matricule',$matricule);
+
+		$smarty->assign('etape','showEleve');
+		$smarty->assign("selecteur","selectClasseEleve");
+		break;
+	case 'supprEleve':
+		switch ($etape) {
+			case 'confirmer':
+				$listeEleves = $_POST['eleves'];
+				$nb = $Ecole->supprEleves($listeEleves);
+				$smarty->assign("message", array(
+					'title'=>'Information',
+					'texte'=>"$nb élève(s) supprimé(s) de la base de données"
+					));
+				// break; pas de break
+			default:
+				$smarty->assign("listeEleves", $Ecole->listOrphanEleves());	
+				$smarty->assign("corpsPage", "selectEleveDel");
+				break;
+			}
+		break;
+	case 'unGroup':
+		$listUngroup = array();
+		foreach ($_POST as $field=>$value) {
+			$field = explode("_", $field);
+			if ($field[0] == 'checkbox')
+				$Ecole->ungroup($value);
+		}
+		// pas de break: on continue sur la gestion des groupes
+	case 'groupEleve':
+		if (isset($groupe)) {
+			if (isset($classes))
+				$nb = $Ecole->saveGroupesClasses ($groupe, $classes);
+			$smarty->assign("groupe", $groupe);
+			}
+		$listeClasses = $Ecole->listeClasses();
+		$smarty->assign("listeClasses", $listeClasses);
+		$smarty->assign("selectedClasses", $classes);
+		$listeGroupes = $Ecole->listeGroupesEtClasses(true);	// true = format compact, rien que les vrais groupes
+		$smarty->assign("listeGroupes", $listeGroupes);
+		$smarty->assign ("corpsPage", "groupeClasses");
+		break;
+	case 'envoiPhotos':
+		require ("envoiPhotosZip.inc.php");
+		break;
+	case 'attribMdp':
+		$nbResultats = $Ecole->attribPasswdEleves();
+		$smarty->assign("message", array(
+			'title'=>"Mots de passe",
+			'texte'=>"$nbResultats mot(s) de passe attribué(s)")
+		);
+		break;
+	default: die("missing mode");
+	}
+?>
