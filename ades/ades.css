@@ -1,0 +1,89 @@
+.boutonFait li {
+	display: block;
+	float:left;
+	width: 8em;
+	height: 2.5em;
+	list-style: none;
+	text-align:center;
+	font-size: 0.8em;
+	border-radius: 5px 10px;
+    margin: 0 3px;
+}
+
+.boutonFait {
+	margin: 0;
+	padding: 0;
+}
+
+
+.cache {
+    background-color: #CCCCCC;
+    color: #008000;
+}
+.rempli {
+    color: #FF0000;
+}
+.remplimontre {
+    color: #FF0000;
+}
+.libremontre {
+    color: #008000;
+}
+
+
+.tableauSynthese {
+	width: 100%;
+}
+
+.tableauSynthese td {
+  border: 1px solid #dddddd;
+}
+.tableauSynthese th {
+  border: 1px outset black;
+  padding: 0;
+  background-color: #dddddd;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+.tableauSynthese .bilan {
+  background-color: #ccccee;
+}
+.tableauSynthese .bilan .echecs strong {
+  color: red;
+}
+.tableauSynthese .bilan .echecs {
+  text-align: left;
+}
+
+.noScreen {
+	display: none;
+	}
+
+
+@media print {
+ 
+.classeEntete {
+	font-size: 800%;
+	text-align:center;
+	}
+	
+.eleveEntete {
+	font-size: 200%;
+	text-align:center;
+	}
+
+h2 {
+	font-size: 200%;
+	}
+	
+.pageBreak { page-break-before:always; }
+
+.noScreen {
+	display: block;
+	}
+.noScreen tr td {
+	text-align: center;
+	
+}
+
+}

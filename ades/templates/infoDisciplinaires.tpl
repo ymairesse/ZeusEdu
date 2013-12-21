@@ -1,0 +1,96 @@
+<img style="float:right; width:100px; position: relative; top: -60px;" src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="photo draggable" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
+
+{if ($userStatus == 'educ') || ($userStatus == 'admin')}
+{* boutons pour ajouter un fait disciplinaire *}
+<ul class="boutonFait">
+{foreach from=$listeTypesFaits item=unTypeFait}
+	<li style="background-color:#{$unTypeFait.couleurFond};" class="photo">
+		<a href="index.php?action=fait&mode=new&amp;matricule={$eleve.matricule}&amp;type={$unTypeFait.type}" style="color:#{$unTypeFait.couleurTexte}">{$unTypeFait.titreFait}</a>
+	</li>
+{/foreach}
+</ul>
+{/if}
+
+{assign var=listeFaits value=$ficheDisc->laListeFaits()}
+{assign var=listeRetenues value=$ficheDisc->laListeRetenues()}
+
+
+{* on prend tous les types de faits disponibles et on les évalue *}
+{* pour chaque type de fait, on considère ses caractéristiques propres (titre, couleurs, liste des champs,...) *}
+	{foreach from=$listeTypesFaits key=typeFait item=descriptionTypeFait}
+		{* si un fait de ce type figure dans la fiche disciplinaire *}
+		{if isset($listeFaits[$typeFait])}
+		{* on se trouve dans le contexte "tableau" *}
+		{assign var=contexte value='tableau'}
+		{* on indique le titre de ce type de faits *}
+		<h3 style="clear:both;background-color: #{$descriptionTypeFait.couleurFond}; color: #{$descriptionTypeFait.couleurTexte}">
+			{$descriptionTypeFait.titreFait}</h3>
+		
+		<table class="tableauAdmin">
+			{* ----------------- ligne de titre du tableau  -------------------------- *}
+			<tr>
+				{strip}
+				{if $descriptionTypeFait.imprimable == 1}
+				<th width="20">&nbsp;</th>
+				{/if}
+			{* on examine chacun des champs qui décrivent le fait *}
+			{foreach from=$descriptionTypeFait.listeChamps item=champ}
+				{* si le champ intervient dans le contexte (ici, "tableau"), on écrit le label corredpondant*}
+				{if in_array($contexte, $descriptionChamps.$champ.contextes)}
+				<th>{$descriptionChamps.$champ.label}</th>
+				{/if}
+			{/foreach}
+				<th width="40">&nbsp;</th>
+				{/strip}
+			</tr>
+			{* ----------------- ligne de titre du tableau  -------------------------- *}
+			
+			{foreach from=$listeFaits.$typeFait key=idfait item=unFaitDeCeType}
+			<tr>
+				{strip}
+				{if $descriptionTypeFait.imprimable == 1}
+				<th>
+					{if ($userStatus == 'educ') || ($userStatus == 'admin')}
+					<a href="index.php?action=print&amp;mode=retenue&amp;idfait={$idfait}&amp;matricule={$matricule}"><img src="../images/print.png" alt="P" title="Imprimer"></a>
+					{else}&nbsp;
+					{/if}
+				</th>
+				{/if}
+				{foreach from=$descriptionTypeFait.listeChamps item=champ}
+					{if in_array($contexte, $descriptionChamps.$champ.contextes)}
+					<td>
+						{strip}
+						{* s'il s'agit d'une retenue (typeFait 4, 5 ou 6), les informations suivantes se trouvent dans la liste des retenues de cet élève *}
+						{if in_array($typeFait,array('4','5','6')) && (in_array($champ,array('dateRetenue','heure','duree','local')))}
+						{assign var=idretenue value=$unFaitDeCeType.idretenue}
+						{assign var=typeRetenue value=$listeRetenues.$idretenue}
+							{if $descriptionChamps.$champ.typeDate == '1'}
+							{$listeRetenues.$idretenue.$champ}
+							{else}
+							{$listeRetenues.$idretenue.$champ|default:'&nbsp;'}
+							{/if}
+						{else}
+						{$unFaitDeCeType.$champ|default:'&nbsp;'}
+						{/if}
+						{/strip}
+					</td>
+					{/if}
+				{/foreach}
+				<td>
+					{strip}
+					{if ($userStatus == 'educ') || ($userStatus == 'admin')}
+					<a href="index.php?action=fait&amp;mode=edit&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}"  title="Modifier ce fait"><img src="../images/edit.png" alt="E"></a> 
+					<a class="delete" href="index.php?action=fait&amp;mode=suppr&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}" title="Supprimer ce fait">
+						<img src="../images/suppr.png" alt="X"></a>
+					{else}&nbsp;
+					{/if}
+					{/strip}
+				</td>
+				{/strip}
+			</tr>
+			{/foreach}
+
+		</table>
+		{/if}
+	{/foreach}
+
