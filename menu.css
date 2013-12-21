@@ -1,0 +1,113 @@
+.menu {
+    margin: 0; 
+}
+
+ul.menu, ul.menu ul, ul.menu li {
+  padding: 0;
+  list-style-type: none;
+  background-color: #e1e2e3;
+}
+ul.menu li {
+  float: left;
+}
+ul.menu li a {
+  border-left: 3px solid #eeeeee;
+  padding: 0.2em 1em;
+  text-decoration: none;
+  color: black;
+}
+ul.menu li a:hover, ul.menu li a:active {
+  padding: 0.2em 1em;
+  background-image: url(images/gradient.jpg);
+  background-repeat: repeat-x;
+}
+
+#menuBas {
+    clear: both;
+    height: 2em;
+    background-color: #ffe37f;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+}
+    
+#menuBas li {
+    float: left;
+    list-style-type: none;
+    }
+#menuBas li a {
+    display: block;
+    background: #FFE37F;
+    padding: 5px 12px;
+    text-decoration: none;
+    border-right: 1px solid white;
+    color: #000;
+}
+
+#menuBas li a:hover{
+    background-color: #ccc;
+    color: black
+}
+
+#menuBas li ul {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    visibility: hidden;
+    border-top: 1px solid white
+}
+
+#menuBas li ul li {
+    float: none;
+    display: inline;
+    }
+
+#menuBas li ul li a {
+    width: auto;
+    height: 20px;
+    background: #FFE37F;
+    color:black;
+    opacity: 0.95;
+}
+
+#menuBas li ul li a:hover {
+  background-image: url(images/gradient.jpg);
+  background-repeat: repeat-x;
+  color: #000;
+}
+
+li.titreMenu {padding: 0.2em; background-color: #E4E3E2; font-weight:bold; border: 2px inset #FFE37F}
+
+#widget li {
+	display: block; 
+	float:left; 
+	width: 100px; 
+	height: 100px; 
+	border: 1px solid black; 
+	margin: 1em;
+	text-align:center;
+	-moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;
+    padding-top: 10px;
+    background-color: #ccf
+}
+
+.barreOutils {
+  clear:both;
+  padding: 0;
+  margin: 0;
+  background-color: #ddd;
+}
+
+.barreOutils li {
+  list-style-type: none;
+  margin: 0;
+
+}
+
+.barreOutils li a img {
+  border: 1px inset black;
+  margin: 2px
+}

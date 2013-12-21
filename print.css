@@ -1,0 +1,186 @@
+#menuHaut {display: none}
+#menuBas {display: none}
+
+body {
+  font-family: Verdana,Arial,sans-serif;
+  font-size: 10pt;
+}
+.menu {display: none;}
+h1 {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+}
+h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+h3 {
+  border-style: none none solid solid;
+  border-width: 1px;
+  font-size: 14px;
+  margin-bottom: 2px;
+  padding-left: 1em;
+}
+
+form {
+}
+input, select, textarea {
+  font-size: 10pt;
+  border: none;
+}
+
+label {
+  padding: 0 5px;
+}
+
+#footer {
+display: none;
+}
+
+#pied {
+  padding: 0.5em;
+  margin-top: 1em;
+  font-size: 0.7em;
+  clear: both;
+}
+
+#lesClasses {
+  margin: 0 1em;
+  float: left;
+}
+
+.echec {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.cadre {
+  margin: 3em 0;
+  width: 20em;
+  float: left;
+}
+
+.gauche {
+  margin: 0 1em;
+  padding: 0 1em;
+  float: left;
+  width: 40%;
+}
+.droite {
+  margin: 0 1em;
+  padding: 0 1em;
+  float: left;
+  width: 40%;
+}
+label.error {
+  background-color: red;
+  color: white;
+}
+#statut {
+  margin: 0 1em;
+  clear: both;
+  background-color: #fff49c;
+}
+.center {
+  margin: 3em 0;
+}
+#espion {
+display:none
+}
+#boite {
+  border: 1px outset red;
+  margin: 5em auto;
+  width: 30em;
+  height: 10em;
+  min-height: 10em;
+}
+#titreBoite {
+  background-image: url(images/gradient.jpg);
+  background-repeat: repeat-x;
+  height: 1.5em;
+  text-align: center;
+}
+#boite #contenu {
+  padding: 1em;
+}
+#boite #contenu img {
+  margin-right: 1em;
+}
+
+#listeCours {  border: 1px outset red;
+  width: 40em;
+  }
+
+#listeCours li {
+list-style-type: none;
+margin: 0.5em 0;
+border: 1px solid #aaa;
+}
+
+.tableauCotes td {border: 1px solid #eee;}
+
+.tableauCotes th {background-color: #FFE37F}
+
+
+ .cote {text-align: center;}
+ .synthese {font-weight: bold; }
+ .echec {background-color: red;
+ color: white;
+}
+.tableauAdmin {
+	width: 100%;
+	margin-bottom: 5em;
+}
+
+
+.tableauAdmin td {border: 1px solid #ddd}
+.tableauAdmin th {border: 1px outset black; 
+	background-color: #ddd; 
+	padding: 0; 
+	font-weight:normal;
+	font-size: 0.9em
+}
+#selectCours {float: left; margin-right: 2em;}
+#selectTop {clear: both; display: none;}
+#enregistrer, #annuler, #wait {display: none}
+
+.noprint {display: none}
+
+#photo {float:right}
+
+.unePhoto {
+  margin: 0.5em;
+  float: left;
+  text-align: center;
+  cursor: pointer;
+}
+
+#photo {
+  float: right;
+}
+
+#trombi {
+  margin: auto;
+  width: 80%;
+  list-style-type: none;
+  border: none;
+}
+
+#widget li {
+	display: none;
+	}
+
+.inv {
+	display: none;
+	}
+
+.tableauBulletin td, .tableauBulletin th {
+	border: 1px solid black;
+	}
+
+.infoSup {
+	display: none;
+}
