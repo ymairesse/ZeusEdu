@@ -1,0 +1,43 @@
+<h3>Choix d'initialisation</h3>
+<p>Attention, les commandes <strong class="danger"><span>en rouge</span></strong> ne devraient plus être utilisées après le début de l'année scolaire. Danger de casser le système!!</p>
+
+<form name="choixInit" id="choixInit" action="index.php" method="POST">
+	<ul>
+		<li class="danger"><input type="radio" name="mode" value="resetSituations"{if (isset($mode)) && ($mode == 'resetSituations')} chacked="checked"{/if}><span>Archivage et initialisation des situations</span></li>
+		<li class="danger"><input type="radio" name="mode" value="resetDetailsCotes"{if (isset($mode)) && ($mode == 'resetDetailsCotes')} checked="checked"{/if}><span>Effacement du détail des cotes par compétences dans les bulletins</span></li>
+		<li class="danger"><input type="radio" name="mode" value="resetCommentProfs"{if (isset($mode) && ($mode == 'resetCommentProfs'))} checked="checked"{/if}><span>Effacement des commentaires aux bulletins</span></li>
+		<li class="danger"><input type="radio" name="mode" value="resetCommentTitus"{if (isset($mode) && ($mode == 'resetCommentTitus'))} checked="checked"{/if}><span>Effacement des commentaires des titulaires aux bulletins</span></li>
+		<!-- <li class="danger"><input type="radio" name="mode" value="sitArchives"{if (isset($mode)) && ($mode == 'sitArchives')} checked="checked"{/if}><span>Transfert des situations vers les archives</span></li> -->
+		<li class="danger"><input type="radio" name="mode" value="initCarnet"{if (isset($mode)) && ($mode == 'initCarnet')} checked="checked"{/if}><span>Initialisation du carnet de cotes</span></li>
+		<li class="danger"><input type="radio" name="mode" value="delPonderations"{if (isset($mode)) && ($mode == 'delPonderations')} checked="checked"{/if}><span>Suppression de toutes les pondérations des cours</span></li>
+		<li class="danger"><input type="radio" name="mode" value="ponderations"{if (isset($mode)) && ($mode == 'ponderations')} checked="checked"{/if}><span>Initialisation des pondérations des cours (penser à supprimer les pondérations avant)</span></li>
+		<li class="danger"><input type="radio" name="mode" value="resetCoordin"{if (isset($mode)) && ($mode == 'resetCoordin')} checked="checked"{/if}><span>Effacement des notices coordinateurs</span></li>
+		<li class="danger"><input type="radio" name="mode" value="resetAttitudes"{if (isset($mode)) && ($mode == 'resetAttitudes')} checked="checked"{/if}><span>Initialisation des "Attitudes"</span></li>
+		<li><input type="radio" name="mode" value="verrous"{if (isset($mode)) && ($mode == 'verrous')} checked="checked"{/if}><span>Initialisation des verrous des cours</span></li>
+		<li><input type="radio" name="mode" value="images"{if (isset($mode)) && ($mode == 'images')} checked="checked"{/if}><span>Initialisation des images des cours</span></li>
+		<li><input type="radio" name="mode" value=""{if (!isset($mode)) || ($mode == '')} checked="checked"{/if}>Ne rien faire</li>
+	</ul>
+<input type="hidden" name="action" value="{$action}">
+{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
+<input type="submit" value="OK" name="Submit">
+</form>
+
+<script type="text/javascript">
+{literal}
+$(document).ready(function(){
+
+	$("#choixInit").submit(function(){
+		var confirmation = true;
+		if ($("#choixInit input:radio:checked").parent().hasClass("danger")) {
+			confirmation = confirm("Vous savez ce que vous faites, n'est-ce pas?\nVous avez été assez averti!");
+			}
+		if (confirmation == true) {
+			$.blockUI();
+			$("#wait").show();
+			}
+		else return false;
+		})
+	
+	})
+{/literal}
+</script>

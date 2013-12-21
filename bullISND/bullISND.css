@@ -1,0 +1,459 @@
+.imagePopup {
+    background-color:white; 
+    font-weight:bold;
+    box-shadow: 1px 1px 12px #555;
+}
+.photoEleve {
+    box-shadow: 1px 1px 12px #555;
+}
+
+.microForm {
+	margin: 0;
+	padding: 0;
+}
+
+#notice {
+	display: block;
+	width: 30%; 
+	min-height: 100px;
+	float:left;
+	padding: 10px 10px 0 80px;
+	border: 1px solid red;
+	margin: 1em;
+	box-shadow: 1px 1px 12px #555;
+	font-weight: bold;
+	background-color: #ee8;
+	background-image: url('../images/info.png');
+	background-repeat:no-repeat;
+	background-position: 10px 10px;
+	}
+	
+.noticeDroite {
+	width: 40%; 
+    float: right;
+    background-color: #ee8;
+	background-image: url('../images/info.png');
+	background-repeat:no-repeat;
+	background-position: 10px 10px;
+    padding: 10px 10px 0 80px;
+	border: 1px solid red;
+	margin: 1em;
+	box-shadow: 1px 1px 12px #555;
+	}
+
+.rowalt {
+	background-color: #eee;
+	}
+
+.delibe {background-color: #F7D6E9;}
+
+.legendePhoto {
+	background-color: #aaa; 
+	color:white;
+	padding: 5px 2px 5px 2px;
+	display: block;
+	}
+.conclusionDelibe {
+    background-color: #eee
+}
+
+.remarqueDelibe {
+	font-size: 0.8em;
+	}
+
+.blocGaucheBulletin {
+  clear:both;
+  float:left;
+  width: 15%;
+  border: 1px solid black;
+  padding: 1em;
+  margin-bottom:1em;
+  border-radius: 10px;
+}
+
+.blocDroitBulletin {
+  float:right;
+  width: 80%;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.blocRemarque {
+	float:left;
+	width:55%	
+	
+}
+
+.blocAttitudes {
+	float:right;
+	width:45%;
+
+}
+
+.tableauBull {
+	width: 100%;
+	font-size:10pt;
+}
+
+.tableauBull td {
+  border: 1px solid #dddddd;
+  font-size: 0.9em;
+}
+.tableauBull th {
+  border: 1px outset black;
+  padding: 0;
+  background-color: #dddddd;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+.tableauBull .bilan {
+  background-color: #ccccee;
+}
+.tableauBull .bilan .echecs {
+  color: red;
+}
+.tableauBull .bilan .echecs {
+  text-align: left;
+}
+
+input[readonly], textarea[readonly], checkbox[readonly] {
+	background-color: #888; 
+	color:#eee;
+	}
+
+
+.tableauBull input {text-align:right;
+	padding-right:3px;
+	}
+
+
+input.nacquis[readonly], input.acquis[readonly]{
+	cursor:pointer;
+	color: black;
+	border: 0;
+	background-color: #eee;
+}	
+
+select[disabled] {color: #ccc}
+	
+.compteur {
+	clear:both;
+	float:right; 
+	color: grey;
+	}
+	
+.erreurEncodage {
+	background-color: red;
+	color:white;
+	}
+
+.echecEncodage {
+	background-color: #e55;
+	color:white;
+	}
+	
+.echecEncodage input {
+	color: #e55;
+	}
+
+.situations, .commentaires {
+	background-color: #eee;
+	}
+.totaux {
+	width:6em; 
+	text-align:center
+}
+
+.cote1erDegre {
+	background-color: yellow; 
+	clear:both; 
+	border: 1px dotted red;
+	}
+
+.patienter {
+	background-color: orange;
+  }
+
+.situationActuelle {
+  background-color: #FCDB82; 
+
+}
+
+.ponderation {
+	color: blue;
+	font-size: 0.8em;
+	font-weight: bold;
+}
+
+.star {
+	background-color: yellow; 
+	color:red;
+}
+
+.lblFraction {
+float:left;
+}
+.fraction {
+float:left;
+padding: 0 0.5em;
+}
+
+.den {
+font-weight:bold;
+text-align: center;
+width: 3em;
+}
+.num {
+border-bottom: 1px solid;
+font-weight:bold;
+text-align: center;
+width: 3em;} 
+
+
+.sit {
+  color: #000;
+  background-color: #ee0;
+}
+
+
+.synthese {
+	border: 1px solid black;
+	background-color: #feeeca
+	}
+	
+.synthese p {
+	padding: 0 1em;
+}
+
+td.TJ, td.EX, th {
+	cursor:pointer;
+	}
+
+#commentaireProf {
+	background-color:#E9ED80;
+	border: 1px solid black;
+	}
+	
+#commentaireProf h4 {
+	margin:0
+	}
+
+.mention{font-size:1.3em;}
+
+.I, .F {color: red;}
+
+
+#tableauCompetences td {
+    font-weight:normal;
+    padding-left: 2em;
+    }
+#tableauCompetences h4 {
+    margin:0;
+	}
+#tableauCompetences td.nomCours {
+	border-bottom: 1px solid black
+	}
+
+#tableauCompetences {
+	font-size:8pt;
+	}
+
+.hide {color: #aaa}
+.rapportCote {float:right; padding-right: 1em;}
+
+.attitudes {
+	font-weight:bold;
+	text-align:center;
+}
+
+.tableauRemarque {
+width: 100%;
+}
+.tableauRemarque th {
+  background-color: #eee;
+  font-size: 0.8em;
+  font-weight: normal;
+}
+.tableauRemarque td {
+  font-size: 0.8em;
+  border: 1px solid #eee;
+}
+.aVoir {
+	display: none;
+}
+.montrer {
+	cursor: pointer;
+}
+.fauxBouton {
+	cursor:pointer;
+}
+
+.collapsible {
+	cursor:pointer;
+	text-decoration: underline;
+}
+
+.inputSituations {
+	font-size: 7pt;
+}
+.inputSituations .sit {
+	text-align:left;
+}
+.inputSituations .max {
+	text-align:right;
+	float:right;
+}
+
+.inputMention {
+	text-align:center
+	}
+
+.mentionI {
+	background-color: #FEA2A0;
+	}
+.mentionF {
+	background-color: #F7D29D;
+	color: black;}
+.mentionS {
+	background-color: #EBF79D;}
+.mentionAB {
+	background-color: #9DF7A1;
+	}
+.mentionB {
+	background-color: #9EF8DB;
+	color: black;
+	}
+.mentionBplus {background-color: #26F8B6;
+	color: black}
+.mentionTB {
+	background-color: #7290E2;
+	color:white}
+.mentionTBplus {
+	background-color: #2558E2;
+	color:white}
+
+ .mentionE {
+	background-color: #D2AAE6;
+	}
+
+/* #menuBas.floatable {
+	position: fixed;
+}
+*/
+.eleveActif {
+	background-color: #FEEDA9;
+}
+.eleveSelectionne {
+	background-color: #feed66}
+.highlight {
+	background-color: #F3F7C6;
+}
+
+.carnetCotes {
+	font-size:0.8em;
+}
+
+th.cert, td.cert, .cert {
+	border: 2px solid black; !important
+	}
+
+
+.couleur0 {
+	background-color: #FFE6E6;
+	}
+
+.couleur1 {
+	background-color: #FBFFE6;
+	}
+  
+.couleur2 {
+	background-color: #E6FFEC;
+	}
+  
+.couleur3 {
+	background-color: #E6F7FF;
+	}
+
+.couleur4 {
+	background-color: #F2E6FF;
+	}
+
+.couleur5 {
+	background-color: #FFE6FD;
+	}
+
+.couleur6 {
+	background-color: #E6E8FF;
+	}
+  
+.couleur7 {
+	background-color: #E6FFF9;
+	}
+  
+.couleur8 {
+	background-color: #ECFFE6;
+	}
+
+.couleur9 {
+	background-color: #FFF4E6;
+	}
+ 
+ 
+.draggable {
+	cursor:pointer
+	}
+
+.editCote, .editTitle {
+    background-color: #F8C653;
+    padding: 5px;
+    font-weight: bold;
+}
+#editCote, #delCote {
+	box-shadow: 10px 10px 5px #888;
+	}
+
+#formDel span {
+	font-weight: bold;
+	}
+
+.formFooter {
+	padding: 3px 0; 
+	margin: 15px 0 0 0;
+	background-color: #F7DF9D;
+	color: grey;
+	border-top: 1px solid grey;
+}
+
+.tableauTitu {
+	border-collapse: collapse
+	}
+
+.tableauTitu th {
+	background-color: #ddd;
+	}
+
+.tableauTitu td {
+	border: 1px solid black;
+	}
+
+#cke_texte {
+	margin: 1em 0;
+	}
+
+.danger span {
+	color:white;
+	background-color:#f00;
+	
+}
+
+.gauche {
+	float:left;
+	width: 47%;
+	padding: 0 2em;
+	
+}
+
+#listeElevesAdd, #listeElevesDel {
+	background-color: #aaa
+	}
+	
