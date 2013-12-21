@@ -1,0 +1,99 @@
+.cadreGauche {
+    border: 2px solid blue;
+    width: 44%;
+    float: left;
+    background-color: #dddddd;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-topright: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -moz-border-radius-bottomleft: 20px;
+  }
+
+.cadreDroit {
+    border: 2px solid red;
+    width: 44%;
+    float: right;
+    background-color: #dddddd;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-topright: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -moz-border-radius-bottomleft: 20px;
+  }
+  
+.legendePhoto {
+	background-color: #aaa; 
+	color:white;
+	padding: 5px 2px 5px 2px;
+	display: block;
+	}
+
+.photoEleve {
+    box-shadow: 1px 1px 12px #555;
+}
+
+#trombi {
+  margin: auto;
+  width: 80%;
+  list-style-type: none;
+}
+#trombi {
+  border:  none;
+}
+
+#accordion h3 {padding-left: 2em; margin-bottom: 0;}
+#accordion div ul li {list-style-type: none; }
+
+.inputDefault {font-style: italic; color: grey;}
+.inputNormal {font-style: normal; color: black;}
+
+.info {background-color: #ffd;
+    margin: 0.5em;
+    padding: 0.7em;
+    border:1px solid #555
+}
+
+fieldset p {
+	background-color: #eee; 
+	padding: 0.5em; 
+	margin:0
+	}
+	
+.tableauTitu {
+	border-collapse: collapse
+	}
+
+.tableauTitu th {
+	background-color: #ddd;
+	}
+
+.tableauTitu td {
+	border: 1px solid black;
+	}
+
+.mentionI {
+	background-color: #FEA2A0;
+	}
+.mentionF {
+	background-color: #F7D29D;
+	color: black;}
+.mentionS {
+	background-color: #EBF79D;}
+.mentionAB {
+	background-color: #9DF7A1;
+	}
+.mentionB {
+	background-color: #9EF8DB;
+	color: black;
+	}
+.mentionBplus {background-color: #26F8B6;
+	color: black}
+.mentionTB {
+	background-color: #7290E2;
+	color:white}
+.mentionTBplus {
+	background-color: #2558E2;
+	color:white}
+
+ .mentionE {
+	background-color: #D2AAE6;
+	}
