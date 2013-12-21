@@ -1,0 +1,27 @@
+
+#tooltip {
+	position:absolute;
+	z-index:9999;
+	display: none;
+	font-size:10pt;
+    background-color: #ffffbb;
+    box-shadow: 8px 8px 12px #555;
+    min-height: 2em;
+    padding: 5px;
+    max-width:20em;
+    border: 1px solid #444;
+	}
+	
+*[title], .tooltip {cursor:pointer}
+ 
+/* IE hack */
+*html #tooltip {margin-bottom:-6px;}
+
+#tooltip h3 {
+	background-color: #FED841;
+    border: 1px solid #999999;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+	}

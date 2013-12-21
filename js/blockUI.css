@@ -1,0 +1,15 @@
+.growlUI {
+    background-color: black;
+    color: white;
+    font-size: 1em;
+    }
+    
+.growlUI h3 {
+    color: white;
+    padding: 0 1em;
+    text-align: justify;
+    border: none
+    }
+ 
+.growlUI h2 {
+background :black }
