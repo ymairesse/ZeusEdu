@@ -925,6 +925,25 @@ CREATE TABLE IF NOT EXISTS `didac_statutCours` (
   PRIMARY KEY (`cadre`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+
+--
+-- Contenu de la table `didac_statutCours`
+--
+
+INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`) VALUES
+(11, 'FC', 2),
+(13, 'Rem', 10),
+(18, 'FC', 2),
+(28, 'FC', 2),
+(34, 'OB', 3),
+(35, 'OG', 4),
+(38, 'OB', 3),
+(51, 'AC', 9),
+(55, 'AC', 9),
+(58, 'AC', 9),
+(75, 'Renf.', 8),
+(81, 'Rem', 10);
+
 -- --------------------------------------------------------
 
 --
