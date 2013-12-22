@@ -1319,7 +1319,8 @@ class bullTQ {
 		$matricule = $infoPerso['matricule'];
 		$classe = $infoPerso['classe'];
 		$titulaires = implode(',',Ecole::titusDeGroupe($classe));
-		$listeCoursGrp = $this->listeCoursGrpEleves($matricule)[$matricule];
+		$listeCoursGrp = $this->listeCoursGrpEleves($matricule);
+		$listeCoursGrp = $listeCoursGrp[$matricule];
 		$listeProfs = $this->listeProfsListeCoursGrp($listeCoursGrp);
 		$listeCompetences = $this->listeCompetencesListeCoursGrp($listeCoursGrp);
 
