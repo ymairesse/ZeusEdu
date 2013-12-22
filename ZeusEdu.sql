@@ -904,7 +904,7 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 ('ades', 'ADM', 'admin'),
 ('trombiEleves', 'ADM', 'admin'),
 ('trombiProfs', 'ADM', 'admin'),
-('delibeEduc', 'ADM', 'admin'),
+('bullTQ', 'ADM', 'admin'),
 ('infirmerie', 'ADM', 'admin'),
 ('bullISND', 'ADM', 'admin'),
 ('pad', 'ADM', 'admin');
