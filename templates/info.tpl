@@ -2,16 +2,25 @@
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>{$titre}</title>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
-  <link rel="stylesheet" href="screen.css" type="text/css" media="screen">
-  <link rel="stylesheet" href="print.css" type="text/css" media="print">
-  
-  <script type="text/javascript" src="./js/jquery.ymtooltip.js"></script>
-  <link rel="stylesheet" href="js/ymtooltip.css" type="text/css" media="screen,print">
-  
-	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css">
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<title>{$titreApplication}</title>
+
+<link rel="stylesheet" href="menu.css" type="text/css" media="screen">
+<link rel="stylesheet" href="screen.css" type="text/css" media="screen">
+<link rel="stylesheet" href="print.css" type="text/css" media="print">
+<link rel="stylesheet" href="js/jquery-ui-themes-1.10.3/themes/sunny/jquery-ui.css" media="screen, print">
+<link rel="stylesheet" href="js/ymtooltip.css" type="text/css" media="screen,print">
+
+<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script type="text/javascript" src="js/jquery.validate.js"></script>
+<script type="text/javascript" src="js/jquery.blockUI.js"></script>
+<script type="text/javascript" src="js/jquery.enter2tab.js"></script>
+<script type="text/javascript" src="js/toTop/jquery.ui.totop.js"></script>
+<script type="text/javascript" src="js/menuBas.js"></script>
+<script type="text/javascript" src="js/toTop/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/jquery.align.js"></script>
+<script type="text/javascript" src="js/jquery.ymtooltip.js"></script>
 </head>
 <body>
 <div id="texte">

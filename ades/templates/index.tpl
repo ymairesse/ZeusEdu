@@ -5,29 +5,9 @@
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META HTTP-EQUIV="Expires" CONTENT="-1">
 <title>{$titre}</title>
-<script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="../js/jquery.form.js"></script>
-<script type="text/javascript" src="../js/jquery.validate.js"></script>
-<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
-<script type="text/javascript" src="../js/jquery.enter2tab.js"></script>
-<script type="text/javascript" src="../js/toTop/jquery.ui.totop.js"></script>
-<script type="text/javascript" src="../js/menuBas.js"></script>
-<script type="text/javascript" src="../js/jquery.ymtooltip.js"></script>
-<script type="text/javascript" src="../js/toTop/jquery.easing.1.3.js"></script>
-<script type="text/javascript" src="../js/jquery.ui.timepicker.js"></script>
-<script type="text/javascript" src="../js/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
 
-<link rel="stylesheet" href="../menu.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../screen.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../print.css" type="text/css" media="print">
-<link rel="stylesheet" href="../js/blockUI.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../js/ymtooltip.css" type="text/css" media="screen,print">
-<link rel="stylesheet" href="../js/jquery-ui-themes-1.10.3/themes/smoothness/jquery-ui.css" media="screen, print">
-
-<link rel="stylesheet" href="../js/jquery.ui.timepicker.css" type="text/css" media="screen">
-<link rel="stylesheet" media="screen,projection" href="../js/toTop/ui.totop.css">
-<!-- feuille de style du module -->
-<link rel="stylesheet" href="{$module}.css" type="text/css" media="screen,print">
+{include file='../../javascript.js'}
+{include file='../../styles.sty'}
 
 </head>
 <body>

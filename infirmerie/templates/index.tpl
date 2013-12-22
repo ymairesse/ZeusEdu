@@ -5,35 +5,9 @@
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META HTTP-EQUIV="Expires" CONTENT="-1">
 <title>{$titre}</title>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
-<script type="text/javascript" src="../js/jquery.form.js"></script>
-<script type="text/javascript" src="../js/jquery.validate.js"></script>
 
-<script type="text/javascript" src="../js/menuBas.js"></script>
-<link rel="stylesheet" href="../menu.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../screen.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../print.css" type="text/css" media="print">
-<!-- feuille de style du module -->
-<link rel="stylesheet" href="{$module}.css" type="text/css" media="screen,print">
-	
-<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
-<link type="text/css" media="screen" rel="stylesheet" href="../js/blockUI.css">
-<script type="text/javascript" src="../js/jquery.ymtooltip.js"></script>
-<link rel="stylesheet" href="../js/ymtooltip.css" type="text/css" media="screen,print">
-
-<script type="text/javascript" src="../js/jquery.enter2tab.js"></script>
-
-<script src="../js/toTop/jquery.easing.1.3.js" type="text/javascript"></script>
-<!-- UItoTop plugin -->
-<script src="../js/toTop/jquery.ui.totop.js" type="text/javascript"></script>
-
-<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-
-<script src="../js/jquery.ui.timepicker.js"></script>
-<link rel="stylesheet" href="../js/jquery.ui.timepicker.css" type="text/css" media="screen">
-
-<link rel="stylesheet" media="screen,projection" href="../js/toTop/ui.totop.css">
+{include file='../../javascript.js'}
+{include file='../../styles.sty'}
 
 </head>
 <body>

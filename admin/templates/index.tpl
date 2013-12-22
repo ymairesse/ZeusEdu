@@ -46,9 +46,11 @@ $(document).ready (function() {
 		)
 	}
 	
-
-	// selectionner le premier champ "texte" du formulaire
-	$("form").find('input[type=text],textarea,select').filter(':visible:first').focus();
+	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
+		if ($("#corpsPage").html() != '\n') 
+			$("#corpsPage form :input:visible:enabled:first").focus();
+			else 
+			$("form :input:visible:enabled:first").focus();
 
 	$("*[title], .tooltip").tooltip();
 	
