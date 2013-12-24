@@ -837,6 +837,23 @@ CREATE TABLE IF NOT EXISTS `didac_presencesHeures` (
   UNIQUE KEY `fin` (`fin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des heures de cours';
 
+--
+-- Contenu de la table `didac_presencesHeures`
+--
+
+INSERT INTO `didac_presencesHeures` (`debut`, `fin`) VALUES
+('08:25:00', '09:15:00'),
+('09:15:00', '10:10:00'),
+('10:20:00', '11:10:00'),
+('11:10:00', '12:00:00'),
+('12:00:00', '12:50:00'),
+('12:50:00', '13:40:00'),
+('13:40:00', '14:20:00'),
+('14:35:00', '15:25:00'),
+('15:25:00', '16:15:00');
+
+
+
 -- --------------------------------------------------------
 
 --
