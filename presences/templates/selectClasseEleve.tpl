@@ -3,35 +3,30 @@
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected{/if}>{$uneClasse}</option>
+			<option value="{$uneClasse}"{if $uneClasse == $classe} selected{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
 
-		<span id="choixEleve">
-		{if isset($prevNext.prev)}
+		{if isset($prevNext) && isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
-			<img src="../images/left.png" alt="<" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+			<img src="images/left.png" style="position: relative; width:18px; top:4px" alt="<" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
 		{/if}
-			<select name="matricule" id="selectEleve">
-				<option value="">Choisir un élève</option>
-				{if isset($listeEleves)}
-					{* key = matric car $matricule est passé en argument *}
-					{foreach from=$listeEleves key=matric item=eleve}
-					<option value="{$matric}"{if (isset($matricule)) && ($matric == $matricule)} selected{/if} title="{$matricule}">
-						{$eleve.nom} {$eleve.prenom}</option>
-					{/foreach}
-				{/if}
-			</select>
-		{if isset($prevNext.next)}
-			{assign var=matrNext value=$prevNext.next}
-		 <img src="../images/right.png" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
-		{/if}
+		
+		<span id="choixEleve">
+			
+		{include file='listeEleves.tpl'}
+	
 		</span>
+		
+		{if isset($prevNext) && isset($prevNext.next)}
+			{assign var=matrNext value=$prevNext.next}
+		 <img src="images/right.png" style="position: relative; width:18px; top:4px" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+		{/if}
 		
 	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
-	{if isset($prevNext)} 
+	{if isset($prevNext)}
 		<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
 		<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
 	{/if}
@@ -67,10 +62,9 @@ $(document).ready (function() {
 			)
 	});
 
-	$("#selectEleve").live("change", function(){
+	$("#choixEleve").on("change", "#selectEleve", function(){
 		if ($(this).val() > 0) {
-			// si la liste de sélection des élèves renvoie une valeur significative
-			// le formulaire est soumis
+			// si la liste de sélection des élèves renvoie une valeur significative, le formulaire est soumis
 			$("#formSelecteur").submit();
 			$("#envoi").show();
 		}

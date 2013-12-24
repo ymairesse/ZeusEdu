@@ -39,15 +39,13 @@ class presences {
 		return $listePeriodes;
 	}
 	
-	/*
-	 * function enregistrerHeures
+	/**
+	 * renvoie le nombre d'enregistrements effectivement réalisés et la liste des erreurs
 	 *
 	 * @param $post : ensemble des informations provenant du formulaire de définition des heures de cours
-	 *
-	 * renvoie le nombre d'enregistrements effectivement réalisés et la liste des erreurs
+	 * @return array : résultat de l'enregistrement
 	 */
 	 public function enregistrerHeures ($post) {
-
 		$listeData = array();		
 		foreach ($post as $champ=>$value) {
 			$split = explode('_', $champ);
@@ -94,8 +92,8 @@ class presences {
 		return array('ok'=>$ok, 'ko'=>$ko);
 	 }
 
-	 /*
-	  * function ajoutPeriode
+	 /**
+	  * ajoute une période de cours dans la table de la base de données
 	  *
 	  * @param
 	  * @return $nb  nombre de périodes ajoutées (normalement, une seule)
@@ -251,7 +249,7 @@ class presences {
 		Application::deconnexionPDO($connexion);
 		$listeAbsences = array();
 		foreach ($liste as $uneAbsence) {
-			$date = $uneAbsence['date'];
+			$date = 	Application::datePHP($uneAbsence['date']);
 			$periode = $uneAbsence['periode'];
 			$listeAbsences[$date][$periode] = $uneAbsence;
 		}

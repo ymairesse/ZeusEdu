@@ -1,5 +1,4 @@
 <div class="noprint">
-	
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 		Période <span class="micro" title="{if !$freePeriode}Période actuelle{else}période {$periode}{/if}">[{$periode}]</span>
 			<input type="checkbox" value="1" id="freePeriode" name="freePeriode"{if $freePeriode} checked="checked"{/if}>
@@ -31,7 +30,7 @@
 		<select name="coursGrp" id="coursGrp">
 			<option value="">Sélectionnez un cours</option>
 		{foreach from=$listeCoursGrp key=cours item=data}
-			<option value="{$cours}"{if $cours == $coursGrp}selected="selected"{/if}>{$data.libelle|truncate:25} ({$data.classes})</option>
+			<option value="{$cours}"{if $cours == $coursGrp} selected="selected"{/if}>{$data.libelle|truncate:25} ({$data.classes})</option>
 		{/foreach}
 		</select>
 		{else}
@@ -44,12 +43,26 @@
 		<input type="submit" value="OK" name="OK" id="envoi">
 		<input type="hidden" name="action" value="listeEleves">
 	</form>
+
+
+{if (empty($listePeriodes))}
+<div id="dialog" title="Avertissement">
+	<p>Attention! Les périodes de cours ne sont pas encore définies. Contactez l'administrateur</p>
+</div>
+{/if}
+	
 	
 </div>
 
 <script type="text/javascript">
 {literal}
+
+	var freePeriode = false;
+	var freeDate = false;
+
 	$(document).ready (function() {
+
+		$("#dialog").dialog();
 		
 		// ajustement de la liste des cours en fonction du prof sélectionné
 		$("#selectProf").change(function(){
@@ -73,13 +86,15 @@
 			});
 		
 		$("#freePeriode").click(function(){
-			if ($(this).attr("checked")) 
-				$("#selectPeriode").show()
-				else $("#selectPeriode").hide();
-			})
+			freePeriode = !(freePeriode);
+			if (freePeriode)
+			$("#selectPeriode").show()
+			else $("#selectPeriode").hide();
+			}) 
 		
 		$("#freeDate").click(function(){
-			if ($(this).attr("checked")) 
+			freeDate = !(freeDate);
+			if (freeDate) 
 				$("#date").show()
 				else $("#date").hide();
 			})
@@ -97,8 +112,9 @@
 		
 		// on vérifie que le formulaire peut être soumis si toutes les informations sont présentes
 		$("#formSelecteur").submit(function(){
-			if (($("#selectProf").val() == '') || ($("#coursGrp").val() == '') || $("#selectPeriode").val() == '')
+			if (($("#selectProf").val() == '') || ($("#coursGrp").val() == '') || $("#selectPeriode").val() == '') {
 				return false;
+				}
 				else {
 					//$.blockUI();	// apparemment, souci sous Safari/iPad
 					// $("#wait").show();

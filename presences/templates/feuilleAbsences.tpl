@@ -19,52 +19,51 @@
 	[Absent(s): <span id="nb" class="size150"></span> ]
 <input type="submit" name="submit" value="Enregistrer" id="submit"></strong>
 
-<table class="tableauAdmin tableauPresences">
-	<tr colspan="6">
-		{foreach from=range(0,1) item=col}
-		<th width="70">Classe</th>
-		<th width="260">Nom Prénom</th>
-		<th width="170">Absent</th>
-		{/foreach}
-	</tr>
-	{foreach from=$nbLignes item=noLigne}
-	<tr>
-		{foreach from=$listeDouble.$noLigne key=matricule item=dataEleve}
-			<th>{$dataEleve.classe|default:'&nbsp;'}</th>
-			<td class="tooltip col0
-			{if isset($listeAbsences) && in_array($periode, $listeAbsences.$matricule)} abs{else}
-			{if isset($listeAbsences.$matricule)} abs0{/if}
-			{/if}">
-				<span class="tip"><img src="../photos/{$dataEleve.photo}.jpg" alt="{$matricule}" width="100px" style="display:none"></span>
-				{$dataEleve.nom|default:'&nbsp;'} {$dataEleve.prenom|default:'&nbsp;'} <input type="text" value="rem_{$matricule}" style="display:none"></td>
-			<td class="col1
-				{if isset($listeAbsences) && in_array($periode, $listeAbsences.$matricule)} abs{else}
-				{if isset($listeAbsences.$matricule)} abs0{/if}
-				{/if}">
-				{if isset($matricule)}
-					{foreach from=$lesPeriodes item=noPeriode}
-						{if $noPeriode == $periode}
-						<input type="checkbox" value="{$matricule}" name="abs_{$matricule}"{if isset($listeAbsences.$matricule) && in_array($noPeriode, $listeAbsences.$matricule)} checked="checked"{/if}>
-						{else}
-							{if isset($listeAbsences.$matricule) && in_array($noPeriode,$listeAbsences.$matricule)}
-							<span class="periode absent">{$noPeriode}</span>
-							{else}
-								<span class="periode present">{$noPeriode}</span>
-							{/if}
-						{/if}
-					{/foreach}
-					{else}&nbsp;
-				{/if}
-			{* si la deuxième colonne est plus courte d'une unité, on allonge pour compléter la "table" *}
-			{if $listeDouble.$noLigne|count == 1}
-				<th><td>&nbsp;</td><td>&nbsp;</td></th>	
-			{/if}
+	<table class="tableauAdmin tableauPresences">
+		<tr colspan="6">
+			{foreach from=range(0,1) item=col}
+			<th width="70">Classe</th>
+			<th width="260">Nom Prénom</th>
+			<th width="170">Absent</th>
+			{/foreach}
+		</tr>
+		{assign var=noCol value=0}
+		{foreach from=$listeEleves key=matricule item=unEleve}
+			{if ($noCol mod 2) == 0}<tr>{/if}
+			<th>{$unEleve.classe|default:'&nbsp;'}</th>
+			
+			<td class="tooltip{if isset($listeAbsences.$matricule) && in_array($periode, $listeAbsences.$matricule)} abs{else}{if isset($listeAbsences.$matricule)} abs0{/if}{/if}">
+				<span class="tip"><img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" width="100px" style="display:none"></span>
+				{$unEleve.nom|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'} <input type="text" value="rem_{$matricule}" style="display:none">
 			</td>
+			
+			<td>
+			{* on passe le différentes périodes existantes en revue*}
+			{foreach from=$lesPeriodes item=noPeriode}
+				{* s'il s'agit de la période actuelle, on présente la case à cocher (éventuellement cochée) *}
+				{if $noPeriode == $periode}
+					<input type="checkbox" value="{$matricule}" name="abs_{$matricule}"
+						{if isset($listeAbsences.$matricule) && in_array($noPeriode, $listeAbsences.$matricule)} checked="checked"{/if}>
+					{else}
+						{if isset($listeAbsences.$matricule) && in_array($noPeriode,$listeAbsences.$matricule)}
+							<span class="periode absent">{$noPeriode}</span>
+						{else}
+							<span class="periode present">{$noPeriode}</span>
+						{/if}
+				{/if}
+			{/foreach}
+			</td>
+			{* si c'est la deuxième colonne, on clôture la ligne *}
+			{if $noCol mod 2 == 1}</tr>{/if}
+			{assign var=noCol value=$noCol+1}
 		{/foreach}
-	</tr> 
-	{/foreach}
-</table>
-
+	
+		{* s'il reste une colonne non définie, on ajoute les cellules vides correspondantes *}
+		{if ($noCol mod 2) == 1}
+			<th>&nbsp;</th><td>&nbsp;</td><td>&nbsp;</td></tr>
+		{/if}
+		
+	</table>
 
 </form>
 </div>

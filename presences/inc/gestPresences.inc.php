@@ -87,11 +87,12 @@ switch ($mode) {
 						$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
 						}
 					// diviser la liste en deux sous-listes dont la première est éventuellement plus longue d'une unité
-					$listeDouble = array_chunk($listeEleves, 2, true);
-					$nbLignes = range(0,count($listeDouble)-1);
+					//$listeDouble = array_chunk($listeEleves, 2, true);
+					// $nbLignes = range(0,count($listeDouble)-1);
+					$smarty->assign('listeEleves',$listeEleves);
 					
-					$smarty->assign('listeDouble', $listeDouble);
-					$smarty->assign('nbLignes',range(0,count($listeDouble)-1));
+					// $smarty->assign('listeDouble', $listeDouble);
+					// $smarty->assign('nbLignes',range(0,count($listeDouble)-1));
 					$smarty->assign('nbEleves',count($listeEleves));
 					$smarty->assign('corpsPage', 'feuilleAbsences');
 				}
