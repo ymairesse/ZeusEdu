@@ -1,5 +1,7 @@
 <?php
-
+/* ---------------------------------------
+/* D E P R E C A T E D 
+/* ---------------------------------------
 /*
  * function connectPDO
  * @param PARAM_HOST, PARAM_BD, PARAM_USER, PARAM_PWD
