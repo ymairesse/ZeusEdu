@@ -23,20 +23,17 @@
 	</li>
 	{/if}
 	<li><a href="javascript:void(0)">Délibés</a>
-		<!--
 		<ul>
-			<li><a href="index.php?action=delibe&amp;mode=parClasse">Feuille de délibé par classe</a></li>
-		<li><a href="index.php?action=delibe&amp;mode=individuel">Feuille de délibé individuelle</a></li>
-		</ul> -->
-	</li>
-	{if $userStatus == 'admin'}
-	<!-- 
-	<li><a href="javascript:void(0)">Admin</a>
-		<ul>
-		<li><a href="index.php?action=gestion">Gestion</a></li>
+			<li><a href="index.php?action=delibe&amp;mode=parClasse">Feuille de synthèse par classe</a></li>
+			<li><a href="index.php?action=delibe&amp;mode=individuel">Feuille de délibé individuelle</a></li>
 		</ul>
 	</li>
-	-->
+	{if $userStatus == 'admin'}
+	<li><a href="javascript:void(0)">Admin</a>
+		<ul>
+					<li><a href="index.php?action=admin&amp;mode=imagesCours">Initialiser images des noms des cours</a></li>
+		</ul>
+	</li>
 	{/if}
 
 </ul>
