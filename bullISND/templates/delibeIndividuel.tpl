@@ -1,5 +1,5 @@
 <h2>{$eleve.nom} {$eleve.prenom}</h2>
-<p id="photoEleve"><img src="../photos/{$photo}.jpg" alt="{$matricule}" title="{$eleve.nom }{$matricule}" height="140px" 
+<p id="photoEleve"><img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" title="{$eleve.nom }{$matricule}" height="140px" 
 	style="position:absolute;right:0;top:-110px;cursor:pointer" class="photo draggable"></p>
 <form name="form" method="POST" action="index.php" id="formulaire">
 <input type="hidden" name="action" value="delibes">

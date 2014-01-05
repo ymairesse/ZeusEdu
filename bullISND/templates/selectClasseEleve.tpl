@@ -3,7 +3,7 @@
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if $uneClasse == $classe} selected{/if}>{$uneClasse}</option>
+			<option value="{$uneClasse}"{if $uneClasse == $classe} selected="selected"{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
 

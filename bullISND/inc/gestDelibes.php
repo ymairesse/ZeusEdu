@@ -22,7 +22,7 @@ $smarty->assign("action", "delibes");
 switch ($mode) {
 	case 'individuel':
 		$listeEleves = isset($classe)?$Ecole->listeEleves($classe,'groupe'):Null;
-		$smarty->assign("listeElevesClasse", $listeEleves);
+		$smarty->assign("listeEleves", $listeEleves);
 		$smarty->assign("bulletin", $bulletin);
 		$smarty->assign("classe", $classe);
 		$smarty->assign("selecteur", "selectClasseEleve");
