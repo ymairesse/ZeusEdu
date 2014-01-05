@@ -11,14 +11,15 @@ $Application = new Application();
 $debut = $Application->chrono();
 
 $user = isset($_SESSION[APPLICATION])?$_SESSION[APPLICATION]:Null;
+
 if (!(isset($user)))
     header ("Location: accueil.php");
-	
-if (!($user->accesApplication(APPLICATION)))
+
+if (!($user->accesApplication(APPLICATION))) {
     header ("Location: accueil.php");
+	}
     else {
         require_once(INSTALL_DIR."/smarty/Smarty.class.php");
-        
         $smarty = new Smarty();
         $smarty->assign("titre", TITREGENERAL);
         $smarty->assign("titreApplication", TITREGENERAL);
@@ -26,7 +27,7 @@ if (!($user->accesApplication(APPLICATION)))
         $smarty->assign("applisDisponibles", $user->getApplications());
         $ip = $user->getIP();
         $acronyme = $user->getAcronyme();
-        
+
         if (($Application->checkIP($ip, $acronyme) == 1) && !(isset($_COOKIE["ZEUSconn1"])))  {  // première connexion
 			$hostname = $user->getHostname();
 			$smarty->assign('ip',$ip);

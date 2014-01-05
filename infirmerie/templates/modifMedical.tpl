@@ -1,8 +1,13 @@
 <form name="modifMedical" id="modifMedical" method="POST" action="index.php">
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 	
-	<a href="index.php?action=parEleve&amp;classe={$eleve.classe}&amp;matricule={$eleve.matricule}&amp;etape=showEleve" class="fauxBouton">
-	Retour</a>
+	<form name="retour" id="retour" action="index.php" method="POST" class="microForm">
+		<input type="hidden" name="action" value="parEleve">
+		<input type="hidden" name="mode" value="wtf">
+		<input type="hidden" name="matricule" value="{$matricule}">
+		<input type="hidden" name="classe" value="{$eleve.classe}">
+		<input type="submit" name="submit" value="Retour sans enregistrer" class="fauxBouton">
+	</form>
 	
 	<p><label>Méd. traitant</label><input type="text" name="medecin" maxlength="30" size="20" value="{$medicEleve.medecin}" id="medecin">
 	<label>Télephone</label><input type="text" name="telMedecin" value="{$medicEleve.telMedecin}" maxlength="20" id="telMedecin"></p>

@@ -92,12 +92,25 @@
 			<legend>Psy</legend>
 			<p>{$medicEleve.psy|default:'&nbsp;'}</p>
 		</fieldset>
-		
-		<a class="fauxBouton" href="{$smarty.server.PHP_SELF}?action=modifier&mode=medical&matricule={$eleve.matricule}">Modifier</a>
+		<form name="modifMedical" method="POST" action="index.php" class="microForm">
+			<input type="hidden" name="action" value="modifier">
+			<input type="hidden" name="mode" value="medical">
+			<input type="hidden" name="classe" value="{$eleve.classe}">
+			<input type="hidden" name="matricule" value="{$matricule}">
+			<input type="submit" name="submit" value="Modifier">
+		</form>
+
 	</div>
 	
 	<div id="tabs-4">
-		<a class="fauxBouton" href="index.php?action=modifier&amp;mode=visite&amp;matricule={$eleve.matricule}" title="Nouvelle visite" style="clear:both">Nouvelle visite</a>
+		
+		<form name="modifVisite" method="POST" action="index.php" class="microForm">
+			<input type="hidden" name="action" value="modifier">
+			<input type="hidden" name="mode" value="visite">
+			<input type="hidden" name="matricule" value="{$matricule}">
+			<input type="submit" name="submit" value="Nouvelle visite">
+		</form>
+
 		<table class="tableauAdmin">
 			<tr>
 				<th>Prof</th>
@@ -106,8 +119,8 @@
 				<th>Motifs</th>
 				<th>Traitements</th>
 				<th>A suivre</th>
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
+				<th style="width:32px">&nbsp;</th>
+				<th style="width:32px">&nbsp;</th>
 			</tr>
 		{foreach from=$consultEleve key=ID item=uneVisite}
 			<tr>
@@ -120,10 +133,26 @@
 					{$uneVisite.traitement|truncate:40:"..."|default:'&nbsp;'}</td>
 				<td class="tooltip"><span class="tip">{$uneVisite.aSuivre}</span>
 					{$uneVisite.aSuivre|truncate:30:"..."|default:'&nbsp;'}</td>
-				<td title="Modifier"><a href="index.php?action=modifier&amp;mode=visite&amp;matricule={$eleve.matricule}&amp;consultID={$uneVisite.consultID}&amp;selectClasse={$classe}">
-					<img src="images/ok.png" alt="V"></a></td>
-				<td title="Supprimer"><a class="delete" href="index.php?action=supprimer&amp;consultID={$uneVisite.consultID}&amp;matricule={$eleve.matricule}&amp;selectClasse={$eleve.classe}">
-				<img src="images/no.png" alt="X"></a></td>
+				<td title="Modifier">
+					<form name="modifier" method="POST" action="index.php" class="microForm noborder">
+						<input type="hidden" name="consultID" value="{$uneVisite.consultID}">
+						<input type="hidden" name="matricule" value="{$eleve.matricule}">
+						<input type="hidden" name="classe" value = "{$eleve.classe}">
+						<input type="hidden" name="action" value="modifier">
+						<input type="hidden" name="mode" value="visite">
+						<input type="image" src="images/pencil.png" name="submit">
+					</form>
+				</td>
+				<td title="Supprimer">
+					<form name="modifier" method="POST" action="index.php" class="microForm noborder">
+						<input type="hidden" name="consultID" value="{$uneVisite.consultID}">
+						<input type="hidden" name="matricule" value="{$eleve.matricule}">
+						<input type="hidden" name="classe" value = "{$eleve.classe}">
+						<input type="hidden" name="action" value="supprimer">
+						<input type="hidden" name="mode" value="visite">
+						<input type="image" src="images/suppr.png" name="submit" class="delete">
+					</form>
+				</td>
 			</tr>
 		{/foreach}
 		</table>
@@ -141,6 +170,7 @@
 			if (!(confirm("Veuillez confirmer l'effacement définitif de cet item")))
 				return false;
 			})
+		
 	})
 {/literal}
 </script>

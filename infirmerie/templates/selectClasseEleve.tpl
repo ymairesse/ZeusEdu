@@ -4,6 +4,7 @@
 		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
 			
 		<select name="classe" id="selectClasse">
+		{* $classe est éventuellement passé en paramètre *}
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
 			<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
@@ -23,13 +24,16 @@
 			{assign var=matrNext value=$prevNext.next}
 		 <img src="../images/right.png" alt=">" style="width:18px" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 		{/if}
+		
 	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
-	{if isset($prevNext)}
-		<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
-		<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
-	{/if}
+		
+		{if isset($prevNext)}
+			<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
+			<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
+		{/if}
+		
 	<input type="hidden" name="etape" value="showEleve">
 	</form>
 </div>

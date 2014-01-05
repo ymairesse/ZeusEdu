@@ -120,7 +120,6 @@ class user {
 		$sql .= "WHERE acronyme = '$this->acronyme' AND userStatus != 'none' ";
 		if ($actives) $sql .= "AND active = 1 ";
 		$sql .= "ORDER BY ordre, lower(nom), userStatus ";
-
 		$resultat = $connexion->query($sql);
 		$applis = array();
 		if ($resultat) {

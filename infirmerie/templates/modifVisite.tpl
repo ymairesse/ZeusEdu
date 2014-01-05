@@ -1,19 +1,16 @@
 <h2 title="{$eleve.matricule}">{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
-	<a href="index.php?action=parEleve&amp;classe={$eleve.classe}&amp;matricule={$eleve.matricule}" class="fauxBouton">
-	Retour</a>
+	<form name="retour" id="retour" action="index.php" method="POST" class="microForm">
+		<input type="hidden" name="action" value="parEleve">
+		<input type="hidden" name="mode" value="wtf">
+		<input type="hidden" name="matricule" value="{$matricule}">
+		<input type="hidden" name="classe" value="{$eleve.classe}">
+		<input type="submit" name="submit" value="Retour sans enregistrer" class="fauxBouton">
+	</form>
 <form name="modifVisite" id="modifVisite" method="POST" action="index.php" style="clear:both">
-	<img src="../photos/{$eleve.matricule}.jpg" class="photo draggable" alt="{$eleve.matricule}" style="width:100px; float:right" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
-	<label for="prof">Professeur</label>
-	<input type="text" name="acronyme" id="acronyme" value="{$visites.$consultID.acronyme|default:''}" size="3" maxlength="3">
-	<input type="button" value=">" id="plus" title="Sélectionner un prof">
-	<select id="prof" name="prof" style="width:15em;">
-		<option value="">Autre</option>
-		{foreach from=$listeProfs key=acronyme item=prof}
-			<option value="{$acronyme|default:''}" style="width:15em"{if isset($visites) && ($acronyme == $visites.$consultID.acronyme)} selected{/if}>
-				{$prof.nom} {$prof.prenom} [{$acronyme}]</option>
-		{/foreach}
-	</select>
-	<span id="nomProf"></span>
+	<img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.matricule}" style="width:100px; float:right" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
+	<label for="professeur">Professeur</label>
+	<input type="text" name="acronyme" id="professeur" value="{$visites.$consultID.acronyme|default:''}" size="3" maxlength="3">
+	<span id="nomPrenom"></span>
 	<br>
 	<label for="date">Date</label>
 		<input id="datepicker" size="10" maxlength="10" type="text" name="date" value="{$visites.$consultID.date|default:''}">
@@ -33,7 +30,7 @@
 	<hr>
 	<input type="hidden" name="consultID" value="{$consultID|default:''}">
 	<input type="hidden" name="matricule" value="{$eleve.matricule}">
-	<input type="hidden" name="selectClasse" value="{$eleve.classe}">
+	<input type="hidden" name="classe" value="{$eleve.classe}">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input style="float:right" type="submit" name="submit" value="Enregistrer">
@@ -95,6 +92,18 @@
 			showDeselectButton: false
 			}
 		);
+		
+		$("#professeur").blur(function(){
+		var acronyme = $(this).val().toUpperCase();
+		$(this).val(acronyme);
+		if (acronyme != '') {
+			$.post("inc/nomPrenom.inc.php",
+				{'acronyme': acronyme},
+				function(resultat) {
+					$("#nomPrenom").html(resultat)
+					});
+			}
+			})
 	})
 {/literal}
 </script>

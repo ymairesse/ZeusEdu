@@ -4,8 +4,8 @@ include (INSTALL_DIR."/inc/entetes.inc.php");
 
 // ----------------------------------------------------------------------------
 //
-$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
-$consultID = isset($_REQUEST['consultID'])?$_REQUEST['consultID']:Null;
+$classe = isset($_POST['classe'])?$_POST['classe']:Null;
+$consultID = isset($_POST['consultID'])?$_POST['consultID']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $matricule2 = isset($_POST['matricule2'])?$_POST['matricule2']:Null;
@@ -29,8 +29,8 @@ $smarty->assign('classe',$classe);
 $smarty->assign('matricule',$matricule);
 $smarty->assign('matricule2',$matricule2);	
 
-if ($classe != '') 
-	$smarty->assign('listeEleves', $Ecole->listeEleves($classe));
+$listeEleves = $classe!=''?$Ecole->listeEleves($classe):Null;
+$smarty->assign('listeEleves',$listeEleves);
 	
 switch ($action) {
 	case 'parEleve':
@@ -38,16 +38,18 @@ switch ($action) {
             $smarty->assign("medicEleve",$infirmerie->getMedicEleve($matricule));
             $smarty->assign("consultEleve",$infirmerie->getVisitesEleve($matricule));
             }
-		$smarty->assign("corpsPage", "ficheEleve");
+		$action = $action;
+		$mode = 'wtf';
+		$smarty->assign('corpsPage','ficheEleve');
 		break;
     case 'modifier':
         if (isset($matricule)) {
         switch ($mode) {
             case 'medical':
                 $smarty->assign("medicEleve",$infirmerie->getMedicEleve($matricule));
-                $smarty->assign("action","enregistrer");
-                $smarty->assign("mode","medical");
-                $smarty->assign("corpsPage","modifMedical");
+				$action = 'enregistrer';
+				$mode = 'medical';
+				$smarty->assign('corpsPage','modifMedical');
                 break;
             case 'visite':
                 // modifier les données d'une visite à l'infirmerie
@@ -57,10 +59,10 @@ switch ($action) {
                     $smarty->assign("visites",$infirmerie->getVisitesEleve($matricule, $consultID));
                     }
                     else { // c'est une nouvelle visite
-                        $smarty->assign("visite",Null);
+                        $smarty->assign("visites",Null);
                         }
-                $smarty->assign("action","enregistrer");
-                $smarty->assign("mode","visite");
+				$action = 'enregistrer';
+				$mode = 'visite';
                 $smarty->assign("corpsPage","modifVisite");
                 break;
             }
@@ -80,6 +82,8 @@ switch ($action) {
 		$smarty->assign("medicEleve",$infirmerie->getMedicEleve($matricule));
 		$smarty->assign("consultEleve",$infirmerie->getVisitesEleve($matricule));
         $smarty->assign("classe",$classe);
+		$action = 'parEleve';
+		$mode = 'wtf';
         $smarty->assign("corpsPage", "ficheEleve");
         break;
     case 'enregistrer':
@@ -87,14 +91,24 @@ switch ($action) {
             switch ($mode) {
                 case 'medical':
                     $nb = $infirmerie->enregistrerMedical($_POST);
+					$smarty->assign("message", array(
+						'title'=>SAVE,
+						'texte'=>"Enregistrement de: $nb fiche"),
+						3000);
                     break;
                 case 'visite':
                     $nb = $infirmerie->enregistrerVisite($_POST);
+					$smarty->assign("message", array(
+						'title'=>SAVE,
+						'texte'=>"Enregistrement de: $nb visite"),
+						3000);
                     break;
                 }
             $smarty->assign("medicEleve",$infirmerie->getMedicEleve($matricule));
             $smarty->assign("consultEleve",$infirmerie->getVisitesEleve($matricule));
             $smarty->assign("classe",$classe);
+			$action = 'parEleve';
+			$mode = 'wtf';			
             $smarty->assign("corpsPage", "ficheEleve");
         }
         break;
@@ -113,8 +127,8 @@ switch ($action) {
 					$smarty->assign("corpsPage", "listesParDates");
 					}
 				}
-			$smarty->assign("action","recherche");
-			$smarty->assign("mode","parDate");
+			$action = 'recherche';
+			$mode = 'parDate';
 			$smarty->assign("etape", "showliste");
 			$smarty->assign("selecteur", "selectPeriode");
 			}
@@ -127,10 +141,12 @@ switch ($action) {
 	default:
 		include ("inc/news.php");
 		break;
-}
+	}
+$action = ($action==Null)?'parEleve':$action;
+$mode = ($mode==Null)?'wtf':$mode;
 
-$smarty->assign('action','parEleve');
-$smarty->assign('mode','wtf');
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
 $smarty->assign('selecteur', 'selectClasseEleve');
 //

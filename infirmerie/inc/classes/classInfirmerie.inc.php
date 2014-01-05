@@ -85,7 +85,7 @@ class eleveInfirmerie {
      * @param $data données $_POST provenant d'un formulaire
      * @return integer : nombre de lignes modifiées dan sla BD
      */
-    function enregistrerVisite($data) {
+    public function enregistrerVisite($data) {
         $consultID=$data['consultID'];
         $acronyme = addslashes($data['acronyme']);
         $matricule=addslashes($data['matricule']);

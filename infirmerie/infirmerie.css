@@ -56,3 +56,12 @@ fieldset p {
 	background-color: #eee; 
 	padding: 0.5em; 
 	margin:0}
+
+.microForm {
+	margin: 0;
+	padding: 0;
+}
+
+.noborder {
+	border: none;
+}
