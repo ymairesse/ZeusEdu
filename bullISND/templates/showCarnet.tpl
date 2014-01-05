@@ -12,7 +12,8 @@ var modifie = false;
 	<span class="fauxBouton" id="boutonPlus" title="Ajouter une cote">Ajouter une cote <img src="images/iconPlusB.png" alt="+"></span>
 </div>
 <form name="cotes" action="index.php" method="POST" id="formCotes">
-<table class="tableauBulletin carnetCotes">
+<table class="tableauBulletin carnetCotes" id="carnet">
+	<thead>
 	<tr>
 		<th width="20">Classe</th>
 		<th style="text-align:left; padding-left:1em">Nom</th>
@@ -24,7 +25,6 @@ var modifie = false;
 					<div class="tip" style="display:none">
 						<h3>C{$travail.ordre} {$listeCompetences.$idComp.libelle}</h3>
 						<p>
-						<!-- C{$travail.ordre}: {$listeCompetences.$idComp.libelle}<br> -->
 						Libellé: {$travail.libelle}<br>
 						Remarque: {$travail.remarque}<br>
 						Neutralisé: {if $travail.neutralise == 1}O{else}N{/if}<br>
@@ -57,7 +57,8 @@ var modifie = false;
 			</th>
 		{/foreach}
 	</tr>
-	
+	</thead>
+	<tbody>
 	{assign var=tabIndex value=1}
 	{assign var=nbEleves value=$listeEleves|@count}
 	{assign var=nbTravaux value=$listeTravaux|@count}
@@ -101,6 +102,7 @@ var modifie = false;
 				{/if}</strong></th>
 		{/foreach}
 	</tr>
+	</tbody>
 </table>
 <input type="submit" name="Submit" value="Enregistrer" id="submit" class="noprint">
 <input type="reset" name="reset" value="Annuler" id="reset" class="noprint">

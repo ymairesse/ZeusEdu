@@ -28,6 +28,9 @@ switch ($action) {
 	case 'gestion':
 		include ('inc/gestion.inc.php');
 		break;
+	case 'admin':
+		include ('inc/admin.inc.php');
+		break;
 	case 'news':
 		$autorise = array('admin');
 		if (in_array($user->userStatus($module), $autorise))

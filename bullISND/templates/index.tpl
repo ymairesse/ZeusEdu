@@ -46,7 +46,7 @@ $(document).ready (function() {
 			3000
 		)
 	}
-
+	
 	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
 		if ($("#corpsPage").html() != '\n') 
 			$("#corpsPage form :input:visible:enabled:first").focus();

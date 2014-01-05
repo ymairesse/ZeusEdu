@@ -867,80 +867,82 @@ class Bulletin {
 		$sql .= "AND (bulletin = '$bulletin') ";
 		$sql .= "ORDER BY matricule, idComp";
 
-		$resultat = $connexion -> query($sql);
 		$cotesVides = array(
                             'form' => array('cote' => '', 'maxForm' => '', 'echec' => false),
                             'cert' => array('cote' => '', 'maxCert' => '', 'echec' => false)
                             );
 		$listeCotes = array();
-		while ($ligne = $resultat -> fetch()) {
-			$matricule = $ligne['matricule'];
-			$coursGrp = $ligne['coursGrp'];
-			$idComp = $ligne['idComp'];
-
-			// remplir le tableau avec des vides si on n'a pas encore vu
-			// de competences pour cet élève (il n'est pas encore passé)
-			if (!(isset($listeCotes[$matricule][$coursGrp]))) {
-                // on a besoin du cours pour trouver les compétences
-				$cours = self::coursDeCoursGrp($coursGrp);
-				$competences = $listeCompetences[$cours];
-				foreach ($competences as $id => $data)
-					$listeCotes[$matricule][$coursGrp][$id] = $cotesVides;
-				}
-
-			// s'il y a du **Formatif** pour la compétence $idComp, on le note pour cet élève et ce cours
-			if (($ligne['form'] != '') && ($ligne['maxForm'] != '')) {
-				$listeCotes[$matricule][$coursGrp][$idComp]['form']['cote'] = $this->sansVirg($ligne['form']);
-				$listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $this->sansVirg($ligne['maxForm']);
-				if ($ligne['maxForm'] > 0) {
-					if (($ligne['form'] / $ligne['maxForm']) < 0.5)
-						$listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = 'echec';
-                    }
-                }
-
-            // ----------------------------------------------------------------
-            // s'il n'y a pas de cote mais seulement un maximum pour cette compétence (cote en attente)
-            if (($ligne['maxForm'] != '') && ($ligne['form'] == '')) {
-                $listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $this->sansVirg($ligne['maxForm']);
-                $listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = '';
-                }
-            // ----------------------------------------------------------------
-            
-            // ----------------------------------------------------------------
-            // s'il n'y a qu'une mention non numérique (Abs, CM, NR, ...)
-            if (!is_numeric($this->sansVirg($ligne['form']))) {
-				$listeCotes[$matricule][$coursGrp][$idComp]['form']['cote'] = $ligne['form'];
-				$listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $ligne['maxForm'];
-				}
-			// ----------------------------------------------------------------
-
-			// s'il y a du **Certificatif** pour la compétence $competence, on le note pour cet élève et ce cours
-			if (($ligne['cert'] != '') && ($ligne['maxCert'] != '')) {
-				$listeCotes[$matricule][$coursGrp][$idComp]['cert']['cote'] = $this->sansVirg($ligne['cert']);
-				$listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $this->sansVirg($ligne['maxCert']);
-				if ($ligne['maxCert'] > 0) {
-					if (($ligne['cert'] / $ligne['maxCert']) < 0.5)
-						$listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = 'echec';
-                    }
-                }
-
-            // ----------------------------------------------------------------
-            // s'il n'y a pas de cote mais seulement un maximum pour cette compétence (cote en attente)
-            if (($ligne['maxCert'] != '') && ($ligne['cert'] == '')) {
-                $listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $this->sansVirg($ligne['maxCert']);
-                $listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = '';
-                }
-            // ----------------------------------------------------------------
-            
-            // ----------------------------------------------------------------
-            // s'il n'y a qu'une mention non numérique (Abs, CM, NR, ...)
-            if (!is_numeric($this->sansVirg($ligne['cert']))) {
-				$listeCotes[$matricule][$coursGrp][$idComp]['cert']['cote'] = $ligne['cert'];
-				$listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $ligne['maxCert'];
-				}
-			// ----------------------------------------------------------------
-            
-		}// while
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			while ($ligne = $resultat -> fetch()) {
+				$matricule = $ligne['matricule'];
+				$coursGrp = $ligne['coursGrp'];
+				$idComp = $ligne['idComp'];
+	
+				// remplir le tableau avec des vides si on n'a pas encore vu
+				// de competences pour cet élève (il n'est pas encore passé)
+				if (!(isset($listeCotes[$matricule][$coursGrp]))) {
+					// on a besoin du cours pour trouver les compétences
+					$cours = self::coursDeCoursGrp($coursGrp);
+					$competences = $listeCompetences[$cours];
+					foreach ($competences as $id => $data)
+						$listeCotes[$matricule][$coursGrp][$id] = $cotesVides;
+					}
+	
+				// s'il y a du **Formatif** pour la compétence $idComp, on le note pour cet élève et ce cours
+				if (($ligne['form'] != '') && ($ligne['maxForm'] != '')) {
+					$listeCotes[$matricule][$coursGrp][$idComp]['form']['cote'] = $this->sansVirg($ligne['form']);
+					$listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $this->sansVirg($ligne['maxForm']);
+					if ($ligne['maxForm'] > 0) {
+						if (($ligne['form'] / $ligne['maxForm']) < 0.5)
+							$listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = 'echec';
+						}
+					}
+	
+				// ----------------------------------------------------------------
+				// s'il n'y a pas de cote mais seulement un maximum pour cette compétence (cote en attente)
+				if (($ligne['maxForm'] != '') && ($ligne['form'] == '')) {
+					$listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $this->sansVirg($ligne['maxForm']);
+					$listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = '';
+					}
+				// ----------------------------------------------------------------
+				
+				// ----------------------------------------------------------------
+				// s'il n'y a qu'une mention non numérique (Abs, CM, NR, ...)
+				if (!is_numeric($this->sansVirg($ligne['form']))) {
+					$listeCotes[$matricule][$coursGrp][$idComp]['form']['cote'] = $ligne['form'];
+					$listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $ligne['maxForm'];
+					}
+				// ----------------------------------------------------------------
+	
+				// s'il y a du **Certificatif** pour la compétence $competence, on le note pour cet élève et ce cours
+				if (($ligne['cert'] != '') && ($ligne['maxCert'] != '')) {
+					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['cote'] = $this->sansVirg($ligne['cert']);
+					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $this->sansVirg($ligne['maxCert']);
+					if ($ligne['maxCert'] > 0) {
+						if (($ligne['cert'] / $ligne['maxCert']) < 0.5)
+							$listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = 'echec';
+						}
+					}
+	
+				// ----------------------------------------------------------------
+				// s'il n'y a pas de cote mais seulement un maximum pour cette compétence (cote en attente)
+				if (($ligne['maxCert'] != '') && ($ligne['cert'] == '')) {
+					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $this->sansVirg($ligne['maxCert']);
+					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = '';
+					}
+				// ----------------------------------------------------------------
+				
+				// ----------------------------------------------------------------
+				// s'il n'y a qu'une mention non numérique (Abs, CM, NR, ...)
+				if (!is_numeric($this->sansVirg($ligne['cert']))) {
+					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['cote'] = $ligne['cert'];
+					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $ligne['maxCert'];
+					}
+				// ----------------------------------------------------------------
+				
+			}// while
+		} // if $resultat
 		Application::DeconnexionPDO($connexion);
 		return ($listeCotes);
 	}

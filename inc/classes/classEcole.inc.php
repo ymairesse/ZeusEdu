@@ -586,6 +586,9 @@ class ecole {
 		Application::DeconnexionPDO($connexion);
 		return $listeCours;
 	
+
+	
+	
 	}
 	/*** 
 	 * retourne la liste de tous les cours qui se donnent dans une classe
@@ -629,6 +632,36 @@ class ecole {
 		return $liste;
 		}
 	
+	/***
+	 * renvoie la liste des cours suivis par la liste des élèves donnée
+	 * @param $listeEleves
+	 * @return array : liste des cours suivis par chacun des élèves
+	 */
+	public function listeCoursListeEleves ($listeEleves) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",",array_keys($listeEleves));
+			else $listeElevesString = $listeEleves;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT DISTINCT matricule, coursGrp, SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) AS cours, libelle, nbheures ";
+		$sql .= "FROM ".PFX."elevesCours ";
+		$sql .= "JOIN ".PFX."cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE ('-',coursGrp)-1)) ";
+		$sql .= "JOIN ".PFX."statutCours AS sc ON (sc.cadre = dc.cadre) ";
+		$sql .= "WHERE matricule IN ($listeElevesString) ";
+		$sql .= "ORDER BY matricule, coursGrp ";
+
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$cours = $ligne['cours'];
+				$liste[$matricule][$cours] = array('coursGrp'=>$ligne['coursGrp'], 'nbheures'=>$ligne['nbheures'], 'libelle'=>$ligne['libelle']);
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+	}
+
 		
 	/***
 	 * retourne la liste des cours qui se donnent dans la liste des classes passée en argument
