@@ -1,6 +1,10 @@
 <?php
 
-// -------------------------------------------------------------------
+/** Création d'un fichier CSV pour les élèves d'une liste donnée d'un groupe (classe) donné
+ * @param $listeEleves : array
+ * @param $groupeCours : string
+ * @return $groupeCours : string
+ */
 function fichierCSV ($listeEleves, $groupeCours) {
 	$listeMatricules = "(".implode(',', array_keys($listeEleves)).")";
 	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);

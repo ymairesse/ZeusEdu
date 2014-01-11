@@ -1,4 +1,5 @@
 {foreach from=$syntheseToutesAnnees key=annee item=dataSynthese}
+
 {assign var=listeCours value=$dataSynthese.listeCours}
 {assign var=resultats value=$dataSynthese.resultats}
 <h3>Résultats de {$annee}e</h3>
@@ -36,7 +37,7 @@
 		</tr>
 
 		{/foreach}
-		
+
 	</table>
 {/foreach}
 

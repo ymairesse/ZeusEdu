@@ -2370,7 +2370,7 @@ class Bulletin {
 		$sql .= "WHERE matricule = '$matricule' ";
 		if ($annee != Null)
 			$sql .= "AND SUBSTR(cours,1,1)='$annee' ";
-		$sql .= "ORDER BY bulletin, statut DESC, nbheures DESC ";
+		$sql .= "ORDER BY annee, bulletin, statut DESC, nbheures DESC ";
 
 		$synthese = array();
 		$resultat = $connexion->query($sql);

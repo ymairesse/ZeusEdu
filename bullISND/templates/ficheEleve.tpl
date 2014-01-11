@@ -46,7 +46,7 @@
 	</div>
 	
 	<div id="tabs-3">
-		<p><img src="../photos/{$eleve.matricule}.jpg" class="photo" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
+		<p><img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
 			id="photo" style="width:100px; top:-60px; position: relative" /> </p>
 		<p><label>Commune de naissance</label>{$eleve.commNaissance|default:'&nbsp;'}</p>
 		<p><label>Classe</label> {$eleve.groupe} {if $titulaires} [{", "|implode:$titulaires}]{/if}</p>

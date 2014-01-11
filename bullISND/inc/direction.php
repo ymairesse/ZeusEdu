@@ -63,11 +63,10 @@ switch ($mode) {
 		// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
 		$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
 		$listeCoursActuelle = $listeCoursActuelle[$matricule];
-		
 		$syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
+		$smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
 		// tableau de synthèse de toutes les cotes de situation pour toutes les années scolaires
 		$syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
-
 		$smarty->assign('listeCoursActuelle', $listeCoursActuelle);
 		$smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
 		$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
