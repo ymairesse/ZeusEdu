@@ -12,4 +12,9 @@
     }
  
 .growlUI h2 {
-background :black }
+    background :black;
+    color:white;
+    padding: 0 1em;
+    text-align:center;
+    background-color: black;
+}

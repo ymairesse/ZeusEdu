@@ -35,12 +35,6 @@ switch ($mode) {
 				break;
 		}
 		break;
-	case 'new':
-		echo "new";
-		break;
-	default: 
-		die("bIbo");
-		break;
 	}
 	
 ?>

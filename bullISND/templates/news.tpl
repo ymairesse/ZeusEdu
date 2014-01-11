@@ -1,10 +1,10 @@
-<div style="width:750px; float:left; clear:both">
-{if $flashInfos|@count > 0}
-<h2>Dernières nouvelles</h2>
-{if $userStatus == 'admin'}
-<a href="index.php?action=news&amp;mode=edit" style="float:right" class="newInfo fauxBouton"><img src="../images/iconPlus.png" alt="+">Ajouter une nouvelle</a>
-{/if}
-<div>
+<div style="width: 750px; float:left; clear:both">
+	{if $userStatus == 'admin'}
+		<a href="index.php?action=news&amp;mode=edit" style="float:right" class="newInfo fauxBouton"><img src="../images/iconPlus.png" alt="+">Ajouter une nouvelle</a>
+	{/if}
+	{if $flashInfos|@count > 0}
+	<h2>Dernières nouvelles</h2>
+
 {foreach from=$flashInfos item="uneInfo"}
 	<div id="flashInfo{$uneInfo.id}">
 		<h3 style="clear:both">Ce {$uneInfo.date|date_format:"%d/%m/%Y"} - <span id="titre{$uneInfo.id}">{$uneInfo.titre}</span></h3>
