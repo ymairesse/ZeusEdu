@@ -80,7 +80,7 @@ $(document).ready (function() {
 	$("#cadreFieldset").show();
 	$("#cadreFieldset").vAlign().hAlign();
 	
-	$.blockUI.defaults.message = 'Veuillez patienter';
+	// $.blockUI.defaults.message = 'Veuillez patienter';
 
 	$("input:enabled").eq(0).focus();
 	

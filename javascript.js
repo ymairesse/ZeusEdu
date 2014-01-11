@@ -15,4 +15,5 @@
 
 <script type="text/javascript">
 	$.blockUI.defaults.message = 'Veuillez patienter';
+	$.blockUI.defaults.theme = true;
 </script>

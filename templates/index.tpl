@@ -78,7 +78,7 @@ $(document).ready(function(){
 		
 		$("*[title], .tooltip").tooltip();
 		
-		$.blockUI.defaults.message = 'Veuillez patienter';
+		// $.blockUI.defaults.message = 'Veuillez patienter';
 		
 		$("#avertissement").dialog({
 			modal: true,
