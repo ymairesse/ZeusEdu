@@ -77,7 +77,9 @@ switch ($mode) {
 				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 				
 				// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
-				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule)[$matricule];
+				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
+				$listeCoursActuelle = $listeCoursActuelle[$matricule];
+				
 				$syntheseCotes4Titu = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
 
 				// pas d'indication de numéro de période, afin de les avoir toutes
