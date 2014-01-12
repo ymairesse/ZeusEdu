@@ -66,8 +66,8 @@ switch ($mode) {
 				$infoPersoEleve = $eleve->getDetailsEleve();
 
 				// liste de tous les cours suivis par l'élève, y compris ceux qu'il ne suit plus (pas d'historique)
-				$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin)[$matricule];
-				// $listeCoursGrp = $listeCoursGrp[$matricule];
+				$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin);
+				$listeCoursGrp = $listeCoursGrp[$matricule];
 
 				$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 
