@@ -78,8 +78,6 @@ $(document).ready(function(){
 		
 		$("*[title], .tooltip").tooltip();
 		
-		// $.blockUI.defaults.message = 'Veuillez patienter';
-		
 		$("#avertissement").dialog({
 			modal: true,
 			width: 400,

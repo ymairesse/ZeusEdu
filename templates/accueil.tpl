@@ -80,8 +80,6 @@ $(document).ready (function() {
 	$("#cadreFieldset").show();
 	$("#cadreFieldset").vAlign().hAlign();
 	
-	// $.blockUI.defaults.message = 'Veuillez patienter';
-
 	$("input:enabled").eq(0).focus();
 	
 	$("#login").validate({
@@ -102,11 +100,7 @@ $(document).ready (function() {
 				}
 			}
 		})
-	$("#dialogueRenvoiMdp").dialog({
-		autoOpen: false,
-		modal: true,
-		closeText: close
-		})
+	
 	$("#messageErreur").dialog({
 		autoOpen: false,
 		modal: true,
@@ -163,7 +157,6 @@ $(document).ready (function() {
 		})
 		
 	$("*[title], .tooltip").tooltip();
-	
 		
 	var erreur = document.location.search;
 	if (erreur.indexOf("faux") > 0)

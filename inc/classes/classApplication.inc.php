@@ -191,6 +191,31 @@ class Application {
 		return $liste;
 	}
 	
+	/**
+	 * retourne la liste des statuts disponibles dans l'application
+	 * semblable à la fonction listeDroits() mais retourne un tableau différent
+	 * à faire: supprimer listeDroits() et remplace par listeStatuts()
+	 * @param
+	 * @return array
+	 */
+	public function listeStatuts(){
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT userStatus, nomStatut ";
+		$sql .= "FROM ".PFX."userStatus ORDER BY ordre";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$status = $ligne['userStatus'];
+				$liste[$status] = $ligne['nomStatut'];
+				}
+			}
+		self::DeconnexionPDO($connexion);
+
+		return $liste;
+	}
+	
 	
 	// --------------------------------------------------------------------
 	// enregistre le statut d'activation / désactivation des applis
@@ -212,7 +237,26 @@ class Application {
 			}
 		self::DeconnexionPDO($connexion);
 		return $nbModifications;
-		}	
+		}
+		
+	/**
+	 * modifie le statut de l'utilisateur pour l'application donnée
+	 * @param $acronyme
+	 * @param $application
+	 * @param $statut
+	 * @return boolean
+	 */
+	public function changeStatut($acronyme, $application, $statut) {
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."profsApplications ";
+		$sql .= "SET acronyme='$acronyme', application='$application', userStatus='$statut' ";
+		$sql .= "ON DUPLICATE KEY UPDATE userStatus='$statut' ";
+		$resultat = $connexion->exec($sql);
+		$ok = ($resultat > 0);
+		self::DeconnexionPDO($connexion);
+		return $ok;
+	}
+	
 	/*
 	 * function affecteDroitsApplications
 	 * @param $usersList, $applications, $droits

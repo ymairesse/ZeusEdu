@@ -13,50 +13,58 @@
 .boutonFait {
 	margin: 0;
 	padding: 0;
-}
+	}
 
 
 .cache {
     background-color: #CCCCCC;
     color: #008000;
-}
+	}
+	
 .rempli {
     color: #FF0000;
-}
+	}
+
 .remplimontre {
     color: #FF0000;
-}
+	}
+
 .libremontre {
     color: #008000;
-}
-
+	}
 
 .tableauSynthese {
 	width: 100%;
-}
+	}
 
 .tableauSynthese td {
   border: 1px solid #dddddd;
 }
+
 .tableauSynthese th {
-  border: 1px outset black;
-  padding: 0;
-  background-color: #dddddd;
-  font-weight: normal;
-  font-size: 0.9em;
-}
+	border: 1px outset black;
+	padding: 0;
+	background-color: #dddddd;
+	font-weight: normal;
+	font-size: 0.9em;
+	}
 .tableauSynthese .bilan {
-  background-color: #ccccee;
-}
+	background-color: #ccccee;
+	}
 .tableauSynthese .bilan .echecs strong {
-  color: red;
-}
+	color: red;
+	}
 .tableauSynthese .bilan .echecs {
-  text-align: left;
-}
+	text-align: left;
+	}
 
 .noScreen {
 	display: none;
+	}
+	
+.microForm {
+	margin: 0;
+	padding: 0;
 	}
 
 
@@ -81,9 +89,9 @@ h2 {
 .noScreen {
 	display: block;
 	}
+	
 .noScreen tr td {
 	text-align: center;
+	}
 	
-}
-
 }
