@@ -98,12 +98,12 @@ switch ($mode) {
 	case 'niveau':
 		$smarty->assign("nbBulletins", NBPERIODES);
 		$listeNiveaux = $Ecole->listeNiveaux();
-		$smarty->assign("selecteur", "selectBulletinNiveau");
-		$smarty->assign("niveau", $niveau);
-		$smarty->assign("listeNiveaux", $listeNiveaux);
-		$smarty->assign("bulletin", $bulletin);
-		$smarty->assign("action", "pdf");
-		$smarty->assign("mode", "niveau");
+		$smarty->assign('selecteur','selectBulletinNiveau');
+		$smarty->assign('niveau',$niveau);
+		$smarty->assign('listeNiveaux',$listeNiveaux);
+		$smarty->assign('bulletin',$bulletin);
+		$smarty->assign('action','pdf');
+		$smarty->assign('mode','niveau');
 		
 		if ($etape == 'showNiveau') {
 			if ($niveau) {
@@ -116,11 +116,11 @@ switch ($mode) {
 					$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme);
 					}
 				// zipper l'ensemble des fichiers
-				$Application->zipFilesNiveau ("pdf/$acronyme", $niveau);
+				$Application->zipFilesNiveau ("pdf/$acronyme", $listeClasses);
 				$smarty->assign('acronyme', $acronyme);
 				$smarty->assign('niveau', $niveau);
-				$smarty->assign('link', "pdf/$acronyme/$niveau");
-				$smarty->assign("corpsPage", "corpsPage");
+				$smarty->assign('link','pdf/$acronyme/$niveau');
+				$smarty->assign('corpsPage','corpsPage');
 				}
 			}
 		break;

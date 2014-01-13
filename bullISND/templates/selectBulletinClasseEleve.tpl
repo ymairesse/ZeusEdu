@@ -32,12 +32,9 @@
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
-		if ($("#selectEleve").val() != '') {
-			$.blockUI();
-			$("#wait").show();
-			}
-			else return false;
-	})
+		if ($("#selectEleve").val() == '')
+			return false;
+		})
 	
 	$("#bulletin").change(function(){
 		$("#envoi").show();
@@ -47,6 +44,7 @@ $(document).ready (function() {
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
 		if (classe != '') $("#envoi").show();
+			else $("#envoi").hide();
 		// la fonction listeEleves.inc.php renvoie la liste déroulante
 		// des élèves de la classe sélectionnée
 		$.post("inc/listeEleves.inc.php",

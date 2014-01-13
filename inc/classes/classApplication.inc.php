@@ -833,16 +833,22 @@ class Application {
 			}
 		$zip->close();
 		}
-		
-	function zipFilesNiveau ($dir, $niveau) {
+
+	/**
+	 * compression de tous les fichiers bulletin d'un niveau
+	 * @param $dir : répertoire où se trouvent les fichiers
+	 * @param $niveau : niveau d'étude concerné
+	 * @return void()
+	 */
+	function zipFilesNiveau ($dir, $listeClasses) {
+		$niveau = substr($listeClasses[0],0,1);
 		$zip = new ZipArchive();
 		if ($zip->open("$dir/niveau_$niveau.zip", ZIPARCHIVE::CREATE)!==TRUE) {
 			exit("Impossible d'ouvrir <niveau_$niveau.zip>\n");
 			}
-		$listeFichiers = 	$this->dirFiles($dir);
-		foreach ($listeFichiers as $unFichier) {
-			if (substr($unFichier,0,1) == $niveau) 
-				$zip->addFile("$dir/$unFichier");
+		$listeFichiers = $this->dirFiles($dir);
+		foreach ($listeClasses as $uneClasse) {
+			$zip->addFile("$dir/$uneClasse.pdf");
 			}
 		$zip->close();
 		}

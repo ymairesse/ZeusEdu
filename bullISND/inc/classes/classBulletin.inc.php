@@ -130,10 +130,10 @@ class Bulletin {
 		}
 
 
-	/*
-	 * function classesPourCours
-	 * @param $coursGrp
+	/**
 	 * retourne la liste des classes représentées parmi les élèves d'un coursGrp
+	 * @param $coursGrp
+	 * @return array
 	 */
 	function classesDansCours($coursGrp) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -150,11 +150,11 @@ class Bulletin {
 		return $listeClasses;
 	}
 
-	/*
-	 * function intituleCours
-	 * @param $cours
+	/**
 	 * retourne toutes les informations (libelle, heures, statut,...)
-	 * d'un coursGrp passé en argument
+	 * d'un coursGrp passé en argument	 
+	 * @param $cours
+	 * @return array
 	 */
 	function intituleCours($coursGrp) {
 		$cours = self::coursDeCoursGrp($coursGrp);
@@ -2093,11 +2093,15 @@ class Bulletin {
 	}
 
 
-    /*
-     * function creeTexteVerticalPng
-     * @param $largeur, $hauteur, $texte, $taillePolice, $font, $nomImage
-     *
+    /**
      * création d'une image d'un texte sur base des paramètres
+     * @param $largeur
+     * @param $hauteur
+     * @param $texte
+     * @param $taillePolice
+     * @param $font
+     * @param $nomImage
+     * @return void()
      */
     function creeTexteVerticalPng ($largeur, $hauteur, $texte, $taillePolice, $font, $nomImage) {
         // crée un texte disposé verticalement pour les entêtes des feuilles de cotes
@@ -2117,10 +2121,10 @@ class Bulletin {
         imagedestroy($im);
         }
 
-    /*
-     * function imagesPngBranches
-     * @param $hauteur
+    /**
      * création des étiquettes verticales "images" pour les cours
+     * @param $hauteur
+     * @return array : liste des images créées
      */
     public function imagesPngBranches ($hauteur) {
         $listeBranches = Ecole::listeCours(Ecole::listeNiveaux());
@@ -4045,7 +4049,7 @@ class Bulletin {
 				mkdir ("pdf/$acronyme");
 				}
 			$pdf->Output("$matricule.pdf",'D');
-			chmod ("pdf/$acronyme/$matricule.pdf", 0644);
+			chmod 	("pdf/$acronyme/$matricule.pdf", 0644);
 			return "pdf/$acronyme/$matricule.pdf";
 			}
 			else return '';
@@ -4599,8 +4603,8 @@ class Bulletin {
 	
 		// *************************************************************************************
 	
-		if (isset($mention[$matricule][$bulletin]))
-			$this->mentionPDF($pdf,$mention[$matricule][$bulletin]);
+		if (isset($mention[$matricule][$annee][$bulletin]))
+			$this->mentionPDF($pdf,$mention[$matricule][$annee][$bulletin]);
 		if (isset($remTitu[$matricule][$bulletin]))
 			$this->remarqueTituPDF($pdf, $remTitu[$matricule][$bulletin]);
 		if (isset($ficheEduc[$matricule][$bulletin]))

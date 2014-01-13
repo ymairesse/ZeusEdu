@@ -40,10 +40,10 @@ Verrouiller: <input type="radio" name="verrou" value="1" {if $verrou == 1}checke
 $(document).ready(function(){
 
 	$(".niveau").click(function(){
-		$(".niveau").nextAll("ul").find("li input").attr("checked", false)
-		var coche = $(this).attr("checked");
-		coche = (coche == "checked")?true:false;
-		$(this).nextAll("ul").find("li input").attr("checked", coche)
+		// suppression de tous les coches ailleurs
+		$(".niveau").nextAll("ul").find("li input:checkbox").prop("checked", false);
+		// ajout des checked sur le niveau sélectionné
+		$(this).nextAll("ul").find("li input:checkbox").prop("checked","checked")
 		})
 		
 	$(".classe").click(function(){
