@@ -68,7 +68,6 @@ var periode={$bulletin};
 
 	$("#tabsAttitudes").tabs().show();
 	$('#tabsAttitudes').tabs( "option", "active", periode-1);
-	// $('#tabsAttitudes').tabs('tabsbeforeactivate', '#tabs-'+periode);
 	 
 	 $("#avisTitu").submit(function(){
 		$.blockUI();
