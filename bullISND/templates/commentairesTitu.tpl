@@ -6,7 +6,7 @@
 	<ul>
 		<li><a href="#tabs-cotes">Cotes</a></li>
 		{if $attitudes}
-		<li><a href="#tabs-attitudes">Attitudes</a></li>
+			<li><a href="#tabs-attitudes">Attitudes</a></li>
 		{/if}		
 		<li><a href="#tabs-remarques">Remarques toutes périodes</a></li>
 	</ul>
@@ -67,7 +67,7 @@ var periode={$bulletin};
 	$("#tabsul").tabs();
 
 	$("#tabsAttitudes").tabs().show();
-	$('#tabsAttitudes').tabs('select', '#tabs-'+periode);
+	// $('#tabsAttitudes').tabs('tabsbeforeactivate', '#tabs-'+periode);
 	 
 	 $("#avisTitu").submit(function(){
 		$.blockUI();
@@ -88,11 +88,11 @@ var periode={$bulletin};
 			else {
 				$(".xmentionS").removeClass("xmentionS").addClass("mentionS");
 				$(".xmentionAB").removeClass("xmentionAB").addClass("mentionAB");
-				$(".XmentionB").removeClass("XmentionB").addClass("mentionB");
-				$(".XmentionBplus").removeClass("XmentionBplus").addClass("mentionBplus");
-				$(".XmentionTB").removeClass("XmentionTB").addClass("mentionTB");
-				$(".XmentionTBplus").removeClass("XmentionTBplus").addClass("mentionTBplus");
-				$(".XmentionE").removeClass("XmentionE").addClass("mentionE");
+				$(".xmentionB").removeClass("xmentionB").addClass("mentionB");
+				$(".xmentionBplus").removeClass("xmentionBplus").addClass("mentionBplus");
+				$(".xmentionTB").removeClass("xmentionTB").addClass("mentionTB");
+				$(".xmentionTBplus").removeClass("xmentionTBplus").addClass("mentionTBplus");
+				$(".xmentionE").removeClass("xmentionE").addClass("mentionE");
 				$(this).text("Désactiver la couleur");
 				}
 		})

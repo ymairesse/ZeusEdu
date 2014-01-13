@@ -52,6 +52,8 @@ switch ($mode) {
 		if (isset($classe)) {
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			$smarty->assign("listeEleves", $listeEleves);
+			$prevNext = $Ecole->prevNext($matricule, $listeEleves);
+			$smarty->assign('prevNext',$prevNext);	
 		}
 
 		switch ($etape) {

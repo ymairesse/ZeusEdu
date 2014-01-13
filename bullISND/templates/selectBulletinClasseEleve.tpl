@@ -15,14 +15,30 @@
 			<option value="{$uneClasse}"{if $uneClasse == $classe} selected{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
+		
+		{if isset($prevNext) && isset($prevNext.prev)}
+			{assign var=matrPrev value=$prevNext.prev}
+			<img src="images/left.png" style="position: relative; width:18px; top:4px" alt="<" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+		{/if}
+		
 		<span id="choixEleve">
 
 		{include file="listeEleves.tpl"}
 		
 		</span>
+		
+		{if isset($prevNext) && isset($prevNext.next)}
+			{assign var=matrNext value=$prevNext.next}
+		 <img src="images/right.png" style="position: relative; width:18px; top:4px" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+		{/if}
+		
 	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
+	{if isset($prevNext)}
+		<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
+		<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
+	{/if}
 	<input type="hidden" name="etape" value="showEleve">
 	</form>
 </div>
@@ -61,9 +77,21 @@ $(document).ready (function() {
 			// le formulaire est soumis
 			$("#formSelecteur").submit();
 			$("#envoi").show();
-		}
+			}
 			else $("#envoi").hide();
 		})
+	
+	$("#prev").click(function(){
+		var matrPrev = $("#matrPrev").val();
+		$("#selectEleve").val(matrPrev);
+		$("#formSelecteur").submit();
+	})
+	
+	$("#next").click(function(){
+		var matrNext = $("#matrNext").val();
+		$("#selectEleve").val(matrNext);
+		$("#formSelecteur").submit();
+	})
 })
 {/literal}
 </script>

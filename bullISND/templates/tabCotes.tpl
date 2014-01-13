@@ -1,3 +1,4 @@
+{debug}
 <table style="font-size:0.8em" class="tableauTitu">
 	<tr>
 		<th>&nbsp;</th>

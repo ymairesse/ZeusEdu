@@ -2594,9 +2594,9 @@ class Bulletin {
 			switch ($moyenneEntiere) {
 				case 10: $mention = 'E'; break;
 				case 9: $mention = 'E'; break;
-				case 8: if ($moyenne >= 85) $mention = 'TB+';
+				case 8: if ($moyenne >= 85) $mention = 'TBplus';
 					else $mention = 'TB'; break;
-				case 7: if ($moyenne >= 75) $mention = 'B+';
+				case 7: if ($moyenne >= 75) $mention = 'Bplus';
 					else $mention = 'B'; break;
 				case 6: if ($moyenne >= 65) $mention = 'AB';
 					else $mention = 'S'; break;
