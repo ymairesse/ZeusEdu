@@ -50,8 +50,8 @@ switch ($mode) {
 		$smarty->assign("mode",$mode);
 		$smarty->assign("etape", "showEleve");
 		if (isset($classe)) {
-			$listeElevesClasse = $Ecole->listeEleves($classe,'groupe');
-			$smarty->assign("listeElevesClasse", $listeElevesClasse);
+			$listeEleves = $Ecole->listeEleves($classe,'groupe');
+			$smarty->assign("listeEleves", $listeEleves);
 		}
 
 		switch ($etape) {
@@ -101,7 +101,7 @@ switch ($mode) {
 				$smarty->assign("remarqueTitu", $remarqueTitulaire[$bulletin]);
 				$smarty->assign("mentions",$mentions);
 
-				$smarty->assign("corpsPage", "showEleve");
+				// $smarty->assign("corpsPage", "showEleve");
 				$smarty->assign("corpsPage", "commentairesTitu");
 				break;
 			default:
