@@ -687,16 +687,14 @@ class Bulletin {
 		}
 
 	/** 
-	 * function saveLocksClasseCoursEleve
-	 * 
-	 * @param post
-	 * 
 	 * Enregistre le verrouillage / déverrouillage des cotes par classe, par cours et par élève
 	 * 
 	 * On déverrouille ou on verrouille (voir le contenu de la variable $_POST['verrouiller']) au cas par cas
 	 * 
 	 * à envisager: un verrouillage pour l'ensemble d'une classe => 1 enregistrement dans la BD / classe
 	 *  et un verrouillage pour l'ensemble d'un cours => 1 enregistrement dans la BD / cours
+	 *  
+	 * @param post
 	 * 
 	 * */
 	public function saveLocksClasseCoursEleve ($post) {
@@ -704,6 +702,7 @@ class Bulletin {
 		if (!(in_array($verrouiller,array('0','1')))) die('illegal lock');
 		$bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:Null;
 		if (!($bulletin)) die('illegal period');
+		
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."bullLockElevesCours ";
 		$sql .= "SET matricule=:matricule, coursGrp=:coursGrp, locked=:verrouiller, periode='$bulletin' ";

@@ -11,31 +11,31 @@
 	<input type="hidden" name="verrouiller" value="{$verrouiller}">
 	<input type="submit" name="submit" value="Enregistrer" id="submit"><br>
 	{foreach from=$listeVerrous key=niveau item=verrousClasse}
-	  <ul>
-		  <li>
-	  <span class="collapisble">Tout le niveau {$niveau}:</span> {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
-		<input class="check" type="checkbox" name="niveau%{$niveau}" value="{$verrouiller}">
-		{foreach from=$verrousClasse key=classe item=listeCours}
-			<ul>
-				<li><span class="collapsible">{$classe}</span> {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
-					<input class="check" type="checkbox" name="classe%{$classe}" value="{$verrouiller}">
-				<ul>
-				{foreach from=$listeCours key=coursGrp item=listeEleves}
-					<li><span class="collapsible">{$coursGrp}</span> [{$listeProfs.$coursGrp|@implode:', '}] {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
-						<input class="check" type="checkbox" name="coursGrp_{$coursGrp|replace:' ':'#'}" value="{$verrouiller}">
-						<ul>
-						{foreach from=$listeEleves key=matricule item=eleve}
-						<li title="{$matricule}">{$eleve} {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
-							<input type="checkbox" name="eleve%{$matricule}_coursGrp%{$coursGrp|replace:' ':'#'}" value="{$verrouiller}">
-						{/foreach}
-						</ul>
-					</li>
+		<ul>
+			<li>
+				<span class="collapisble">Tout le niveau {$niveau}:</span> {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
+				<input class="check" type="checkbox" name="niveau%{$niveau}" value="{$verrouiller}">
+				{foreach from=$verrousClasse key=classe item=listeCours}
+					<ul>
+						<li><span class="collapsible">{$classe}</span> {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
+							<input class="check" type="checkbox" name="classe%{$classe}" value="{$verrouiller}">
+							<ul>
+							{foreach from=$listeCours key=coursGrp item=listeEleves}
+								<li><span class="collapsible">{$coursGrp}</span>{if isset($listeProfs.$coursGrp)} [{$listeProfs.$coursGrp|@implode:', '}]{/if} {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
+									<input class="check" type="checkbox" name="coursGrp_{$coursGrp|replace:' ':'#'}" value="{$verrouiller}">
+									<ul>
+										{foreach from=$listeEleves key=matricule item=eleve}
+										<li title="{$matricule}">{$eleve} {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
+											<input type="checkbox" name="eleve%{$matricule}_coursGrp%{$coursGrp|replace:' ':'#'}" value="{$verrouiller}">
+										{/foreach}
+									</ul>
+								</li>
+							{/foreach}
+							</ul>
+						</li>
+					</ul>
 				{/foreach}
-				</ul>
-				</li>
-			</ul>
-		{/foreach}
-		</li>
+			</li>
 		</ul>
 	{/foreach}
 {/if}
@@ -51,10 +51,10 @@ $(document).ready(function(){
 	$(".collapsible").parent().children().filter("ul").hide();
 
 	$(".check").click(function(){
-		var checked = $(this).attr("checked");
+		var checked = $(this).prop("checked");
 		if (checked)
-			$(this).siblings().find("input:checkbox").attr("checked", true);
-			else $(this).siblings().find("input:checkbox").attr("checked", false);
+			$(this).siblings().find("input:checkbox").prop("checked", true);
+			else $(this).siblings().find("input:checkbox").prop("checked", false);
 		})
 		
 	$("#formVerrouiller").submit(function(){
