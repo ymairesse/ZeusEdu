@@ -31,6 +31,7 @@
 		<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
 	{/if}
 	<input type="hidden" name="etape" value="showEleve">
+	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
 </div>
 

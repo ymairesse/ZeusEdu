@@ -64,8 +64,11 @@ switch ($action) {
 
 // pour les différents cas où il faut afficher une fiche d'élève, on affiche
 if (isset($afficherEleve) && ($afficherEleve == true)) {
-	$smarty->assign("listeTypesFaits", $Ades->listeTypesFaits());
-	$smarty->assign("descriptionChamps", $Ades->listeChamps());
+	require_once(INSTALL_DIR."/$module/inc/classes/classMemo.inc.php");
+	$memoEleve = new memoAdes($matricule,'ades');
+	$smarty->assign('memoEleve',$memoEleve);
+	$smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
+	$smarty->assign('descriptionChamps', $Ades->listeChamps());
 	$smarty->assign('action',$action);
 	$smarty->assign('mode',$mode);
 	$smarty->assign('etape','showEleve');

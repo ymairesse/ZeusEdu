@@ -26,7 +26,7 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'colors' },
 		{ name: 'about' }
 	];
-	
+
 
 
 	// Se the most common block elements.
@@ -36,9 +36,9 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.removeDialogTabs = 'image:advanced;link:advanced';
 
 	config.height = '400px';
-	
+
 	config.disableNativeSpellChecker = false;
 
 	config.extraPlugins = 'print,font';
-	
+
 };
