@@ -788,7 +788,7 @@ CREATE TABLE IF NOT EXISTS `didac_logins` (
 
 CREATE TABLE IF NOT EXISTS `didac_pad` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
-  `proprio` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'propriétaire de la fiche',
+  `proprio` varchar(12) COLLATE utf8_unicode_ci NOT NULL COMMENT 'propriétaire de la fiche',
   `texte` blob NOT NULL COMMENT 'texte de la fiche',
   PRIMARY KEY (`matricule`,`proprio`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des notes relatives aux élève';
