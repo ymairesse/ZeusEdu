@@ -385,12 +385,14 @@ class ecole {
      * @param $cours
      * @return array
      */
-    public function listeElevesCours($coursGrp, $tri=Null) {
+    public function listeElevesCours($coursGrp, $tri=Null, $parti=false) {
         $connexion = Application::connectPDO (SERVEUR, BASE, NOM, MDP);
         $sql = "SELECT ".PFX."elevesCours.matricule, nom, prenom, classe ";
         $sql .= "FROM ".PFX."elevesCours ";
         $sql .= "JOIN ".PFX."eleves ON (".PFX."eleves.matricule = ".PFX."elevesCours.matricule) ";
         $sql .= "WHERE coursGrp = '$coursGrp' ";
+		if ($parti==false)
+			$sql .= "AND section != 'PARTI' ";
         if ($tri == 'alpha')
 			$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
 		else
@@ -418,11 +420,10 @@ class ecole {
         
 	/***
 	 * retourne des listes d'élèves pour chacun des coursGrp passés en paramètre
-	 * 
 	 * @param $listeCoursGrp
 	 * @return array
 	 */
-	 function listeElevesDeListeCoursGrp ($listeCoursGrp) {
+	 function listeElevesDeListeCoursGrp ($listeCoursGrp, $parti=false) {
         if (is_array($listeCoursGrp))
             $listeCoursGrpString = "'" . implode("','", array_keys($listeCoursGrp)) . "'";
             else $listeCoursGrpString = "'".$listeCoursGrp."'";
@@ -431,6 +432,8 @@ class ecole {
 		$sql .= "FROM ".PFX."elevesCours ";
 		$sql .= "JOIN ".PFX."eleves ON (".PFX."eleves.matricule = ".PFX."elevesCours.matricule) ";
 		$sql .= "WHERE coursGrp IN ($listeCoursGrpString) ";
+		if ($parti == false)
+			$sql .= "AND section != 'PARTI' ";
 		$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
 		$resultat = $connexion->query($sql);
 		$listesEleves = array();
