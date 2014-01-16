@@ -45,7 +45,6 @@
 		$smarty->assign('corpsPage','editFaitDisciplinaire');
 		break;
 	case 'enregistrer':
-		echo "$action";
 		$type=isset($_POST['type'])?$_POST['type']:Null;
 		$oldIdretenue = isset($_POST['oldIdretenue'])?$_POST['oldIdretenue']:Null;
 		// s'il n'y a pas de idretenue mais qu'on a un oldIdretenue, c'est que la date de retenue n'est plus accessible (cachée)
@@ -58,7 +57,7 @@
 		$smarty->assign("message", array(
 			'title'=>"Enregistrement",
 			'texte'=>"Enregistrement de: $nb fait(s)"),
-		3000);
+			3000);
 		$ficheDisc->relireFaitsDisciplinaires($matricule);
 		$afficherEleve = true;
 		$action = Null; $mode= Null;

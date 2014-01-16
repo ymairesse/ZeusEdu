@@ -11,10 +11,11 @@ $Ades = new Ades();
 $texte = isset($_POST['texte'])?$_POST['texte']:Null;
 $user = isset($_POST['qui'])?$_POST['qui']:Null;
 $champ = isset($_POST['champ'])?$_POST['champ']:Null;
+$id = isset($_POST['id'])?$_POST['id']:'';
+$free = isset($_POST['free'])?$_POST['free']:0;
 
 if (($texte == Null) || ($user == Null || $champ == Null)) die("no text no user");
-
-$nb = $Ades->saveTexte('', $user, '0', $texte, $champ);
+$nb = $Ades->saveTexte($id, $user, $free, $texte, $champ);
 if ($nb == 1)
 	echo ":o)";
 

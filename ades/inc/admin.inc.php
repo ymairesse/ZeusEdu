@@ -47,6 +47,11 @@ if ($userStatus == 'admin') {
 			$smarty->assign('listeProfs',$listeProfs);
 			$smarty->assign('corpsPage', 'usersList');
 			break;
+		case 'remAuto':
+			$smarty->assign('listeMemos',$Ades->listeMemos($user->acronyme()));
+			$smarty->assign('acronyme',$acronyme);
+			$smarty->assign('corpsPage','gestionMemos');
+			break;
 		}
 }
 

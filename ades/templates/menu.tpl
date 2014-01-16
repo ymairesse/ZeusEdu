@@ -20,11 +20,13 @@
 			<li><a href="index.php?action=synthese">Synthèses</a></li>
 		</ul>
 	</li>
-	{if $userStatus == 'admin'}
-	<li><a href="javascript:void(0)">Admin</a>
+	
+	<li><a href="javascript:void(0)">Options</a>
 		<ul>
+			{if $userStatus == 'admin'}
 			<li><a href="index.php?action=admin&amp;mode=users">Utilisateurs</a></li>
+			{/if}
+			<li><a href="index.php?action=admin&amp;mode=remAuto">Gestion des textes automatiques</a></li>
 		</ul>
 	</li>
-	{/if}
 </ul>

@@ -259,8 +259,23 @@ class Ades {
 		$sql = "INSERT INTO ".PFX."adesTextes ";
 		$sql .= "SET idTexte = '$idTexte', user='$user', free='$free', texte='$texte', champ='$champ' ";
 		$sql .= "ON DUPLICATE KEY UPDATE user='$user', free='$free', texte='$texte', champ='$champ' ";
+	
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO($connexion);
+		return $resultat;
+	}
+	
+	/**
+	 * suppression d'un texte de la banque de textes de ADES
+	 * @param $id
+	 * @return $nb : nombre de modifications dans la BD (normalement 1)
+	 */
+	public function delTexte ($id) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."adesTextes ";
+		$sql .= "WHERE idTexte='$id' ";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPOD($connexion);
 		return $resultat;
 	}
 
@@ -271,10 +286,10 @@ class Ades {
 	 */
 	function listeMemos ($acronyme) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT user, champ, free, texte ";
+		$sql = "SELECT idTexte, user, champ, free, texte ";
 		$sql .= "FROM ".PFX."adesTextes ";
 		$sql .= "WHERE user = '$acronyme' OR free='1' ";
-		$sql .= "ORDER BY texte ";
+		$sql .= "ORDER BY champ, texte ";
 
 		$resultat = $connexion->query($sql);
 		$liste = array();
@@ -282,7 +297,8 @@ class Ades {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$champ = $ligne['champ'];
-				$liste[$champ][] = $ligne;
+				$id = $ligne['idTexte'];
+				$liste[$champ][$id] = $ligne;
 			}
 		}
 		Application::DeconnexionPDO($connexion);
