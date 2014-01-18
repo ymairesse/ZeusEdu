@@ -202,7 +202,7 @@ class presences {
 		$sql .= "FROM ".PFX."presencesAbsences ";
 		$sql .= "JOIN ".PFX."eleves ON (".PFX."presencesAbsences.matricule = ".PFX."eleves.matricule ) ";
 		$sql .= "WHERE date = '$date' ";
-		$sql .= "ORDER BY classe, REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, periode";
+		$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, classe, periode";
 		$resultat = $connexion->query($sql);
 		$listeAbsences = array();
 		if ($resultat) {

@@ -27,3 +27,20 @@
 	</table>
 	<strong>{$listeAbsences|count} absence(s)</strong>
 </div>
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+	
+	$(".tableauAdmin tr").hover(
+		function() {
+			$(this).addClass('mev')
+			},
+		function() {
+			$(this).removeClass('mev')
+			}
+		)
+		
+	})
+	
+</script>
