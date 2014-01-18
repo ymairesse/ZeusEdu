@@ -4,8 +4,8 @@ $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 
 switch ($mode) {
 	case 'parDate':
-		$smarty->assign('action', 'listeAbsences');
-		$smarty->assign('mode','parDate');
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
 		$smarty->assign('etape','dateChoisie');
 		$smarty->assign('selecteur', 'selectDate');
 		$date = isset($_POST['date'])?$_POST['date']:strftime("%d/%m/%Y");

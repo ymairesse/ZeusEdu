@@ -6,11 +6,18 @@
 		<input type="hidden" name="classe" value="{$eleve.classe}">
 		<input type="submit" name="submit" value="Retour sans enregistrer" class="fauxBouton">
 	</form>
+	
 <form name="modifVisite" id="modifVisite" method="POST" action="index.php" style="clear:both">
 	<img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.matricule}" style="width:100px; float:right" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
 	<label for="professeur">Professeur</label>
-	<input type="text" name="acronyme" id="professeur" value="{$visites.$consultID.acronyme|default:''}" size="3" maxlength="3">
-	<span id="nomPrenom"></span>
+
+	<input type="text" name="acronyme" id="professeur" value="{if ($visites != Null)}{$visites.$consultID.acronyme|default:''}{/if}" size="3" maxlength="3">
+	<select name="listeProfs" id="listeProfs">
+		<option value="">Choisir un nom</option>
+		{foreach from=$listeProfs key=acronyme item=prof}
+		<option value="{$acronyme}"{if ($visites != Null) && ($acronyme == $visites.$consultID.acronyme)} selected="selected"{/if}>{$prof.prenom} {$prof.nom}</option>
+		{/foreach}
+	</select>
 	<br>
 	<label for="date">Date</label>
 		<input id="datepicker" size="10" maxlength="10" type="text" name="date" value="{$visites.$consultID.date|default:''}">
@@ -94,15 +101,14 @@
 		);
 		
 		$("#professeur").blur(function(){
-		var acronyme = $(this).val().toUpperCase();
-		$(this).val(acronyme);
-		if (acronyme != '') {
-			$.post("inc/nomPrenom.inc.php",
-				{'acronyme': acronyme},
-				function(resultat) {
-					$("#nomPrenom").html(resultat)
-					});
-			}
+			var acronyme = $(this).val().toUpperCase();
+			$(this).val(acronyme);
+			$("#listeProfs").val(acronyme);
+			})
+		
+		$("#listeProfs").change(function(){
+			var acronyme = $(this).val().toUpperCase();
+			$("#professeur").val(acronyme);
 			})
 	})
 {/literal}

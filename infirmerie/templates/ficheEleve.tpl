@@ -56,6 +56,13 @@
 		</div>
 		
 	<div id="tabs-3">
+		<form name="modifMedical" method="POST" action="index.php" class="microForm">
+		<input type="submit" name="submit" value="Modifier">
+		<input type="hidden" name="action" value="modifier">
+		<input type="hidden" name="mode" value="medical">
+		<input type="hidden" name="classe" value="{$eleve.classe}">
+		<input type="hidden" name="matricule" value="{$matricule}">
+			
 		<h3>Médecin</h3>
 		<fieldset style="float:left; width:15em">
 			<legend>Medecin traitant</legend>
@@ -92,12 +99,6 @@
 			<legend>Psy</legend>
 			<p>{$medicEleve.psy|default:'&nbsp;'}</p>
 		</fieldset>
-		<form name="modifMedical" method="POST" action="index.php" class="microForm">
-			<input type="hidden" name="action" value="modifier">
-			<input type="hidden" name="mode" value="medical">
-			<input type="hidden" name="classe" value="{$eleve.classe}">
-			<input type="hidden" name="matricule" value="{$matricule}">
-			<input type="submit" name="submit" value="Modifier">
 		</form>
 
 	</div>
