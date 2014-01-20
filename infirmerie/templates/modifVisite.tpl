@@ -4,11 +4,21 @@
 		<input type="hidden" name="mode" value="wtf">
 		<input type="hidden" name="matricule" value="{$matricule}">
 		<input type="hidden" name="classe" value="{$eleve.classe}">
+		<input type="hidden" name="onglet" id="onglet" value="{$onglet|default:0}">
 		<input type="submit" name="submit" value="Retour sans enregistrer" class="fauxBouton">
 	</form>
 	
 <form name="modifVisite" id="modifVisite" method="POST" action="index.php" style="clear:both">
-	<img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.matricule}" style="width:100px; float:right" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
+	<input type="hidden" name="consultID" value="{$consultID|default:''}">
+	<input type="hidden" name="matricule" value="{$eleve.matricule}">
+	<input type="hidden" name="classe" value="{$eleve.classe}">
+	<input type="hidden" name="onglet" id="onglet" value="{$onglet|default:0}">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="{$mode}">
+	<input style="float:right" type="submit" name="submit" value="Enregistrer">
+	<input style="float:right" type="reset" name="Annuler" value="Annuler">
+	<br>
+	<img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.matricule}" style="width:100px; float:right; clear:both" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
 	<label for="professeur">Professeur</label>
 
 	<input type="text" name="acronyme" id="professeur" value="{if ($visites != Null)}{$visites.$consultID.acronyme|default:''}{/if}" size="3" maxlength="3">
@@ -33,16 +43,9 @@
 	<hr>
 	<label for="aSuivre">À suivre</label><br>
 	<textarea name="aSuivre" id="aSuivre" cols="60" rows="1">{$visites.$consultID.aSuivre|default:''}</textarea><br>
-	
-	<hr>
-	<input type="hidden" name="consultID" value="{$consultID|default:''}">
-	<input type="hidden" name="matricule" value="{$eleve.matricule}">
-	<input type="hidden" name="classe" value="{$eleve.classe}">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
-	<input style="float:right" type="submit" name="submit" value="Enregistrer">
-	<input style="float:right" type="reset" name="Annuler" value="Annuler">	
+
 </form>
+<br>
 <script type="text/javascript">
 {literal}
 	$("document").ready(function(){
