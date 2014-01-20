@@ -142,7 +142,8 @@ class ecole {
 	 * @return $listeClasses
 	 */
 	public function listeClassesNiveau ($niveau, $entite='groupe', $sections=Null) {
-		$sections = "'".implode("','",$sections)."'";
+		if ($sections != Null)
+			$sections = "'".implode("','",$sections)."'";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT DISTINCT $entite ";
 		$sql .= "FROM ".PFX."eleves ";
@@ -150,7 +151,6 @@ class ecole {
 		if ($sections != Null)
 			$sql .= "AND section IN ($sections) ";
 		$sql .= "ORDER BY $entite";
-
 		$resultat = $connexion->query($sql);
 		$lesClasses = array();
         if ($resultat) {
