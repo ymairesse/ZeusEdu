@@ -17,7 +17,8 @@
 	</li>
 	<li><a href="javascript:void(0)">Que s'est-il passé?</a>
 		<ul>
-			<li><a href="index.php?action=synthese">Synthèses</a></li>
+			<li><a href="index.php?action=synthese&amp;mode=showFiches">Synthèses de comportement</a></li>
+			<li><a href="index.php?action=synthese&amp;mode=statistiques">Statistiques par niveau</a></li>
 		</ul>
 	</li>
 	

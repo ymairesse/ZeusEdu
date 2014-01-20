@@ -1,4 +1,4 @@
-
+{debug}
 {foreach from=$listeFaits key=classe item=Eleves}
 	{if $Eleves|count > 1}
 		<h2 class="classeEntete">{$classe}</h2>

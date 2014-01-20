@@ -31,25 +31,38 @@ if (isset($classe)) {
 	$listeEleves = $Ecole->listeEleves($classe,'groupe');
 	$smarty->assign('listeEleves', $listeEleves);
 	}
-	
-if ($mode == 'showFiches') {
-	// élève isolé
-	if (isset($matricule) && $matricule != '') 
-		$listeEleves = $matricule;
-		// une seule classe du niveau
-		else if (isset($classe) && $classe != '')
-				$listeEleves = $Ecole->listeEleves($classe,'groupe');
-				// tout le niveau
-				else $listeEleves = $Ecole->listeElevesNiveaux($niveau);
-	// pour chaque type de faits, voir quel champ doit être affiché dans le contexte "tableau"
-	$listeChamps = $Ades->champsInContexte('tableau');
-	$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin);
-	$smarty->assign('listeFaits', $listeFaits);
-	}
 
-$smarty->assign('action',$action);
-$smarty->assign('mode','showFiches');
-
+switch ($mode) {
+	case 'showFiches':
+		// élève isolé
+		if (isset($matricule) && $matricule != '') 
+			$listeEleves = $matricule;
+			// une seule classe du niveau
+			else if (isset($classe) && $classe != '')
+					$listeEleves = $Ecole->listeEleves($classe,'groupe');
+					// tout le niveau
+					else $listeEleves = $Ecole->listeElevesNiveaux($niveau);
+		// pour chaque type de faits, voir quel champ doit être affiché dans le contexte "tableau"
+		$listeChamps = $Ades->champsInContexte('tableau');
+		$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin);
+		$smarty->assign('listeFaits', $listeFaits);
+		$smarty->assign('corpsPage', 'synthese');
+		break;
+	case 'statistiques':
+		// élève isolé
+		if (isset($matricule) && $matricule != '') 
+			$listeEleves = $matricule;
+			// une seule classe du niveau
+			else if (isset($classe) && $classe != '')
+					$listeEleves = $Ecole->listeEleves($classe,'groupe');
+					// tout le niveau
+					else $listeEleves = $Ecole->listeElevesNiveaux($niveau);
+		$statistiques = $Ades->statistiques($listeEleves, $debut, $fin);
+		$smarty->assign('statistiques', $statistiques);
+		$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
+		$smarty->assign('corpsPage','statistiques');
+		break;
+	}	
 
 $listeNiveaux = Ecole::listeNiveaux();
 $smarty->assign('listeNiveaux', $listeNiveaux);
@@ -58,7 +71,8 @@ if (isset($listeFaits)) {
 	$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
 	$smarty->assign('listeChamps', $listeChamps);
 	$smarty->assign('listeTitres', $Ades->titreChamps());
-	$smarty->assign('listeFaits', $listeFaits);
-	$smarty->assign('corpsPage', 'synthese');
 	}
+	
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
 ?>

@@ -11,7 +11,6 @@ $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 if ($niveau != '') {
 	$sections = array();
 	$listeClasses = $Ecole->listeClassesNiveau($niveau,'groupe',$sections);
-	
 	require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 	$smarty = new Smarty();
 	$smarty->template_dir = "../templates";

@@ -8,13 +8,13 @@ require(INSTALL_DIR."/inc/classes/class.pdf.php");
  * class Ades
  */
 class Ades {
-	
+
 	private $listeTypesFaits;
 	private $listeChamps;
 	private $typesRetenues;
     /*
      * __construct
-     * @param 
+     * @param
      */
     function __construct() {
 		$this->listeTypesFaits = $this->getListeTypesFaits();
@@ -47,10 +47,10 @@ class Ades {
 		Application::deconnexionPDO($connexion);
 		return $liste;
 		}
-		
+
 	/***
 	 * return liste de tous les types de faits avec leur description (champs nécessaires)
-	 * @param 
+	 * @param
 	 * @return array
 	 */
 	 private function getListeTypesFaits () {
@@ -71,7 +71,7 @@ class Ades {
 		Application::deconnexionPDO($connexion);
 		return $liste;
 		}
-		
+
 	/***
 	 * renvoie la liste des types de faits existants
 	 * @param
@@ -96,8 +96,8 @@ class Ades {
 		}
 		return $liste;
 	}
-	
-	
+
+
 	private function lireDescriptionChamps(){
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."adesChamps ";
@@ -115,7 +115,7 @@ class Ades {
 		Application::deconnexionPDO($connexion);
 		return $liste;
 		}
-		
+
 	/**
 	 * renvoie la liste des types de faits de l'objet
 	 * @param
@@ -124,7 +124,7 @@ class Ades {
 	public function listeTypesFaits(){
 		return $this->listeTypesFaits;
 		}
-		
+
 	/**
 	 * renvoie la description des champs de la BD
 	 * @param
@@ -133,7 +133,7 @@ class Ades {
 	public function listeChamps(){
 		return $this->listeChamps;;
 	}
-	
+
 	/**
 	 * renvoie la description des différents types de retenues existantes
 	 * @param
@@ -165,7 +165,7 @@ class Ades {
 		Application::DeconnexionPDO($connexion);
 		return $ligne;
 		}
-	
+
 	/**
 	 * renvoie la structure nécessaire à l'établissment du formulaire d'édition d'un fait disciplinaire
 	 * sans les données
@@ -176,7 +176,7 @@ class Ades {
 		if (!isset($type)) die('no type');
 		$structure = $this->structureFait($type);
 		$listeChamps = "'".implode("','",$structure['listeChamps'])."'";
-		
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT champ, label, contextes, typeDate, typeDateRetenue, typeChamp, size, maxlength, colonnes,lignes, classCSS, autocomplete ";
 		$sql .= "FROM ".PFX."adesChamps ";
@@ -193,7 +193,7 @@ class Ades {
 		Application::DeconnexionPDO($connexion);
 		return $prototype;
 	}
-	
+
 	/**
 	 * retourne la liste des retenues disponibles du type spécifié
 	 * @param integer $type
@@ -259,12 +259,12 @@ class Ades {
 		$sql = "INSERT INTO ".PFX."adesTextes ";
 		$sql .= "SET idTexte = '$idTexte', user='$user', free='$free', texte='$texte', champ='$champ' ";
 		$sql .= "ON DUPLICATE KEY UPDATE user='$user', free='$free', texte='$texte', champ='$champ' ";
-	
+
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO($connexion);
 		return $resultat;
 	}
-	
+
 	/**
 	 * suppression d'un texte de la banque de textes de ADES
 	 * @param $id
@@ -330,7 +330,7 @@ class Ades {
 		Application::DeconnexionPDO($connexion);
 		return $liste;
 	}
-	
+
 	/**
 	 * recherche les caractéristiques d'un fait disciplinaire dont on fournit le $idfait
 	 * @param $idfait
@@ -352,7 +352,7 @@ class Ades {
 		Application::DeconnexionPDO($connexion);
 		return $infosFait[0];
 	}
-	
+
 	/**
 	 * caractéristiques de la retenue dont on fournit le idretenue
 	 * @param $idretenue
@@ -360,19 +360,12 @@ class Ades {
 	 */
 	public function infosRetenue ($idretenue) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		/*
-		$sql = "SELECT ".PFX."adesRetenues.type, idretenue, dateRetenue, heure, duree, local, places, occupation, titreFait ";
-		$sql .= "FROM ".PFX."adesRetenues ";
-		$sql .= "JOIN ".PFX."adesTypesFaits ON (".PFX."adesTypesFaits.typeRetenue = ".PFX."adesRetenues.type) ";
-		$sql .= "WHERE idretenue = '$idretenue' ";
-	*/
-		
 		$sql = "SELECT ".PFX."adesRetenues.type, idretenue, dateRetenue, heure, duree, local, places, titrefait, ";
 		$sql .= "(SELECT COUNT(*) FROM ".PFX."adesFaits WHERE idretenue='$idretenue') AS occupation ";
 		$sql .= "FROM ".PFX."adesRetenues ";
 		$sql .= "JOIN ".PFX."adesTypesFaits ON (".PFX."adesTypesFaits.typeRetenue = ".PFX."adesRetenues.type) ";
 		$sql .= "WHERE idretenue = '$idretenue' ";
-		
+
 		$resultat = $connexion->query($sql);
 		$info = Null;
 		if ($resultat) {
@@ -384,7 +377,7 @@ class Ades {
 		Application::DeconnexionPDO($connexion);
 		return $infos;
 	}
-	
+
 	/**
 	 * caractéristiques d'une retenue dont on fournit le type
 	 * informations venant de adesTypesFaits
@@ -408,8 +401,8 @@ class Ades {
 
 function utf8($argument) {
 	return utf8_decode($argument);
-	}	
-	
+	}
+
 	/**
 	 * Impression d'un billet de retenue
 	 * @param $data : array toutes les informations qui figurent sur le billet de retenue
@@ -435,51 +428,51 @@ function utf8($argument) {
 		$pdf->Cell(100,5,$this->utf8(ADRESSE), 0, 2, 'C', 0);
 		$pdf->SetXY(90,20);
 		$pdf->Cell(100,5, $this->utf8('Téléphone: '.TELEPHONE), 0, 2, 'C', 0);
-		
+
 		$pdf->SetFont('Arial','',12);
 		$dt = date("d/m/Y");
 		$pdf->SetXY(140,35);
 		$pdf->Cell(50,5,$this->utf8(COMMUNE).', le '.$dt, 0, 2, 'R');
-		
+
 		$pdf->SetFont('','B',24);
 		$pdf->SetXY(70,45);
 		$pdf->Cell(110,10, $this->utf8($data['fait']['titreFait']), 1, 0, 'C');
-		
+
 		$pdf->SetXY(10,65);
 		$pdf->SetFont('', 'B',10);
 		$chaine = "M. ".$this->utf8($data['eleve']['prenom'])." ".$this->utf8($data['eleve']['nom'])." en classe de ".$this->utf8($data['eleve']['classe'])."\n";
 		$pdf->Cell(200,5, $chaine, 0,0,'L');
-		
+
 		$pdf->SetXY(10,70);
 		$pdf->SetFont('');
 		$chaine = $this->utf8("a mérité une retenue de ".$data['retenue']['duree']." h ce ".$data['retenue']['dateRetenue']." à ".$data['retenue']['heure']);
 		$chaine .= "(local ".$this->utf8($data['retenue']['local']).") pour le motif suivant\n";
 		$pdf->Cell(200,5, $chaine, 0,0,'L');
-		
+
 		$pdf->SetXY(10,75);
 		$pdf->SetFont('','',12);
 
 		$pdf->Write(5, $this->utf8($data['fait']['motif']));
 		$pdf->SetFont('', '', 10);
 		$pdf->SetXY(10,90);
-		
+
 		$chaine = $this->utf8("Matériel à apporter: Jcl, de quoi écrire - ".$data['fait']['materiel']).".\n";
 		$chaine .= $this->utf8("Travail à effectuer: ".$data['fait']['travail']."\n");
-		
+
 		$pdf->Write(5, $chaine);
-		
+
 		$pdf->SetXY(10,110);
 		$pdf->Cell(30,5,"Le professeur", 0, 0, 'L', 0);
 		$pdf->SetXY(80,110);
 		$pdf->Cell(30,5,"Le CPE", 0, 0, 'L', 0);
 		$pdf->SetXY(150,110);
 		$pdf->Cell(30,5,"Les parents", 0, 0, 'L', 0);
-		
+
 		$pdf->SetXY(30,120);
 		$pdf->Cell(30,5,$this->utf8($data['fait']['professeur']), 0, 0, 'L', 0);
-		
+
 		// création du répertoire correspondant à l'utilisateur en cours
-		if (!(file_exists("pdf/$acronyme"))) 
+		if (!(file_exists("pdf/$acronyme")))
 			mkdir ("pdf/$acronyme");
 
 		$pdf->Output("pdf/$acronyme/".$data['eleve']['matricule'].".pdf",'D');
@@ -511,7 +504,7 @@ function utf8($argument) {
 		$resultat = $connexion->query($sql);
 		$listeChamps = array();
 		if ($resultat) {
-			while ($ligne = $resultat->fetch()) 
+			while ($ligne = $resultat->fetch())
 				$listeChamps[] = $ligne['champ'];
 			}
 		// parcours de la liste des faits existants et de leur description
@@ -522,7 +515,7 @@ function utf8($argument) {
 		Application::DeconnexionPDO($connexion);
 		return $listeFaits;
 	}
-	
+
 	/***
 	 * renvoie une table de correspondance entre les noms et les titres des champs à exposer
 	 * @param
@@ -543,11 +536,45 @@ function utf8($argument) {
 		Application::DeconnexionPDO($connexion);
 		return $listeChamps;
 	}
-	
+
+	/**
+	 * renvoie les statistiques sur les différents types de faits entre les dates précisées
+	 * pour les élèves demandés (la liste des élèves est fabriquée ailleurs)
+	 * @param $listeEleves : liste des élèves concernés
+	 * @param $debut : date de début
+	 * @param $fin : date de fin
+	 * @return array
+	 */
+	public function statistiques ($listeEleves, $debut, $fin) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",",array_keys($listeEleves));
+			else $listeElevesString = $listeEleves;
+		$debut = Application::dateMysql($debut);
+		$fin = Application::dateMysql($fin);
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT COUNT(*) AS nbFaits, af.type, titreFait, couleurFond, couleurTexte ";
+		$sql .= "FROM ".PFX."adesFaits AS af ";
+		$sql .= "JOIN ".PFX."adesTypesFaits AS tf ON (tf.type = af.type) ";
+		$sql .= "WHERE matricule IN ($listeElevesString) AND af.ladate > '$debut' AND af.ladate < '$fin' ";
+		$sql .= "GROUP BY type ORDER BY type";
+		$resultat = $connexion->query($sql);
+		$statistiques = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$type = $ligne['type'];
+				$statistiques[$type] = $ligne;
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $statistiques;
+		}
+
 	/**
 	 * renvoie Les fiches disciplinaires de la liste d'élèves indiquée avec uniquement les champs demandés
 	 * @param $listeEleves : liste des élèves concernés
-	 * @param $listeChamps : liste des champs que l'on souhaite extraire de la table des faits
+	 * @param $debut : date de début
+	 * @param $fin : date de fin
 	 * @return array
 	 */
 	public function fichesDisciplinaires ($listeEleves, $debut, $fin) {
@@ -611,6 +638,6 @@ function utf8($argument) {
 		return $texte;
 		}
 
-}      
+}
 
 ?>
