@@ -11,7 +11,7 @@
 	<select name="classe" id="classe">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if isset($classe) && ($classe == $uneClasse)}selected{/if}>{$uneClasse}</option>
+			<option value="{$uneClasse}"{if isset($classe) && ($classe == $uneClasse)} selected="selected"{/if}>{$uneClasse}</option>
 		{/foreach}
 	</select>
 	<input type="submit" value="OK" name="OK" id="envoi">

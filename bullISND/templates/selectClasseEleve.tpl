@@ -23,7 +23,7 @@
 		 <img src="images/right.png" style="position: relative; width:18px; top:4px" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 		{/if}
 		
-	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
+	<input type="submit" value="OK" name="OK" id="envoi">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}
@@ -68,7 +68,7 @@ $(document).ready (function() {
 			$("#formSelecteur").submit();
 			$("#envoi").show();
 		}
-			else $("#envoi").hide();
+			// else $("#envoi").hide();
 		})
 		
 	$("#prev").click(function(){

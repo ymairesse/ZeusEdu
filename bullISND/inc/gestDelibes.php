@@ -101,7 +101,6 @@ switch ($mode) {
 				else $listeMentions = Null;
 			$listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
 			$listeCoursGrp = $Ecole->listeCoursGrpClasse($classe);
-			
 			$listeCoursClasse = $Ecole->listeCoursClassePourDelibe($classe);
 			$situationsActuelles = $Bulletin->listeSituationsClassePourDelibe($listeEleves, $bulletin);
 			$delibe = $Bulletin->echecMoyennesDecisions($listeEleves, $listeCoursGrp, $bulletin);

@@ -1,17 +1,24 @@
+
+
+
+
+
 <table style="font-size:0.8em" class="tableauTitu">
 	<tr>
 		<th>&nbsp;</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=data}
-		<th title="{$data.libelle} | {$listeProfsCoursGrp.$coursGrp}">{$data.cours}</th>
+			<th title="{$data.libelle} | {$listeProfsCoursGrp.$coursGrp}">{$data.cours}</th>
 		{/foreach}
 		<th>Mentions</th>
 	</tr>
+	
 	{foreach from=$listePeriodes key=periode item=bulletin}
+	
 	<tr>
 		<th>{$bulletin}</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=data}
 		
-		<td class="cote mention{$syntheseCotes.$bulletin.$coursGrp.mention|default:''}"
+		<td class="cote mention{$syntheseCotes.$bulletin.$coursGrp.mention|trim:'+'|default:''}"
 			title="{$listeProfsCoursGrp.$coursGrp}: {$listeCoursGrp.$coursGrp.libelle}|{$commentairesProfs.$matricule.$coursGrp.$bulletin|default:'no comment'}">
 			{if isset($syntheseCotes.$bulletin.$coursGrp.sitDelibe) && ($syntheseCotes.$bulletin.$coursGrp.sitDelibe != '')}
 				<span class="micro">Délibé </span>

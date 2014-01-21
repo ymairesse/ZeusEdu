@@ -3,7 +3,7 @@
 {assign var=listeCours value=$dataSynthese.listeCours}
 {assign var=resultats value=$dataSynthese.resultats}
 <h3>Résultats de {$annee}e</h3>
-	<table class="tableauTitu">
+	<table style="font-size:0.8em" class="tableauTitu">
 		<tr>
 			<th>&nbsp;</th>
 			{foreach from=$listeCours key=coursGrp item=data}
@@ -18,7 +18,7 @@
 			<th>{$periode}</th>
 			{foreach from=$listeCours key=coursGrp item=data}
 				{if in_array($coursGrp, array_keys($resultats.$periode))}
-					<td class="cote mention{$resultats.$periode.$coursGrp.mention|default:''}" title="{$coursGrp}">
+					<td class="cote mention{$resultats.$periode.$coursGrp.mention|trim:'+'|default:''}" title="{$coursGrp}">
 						{if isset($resultats.$periode.$coursGrp.sitDelibe) && ($resultats.$periode.$coursGrp.sitDelibe != '')}
 							<span class="micro">Délibé </span>
 							<strong>{$resultats.$periode.$coursGrp.sitDelibe}</strong><br>

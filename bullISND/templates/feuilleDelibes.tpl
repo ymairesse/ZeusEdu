@@ -46,13 +46,17 @@
 
 		<td class="delibe">{$delibe.$matricule.moyenne|default:'&nbsp;'}</td>
 		<td class="delibe"
-			{if $delibe.$matricule.nbEchecs >0} title="{$delibe.$matricule.nbEchecs} échec(s) {$delibe.$matricule.nbHeuresEchec}h|{$delibe.$matricule.coursEchec}"
-			>
-			{$delibe.$matricule.nbEchecs}
-			{else}&nbsp;{/if}</td>
-		<td class="delibe" {if $delibe.$matricule.nbEchecs > 0} title="{$delibe.$matricule.nbEchecs} échec(s) {$delibe.$matricule.nbHeuresEchec}h|{$delibe.$matricule.coursEchec}">
-			{$delibe.$matricule.nbHeuresEchec}h
-			{else}&nbsp;{/if}</td>
+			{if ($delibe.$matricule.nbEchecs >0)}
+			title="{$delibe.$matricule.nbEchecs} échec(s) {$delibe.$matricule.nbHeuresEchec}h|{$delibe.$matricule.coursEchec}"
+			{/if}>
+			{if ($delibe.$matricule.nbEchecs >0)}{$delibe.$matricule.nbEchecs}{else}&nbsp;{/if}
+		</td>
+		<td class="delibe"
+			{if $delibe.$matricule.nbEchecs > 0}
+			title="{$delibe.$matricule.nbEchecs} échec(s) {$delibe.$matricule.nbHeuresEchec}h|{$delibe.$matricule.coursEchec}"
+			{/if}>
+			{if $delibe.$matricule.nbEchecs > 0}{$delibe.$matricule.nbHeuresEchec|default:'-'}h{else}&nbsp;{/if}
+		</td>
 		<td class="cote delibe">{$delibe.$matricule.mention|default:'&nbsp;'}</td>
 		<td class="delibe">{$listeMentions.$matricule.$annee.$bulletin|default:'&nbsp;'}</td> 
 	</tr>

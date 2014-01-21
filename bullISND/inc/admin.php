@@ -128,7 +128,7 @@ switch ($mode) {
 		$smarty->assign("selecteur", "selectClasseEleve");
 		if (isset($classe)) {
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
-			$smarty->assign("listeElevesClasse", $listeEleves);
+			$smarty->assign("listeEleves", $listeEleves);
 			}
 		if (isset($matricule)) {
 			$eleve = new Eleve($matricule);
