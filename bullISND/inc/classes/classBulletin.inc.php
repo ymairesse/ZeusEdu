@@ -2594,9 +2594,9 @@ class Bulletin {
 			switch ($moyenneEntiere) {
 				case 10: $mention = 'E'; break;
 				case 9: $mention = 'E'; break;
-				case 8: if ($moyenne >= 85) $mention = 'TBplus';
+				case 8: if ($moyenne >= 85) $mention = 'TB+';
 					else $mention = 'TB'; break;
-				case 7: if ($moyenne >= 75) $mention = 'Bplus';
+				case 7: if ($moyenne >= 75) $mention = 'B+';
 					else $mention = 'B'; break;
 				case 6: if ($moyenne >= 65) $mention = 'AB';
 					else $mention = 'S'; break;
@@ -3570,6 +3570,7 @@ class Bulletin {
 						// on compte un cours de plus pour la moyenne uniquement s'il y a une cote de situation
 						if (trim($situation['sitDelibe']) != '')
 							$nbCours++;
+							
 						// s'il y a $this->echec et ce n'est pas une AC
 						if (($situation['sitDelibe'] < 50)
 								&& ($situation['sitDelibe'] != '')
@@ -3581,6 +3582,7 @@ class Bulletin {
 						}
 					}
 				}
+				
 			if ($listeCoursEchec)
 				$data['coursEchec'] = implode("<br />", $listeCoursEchec);
 			if ($nbCours > 2) {
