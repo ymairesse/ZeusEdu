@@ -2440,6 +2440,7 @@ class Bulletin {
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX."cours.cadre) ";
 		$sql .= "WHERE matricule = '$matricule' ";
 		$sql .= "AND coursGrp IN ($stringListeCoursActuelle) ";
+		$sql .= "ORDER BY bulletin";
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {

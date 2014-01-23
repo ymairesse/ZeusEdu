@@ -1,3 +1,4 @@
+{debug}
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 <h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
@@ -38,7 +39,7 @@
 			<tr>
 			<td>{$uneEcole.annee}</td>
 			<td>{$uneEcole.nomEcole}</td>
-			<td> {$uneEcole.adresse} {$uneEcole.cPostal} {$uneEcole.commune}</td>
+			<td>{$uneEcole.adresse} {$uneEcole.cPostal} {$uneEcole.commune}</td>
 			</tr>
 			{/foreach}
 		</table>

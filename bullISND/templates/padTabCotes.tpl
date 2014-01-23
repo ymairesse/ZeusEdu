@@ -1,22 +1,49 @@
+<table style="font-size:0.8em" class="tableauTitu">
+	<tr>
+		<th>&nbsp;</th>
+	{foreach from=$listeCoursGrp key=coursGrp item=dataCours}
+		<th>{$dataCours.cours} {$dataCours.statut} {$dataCours.nbheures}h</th>
+	{/foreach}
+	<th>Mentions</th>
+	</tr>
+
+	{foreach from=$anneeEnCours key=periode item=data}
+	<tr>
+		<th>{$periode}</td>
+		{foreach from=$listeCoursGrp key=coursGrp item=dataCours}
+			<td class="cote mention{$anneeEnCours.$periode.$coursGrp.mention|trim:'+'|default:''}" title="{$coursGrp}">
+			{if isset($anneeEnCours.$periode.$coursGrp.sitDelibe) && ($anneeEnCours.$periode.$coursGrp.sitDelibe != '')}
+				<span class="micro">Délibé</span>
+				<strong>{$anneeEnCours.$periode.$coursGrp.sitDelibe|default:''}</strong><br>
+			{/if}
+			{$anneeEnCours.$periode.$coursGrp.situation|default:''}/{$anneeEnCours.$periode.$coursGrp.maxSituation|default:''}<br>
+			<span class="micro">={$anneeEnCours.$periode.$coursGrp.pourcent|default:''}</span>
+			</td>
+		{/foreach}
+		<td>&nbsp;</td>
+	</tr>
+	{/foreach}
+</table>
+
 {foreach from=$syntheseToutesAnnees key=annee item=dataSynthese}
 
-{assign var=listeCours value=$dataSynthese.listeCours}
+{assign var=listeCoursGrp value=$dataSynthese.listeCours}
 {assign var=resultats value=$dataSynthese.resultats}
 <h3>Résultats de {$annee}e</h3>
+
 	<table style="font-size:0.8em" class="tableauTitu">
 		<tr>
 			<th>&nbsp;</th>
-			{foreach from=$listeCours key=coursGrp item=data}
+			{foreach from=$listeCoursGrp key=coursGrp item=data}
 				<th title="{$data.libelle} {$coursGrp}">{$data.cours} {$data.nbheures}h {$data.statut} </th>
 			{/foreach}
 			<th>Mentions</th>
 		</tr>
 		
 		{foreach from=$resultats key=periode item=bulletin}
-
 		<tr>
 			<th>{$periode}</th>
-			{foreach from=$listeCours key=coursGrp item=data}
+			{foreach from=$listeCoursGrp key=coursGrp item=data}
 				{if in_array($coursGrp, array_keys($resultats.$periode))}
 					<td class="cote mention{$resultats.$periode.$coursGrp.mention|trim:'+'|default:''}" title="{$coursGrp}">
 						{if isset($resultats.$periode.$coursGrp.sitDelibe) && ($resultats.$periode.$coursGrp.sitDelibe != '')}
@@ -41,19 +68,4 @@
 	</table>
 {/foreach}
 
-<table class="micro">
-<tr>
-	<td colspan="6">Code de couleurs</td>
-</tr>
-<tr>
-	<td class="mentionI">< 50</td>
-	<td class="mentionF">50</td>
-	<td class="mentionS">60</td>
-	<td class="mentionAB">65</td>
-	<td class="mentionB">70</td>
-	<td class="mentionBplus">75</td>
-	<td class="mentionTB">80</td>
-	<td class="mentionTBplus">85</td>
-	<td class="mentionE">>90</td>
-</tr>
-</table>
+{include file="tableauMentions.tpl"}

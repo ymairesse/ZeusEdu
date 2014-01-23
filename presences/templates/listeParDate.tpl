@@ -17,7 +17,8 @@
 		<td class="tooltip"><span class="tip"><img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" width="100px"></span>{$unEleve.nom} {$unEleve.prenom}</td>
 		{foreach from=$listePeriodes key=laPeriode item=wtf}
 			{if isset($unEleve.periodes) && in_array($laPeriode, array_keys($unEleve.periodes))}
-				<td class="absent" style="border:1px solid red" title="{$unEleve.periodes.$laPeriode.heure} par {$unEleve.periodes.$laPeriode.educ}">{$laPeriode}</td>
+				<td class="absent" title="{$unEleve.periodes.$laPeriode.heure} par {$unEleve.periodes.$laPeriode.educ}">
+					{$unEleve.periodes.$laPeriode.educ} <span  style="border:1px solid red">{$laPeriode}</span></td>
 				{else}
 				<td class="present">{$laPeriode}</td>
 			{/if}

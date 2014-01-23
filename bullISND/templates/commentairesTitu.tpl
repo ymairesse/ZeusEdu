@@ -1,3 +1,4 @@
+{debug}
 <div id="resultat">
 <h3 style="clear:both" title="{$infoPerso.matricule}">
 	{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}</h3>
