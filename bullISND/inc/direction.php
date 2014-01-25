@@ -4,6 +4,9 @@ $classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
 $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
+$onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
+$smarty->assign('onglet',$onglet);
+
 $smarty->assign('classe',$classe);
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);

@@ -1,12 +1,11 @@
-{debug}
 <!-- année scolaire en cours -->
 {assign var=annee value=$classe|substr:0:1}
-<h3>Résultat de {$annee}e année</h3>
+<h3>Résultats de {$annee}e année</h3>
 <table style="font-size:0.8em" class="tableauTitu">
 	<tr>
 		<th>&nbsp;</th>
 	{foreach from=$listeCoursGrp key=coursGrp item=dataCours}
-		<th>{$dataCours.cours} {$dataCours.statut} {$dataCours.nbheures}h</th>
+		<th>{$dataCours.cours} {$dataCours.nbheures}h<br>{$dataCours.statut} </th>
 	{/foreach}
 	<th>Mentions</th>
 	</tr>
@@ -20,7 +19,7 @@
 				<span class="micro">Délibé</span>
 				<strong>{$anneeEnCours.$periode.$coursGrp.sitDelibe|default:''}</strong><br>
 			{/if}
-			{if isset($anneeEnCours.$periode.$coursGrp.situation)}
+			{if ($anneeEnCours.$periode.$coursGrp.situation|trim:' ' != '')}
 				{$anneeEnCours.$periode.$coursGrp.situation|default:''}/{$anneeEnCours.$periode.$coursGrp.maxSituation|default:''}<br>
 				<span class="micro">={$anneeEnCours.$periode.$coursGrp.pourcent|default:''}</span>
 			{else}

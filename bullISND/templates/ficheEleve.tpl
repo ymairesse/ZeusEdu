@@ -95,6 +95,9 @@
 </div> <!-- tabs -->
 
 <script type="text/javascript">
+	<!-- quel est l'onglet actif? -->
+	var onglet = "{$onglet|default:''}";
+
 {literal}
 
 $(document).ready(function(){
@@ -106,6 +109,15 @@ $(document).ready(function(){
 	$("#mod").hide();
 	
 	$("#tabs").tabs();
+	
+	<!-- activer l'onglet dont le numéro a été passé -->
+	$('#tabs').tabs("option", "active", onglet);
+		
+	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont l'id est 'onglet' -->
+	$("#tabs ul li a").click(function(){
+		var no = $(this).attr("href").substr(6,1);
+		$(".onglet").val(no-1);
+		});	
 
 	function modification () {
 		if (!(modifie)) {

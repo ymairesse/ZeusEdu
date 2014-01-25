@@ -26,14 +26,13 @@
 
 <script type="text/javascript">
 	<!-- quel est l'onglet actif? -->
-	var onglet = "{$onglet|default:''}"
+	var onglet = "{$onglet|default:''}";
 
 {literal}
 	$(document).ready(function(){
 		
 		$("#tabs").tabs();
 
-		
 		$(".delete").click(function(){
 			if (!(confirm("Veuillez confirmer l'effacement définitif de cet item")))
 				return false;
