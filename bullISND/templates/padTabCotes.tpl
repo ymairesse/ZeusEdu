@@ -1,3 +1,7 @@
+{debug}
+<!-- année scolaire en cours -->
+{assign var=annee value=$classe|substr:0:1}
+<h3>Résultat de {$annee}e année</h3>
 <table style="font-size:0.8em" class="tableauTitu">
 	<tr>
 		<th>&nbsp;</th>
@@ -16,20 +20,26 @@
 				<span class="micro">Délibé</span>
 				<strong>{$anneeEnCours.$periode.$coursGrp.sitDelibe|default:''}</strong><br>
 			{/if}
-			{$anneeEnCours.$periode.$coursGrp.situation|default:''}/{$anneeEnCours.$periode.$coursGrp.maxSituation|default:''}<br>
-			<span class="micro">={$anneeEnCours.$periode.$coursGrp.pourcent|default:''}</span>
+			{if isset($anneeEnCours.$periode.$coursGrp.situation)}
+				{$anneeEnCours.$periode.$coursGrp.situation|default:''}/{$anneeEnCours.$periode.$coursGrp.maxSituation|default:''}<br>
+				<span class="micro">={$anneeEnCours.$periode.$coursGrp.pourcent|default:''}</span>
+			{else}
+				&nbsp;
+			{/if}
 			</td>
 		{/foreach}
-		<td>&nbsp;</td>
+		<td class="cote"><strong>{$mentions.$matricule.$annee.$periode|default:'&nbsp;'}</strong></td>
 	</tr>
 	{/foreach}
 </table>
+
+<!-- Années scolaires précédentes -->
 
 {foreach from=$syntheseToutesAnnees key=annee item=dataSynthese}
 
 {assign var=listeCoursGrp value=$dataSynthese.listeCours}
 {assign var=resultats value=$dataSynthese.resultats}
-<h3>Résultats de {$annee}e</h3>
+<h3>Résultats de {$annee}e année</h3>
 
 	<table style="font-size:0.8em" class="tableauTitu">
 		<tr>

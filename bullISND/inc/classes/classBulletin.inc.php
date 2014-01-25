@@ -1983,7 +1983,6 @@ class Bulletin {
 		$sql = "SELECT matricule, mention, periode, annee ";
 		$sql .= "FROM " . PFX . "bullMentions ";
 		$sql .= "WHERE matricule IN ($listeElevesString) ";
-
 		if ($periode != Null)
 			$sql .= "AND periode = '$periode'";
 		if ($annee != Null)

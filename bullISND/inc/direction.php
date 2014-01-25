@@ -36,7 +36,7 @@ switch ($mode) {
 		$smarty->assign('listeClasses',$listeClasses);
 		if (isset($classe)) {
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
-			$smarty->assign('listeElevesClasse', $listeEleves);
+			$smarty->assign('listeEleves', $listeEleves);
 			}
 
 		if (isset($matricule) && ($matricule != '')) {
@@ -52,7 +52,8 @@ switch ($mode) {
 						'texte'=>"Note enregistrée"));
 				}
 			$smarty->assign("padEleve", $padEleve);
-			$smarty->assign('listeEleves',$listeEleves);
+			// déjà fait plus haut; s'il y a un matricule, il y a forcément une classe
+			// $smarty->assign('listeEleves',$listeEleves);
 			// recherche des infos personnelles de l'élève
 			$smarty->assign("eleve", $eleve->getDetailsEleve());
 			// recherche des infos concernant le passé scolaire
@@ -73,7 +74,6 @@ switch ($mode) {
 			$smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
 			$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
 			$smarty->assign('mentions', $Bulletin->listeMentions($matricule, Null, Null));
-	
 			$prevNext = $Bulletin->prevNext($matricule,$listeEleves);
 			$titulaires = $eleve->titulaires($matricule);
 			$smarty->assign('matricule',$matricule);
