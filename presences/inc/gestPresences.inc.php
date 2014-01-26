@@ -3,21 +3,6 @@ $selectProf = isset($_POST['selectProf'])?$_POST['selectProf']:Null;
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 
 switch ($mode) {
-	case 'parDate':
-		$smarty->assign('action',$action);
-		$smarty->assign('mode',$mode);
-		$smarty->assign('etape','dateChoisie');
-		$smarty->assign('selecteur', 'selectDate');
-		$date = isset($_POST['date'])?$_POST['date']:strftime("%d/%m/%Y");
-		$smarty->assign('date',$date);
-		if ($etape == 'dateChoisie') {
-			$listeParDate = $Presences->listeParDate($date);
-			$listePeriodes = $Presences->lirePeriodesCours();
-			$smarty->assign("listePeriodes",$listePeriodes);
-			$smarty->assign("listeAbsences", $listeParDate);
-			$smarty->assign("corpsPage", "listeParDate");
-		}
-		break;
 	case 'parEleve':
 		$classe = isset($_POST['classe'])?$_POST['classe']:Null;
 		$smarty->assign('classe',$classe);
@@ -86,13 +71,7 @@ switch ($mode) {
 						// si on a enregistré, $listeEleves est déjà connu
 						$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
 						}
-					// diviser la liste en deux sous-listes dont la première est éventuellement plus longue d'une unité
-					//$listeDouble = array_chunk($listeEleves, 2, true);
-					// $nbLignes = range(0,count($listeDouble)-1);
 					$smarty->assign('listeEleves',$listeEleves);
-					
-					// $smarty->assign('listeDouble', $listeDouble);
-					// $smarty->assign('nbLignes',range(0,count($listeDouble)-1));
 					$smarty->assign('nbEleves',count($listeEleves));
 					$smarty->assign('corpsPage', 'feuilleAbsences');
 				}

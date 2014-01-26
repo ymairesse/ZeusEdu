@@ -20,11 +20,11 @@
 <input type="submit" name="submit" value="Enregistrer" id="submit"></strong>
 
 	<table class="tableauAdmin tableauPresences">
-		<tr colspan="6">
+		<tr>
 			{foreach from=range(0,1) item=col}
-			<th width="70">Classe</th>
-			<th width="260">Nom Prénom</th>
-			<th width="170">Absent</th>
+				<th style="width:70px">Classe</th>
+				<th style="width:260px">Nom Prénom</th>
+				<th style="width:170px">Absent</th>
 			{/foreach}
 		</tr>
 		{assign var=noCol value=0}
@@ -33,7 +33,7 @@
 			<th>{$unEleve.classe|default:'&nbsp;'}</th>
 			
 			<td class="tooltip{if isset($listeAbsences.$matricule) && in_array($periode, $listeAbsences.$matricule)} abs{else}{if isset($listeAbsences.$matricule)} abs0{/if}{/if}">
-				<span class="tip"><img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" width="100px" style="display:none"></span>
+				<span class="tip"><img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" style="display:none; width: 100px"></span>
 				{$unEleve.nom|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'} <input type="text" value="rem_{$matricule}" style="display:none">
 			</td>
 			

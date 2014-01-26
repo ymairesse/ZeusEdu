@@ -1,3 +1,4 @@
+{debug}
 <h3>Absences de {$nomEleve} {$classe}</h3>
 <table class="tableauAdmin">
 	<tr>
@@ -13,7 +14,7 @@
 				{if isset($absence.$periode)}
 					<li class="tooltip absent">
 						<span class="tip"><h3>{$absence.$periode.prof}</h3>{$absence.$periode.libelle}</span>
-						<span class="micro">{$periode}</span> | {$listePeriodes.$periode.debut}</li>
+						<span class="micro">{$periode} | {$listePeriodes.$periode.debut} {$absence.$periode.educ}</span></li>
 					{else}
 					<li>{$periode}</li>
 				{/if}

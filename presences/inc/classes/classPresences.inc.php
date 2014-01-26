@@ -233,7 +233,7 @@ class presences {
 	 */
 	function absencesEleve ($matricule) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT matricule, periode,date,coursGrp,periode, prof, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) AS cours, ";
+		$sql = "SELECT matricule, periode,date,coursGrp,periode, prof, educ, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) AS cours, ";
 		$sql .= "libelle, nom, prenom  ";
 		$sql .= "FROM ".PFX."presencesAbsences ";
 		$sql .= "JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1)) ";

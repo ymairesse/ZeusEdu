@@ -13,8 +13,11 @@ switch ($action) {
 	case 'admin':
 		include('inc/gestAdmin.inc.php');
 		break;
+	case 'presences':
+		include('inc/gestPresences.inc.php');
+		break;
 	case 'listeAbsences':
-		include ('inc/gestPresences.inc.php');
+		include ('inc/gestAbsences.inc.php');
 		break;
 	default:
 		include('inc/gestPresences.inc.php');
