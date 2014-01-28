@@ -19,11 +19,11 @@ class Retenue {
 		else {
 			$this->set('idretenue',Null);
 			$this->set('type',0);
-			$this->set('occupation',0);
 			$this->set('date','');
-			$this->set('heure','13h00');
+			$this->set('heure','13:00');
 			$this->set('local','');
 			$this->set('places','');
+			$this->set('occupation',0);
 			$this->set('duree','1h');
 			$this->set('affiche','O');
 			}
@@ -35,8 +35,7 @@ class Retenue {
 
 	function get($key){
 		return $this->caracteristiques[$key];
-		}		
-		
+		}
 	
 	/**
 	 * relecture des caractéristiques d'une retenue dans la BD
@@ -45,7 +44,9 @@ class Retenue {
 	 */
 	public function lireRetenue($idretenue) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT * FROM ".PFX."adesRetenues WHERE idretenue='$idretenue'";
+		$sql = "SELECT idretenue, type, dateRetenue, heure, local, places, duree, affiche, ";
+		$sql .= "(SELECT COUNT(*) FROM ".PFX."adesFaits WHERE ".PFX."adesFaits.idretenue = ".PFX."adesRetenues.idretenue) as occupation ";
+		$sql .= "FROM ".PFX."adesRetenues WHERE idretenue='$idretenue'";
 		$resultat = $connexion->query($sql);
 		if ($resultat) {
 			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
@@ -74,12 +75,12 @@ class Retenue {
 		$affiche = isset($post['affiche'])?'O':'N';
 		if (isset($idretenue)) {
 			$sql = "UPDATE ".PFX."adesRetenues ";
-			$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', occupation='$occupation', affiche='$affiche' ";
+			$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
 			$sql .= "WHERE idretenue = '$idretenue' ";
 			}
 			else {
 				$sql = "INSERT INTO ".PFX."adesRetenues ";
-				$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', occupation='$occupation', affiche='$affiche' ";
+				$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
 			}
 
 		$resultat = $connexion->exec($sql);
@@ -97,8 +98,9 @@ class Retenue {
 	public function delRetenue() {
 		$idretenue = $this->get('idretenue');
 		$type = $this->get('type');
-		$occupation = $this->get('occupation');
-		if ($occupation == 0) {
+		$occupations = $this->occupation($idretenue);
+
+		if (!isset($occupations[$idretenue]) || $occupations[$idretenue] == 0) {
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 			$sql = "DELETE FROM ".PFX."adesRetenues ";
 			$sql .= "WHERE idretenue = '$idretenue' ";
@@ -108,6 +110,33 @@ class Retenue {
 			}
 		else return 0;
 		}
+		
+	/**
+	 * Détermination de l'occupation des retenues dont on fournit les idretenue
+	 * @param array | integer:  $listeIdretenues
+	 * @return array : occupation par retenue
+	 */
+	public function occupation($listeIdRetenues) {
+		if (is_array($listeIdRetenues))
+			$listeIdString = implode(",", array_keys($listeIdRetenues));
+		else
+			$listeIdString = $listeIdRetenues;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT idretenue, count(*) AS occupation ";
+		$sql .= "FROM ".PFX."adesFaits ";
+		$sql .= "WHERE idretenue IN ($listeIdString) ";
+		$sql .= "GROUP BY idretenue ";
+		$resultat = $connexion->query($sql);
+		$occupations = array();
+		if ($resultat) {
+			while ($ligne = $resultat->fetch()){
+				$idretenue = $ligne['idretenue'];
+				$occupations[$idretenue] = $ligne['occupation'];
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $occupations;
+	}
 
 	
 }

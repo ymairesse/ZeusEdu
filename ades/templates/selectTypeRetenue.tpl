@@ -1,9 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		<select name="type" id="selectType">
+		<select name="typeRetenue" id="selectType">
 		<option value="">Type de retenue</option>
 		{foreach from=$listeTypes key=ceType item=unType}
-			<option value="{$ceType}"{if isset($type) && ($type == $ceType)} selected="selected"{/if}>{$unType.titreFait}</option>
+			<option value="{$ceType}"{if isset($typeRetenue) && ($typeRetenue == $ceType)} selected="selected"{/if}>{$unType.titreFait}</option>
 		{/foreach}
 		</select>
 		

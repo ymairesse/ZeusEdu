@@ -211,6 +211,7 @@ class Ades {
 			$sql .= "AND affiche = true ";
 		$sql .= "AND dateRetenue > '".BEGINDATE."' ";
 		$sql .= "ORDER BY dateRetenue, heure ";
+
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
