@@ -159,9 +159,10 @@ $(document).ready(function(){
 	
 	$("#ladate").datepicker({ 
 		dateFormat: "dd/mm/yy",
-		prevText: "Avant",
-		nextText: "Après",
+		prevText: "",
+		nextText: "",
 		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+		dayNames: [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ],
 		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
 		firstDay: 1	
 		});
