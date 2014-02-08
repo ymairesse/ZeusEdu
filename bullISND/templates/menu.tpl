@@ -80,7 +80,6 @@
 		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Verrous classe/cours/élève</a></li>
 		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>
 		<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
-		<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
 		</ul>
 	</li>
 	{/if}
