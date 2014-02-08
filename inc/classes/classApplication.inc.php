@@ -119,8 +119,9 @@ class Application {
 								array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
 			}
 		catch(Exception $e)	{
-			echo ("Une erreur est survenue lors de l'ouverture de la base de données");
-			print_r(array($host,$bd,$user,$mdp));
+			echo ("Une erreur est survenue lors de l'ouverture de la base de donn&eacute;es <br>");
+			echo ("Veuillez v&eacute;rifier le fichier config.inc.php");
+			// print_r(array($host,$bd,$user,$mdp));
 			die();
 		}
 		return $connexion;
@@ -138,6 +139,7 @@ class Application {
 	/**
 	 * retourne un array contenant une liste des périodes de l'année scolaire
 	 * @param $nbBulletins
+	 * @param $debut : premier bulletin à prendre en compte (implicite sauf si bulletin = 0 existe)
 	 * @return array
 	 */
 	public function listePeriodes ($nbBulletins, $debut=1) {
