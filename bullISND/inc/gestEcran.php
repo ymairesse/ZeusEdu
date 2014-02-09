@@ -14,7 +14,7 @@ switch ($mode) {
 		$smarty->assign("selecteur", "selectBulletinClasseEleve");
 		$smarty->assign("listeClasses", $listeClasses);
 		$smarty->assign("classe", $classe);
-		$smarty->assign("listeElevesClasse", $listeEleves);
+		$smarty->assign("listeEleves", $listeEleves);
 		$smarty->assign("nbBulletins", NBPERIODES);
 		$smarty->assign("bulletin", $bulletin);
 		$smarty->assign("action", "ecran");

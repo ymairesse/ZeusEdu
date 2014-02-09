@@ -3260,14 +3260,12 @@ class Bulletin {
 		return $listeEvaluations;
 		}
 
-	/*
-	 * function listeCotesCompFormCert
-	 *
-	 * @param $listeColonnes
-	 *
+	/**
 	 * renvoie un tableau de toutes les cotes dont les entêtes sonf passées
 	 * dans $listeColonnes
-	 * */
+	 * @param $listeColonnes
+	 * @return array
+	 */
 	public function listeCotesCompFormCert ($listeColonnes) {
 		$listeIdCarnetString = implode(',', array_keys($listeColonnes));
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -3289,14 +3287,13 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeCotes;
 		}
-	/*
-	 * function estCoteNulle
-	 * @param $cote
-	 *
+		
+	/**
 	 * vérifie qu'une cote passée en argument vaut pour "0"
 	 * la liste des cotes valant pour "0" se trouve dans la constante COTENULLE
-	 * */
-
+	 * @param $cote
+	 *
+	 */
 	private function estCoteNulle ($cote) {
 		return in_array(strtolower($cote), explode(',',COTENULLE));
 		}
@@ -3315,15 +3312,14 @@ class Bulletin {
 		}
 
 	/*
-	 * function sommeBruteCotes
-	 * @param $listeColonnes
-	 * @param $listeCompetences
-	 * @param $listeCotesEleves
-	 *
 	 * retourne la somme des cotes figurant dans le carnet de cotes pour les colonnes
 	 * figurant dans $listeColonnes
 	 * pour les cotes figurant dans $listeCotesEleves
-	 * */
+	 * @param $listeColonnes
+	 * @param $listeCompetences
+	 * @param $listeCotesEleves
+	 * @return array
+	 */
 	public function sommesBruteCotes ($listeColonnes, $listeCotesEleves) {
 		$listeSommes = array();
 		foreach ($listeCotesEleves as $matricule=>$listeCompetences) {
@@ -3348,14 +3344,12 @@ class Bulletin {
 		return $listeSommes;
 		}
 
-	/*
-	 * function poidsCompetencesBulletin
-	 *
+	/**
+	 * retourne la liste des poids attribués à chaque compétence, dans le bulletin
 	 * @param coursGrp
 	 * @param bulletin
-	 *
-	 * retourne la liste des poids attribués à chaque compétence, dans le bulletin
-	 * */
+	 * @return array
+	*/
 	public function poidsCompetencesBulletin ($coursGrp, $bulletin) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT idComp, poids, certForm ";
@@ -3375,13 +3369,12 @@ class Bulletin {
 		}
 
 	/*
-	 * function cotesBulletinCalculees
+	 * retourne les cotes calculées prêtes pour le bulletin
 	 *
 	 * @param $listeCotes
 	 * @param $listePoids
-	 *
-	 * retourne les cotes calculées prêtes pour le bulletin
-	 * */
+	 * @return array
+	 */
 	public function cotesBulletinCalculees ($sommesBrutesCotes, $listePoids) {
 		$listeCotesBulletin = array();
 		foreach ($sommesBrutesCotes as $matricule => $listeTypes) {
@@ -3399,20 +3392,16 @@ class Bulletin {
 		return $listeCotesBulletin;
 		}
 
-	/* 
-	 * function poidsOK
-	 * @param $coursGrp
-	 * @param $bulletin
-	 * @param $listeCompetences
-	 * 
-	 * return boolean
-	 * 
+	/**
 	 * renvoie la valeur false ou true selon que des poids ont été
 	 * attribués à des compétences pour le cours $coursGrp
 	 * dans le bulletin $bulletin
 	 * pour chaque compétence, indique son libellé et son statut (OK ou pas OK)
-	 * 
-	 * */
+	 * @param $coursGrp
+	 * @param $bulletin
+	 * @param $listeCompetences
+	 * return boolean
+	*/
 	public function poidsCompetencesOK($coursGrp,$bulletin, $listeCompetences) {
 		// chercher la liste des compétences et des types (form/cert) pour lesquels il y a des points
 		// pour cette période, dans le carnet de cotes
@@ -3456,14 +3445,12 @@ class Bulletin {
 		return array('tutti'=>$poidsOKEnsemble, 'details'=>$listePoidsOK);
 		}
 
-	/*
-	 * function transfertCarnetCotes
-	 *
-	 * @param $post
-	 *
+	/**
 	 * Transfère vers le bulletin tous les points venant du formulaire
 	 * ad-hoc dans le carnet de cotes
-	 * */
+	 *
+	 * @param $post
+	 */
 	public function transfertCarnetCotes ($post, $listeLocks) {
 		$sqlForm = "INSERT INTO ".PFX."bullDetailsCotes ";
 		$sqlForm .= "SET matricule=:matricule, coursGrp=:coursGrp, bulletin=:bulletin, ";
@@ -4173,7 +4160,7 @@ class Bulletin {
 		// encadrement pour situation précédente
 		$pdf->SetLineWidth(0.2);
 		// s'il y a une situation précédente
-		if ($degre == 1)
+		if (in_array($degre, array(1,2,3)))  // possibilité de choisir le degré; actuellement, pour tous les degrés
 			if ($sitPrec['maxSit'] != 0) {
 				$pdf->Cell(40,5,$this->utf8('Situation Précédente'),0,0,'R');
 				$sitPrec = $sitPrec['sit']."/".$sitPrec['maxSit'];
