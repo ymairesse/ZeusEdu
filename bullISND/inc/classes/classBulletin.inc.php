@@ -2002,13 +2002,10 @@ class Bulletin {
 	}
 
 
-	/*
-	 * function listeFichesEducs
+	/**
+	* retourne une liste des fichers éducs pour une liste d'élèves donnés et pour un bulletin donné
 	 * @param $listeEleves, $bulletin
-	 *
-	 * retourne une liste des fichers éducs pour
-	 * une liste d'élèves donnés et pour
-	 * un bulletin donné
+	 * @return array
 	 */
 	public function listeFichesEduc($listeEleves, $bulletin) {
 		if (is_array($listeEleves))
@@ -4287,7 +4284,7 @@ class Bulletin {
 				else $pdf->Cell(12+14,5,'',1,1,'C',true);	// déplacer le pointeur
 			}	// on n'est pas en période de délibés
 			else {
-				if ($degre == 1) {	// sommes-nous au premier degré
+				if (in_array($degre, array(1,2,3))) {  // possibilité de choisir le degré; ici, on les prend tous
 					// la situation est-elle connue?
 					$sit = trim($sitActuelle['sit']);
 					$max = $sitActuelle['maxSit'];
@@ -4304,8 +4301,14 @@ class Bulletin {
 					}
 					else $pdf->Cell(12+14,5,'',1,1,'C',true);	// déplacer le pointeur
 				}
-		}
+			}
 
+	/**
+	 * écriture des "attitudes" dans le bulletin PDF
+	 * @param $pdf
+	 * @param $attitudes
+	 * @return void(0)
+	 */
 	function attitudesPDF ($pdf, $attitudes) {
 		if ($attitudes != Null) {
 			$pdf->SetLineWidth(0.2);
