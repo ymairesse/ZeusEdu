@@ -16,12 +16,6 @@ switch ($mode) {
 		$smarty->assign("mode","saveUser");
 		$smarty->assign("corpsPage","formPerso");
 		break;
-	/* case 'selectUser':
-		$smarty->assign("mode", "modifUser");
-		$smarty->assign("selecteur","selectNomProf");
-		if (!$acronyme) break;
-		// sinon, on continue
-		*/
 
 	case 'saveUser':
 		$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;

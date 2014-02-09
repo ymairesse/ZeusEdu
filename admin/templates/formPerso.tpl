@@ -103,11 +103,6 @@ $(document).ready(function(){
         errorElement: "span"
     })
 	
-	$("#formPerso").submit(function(){
-		$.blockUI();
-		$("#wait").show();
-		
-		})
     
 	// formulaire d'inscription d'un nouvel utilisateur
     $("#acronyme").keyup(function(){
