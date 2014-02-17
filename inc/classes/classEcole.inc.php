@@ -258,6 +258,7 @@ class ecole {
      */
     public static function listeNiveaux () {
 		// si la liste des niveaux est définies dans les constantes
+		// if (LISTENIVEAUX) return explode(',',str_replace(' ','',LISTENIVEAUX));
 		if (LISTENIVEAUX) return explode(',',LISTENIVEAUX);
 		}
 
