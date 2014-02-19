@@ -4104,15 +4104,13 @@ class Bulletin {
 				unset($eleve);
 			}
 		}
+		// création éventuelle du répertoire au nom de l'utlilisateur
 		if (!(file_exists("pdf/$acronyme"))) 
 			mkdir ("pdf/$acronyme");
-		if ($parNiveau == false) {
+		// s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau) 
+		if ($parNiveau == false) 
 			$pdf->Output("pdf/$acronyme/$classe.pdf",'D');
-			}
-			else {
-				$pdf->Output("pdf/$acronyme/$classe.pdf");
-				}
-		return "pdf/$acronyme/$classe.pdf";
+			else return "pdf/$acronyme/$classe.pdf";
 		}
 
 	// --------------------------------------------------------------------

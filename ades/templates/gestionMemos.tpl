@@ -1,3 +1,6 @@
+{if $listeMemos == array()}
+<p>Rien à traiter</p>
+{else}
 <table class="tableauAdmin">
 	
 	{foreach from=$listeMemos key=titre item=listeTextes}
@@ -31,7 +34,7 @@
 		{/foreach}
 	{/foreach}
 </table>
-
+{/if}
 <script type="text/javascript">
 	{literal}
 	$(document).ready(function(){
