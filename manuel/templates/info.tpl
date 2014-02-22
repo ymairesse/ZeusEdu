@@ -1,32 +1,6 @@
-<!doctype html>
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>{$titre}</title>
+<h2>Page d'informations</h2>
 
-<link rel="stylesheet" href="menu.css" type="text/css" media="screen">
-<link rel="stylesheet" href="screen.css" type="text/css" media="screen">
-<link rel="stylesheet" href="print.css" type="text/css" media="print">
-<link rel="stylesheet" href="js/jquery-ui-themes-1.10.3/themes/sunny/jquery-ui.css" media="screen, print">
-<link rel="stylesheet" href="js/ymtooltip.css" type="text/css" media="screen,print">
-
-<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.form.js"></script>
-<script type="text/javascript" src="js/jquery.validate.js"></script>
-<script type="text/javascript" src="js/jquery.blockUI.js"></script>
-<script type="text/javascript" src="js/jquery.enter2tab.js"></script>
-<script type="text/javascript" src="js/toTop/jquery.ui.totop.js"></script>
-<script type="text/javascript" src="js/menuBas.js"></script>
-<script type="text/javascript" src="js/toTop/jquery.easing.1.3.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/jquery.align.js"></script>
-<script type="text/javascript" src="js/jquery.ymtooltip.js"></script>
-</head>
-<body>
-<div id="texte">
-<h1>Page d'informations</h1>
-
-<h3>Licence du logiciel</h3>
+<h3 id="licence">Licence du logiciel</h3>
 <p>Le logiciel ZEUS est un logiciel libre et gratuit distribué selon les termes de la Licence publique générale GNU dont le texte est disponible dans le fichier gpl.txt qui doit figurer dans le fichier d'archive qui a été mis à votre disposition.</p>
 <p>Le texte original de cette licence peut être trouvé à l'adresse http://www.gnu.org/licenses/gpl-3.0.txt (en anglais) et une traduction non officielle se trouve à l'adresse http://www.rodage.org/gpl-3.0.fr.html.</p>
 <p>Le logiciel ZEUS est fourni dans l'état et sans aucune garantie d'aucune sorte. Chacun est libre de consulter le code source et de vérifier qu'il correspond à ses besoins, voire de le modifier pour l'adapter à ses besoins.</p>
@@ -47,7 +21,7 @@
 
 <h3 id="ip">L'dresse IP</h3>	
 <p>L'adresse IP d'un ordinateur, dans un réseau, peut être comparée à un numéro de téléphone qui permet d'atteindre un poste unique.</p>
-<p>Une adresse IP est formée d'un ensemble de quatre nombres compris entre 0 et 255 séparés par des ".". Votre adresse IP actuelle est <strong>{$ip}</strong>. Elle correspond très probablement à l'adrese du modem ou du routeur qui vous relie à l'Internet.</p>
+<p>Une adresse IP est formée d'un ensemble de quatre nombres compris entre 0 et 255 séparés par des ".". Votre adresse IP actuelle est <strong>{$smarty.server.REMOTE_ADDR}</strong>. Elle correspond très probablement à l'adrese du modem ou du routeur qui vous relie à l'Internet.</p>
 <p>Les mathématiciens calculeront aisément qu'il y a, théoriquement, plus de 4 milliards d'adresses IP différentes possibles.</p>
 <p>Sur l'Internet, l'adresse IP est attribuée par votre fournisseur de services (Belgacom, Numéricable, Scarlet,...). Avec l'avènement des connexions permanentes par le câble, les adresses IP ont tendance à être fixes.</p>
 <p>Dans certains cas, le fournisseur d'accès vous attribue une adresse IP pour une période limitée; et vous la perdez lors de votre déconnexion du réseau. Ce n'est pas gênant pour l'utilisateur moyen de l'Internet.</p>
@@ -56,13 +30,3 @@
 <p>Si vous constatez une tentative d'accès frauduleux avec votre nom d'utilisateur (vous serez prévenu par mail), n'hésitez pas à contacter les administrateurs pour savoir les suites qui sont données.</p>
 <p>Pour plus d'informations sur la notion d'adresse IP, voyez <a href="http://fr.wikipedia.org/wiki/Adresse_IP" target="_blank">http://fr.wikipedia.org/wiki/Adresse_IP</a></p>
 
-</div>
-{include file="footer.tpl"}
-
-<script type="text/javascript">
-{literal}
-	$("*[title], .tooltip").tooltip();
-{/literal}
-</script>
-</body>
-</html>

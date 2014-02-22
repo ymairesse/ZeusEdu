@@ -5,5 +5,5 @@
 <p>Un mail d'information vient d'être envoyé à votre adresse professionnelle et aux administrateurs; la date et l'heure de connexion y sont indiquées.</p>
 <p>Si nécessaire, suivez les instructions qui vous sont données dans ce mail.</p>
 <p>Sinon, vous pouvez négliger ce message.</p>
-<p>Pour plus d'explications, voyez <a href="info.php#ip" target="_blank">la page d'informations</a>.</p>
+<p>Pour plus d'explications, voyez <a href="manuel/index.php?page=info&amp;cible=ip" target="_blank">la page d'informations</a>.</p>
 </div>

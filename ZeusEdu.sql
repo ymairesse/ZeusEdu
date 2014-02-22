@@ -173,7 +173,8 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 12),
 ('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
 ('infirmerie', 'Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
-('bullISND', 'Bulletin', 'bullISND', 'bullISND.png', 1, 14);
+('bullISND', 'Bulletin', 'bullISND', 'bullISND.png', 1, 14),
+('manuel', 'Manuel d''utilisation', 'manuel', 'manuel.png', 1, 98);
 
 -- --------------------------------------------------------
 
@@ -906,7 +907,8 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 ('bullTQ', 'ADM', 'admin'),
 ('infirmerie', 'ADM', 'admin'),
 ('bullISND', 'ADM', 'admin'),
-('pad', 'ADM', 'admin');
+('pad', 'ADM', 'admin'),
+('manuel', 'ADM', 'admin');
 
 -- --------------------------------------------------------
 
