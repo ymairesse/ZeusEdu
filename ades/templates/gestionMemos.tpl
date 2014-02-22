@@ -1,5 +1,6 @@
+<h2>Gestion des textes enregistrés</h2>
 {if $listeMemos == array()}
-<p>Rien à traiter</p>
+<p>Rien à traiter...</p>
 {else}
 <table class="tableauAdmin">
 	
