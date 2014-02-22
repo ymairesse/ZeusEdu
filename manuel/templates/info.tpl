@@ -15,9 +15,9 @@
 </ul>
 <p>Il a été développé sur une plate-forme entièrement libre Linux avec les outils libres tels que Geany, Komodo Edit, Gimp, Firefox, Apache2, PHP, MySQL,...</p>
 
-<h3>Mais pourquoi ZEUS?</h3>
+<h3 id="zeus">Mais pourquoi ZEUS?</h3>
 <p>La mythologie grecque avait déjà inspiré un nom pour une application dédiée à l'Administration de la Discipline dans les Établissements Scolaires (ADES) qui pourrait renaître dans une nouvelle mouture.</p>
-<p>Quel nom donner à cette nouvelle application, plus multifonctionnelle et toujours dédiée à bien plus de questions liées à la gestion de questions scolaires? Cette fois, nous ne pouvions convoquer que ZEUS lui-même. Vive ZEUS et la mégalomanie.</p>
+<p>Quel nom donner à cette nouvelle application, plus multifonctionnelle et toujours dédiée à bien plus de fonctions liées à la gestion de questions scolaires? Cette fois, nous ne pouvions convoquer que ZEUS lui-même. Vive ZEUS et la mégalomanie.</p>
 
 <h3 id="ip">L'dresse IP</h3>	
 <p>L'adresse IP d'un ordinateur, dans un réseau, peut être comparée à un numéro de téléphone qui permet d'atteindre un poste unique.</p>
