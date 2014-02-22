@@ -48,13 +48,10 @@ if ($_SESSION[APPLICATION]->userStatus($module) == 'admin') {
 		$smarty->assign("derniersConnectes", $Application->derniersConnectes(60));
 		$smarty->assign('corpsPage', 'bilan');
 		}
-	
 	//
 	// ----------------------------------------------------------------------------
 	$smarty->assign("executionTime",round($Application->chrono()-$debut,6));
 	$smarty->display("index.tpl");
 	}
-	else {
-		$smarty->display('info.tpl');
-	}
+	else die ('get out of here')
 ?>
