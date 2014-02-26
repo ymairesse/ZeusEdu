@@ -23,10 +23,7 @@
 <script type="text/javascript">
 {literal}
 $(document).ready (function() {
-	
-	$("#bulletin, #niveau").change(function(){
-		$("#formSelecteur").submit();
-		})
+
 	})
 {/literal}
 </script>

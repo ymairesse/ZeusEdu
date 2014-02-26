@@ -113,13 +113,13 @@ switch ($mode) {
 				// accumuler tous les bulletins dans des fichiers par classe
 				foreach ($listeClasses as $classe) {
 					$listeEleves = $Ecole->listeEleves($classe,'groupe');
-					$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme);
+					$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme, true);
 					}
 				// zipper l'ensemble des fichiers
 				$Application->zipFilesNiveau ("pdf/$acronyme", $listeClasses);
 				$smarty->assign('acronyme', $acronyme);
 				$smarty->assign('niveau', $niveau);
-				$smarty->assign('link','pdf/$acronyme/$niveau');
+				$smarty->assign('link',$niveau);
 				$smarty->assign('corpsPage','corpsPage');
 				}
 			}

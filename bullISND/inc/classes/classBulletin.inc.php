@@ -25,7 +25,7 @@ class Bulletin {
 		return (($data != Null) && (is_numeric($data)) && ($data != ''));
 		}
 
-	/***
+	/**
 	 * retourne les pondérations pour le cours (groupe) donné et le bulletin donné
 	 * si le numéro du bulletin n'est pas précisé, retourne toutes les pondérations pour le cours (groupe)
 	 * si la pondération contient un matricule, c'est qu'il y a un cas particulier
@@ -56,13 +56,12 @@ class Bulletin {
 		return $listePonderations;
 	}
 
-	/*
-	 * function ponderationsVides
-	 * @param $nbPeriodes
-	 * @param $coursGrp
-	 *
+	/**
 	 * introduction d'une pondération vide lors du premier accès
 	 * la procédure retourne un tableau contenant une pondération vide
+	 * @param $nbPeriodes
+	 * @param $coursGrp
+	 * @return array
 	 */
 	public function ponderationsVides($nbPeriodes, $coursGrp) {
 		$periodes = array();
@@ -81,6 +80,13 @@ class Bulletin {
 		return $listePonderations;
 	}
 
+	/**
+	 * recherche les pondérations applicable aux cours de la liste fournie
+	 * pour le bulletin numéro $bulletin
+	 * @param $listeCours
+	 * @param $bulletin
+	 * @return array
+	 */
 	public function getPonderationsBulletin($listeCours, $bulletin) {
 		if (is_array($listeCours))
 			$listeCoursString = "'" . implode('\',\'', array_keys($listeCours)) ."'";
@@ -103,13 +109,12 @@ class Bulletin {
 	}
 
 
-	/*
-	 * function listeElevesCoursDeGroupe
-	 * @param $classe
-	 *
+	/**
 	 * retourne une liste des élèves d'un groupe classe, ordonnée sur les matricules ,
 	 * reprenant tous les cours de chacun de ces élèves
-	 * */
+	 * @param $classe
+	 * @return array
+	 */
 	function listeElevesCoursDeGroupe ($classe) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$listeElevesCours = array();
@@ -4029,15 +4034,8 @@ class Bulletin {
 			$pdf->SetFillColor (230);
 			
 			$this->createBulletinEleve ($pdf, $detailsBulletin, $bulletin);
-			// création du répertoire correspondant à l'utilisateur en cours
-			if (!(file_exists("pdf/$acronyme"))) {
-				mkdir ("pdf/$acronyme");
-				}
-			$pdf->Output("$matricule.pdf",'D');
-			chmod 	("pdf/$acronyme/$matricule.pdf", 0644);
-			return "pdf/$acronyme/$matricule.pdf";
+			$pdf->Output("$matricule.pdf", 'D');
 			}
-			else return '';
 		}
 	
 	/**
@@ -4085,6 +4083,7 @@ class Bulletin {
 				$mention = $this->listeMentions($matricule, $bulletin, $annee);
 				$ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
 				$remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
+				// tableau des attitudes seulement au premier degré.
 				$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;
 				$noticeDirection = $this->noteDirection($annee, $bulletin);
 				
@@ -4100,17 +4099,18 @@ class Bulletin {
 					'remTitu' => $remarqueTitulaire,			'mention' => $mention,
 					'noticeDirection' => $noticeDirection
 					);
-				$this->createBulletinEleve ($pdf, $detailsBulletin, $bulletin);
+				$this->createBulletinEleve($pdf, $detailsBulletin, $bulletin);
 				unset($eleve);
 			}
 		}
 		// création éventuelle du répertoire au nom de l'utlilisateur
 		if (!(file_exists("pdf/$acronyme"))) 
 			mkdir ("pdf/$acronyme");
-		// s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau) 
-		if ($parNiveau == false) 
-			$pdf->Output("pdf/$acronyme/$classe.pdf",'D');
-			else return "pdf/$acronyme/$classe.pdf";
+		// s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
+		$pdf->Output("pdf/$acronyme/$classe.pdf");
+		if ($parNiveau == false)
+			return "pdf/$acronyme/$classe.pdf";
+			else return Null;
 		}
 
 	// --------------------------------------------------------------------
@@ -4508,14 +4508,14 @@ class Bulletin {
 		return $page+1;
 		}
 
-	/***
+	/**
 	 * Création effective du bulletin de l'élève
 	 * @param $pdf class fpdf
 	 * @param array $bulletinEleve : ensemble des informations relatives à l'élève et à son bulletin
 	 * @param integer $bulletin : numéro du bulletin à générer
-	 * @return 
+	 * @return void()
 	 */
-	function createBulletinEleve ($pdf, $bulletinEleve, $bulletin) {
+	public function createBulletinEleve ($pdf, $bulletinEleve, $bulletin) {
 		foreach ($bulletinEleve as $key=>$data) 
 			$$key = $data;
 		/* $bulletinEleve
@@ -4643,11 +4643,9 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $nb;
 		}
-
-		
 	}
 
-	/***
+	/**
 	 * Suppression de la virgule et remplacement par un point dans les nombres + suppression des espaces
 	 * @param $nombre string
 	 * @return string
@@ -4658,9 +4656,12 @@ class Bulletin {
 		return $nombre;
 		}
 		
-	
-	
-	
+
+	/**
+	 * Ajout d'une "compétence" pour tous les cours
+	 * @param
+	 * @return void()
+	 */
 	function ajouteTV (){
 		$listeCours = $this->listeCoursNiveaux(ECOLE::listeNiveaux());
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -4670,7 +4671,6 @@ class Bulletin {
 			$resultat = $connexion->exec($sql);
 		}
 		Application::DeconnexionPDO($connexion);
-		
 	}
 }
 ?>

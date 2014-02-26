@@ -3,7 +3,7 @@
 		Bulletin n° <select name="bulletin" id="bulletin">
 		{section name=bidule start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.bidule.index}" 
-			{if $smarty.section.bidule.index == $bulletin}selected{/if}>{$smarty.section.bidule.index}
+			{if $smarty.section.bidule.index == $bulletin} selected="selected"{/if}>{$smarty.section.bidule.index}
 			</option>
 		{/section}
 	</select>
@@ -27,8 +27,8 @@ $(document).ready (function() {
 		if (($("#classe").val() == '') || ($("#bulletin").val() == '')) 
 			return false;
 			else {
-			$("#wait").show();
-			$.blockUI();
+				$("#wait").show();
+				$.blockUI();
 			}
 		})
 	
