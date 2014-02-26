@@ -44,7 +44,6 @@ switch ($mode) {
 		$smarty->assign("bulletin", $bulletin);
 		$smarty->assign("action", "pdf");
 		$smarty->assign("selecteur", "selectBulletinClasseEleve");
-
 		$smarty->assign("mode", "bulletinIndividuel");
 
 		if ($etape == 'showEleve') {
@@ -70,14 +69,14 @@ switch ($mode) {
 	case 'bulletinClasse':
 		// liste complète des noms des classes en rapport avec leur classe
 		$listeClasses = $Ecole->listeGroupes(array('G','TT','S'));
-		$smarty->assign("selecteur", "selectBulletinClasse");
-		$smarty->assign("listeClasses", $listeClasses);
-		$smarty->assign("classe", $classe);
-		$smarty->assign("nbBulletins", NBPERIODES);
-		$smarty->assign("bulletin", $bulletin);
-		$smarty->assign("action", "pdf");
-		$smarty->assign("mode", "bulletinClasse");
-		$smarty->assign("etape", "showClasse");
+		$smarty->assign('selecteur', 'selectBulletinClasse');
+		$smarty->assign('listeClasses', $listeClasses);
+		$smarty->assign('classe', $classe);
+		$smarty->assign('nbBulletins', NBPERIODES);
+		$smarty->assign('bulletin', $bulletin);
+		$smarty->assign('action', 'pdf');
+		$smarty->assign('mode', 'bulletinClasse');
+		$smarty->assign('etape', 'showClasse');
 
 		if ($etape == 'showClasse') {
 			if ($classe) {

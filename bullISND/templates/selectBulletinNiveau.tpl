@@ -23,7 +23,10 @@
 <script type="text/javascript">
 {literal}
 $(document).ready (function() {
-
+	$("#formSelecteur").submit(function(){
+		$("#wait").show();
+		$.blockUI();
+		})
 	})
 {/literal}
 </script>
