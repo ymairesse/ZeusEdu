@@ -49,5 +49,6 @@ $smarty->assign("userStatus", $userStatus);
 // d'autres paramètres peuvent être récupérés plus loin
 $action = isset($_REQUEST['action'])?$_REQUEST['action']:Null;
 $mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
+$modeCorps = isset($_REQUEST['modeCorps'])?$_REQUEST['modeCorps']:Null;
 
 /* pas de balise finale ?> */
