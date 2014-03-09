@@ -18,7 +18,7 @@
 		{foreach from=$listePeriodes key=laPeriode item=wtf}
 			{if isset($unEleve.periodes) && in_array($laPeriode, array_keys($unEleve.periodes))}
 				<td class="absent" title="{$unEleve.periodes.$laPeriode.heure} par {$unEleve.periodes.$laPeriode.educ}">
-					{$unEleve.periodes.$laPeriode.educ} <span  style="border:1px solid red">{$laPeriode}</span></td>
+					<span  style="border:1px solid red">{$laPeriode}</span> {$unEleve.periodes.$laPeriode.educ} </td>
 				{else}
 				<td class="present">{$laPeriode}</td>
 			{/if}

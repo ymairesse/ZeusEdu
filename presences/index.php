@@ -19,6 +19,9 @@ switch ($action) {
 	case 'listeAbsences':
 		include ('inc/gestAbsences.inc.php');
 		break;
+	case 'autorisations':
+		include('inc/autorisations.inc.php');
+		break;
 	default:
 		include('inc/gestPresences.inc.php');
 		break;

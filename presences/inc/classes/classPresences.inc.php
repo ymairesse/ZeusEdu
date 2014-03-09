@@ -256,6 +256,90 @@ class presences {
 		return $listeAbsences;
 	}
 
+	/**
+	 * listes des autorisations de sorties pour un élève dont on fournit le matricule
+	 * @param $matricule
+	 * @return array
+	 */
+	public function listeAutorisations ($matricule) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT id, matricule, educ, parent, media, date, heure ";
+		$sql .= "FROM ".PFX."presencesAutorisations AS aut ";
+		$sql .= "WHERE matricule = '$matricule' ";
+		$sql .= "ORDER BY date, heure ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$id = $ligne['id'];
+				$date = $ligne['date'];
+				$ligne['date'] = Application::datePHP($date);
+				$liste[$id] = $ligne;
+				}
+			}
+		Application::deconnexionPDO($connexion);
+		return $liste;
+	}
+
+	/**
+	 * enregistrement des données d'autorisation de sortie
+	 * @param $post : données sortant d'un formulaire écran
+	 * @return $nb : nombre de modifications dans la BD (normalement 1)
+	 */
+	public function saveAutorisation($post) {
+		$id = isset($post['id'])?$post['id']:Null;
+		$educ = isset($post['user'])?$post['user']:Null;
+		$matricule = isset($post['matricule'])?$post['matricule']:Null;
+		$parent = isset($post['parent'])?$post['parent']:Null;
+		$media = isset($post['media'])?$post['media']:Null;
+		$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
+		$heure = isset($post['heure'])?$post['heure']:Null;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."presencesAutorisations ";
+		$sql .= "SET id='$id', matricule='$matricule', educ='$educ', parent='$parent', media='$media', date='$date', heure='$heure' ";
+		$sql .= "ON DUPLICATE KEY UPDATE educ='$educ', parent='$parent', media='$media', date='$date', heure='$heure' ";
+		$nb = $connexion->exec($sql);
+		Application::deconnexionPDO($connexion);
+		return $nb;
+	}
+	
+	/**
+	 * renvoie les informations relatives à l'autorisation enregistrée sous $id dans la base de données
+	 * @param $id
+	 * @return array
+	 */
+	public function getAutorisation($id) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT id, matricule, educ, parent, media, date, heure ";
+		$sql .= "FROM ".PFX."presencesAutorisations ";
+		$sql .= "WHERE id='$id' ";
+		$sql .= "ORDER BY date, heure ";
+		$resultat = $connexion->query($sql);
+		$ligne = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$ligne = $resultat->fetch();
+			$ligne['date'] = Application::datePHP($ligne['date']);
+		}
+		Application::deconnexionPDO($connexion);
+		return $ligne;
+	}
+	
+	/**
+	 * Suppression de l'autorisation de sortie enregistrée sous $id dans la base de données
+	 * @param $id
+	 * @return $nb : nombre de suppressions
+	 */
+	public function delAutorisation($id) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."presencesAutorisations ";
+		$sql .= "WHERE id='$id' ";
+		$nb = $connexion->exec($sql);
+		Application::deconnexionPDO($connexion);
+		return $nb;
+	}
+	
 }      
 
 ?>

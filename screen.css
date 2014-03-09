@@ -66,8 +66,13 @@ form {
   // clear:both;
   border: 1px dashed Red;
   padding: 15px;
-
 }
+
+.microForm {
+	margin: 0;
+	padding: 0;
+	}
+
 input[type='text'], select, textarea {
   border: 1px solid #ccc;
   background: #eeeeee repeat scroll 0% 50%;

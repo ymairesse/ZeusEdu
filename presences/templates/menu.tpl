@@ -14,7 +14,13 @@
 			<li><a href="index.php?action=listeAbsences&amp;mode=parDate">Absences par date</a></li>
 			<li><a href="index.php?action=listeAbsences&amp;mode=parEleve">Absences par élève</a></li>
 		</ul>
-		
+	</li>
+	
+	<li><a href="javascript:void(0)">Autorisations de sorties</a>
+		<ul>
+			<li><a href="index.php?action=autorisations&amp;mode=listes">Listes des autorisations</a></li>
+			<li><a href="index.php?action=autorisations&amp;mode=encoder">Encoder les autorisations</a></li>
+		</ul>
 	</li>
 	{if $userStatus == 'admin'}
 		<li><a href="javascript:void(0)">Admin</a>

@@ -380,7 +380,7 @@ class user {
 		return $nbModif;
 	}
 
-	/*
+	/**
 	 * fournit le mot de passe MD5 de l'utilisateur 
 	 * @param
 	 * @return string
@@ -389,7 +389,7 @@ class user {
 		return $this->identite['mdp'];
 	}
 	
-	/*
+	/**
 	 * renvoie l'acronyme (userName) de l'utilisateur courant
 	 * @param 
 	 */
@@ -397,7 +397,7 @@ class user {
 		return $this->identite['acronyme'];
 	}
 	
-	/*
+	/**
 	 * renvoie le statut global de l'utlilisateur
 	 * @param
 	 * @return string
@@ -406,7 +406,7 @@ class user {
 		return $this->identite['statut'];
 	}
 	
-	/***
+	/**
 	 * fixer le statut global de l'application à un niveau donné
 	 * @param $statut
 	 * @return void()

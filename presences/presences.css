@@ -26,8 +26,7 @@
     background-color:#FDF2C1;
 	}
 	
-input[type="submit"] {
-	// display: inline-block; 
+input[type=submit], input[type=reset], input[type=button] {
 	padding: 0.3em; 
 	font-size: 120%; 
 	border: 1px solid black; 
@@ -73,3 +72,8 @@ input[type="submit"] {
 .mev {
 	background-color: #ffc
 }
+
+.erreurEncodage {
+	background-color: red;
+	color:white;
+	}
