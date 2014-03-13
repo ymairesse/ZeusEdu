@@ -1,7 +1,6 @@
 <?php
 require_once("../config.inc.php");
 include (INSTALL_DIR."/inc/entetes.inc.php");
-
 // ----------------------------------------------------------------------------
 //
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
@@ -9,6 +8,11 @@ $consultID = isset($_POST['consultID'])?$_POST['consultID']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $matricule2 = isset($_POST['matricule2'])?$_POST['matricule2']:Null;
+
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
+$smarty->assign('listeClasses', $Ecole->listeGroupes());
+$smarty->assign('selecteur', 'selectClasseEleve');
 
 require_once(INSTALL_DIR."/$module/inc/classes/classVisite.inc.php");
 
@@ -127,10 +131,12 @@ switch ($action) {
 					$smarty->assign("corpsPage", "listesParDates");
 					}
 				}
-			$action = 'recherche';
-			$mode = 'parDate';
-			$smarty->assign("etape", "showliste");
-			$smarty->assign("selecteur", "selectPeriode");
+			// $action = 'recherche';
+			// $mode = 'parDate';
+			$smarty->assign('action',$action);
+			$smarty->assign('mode',$mode);
+			$smarty->assign('etape', 'showliste');
+			$smarty->assign('selecteur', 'selectPeriode');
 			}
 		break;
 	case 'news':
@@ -145,9 +151,9 @@ switch ($action) {
 $action = ($action==Null)?'parEleve':$action;
 $mode = ($mode==Null)?'wtf':$mode;
 
+
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
-$smarty->assign('listeClasses', $Ecole->listeGroupes());
 $smarty->assign('selecteur', 'selectClasseEleve');
 //
 // ----------------------------------------------------------------------------
