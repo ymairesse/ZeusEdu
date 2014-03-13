@@ -224,6 +224,37 @@ class presences {
 		Application::deconnexionPDO($connexion);
 		return $listeAbsences;
 	}
+	
+	/**
+	 * retourne la liste des autorisations de sortie pour une période donnée entre $dateDebut et $dateFin
+	 * @param $dateDebut
+	 * @param $dateFin
+	 * @return array
+	 */
+	public function listeParPeriode($dateDebut, $dateFin) {
+		$dateDebut = Application::dateMysql($dateDebut);
+		$dateFin = Application::dateMysql($dateFin);
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT id, pa.matricule, nom, prenom, groupe, date, heure, educ ";
+		$sql .= "FROM ".PFX."presencesAutorisations AS pa ";
+		$sql .= "JOIN ".PFX."eleves AS e ON (pa.matricule = e.matricule ) ";
+		$sql .= "WHERE date >= '$dateDebut' AND date <= '$dateFin' ";
+		$sql .= "ORDER BY date, heure, REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, classe";
+		$resultat = $connexion->query($sql);
+		$listeAutorisations = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$ligne['date'] = Application::datePHP($ligne['date']);
+				$date = $ligne['date'];
+				$heure = $ligne['heure'];
+				$matricule = $ligne['matricule'];
+				$listeAutorisations[$date][$matricule][$heure] = $ligne;
+			}
+		}
+		Application::deconnexionPDO($connexion);
+		return $listeAutorisations;
+		}
 
 	/**
 	 * function absencesEleve
