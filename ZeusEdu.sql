@@ -183,10 +183,10 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 --
 
 CREATE TABLE IF NOT EXISTS `didac_appliTables` (
-  `application` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `nomTable` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `application` varchar(20) CHARACTER SET latin1 NOT NULL,
+  `nomTable` varchar(30) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`application`,`nomTable`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des tables par application (pour backup)';
 
 --
 -- Contenu de la table `didac_appliTables`
@@ -248,6 +248,7 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('pad', 'pad'),
 ('presences', 'presencesAbsences'),
 ('presences', 'presencesHeures');
+('presences', 'didac_presencesAutorisations');
 
 
 --
@@ -848,6 +849,23 @@ INSERT INTO `didac_presencesHeures` (`debut`, `fin`) VALUES
 ('15:25:00', '16:15:00');
 
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `didac_presencesAutorisations`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_presencesAutorisations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `matricule` int(6) NOT NULL,
+  `educ` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `parent` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `media` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `date` date NOT NULL,
+  `heure` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `matricule` (`matricule`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Autorisations de sorties';
 
 -- --------------------------------------------------------
 
