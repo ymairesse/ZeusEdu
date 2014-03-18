@@ -38,7 +38,7 @@ switch ($mode) {
     $smarty->assign('date',$data['date']);
     $smarty->assign('heure',$data['heure']);
     $smarty->assign('corpsPage','newAutorisation');
-    $smarty->assign('mode','encoder');
+    $smarty->assign('mode',$mode);
     $smarty->assign('etape',Null);
     $smarty->assign('etapeFormulaire','enregistrer');
     if ($etapeFormulaire == 'enregistrer') {
@@ -76,8 +76,8 @@ switch ($mode) {
     if ($etapeFormulaire != 'enregistrer') {
       $acronyme = $user->getAcronyme();
       $smarty->assign('user',$acronyme);
-      $smarty->assign('media','');
-      $smarty->assign('parent','');
+      $smarty->assign('media','Journal de classe');
+      $smarty->assign('parent','Parents');
       $smarty->assign('corpsPage','newAutorisation');
       }
       else {

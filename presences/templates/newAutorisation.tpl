@@ -13,7 +13,7 @@
 	<p><label for="selectParent">Demandé par </label>
 	<input type="text" name="parent" id="parent" size="30" maxlength="30" value="{$parent}">
 	<select name="selectParent" id="selectParent" height="3">
-		<option value="">Choisir</option>
+		<option value="Parents"{if $parent == 'Parents'} selected="selected"{/if}>Parents</option>
 		<option value="{$eleve.nomResp}"{if $parent == $eleve.nomResp} selected="selected"{/if}>Responsable: {$eleve.nomResp}</option>
 		<option value="{$eleve.nomMere}"{if $parent == $eleve.nomMere} selected="selected"{/if}>Mère: {$eleve.nomMere}</option>
 		<option value="{$eleve.nomPere}"{if $parent == $eleve.nomPere} selected="selected"{/if}>Père: {$eleve.nomPere}</option>
@@ -24,7 +24,7 @@
 	<p><label for="selectMedia">Média</label>
 	<input type="text" name="media" id="media" size="30" maxlength="30" value="{$media}">
 	<select name="selectMedia" id="selectMedia" height="5">
-		<option value="">Choisir</option>
+		<option value="jdc"{if $media == "jdc"} selected="selected"{/if}>Journal de classe</option>
 		<option value="Motif manuscrit"{if $media == 'Motif manuscrit'} selected="selected"{/if}>Motif mansucrit</option>
 		<option value="Téléphone"{if $media == 'Téléphone'} selected="selected"{/if}>Par téléphone</option>
 		<option value="Mail"{if $media == 'Mail'} selected="selected"{/if}>Mail</option>

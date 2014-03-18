@@ -19,7 +19,7 @@
 	<li><a href="javascript:void(0)">Autorisations de sorties</a>
 		<ul>
 			<li><a href="index.php?action=autorisations&amp;mode=listes">Listes des autorisations</a></li>
-			<li><a href="index.php?action=autorisations&amp;mode=encoder">Encoder les autorisations</a></li>
+			<li><a href="index.php?action=autorisations&amp;mode=encoder">Nouvel(le) élève</a></li>
 		</ul>
 	</li>
 	{if $userStatus == 'admin'}

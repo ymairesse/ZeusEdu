@@ -238,7 +238,9 @@ class presences {
 		$sql = "SELECT id, pa.matricule, nom, prenom, groupe, date, heure, educ ";
 		$sql .= "FROM ".PFX."presencesAutorisations AS pa ";
 		$sql .= "JOIN ".PFX."eleves AS e ON (pa.matricule = e.matricule ) ";
-		$sql .= "WHERE date >= '$dateDebut' AND date <= '$dateFin' ";
+		if ($dateFin == '') 
+			$sql .= "WHERE date = '$dateDebut' ";
+			else $sql .= "WHERE (date >= '$dateDebut') AND (date <= '$dateFin') ";
 		$sql .= "ORDER BY date, heure, REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, classe";
 		$resultat = $connexion->query($sql);
 		$listeAutorisations = array();
