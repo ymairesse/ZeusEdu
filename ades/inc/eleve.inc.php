@@ -11,6 +11,7 @@ switch ($mode) {
 		$afficherEleve = ($etape == 'showEleve')?true:Null;
 		$smarty->assign('selecteur','selectClasseEleve');
 		break;
+	
 	case 'trombinoscope':
 		$smarty->assign('lesGroupes', $Ecole->listeGroupes());
 		$smarty->assign('selecteur','selectClasse');
@@ -24,6 +25,7 @@ switch ($mode) {
 		}
 		$afficherEleve = (isset($matricule))?true:Null;
 		break;
+	
 	case 'savePad':
 		require_once(INSTALL_DIR."/$module/inc/classes/classMemo.inc.php");
 		$memoAdes = new memoAdes($matricule, 'ades');
@@ -38,6 +40,7 @@ switch ($mode) {
 		$smarty->assign('selecteur','selectClasseEleve');
 		$afficherEleve = true;
 		break;
+	
 	default:
 		if (isset($matricule) && isset($classe)) {
 			$afficherEleve = true;

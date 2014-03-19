@@ -2,6 +2,7 @@
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $etapeFormulaire = isset($_POST['etapeFormulaire'])?$_POST['etapeFormulaire']:Null;
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
+$matricule2 = isset($_POST['matricule2'])?$_POST['matricule2']:Null;
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 $id = isset($_POST['id'])?$_POST['id']:Null;
 
@@ -9,9 +10,13 @@ $id = isset($_POST['id'])?$_POST['id']:Null;
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
+// on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
+$matricule = ($matricule!='')?$matricule:$matricule2;
 // si un élève est déclaré, on aura certainement besoin des détails
 if ($matricule != Null) {
     $eleve = new Eleve($matricule);
+    $classe = $eleve->groupe();
+    $matricule = $eleve->matricule();
     $smarty->assign('eleve',$eleve->getDetailsEleve());
   }
 

@@ -1,4 +1,3 @@
-{debug}
 <h3>Absences de {$nomEleve} {$classe}</h3>
 <table class="tableauAdmin">
 	<tr>

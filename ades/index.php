@@ -18,6 +18,7 @@ $Ades = new Ades();
 if (($matricule != '') || ($matricule2 != '')) {
     // si un matricule est donné, on aura sans doute besoin des données de l'élève
 	require_once(INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php");
+	// on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
 	$matricule = ($matricule!='')?$matricule:$matricule2;
 	$eleve = new Eleve($matricule);
 	$ficheDisc = new EleveAdes($matricule);

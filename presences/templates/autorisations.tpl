@@ -1,4 +1,5 @@
-<h3>Autorisations de sortie pour {$eleve.prenom} {$eleve.nom} {$eleve.classe}</h3>
+<h3 title="{$matricule}">Autorisations de sortie pour {$eleve.prenom} {$eleve.nom} {$eleve.classe}</h3>
+<img style="float:right; width:100px; position: relative; top: -60px;" src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="photo draggable" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
 <form name="newAutorisation" id="newAutorisation" action="index.php" method="POST">
 	<input type="submit" name="submit" class="fauxBouton" value="Nouvelle autorisation">
 	<input type="hidden" name="action" value="{$action}">
