@@ -7,10 +7,10 @@
 <table class="tableauAdmin">
 	<tr>
 		<th>Matricule</th>
-		<th>Heure</th>
 		<th>Nom</th>
 		<th>Prénom</th>
 		<th>Classe</th>
+		<th>Heure</th>
 		<th>Par</th>
 		<th style="width:16px" class="noprint">&nbsp;</th>
 		<th style="width:16px" class="noprint">&nbsp;</th>
@@ -20,10 +20,10 @@
 		{foreach from=$cetEleve key=heure item=eleve}
 		<tr>
 			<td>{$eleve.matricule}</td>
-			<td>{$eleve.heure}</td>
 			<td>{$eleve.nom}</td>
 			<td>{$eleve.prenom}</td>
 			<td>{$eleve.groupe}</td>
+			<td>{$eleve.heure}</td>
 			<td>{$eleve.educ}</td>
 			<td class="noprint">
 				<form class="microForm editForm noprint" action="index.php" method="POST" name="edit">

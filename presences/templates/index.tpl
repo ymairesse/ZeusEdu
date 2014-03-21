@@ -25,9 +25,11 @@
 </div>
 
 {* La valeur de $corpsPage est définie dans index.php ou les sous-modules php *}
+<div id="corpsPage">
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
-{/if}
+{/if}</div>
+
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
