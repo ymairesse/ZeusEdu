@@ -12,7 +12,7 @@
 		<ul>
 		<li><a href="index.php?action=retenues&amp;mode=liste">Listes d'élèves</a></li>
 		{if ($userStatus == 'admin') || ($userStatus == 'educ')}<li><a href="index.php?action=retenues&amp;mode=dates">Dates et clonages</a></li>{/if}
-		{if $userStatus == 'admin'}<li><a href="index.php?action=retenues&amp;mode=edit">Nouvelle retenue</a></li>{/if}	
+		{if ($userStatus == 'admin') || ($userStatus == 'educ')}<li><a href="index.php?action=retenues&amp;mode=edit">Nouvelle retenue</a></li>{/if}	
 		</ul>
 	</li>
 	<li><a href="javascript:void(0)">Que s'est-il passé?</a>

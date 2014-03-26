@@ -29,9 +29,10 @@
 		<table class="tableauAdmin">
 			{* ----------------- ligne de titre du tableau  -------------------------- *}
 			<tr>
+				<th>&nbsp;</th>
 				{strip}
 				{if $descriptionTypeFait.imprimable == 1}
-				<th width="20">&nbsp;</th>
+				<th style="width:16px">&nbsp;</th>
 				{/if}
 			{* on examine chacun des champs qui décrivent le fait *}
 			{foreach from=$descriptionTypeFait.listeChamps item=champ}
@@ -40,7 +41,7 @@
 				<th>{$descriptionChamps.$champ.label}</th>
 				{/if}
 			{/foreach}
-				<th width="40">&nbsp;</th>
+				<th style="width:16px">&nbsp;</th>
 				{/strip}
 			</tr>
 			{* ----------------- ligne de titre du tableau  -------------------------- *}
@@ -48,13 +49,17 @@
 			{foreach from=$listeFaits.$typeFait key=idfait item=unFaitDeCeType}
 			<tr>
 				{strip}
+				<td style="width:16px">
+					<a class="delete" href="index.php?action=fait&amp;mode=suppr&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}" title="Supprimer ce fait">
+						<img src="../images/suppr.png" alt="X"></a>
+				</td>
 				{if $descriptionTypeFait.imprimable == 1}
-				<th>
+				<td style="width:16px">
 					{if ($userStatus == 'educ') || ($userStatus == 'admin')}
 					<a href="index.php?action=print&amp;mode=retenue&amp;idfait={$idfait}&amp;matricule={$matricule}"><img src="../images/print.png" alt="P" title="Imprimer"></a>
 					{else}&nbsp;
 					{/if}
-				</th>
+				</td>
 				{/if}
 				{foreach from=$descriptionTypeFait.listeChamps item=champ}
 					{if in_array($contexte, $descriptionChamps.$champ.contextes)}
@@ -76,12 +81,10 @@
 					</td>
 					{/if}
 				{/foreach}
-				<td>
+				<td style="width:16px">
 					{strip}
 					{if ($userStatus == 'educ') || ($userStatus == 'admin')}
 					<a href="index.php?action=fait&amp;mode=edit&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}"  title="Modifier ce fait"><img src="../images/edit.png" alt="E"></a> 
-					<a class="delete" href="index.php?action=fait&amp;mode=suppr&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}" title="Supprimer ce fait">
-						<img src="../images/suppr.png" alt="X"></a>
 					{else}&nbsp;
 					{/if}
 					{/strip}
