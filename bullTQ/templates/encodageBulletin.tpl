@@ -96,7 +96,7 @@
 		<h3>Remarque pour la période {$bulletin}</h3>
 			<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque" rows="8" 
 			cols="80" 
-			name="COMMENTAIRE-{$matricule}">{$listeCommentaires.$matricule|default:Null}</textarea>
+			name="COMMENTAIRE-{$matricule}">{$listeCommentaires.$bulletin.$coursGrp.$matricule|default:Null}</textarea>
 
 		<p class="ouvrir" style="clear:both">Remarques des autres périodes</p>
 			<ul class="commentaires" style="display:none">
