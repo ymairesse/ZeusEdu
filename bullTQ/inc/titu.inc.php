@@ -40,7 +40,8 @@ switch ($mode) {
 				$infoPersoEleve = $eleve->getDetailsEleve();
 
 				// liste de tous les cours suivis par l'élève (pas d'historique)
-				$listeCoursGrp = $BullTQ->listeCoursGrpEleves($matricule)[$matricule];
+				$listeCoursGrp = $BullTQ->listeCoursGrpEleves($matricule);
+				$listeCoursGrp = $listeCoursGrp[$matricule];
 				$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 				
 				// liste des commentaires des profs des différents cours

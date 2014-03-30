@@ -57,7 +57,7 @@ $(document).ready (function() {
 			)
 	});
 
-	$("#selectEleve").live("change", function(){
+	$("#choixEleve").on("change", "#selectEleve", function(){
 		if ($(this).val() > 0) {
 			// si la liste de sélection des élèves renvoie une valeur significative
 			// le formulaire est soumis

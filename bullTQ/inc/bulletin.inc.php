@@ -18,7 +18,6 @@ if (isset($coursGrp)) {
 	$smarty->assign('coursGeneral', $BullTQ->estGeneral($coursGrp));
 	
 	$listeCommentaires = $BullTQ->listeCommentaires($listeEleves, $coursGrp);
-	$listeCommentaires = (isset($listeCommentaires[$bulletin][$coursGrp]))?$listeCommentaires[$bulletin][$coursGrp]:Null;
 	$smarty->assign('listeCommentaires', $listeCommentaires);
 
 	$cours = $BullTQ->coursDeCoursGrp($coursGrp);

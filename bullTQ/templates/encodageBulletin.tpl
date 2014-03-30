@@ -93,7 +93,6 @@
 				
 		{/if}
 		
-		
 		<h3>Remarque pour la période {$bulletin}</h3>
 			<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque" rows="8" 
 			cols="80" 
@@ -103,7 +102,7 @@
 			<ul class="commentaires" style="display:none">
 			{section name=annee start=1 loop=$nbBulletins+1}
 			{assign var="periode" value=$smarty.section.annee.index}
-				<li>{$periode} => {$listeCommentaires.$periode.$matricule|default:Null}
+				<li>{$periode} => {$listeCommentaires.$periode.$coursGrp.$matricule|default:Null}
 			{/section}
 			</ul>
 		
