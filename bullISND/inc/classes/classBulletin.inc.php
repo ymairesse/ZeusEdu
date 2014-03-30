@@ -693,9 +693,7 @@ class Bulletin {
 
 	/** 
 	 * Enregistre le verrouillage / déverrouillage des cotes par classe, par cours et par élève
-	 * 
 	 * On déverrouille ou on verrouille (voir le contenu de la variable $_POST['verrouiller']) au cas par cas
-	 * 
 	 * à envisager: un verrouillage pour l'ensemble d'une classe => 1 enregistrement dans la BD / classe
 	 *  et un verrouillage pour l'ensemble d'un cours => 1 enregistrement dans la BD / cours
 	 *  
@@ -847,10 +845,71 @@ class Bulletin {
 	}
 
 	/**
-	 * function listeCotes
+	 * produire un tableau reprenant la somme des cotes de TJ et les sommes des cotes CERT
+	 * pour une liste d'élèves donnés et pour un bulletin donné
+	 * la liste est indexée sur les matricules et les cours concernés
+	 * @param $listeEleves
+	 * @parem $bulletin
+	 */
+	public function sommesTjCertEleves ($listeEleves, $bulletin) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(',', array_keys($listeEleves));
+			else $listeElevesString = $listeEleves;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, coursGrp, idComp, form, maxForm, cert, maxCert ";
+		$sql .= "FROM ".PFX."bullDetailsCotes ";
+		$sql .= "WHERE (matricule IN ($listeElevesString)) ";
+		$sql .= "AND (bulletin = '$bulletin') ";
+		$sql .= "ORDER BY matricule, coursGrp, idComp";
+
+		$cotesVides = array(
+					'form' => array('cote' => '', 'max' => ''),
+					'cert' => array('cote' => '', 'max' => '')
+					);
+		$listeCotes = array();
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$coursGrp = $ligne['coursGrp'];
+				$idComp = $ligne['idComp'];
+				$form = $this->sansVirg($ligne['form']);	$maxForm = $this->sansVirg($ligne['maxForm']);
+				$cert = $this->sansVirg($ligne['cert']);	$maxCert = $this->sansVirg($ligne['maxCert']);
+				if (!(isset($listeCotes[$matricule][$coursGrp])))
+					$listeCotes[$matricule][$coursGrp] = $cotesVides;
+				
+				// s'il y a du **Formatif** pour cet enregistrement, on l'additionne
+				if (($form != '') && ($maxForm != '')) {
+					// si form et maxForm sont des informations numériques, on les additionne
+					if (is_numeric($form) && is_numeric($maxForm)) {
+						$listeCotes[$matricule][$coursGrp]['form']['cote'] += $form;
+						$listeCotes[$matricule][$coursGrp]['form']['max'] += $maxForm;
+						}
+					}  // if $form...
+				// s'il y a du **Certificatif** pour cet enregistrement, on l'additionne
+				if (($cert != '') && ($maxCert != '')) {
+					// si cert et maxCert sont des informations numériques, on les additionne
+					if (is_numeric($cert) && is_numeric($maxCert)) {
+						$listeCotes[$matricule][$coursGrp]['cert']['cote'] += $cert;
+						$listeCotes[$matricule][$coursGrp]['cert']['max'] += $maxCert;
+						}
+					}  // if $cert...
+					
+			}  // while
+		} // if $resultat
+		Application::DeconnexionPDO($connexion);
+		return ($listeCotes);
+	}
+	
+	
+	
+	/**
+	 * produire un tableau reprenant les sommes des cotes TJ et les sommes des cotes CERT
+	 * pour une liste d'élèves, une liste de cours, une liste de compétences et un bulletin donnés 
 	 *
 	 * @param $listeEleves: tableau dont les keys sont les $matricule
-	 * @param $cours
+	 * @param $listeCoursGrp: liste des coursGrp pour ces élèves
 	 * @param $listeCompetences: liste des compétences existantes pour ce cours
 	 * @param $bulletin: n° du bulletin concerné
 	 * 
@@ -951,13 +1010,45 @@ class Bulletin {
 		return ($listeCotes);
 	}
 
-	/*
-	 * function listeGlobalPeriodePondere
+	/**
+	 * calcule les cotes de périodes pondérées pour tous les cours d'un élèves
+	 * les sommes des TJ et des Cert sont passées dans le tableau $sommesTjCert,
+	 * les pondérations à appliquer sont passées dans le tableau $ponderations
+	 * @param $sommesTjCert array
+	 * @param $ponderations array
+	 * @return array
+	 */
+	public function cotesPeriodePonderees($sommesTjCert, $ponderations) {
+		$listeCotesPonderees = array();
+		foreach ($sommesTjCert as $matricule=>$lesCours) {
+			foreach ($lesCours as $coursGrp=>$lesCotes) {
+				$laPonderation = $ponderations[$coursGrp];
+					if (in_array($matricule, $laPonderation))
+						$ponderation = $laPonderation[$matricule];
+						else $ponderation = $laPonderation['all'];
+				if (is_numeric($lesCotes['form']['cote']) && is_numeric($lesCotes['form']['max'])) {
+					$coteForm100 = $lesCotes['form']['cote'] / $lesCotes['form']['max'];
+					$listeCotesPonderees[$matricule][$coursGrp]['form']['cote'] = round($coteForm100 * $ponderation['form'],1);
+					$listeCotesPonderees[$matricule][$coursGrp]['form']['max'] = $ponderation['form'];
+					$listeCotesPonderees[$matricule][$coursGrp]['form']['mention'] = $this->calculeMention($coteForm100*100);
+					}
+				if (is_numeric($lesCotes['cert']['cote']) && is_numeric($lesCotes['cert']['max'])) {
+					$coteCert100 = $lesCotes['cert']['cote'] / $lesCotes['cert']['max'];
+					$listeCotesPonderees[$matricule][$coursGrp]['cert']['cote'] = round($coteCert100 * $ponderation['cert'],1);
+					$listeCotesPonderees[$matricule][$coursGrp]['cert']['max'] = $ponderation['cert'];
+					$listeCotesPonderees[$matricule][$coursGrp]['cert']['mention'] = $this->calculeMention($coteCert100*100);
+					}
+				}
+			}
+		return $listeCotesPonderees;
+	}
+	
+	/**
+	 * retourne les cotesGlobales pondérées, formatives et certificatives
+	 * à partir des cotes brutes et des pondérations
 	 * @param $listeCotes
 	 * @param $ponderations
 	 *
-	 * retourne les cotesGlobales pondérées, formatives et certificatives
-	 * à partir des cotes brutes et des pondérations
 	 */
 	function listeGlobalPeriodePondere($listeCotes, $ponderations, $periode) {
 				$listeCotesGlobales = array();
@@ -1015,12 +1106,7 @@ class Bulletin {
 		return $listeCotesGlobales;
 	}
 
-	/* 
-	 * function listeSituationsClassePourDelibe
-	 * 
-	 * @param $listeEleves 
-	 * @param $bulletin
-	 * 
+	/** 
 	 * retourne une liste des situations et cotes de délibé
 	 * pour la liste d'élèves donnée
 	 * pour une période donnée
@@ -1031,7 +1117,11 @@ class Bulletin {
 	 *  - sitDelibe
 	 *  - degre, hook, star
 	 *  - statut du cours (AC, FC,...)
-	 * */
+	 * 
+	 * @param $listeEleves 
+	 * @param $bulletin
+	 * 
+	 */
 	public function listeSituationsClassePourDelibe($listeEleves, $bulletin) {
 		if (is_array($listeEleves))
 			$listeElevesString = implode(',', array_keys($listeEleves));
@@ -2587,7 +2677,7 @@ class Bulletin {
 
 	/***
 	 * Calcule la mention obetnue par un élève selon les règles en vigueur à l'ISND
-	 * @param $moyenne
+	 * @param $moyenne exprimée sur 100
 	 * return $string : mention obtenue
 	 */
 	 public function calculeMention ($moyenne) {
@@ -2617,7 +2707,7 @@ class Bulletin {
 	 * et pour les élèves dont la liste est fournie
 	 * @param $bulletin
 	 * @param $eleves
-	 * @return array
+	 * @return array : coursGrp, sit100, mention
 	 */
 	public function getSituations100 ($bulletin, $listeEleves) {
 		$listeSituations = $this->getSituations($bulletin, $listeEleves);

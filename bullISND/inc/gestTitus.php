@@ -73,7 +73,7 @@ switch ($mode) {
 
 				$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 
-				// pas d'indication de néuméro de période, afin de les avoir toutes
+				// pas d'indication de numéro de période, afin de les avoir toutes
 				$commentairesProfs = $Bulletin->listeCommentairesTousCours($matricule, Null);
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
 				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
@@ -81,6 +81,13 @@ switch ($mode) {
 				// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
 				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
 				$listeCoursActuelle = $listeCoursActuelle[$matricule];
+				
+				// cotes de gobal période pour le bulletin $bulletin
+				$sommesTjCert = $Bulletin->sommesTJCertEleves($matricule, $bulletin);
+				$ponderations = $Bulletin->getPonderationsBulletin($listeCoursGrp, $bulletin);
+				$cotesPeriode = $Bulletin->cotesPeriodePonderees($sommesTjCert, $ponderations);
+				$smarty->assign('cotesPeriode',$cotesPeriode);				
+				
 				
 				$syntheseCotes4Titu = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
 
@@ -91,20 +98,20 @@ switch ($mode) {
 
 				// pas d'indication de bulletin afin de les avoir tous
 				$tableauAttitudes = $Bulletin->tableauxAttitudes($matricule, Null);
-				$smarty->assign("matricule", $matricule);
-				$smarty->assign("infoPerso", $infoPersoEleve);
-				$smarty->assign("listeCoursGrp", $listeCoursGrp);
-				$smarty->assign("listeProfsCoursGrp", $listeProfsCoursGrp);
-				$smarty->assign("commentairesProfs", $commentairesProfs);
-				$smarty->assign("syntheseCotes", $syntheseCotes4Titu);
-				$smarty->assign("attitudes", $tableauAttitudes);
-				$smarty->assign("ficheEduc", $ficheEduc);
-				$smarty->assign("listeRemarquesTitu", $listeRemarquesTitulaire);
-				$smarty->assign("remarqueTitu", $remarqueTitulaire[$bulletin]);
-				$smarty->assign("mentions",$mentions);
+				$smarty->assign('matricule', $matricule);
+				$smarty->assign('infoPerso', $infoPersoEleve);
+				$smarty->assign('listeCoursGrp', $listeCoursGrp);
+				$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);
+				$smarty->assign('commentairesProfs', $commentairesProfs);
+				
+				$smarty->assign('syntheseCotes', $syntheseCotes4Titu);
+				$smarty->assign('attitudes', $tableauAttitudes);
+				$smarty->assign('ficheEduc', $ficheEduc);
+				$smarty->assign('listeRemarquesTitu', $listeRemarquesTitulaire);
+				$smarty->assign('remarqueTitu', $remarqueTitulaire[$bulletin]);
+				$smarty->assign('mentions',$mentions);
 
-				// $smarty->assign("corpsPage", "showEleve");
-				$smarty->assign("corpsPage", "commentairesTitu");
+				$smarty->assign('corpsPage', 'commentairesTitu');
 				break;
 			default:
 				break;
