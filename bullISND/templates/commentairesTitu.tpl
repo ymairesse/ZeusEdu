@@ -1,19 +1,24 @@
-{debug}
 <div id="resultat">
 <h3 style="clear:both" title="{$infoPerso.matricule}">
 	{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}</h3>
 	<span class="fauxBouton couleur">Désactiver la couleur</span>
 <div id="tabsul">
 	<ul>
-		<li><a href="#tabs-cotes">Cotes</a></li>
+		<li><a href="#tabs-cotes">Cotes de situation</a></li>
+		<li><a href="#tabs-periode">Cotes période {$bulletin}</a></li>
 		{if $attitudes}
 			<li><a href="#tabs-attitudes">Attitudes</a></li>
-		{/if}		
+		{/if}
+
 		<li><a href="#tabs-remarques">Remarques toutes périodes</a></li>
 	</ul>
 	
 	<div id="tabs-cotes">
 		{include file="tabCotes.tpl"}
+	</div>
+	
+	<div id="tabs-periode">
+		{include file="tabPeriode.tpl"}
 	</div>
 	
 	{if isset($attitudes)}
