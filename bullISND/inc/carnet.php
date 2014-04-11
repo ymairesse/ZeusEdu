@@ -1,6 +1,7 @@
 <?php
 $unAn = time() + 365*24*3600;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
+
 if (isset($_POST['coursGrp'])) {
 	$coursGrp = $_POST['coursGrp'];
 	setcookie('coursGrp',$coursGrp,$unAn, null, null, false, true);
