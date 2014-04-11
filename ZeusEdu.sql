@@ -247,7 +247,7 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('infirmerie', 'infirmerie'),
 ('pad', 'pad'),
 ('presences', 'presencesAbsences'),
-('presences', 'presencesHeures');
+('presences', 'presencesHeures'),
 ('presences', 'didac_presencesAutorisations');
 
 
