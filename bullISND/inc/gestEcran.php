@@ -1,8 +1,21 @@
 <?php
+$unAn = time() + 365*24*3600;
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
-$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
+
+if (isset($_POST['classe'])) {
+	$classe = $_POST['classe'];
+	setcookie('classe',$classe,$unAn, null, null, false, true);
+	}
+	else $classe = $_COOKIE['classe'];
+$smarty->assign('classe', $classe);
+
+if (isset($_POST['matricule'])) {
+	$matricule = $_POST['matricule'];
+	setcookie('matricule',$matricule,$unAn, null, null, false, true);
+	}
+	else $matricule = $_COOKIE['matricule'];
+$smarty->assign('matricule', $matricule);
 
 switch ($mode) {
 	case 'bulletinIndividuel':
@@ -11,14 +24,13 @@ switch ($mode) {
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe', false);
 			else $listeEleves = Null;
 
-		$smarty->assign("selecteur", "selectBulletinClasseEleve");
-		$smarty->assign("listeClasses", $listeClasses);
-		$smarty->assign("classe", $classe);
-		$smarty->assign("listeEleves", $listeEleves);
-		$smarty->assign("nbBulletins", NBPERIODES);
-		$smarty->assign("bulletin", $bulletin);
-		$smarty->assign("action", "ecran");
-		$smarty->assign("mode", "bulletinIndividuel");
+		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
+		$smarty->assign('listeClasses', $listeClasses);
+		$smarty->assign('listeEleves', $listeEleves);
+		$smarty->assign('nbBulletins', NBPERIODES);
+		$smarty->assign('bulletin', $bulletin);
+		$smarty->assign('action', 'ecran');
+		$smarty->assign('mode', 'bulletinIndividuel');
 		if ($etape == 'showEleve') {
 			$annee = $Ecole->anneeDeClasse($classe);
 			$eleve = new Eleve($matricule);
@@ -48,22 +60,21 @@ switch ($mode) {
 				$noticeDirection = $Bulletin->noteDirection($annee, $bulletin);
 			
 				$smarty->assign('annee',$annee);
-				$smarty->assign("matricule", $matricule);
-				$smarty->assign("infoPerso", $infoPersoEleve);
-				$smarty->assign("listeCoursGrp", $listeCoursGrp);
-				$smarty->assign("listeProfsCoursGrp", $listeProfsCoursGrp);
-				$smarty->assign("sitPrecedentes", $sitPrecedentes);
-				$smarty->assign("sitActuelles", $sitActuelles);
-				$smarty->assign("listeCotes", $listeCotes);
-				$smarty->assign("listeCompetences", $listeCompetences);
-				
-				$smarty->assign("cotesPonderees", $cotesPonderees);
-				$smarty->assign("commentaires", $commentairesCotes);
-				$smarty->assign("attitudes", $tableauAttitudes);
-				$smarty->assign("ficheEduc", $ficheEduc);
-				$smarty->assign("remTitu", $remarqueTitulaire);
-				$smarty->assign("mention",$mentions);
-				$smarty->assign("noticeDirection", $noticeDirection);
+				$smarty->assign('infoPerso', $infoPersoEleve);
+				$smarty->assign('listeCoursGrp', $listeCoursGrp);
+				$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);
+				$smarty->assign('sitPrecedentes', $sitPrecedentes);
+				$smarty->assign('sitActuelles', $sitActuelles);
+				$smarty->assign('listeCotes', $listeCotes);
+				$smarty->assign('listeCompetences', $listeCompetences);
+
+				$smarty->assign('cotesPonderees', $cotesPonderees);
+				$smarty->assign('commentaires', $commentairesCotes);
+				$smarty->assign('attitudes', $tableauAttitudes);
+				$smarty->assign('ficheEduc', $ficheEduc);
+				$smarty->assign('remTitu', $remarqueTitulaire);
+				$smarty->assign('mention',$mentions);
+				$smarty->assign('noticeDirection', $noticeDirection);
 			}
 			$smarty->assign("corpsPage", "showEleve"); 
 		}

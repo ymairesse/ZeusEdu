@@ -26,8 +26,7 @@
 	{/if}
 	<li><a href="javascript:void(0)">Carnet de cotes</a>
 		<ul>
-		<li><a href="index.php?action=carnet&amp;mode=gererCotes&amp;tri=alpha">Gérer les cotes (tri alpha)</a></li>
-		<li><a href="index.php?action=carnet&amp;mode=gererCotes&amp;tri=classe">Gérer les cotes (tri par classe)</a></li>
+		<li><a href="index.php?action=carnet&amp;mode=gererCotes">Gérer les cotes</a></li>
 		<li><a href="index.php?action=carnet&amp;mode=poidsCompetences">Poids des compétences</a></li>
 		<li><a href="index.php?action=carnet&amp;mode=oneClick">One Click Bulletin</a></li>
 		</ul>
@@ -36,8 +35,7 @@
 		<ul>
 		<li><a href="index.php?action=gestionBaremes&amp;mode=voir">Pondération par période</a></li>
 		<li><a href="index.php?action=gestionCotes&amp;mode=voir">Aperçu des cotes pour vos cours</a></li>
-		<li><a href="index.php?action=gestEncodageBulletins&amp;tri=alpha">Encodage des bulletins (ordre alpha)</a></li>
-		<li><a href="index.php?action=gestEncodageBulletins&amp;tri=classes">Encodage des bulletins (ordre classes)</a></li>
+		<li><a href="index.php?action=gestEncodageBulletins">Encodage des bulletins</a></li>
 		</ul>
 	</li>
 	{*
@@ -80,6 +78,7 @@
 		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Verrous classe/cours/élève</a></li>
 		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>
 		<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
+		<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
 		</ul>
 	</li>
 	{/if}

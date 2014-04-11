@@ -2,13 +2,13 @@
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 		Bulletin n° <select name="bulletin" id="bulletin">
 		{section name=foo start=1 loop=$nbBulletins+1}
-			<option value="{$smarty.section.foo.index}" {if $smarty.section.foo.index == $bulletin}selected{/if}>{$smarty.section.foo.index}</option>
+			<option value="{$smarty.section.foo.index}"{if $smarty.section.foo.index == $bulletin} selected="selected"{/if}>{$smarty.section.foo.index}</option>
 		{/section}
 	</select>
 	<select name="niveau" id="niveau">
 		<option value="">Niveau</option>
 		{foreach from=$listeNiveaux item=unNiveau}
-			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)} selected{/if}>{$unNiveau}</option>
+			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)} selected="selected"{/if}>{$unNiveau}</option>
 		{/foreach}
 	</select>
 	

@@ -69,7 +69,7 @@ var modifie = false;
 	<td>
 		<span class="tooltip">{$nomPrenom|truncate:20}
 		<div class="tip" style="display:none">
-			<img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" style="width:140px"><br>
+			<img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" style="width:100px"><br>
 			{$nomPrenom|truncate:15}<br><span class="micro">[{$matricule}]</span></div>
 		</span>
 	</td>

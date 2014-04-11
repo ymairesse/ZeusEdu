@@ -372,6 +372,27 @@ class presences {
 		Application::deconnexionPDO($connexion);
 		return $nb;
 	}
+
+	/**
+	 * enregistrement du local, de la période, du jour de la semaine (numérique commençant par 1 pour lundi), du prof et du cours
+	 * @param $local
+	 * @param $periode
+	 * @param $prof
+	 * @param $coursGrp
+	 * @return $nb : nombre d'enregistrements/updates réalisés
+	 */
+	public function saveLocalCoursGrp ($local, $periode, $prof, $coursGrp) {
+		$date = strftime("%d/%m/%Y");
+		$jourSemaine = strftime('%w',$Application->dateFR2Time($date));
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."locauxDatesCours ";
+		$sql .= "SET local='$local', jour='$jourSemaine', periode='$periode', acronyme='$prof', coursGrp='$coursGrp' ";
+		$sql .= "ON DUPLICATE KEY UPDATE acronyme='$prof', coursGrp='$coursGrp' ";
+		$nb = $connexion->exec($sql);
+		Application::deconnexionPDO($connexion);
+		return $nb;
+	}
+
 	
 }      
 

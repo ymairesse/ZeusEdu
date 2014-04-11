@@ -1,8 +1,25 @@
 <?php
+$unAn = time() + 365*24*3600;
 $bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:PERIODEENCOURS;
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
-$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
+
+if (isset($_POST['classe'])) {
+	$classe = $_POST['classe'];
+	setcookie('classe',$classe,$unAn, null, null, false, true);
+	}
+	else $classe = $_COOKIE['classe'];
+$smarty->assign('classe', $classe);
+//$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
+
+
+if (isset($_POST['matricule'])) {
+	$matricule = $_POST['matricule'];
+	setcookie('matricule',$matricule,$unAn, null, null, false, true);
+	}
+	else $matricule = $_COOKIE['matricule'];
+$smarty->assign('matricule', $matricule);
+// $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
+
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $annee = ($classe != Null)?SUBSTR($classe,0,1):Null;
 
@@ -12,8 +29,8 @@ $listeClasses = $Ecole->listeGroupes($sections=array('G','TT'));
 
 $smarty->assign("listeTitus", $listeTitus);
 $smarty->assign("listeClasses", $listeClasses);
-$smarty->assign("matricule", $matricule);
-$smarty->assign("classe", $classe);
+// $smarty->assign("matricule", $matricule);
+// $smarty->assign("classe", $classe);
 $smarty->assign("annee", $annee);
 $smarty->assign("bulletin", $bulletin);
 $smarty->assign("nbBulletins", NBPERIODES);
@@ -24,7 +41,7 @@ switch ($mode) {
 		$listeEleves = isset($classe)?$Ecole->listeEleves($classe,'groupe'):Null;
 		$smarty->assign("listeEleves", $listeEleves);
 		$smarty->assign("bulletin", $bulletin);
-		$smarty->assign("classe", $classe);
+		// $smarty->assign("classe", $classe);
 		$smarty->assign("selecteur", "selectClasseEleve");
 		$smarty->assign("action","delibes");
 		$smarty->assign("mode","individuel");
@@ -52,7 +69,7 @@ switch ($mode) {
 				$smarty->assign("listeCours", $listeCoursEleve);
 				$smarty->assign("listeSituations", $listeSituations);
 				$smarty->assign("listeRemarques", $remarques);
-				$smarty->assign("matricule", $matricule);
+				// $smarty->assign("matricule", $matricule);
 				$smarty->assign("prevNext", $prevNext);
 				$smarty->assign("eleve", $Ecole->nomPrenomClasse($matricule));
 
@@ -79,7 +96,7 @@ switch ($mode) {
 			$listeSituations100 = $Bulletin->getSituations100($bulletin, $listeEleves);
 			$listeCoursClasse = $Ecole->listeCoursClassePourDelibe($classe);
 			
-			$smarty->assign("classe",$classe);
+			// $smarty->assign("classe",$classe);
 			$smarty->assign("listeSituations100", $listeSituations100);
 			$smarty->assign("listeCours", $listeCoursClasse);
 			$smarty->assign("listeCoursGrpListeEleves",$listeCoursGrpListeEleves);
@@ -91,7 +108,7 @@ switch ($mode) {
 		$smarty->assign("action","delibes");
 		$smarty->assign("mode","parClasse");
 		$smarty->assign("etape","showCotes");
-		$smarty->assign("laClasse", $classe);
+		// $smarty->assign("laClasse", $classe);
 		$smarty->assign("selecteur", "selectBulletinClasse");
 		if (($etape == 'showCotes') && ($classe != Null)) {
 			$titusClasse = $Ecole->titusDeGroupe($classe);

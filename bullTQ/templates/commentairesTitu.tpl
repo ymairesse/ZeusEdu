@@ -4,12 +4,15 @@
 <div id="tabsul">
 	<ul>
 		<li><a href="#tabs-cotes">Cotes</a></li>
-	
 		<li><a href="#tabs-remarques">Remarques toutes périodes</a></li>
 	</ul>
 	
+	
 	<div id="tabs-cotes">
 		{include file="tabCotes.tpl"}
+		{* if in_array($bulletin, $PERIODESDELIBES) *}
+			{*include file="delibeIndividuelRO.tpl" *}
+		{* /if *}
 	</div>
 	
 	<div id="tabs-remarques">
@@ -26,6 +29,7 @@
 		{/foreach}
 		</table>
 	</div>
+	
 </div>
 <hr style="clear:both">
 	<form name="avisTitu" id="avisTitu" action="index.php" method="POST" style="border-radius: 15px; box-shadow: 1px 1px 12px #555;">

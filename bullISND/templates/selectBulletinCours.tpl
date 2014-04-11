@@ -17,12 +17,17 @@
 		{/foreach}
 		{/if}
 	</select>
-	{if isset($tri)}Tri: {$tri}{/if}
+
+	Ordre
+	<select name="tri" id="tri">
+		<option value="alpha"{if $tri == 'alpha'} selected="selected"{/if}>Alphabétique</option>
+		<option value="classes"{if $tri == 'classes'} selected="selected"{/if}>Par classes</option>
+	</select>
+	
 	{* si un cours est sélectionné, on présente le bouton OK *}
 	{if isset($coursGrp)}<input type="submit" value="OK" name="OK" id="envoi">{/if}
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
-	<input type="hidden" name="tri" value="{$tri}">
 	<input type="hidden" name="etape" value="showCotes">
 	</form>
 </div>

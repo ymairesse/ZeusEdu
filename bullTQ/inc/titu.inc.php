@@ -11,6 +11,7 @@ $smarty->assign("matricule", $matricule);
 $smarty->assign("classe", $classe);
 $smarty->assign("bulletin", $bulletin);
 $smarty->assign("nbBulletins", NBPERIODES);
+$smarty->assign('PERIODESDELIBES', explode(',',PERIODESDELIBES));
 $smarty->assign("listePeriodes", $Application->listePeriodes(NBPERIODES));
 
 $smarty->assign("action", "titu");

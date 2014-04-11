@@ -4,7 +4,6 @@ include (INSTALL_DIR."/inc/entetes.inc.php");
 
 // ----------------------------------------------------------------------------
 //
-
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 
@@ -28,6 +27,7 @@ switch ($action) {
 		include ("inc/gestEcran.php");
 		break;
 	case 'gestionCotes':
+		die($action);
 		include ("inc/gestCotes.php");
 		break;
 	case 'pdf':

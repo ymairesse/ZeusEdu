@@ -1,6 +1,14 @@
 <?php
+$unAn = time() + 365*24*3600;
 $bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
-$tri = isset($_REQUEST['tri'])?$_REQUEST['tri']:'alpha';
+
+if (isset($_POST['tri'])) {
+	$tri = $_POST['tri'];
+	setcookie('tri',$tri,$unAn, null, null, false, true);
+	}
+	else $tri = $_COOKIE['tri'];
+$smarty->assign('tri', $tri);
+
 $coursGrp = isset($_REQUEST['coursGrp'])?$_REQUEST['coursGrp']:Null;
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
@@ -37,7 +45,7 @@ if ($coursGrp) {
 			$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
 			$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 			// break;  pas de break, on continue
-		case 'encodage':
+		default:
 			// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 			$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);
 
@@ -92,7 +100,7 @@ if ($coursGrp) {
 	}
 	
 // par défaut
-$smarty->assign("tri",$tri);
+
 $smarty->assign("mode","encodage");
 $smarty->assign("nbBulletins", NBPERIODES);
 $smarty->assign("selecteur", "selectBulletinCours");

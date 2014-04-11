@@ -1,18 +1,35 @@
 <?php
-$bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
+$unAn = time() + 365*24*3600;
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
-$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
-$niveau = isset($_REQUEST['niveau'])?$_REQUEST['niveau']:Null;
+$bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
+
+if (isset($_POST['classe'])) {
+	$classe = $_POST['classe'];
+	setcookie('classe',$classe,$unAn, null, null, false, true);
+	}
+	else $classe = $_COOKIE['classe'];
+$smarty->assign('classe', $classe);
+
+if (isset($_POST['matricule'])) {
+	$matricule = $_POST['matricule'];
+	setcookie('matricule',$matricule,$unAn, null, null, false, true);
+	}
+	else $matricule = $_COOKIE['matricule'];
+$smarty->assign('matricule', $matricule);
+
+if (isset($_POST['niveau'])) {
+	$niveau = $_POST['niveau'];
+	setcookie('niveau',$niveau,$unAn, null, null, false, true);
+	}
+	else $niveau = $_COOKIE['niveau'];
+$smarty->assign('niveau', $niveau);
+
 $acronyme = $_SESSION[APPLICATION]->getAcronyme();
 
 switch ($mode) {
 	case 'archive':
 		$annee = isset($_POST['annee'])?$_POST['annee']:Null;
-		$niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
-		$smarty->assign('annee',$annee);
-		$smarty->assign('niveau',$niveau);
-		$smarty->assign('matricule',$matricule);
+
 		$smarty->assign('listeAnnees', $Bulletin->anneesArchivesDispo());
 		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
 		$smarty->assign('action',$action);
@@ -20,7 +37,7 @@ switch ($mode) {
 		$smarty->assign('selecteur','selectAnneeNiveauEleve');
 		if ($etape == 'showEleve') {
 			$listeElevesArchives = $Bulletin->listeElevesArchives($annee, $niveau);
-			$smarty->assign("listeEleves", $listeElevesArchives);
+			$smarty->assign('listeEleves', $listeElevesArchives);
 			$nomEleve = isset($_POST['nomEleve'])?$_POST['nomEleve']:Null;
 			$anneeScolaire = isset($_POST['annee'])?$_POST['annee']:Null;
 			$smarty->assign('nomEleve', $nomEleve);
@@ -37,22 +54,20 @@ switch ($mode) {
 		if ($classe != Null) 
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			else $listeEleves = Null;
-		$smarty->assign("listeClasses", $listeClasses);
-		$smarty->assign("classe", $classe);
-		$smarty->assign("listeElevesClasse", $listeEleves);
-		$smarty->assign("nbBulletins", NBPERIODES);
-		$smarty->assign("bulletin", $bulletin);
-		$smarty->assign("action", "pdf");
-		$smarty->assign("selecteur", "selectBulletinClasseEleve");
-		$smarty->assign("mode", "bulletinIndividuel");
+		$smarty->assign('listeClasses', $listeClasses);
+		$smarty->assign('listeEleves', $listeEleves);
+		$smarty->assign('nbBulletins', NBPERIODES);
+		$smarty->assign('bulletin', $bulletin);
+		$smarty->assign('action', 'pdf');
+		$smarty->assign('mode', 'bulletinIndividuel');
+		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
 
 		if ($etape == 'showEleve') {
 			if ($matricule) {
-				$smarty->assign('matricule', $matricule);
 				$smarty->assign('acronyme', $acronyme);
 				// effacement de tous les fichiers PDF de l'utilisateur sauf pour les admins
 				if ($user->userStatus($Application->repertoireActuel()) != 'admin')
-					$Application->vider("./pdf/$acronyme");
+					$Application->vider('./pdf/$acronyme');
 				$dataEleve = array(
 						'matricule'=>$matricule,
 						'classe'=>$classe,
@@ -62,7 +77,7 @@ switch ($mode) {
 						);
 				$link = $Bulletin->createPDFeleve($dataEleve, $bulletin, $acronyme);
 				$smarty->assign('link',$link);
-				$smarty->assign("corpsPage", "corpsPage");
+				$smarty->assign('corpsPage', 'corpsPage');
 				}
 			}
 		break;
@@ -71,7 +86,6 @@ switch ($mode) {
 		$listeClasses = $Ecole->listeGroupes(array('G','TT','S'));
 		$smarty->assign('selecteur', 'selectBulletinClasse');
 		$smarty->assign('listeClasses', $listeClasses);
-		$smarty->assign('classe', $classe);
 		$smarty->assign('nbBulletins', NBPERIODES);
 		$smarty->assign('bulletin', $bulletin);
 		$smarty->assign('action', 'pdf');
@@ -84,21 +98,19 @@ switch ($mode) {
 				$listeEleves = $Ecole->listeEleves($classe,'groupe');
 				// effacement de tous les fichiers PDF de l'utilisateur sauf pour les admins
 				if ($user->userStatus($Application->repertoireActuel()) != 'admin')
-					$Application->vider ("./pdf/$acronyme");
+					$Application->vider ('./pdf/$acronyme');
 
 				$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme);
-				$smarty->assign('classe', $classe);
 				$smarty->assign('acronyme', $acronyme);
 				$smarty->assign('link',$link);
-				$smarty->assign("corpsPage", "corpsPage");
+				$smarty->assign('corpsPage', 'corpsPage');
 				}
 			}
 		break;
 	case 'niveau':
-		$smarty->assign("nbBulletins", NBPERIODES);
+		$smarty->assign('nbBulletins', NBPERIODES);
 		$listeNiveaux = $Ecole->listeNiveaux();
 		$smarty->assign('selecteur','selectBulletinNiveau');
-		$smarty->assign('niveau',$niveau);
 		$smarty->assign('listeNiveaux',$listeNiveaux);
 		$smarty->assign('bulletin',$bulletin);
 		$smarty->assign('action','pdf');
@@ -108,16 +120,15 @@ switch ($mode) {
 			if ($niveau) {
 				$listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', array('G','TT','S'));
 				if ($user->userStatus($Application->repertoireActuel()) != 'admin')
-					$Application->vider("./pdf/$acronyme");
+					$Application->vider('./pdf/$acronyme');
 				// accumuler tous les bulletins dans des fichiers par classe
 				foreach ($listeClasses as $classe) {
 					$listeEleves = $Ecole->listeEleves($classe,'groupe');
 					$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme, true);
 					}
 				// zipper l'ensemble des fichiers
-				$Application->zipFilesNiveau ("pdf/$acronyme", $listeClasses);
+				$Application->zipFilesNiveau ('pdf/$acronyme', $listeClasses);
 				$smarty->assign('acronyme', $acronyme);
-				$smarty->assign('niveau', $niveau);
 				$smarty->assign('link',$niveau);
 				$smarty->assign('corpsPage','corpsPage');
 				}
@@ -126,20 +137,20 @@ switch ($mode) {
 	case 'delete':
 		if ($etape == 'confirmation') {
 			foreach ($_POST as $nomChamp=>$value) {
-				if (preg_match("/^del#/",$nomChamp)) 
-					@unlink("./pdf/$acronyme/$value");
+				if (preg_match('/^del#/',$nomChamp)) 
+					@unlink('./pdf/$acronyme/$value');
 				}
 			}	
 		// break;  pas de break
 	default: 
-		$listeFichiers = $Application->scanDirectories ("./pdf/$acronyme/");
+		$listeFichiers = $Application->scanDirectories ('./pdf/$acronyme/');
 		$smarty->assign('action', 'pdf');
 		$smarty->assign('mode', 'delete');
 		$smarty->assign('etape', 'confirmation');
-		$smarty->assign("acronyme",$acronyme);
-		$smarty->assign("listeFichiers", $listeFichiers);
-		$smarty->assign("userName", $acronyme);
-		$smarty->assign("corpsPage", "tableauFichiersPDF");
+		$smarty->assign('acronyme',$acronyme);
+		$smarty->assign('listeFichiers', $listeFichiers);
+		$smarty->assign('userName', $acronyme);
+		$smarty->assign('corpsPage', 'tableauFichiersPDF');
 		break;
 	}
 ?>

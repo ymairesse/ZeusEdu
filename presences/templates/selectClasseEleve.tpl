@@ -1,4 +1,3 @@
-{debug}
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 		<input type="hidden" name="matricule2" id="matricule2">

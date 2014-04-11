@@ -1,7 +1,23 @@
 <?php
+$unAn = time() + 365*24*3600;
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$coursGrp = isset($_REQUEST['coursGrp'])?$_REQUEST['coursGrp']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
+
+if (isset($_POST['coursGrp'])) {
+	$coursGrp = $_POST['coursGrp'];
+	setcookie('coursGrp',$coursGrp,$unAn, null, null, false, true);
+	}
+	else $coursGrp = $_COOKIE['coursGrp'];
+$smarty->assign('coursGrp', $coursGrp);
+// $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
+
+if (isset($_POST['matricule'])) {
+	$matricule = $_POST['matricule'];
+	setcookie('matricule',$matricule,$unAn, null, null, false, true);
+	}
+	else $matricule = $_COOKIE['matricule'];
+$smarty->assign('matricule', $matricule);
+
+// $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
 
 $listeCours = $user->listeCoursProf("'G','S','TT'");
 
@@ -47,7 +63,7 @@ switch ($mode) {
 					$admin = $_SESSION[APPLICATION]->getUserStatus($module);
 					$intituleCours = $Bulletin->intituleCours($coursGrp);
 					$smarty->assign("periodes", explode(",", NOMSPERIODES));					
-					$smarty->assign("matricule", $matricule);
+// 					$smarty->assign("matricule", $matricule);
 					$smarty->assign("admin",$admin);
 					$smarty->assign("ponderations", $ponderations);
 					$smarty->assign("nbPeriodes", NBPERIODES);
