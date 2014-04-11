@@ -1,4 +1,4 @@
- <?php
+<?php
 $unAn = time() + 365*24*3600;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 if (isset($_POST['coursGrp'])) {
