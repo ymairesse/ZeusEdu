@@ -1,4 +1,4 @@
-<img style="float:right; width:100px; position: relative; top: -60px;" src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="photo draggable" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
+<img style="float:right; height:150px; position: relative; top: -150px; margin-bottom: -150px" src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="photo draggable" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
 
 {if ($userStatus == 'educ') || ($userStatus == 'admin')}
 {* boutons pour ajouter un fait disciplinaire *}
