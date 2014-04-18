@@ -26,7 +26,7 @@
 		<h3 style="clear:both;background-color: #{$descriptionTypeFait.couleurFond}; color: #{$descriptionTypeFait.couleurTexte}">
 			{$descriptionTypeFait.titreFait}</h3>
 		
-		<table class="tableauAdmin">
+		<table class="tableauBull">
 			{* ----------------- ligne de titre du tableau  -------------------------- *}
 			<tr>
 				<th>&nbsp;</th>
