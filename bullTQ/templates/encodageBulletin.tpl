@@ -1,4 +1,5 @@
 {assign var="ancre" value=$matricule}
+
 <h2 title="{$libelleCours.coursGrp}">Bulletin {$bulletin} - {$libelleCours.cours} {$libelleCours.libelle} {$libelleCours.nbheures}h </h2>
 
 <form name="formBulletin" id="formBulletin" action="index.php" method="POST">
@@ -11,6 +12,7 @@
 	<input type="hidden" name="mode" value="enregistrer">
 	<input type="hidden" name="bulletin" value="{$bulletin}">
 	<input type="hidden" name="coursGrp" value="{$coursGrp}">
+	<input type="hidden" name="matricule" id="matricule" value="{$matricule}">
 	
 	<select name="selectEleve" id="selectEleve">
 		<option value=''>Sélectionner un élève</option>
@@ -38,7 +40,7 @@
 		<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$unEleve.nom} {$unEleve.prenom} {$matricule}">
 		<p><strong>Classe: {$unEleve.classe}</strong></p>
 	
-		<input type="submit" name="submit" value="Enregistrer tout"
+		<input type="submit" name="submit" value="Enregistrer tout" id="el{$matricule}"
 		title="Enregistre l'ensemble des modifications de la page" class="noprint enregistrer"><span></span>
 		</div>
 	
@@ -117,11 +119,6 @@
 
 <hr>
 <script type="text/javascript">
-
-{if isset($ancre)}
-	window.location.href="index.php#{$ancre}"
-{/if}
-
 {literal}
 var show = "Cliquer pour voir";
 var hide = "Cliquer pour cacher";
@@ -255,6 +252,20 @@ $(document).ready(function(){
 });
 
 {/literal}
+
+function goToByScroll(id){
+	var adresse = "#"+id;
+	var offset = $(adresse).offset();
+	$('html,body').animate({
+		scrollTop: $("#"+id).offset().top-100
+		},
+		'slow'
+		);
+	}
+
+{if (isset($ancre))}
+	goToByScroll("{$ancre}")
+{/if}
 
 {if isset($tableErreurs)} alert(erreursEncodage){/if}
 </script>
