@@ -8,7 +8,6 @@ if (isset($_POST['coursGrp'])) {
 	}
 	else $coursGrp = $_COOKIE['coursGrp'];
 $smarty->assign('coursGrp', $coursGrp);
-// $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 
 if (isset($_POST['matricule'])) {
 	$matricule = $_POST['matricule'];
@@ -16,8 +15,6 @@ if (isset($_POST['matricule'])) {
 	}
 	else $matricule = $_COOKIE['matricule'];
 $smarty->assign('matricule', $matricule);
-
-// $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
 
 $listeCours = $user->listeCoursProf("'G','S','TT'");
 

@@ -76,7 +76,7 @@ switch ($mode) {
 				// pas d'indication de numéro de période, afin de les avoir toutes
 				$commentairesProfs = $Bulletin->listeCommentairesTousCours($matricule, Null);
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
-				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
+				// $ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 				
 				// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
 				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);

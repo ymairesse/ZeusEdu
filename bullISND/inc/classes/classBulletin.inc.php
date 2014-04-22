@@ -4102,7 +4102,7 @@ class Bulletin {
 			$cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 			$commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
 			$mention = $this->listeMentions($matricule, $bulletin,$annee);
-			$ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
+			// $ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
 			$remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
 			$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;
 			$noticeDirection = $this->noteDirection($annee, $bulletin);
@@ -4171,7 +4171,7 @@ class Bulletin {
 				$cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 				$commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
 				$mention = $this->listeMentions($matricule, $bulletin, $annee);
-				$ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
+				// $ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
 				$remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
 				// tableau des attitudes seulement au premier degré.
 				$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;

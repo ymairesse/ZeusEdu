@@ -20,6 +20,7 @@ $smarty->assign('matricule', $matricule);
 switch ($mode) {
 	case 'bulletinIndividuel':
 		$listeClasses = $Ecole->listeGroupes(array('G','TT'));
+		
 		if ($classe != Null) 
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe', false);
 			else $listeEleves = Null;
@@ -51,8 +52,7 @@ switch ($mode) {
 
 				$commentairesCotes = $Bulletin->listeCommentairesTousCours($matricule, $bulletin);
 				$mentions = $Bulletin->listeMentions($matricule, $bulletin);
-			
-				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
+				// $ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 				$remarqueTitulaire = $Bulletin->remarqueTitu($matricule, $bulletin);
 				if ($remarqueTitulaire != Null)
 					$remarqueTitulaire = $remarqueTitulaire[$matricule][$bulletin];
