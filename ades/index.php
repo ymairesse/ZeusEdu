@@ -81,15 +81,6 @@ if (isset($afficherEleve) && ($afficherEleve == true)) {
 	$smarty->assign('corpsPage','ficheEleve');
 }
 
-if ($smarty->getTemplateVars('selecteur') == Null) {
-	$smarty->assign('listeClasses', $Ecole->listeGroupes());
-	if (isset($classe))
-		$smarty->assign('listeEleves', $Ecole->listeEleves($classe));
-	$smarty->assign('action','eleves');
-	$smarty->assign('mode','selection');
-	$smarty->assign('selecteur','selectClasseEleve');
-	}
-
 //
 // ----------------------------------------------------------------------------
 $smarty->assign("executionTime",round(Application::chrono()-$debut,6));
