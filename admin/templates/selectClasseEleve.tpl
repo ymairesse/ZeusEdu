@@ -13,7 +13,7 @@
 			{if isset($listeEleves)}
 				{* key = matric car $matricule est passé en argument *}
 				{foreach from=$listeEleves key=matric item=eleve}
-				<option value="{$matric}"{if isset($matricule) && ($matric == $matricule)} selected{/if}>
+				<option value="{$matric}"{if isset($matricule) && ($matric == $matricule)} selected="selected"{/if}>
 					{$eleve.nom} {$eleve.prenom}</option>
 				{/foreach}
 			{/if}
@@ -51,7 +51,7 @@ $(document).ready (function() {
 			)
 	});
 
-	$("#selectEleve").live("change", function(){
+	$("#selectEleve").change(function(){
 		if ($(this).val() > 0) {
 			// si la liste de sélection des élèves renvoie une valeur significative
 			// le formulaire est soumis
