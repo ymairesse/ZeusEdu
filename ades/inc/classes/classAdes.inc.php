@@ -97,7 +97,11 @@ class Ades {
 		return $liste;
 	}
 
-
+	/** 
+	 * Lecture de la description des champs dans la BD
+	 * @param 
+	 * @return array
+	 */
 	private function lireDescriptionChamps(){
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."adesChamps ";
@@ -201,17 +205,16 @@ class Ades {
 	 */
 	public function listeRetenues ($typeRetenue, $affiche=true) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT 	type, idretenue, dateRetenue, heure, duree, local, places, affiche, ";
-		$sql .= "(SELECT COUNT(*) ";
-		$sql .= "FROM ".PFX."adesFaits ";
-		$sql .= "WHERE ".PFX."adesFaits.idretenue = ".PFX."adesRetenues.idretenue) as occupation ";
+		$sql = "SELECT type, idretenue, dateRetenue, heure, duree, local, places, affiche ";
+		//$sql .= "(SELECT COUNT(*) ";
+		//$sql .= "FROM ".PFX."adesFaits ";
+		//$sql .= "WHERE ".PFX."adesFaits.idretenue = ".PFX."adesRetenues.idretenue) as occupation ";
 		$sql .= "FROM ".PFX."adesRetenues ";
 		$sql .= "WHERE type='$typeRetenue' ";
 		if ($affiche == true)
-			$sql .= "AND affiche = true ";
+			$sql .= "AND affiche = 'O' ";
 		$sql .= "AND dateRetenue > '".BEGINDATE."' ";
 		$sql .= "ORDER BY dateRetenue, heure ";
-
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
@@ -220,7 +223,23 @@ class Ades {
 				$idretenue = $ligne['idretenue'];
 				$ligne['jourSemaine'] = Application::jourSemaineMySQL($ligne['dateRetenue']);
 				$ligne['dateRetenue'] = Application::datePHP($ligne['dateRetenue']);
+				$ligne['occupation'] = 0;
 				$liste[$idretenue] = $ligne;
+				}
+			}
+		$listeIdRetenue = implode(',',array_keys($liste));
+
+		$sql = "SELECT idretenue, COUNT(*) as occupation ";
+		$sql .= "FROM ".PFX."adesFaits ";
+		$sql .= "WHERE idretenue IN ($listeIdRetenue) ";
+		$sql .= "GROUP BY idretenue ";
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$listeOccupation = $resultat->fetchall();
+			foreach ($listeOccupation as $wtf=>$data) {
+				$idretenue = $data['idretenue'];
+				$liste[$idretenue]['occupation']=$data['occupation'];
 				}
 			}
 		Application::DeconnexionPDO($connexion);
@@ -317,7 +336,7 @@ class Ades {
 		$sql .= "FROM ".PFX."adesFaits ";
 		$sql .= "JOIN ".PFX."eleves ON (".PFX."eleves.matricule = ".PFX."adesFaits.matricule) ";
 		$sql .= "WHERE idretenue = '$idretenue' ";
-		$sql .= "ORDER BY groupe ";
+		$sql .= "ORDER BY nom, prenom, groupe ";
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {

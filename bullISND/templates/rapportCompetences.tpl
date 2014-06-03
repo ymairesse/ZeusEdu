@@ -11,16 +11,17 @@
 		{if isset($listeAcquis.$matricule)}
 		{assign var=lesCoursEleve value=$listeAcquis.$matricule}
 		{* $lesCours = liste des cours de l'élève courant avec les informations de cotes et d'acquisition OK ou KO *}
-		{foreach from=$lesCoursEleve key=abrCours item=dataCompetences}
+
+		{foreach from=$lesCoursEleve key=leCours item=dataCompetences}
 		<tr>
-			<td class="nomCours" colspan="2"><h4>{$listeCours.$abrCours.libelle}</h4></td>
+			<td class="nomCours" colspan="2"><h4>{$listeCours.$leCours.dataCours.libelle}</h4></td>
 		</tr>
 			{foreach from=$dataCompetences key=idComp item=uneCompetence}
 				<tr>
-					<td>{$listeCompetences.$abrCours.$idComp.libelle}
-						<span class="noprint hide">{if isset($listeAcquis.$matricule)}{$listeAcquis.$matricule.$abrCours.$idComp.cote}/{$listeAcquis.$matricule.$abrCours.$idComp.max}{/if}}</span>
+					<td>{$listeCompetences.$leCours.$idComp.libelle}
+						<span class="noprint hide">{if isset($listeAcquis.$matricule)}{$listeAcquis.$matricule.$leCours.$idComp.cote}/{$listeAcquis.$matricule.$leCours.$idComp.max}{/if}}</span>
 					</td>
-					<td style="text-align:center">{if isset($listeAcquis.$matricule)}{$listeAcquis.$matricule.$abrCours.$idComp.acq}{/if}</td>
+					<td style="text-align:center">{if isset($listeAcquis.$matricule)}{$listeAcquis.$matricule.$leCours.$idComp.acq}{/if}</td>
 				</tr>
 			{/foreach}
 		{/foreach}
@@ -36,7 +37,7 @@
 		{if $signature == true}
 		<tr>
 			<td  width="75%"><img src="images/sceauISND.png" width="240" border="0" alt="Sceau ISND" /></td>
-			<td width="25%"><img src="images/ams.jpg" width="149" border="0" alt="Signature" /></td>
+			<td width="25%"><img src="images/direction.jpg" width="200" border="0" alt="Signature" /></td>
 		</tr>
 		{/if}
 	</table>

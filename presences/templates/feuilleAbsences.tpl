@@ -38,11 +38,11 @@
 			</td>
 			
 			<td>
-			{* on passe le différentes périodes existantes en revue*}
+			{* on passe le différentes périodes existantes en revue *}
 			{foreach from=$lesPeriodes item=noPeriode}
 				{* s'il s'agit de la période actuelle, on présente la case à cocher (éventuellement cochée) *}
 				{if $noPeriode == $periode}
-					<input type="checkbox" value="{$matricule}" name="abs_{$matricule}"
+					<input type="checkbox" value="{$matricule}" name="abs_{$matricule}" class="cb"
 						{if isset($listeAbsences.$matricule) && in_array($noPeriode, $listeAbsences.$matricule)} checked="checked"{/if}>
 					{else}
 						{if isset($listeAbsences.$matricule) && in_array($noPeriode,$listeAbsences.$matricule)}
@@ -97,7 +97,6 @@
 		// click sur la case à cocher ne provoque aucun effet supplémentaire; tout est traité dans le col1.click
 		$(".col1 input[type='checkbox']").click(function(event){
 			$(this).parent().trigger("click");
-
 			})
 		
 		$(".col1").click(function(event){
@@ -129,6 +128,18 @@
 		$("#listeEleves").submit(function(){
 			window.onbeforeunload = function(){};
 			})
+		
+		$(".cb").click(function(e){
+			// var test = $(this).parent().trigger("click");
+			// return false;
+			})
+		
+		// il suffit de cliquer sur le <td> contenant les cases à cocher
+		$(".tableauPresences td").click(function(e){
+			$(this).find('input:checkbox').trigger("click");
+			// e.preventDefault();
+			})
+
 
 	})
 {/literal}

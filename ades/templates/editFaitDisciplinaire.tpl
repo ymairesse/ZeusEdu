@@ -1,6 +1,7 @@
 <h2>{$eleve.nom} {$eleve.prenom} | {$eleve.groupe}</h2>
 
 {assign var=contexte value='formulaire'}
+{assign var="tabIndex" value="1"}
 
 <h3 style="color:#{$prototype.structure.couleurTexte}; background-color:#{$prototype.structure.couleurFond}">{$prototype.structure.titreFait}</h3>
 {strip}
@@ -24,9 +25,11 @@
 			{if $data.size > 0} size="{$data.size}"{/if}
 			{if $data.maxlength > 0} maxlength="{$data.maxlength}"{/if}
 			{if $data.colonnes > 0} cols="{$data.colonnes}"{/if}
-			{if $data.lignes > 0} rows="{$data.lignes}"{/if}>
+			{if $data.lignes > 0} rows="{$data.lignes}"{/if}
+			tabIndex="{$tabIndex}">
 			{if $unChamp == 'professeur'} <span id="nomPrenom"></span>{/if}
 			<br>
+			{assign var="tabIndex" value=$tabIndex+1}
 		{/if}
 		{/strip}
 		
@@ -35,21 +38,25 @@
 		{if $data.typeChamp == 'textarea'}
 			<textarea {if $data.colonnes > 0}cols="{$data.colonnes}" {/if}
 				{if $data.lignes > 0}rows="{$data.lignes}" {/if}
-				name="{$unChamp}">{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}</textarea>
-
+				name="{$unChamp}"
+				tabIndex="{$tabIndex}">{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}
+				</textarea>
+				{assign var="tabIndex" value=$tabIndex+1}
 				<span class="saveMotif" id="{$unChamp}" title="Enregistrer"><img src="../images/disk.png" alt="xx"></span>
 				<span class="saveOK_{$unChamp}"></span><br>
 
 				{if isset($listeMemos.$unChamp)}
 				<label for="memos_{$unChamp}">^^^^^^^</label>
 				{assign var=liste value=$listeMemos.$unChamp}
-					<select name="memos" class="memos" id="memos_{$unChamp}" style="width:40em">
+					<select name="memos" class="memos" id="memos_{$unChamp}" style="width:40em" tabIndex="{$tabIndex}">
 						<option value="">Sélectionner un texte</option>
 						{foreach from=$liste key=k item=unMemo}
 						<option value="{$k}">{$unMemo.texte}</option>
 						{/foreach}
 					</select>
-				<a href="javascript:void(0)" class="copier" title="copier le texte"><span ><img src="../images/up.png" alt="^"></span></a>
+					{assign var="tabIndex" value=$tabIndex+1}
+				<a href="javascript:void(0)" class="copier" title="copier le texte" tabIndex="{$tabIndex}"><span ><img src="../images/up.png" alt="^"></span></a>
+				{assign var="tabIndex" value=$tabIndex+1}
 				{/if}
 				
 			<br>
@@ -61,7 +68,7 @@
 		{if $data.typeChamp == 'select'}
 			{if $unChamp == 'idretenue'}
 			<input type="hidden" name="oldIdretenue" value="{$fait.idretenue|default:''}">
-			<select name="{$unChamp}" id="{$unChamp}">
+			<select name="{$unChamp}" id="{$unChamp}" tabindex="{$tabIndex}">
 				<option value=''>Choisir une date</option>
 				{foreach from=$listeRetenues key=unidretenue item=uneRetenue}
 					{if $uneRetenue.affiche == 'O'}
@@ -71,6 +78,7 @@
 					{/if}
 				{/foreach}
 			</select>
+			{assign var="tabIndex" value=$tabIndex+1}
 			{/if}
 			<br>
 		{/if}
@@ -92,9 +100,11 @@
 	{/if}
 	
 	{/foreach}
-	<input type="submit" name="submit" value="Enregistrer">
-	<input type="reset" name="reset" value="Annuler">
-	<a href="index.php?action=eleves&amp;classe={$classe}&amp;matricule={$matricule}" style="float:right"><span class="fauxBouton">Retour sans enregistrer</span></a>
+	<input type="submit" name="submit" value="Enregistrer" tabIndex="{$tabIndex}">
+	{assign var="tabIndex" value=$tabIndex+1}
+	<input type="reset" name="reset" value="Annuler" tabIndex="{$tabIndex}">
+	{assign var="tabIndex" value=$tabIndex+1}
+	<a href="index.php?action=eleves&amp;classe={$classe}&amp;matricule={$matricule}" style="float:right" tabIndex="{$tabIndex}"><span class="fauxBouton">Retour sans enregistrer</span></a>
 	<input type="hidden" name="classe" value="{$eleve.groupe}">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">

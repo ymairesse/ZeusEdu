@@ -1,8 +1,7 @@
 <?php
-
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 $bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
-$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
+$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
 $smarty->assign('matricule',$matricule);
 if ($mode == 'enregistrer') {
 	$data = $BullTQ->organiserData($_POST);

@@ -1,7 +1,6 @@
 <?php
 $unAn = time() + 365*24*3600;
 $bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
-
 if (isset($_POST['tri'])) {
 	$tri = $_POST['tri'];
 	setcookie('tri',$tri,$unAn, null, null, false, true);
@@ -9,9 +8,19 @@ if (isset($_POST['tri'])) {
 	else $tri = $_COOKIE['tri'];
 $smarty->assign('tri', $tri);
 
-$coursGrp = isset($_REQUEST['coursGrp'])?$_REQUEST['coursGrp']:Null;
+if (isset($_POST['coursGrp'])) {
+	$coursGrp = $_POST['coursGrp'];
+	setcookie('coursGrp',$coursGrp,$unAn, null, null, false, true);
+	}
+	else $coursGrp = $_COOKIE['coursGrp'];
+
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
+//if(isset($_POST['matricule'])) {
+//	$matricule = $_POST['matricule'];
+//	setcookie('matricule',$matricule,$unAn, null, null, false, true);
+//	}
+//	else $matricule = $_COOKIE['matricule'];
+$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 
 $smarty->assign("bulletin", $bulletin);
 $smarty->assign("coursGrp",$coursGrp);

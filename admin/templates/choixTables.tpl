@@ -1,5 +1,9 @@
 <h3>Choix des tables à sauvegarder</h3>
 <form name="applisSwitch" method="POST" action="index.php">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="{$mode}">
+	<input name="submit" id="submit" value="Sauvegarder" type="submit">
+    <input name="reset" value="Annuler" type="reset">
 <table class="tableauAdmin">
 	<tr>
 		<th>Tables</th>
@@ -20,10 +24,6 @@
 	</tr>
 {/foreach}
 </table>
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
-	<input name="submit" id="submit" value="Sauvegarder" type="submit">
-    <input name="reset" value="Annuler" type="reset">
 </form>
 
 <script type="text/javascript">

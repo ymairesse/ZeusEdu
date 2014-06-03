@@ -457,3 +457,11 @@ th.cert, td.cert, .cert {
 	background-color: #aaa
 	}
 	
+.disabled {
+	color: grey;
+	font-weight: normal;
+	}
+.enabled {
+	color: black;
+	font-weight: bolder;
+	}

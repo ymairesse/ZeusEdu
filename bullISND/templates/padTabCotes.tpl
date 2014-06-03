@@ -1,6 +1,6 @@
 <!-- année scolaire en cours -->
 {assign var=annee value=$classe|substr:0:1}
-<h3>Résultats de {$annee}e année</h3>
+<h3>Résultats de {$annee}e année (année scolaire en cours)</h3>
 <table style="font-size:0.8em" class="tableauTitu">
 	<tr>
 		<th>&nbsp;</th>
@@ -33,12 +33,12 @@
 </table>
 
 <!-- Années scolaires précédentes -->
-
+<h3>Année(s) scolaire(s) précédentes</h3>
 {foreach from=$syntheseToutesAnnees key=annee item=dataSynthese}
 
 {assign var=listeCoursGrp value=$dataSynthese.listeCours}
 {assign var=resultats value=$dataSynthese.resultats}
-<h3>Résultats de {$annee}e année</h3>
+<h4>Résultats de {$annee}e année</h4>
 
 	<table style="font-size:0.8em" class="tableauTitu">
 		<tr>

@@ -15,7 +15,37 @@ switch ($mode) {
 		// $Bulletin->ajouteTV();
 
 		break;
-	
+	case 'eprExternes':
+		// sélection d'un cours pour lequel il faut initialiser la table des épreuves externes
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
+		$smarty->assign('listeNiveaux', Ecole::listeNiveaux());
+		$smarty->assign('niveau',$niveau);
+		$smarty->assign('selecteur','selectNiveau');
+
+		if (($niveau != Null)) {
+			// liste de tous les cours suivis par des élèves à ce niveau
+			$smarty->assign('listeCoursNiveau',$Bulletin->listeCoursSuivisNiveau($niveau));
+
+			$smarty->assign('etape','enregistrement');			
+			// recherche de tous les coursGrp pour le cours sélectionné	et initialisation de la table pour le cours choisi
+			if (isset($cours) && ($etape == 'enregistrement')) {
+				$listeElevesCoursGrp = $Bulletin->elevesCoursGrpDeCours($cours);
+				$nb = $Bulletin->initEpreuvesExternes($listeElevesCoursGrp);
+				$smarty->assign("message", array(
+								'title'=>"Enregistrement",
+								'texte'=>"$nb enregistrement(s) effectué(s)"));
+				}
+			
+			// liste des cours à épreuve externe défjà définis, pour affichage sur la page
+			$smarty->assign('listeCours', $Bulletin->listeCoursEpreuveExterne($niveau));
+			// nombre de cotes déjà attribuées par coursGrp (nécessaire pour savoir si la suppression est possible)
+			$smarty->assign('nbCotesExtCoursGrp', $Bulletin->nbCotesExtCoursGrp($niveau));
+
+			$smarty->assign('cours',$cours);
+			$smarty->assign('corpsPage','initEprExternes');
+		}
+		break;
 	case 'remplacants':
 		$profsParCours = $Ecole->listeCoursGrpProf($Ecole->listeNiveaux());
 		$listeRemplacements = $Ecole->listeRemplacants($profsParCours);

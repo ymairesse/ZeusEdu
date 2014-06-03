@@ -18,12 +18,14 @@
 {assign var="tabIndexForm" value="1"}
 {assign var="tabIndexCert" value="500"}
 {assign var="tabIndexAutres" value="1000"}
+
 <select name="selectEleve" id="selectEleve">
 	<option value=''>Sélectionner un élève</option>
 	{foreach from=$listeEleves key=matricule item=unEleve}
 	<option value="{$matricule}" id="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
 	{/foreach}
 </select>
+
 {foreach from=$listeEleves key=matricule item=unEleve}
 <div id="el{$matricule}" class="eleve">
 	<div class="blocGaucheBulletin photo" style="text-align:center">
@@ -41,7 +43,7 @@
 	<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$unEleve.nom} {$unEleve.prenom} {$matricule}">
 	<p><strong>Classe: {$unEleve.classe}</strong></p>
 
-	<input type="submit" name="submit" value="Enregistrer tout" id="el{$matricule}"
+	<input type="submit" name="submit" value="Enregistrer tout" id="{$matricule}"
 	title="Enregistre l'ensemble des modifications de la page" class="noprint enregistrer"><span></span>
 	
 	</div>
@@ -722,11 +724,10 @@ $(document).ready(function(){
 		$("#situation-eleve_"+matricule).val('');
 		})
 
-	function goToByScroll(id){
-		var adresse = "#"+id;
-		var offset = $(adresse).offset();
+		
+	function goToByScroll(matricule){
      	$('html,body').animate({
-			scrollTop: $("#"+id).offset().top-100
+			scrollTop: $("#"+matricule).offset().top-100
 			},
 			'slow'
 			);
@@ -750,12 +751,10 @@ $(document).ready(function(){
 		})
 
 	{if (isset($ancre))}
-		goToByScroll("{$ancre}")
+		goToByScroll("el{$ancre}")
 	{/if}
 
 });
-
-
 
 {if $tableErreurs} alert(erreursEncodage){/if}
 </script>

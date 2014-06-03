@@ -146,31 +146,6 @@ class Application {
 		return range($debut,$nbBulletins);
 		}
 		
-	
-	/***
-	 * renvoie la liste des applications existantes (et, éventuellement, seulement celles qui sont activées)
-	 * @param boolean $active
-	 * @return array
-	 */
-	public function listeApplis($actives='') {
-		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT nom, nomLong, active ";
-		$sql .= "FROM ".PFX."applications ";
-		if ($actives)
-			$sql .= "WHERE active ";
-		$sql .= "ORDER BY ordre, LOWER(nom)";
-		$resultat = $connexion->query($sql);
-		$liste = array();
-		while ($ligne = $resultat->fetch()) {
-			$nom = $ligne['nom'];
-			$nomLong = $ligne['nomLong'];
-			$active = $ligne['active'];
-			$liste[$nom] = array("nom"=>$nom, "nomLong"=>$nomLong, "active"=>$active);
-			}
-		self::DeconnexionPDO($connexion);
-		return $liste;
-	}
-	
 	/***
 	 * liste de tous les droits existants dans la BD pour les différentes applications
 	 * educ, prof, admin, direction,... et tous les autres statuts éventuels existants
@@ -178,7 +153,6 @@ class Application {
 	 * @param
 	 * @return array
 	 */
-	
 	public function listeDroits () {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT userStatus FROM ".PFX."userStatus ORDER BY ordre";
@@ -633,7 +607,7 @@ class Application {
 	   }
 	
 	/**
-	* On fournit une liste de tables; la procédure fabrique un fichiers .sql permettant la restauration des tables désignées
+	* On fournit une liste de tables; la procédure fabrique un fichier .sql permettant la restauration des tables désignées
 	* @param $post : formulaire dans lequel on a coché les noms des tables à sauvegarder
 	* @return string : nom du fichier .sql.gz créé
 	*/
@@ -643,25 +617,36 @@ class Application {
 		foreach ($post as $unItem=>$value) {
 			if (strstr($unItem, "check")) {
 			$data = explode("_",$unItem);
-			$listeTables[] = PFX.$data[1];
+			$listeTables[] = PFX.$data[2];
 			}
 		}
 		$nb = count($listeTables);
 		$nbTotal = $this->DBnumTables();
 		$listeTables = implode(" ",$listeTables);
-		if ($nb < $nbTotal)
-			$fileName = date("Y-m-d:Hms")."_$nb-tables.sql";
-			else $fileName = date("Y-m-d:Hms")."_complet.sql";
+		$fileName = Null;
+		if ($nb > 0) {
+			if ($nb < $nbTotal)
+				$fileName = date("Y-m-d:Hms")."_$nb-tables.sql";
+				else $fileName = date("Y-m-d:Hms")."_complet.sql";
 		
-		try {
-		$output = exec("mysqldump -u ".NOM." --host=".SERVEUR." --password=".MDP." ".BASE." --tables $listeTables > save/$fileName") ;
-		}
-		catch (Exception $e) {
-		die ($e->getMessage());
-		}
-		system("gzip save/$fileName");
+			try {
+			$output = exec("mysqldump -u ".NOM." --host=".SERVEUR." --password=".MDP." ".BASE." --tables $listeTables > save/$fileName") ;
+			}
+			catch (Exception $e) {
+			die ($e->getMessage());
+			}
+			system("gzip save/$fileName");
+			}
 		return $fileName;
 		}
+
+	/**
+	 * on fournit la liste des tables; la procédure fabrique des fichiers .csv permettant la restauration des tables désignées
+	* @param $post : formulaire dans lequel on a coché les noms des tables à sauvegarder
+	* @return string : nom du fichier .csv.gz créé
+	*/
+	
+	
 		
 	/**
 	 * retourne le nombre total de tables de la BD
@@ -679,6 +664,7 @@ class Application {
 		self::DeconnexionPDO ($connexion);
 		return $ligne['Tables'];
 	}
+
 
 	/**
 	 * function lireFlashInfos
@@ -1003,9 +989,8 @@ class Application {
 
 	/**
 	 * transforme un fichier .csv uploadé en un array()
-	 *
 	 * @param string $fileName : nom du fichier
-	 * @return $aarray
+	 * @return array
 	 */
 	public function csv2array ($fileName) {
 	$handle = fopen("$fileName.csv","r");
@@ -1017,15 +1002,40 @@ class Application {
 	return $tableau;
 	}
 		
-	/**
-	 * liste de toutes les tables qui présentent un champ nommé "matricule"
-	 * destinée à la suppression des anciens élèves dans toutes les tables de la BD
-	 *
-	 * @param
+
+	/***
+	 * renvoie la liste des applications existantes (et, éventuellement, seulement celles qui sont activées)
+	 * @param boolean $active
 	 * @return array
 	 */
-	function listeTablesAvecChamp ($champ){
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+	public function listeApplis($actives='') {
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT nom, nomLong, active ";
+		$sql .= "FROM ".PFX."applications ";
+		if ($actives)
+			$sql .= "WHERE active ";
+		$sql .= "ORDER BY ordre, LOWER(nom)";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		while ($ligne = $resultat->fetch()) {
+			$nom = $ligne['nom'];
+			$nomLong = $ligne['nomLong'];
+			$active = $ligne['active'];
+			$liste[$nom] = array("nom"=>$nom, "nomLong"=>$nomLong, "active"=>$active);
+			}
+		self::DeconnexionPDO($connexion);
+		return $liste;
+	}
+
+	/**
+	 * liste de toutes les tables qui présentent un champ (typiquement, "matricule")
+	 * destinée à la suppression des anciens élèves dans toutes les tables de la BD
+	 * si pas de champ spécifié, retourne toutes les tables
+	 * @param string $champ 
+	 * @return array
+	 */
+	public function listeTablesAvecChamp ($champ=''){
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		// liste de toutes les tables
 		$sql = "SHOW TABLES FROM ".BASE." LIKE '".PFX."%'";
 		$resultat = $connexion->query($sql);
@@ -1033,55 +1043,121 @@ class Application {
 		if ($resultat) 
 			while ($ligne = $resultat->fetch()) 
 				$listeTables[] = current($ligne);
-		$n=0;
-		foreach ($listeTables as $uneTable) {
-			$sql = "DESCRIBE $uneTable";		
-			$resultat = $connexion->query($sql);
-			$found = false;
-			while (!$found && $ligne = $resultat->fetch()) {
-				$found = ($ligne['Field'] == $champ);
+		if ($champ != '') {
+			$n=0;
+			foreach ($listeTables as $uneTable) {
+				$sql = "DESCRIBE $uneTable";		
+				$resultat = $connexion->query($sql);
+				$found = false;
+				while (!$found && $ligne = $resultat->fetch()) {
+					$found = ($ligne['Field'] == $champ);
+					}
+				if (!$found)
+					unset($listeTables[$n]);
+				$n++;
 				}
-			if (!$found)
-				unset($listeTables[$n]);
-			$n++;
 			}
-		Application::DeconnexionPDO($connexion);
+		self::DeconnexionPDO($connexion);
 		return $listeTables;
 	}
-		
+
 	/**
-	 * fournit la liste des tables pour l'application donnée
-	 * si pas d'application précisée, donne la liste de toutes les tables
-	 * cette liste des tables doit, elle-même, figurer dans une table
-	 * de l'application 'admin'
-	 * @param $base, $application
+	 * fournit la liste triée des tables pour l'ensemble des applications commen indiqué dans la table appliTables
+	 * @param
+	 * @return array
 	  */
-	function listeTables($base, $application=Null) {
+	function listeTablesParAppli() {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT application, nomTable FROM ".PFX."appliTables ";
-		if ($application) $sql .= "WHERE application = '$application'";
-		try {
-			$resultat = $connexion->query($sql);
-			}
-			catch(PDOException $e){
-				die ($e->getMessage());
-			}
+		$sql = "SELECT application, nomTable ";
+		$sql .= "FROM ".PFX."appliTables ";
+		$resultat = $connexion->query($sql);
 		$listeTables = array();
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			$listeTables = array();
 			while ($ligne = $resultat->fetch()) {
 				$application = $ligne['application'];
-				$listeTables[$application][] = $ligne['nomTable'];
+				$nomTable = PFX.$ligne['nomTable'];
+				$listeTables[$application][] = $nomTable;
 				}
 			}
 		self::DeconnexionPDO ($connexion);
 		return $listeTables;
 	}
+	
 	/**
-	* function SQLtableFields2array
-	* @param $table
+	 * fournit la liste *non triée* des tables et des applications liées comme indiqué dans la table appliTables
+	 * @param
+	 * @return array
+	 */
+	function listeTablesEtApplis(){
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT application, nomTable ";
+		$sql .= "FROM ".PFX."appliTables ";
+		$sql .= "ORDER BY application ";
+		$resultat = $connexion->query($sql);
+		$listeTables = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$application = $ligne['application'];
+				$nomTable = PFX.$ligne['nomTable'];
+				$listeTables[$nomTable]= $application;
+				}
+			}
+		self::DeconnexionPDO ($connexion);
+		return $listeTables;
+	}
+
+	
+	/**
+	 * fournit la liste des associations entre les tables et les applis, y compris la valeur Null pour une table associée à aucune appli
+	 * (ce qui serait une erreur du programmeur d'une appli)
+	 * dans ce cas, la $listeTablesEtApplis ne contiendrait pas d'entrée pour une table orpheline
+	 * @param array $listeToutesTables
+	 * @param array $listeTablesEtApplis
+	 * @return array
+	 */
+	public function listeAssocTablesApplis($listeToutesTables, $listeTablesEtApplis) {
+		$listeAssoc = array();
+		foreach ($listeToutesTables as $nomTable) 
+			if (array_key_exists($nomTable, $listeTablesEtApplis))
+				$listeAssoc[$nomTable] = $listeTablesEtApplis[$nomTable];
+				else $listeAssoc[$nomTable] = Null;
+		return $listeAssoc;
+	}
+	
+	/**
+	 * enregistre les liens entre applications et tables à destination de la table appliTables
+	 * @param array $post
+	 * @return integer nb
+	 */
+	public function saveLinkApplisTables ($post) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."appliTables ";
+		$sql .= "SET nomTable = :nomTable, application= :application ";
+		
+		$requete = $connexion->prepare($sql);
+		// suppression de la table existante
+		$sql = "TRUNCATE ".PFX."appliTables ";
+		$connexion->exec($sql);
+		$nb = 0;
+		foreach ($post as $table=>$appli) {
+			if (substr($table, 0, 6) == 'table_') {
+				$table = explode('_', $table);
+				$nomTable = $table[2];
+				$data = array(':application'=>$appli, ':nomTable'=>$nomTable);
+				$nb +=$requete->execute($data);
+			}
+		}
+		Application::DeconnexionPDO ($connexion);
+		return $nb;
+	}
+
+	
+	/**
 	* renvoie un tableau indiquant les noms des champs de la table MySQL indiquée
+	* @param $table
+	* @return array
 	*/
 	public static function SQLtableFields2array ($table) {
 	   $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1125,7 +1201,7 @@ class Application {
 
 		// si tous les champs sont des clés primaires, il n'y a pas d'Update possible
 		if ($valuesUpdate) $sql .= "ON DUPLICATE KEY UPDATE ".implode(',',$valuesUpdate);
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$connexion->beginTransaction();
 		$requete = $connexion->prepare($sql);
 		$ajouts = 0; $erreurs = 0;
@@ -1136,40 +1212,39 @@ class Application {
 				else $erreurs++;
 			}
 		$connexion->commit();
-		Application::DeconnexionPDO($connexion);
+		self::DeconnexionPDO($connexion);
 		return array("erreurs"=>$erreurs,"ajouts"=>$ajouts);
 	}
 
 	/**
-	 * function newPasswdAssign 
-	 *
+	 * enregistre de nouveaux mots de passe pour les élèves fournis dans le fichier CSV $table
 	 * @param array $table : liste des élèves dont il faut réinitialiser le pwd
 	 * @return array : liste des erreurs et des réussites
 	 */
 	public function newPasswdAssign ($table) {
-	$tableauCSV = self::csv2array($table);
-	$entete = array_shift($tableauCSV);
-	$erreurs = 0; $ajouts = 0;
-	$tousEleves = self::listeTousEleves();
-	$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-	foreach ($tableauCSV as $unEleve) {
-		$matricule = $unEleve[0];
-		$passwd = $unEleve[2];
-		$eleve = $tousEleves[$matricule];
-		$nom = $tousEleves[$matricule]['nom'];
-		$prenom = $tousEleves[$matricule]['prenom'];
-		$username = self::username($matricule, $nom, $prenom);
-		$sql = "INSERT INTO ".PFX."passwd ";
-		$sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
-		// en cas de doublon, seul le "mot de passe" est modifié
-		$sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
-		$resultat = $connexion->exec($sql);
-		if ($resultat === false)
-			$erreurs++;
-			else $ajouts++;
-		}
-	self::DeconnexionPDO($connexion);
-	return array("erreurs"=>$erreurs, "ajouts"=>$ajouts);
+		$tableauCSV = self::csv2array($table);
+		$entete = array_shift($tableauCSV);
+		$erreurs = 0; $ajouts = 0;
+		$tousEleves = self::listeTousEleves();
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+		foreach ($tableauCSV as $unEleve) {
+			$matricule = $unEleve[0];
+			$passwd = $unEleve[2];
+			$eleve = $tousEleves[$matricule];
+			$nom = $tousEleves[$matricule]['nom'];
+			$prenom = $tousEleves[$matricule]['prenom'];
+			$username = self::username($matricule, $nom, $prenom);
+			$sql = "INSERT INTO ".PFX."passwd ";
+			$sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
+			// en cas de doublon, seul le "mot de passe" est modifié
+			$sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
+			$resultat = $connexion->exec($sql);
+			if ($resultat === false)
+				$erreurs++;
+				else $ajouts++;
+			}
+		self::DeconnexionPDO($connexion);
+		return array("erreurs"=>$erreurs, "ajouts"=>$ajouts);
 	}
 
 	public static function stripAccents($string){
@@ -1238,11 +1313,11 @@ class Application {
 	}
 
 	/**
-	 * function SQLtable2array
+	 * transforme le contenu d'une table SQL en un array
 	 * @param string $table : nom de la table à convertir en array
-	 * @return $tableau
+	 * @return array $tableau
 	 */
-	function SQLtable2array ($table) {
+	public function SQLtable2array ($table) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."$table";
 		$resultat = $connexion->query($sql);
@@ -1261,7 +1336,7 @@ class Application {
 	 * @param array $tableau
 	 * @return $array : liste des matricules des élèves
 	 */
-	function tableau2listeEleves($tableau) {
+	public function tableau2listeEleves($tableau) {
 		$entete = array_shift($tableau);
 		if ($entete[0] != 'matricule') die('tableau mal formé');
 		$listeMatricules = array();

@@ -69,7 +69,7 @@ class user {
 	 * @param
 	 * @return array : tableau des classes dont l'utilisateur est titulaire
 	 */
-	function listeTitulariats () {
+	public function listeTitulariats () {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT classe ";
 		$sql .= "FROM ".PFX."titus ";

@@ -428,6 +428,8 @@ var modifie = false;
 			$('.carnetCotes').column(col).find("input").attr("disabled",false).show();
 			$('.carnetCotes').column(col).find("span").hide();
 			$(this).fadeOut();
+			$(".boutonSuppr, .boutonEdit, #boutonPlus").fadeOut();
+			// $(".boutonEdit").fadeOut();
 			})
 			
 		$("#reset").click(function(){
@@ -437,6 +439,7 @@ var modifie = false;
 				modifie = false;
 				window.onbeforeunload = function(){};
 				}
+			$(".boutonSuppr, .boutonEdit, #boutonPlus").fadeIn();
 			})
 
 		$("#submit").click(function(){

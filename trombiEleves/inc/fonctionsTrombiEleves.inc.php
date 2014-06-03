@@ -8,15 +8,16 @@
 function fichierCSV ($listeEleves, $groupeCours) {
 	$listeMatricules = "(".implode(',', array_keys($listeEleves)).")";
 	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-	$sql = "SELECT classe, nom, prenom, nomResp, telephone1, telephone2, telephone3 ";
+	$sql = "SELECT matricule, classe, nom, prenom, nomResp, telephone1, telephone2, telephone3 ";
 	$sql .= "FROM ".PFX."eleves ";
 	$sql .= "WHERE matricule IN $listeMatricules ";
 	$sql .= "ORDER BY REPLACE(REPLACE (nom, ' ', ''),'''',''), prenom";
 	$resultat = $connexion->query($sql);
 	$texte = '';
 	if ($resultat) {
-		$texte = "\"Classe\",\"Nom\",\"Prénom\",\"Responsable\",\"telephone1\",\"telephone2\",\"telephone3\"".chr(10);
+		$texte = "\"Matricule\", \"Classe\",\"Nom\",\"Prénom\",\"Responsable\",\"telephone1\",\"telephone2\",\"telephone3\"".chr(10);
 		while ($ligne = $resultat->fetch()) {
+			$matricule = $ligne['matricule'];
 			$classe = $ligne['classe'];
 			$nom = $ligne['nom'];
 			$prenom = $ligne['prenom'];
@@ -24,7 +25,7 @@ function fichierCSV ($listeEleves, $groupeCours) {
 			$telephone1 = $ligne['telephone1'];
 			$telephone2 = $ligne['telephone2'];
 			$telephone3 = $ligne['telephone3'];
-			$texte .= "\"$classe\",\"$nom\",\"$prenom\",\"$nomResp\",\"$telephone1\",\"$telephone2\",\"$telephone3\"".chr(10);
+			$texte .= "\"$matricule\",\"$classe\",\"$nom\",\"$prenom\",\"$nomResp\",\"$telephone1\",\"$telephone2\",\"$telephone3\"".chr(10);
 			}
 		Application::DeconnexionPDO($connexion);
 		if (!($fp = fopen ("csv/$groupeCours.csv", "w"))) die ("erreur à l'ouverture du fichier");

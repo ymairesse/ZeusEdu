@@ -1,3 +1,6 @@
+{* Permet de sélectionner un niveau d'étude puis un cours parmi ceux qui sont donnés à ce niveau*}
+{* demande une $listeNiveaux; la liste des cours est chargée en arrière-plan en fonction du niveau sélectionné *}
+
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
 	<select name="niveau" id="niveau">

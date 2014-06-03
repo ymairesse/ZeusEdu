@@ -34,7 +34,7 @@ function createPDFeleve ($classe, $matricule, $bulletin, $acronyme) {
 
 	$mentions = $Bulletin->listeMentions($matricule, $bulletin, $annee);
 
-	$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
+	// $ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 	$remarqueTitulaire = $Bulletin->remarqueTitu($matricule, $bulletin);
 	$remarqueTitulaire = $remarqueTitulaire[$matricule][$bulletin];
 

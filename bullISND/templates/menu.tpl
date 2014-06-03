@@ -18,7 +18,7 @@
 	<li><a href="javascript:void(0)">Coordinateurs</a>
 		<ul>
 			<li><a href="index.php?action=nota">Notices coordinateurs</a></li>
-			<!-- <li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences</a></li> -->
+			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences</a></li>
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
 		</ul>
@@ -36,6 +36,14 @@
 		<li><a href="index.php?action=gestionBaremes&amp;mode=voir">Pondération par période</a></li>
 		<li><a href="index.php?action=gestionCotes&amp;mode=voir">Aperçu des cotes pour vos cours</a></li>
 		<li><a href="index.php?action=gestEncodageBulletins">Encodage des bulletins</a></li>
+		<li><a href="index.php?action=gestEprExternes">Épreuves externes</a></li>
+		<li><hr></li>
+		{if $userStatus eq 'admin'}
+		<li><a href="index.php?action=admin&amp;mode=poserVerrous">Ouvrir/fermer des verrous</a></li>
+		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Verrous classe/cours/élève</a></li>
+		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>
+		<li><a href="index.php?action=admin&amp;mode=eprExternes">Init. Épreuves externes</a></li>
+		{/if}
 		</ul>
 	</li>
 	{*
@@ -60,7 +68,6 @@
 			<li><a href="index.php?action=delibes&amp;mode=parClasse">Feuille de délibé par classe</a></li>
 			<li><a href="index.php?action=delibes&amp;mode=individuel">Feuille de délibé individuelle</a></li>
 			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses par classe (toutes périodes)</a></li>
-			<!--  <li><a href="index.php?action=delibes&amp;mode=diffPremiere">Situations 1e/2e</a></li> -->
 		</ul>
 		</li>
 	{if $userStatus eq 'admin'}
@@ -74,9 +81,6 @@
 		<li><a href="index.php?action=admin&amp;mode=attributionsEleves">Attrib. élèves aux cours</a></li>
 		<li><a href="index.php?action=admin&amp;mode=programmeEleve">Attrib. cours aux élèves</a></li>		
 		<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
-		<li><a href="index.php?action=admin&amp;mode=poserVerrous">Ouvrir/fermer des verrous</a></li>
-		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Verrous classe/cours/élève</a></li>
-		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>
 		<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
 		<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
 		</ul>

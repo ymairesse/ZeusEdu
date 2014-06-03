@@ -1,4 +1,5 @@
 <?php
+
 require_once("../config.inc.php");
 include (INSTALL_DIR."/inc/entetes.inc.php");
 
@@ -11,6 +12,7 @@ require_once("inc/classes/classBulletin.inc.php");
 $Bulletin = new Bulletin();
 
 $smarty->assign("listeCours",$user->listeCoursProf("'G','S','TT'"));
+$smarty->assign('sections',"'G','S','TT'");
 $acronyme = $user->getAcronyme();
 
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
@@ -27,7 +29,7 @@ switch ($action) {
 		include ("inc/gestEcran.php");
 		break;
 	case 'gestionCotes':
-		die($action);
+		// aperçu des cotes pour un cours
 		include ("inc/gestCotes.php");
 		break;
 	case 'pdf':
@@ -50,6 +52,10 @@ switch ($action) {
 	case 'gestEncodageBulletins':
 		// encodage des bulletins par les profs des différentes branches
 		include("inc/gestEncodageBulletins.php");
+		break;
+	case 'gestEprExternes':
+		// encodage des points des épreuves externes
+		include("inc/gestEprExternes.php");
 		break;
 	case 'gestSituations':
 		include("inc/gestSituations.php");

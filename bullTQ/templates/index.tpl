@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -27,9 +27,10 @@
 </div>
 
 {* La valeur de $corpsPage est définie dans index.php ou les sous-modules php *}
+<div id="corpsPage">
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
-{/if}
+{/if}</div>
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">

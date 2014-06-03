@@ -10,9 +10,9 @@
 		Avec signature <input type="checkbox" value=true {if $signature==true}checked=checked{/if} name="signature">
 	Date: <input type="text" name="date" value="{$date}" id="date" size="15">
 	<input type="Submit" name="OK" value="OK" id="submit">
-	<input type="hidden" name="action" value="admin">
-	<input type="hidden" name="mode" value="rapportCompetences">
-	<input type="hidden" name="etape" value="print">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="{$mode}">
+	<input type="hidden" name="etape" value="{$etape}">
 	</form>
 </div>
 

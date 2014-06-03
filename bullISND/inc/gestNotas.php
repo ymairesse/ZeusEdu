@@ -10,7 +10,7 @@ if (isset($_POST['niveau'])) {
 	else $niveau = $_COOKIE['niveau'];
 $smarty->assign('niveau', $niveau);
 
-$niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
+// $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $notice = isset($_POST['notice'])?$_POST['notice']:Null;
 
 $listeNiveaux = $Ecole->listeNiveaux();

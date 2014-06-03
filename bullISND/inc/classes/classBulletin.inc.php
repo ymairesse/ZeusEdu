@@ -1138,7 +1138,6 @@ class Bulletin {
 		if ($resultat) {
 			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
-
 				$matricule = $ligne['matricule'];
 				$coursGrp = $ligne['coursGrp'];
 				$cours = $ligne['cours'];
@@ -1184,7 +1183,6 @@ class Bulletin {
 		if ($bulletin)
 			$sql .= "AND bulletin='$bulletin' ";
 		$sql .= "ORDER BY bulletin, matricule";
-
 		$resultat = $connexion -> query($sql);
 		$listeSituationsCours = array();
 		if ($resultat)
@@ -1658,7 +1656,7 @@ class Bulletin {
 					$listeSitHookStarsDegre[$matricule]['star'] = $value;
 					break;
 				case 'degre' :
-					// réussite du degré, on retien l'élève et le cours
+					// réussite du degré, on retient l'élève et le cours
 					$matricule = substr($data[1], strpos($data[1], '_') + 1);
 					$listeSitHookStarsDegre[$matricule]['degre'] = $value;
 				case 'situation' :
@@ -1840,7 +1838,7 @@ class Bulletin {
 		return $listeEleves;
 	}
 
-	/*
+	/**
 	 * liste de tous les cours qui se donnent à une liste d'élèves
 	 * sans tenir compte des sous-groupes éventuels
 	 * 
@@ -2295,6 +2293,31 @@ class Bulletin {
 			}
         Application::DeconnexionPDO($connexion);
         return $listeCours;
+	 }
+	 
+	 /**
+	  * retourne la liste des cours réellemnent suivis par des élèves à un certain niveau d'études
+	  * @param $niveau
+	  * @return array
+	  */
+	 public function listeCoursSuivisNiveau($niveau) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT DISTINCT coursGrp, libelle, cours, nbheures ";
+		$sql .= "FROM ".PFX."elevesCours ";
+		$sql .= "JOIN ".PFX."cours AS dc ON (dc.cours = SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1)) ";
+		$sql .= "WHERE SUBSTR(coursGrp,1,1) = '$niveau' ";
+		$sql .= "ORDER BY libelle, coursGrp ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$cours = $ligne['cours'];
+				$liste[$cours] = $ligne;
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+        return $liste;
 	 }
 
 
@@ -4011,7 +4034,7 @@ class Bulletin {
 
 	/** 
 	 * retourne la liste de situations des élèves pour la liste des cours passés en argument
-	 * on soustrait le situation de la période 0 de celle de la période $periode
+	 * on soustrait le situation de la période 0 de celle de la période $bulletin
 	 * 
 	 * @param string|array $listeEleves : liste des élèves
 	 * @param string|array $listeCoursGrp: liste des coursGrp concernés
@@ -4713,7 +4736,6 @@ class Bulletin {
 		$resultat = $connexion->query($sql);
 		$listeErreurs = array();
 		if ($resultat) {
-			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$matricule = $ligne['matricule'];
 				$correct = $ligne['correct'];
@@ -4762,5 +4784,293 @@ class Bulletin {
 		}
 		Application::DeconnexionPDO($connexion);
 	}
-}
+
+	/**
+	 * recherche de tous les coursGrp correspondant à un $cours donné
+	 * la fonction retourne des array (matricule, coursGrp)
+	 * @param string $cours
+	 * @return array
+	 */
+	public function elevesCoursGrpDeCours($cours) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule,coursGrp FROM ".PFX."elevesCours ";
+		$sql .= "WHERE SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1)='$cours' ";
+		$sql .= "ORDER BY coursGrp ";
+		$resultat = $connexion->query($sql);
+		$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+		$elevesCoursGrp = $resultat->fetchall();
+		Application::DeconnexionPDO($connexion);
+		return $elevesCoursGrp;
+	}
+
+	/**
+	 * initialisation de la table des résultats d'épreuves externes
+	 * les enregistrements déjà existants ne sont pas écrasés!!!
+	 * @param array $elevesCoursGrp
+	 * @return integer $nb : nombre de nouveaux enregistrements dans la table
+	 */
+	public function initEpreuvesExternes ($elevesCoursGrp) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."bullEprExterne ";
+		$sql .= "SET matricule=:matricule, coursGrp=:coursGrp ";
+		$requete = $connexion->prepare($sql);
+		$nb = 0;
+		foreach ($elevesCoursGrp as $wtf=>$data) {
+			$matricule = $data['matricule'];
+			$coursGrp = $data['coursGrp'];
+			$nb += $requete->execute($data);
+		}
+		Application::DeconnexionPDO($connexion);
+		return $nb;
+	}
+	
+	/**
+	 * liste des cours (et des coursGrp correspondants) de la table des épreuves externes
+	 * @param integer $niveau : le niveau d'étude
+	 * @return array
+	 */
+	public function listeCoursEpreuveExterne($niveau) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT DISTINCT coursGrp, cours, libelle ";
+		$sql .= "FROM ".PFX."bullEprExterne ";
+		$sql .= "JOIN ".PFX."cours as dc ON (dc.cours = SUBSTR(coursGrp,1, LOCATE('-',coursGrp)-1)) ";
+		$sql .= "WHERE SUBSTR(coursGrp,1,1) = '$niveau' ";
+		$sql .= "ORDER BY libelle,coursGrp ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$cours = $ligne['cours'];
+				$coursGrp = $ligne['coursGrp'];
+				$libelle = $ligne['libelle'];
+				if (!(isset($liste[$cours]))) {
+					$bloc = array('libelle'=>$libelle, 'coursGrp'=>array());
+					$liste[$cours] = $bloc;
+				}
+				$liste[$cours]['coursGrp'][] = $coursGrp;
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+		}
+		
+	/**
+	 * renvoie le nombre de cotes déjà encondées pour chacun des cours à épreuve externe dans le niveau donné
+	 * @param $niveau
+	 * @return array
+	 */
+	public function nbCotesExtCoursGrp($niveau) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT coursGrp, count(*) AS nbCotes ";
+		$sql .= "FROM ".PFX."bullEprExterne ";
+		$sql .= "WHERE (cote != '') AND (SUBSTR(coursGrp,1,1) = '$niveau') ";
+		$sql .= "GROUP BY coursGrp ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while($ligne = $resultat->fetch()) {
+				$coursGrp = $ligne['coursGrp'];
+				$liste[$coursGrp] = $ligne['nbCotes'];
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+		}
+
+	/**
+	 * Suppression d'un coursGrp dans la table des épreuves externes
+	 * @param string $coursGrp
+	 * @return $nb
+	 */
+	public function delEprExterne($coursGrp) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."bullEprExterne ";
+		$sql .= "WHERE coursGrp = '$coursGrp' ";
+		$nb = $connexion->exec($sql);
+		Application::DeconnexionPDO($connexion);
+		return $nb;
+		}
+		
+	/**
+	 * recherche la liste des cotes d'épreuve externe pour un cours-groupe donné
+	 * @param string $coursGrp
+	 * @return array
+	 */
+	public function listeCotesEprExterne($coursGrp) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, coteExterne, choixCote, coursGrp ";
+		$sql .= "FROM ".PFX."bullEprExterne ";
+		$sql .= "WHERE coursGrp = '$coursGrp' ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$liste[$matricule] = $ligne;
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+		}
+		
+	/**
+	 * retourne la liste des cours d'un prof qui sont concernés par une épreuve externe
+	 * @param array $listeCoursProf
+	 * @return array
+	 */
+	public function listeCoursEprExterne($listeCoursProf) {
+		$listeCoursProf = "'" .implode("','", array_keys($listeCoursProf))."'";
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT DISTINCT ext.coursGrp, statut, libelle, nbheures, cours ";
+		$sql .= "FROM ".PFX."bullEprExterne AS ext ";
+		$sql .= "JOIN ".PFX."cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1)) ";
+		$sql .= "JOIN ".PFX."statutCours AS sc ON ( sc.cadre = dc.cadre ) ";
+		$sql .= "WHERE coursGrp IN ($listeCoursProf) ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$coursGrp = $ligne['coursGrp'];
+				$liste[$coursGrp] = $ligne;
+			}
+			
+		}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+	}
+
+	/**
+	 * enregistrement des cotes d'épreuves externes en provenance d'un formulaire POST
+	 * @param array post
+	 * @return integer nombre d'enregistrements modifiés
+	 */
+	public function enregistrerEprExternes($post) {
+		$coursGrp = $post['coursGrp'];
+		$sql = "UPDATE ".PFX."bullEprExterne ";
+		$sql .= "SET coteExterne=:cote, choixCote=:choixCote ";
+		$sql .= "WHERE matricule=:matricule AND coursGrp=:coursGrp ";
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$requete = $connexion->prepare($sql);
+		$coteabs = explode(',',COTEABS);
+		$nb = 0;
+		$tableErreurs = array();
+		foreach ($post as $field=>$value) {
+			$fieldCote = explode('_',$field);
+			if (isset($fieldCote[0]) && ($fieldCote[0]=='cote')) {
+				$matricule = $fieldCote[1];
+				$cote = strtoupper(sansVirg($value));
+				$type = 'choix_'.$matricule;
+				$choix = $post[$type];
+				$erreur = false;
+
+				if (($cote == '') && ($choix == 'coteExterne')) $erreur = true;
+				if (is_numeric($cote) && (($cote > 100 ) || ($cote < 0))) $erreur = true;
+				if (!(is_numeric($cote)) && !(in_array($cote,$coteabs))) $erreur = true;
+				if ((in_array($cote, $coteabs)) && ($choix == 'coteExterne')) $erreur = true;
+				if ($erreur == true)
+					$tableErreurs[$matricule]=$cote;
+					else {
+						$data = array(':cote'=>$cote,':choixCote'=>$choix,':matricule'=>$matricule,':coursGrp'=>$coursGrp);
+						$nb += $requete->execute($data);
+						}
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return array('nb'=>$nb, 'erreurs'=>$tableErreurs);
+		}
+		
+	/**
+	 * retourne la liste liste des cotes de situation lors de la prise en compte de l'épreuve externe
+	 * soit la cote de l'épreuve externe, soit 50% (cas de la réussite interne), soit la cote de situation
+	 * pour chaque élève et pour chacun de ses cours
+	 * => destination: feuille de délibés par classe
+	 * @param array $listeSituationsActuelles
+	 * @param array $listeEleves
+	 * @param array $listeCoursGrp : liste des coursGrp dans la classe
+	 * @return array
+	 */
+	public function listeSitDelibeExternes($situationsActuelles, $listeEleves, $listeCoursGrp) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(',', array_keys($listeEleves));
+		else $listeElevesString = $listeEleves;
+		if (is_array($listeCoursGrp))
+			$listeCoursGrpString = "'" . implode("','", array_keys($listeCoursGrp)) . "'";
+			else $listeCoursGrpString = "'" . $listeCoursGrp . "'";
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, coursGrp, coteExterne, choixCote ";
+		$sql .= "FROM ".PFX."bullEprExterne ";
+		$sql .= "WHERE matricule IN ($listeElevesString) AND coursGrp IN ($listeCoursGrpString) ";
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$coursGrp = $ligne['coursGrp'];
+				$cours = self::coursSansGrp($coursGrp);
+				$coteExterne = $ligne['coteExterne'];
+				$choixCote = $ligne['choixCote'];
+				switch ($choixCote) {
+					case 'coteExterne':
+						$situationsActuelles[$matricule][$cours]['sitDelibe']=$coteExterne;
+						$situationsActuelles[$matricule][$cours]['echec']=($coteExterne < 50)?'echec':Null;
+					break;
+					case 'reussite':
+						$situationsActuelles[$matricule][$cours]['sitDelibe']=50;
+						$situationsActuelles[$matricule][$cours]['echec']=Null;
+					break;
+					case 'sitDelibe':
+						// do nothing : la cote est le situation choisie par le titulaire du cours dans le bulletin
+					break;
+					}
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $situationsActuelles;
+		}
+		
+	/**
+	 * retourne les cotes de situation en tenant compte des épreuves externes pour un élève donné
+	 * soit la cote de l'épreuve externe, soit 50% (cas de la réussite interne), soit la cote de situation
+	 * => destination: feuille de délibé individuelle par élève
+	 * @param array $listeSituations : la liste de situations de délibé pour chaque cours
+	 * @param integer $matricule : le matricule de l'élève
+	 * @return $listeSituations
+	 */
+	public function eleveSitDelibeExternes($matricule, $listeSituations) {
+		// afficher($listeSituations);
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT coursGrp, coteExterne, choixCote ";
+		$sql .= "FROM ".PFX."bullEprExterne ";
+		$sql .= "WHERE matricule = '$matricule' ";
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$coursGrp = $ligne['coursGrp'];
+				$coteExterne = $ligne['coteExterne'];
+				$choixCote = $ligne['choixCote'];
+				if (isset($listeSituations[$coursGrp][NBPERIODES]['sitDelibe'])) {
+					switch ($choixCote) {
+						case 'coteExterne':
+							$listeSituations[$coursGrp][NBPERIODES]['sitDelibe']=$coteExterne;
+							$listeSituations[$coursGrp][NBPERIODES]['echec']=($coteExterne < 50)?'echec':Null;
+						break;
+						case 'reussite':
+							$listeSituations[$coursGrp][NBPERIODES]['sitDelibe']=50;
+							$listeSituations[$coursGrp][NBPERIODES]['echec']=Null;
+						break;
+						case 'sitDelibe':
+							// do nothing : la cote est le situation choisie par le titulaire du cours dans le bulletin
+						break;
+						}
+					}
+				}
+			}
+		return $listeSituations;
+		}
+	}
 ?>

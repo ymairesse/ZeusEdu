@@ -168,8 +168,42 @@ class presences {
 		Application::deconnexionPDO($connexion);
 		return $resultat;
 	}
+	
+	/**
+	 * enregistrement des absences depuis la fiche de notation des absences par élève
+	 * @param $post
+	 * @return integer : nombre d'enregistrements effectués
+	 */
+	public function enregistrerAbsencesEleves ($post) {
+		$date = Application::dateMysql($post['date']);
+		$educ = $post['educ'];
+		$heure = date("H:i");
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$nb = 0;
+		foreach ($post as $nomChamp=>$value) {
+			$nomChamp = explode('_', $nomChamp);
+			// les champs à enregistrer se présentent sous la forme matr-xxxx_per-YY dont il faut extraire XXXX et YY
+			if (substr($nomChamp[0], 0, 5) == 'matr-') {
+				$wtf = explode('-',$nomChamp[0]);
+				$matricule = $wtf[1];
+				$wtf = explode('-',$nomChamp[1]);
+				$periode = $wtf[1];
+				$sql = "INSERT INTO ".PFX."presencesAbsences ";
+				$sql .= "SET date='$date', periode='$periode', heure='$heure', educ='$educ', coursGrp='', matricule='$matricule', prof='' ";
+				$sql .= "ON DUPLICATE KEY UPDATE educ='$educ', heure='$heure' ";
+				$nb += $connexion->exec($sql);
+				}
+			}
+		Application::deconnexionPDO($connexion);
+		return $nb;
+	}
 
-
+	/**
+	 * lecture de la liste des absences pour un jour donné dans un coursGrp donné
+	 * @param $date
+	 * @param $coursGrp
+	 * @return array
+	 */
 	public function lireAbsences ($date, $coursGrp) {
 		$date = Application::dateMysql($date);
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -189,10 +223,9 @@ class presences {
 		return $listeAbsences;
 		}
 		
-	/*
-	 * function listeParDate
+	/**
+	 * retourne la liste des absences pour toute l'école et pour une date donnée
 	 * @param $date : date au format ordinaire
-	 *
 	 * @return $listeAbsences : liste des absences pour la date indiquée
 	 */
 	public function listeParDate ($date) {
@@ -276,18 +309,54 @@ class presences {
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
-			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			$liste = $resultat->fetchAll();
 			}
 		Application::deconnexionPDO($connexion);
 		$listeAbsences = array();
 		foreach ($liste as $uneAbsence) {
-			$date = 	Application::datePHP($uneAbsence['date']);
+			$date = Application::datePHP($uneAbsence['date']);
 			$periode = $uneAbsence['periode'];
 			$listeAbsences[$date][$periode] = $uneAbsence;
 		}
 		return $listeAbsences;
 	}
+	
+	/**
+	 * retourne les périodes d'absences pour une date déterminée pour un élève ou une liste d'élèves donnés
+	 * @param $date : la date au format ordinaire
+	 * @param $listeEleves
+	 * @return array
+	 */
+	public function absencesEleveDate($date, $listeEleves) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",", array_keys($listeEleves));
+		else $listeElevesString = $listeEleves;
+		$dateSQL = Application::dateMysql($date);
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, coursGrp, periode, prof, educ, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) AS cours, ";
+		$sql .= "libelle, nom, prenom  ";
+		$sql .= "FROM ".PFX."presencesAbsences ";
+		$sql .= "LEFT JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1)) ";
+		$sql .= "LEFT JOIN ".PFX."profs ON (".PFX."profs.acronyme = prof) ";
+		$sql .= "WHERE date = '$dateSQL' AND matricule IN ($listeElevesString) ";
+		$sql .= "ORDER BY matricule, periode ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$liste = $resultat->fetchAll();
+			}
+		Application::deconnexionPDO($connexion);
+		$listeAbsences = array();
+		foreach ($liste as $uneAbsence) {
+			$periode = $uneAbsence['periode'];
+			$matricule = $uneAbsence['matricule'];
+			$listeAbsences[$matricule][$periode] = $uneAbsence;
+			}
+		return $listeAbsences;
+		}
+	
 
 	/**
 	 * listes des autorisations de sorties pour un élève dont on fournit le matricule

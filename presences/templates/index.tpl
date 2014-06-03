@@ -2,11 +2,17 @@
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="-1">
 <title>{$titre}</title>
 
 {include file='../../javascript.js'}
 {include file='../../styles.sty'}
-
+<style type="text/css">
+body {
+	width:937px;
+}
+</style>
 </head>
 <body>
 {include file="menu.tpl"}
@@ -29,7 +35,6 @@
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
 {/if}</div>
-
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
