@@ -184,7 +184,7 @@ switch ($mode) {
 		break;
 
 	default:
-		
+		// wtf
 		break;
 }
 

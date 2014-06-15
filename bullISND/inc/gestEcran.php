@@ -15,7 +15,7 @@ if (isset($_POST['matricule'])) {
 	setcookie('matricule',$matricule,$unAn, null, null, false, true);
 	}
 	else $matricule = $_COOKIE['matricule'];
-$smarty->assign('matricule', $matricule);
+$smarty->assign('matricule',$matricule);
 
 switch ($mode) {
 	case 'bulletinIndividuel':
@@ -43,6 +43,7 @@ switch ($mode) {
 				$listeCoursGrp = $listeCoursGrp[$matricule];
 				$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 				$listeSituations = $Bulletin->listeSituationsCours($matricule, array_keys($listeCoursGrp), Null, true);
+
 				$sitPrecedentes = $Bulletin->situationsPrecedentes($listeSituations,$bulletin);
 				$sitActuelles = $Bulletin->situationsPeriode($listeSituations, $bulletin);
 				$listeCompetences = $Bulletin->listeCompetencesListeCoursGrp($listeCoursGrp);
@@ -76,9 +77,9 @@ switch ($mode) {
 				$smarty->assign('mention',$mentions);
 				$smarty->assign('noticeDirection', $noticeDirection);
 			}
-			$smarty->assign("corpsPage", "showEleve"); 
+			$smarty->assign('corpsPage', 'showEleve'); 
 		}
 		break; 
-	default: die ("missing mode");
+	default: die ('missing mode');
 	}
 ?>

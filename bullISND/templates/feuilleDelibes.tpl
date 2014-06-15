@@ -1,6 +1,5 @@
 <h2>Classe: | {$classe} | {$titusClasse|implode:','} -> Période: {$bulletin}</h2>
 <table class="tableauAdmin">
-
 	<tr>
 		<th style="min-width:35%">
 			<div id="notice" class="inv" style="width:65%">Ce document est basé sur les cotes de délibération fournies dans le bulletin. Il ne devient définitif que la veille de la délibération à 17h00</div>
@@ -11,7 +10,7 @@
 		<th class="tooltip">
 			<span class="tip" style="display:none">{$detailsCours.cours.libelle}<br>{$cours}</span>
 			<img src="imagesCours/{$cours}.png" alt="{$cours}"><br>
-			{$detailsCours.cours.nbheures}h
+			{$detailsCours.cours.statut}<br>{$detailsCours.cours.nbheures}h
 		</th>
 		{/foreach}
 		<th><img src="images/moyenne.png" alt="moyenne"></th>
@@ -33,14 +32,22 @@
 			{$unEleve.classe} {$nomPrenom|truncate:25:'...'}</td>
 
 		{foreach from=$listeCours key=cours item=detailsCours}
-			{assign var=coursGrp value=$listeSituations.$matricule.$cours.coursGrp|default:Null}
-			{if isset($coursGrp)}
+			{if !(isset($listeCoursListeEleves.$matricule.$cours))}
+				<td class="pasCours">&nbsp;</td>
+			{else}
+				{assign var=coursGrp value=$listeSituations.$matricule.$cours.coursGrp|default:Null}
+				{if $coursGrp != Null}
 				<td class="{$listeSituations.$matricule.$cours.statut} {$listeSituations.$matricule.$cours.echec}"
-					title="{$coursGrp}|{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}">
-				{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}
+					title="{$coursGrp}<br>{if $listeSituations.$matricule.$cours.symbole == '$'}Épreuve externe{/if}|{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}">
+					{if $listeSituations.$matricule.$cours.attribut == 'hook'}
+						[{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}]
+					{else}
+						{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}<sup>{$listeSituations.$matricule.$cours.symbole|default:''}</sup>
+					{/if}
 				</td>
 				{else}
 				<td class="cote">-</td>
+				{/if}
 			{/if}
 		{/foreach}
 
@@ -64,3 +71,12 @@
 </table>
 {$listeEleves|@count} élèves
 
+<p>Symbolique:</p>
+<ul>
+<li>² => réussite degré</li>
+<li>* => cote étoilée</li>
+<li>↗ => baguette magique</li>
+<li>~ => reussite 50%</li>
+<li>$ => épreuve externe</li>
+<li>[xx] => non significatif</li>
+</ul>

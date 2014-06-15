@@ -26,7 +26,12 @@
 		{/if}
 
 		{if isset($sitActuelle.sitDelibe) && $sitActuelle.sitDelibe != ''}
-			<strong>Délibé: {$sitActuelle.sitDelibe} %</strong>
+			<strong>Délibé:
+			{if $sitActuelle.attribut == 'hook'}[{$sitActuelle.sitDelibe}] %
+			{else}
+			{$sitActuelle.sitDelibe}<sup>{$sitActuelle.symbole}</sup> %
+			{/if}
+			</strong>
 		{/if}
 		</span>
 	{/if}

@@ -106,7 +106,7 @@ class user {
 		return ($ligne['acronyme']);
 		}
 	
-	/*
+	/**
 	 * détermine les applications autorisées (en excluant éventuellement les application inactives) pour l'utilisateur courant
 	 * @param $active : boolean true si l'on souhaite ne sélectionner que les applications non désactivées par l'administrateur
 	 * #return array
@@ -193,7 +193,7 @@ class user {
 			else return true;
 	}
 	
-	/*
+	/**
 	 * renvoie la liste des cours donnés par l'utilisateur courant; possibilité de demander les cours par section (GT, TQ, ...)
 	 * @param string sections : liste des sections, chacune étant entourée de guillemets simples
 	 * @return array : liste de tous les cours données par le prof utilisateur actuel

@@ -1,35 +1,31 @@
 <?php
+
 $unAn = time() + 365*24*3600;
 $bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
 if (isset($_POST['tri'])) {
 	$tri = $_POST['tri'];
 	setcookie('tri',$tri,$unAn, null, null, false, true);
 	}
-	else $tri = $_COOKIE['tri'];
+	else $tri = isset($_COOKIE['tri'])?$_COOKIE['tri']:Null;
 $smarty->assign('tri', $tri);
 
 if (isset($_POST['coursGrp'])) {
 	$coursGrp = $_POST['coursGrp'];
 	setcookie('coursGrp',$coursGrp,$unAn, null, null, false, true);
 	}
-	else $coursGrp = $_COOKIE['coursGrp'];
+	else $coursGrp = isset($_COOKIE['coursGrp'])?$_COOKIE['coursGrp']:Null;
 
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-//if(isset($_POST['matricule'])) {
-//	$matricule = $_POST['matricule'];
-//	setcookie('matricule',$matricule,$unAn, null, null, false, true);
-//	}
-//	else $matricule = $_COOKIE['matricule'];
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 
-$smarty->assign("bulletin", $bulletin);
-$smarty->assign("coursGrp",$coursGrp);
-$smarty->assign("tableErreurs",Null);
+$smarty->assign('bulletin', $bulletin);
+$smarty->assign('coursGrp',$coursGrp);
+$smarty->assign('tableErreurs',Null);
 
-$smarty->assign("COTEABS",COTEABS);
-$smarty->assign("COTENULLE",COTENULLE);
+$smarty->assign('COTEABS',COTEABS);
+$smarty->assign('COTENULLE',COTENULLE);
 
-if ($coursGrp) {
+if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 	$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 	$ponderations = $Bulletin->getPonderations($coursGrp, $bulletin);
 	$listeCompetences = $Bulletin->listeCompetences($coursGrp);
@@ -79,26 +75,26 @@ if ($coursGrp) {
 		$sitDeuxiemes = $Bulletin->situationsDeuxieme ($listeEleves, $coursGrp, $bulletin);
 		else $sitDeuxiemes = Null;
 
-	$smarty->assign("situationsPrecedentes", $situationsPrecedentes);
-	$smarty->assign("listeEleves", $listeEleves);
-	$smarty->assign("listeCotes",$listeCotes);
+	$smarty->assign('situationsPrecedentes', $situationsPrecedentes);
+	$smarty->assign('listeEleves', $listeEleves);
+	$smarty->assign('listeCotes',$listeCotes);
 	
-	$smarty->assign("listeVerrous",$Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin));
-	$smarty->assign("listeCommentaires", $Bulletin->listeCommentaires($listeEleves, $coursGrp));
-	$smarty->assign("action","gestEncodageBulletins");
-	$smarty->assign("intituleCours",$Bulletin->intituleCours($coursGrp));
-	$smarty->assign("listeClasses", $Bulletin->classesDansCours($coursGrp));
-	$smarty->assign("listeCompetences", $listeCompetences);
-	$smarty->assign("listeSommesFormCert", $Bulletin->listeSommesFormCert($listeCotes));
-	$smarty->assign("listeAttitudes", $listeAttitudes);
-	$smarty->assign("listeGlobalPeriodePondere", $listeGlobalPeriodePondere);
-	$smarty->assign("ponderations", $ponderations);
-	$smarty->assign("listeSituations", $listeSituations);
-	$smarty->assign("sitDeuxiemes", $sitDeuxiemes);
+	$smarty->assign('listeVerrous',$Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin));
+	$smarty->assign('listeCommentaires', $Bulletin->listeCommentaires($listeEleves, $coursGrp));
+	$smarty->assign('action','gestEncodageBulletins');
+	$smarty->assign('intituleCours',$Bulletin->intituleCours($coursGrp));
+	$smarty->assign('listeClasses', $Bulletin->classesDansCours($coursGrp));
+	$smarty->assign('listeCompetences', $listeCompetences);
+	$smarty->assign('listeSommesFormCert', $Bulletin->listeSommesFormCert($listeCotes));
+	$smarty->assign('listeAttitudes', $listeAttitudes);
+	$smarty->assign('listeGlobalPeriodePondere', $listeGlobalPeriodePondere);
+	$smarty->assign('ponderations', $ponderations);
+	$smarty->assign('listeSituations', $listeSituations);
+	$smarty->assign('sitDeuxiemes', $sitDeuxiemes);
 	
-	$smarty->assign("PERIODESDELIBES", explode(',',PERIODESDELIBES));
-	$smarty->assign("listeElevesSuivPrec", $Bulletin->listeElevesSuivPrec($listeEleves));
-	$smarty->assign("matricule", $matricule);
+	$smarty->assign('PERIODESDELIBES', explode(',',PERIODESDELIBES));
+	$smarty->assign('listeElevesSuivPrec', $Bulletin->listeElevesSuivPrec($listeEleves));
+	$smarty->assign('matricule', $matricule);
 	
 	$readonly = ($bulletin < PERIODEENCOURS)?"readonly":"";
 	// PERMETTRE AUX ADMIN DE PASSER OUTRE LE READONLY
@@ -109,10 +105,9 @@ if ($coursGrp) {
 	}
 	
 // par défaut
-
-$smarty->assign("mode","encodage");
-$smarty->assign("nbBulletins", NBPERIODES);
-$smarty->assign("selecteur", "selectBulletinCours");
-$smarty->assign("action","gestEncodageBulletins");
+$smarty->assign('mode','encodage');
+$smarty->assign('nbBulletins', NBPERIODES);
+$smarty->assign('selecteur', 'selectBulletinCours');
+$smarty->assign('action','gestEncodageBulletins');
 
 ?>

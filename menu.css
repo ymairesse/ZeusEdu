@@ -76,6 +76,10 @@ ul.menu li a:hover, ul.menu li a:active {
   color: #000;
 }
 
+#menuBas hr {
+	margin: 0
+	}
+
 li.titreMenu {padding: 0.2em; background-color: #E4E3E2; font-weight:bold; border: 2px inset #FFE37F}
 
 #widget li {

@@ -18,36 +18,36 @@ $smarty->assign('matricule', $matricule);
 
 $listeCours = $user->listeCoursProf("'G','S','TT'");
 
-$smarty->assign("action",$action);
+$smarty->assign('action',$action);
 // on présente toujours le sélecteur de cours
-$smarty->assign("coursGrp", $coursGrp);
+$smarty->assign('coursGrp', $coursGrp);
 // quelles sont les classes des élèves qui fréquentent le cours?
 if (isset($coursGrp)) {
 	$classesDansCours = implode(", ", $Bulletin->classesDansCours($coursGrp));
-	$smarty->assign("listeClasses", $classesDansCours);
+	$smarty->assign('listeClasses', $classesDansCours);
 	}
 
 switch ($mode) {
 	case 'modifBareme':
-		if ($coursGrp) {  // si $coursGrp pas défini, on ne fait rien
+		if ($coursGrp  && in_array($coursGrp, array_keys($user->listeCoursProf()))) {  // si $coursGrp pas défini, on ne fait rien
 			switch ($etape) {
 				case 'enregistrer':
 					$nbInsert = $Bulletin->enregistrementPonderations($_POST);
 					$ponderations = $Bulletin->getPonderations($coursGrp);
 					$intituleCours = $Bulletin->intituleCours($coursGrp);
 					$listeEleves = $Ecole->listeElevesCours($coursGrp);
-					$smarty->assign("selecteur", "selectCours");
-					$smarty->assign("periodes", explode(",", NOMSPERIODES));					
-					$smarty->assign("nbPeriodes", NBPERIODES);
-					$smarty->assign("listeEleves", $listeEleves);
-					$smarty->assign("ponderations", $ponderations);
-					$smarty->assign("intituleCours", $intituleCours);
-					$smarty->assign("mode","voir");
+					$smarty->assign('selecteur', 'selectCours');
+					$smarty->assign('periodes', explode(',', NOMSPERIODES));					
+					$smarty->assign('nbPeriodes', NBPERIODES);
+					$smarty->assign('listeEleves', $listeEleves);
+					$smarty->assign('ponderations', $ponderations);
+					$smarty->assign('intituleCours', $intituleCours);
+					$smarty->assign('mode','voir');
 					$smarty->assign("message", array(
 									'title'=>"Enregistrement",
 									'texte'=>"$nbInsert pondérations modifiées")
 									);
-					$smarty->assign("corpsPage", "showPonderations");
+					$smarty->assign('corpsPage', 'showPonderations');
 					break;
 				default:
 					if (!($Bulletin->legitimeModifBareme ($coursGrp, $listeCours, $matricule)))
@@ -59,17 +59,16 @@ switch ($mode) {
 						}
 					$admin = $_SESSION[APPLICATION]->getUserStatus($module);
 					$intituleCours = $Bulletin->intituleCours($coursGrp);
-					$smarty->assign("periodes", explode(",", NOMSPERIODES));					
-// 					$smarty->assign("matricule", $matricule);
-					$smarty->assign("admin",$admin);
-					$smarty->assign("ponderations", $ponderations);
-					$smarty->assign("nbPeriodes", NBPERIODES);
-					$smarty->assign("bulletin", PERIODEENCOURS);
-					$smarty->assign("action",$action);
-					$smarty->assign("mode", $mode);
-					$smarty->assign("etape", "enregistrer");
-					$smarty->assign("intituleCours", $intituleCours);
-					$smarty->assign("corpsPage", "formBaremes");
+					$smarty->assign('periodes', explode(',', NOMSPERIODES));					
+					$smarty->assign('admin',$admin);
+					$smarty->assign('ponderations', $ponderations);
+					$smarty->assign('nbPeriodes', NBPERIODES);
+					$smarty->assign('bulletin', PERIODEENCOURS);
+					$smarty->assign('action',$action);
+					$smarty->assign('mode', $mode);
+					$smarty->assign('etape', 'enregistrer');
+					$smarty->assign('intituleCours', $intituleCours);
+					$smarty->assign('corpsPage', 'formBaremes');
 					break;
 				}
 			}
@@ -86,15 +85,15 @@ switch ($mode) {
 		$listeEleves = $Ecole->listeElevesCours($coursGrp);
 		$intituleCours = $Bulletin->intituleCours($coursGrp);
 		$classesDansCours = implode(", ", $Bulletin->classesDansCours($coursGrp));
-		$smarty->assign("nbPeriodes", NBPERIODES);
-		$smarty->assign("ponderations", $ponderations);
-		$smarty->assign("intituleCours", $intituleCours);
-		$smarty->assign("listeEleves", $listeEleves);
-		$smarty->assign("message", array(
-				'title'=>"Pondérations",
+		$smarty->assign('nbPeriodes', NBPERIODES);
+		$smarty->assign('ponderations', $ponderations);
+		$smarty->assign('intituleCours', $intituleCours);
+		$smarty->assign('listeEleves', $listeEleves);
+		$smarty->assign('message', array(
+				'title'=>'Pondérations',
 				'texte'=>$notice )
 				);
-		$smarty->assign("corpsPage", "showPonderations");
+		$smarty->assign('corpsPage', 'showPonderations');
 		break;
 	case 'supprBaremeParticulier':
 		// on vérifie que le barème n'a pas été modifié par rapport au barème de base
@@ -105,27 +104,27 @@ switch ($mode) {
 				die("Vous ne donnez pas ce cours ou l'eleve ne suit pas ce cours...");
 			$nbSuppressions = $Bulletin->suppressionPonderation ($coursGrp, $matricule);
 			$smarty->assign("message", array(
-					'title'=>"Suppression",
+					'title'=>'Suppression',
 					'texte'=>"$nbSuppressions pondérations supprimées")
 					);
 			}
 			else $smarty->assign("message", array(
-					'title'=>"Suppression",
+					'title'=>'Suppression',
 					'texte'=>"Cette pondération a été modifiée. Impossible de la supprimer.<br>Veuillez la ramener à la même pondération que l'ensemble du groupe.")
 					);
 		$ponderations = $Bulletin->getPonderations($coursGrp);
 		$listeEleves = $Ecole->listeElevesCours($coursGrp);
 		$intituleCours = $Bulletin->intituleCours($coursGrp);
-		$smarty->assign("selecteur", "selectCours");
-		$smarty->assign("nbPeriodes", NBPERIODES);
-		$smarty->assign("ponderations", $ponderations);
-		$smarty->assign("intituleCours", $intituleCours);
-		$smarty->assign("listeEleves", $listeEleves);
-		$smarty->assign("corpsPage", "showPonderations");
+		$smarty->assign('selecteur', 'selectCours');
+		$smarty->assign('nbPeriodes', NBPERIODES);
+		$smarty->assign('ponderations', $ponderations);
+		$smarty->assign('intituleCours', $intituleCours);
+		$smarty->assign('listeEleves', $listeEleves);
+		$smarty->assign('corpsPage', 'showPonderations');
 		break;
 		
 	default:
-		$smarty->assign("selecteur", "selectCours");
+		$smarty->assign('selecteur','selectCours');
 		// on revient avec un cours à traiter...
 		if ($coursGrp != Null) {
 			$ponderations = $Bulletin->getPonderations($coursGrp);
@@ -133,14 +132,14 @@ switch ($mode) {
 				$ponderations = $Bulletin->ponderationsVides(NBPERIODES, $coursGrp);
 			$listeEleves = $Ecole->listeElevesCours($coursGrp);
 			$intituleCours = $Bulletin->intituleCours($coursGrp);
-			$smarty->assign("selecteur", "selectCours");
-			$smarty->assign("periodes", explode(",", NOMSPERIODES));					
-			$smarty->assign("mode","voir");
-			$smarty->assign("nbPeriodes", NBPERIODES);
-			$smarty->assign("ponderations", $ponderations);
-			$smarty->assign("intituleCours", $intituleCours);
-			$smarty->assign("listeEleves", $listeEleves);
-			$smarty->assign("corpsPage", "showPonderations");
+			$smarty->assign('selecteur', 'selectCours');
+			$smarty->assign('periodes', explode(',', NOMSPERIODES));					
+			$smarty->assign('mode','voir');
+			$smarty->assign('nbPeriodes', NBPERIODES);
+			$smarty->assign('ponderations', $ponderations);
+			$smarty->assign('intituleCours', $intituleCours);
+			$smarty->assign('listeEleves', $listeEleves);
+			$smarty->assign('corpsPage', 'showPonderations');
 		}
 		break;
 

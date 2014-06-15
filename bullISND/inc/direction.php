@@ -1,5 +1,5 @@
 <?php
-
+$unAn = time() + 365*24*3600;
 if (isset($_POST['classe'])) {
 	$classe = $_POST['classe'];
 	setcookie('classe',$classe,$unAn, null, null, false, true);
@@ -14,10 +14,16 @@ if (isset($_POST['matricule'])) {
 	else $matricule = $_COOKIE['matricule'];
 $smarty->assign('matricule',$matricule);
 
+$niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
+$coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
-$smarty->assign('onglet',$onglet);
+$typeDoc = isset($_POST['typeDoc'])?$_POST['typeDoc']:Null;
 
+$smarty->assign('coursGrp',$coursGrp);
+$smarty->assign('niveau',$niveau);
+$smarty->assign('onglet',$onglet);
+$smarty->assign('typeDoc',$typeDoc);
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 
@@ -29,7 +35,9 @@ switch ($mode) {
 		switch ($etape) {
 			case 'print':
 				if ($classe) {
-					$listeEleves = $Ecole->listeEleves($classe,'classe');
+					if ($typeDoc == 'competences')
+						$listeEleves = $Ecole->listeEleves($classe,'classe', false, false);
+						else $listeEleves = $Ecole->listeEleves($classe,'classe', false, true);
 					$listeCours = $Ecole->listeCoursClasse($classe);
 					$listeCompetences = $Bulletin->listeCompetencesListeCours($listeCours);
 					$sommeCotes = $Bulletin->sommeToutesCotes($listeEleves,$listeCours,$listeCompetences);
@@ -41,7 +49,7 @@ switch ($mode) {
 					}
 				// break; pas de break
 			default:
-				$listeClasses = $Ecole->listeClasses(array('G','TT'));
+				$listeClasses = $Ecole->listeClasses(array('G','TT', 'S'));
 				$smarty->assign('listeClasses',$listeClasses);
 				$smarty->assign('classe',$classe);
 				$smarty->assign('date',$date);
@@ -53,26 +61,38 @@ switch ($mode) {
 				break;
 		}
 		break;
-	//	$listeNiveaux = $Ecole->listeNiveaux();
-	//	$smarty->assign("listeNiveaux", $listeNiveaux);
-	//	if (isset($niveau)) {
-	//		$smarty->assign("niveau", $niveau);
-	//		$listeCoursComp = $Bulletin->listeCoursNiveaux($niveau);
-	//		$smarty->assign("listeCoursComp", $listeCoursComp);
-	//		}
-	//	if ($etape == 'enregistrer') {
-	//		$nbResultats = $Bulletin->enregistrerCompetences($_POST);
-	//		$smarty->assign("message", array(
-	//					'title'=>"Enregistrement",
-	//					'texte'=>"$nbResultats compétence(s) modifiée(s)"));
-	//		}
-	//
-	//	$listeCompetences = $Bulletin->listeCompetencesListeCours($cours);
-	//	$smarty->assign("listeCompetences", $listeCompetences);
-	//	$smarty->assign("selecteur", "selectNiveauCours");
-	//	$smarty->assign("corpsPage", "adminCompetences");
-	//	break;
+	
+	case 'eprExternes':
+		if ($etape == 'enregistrer') {
+			$resultat = $Bulletin->enregistrerEprExternes($_POST);
+			$tableErreurs = $resultat['erreurs'];
+			$smarty->assign('tableErreurs',$tableErreurs);
+			$smarty->assign('message', array(
+					'title'=>'Enregistrement',
+					'texte'=>$resultat['nb'].' enregistrements modifiées')
+					);
+			}
+		if (isset($coursGrp)) {
+			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
+			$listeCotes = $Bulletin->listeCotesEprExterne($coursGrp);
+			$listeSituationsBulletin = $Bulletin->listeSituationsCours($listeEleves,$coursGrp,NBPERIODES);
+			$smarty->assign('listeSituations', $listeSituationsBulletin);
+			$smarty->assign('NBPERIODES',NBPERIODES);
+			$smarty->assign('listeEleves', $listeEleves);
+			$smarty->assign('listeCotes',$listeCotes);
+			$smarty->assign('etape','enregistrer');
+				
+			$smarty->assign('intituleCours',$Bulletin->intituleCours($coursGrp));
+			$smarty->assign('listeClasses',$Bulletin->classesDansCours($coursGrp));
+			$smarty->assign('corpsPage','gestEprExternes');
+			}
 
+		if (isset($niveau))
+			$listeCoursGrp = $Bulletin->listeEprExterne($niveau);
+		$smarty->assign('listeCoursGrp',$listeCoursGrp);
+		$smarty->assign('listeNiveaux',Ecole::listeNiveaux());
+		$smarty->assign('selecteur','selectNiveauEprExterne');
+		break;
 	case 'padEleve':
 		$listeClasses = $Ecole->listeGroupes(array('G','TT','GT'));
 		$smarty->assign('listeClasses',$listeClasses);

@@ -1,8 +1,18 @@
-<h1>Rapport de compétences acquises: {$classe}</h1>
+{if $typeDoc == 'pia'}
+	<h1>Plans individuels d'apprentissages: {$classe}</h1>
+{/if}
+{if $typeDoc == 'competences'}
+	<h1>Rapport de compétences acquises: {$classe}</h1>
+{/if}
 <div id="tableauCompetences">
 {if isset($listeEleves)}
 {foreach from=$listeEleves key=matricule item=data}
-	{include file="enteteCompetences.tpl"}
+	{if $typeDoc == 'pia'}
+		{include file="entetePIA.tpl"}
+	{/if}
+	{if $typeDoc == 'competences'}
+		{include file="enteteCompetences.tpl"}
+	{/if}
 	<table style="width:100%" border="1px" class="tableauAdmin">
 		<tr>
 			<th width="75%">COMPETENCES</td>

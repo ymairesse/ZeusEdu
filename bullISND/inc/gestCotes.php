@@ -24,7 +24,7 @@ switch ($mode) {
 		$smarty->assign('bulletin', $bulletin);
 		$smarty->assign('action', 'gestionCotes');
 		$smarty->assign('mode','voir');
-		if ($etape == 'showCotes') {
+		if ($etape == 'showCotes' && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 			$ponderations = $Bulletin->getPonderations($coursGrp, $bulletin);
 			$listeCompetences = $Bulletin->listeCompetences($coursGrp);

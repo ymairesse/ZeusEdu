@@ -169,6 +169,10 @@ select[disabled] {color: #ccc}
 	clear:both; 
 	border: 1px dotted red;
 	}
+	
+.cote1erDegre:after {
+	content:' ²'
+	}
 
 .patienter {
 	background-color: orange;
@@ -188,7 +192,11 @@ select[disabled] {color: #ccc}
 .star {
 	background-color: yellow; 
 	color:red;
-}
+	}
+
+.star:after {
+	content:' *'
+	}
 
 .lblFraction {
 float:left;
@@ -465,3 +473,8 @@ th.cert, td.cert, .cert {
 	color: black;
 	font-weight: bolder;
 	}
+	
+.pasCours {
+    background-color: #ddd;
+    text-align:center;
+    }

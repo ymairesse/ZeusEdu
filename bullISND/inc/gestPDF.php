@@ -50,7 +50,7 @@ switch ($mode) {
 		break;
 	
 	case 'bulletinIndividuel':
-		$listeClasses = $Ecole->listeGroupes(array('G','TT'));
+		$listeClasses = $Ecole->listeGroupes(array('G','TT','S'));
 		if ($classe != Null) 
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			else $listeEleves = Null;
@@ -58,8 +58,8 @@ switch ($mode) {
 		$smarty->assign('listeEleves', $listeEleves);
 		$smarty->assign('nbBulletins', NBPERIODES);
 		$smarty->assign('bulletin', $bulletin);
-		$smarty->assign('action', 'pdf');
-		$smarty->assign('mode', 'bulletinIndividuel');
+		$smarty->assign('action', $action);
+		$smarty->assign('mode', $mode);
 		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
 
 		if ($etape == 'showEleve') {
@@ -88,8 +88,8 @@ switch ($mode) {
 		$smarty->assign('listeClasses', $listeClasses);
 		$smarty->assign('nbBulletins', NBPERIODES);
 		$smarty->assign('bulletin', $bulletin);
-		$smarty->assign('action', 'pdf');
-		$smarty->assign('mode', 'bulletinClasse');
+		$smarty->assign('action', $action);
+		$smarty->assign('mode', $mode);
 		$smarty->assign('etape', 'showClasse');
 
 		if ($etape == 'showClasse') {
@@ -113,8 +113,8 @@ switch ($mode) {
 		$smarty->assign('selecteur','selectBulletinNiveau');
 		$smarty->assign('listeNiveaux',$listeNiveaux);
 		$smarty->assign('bulletin',$bulletin);
-		$smarty->assign('action','pdf');
-		$smarty->assign('mode','niveau');
+		$smarty->assign('action',$action);
+		$smarty->assign('mode', $mode);
 		
 		if ($etape == 'showNiveau') {
 			if ($niveau) {
@@ -144,7 +144,7 @@ switch ($mode) {
 		// break;  pas de break
 	default: 
 		$listeFichiers = $Application->scanDirectories ('./pdf/$acronyme/');
-		$smarty->assign('action', 'pdf');
+		$smarty->assign('action', $action);
 		$smarty->assign('mode', 'delete');
 		$smarty->assign('etape', 'confirmation');
 		$smarty->assign('acronyme',$acronyme);

@@ -9,6 +9,10 @@
 	</select>
 		Avec signature <input type="checkbox" value=true {if $signature==true}checked=checked{/if} name="signature">
 	Date: <input type="text" name="date" value="{$date}" id="date" size="15">
+	<select name="typeDoc">
+		<option value="competences"{if $typeDoc == 'competences'} selected="selected"{/if}>Rapport de compétences</option>
+		<option value="pia"{if $typeDoc == 'pia'} selected="selected"{/if}>Plan individuel d'apprentissage</option>
+	</select>
 	<input type="Submit" name="OK" value="OK" id="submit">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">

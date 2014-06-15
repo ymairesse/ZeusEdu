@@ -1,5 +1,4 @@
 <?php
-$mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
 switch ($mode) {
 	case 'tables':
 		if ($etape == 'Enregistrer') {
@@ -42,7 +41,7 @@ switch ($mode) {
 		$fileName = isset($_GET['fileName'])?$_GET['fileName']:Null;
 		$listeNomsFichiers = $Application->listeFichiers('./save');
 		if (!(in_array($fileName, $listeNomsFichiers))) die('invalid file name');
-		unlink("./save/$fileName");
+		unlink("./save/".$fileName);
 		$smarty->assign('fileName',$fileName);
 		$smarty->assign('confirmDeleteBU','confirmDelete');
 		$listeFichiers = $Application->scanDirectories ('./save');

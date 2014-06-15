@@ -6,7 +6,7 @@ var modifie = false;
 {/literal}
 </script>
 
-<h2>Carnet de cotes de {$coursGrp} Période {$bulletin} tri: {$tri}</h2>
+<h2>Carnet de cotes de {$coursGrp} Période {$bulletin}</h2>
 <div id="test"></div>
 <div id="barreOutils" class="noprint">
 	<span class="fauxBouton" id="boutonPlus" title="Ajouter une cote">Ajouter une cote <img src="images/iconPlusB.png" alt="+"></span>

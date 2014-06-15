@@ -282,7 +282,7 @@ class ecole {
      * $entite est soit 'classe' (par défaut), soit 'groupe'
      * liste de tous les élèves de l'école (matricule + nom + prénom)
      */
-    public static function listeEleves($critere=Null, $entite='classe', $partis=false) {
+    public static function listeEleves($critere=Null, $entite='classe', $partis=false, $extended=false) {
 		$supSQL = array();
         if ($critere != Null)
             $supSQL[] = " $entite = '$critere' ";
@@ -293,6 +293,8 @@ class ecole {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		
         $sql = "SELECT matricule, nom, prenom, classe, DateNaiss, commNaissance ";
+		if ($extended)
+			$sql .= ", sexe, nomResp, adresseResp, cpostResp, localiteResp ";
         $sql .= "FROM ".PFX."eleves ";
 		if ($supSQL != '')
 			$sql .= "WHERE ".$supSQL;
@@ -301,16 +303,14 @@ class ecole {
         $resultat = $connexion->query($sql);
         $listeEleves = array();
         if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
-                $listeEleves[$matricule] = array(
-                        'nom'=>$ligne['nom'],
-                        'prenom'=>$ligne['prenom'],
-                        'classe'=>$ligne['classe'],
-						'DateNaiss'=>Application::datePHP($ligne['DateNaiss']),
-						'commNaissance'=>$ligne['commNaissance'],
-						'photo'=>self::photo($matricule)
-                    );
+				$dateNaiss = $ligne['DateNaiss'];
+				$listeEleves[$matricule] = $ligne;
+
+				$listeEleves[$matricule]['DateNaiss'] = Application::datePHP($dateNaiss);
+				$listeEleves[$matricule]['photo'] = self::photo($matricule);
                 }
             }
         Application::DeconnexionPDO($connexion);
@@ -651,7 +651,7 @@ class ecole {
 			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$cours = $ligne['cours'];
-				$liste[$cours]['cours'] = array('nbheures'=>$ligne['nbheures'],'libelle'=>$ligne['libelle']);
+				$liste[$cours]['cours'] = array('nbheures'=>$ligne['nbheures'],'libelle'=>$ligne['libelle'], 'statut'=>$ligne['statut']);
 				$coursGrp = $ligne['coursGrp'];
 				$acronyme = $ligne['acronyme'];
 				$liste[$cours][$coursGrp]['profs'][$acronyme] = $ligne['nom']." ".$ligne['prenom'];
@@ -1768,6 +1768,7 @@ class ecole {
 
 	/***
 	 * renvoie la liste des sections organisées à l'école
+	 
 	 * @param
 	 * @return : array
 	 */

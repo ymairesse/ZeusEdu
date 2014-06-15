@@ -296,14 +296,18 @@
 			{* nouvelle cote de situation y compris en % -------------*}
 			{* ------------------------------------------------------ *}
 			<td width="15%">
-				{if isset($listeSituations.$matricule.$coursGrp.$bulletin.sit) && is_numeric($listeSituations.$matricule.$coursGrp.$bulletin.sit)}
-					{if $listeSituations.$matricule.$coursGrp.$bulletin.max neq 0}
-					<div class="fraction">
-						<div class="num">{$listeSituations.$matricule.$coursGrp.$bulletin.sit}</div>
-						<div class="den">{$listeSituations.$matricule.$coursGrp.$bulletin.max}</div>
-					</div> 
-					<span class="micro">= {$listeSituations.$matricule.$coursGrp.$bulletin.pourcent}%</span>
+				{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
+					{if isset($listeSituations.$matricule.$coursGrp.$bulletin.sit) && is_numeric($listeSituations.$matricule.$coursGrp.$bulletin.sit)}
+						{if $listeSituations.$matricule.$coursGrp.$bulletin.max neq 0}
+						<div class="fraction">
+							<div class="num">{$listeSituations.$matricule.$coursGrp.$bulletin.sit}</div>
+							<div class="den">{$listeSituations.$matricule.$coursGrp.$bulletin.max}</div>
+						</div> 
+						<span class="micro">= {$listeSituations.$matricule.$coursGrp.$bulletin.pourcent}%</span>
+						{/if}
 					{/if}
+				{else}
+				&nbsp;
 				{/if}
 			</td>
 			
@@ -314,68 +318,51 @@
 			{*  Choix de la cote de délibé     ---------------------- *}
 			{* ------------------------------------------------------ *}
 			<td style="width:20%; text-align:center">
-
 				{if !($blocage.$coursGrp)}
-				{* trois champs destinés à retenir si les cotes sont entre [],  étoilées ou ² (réussite deuxième année du degré) *}
-				
-				{* ----->>>> cote entre crochets --------*}
-				<input type="hidden" name="hook-eleve_{$matricule}" 
-					id="hook-eleve_{$matricule}"
-					value="{$listeSituations.$matricule.$coursGrp.$bulletin.hook|default:'0'}"
-					{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-					>
 
-				{* ----->>>> cote étoilée ---------------*}
-
-				<input type="hidden" name="star-eleve_{$matricule}" 
-					id="star-eleve_{$matricule}"
-					value="{$listeSituations.$matricule.$coursGrp.$bulletin.star|default:'0'}"
-					{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-					>
-
-				{* ----->>>> cote de deuxième -----------*}
-
-				{if isset($sitDeuxiemes.$coursGrp.$matricule.sit2)}
-				<input type="hidden" name="degre-eleve_{$matricule}"
-					id="degre-eleve_{$matricule}"
-					value="{$sitDeuxiemes.$coursGrp.$matricule.sit2|default:'0'}"
-					{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-					>
+				{* champs destinés à retenir si les cotes sont entre [], magiques, étoilées ou ² (réussite deuxième année du degré) *}
+				{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
+					{assign var=attribut value=$listeSituations.$matricule.$coursGrp.$bulletin.attribut}
+				{else}
+					{assign var=attribut value=Null}
 				{/if}
+				{* ----->>>> attribut de la cote de délibé: * ² [] ... --------*}
+				<input type="hidden" name="attribut-eleve_{$matricule}" 
+					id="attribut-eleve_{$matricule}" value="{$attribut}"
+					{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}>
 
 				{* ------------------------------------------------------ *}
 				{* cote entre crochets? ----------------------------------*}
 				{* Deux boutons: avec ou sans crochets -------------------*}
 				{* ------------------------------------------------------ *}
 
-					{if isset($listeSituations.$matricule.$coursGrp.$bulletin.pourcent)}
-					<input style="font-size:8pt" type="button" name="btnHook-eleve_{$matricule}" 
-						tabIndex="{$tabIndexAutres+1}"
-						class="hook" value="[{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent} %]"
-						{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-						>
-					<input style="font-size:8pt" type="button" name="btnNohook-eleve_{$matricule}" 
-						tabIndex="{$tabIndexAutres+2}"
-						class="nohook" value="{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent} %"
-						{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-						>
-					{if ($listeSituations.$matricule.$coursGrp.$bulletin.sitDelibe == Null)}
-						<img src="images/led.gif" alt="!!" title="Sélectionnez une cote de délibération">
-					{/if}
+					{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
+						<input style="font-size:8pt" type="button" name="btnHook-eleve_{$matricule}" 
+							tabIndex="{$tabIndexAutres+1}"
+							class="hook" value="[{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent|default:''} %]"
+							{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}>
+						<input style="font-size:8pt" type="button" name="btnNohook-eleve_{$matricule}" 
+							tabIndex="{$tabIndexAutres+2}"
+							class="nohook" value="{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent|default:''} %"
+							{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}>
+						{if ($listeSituations.$matricule.$coursGrp.$bulletin.sitDelibe == Null)}
+							<img src="images/led.gif" alt="!!" title="Sélectionnez une cote de délibération">{/if}
 						{else}
-						-
-					{/if}  {*  /cote entre crochets  *}
-				{else}
-				&nbsp;
-				{/if}
+							-
+						{/if}  {*  /cote entre crochets  *}
+					{else}
+						&nbsp;
+					{/if}
+
 				{* ------------------------------------------------------ *}
 				{* ces boutons n'apparaîssent qu'à la dernière période    *}
 				{* Quand le bulletin est le dernier de l'année            *}
 				{* ------------------------------------------------------ *}
 				{if $bulletin == $nbBulletins}
+				
 					{* cote étoilée? -----------------------------------------*}
 					{* Un bouton à cliquer si la situation le permet----------*}
-					{if $listeSommesFormCert.$matricule.pourcentCert > $listeSituations.$matricule.$coursGrp.$bulletin.pourcent}
+					{if isset($listeSituations.$matricule.$coursGrp.$bulletin) && ($listeSommesFormCert.$matricule.pourcentCert > $listeSituations.$matricule.$coursGrp.$bulletin.pourcent)}
 					<input style="font-size:8pt" type="button" name="btnStar-eleve_{$matricule}" 
 						tabIndex="{$tabIndexAutres+3}"
 						class="star" value="{$listeSommesFormCert.$matricule.pourcentCert} % *"
@@ -384,31 +371,31 @@
 					{/if}
 					
 					{* baguette magique? -----------------------------------------*}
-					<button type="button" class="magic-eleve_{$matricule} magic" 
+					<button type="button" name="magic-eleve_{$matricule}" class="magic" 
 						{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
 						><img width="16" src="images/magic.png" alt="/"></button>
 					
-						
+					
 					{* cote réussite du degré? ------------------------------------*}
 					{* Un bouton à cliquer si l'élève est en échec pour le degré---*}
 					{* et s'il y a une cote de première année du degré             *}
-					{if ($listeSituations.$matricule.$coursGrp.$bulletin.pourcent < 50) 
+					{if isset($listeSituations.$matricule.$coursGrp.$bulletin)&& ($listeSituations.$matricule.$coursGrp.$bulletin.pourcent < 50) 
 							&& ($sitDeuxiemes.$coursGrp.$matricule.sit2)}
-						<div class="cote1erDegre">
-						{* attribution de la cote 50% en cas de réussite en deuxième; la cote de deuxième se trouve dans sit2 *}
-						{* la cote de deuxième exclusivement est affichée pour information *}
-						
-							{$sitDeuxiemes.$coursGrp.$matricule.sit2}% en 2<sup>e</sup>
-							{if $sitDeuxiemes.$coursGrp.$matricule.sit2 >= 50}
-							=>
-							{assign var=reussite50 value=50}
-								<input style="font-size:8pt" type="button" name="btnDegre-eleve_{$matricule}"
-									tabIndex="{$tabIndexAutres+4}"
-									class="degre" value="{$reussite50} ² %"
-									{if ($blocage.$coursGrp > 0)}disable="disabled"{/if}
-									>
-							{/if}
-						</div>
+					<div class="cote1erDegre">
+					{* attribution de la cote 50% en cas de réussite en deuxième; la cote de deuxième se trouve dans sit2 *}
+					{* la cote de deuxième exclusivement est affichée pour information *}
+					
+						{$sitDeuxiemes.$coursGrp.$matricule.sit2}% en 2<sup>e</sup>
+						{if $sitDeuxiemes.$coursGrp.$matricule.sit2 >= 50}
+						=>
+						{assign var=reussite50 value=50}
+							<input style="font-size:8pt" type="button" name="btnDegre-eleve_{$matricule}"
+								tabIndex="{$tabIndexAutres+4}"
+								class="degre" value="{$reussite50} %"
+								{if ($blocage.$coursGrp > 0)}disable="disabled"{/if}
+								>
+						{/if}
+					</div>
 					{/if}
 				{/if}
 			</td>
@@ -418,9 +405,23 @@
 			{* Une fois dans un texte à l'écran -----------------------*}
 			{* Une fois dans un champ text caché (pour POST)-----------*}
 			{* ------------------------------------------------------- *}
-			<td style="width:20%; text-align:center">
-			{assign var="sitDelibe" value=$listeSituations.$matricule.$coursGrp.$bulletin.sitDelibe|default:Null}
-			<strong id="situationFinale_{$matricule}">{$sitDelibe} %</strong>
+			<td style="width:20%; text-align:center"{if isset($tableErreurs.$matricule['sitDelibe'])} class="erreurEncodage"{/if}>
+			{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
+				{assign var="sitDelibe" value=$listeSituations.$matricule.$coursGrp.$bulletin.sitDelibe|default:Null}
+				{else}
+				{assign var="sitDelibe" value=Null}
+			{/if}
+			{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
+			{assign var="symbole" value=$listeSituations.$matricule.$coursGrp.$bulletin.symbole}
+			<strong id="situationFinale_{$matricule}">
+				{if $listeSituations.$matricule.$coursGrp.$bulletin.attribut == 'hook'}
+				[{$sitDelibe}]%
+				{else}
+				{$sitDelibe}<sup>{$symbole}</sup>%{/if}
+			{else}
+			&nbsp;
+			{/if}
+			</strong>
 			<input type="text" maxlength="4" size="3" name="situation-eleve_{$matricule}" 
 				id="situation-eleve_{$matricule}" value="{$sitDelibe}" style="display:none">
 				
@@ -529,7 +530,6 @@ $(document).ready(function(){
 			modification();
 			}
 		});
-
 	
 	// le copier/coller provoque aussi  une "modification"
 	$("input, textarea").bind('paste', function(){
@@ -620,107 +620,76 @@ $(document).ready(function(){
 
 	$(".hook, .nohook").click(function(){
 		modification();
-		var cote = $(this).val();
+		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 		// Retrouver le matricule dans Ex: "btnHook-eleve_5042"
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
 		
 		// cacher le champ Input (éventuellement utilisé par la baguette magique)
 		$("#situation-eleve_"+matricule).hide();
-		
-		// attribution d'une valeur affichée et affichage du texte
-		$("#situationFinale_"+matricule).html(cote).show();
+		// attribution d'une valeur affichée
+		if ($(this).hasClass('hook')) 
+			$("#situationFinale_"+matricule).html('['+cote+']%').show();
+			else $("#situationFinale_"+matricule).html(cote+'%').show();
 		// attribution d'une valeur au champ input situation-eleve pour$_POST
 		$("#situation-eleve_"+matricule).val(cote);
-
-		// indicateur de cote entre crochets (ou pas)
-		if ($(this).attr("class") == "hook")
-			$("#hook-eleve_"+matricule).val(1);
-			else $("#hook-eleve_"+matricule).val(0);
-		// suppression de l'étoile si cote entre crochets ou normale
-		$("#star-eleve_"+matricule).val(0);
-		// suppression de la cote par degré
-		$("#degre-eleve_"+matricule).val(0);
-	})
+		// indicateur d'attribut de la situation de délibé
+		if ($(this).hasClass('hook')) 
+			$("#attribut-eleve_"+matricule).val('hook');
+			else $("#attribut-eleve_"+matricule).val('');
+		})
 	
 	$(".star").click(function(){
 		modification();
-
-		// quelle est la cote portée par le bouton?
-		var cote = $(this).val();
-		// Retrouver le matricule dans Ex: "btnStar-eleve_5042"
+		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
 
-		// cacher le champ Input (éventuellement utilisé par la baguette magique)
+		// cacher le champ Input (pas de baguette magique)
 		$("#situation-eleve_"+matricule).hide();
-		
 		// attribution d'une valeur affichée et affichage du texte
-		$("#situationFinale_"+matricule).html(cote).show();
-
-		// attribution d'une valeur au champ input situation-eleve pour $_POST
+		$("#situationFinale_"+matricule).html(cote+'*%').show();
+		
+		// attribution d'une valeur au champ input situation-eleve
 		$("#situation-eleve_"+matricule).val(cote);
-
-		// indicateur de cote étoilée = ON
-		$("#star-eleve_"+matricule).val(1);
-		// suppression des crochets si cote étoilée
-		$("#hook-eleve_"+matricule).val(0);
-		// suppression de la cote par degré
-		$("#degre-eleve_"+matricule).val(0);
+		// indicateur d'attribut de la situation de délibé
+		$("#attribut-eleve_"+matricule).val('star');
 	})
 	
 	$(".degre").click(function(){
 		modification();
-		var cote = $(this).val().replace(/[\*]+/,'');
-		var name= $(this).attr("name");
+		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
 		
-		// cacher le champ Input
+		// cacher le champ Input (pas de baguette magique)
 		$("#situation-eleve_"+matricule).hide();
-		// montrer la cote "texte"
-		$("#situationFinale_"+matricule).show();
-		
 		// attribution d'une valeur affichée
-		$("#situationFinale_"+matricule).html(cote);
+		$("#situationFinale_"+matricule).html(cote+'²%').show();
+		
 		// attribution d'une valeur au champ input situation-eleve
 		$("#situation-eleve_"+matricule).val(cote);
-		if ($("#degre-eleve_"+matricule).val() == 0)
-			$("#degre-eleve_"+matricule).val(1);
-		// suppression de l'étoile si cote par degré
-		$("#star-eleve_"+matricule).val(0);
-		// suppression des crochets si cote par degré
-		$("#hook-eleve_"+matricule).val(0);
+		$("#attribut-eleve_"+matricule).val('degre');
 	})
-	
-	$(".remarque").focus(function(){
-		var center = $(window).height()/2;
-		var top = $(this).offset().top ;
-		if (top > center){
-			$(window).scrollTop(top-center);
-		}
-	});
+
 	
 	$(".magic").click(function(){
 		if (confirm(coteArbitraire)) {
-			// élimination du nom de class 'magic' dans le nom de class
-			var nomClass = $(this).attr("class");
-			nomClass = nomClass.substring(0,nomClass.lastIndexOf(' magic'));
-			var matricule = nomClass.split('-')[1].split("_")[1];
+			modification();
+			// var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
+			var matricule = $(this).attr("name").split('-')[1].split("_")[1];
 
-			$("#situationFinale_"+matricule).hide();
+			// montrer le champ input
 			$("#situation-eleve_"+matricule).css('display','block');
-			// suppression des crochets, de l'étoile, du ² et du signe %
-			$("#situation-eleve_"+matricule).val($("#situation-eleve_"+matricule).val().replace(/[\[\]²%\*]+/g,''));
-			$("#star-eleve_"+matricule).val(1);
-			// suppression des crochets si magic
-			$("#hook-eleve_"+matricule).val(0);
-			// suppression de la cote par degré si magic
-			$("degre-eleve_"+matricule).val(0);
+			// attribution d'une valeur affichée et affichage du texte
+			$("#situationFinale_"+matricule).hide();
+			
+			$("#attribut-eleve_"+matricule).val('magique');
 		}
 	})
 	
 	$(".balayette").click(function(){
 		modification();
 		var matricule = parseInt($(this).attr("id").substr(4,10));
-		$("#situationFinale_"+matricule).text('');
+		$("#situationFinale_"+matricule).text('').hide();
+		$("#attribut-eleve_"+matricule).val('');
 		$("#situation-eleve_"+matricule).val('');
 		})
 
@@ -737,6 +706,14 @@ $(document).ready(function(){
 		var matricule = $(this).val();
 		goToByScroll("el"+matricule);
 		})
+	
+	//$(".remarque").focus(function(){
+	//	var center = $(window).height()/2;
+	//	var top = $(this).offset().top ;
+	//	if (top > center){
+	//		$(window).scrollTop(top-center);
+	//	}
+	//});
 	
 	$(".clickNE, .clickNA, .clickA").attr('title',toutesAttitudes);
 

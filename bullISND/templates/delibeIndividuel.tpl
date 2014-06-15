@@ -24,8 +24,12 @@
 		<td>{$unCours.nbheures}h</td>
 		{foreach from=$listePeriodes item=periode}
 			<td class="cote 
-				{if ($listeSituations.$coursGrp.$periode.sitDelibe < 50) && ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '') }echec{/if}">
-				{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}</td>
+				{if ($listeSituations.$coursGrp.$periode.sitDelibe < 50) && ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '') && ($listeSituations.$coursGrp.$periode.attribut != 'hook')}echec{/if}">
+				{if $listeSituations.$coursGrp.$periode.attribut == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}]
+					{else}
+					{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}<sup>{$listeSituations.$coursGrp.$periode.symbole|default:''}</sup>
+				{/if}
+			</td>
 		{/foreach}
 		
 		<td class="remarqueDelibe" title="{$listeRemarques.$matricule.$coursGrp.2|default:''}">
@@ -135,6 +139,15 @@
 	</tr>
 </table>
 </form>
+<p>Symbolique:</p>
+<ul>
+<li>² => réussite degré</li>
+<li>* => cote étoilée</li>
+<li>↗ => baguette magique</li>
+<li>← => reussite 50%</li>
+<li>$ => épreuve externe</li>
+<li>[xx] => non significatif</li>
+</ul>
 
 <script type="text/javascript">
 {literal}

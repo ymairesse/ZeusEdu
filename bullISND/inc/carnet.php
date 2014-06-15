@@ -30,8 +30,8 @@ switch ($mode) {
 	case 'gererCotes':
 		$smarty->assign('selecteur', 'selectBulletinCours');
 		$smarty->assign('mode','gererCotes');
-		if ($coursGrp)
-			$smarty->assign ('corpsPage', 'showCarnet');
+		//if ($coursGrp)
+		//	$smarty->assign ('corpsPage', 'showCarnet');
 		switch ($etape) {
 			case 'recordEnteteCote':
 				$nb = $Bulletin->recordEnteteCote($_POST);
@@ -57,7 +57,8 @@ switch ($mode) {
 					);
 				break;
 			}
-		if ($coursGrp) {
+		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
+			$smarty->assign ('corpsPage', 'showCarnet');
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 			$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
 			$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
@@ -135,13 +136,13 @@ switch ($mode) {
 	case 'poidsCompetences':
 		$smarty->assign('selecteur', 'selectCours');
 		$smarty->assign('mode', 'poidsCompetences');
-		if ($coursGrp) {
+		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			switch ($etape) {
 				case 'enregistrer':
 					$nbResultats = $Bulletin->recordPoidsCompetences($_POST);
 					$smarty->assign('message', array(
 						'title'=>'Enregistrement',
-						'texte'=>'$nbResultats poids enregistré(s)')
+						'texte'=> "$nbResultats poids enregistré(s)")
 						);
 				// pas de break;
 				// break;

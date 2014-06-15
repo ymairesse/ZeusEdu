@@ -21,6 +21,7 @@
 			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences</a></li>
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
+			<li><a href="index.php?action=direction&amp;mode=eprExternes">Épreuves externes/délibés</a></li>
 		</ul>
 	</li>
 	{/if}
@@ -37,8 +38,8 @@
 		<li><a href="index.php?action=gestionCotes&amp;mode=voir">Aperçu des cotes pour vos cours</a></li>
 		<li><a href="index.php?action=gestEncodageBulletins">Encodage des bulletins</a></li>
 		<li><a href="index.php?action=gestEprExternes">Épreuves externes</a></li>
-		<li><hr></li>
 		{if $userStatus eq 'admin'}
+		<li><hr></li>
 		<li><a href="index.php?action=admin&amp;mode=poserVerrous">Ouvrir/fermer des verrous</a></li>
 		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Verrous classe/cours/élève</a></li>
 		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>

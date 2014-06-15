@@ -1,5 +1,5 @@
 <h2>Situations | classe: {$classe} | Période: {$bulletin}</h2>
-<p class="noprint">Attention: ceci n'est pas la feuille de délibération 
+<p class="noprint">Attention: ceci n'est pas la feuille de délibération. <strong>Les valeurs présentées sont les situations actuelles ramenées à 100 points. </strong>
 <span class="fauxBouton couleur">Désactiver la couleur</span></p>
 <table class="tableauAdmin">
 	<tr>
@@ -74,11 +74,11 @@ $(document).ready(function(){
 			else {
 				$(".xmentionS").removeClass("xmentionS").addClass("mentionS");
 				$(".xmentionAB").removeClass("xmentionAB").addClass("mentionAB");
-				$(".XmentionB").removeClass("XmentionB").addClass("mentionB");
-				$(".XmentionBplus").removeClass("XmentionBplus").addClass("mentionBplus");
-				$(".XmentionTB").removeClass("XmentionTB").addClass("mentionTB");
-				$(".XmentionTBplus").removeClass("XmentionTBplus").addClass("mentionTBplus");
-				$(".XmentionE").removeClass("XmentionE").addClass("mentionE");
+				$(".xmentionB").removeClass("xmentionB").addClass("mentionB");
+				$(".xmentionBplus").removeClass("xmentionBplus").addClass("mentionBplus");
+				$(".xmentionTB").removeClass("xmentionTB").addClass("mentionTB");
+				$(".xmentionTBplus").removeClass("xmentionTBplus").addClass("mentionTBplus");
+				$(".xmentionE").removeClass("xmentionE").addClass("mentionE");
 				$(this).text("Désactiver la couleur");
 				}
 		})
