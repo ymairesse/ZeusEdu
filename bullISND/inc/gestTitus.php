@@ -1,27 +1,43 @@
 <?php
+$unAn = time() + 365*24*3600;
 $bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:PERIODEENCOURS;
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
-$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
+
+if (isset($_POST['matricule'])) {
+	$matricule = $_POST['matricule'];
+	setcookie('matricule',$matricule,$unAn, null, null, false, true);
+	}
+	else $matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
+$smarty->assign('matricule', $matricule);
+
+if (isset($_POST['classe'])) {
+	$classe = $_POST['classe'];
+	setcookie('classe',$classe,$unAn, null, null, false, true);
+	}
+	else $classe = isset($_COOKIE['classe'])?$_COOKIE['classe']:Null;
+$smarty->assign('classe', $classe);
+
 $annee = ($classe != Null)?SUBSTR($classe,0,1):Null;
+$onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
 
 // liste des classes dont le prof utilisateur est titulaire
 $listeTitus = $user->listeTitulariats();
-$smarty->assign("listeClasses", $listeTitus);
-$smarty->assign("matricule", $matricule);
+$smarty->assign('listeClasses', $listeTitus);
+$smarty->assign('matricule', $matricule);
 $smarty->assign('annee',$annee);
-$smarty->assign("classe", $classe);
-$smarty->assign("bulletin", $bulletin);
-$smarty->assign("nbBulletins", NBPERIODES);
-$smarty->assign("listePeriodes", $Bulletin->listePeriodes(NBPERIODES));
+$smarty->assign('classe', $classe);
+$smarty->assign('bulletin', $bulletin);
+$smarty->assign('nbBulletins', NBPERIODES);
+$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
+$smarty->assign('onglet',$onglet);
 
 $smarty->assign("action",$action);
 
 switch ($mode) {
 	case 'verrous':
-		$smarty->assign ("selecteur", "selectBulletinClasse");
-		$smarty->assign("mode", "verrous");
-		$smarty->assign("etape", "showVerrous");
+		$smarty->assign ('selecteur','selectBulletinClasse');
+		$smarty->assign("mode",$mode);
+		$smarty->assign('etape','showVerrous');
 		switch ($etape) {
 			case 'enregistrer':
 				$nbEnregistrements = $Bulletin->saveLocksBulletin($_POST, $bulletin);
@@ -46,12 +62,12 @@ switch ($mode) {
 			}
 		break;
 	case 'remarques':
-		$smarty->assign ("selecteur", "selectBulletinClasseEleve");
-		$smarty->assign("mode",$mode);
-		$smarty->assign("etape", "showEleve");
+		$smarty->assign ('selecteur','selectBulletinClasseEleve');
+		$smarty->assign('mode',$mode);
+		$smarty->assign('etape','showEleve');
 		if (isset($classe)) {
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
-			$smarty->assign("listeEleves", $listeEleves);
+			$smarty->assign('listeEleves', $listeEleves);
 			$prevNext = $Ecole->prevNext($matricule, $listeEleves);
 			$smarty->assign('prevNext',$prevNext);	
 		}
@@ -76,7 +92,7 @@ switch ($mode) {
 				// pas d'indication de numéro de période, afin de les avoir toutes
 				$commentairesProfs = $Bulletin->listeCommentairesTousCours($matricule, Null);
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
-				// $ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
+				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 				
 				// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
 				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
@@ -108,7 +124,7 @@ switch ($mode) {
 				$smarty->assign('attitudes', $tableauAttitudes);
 				$smarty->assign('ficheEduc', $ficheEduc);
 				$smarty->assign('listeRemarquesTitu', $listeRemarquesTitulaire);
-				$smarty->assign('remarqueTitu', $remarqueTitulaire[$bulletin]);
+				$smarty->assign('remarqueTitu', $remarqueTitulaire);
 				$smarty->assign('mentions',$mentions);
 
 				$smarty->assign('corpsPage', 'commentairesTitu');

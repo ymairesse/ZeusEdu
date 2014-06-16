@@ -423,7 +423,7 @@
 			{/if}
 			</strong>
 			<input type="text" maxlength="4" size="3" name="situation-eleve_{$matricule}" 
-				id="situation-eleve_{$matricule}" value="{$sitDelibe}" style="display:none">
+				id="situation-eleve_{$matricule}" value="{$sitDelibe}" class="sitDelibe" style="display:none">
 				
 				{* balayette pour effacer la cote de délibé *}
 				{if $sitDelibe != ''}

@@ -7,14 +7,14 @@ if (isset($_POST['classe'])) {
 	$classe = $_POST['classe'];
 	setcookie('classe',$classe,$unAn, null, null, false, true);
 	}
-	else $classe = $_COOKIE['classe'];
+	else $classe = isset($_COOKIE['classe'])?$_COOKIE['classe']:Null;
 $smarty->assign('classe', $classe);
 
 if (isset($_POST['matricule'])) {
 	$matricule = $_POST['matricule'];
 	setcookie('matricule',$matricule,$unAn, null, null, false, true);
 	}
-	else $matricule = $_COOKIE['matricule'];
+	else $matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
 $smarty->assign('matricule', $matricule);
 
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;

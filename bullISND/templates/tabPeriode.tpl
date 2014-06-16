@@ -8,16 +8,26 @@
 	<tr>
 		<th>TJ</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=data}
-		<td class="cote mention{$cotesPeriode.$matricule.$coursGrp.form.mention}" title="{$commentairesProfs.$matricule.$coursGrp.$bulletin}">
-			{$cotesPeriode.$matricule.$coursGrp.form.cote}/{$cotesPeriode.$matricule.$coursGrp.form.max}
+		<td class="cote mention{$cotesPeriode.$matricule.$coursGrp.form.mention|default:''}"
+			title="{$commentairesProfs.$matricule.$coursGrp.$bulletin|default:'No Comment'}">
+			{if isset($cotesPeriode.$matricule.$coursGrp.form.cote)}
+				{$cotesPeriode.$matricule.$coursGrp.form.cote}/{$cotesPeriode.$matricule.$coursGrp.form.max}
+				{else}
+				&nbsp;
+			{/if}
 		</td>
 		{/foreach}
 	</tr>
 	<tr>
 		<th>Cert</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=data}
-		<td class="cote mention{$cotesPeriode.$matricule.$coursGrp.cert.mention}" title="{$commentairesProfs.$matricule.$coursGrp.$bulletin}">
-			{$cotesPeriode.$matricule.$coursGrp.cert.cote}/{$cotesPeriode.$matricule.$coursGrp.cert.max}
+		<td class="cote mention{$cotesPeriode.$matricule.$coursGrp.cert.mention|default:''}"
+			title="{$commentairesProfs.$matricule.$coursGrp.$bulletin|default:'No Comment'}">
+			{if isset($cotesPeriode.$matricule.$coursGrp.cert.cote)}
+				{$cotesPeriode.$matricule.$coursGrp.cert.cote}/{$cotesPeriode.$matricule.$coursGrp.cert.max}
+				{else}
+				&nbsp;
+			{/if}
 		</td>
 		{/foreach}		
 	</tr>

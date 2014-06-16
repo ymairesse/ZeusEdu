@@ -4,30 +4,23 @@
 	<span class="fauxBouton couleur">Désactiver la couleur</span>
 <div id="tabsul">
 	<ul>
-		<li><a href="#tabs-cotes">Cotes de situation</a></li>
-		<li><a href="#tabs-periode">Cotes période {$bulletin}</a></li>
+		<li><a href="#tabs-1">Cotes de situation</a></li>
+		<li><a href="#tabs-2">Cotes période {$bulletin}</a></li>
+		<li><a href="#tabs-3">Remarques toutes périodes</a></li>
 		{if $attitudes}
-			<li><a href="#tabs-attitudes">Attitudes</a></li>
+			<li><a href="#tabs-4">Attitudes</a></li>
 		{/if}
-
-		<li><a href="#tabs-remarques">Remarques toutes périodes</a></li>
 	</ul>
 	
-	<div id="tabs-cotes">
+	<div id="tabs-1">
 		{include file="tabCotes.tpl"}
 	</div>
 	
-	<div id="tabs-periode">
+	<div id="tabs-2">
 		{include file="tabPeriode.tpl"}
 	</div>
 	
-	{if isset($attitudes)}
-	<div id="tabs-attitudes">
-		{include file="tabAttitudes.tpl"}
-	</div>
-	{/if}
-	
-	<div id="tabs-remarques">
+	<div id="tabs-3">
 		<table class="tableauTitu" style="width:100%">
 			<tr>
 			<th style="width:3em">Bulletin</th>
@@ -41,6 +34,12 @@
 		{/foreach}
 		</table>
 	</div>
+	
+	{if $attitudes}
+	<div id="tabs-4">
+		{include file="tabAttitudes.tpl"}
+	</div>
+	{/if}
 </div>
 <hr style="clear:both">
 	<form name="avisTitu" id="avisTitu" action="index.php" method="POST" style="border-radius: 15px; box-shadow: 1px 1px 12px #555;">
@@ -50,27 +49,41 @@
 		{if isset($mentions.$matricule.$annee.$bulletin)}
 		<p>Mention accordée <strong>{$mentions.$matricule.$annee.$bulletin|default:'-'}</strong>.</p>
 		{/if}
-		 <textarea name="commentaire" id="commentaire" rows="7" cols="80">{$remarqueTitu|default:'&nbsp;'}</textarea>
-			  <br>
-			  <input type="submit" name="Enregistrer" value="Enregistrer" id="enregistrer">
-			  <input type="reset" name="Annuler" value="Annuler"><br>
-			  <input type="hidden" name="action" value="titu">
-			  <input type="hidden" name="mode" value="remarques">
-			  <input type="hidden" name="etape" value="enregistrer">
-			  <input type="hidden" name="bulletin" value="{$bulletin}">
-			  <input type="hidden" name="matricule" value="{$matricule}">
-			  <input type="hidden" name="classe" value="{$classe}">
+		 <textarea name="commentaire" id="commentaire" rows="7" cols="80">{$remarqueTitu.$bulletin|default:'&nbsp;'}</textarea>
+			<br>
+			<input type="submit" name="Enregistrer" value="Enregistrer" id="enregistrer">
+			<input type="reset" name="Annuler" value="Annuler"><br>
+			<input type="hidden" name="action" value="titu">
+			<input type="hidden" name="mode" value="remarques">
+			<input type="hidden" name="etape" value="enregistrer">
+			<input type="hidden" name="bulletin" value="{$bulletin}">
+			<input type="hidden" name="matricule" value="{$matricule}">
+			<input type="hidden" name="classe" value="{$classe}">
+			<input type="hidden" name="onglet" class="onglet" value="{$onglet}">
 	</form>
 </div>
 
 <script type="text/javascript">
 var periode={$bulletin};
+
+<!-- quel est l'onglet actif? -->
+var onglet = "{$onglet|default:''}";
+
 {literal}
 	$(document).ready(function(){
+		
+	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet' -->
+	$("#tabsul ul li a").click(function(){
+		var no = $(this).attr("href").substr(6,1);
+		$(".onglet").val(no-1);
+		});
 
 	$(".photo").draggable();
 	
 	$("#tabsul").tabs();
+	
+	<!-- activer l'onglet dont le numéro a été passé -->
+	$('#tabsul').tabs("option", "active", onglet);
 
 	$("#tabsAttitudes").tabs().show();
 	$('#tabsAttitudes').tabs("option", "active", periode-1);
