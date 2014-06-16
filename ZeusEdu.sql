@@ -249,6 +249,7 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('presences', 'presencesHeures'),
 ('presences', 'didac_presencesAutorisations');
 
+-- --------------------------------------------------------
 
 --
 -- Structure de la table `didac_bullArchives`
@@ -262,6 +263,19 @@ CREATE TABLE IF NOT EXISTS `didac_bullArchives` (
   PRIMARY KEY (`lematricule`,`annee`),
   KEY `classe` (`classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Tablea des anciens élèves pour archives des bulletins';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `didac_bullEducs`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_bullEducs` (
+  `matricule` int(6) NOT NULL,
+  `bulletin` tinyint(2) NOT NULL,
+  `fiche` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`matricule`,`bulletin`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Informations éducateurs';
 
 -- --------------------------------------------------------
 
