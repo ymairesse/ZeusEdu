@@ -26,6 +26,7 @@ switch ($mode) {
 			else $listeEleves = Null;
 
 		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
+		$smarty->assign('etape','showEleve');
 		$smarty->assign('listeClasses', $listeClasses);
 		$smarty->assign('listeEleves', $listeEleves);
 		$smarty->assign('nbBulletins', NBPERIODES);

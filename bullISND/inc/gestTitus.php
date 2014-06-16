@@ -102,8 +102,6 @@ switch ($mode) {
 				$sommesTjCert = $Bulletin->sommesTJCertEleves($matricule, $bulletin);
 				$ponderations = $Bulletin->getPonderationsBulletin($listeCoursGrp, $bulletin);
 				$cotesPeriode = $Bulletin->cotesPeriodePonderees($sommesTjCert, $ponderations);
-				$smarty->assign('cotesPeriode',$cotesPeriode);				
-				
 				
 				$syntheseCotes4Titu = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
 
@@ -119,6 +117,7 @@ switch ($mode) {
 				$smarty->assign('listeCoursGrp', $listeCoursGrp);
 				$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);
 				$smarty->assign('commentairesProfs', $commentairesProfs);
+				$smarty->assign('cotesPeriode',$cotesPeriode);
 				
 				$smarty->assign('syntheseCotes', $syntheseCotes4Titu);
 				$smarty->assign('attitudes', $tableauAttitudes);

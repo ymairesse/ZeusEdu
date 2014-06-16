@@ -34,6 +34,7 @@ switch ($mode) {
 		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
+		$smarty->assign('etape','showEleve');
 		$smarty->assign('selecteur','selectAnneeNiveauEleve');
 		if ($etape == 'showEleve') {
 			$listeElevesArchives = $Bulletin->listeElevesArchives($annee, $niveau);
@@ -58,6 +59,7 @@ switch ($mode) {
 		$smarty->assign('listeEleves', $listeEleves);
 		$smarty->assign('nbBulletins', NBPERIODES);
 		$smarty->assign('bulletin', $bulletin);
+		$smarty->assign('etape','showEleve');
 		$smarty->assign('action', $action);
 		$smarty->assign('mode', $mode);
 		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
