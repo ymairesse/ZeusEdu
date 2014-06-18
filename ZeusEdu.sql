@@ -175,6 +175,7 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('bullISND', 'Bulletin', 'bullISND', 'bullISND.png', 1, 14),
 ('manuel', 'Manuel d''utilisation', 'manuel', 'manuel.png', 1, 98);
 
+
 -- --------------------------------------------------------
 
 --
@@ -223,6 +224,7 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('bullISND', 'bullCompetences'),
 ('bullISND', 'bullDetailsCotes'),
 ('bullISND', 'bullEducs'),
+('bullISND', 'bullEprExterne'),
 ('bullISND', 'bullHistoCours'),
 ('bullISND', 'bullLockElevesCours'),
 ('bullISND', 'bullMentions'),
@@ -239,17 +241,15 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('bullTQ', 'bullTQQualif'),
 ('bullTQ', 'bullTQTitus'),
 ('bullTQ', 'bullTQtypologie'),
-('delibeEduc', 'delibeEducCotes'),
-('delibeEduc', 'delibeEducMentions'),
-('delibeEduc', 'delibeEducQualif'),
 ('infirmerie', 'infirmConsult'),
 ('infirmerie', 'infirmerie'),
 ('pad', 'pad'),
+('presences', 'delibeEducCotes'),
+('presences', 'delibeEducMentions'),
+('presences', 'delibeEducQualif'),
 ('presences', 'presencesAbsences'),
-('presences', 'presencesHeures'),
-('presences', 'didac_presencesAutorisations');
-
--- --------------------------------------------------------
+('presences', 'presencesAutorisations'),
+('presences', 'presencesHeures');
 
 --
 -- Structure de la table `didac_bullArchives`
