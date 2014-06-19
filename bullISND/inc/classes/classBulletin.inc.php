@@ -1030,13 +1030,15 @@ class Bulletin {
 					$coteForm100 = $lesCotes['form']['cote'] / $lesCotes['form']['max'];
 					$listeCotesPonderees[$matricule][$coursGrp]['form']['cote'] = round($coteForm100 * $ponderation['form'],1);
 					$listeCotesPonderees[$matricule][$coursGrp]['form']['max'] = $ponderation['form'];
-					$listeCotesPonderees[$matricule][$coursGrp]['form']['mention'] = $this->calculeMention($coteForm100*100);
+					$mention = $this->calculeMention($coteForm100*100);
+					$listeCotesPonderees[$matricule][$coursGrp]['form']['mention'] = str_replace('+','plus',$mention);
 					}
 				if (is_numeric($lesCotes['cert']['cote']) && is_numeric($lesCotes['cert']['max'])) {
 					$coteCert100 = $lesCotes['cert']['cote'] / $lesCotes['cert']['max'];
 					$listeCotesPonderees[$matricule][$coursGrp]['cert']['cote'] = round($coteCert100 * $ponderation['cert'],1);
 					$listeCotesPonderees[$matricule][$coursGrp]['cert']['max'] = $ponderation['cert'];
-					$listeCotesPonderees[$matricule][$coursGrp]['cert']['mention'] = $this->calculeMention($coteCert100*100);
+					$mention = $this->calculeMention($coteCert100*100);
+					$listeCotesPonderees[$matricule][$coursGrp]['cert']['mention'] = str_replace('+','plus',$mention);
 					}
 				}
 			}
@@ -3471,7 +3473,6 @@ class Bulletin {
 					foreach ($lesCotes as $uneCote) {
 						$cote = $this->sansVirg($uneCote['cote']);
 						$max = $this->sansVirg($uneCote['max']);
-
 						if ($this->estLicite($cote)) {
 							if (isset($listeSommes[$matricule][$unType][$idComp]['cote']))
 								$listeSommes[$matricule][$unType][$idComp]['cote'] += $cote;
@@ -3511,9 +3512,8 @@ class Bulletin {
 		return $listePoids;
 		}
 
-	/** 
-	 * retourne les cotes calculées prêtes pour le bulletin
-	 *
+	/**
+	 * retourne les cotes calculées prêtes pour le bulletin depuis le carnet de cotes
 	 * @param $listeCotes
 	 * @param $listePoids
 	 * @return array
@@ -3526,7 +3526,11 @@ class Bulletin {
 					$cote = $uneCote['cote'];
 					$max = $uneCote['max'];
 					$poids = $listePoids[$idComp][$formCert];
-					if (is_numeric($this->sansVirg($cote)) && ($max > 0) && ($poids != '')) {
+					// on utilise la cote si
+					// - elle est numérique
+					// - ou s'il s'agit d'une cote nulle (Non remis = nr, ou autre éventuel)
+					// - et s'il y a un max et un poids
+					if ((is_numeric($this->sansVirg($cote)) || $this->estCoteNulle($cote)) && ($max > 0) && ($poids != '')) {
 						$listeCotesBulletin[$matricule][$formCert][$idComp] = round($cote*$poids/$max,1);
 					}
 				}
@@ -3640,7 +3644,7 @@ class Bulletin {
 				$bulletin = explode('_',$data[5]); 		$bulletin = $bulletin[1];
 
 				// vérifier que le bulletin de cet élève et de ce cours n'est pas verrouillé
-				if ($listeLocks[$matricule][$coursGrp] == 0) {
+				if (isset($listeLocks[$matricule][$coursGrp]) && $listeLocks[$matricule][$coursGrp] == 0) {
 					switch ($type) {
 						case 'form':
 							$data = array(
@@ -4146,7 +4150,7 @@ class Bulletin {
 			$cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 			$commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
 			$mention = $this->listeMentions($matricule, $bulletin,$annee);
-			// $ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
+			$ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
 			$remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
 			$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;
 			$noticeDirection = $this->noteDirection($annee, $bulletin);
@@ -4215,7 +4219,7 @@ class Bulletin {
 				$cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 				$commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
 				$mention = $this->listeMentions($matricule, $bulletin, $annee);
-				// $ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
+				$ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
 				$remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
 				// tableau des attitudes seulement au premier degré.
 				$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;
@@ -4665,10 +4669,11 @@ class Bulletin {
 		$titulaires = implode(', ', $titulaires);
 		$eleve_nom = $this->utf8($infoPerso['nom']);
 		$eleve_prenom = $this->utf8($infoPerso['prenom']);
-		
+
 		$pdf->AddPage('P');
 		$pdf->SetLeftMargin(6); // fixe la marge de gauche
 		$page=1;
+
 		$this->enteteBulletin ($pdf, $infoPerso, $titulaires, $bulletin);
 		$pdf->SetFont('Arial','',8);
 		
@@ -4676,6 +4681,7 @@ class Bulletin {
 		foreach ($listeCoursEleve as $coursGrp=>$dataCours) {
 			$debutX = $pdf->GetX(); $debutY = $pdf->GetY();
 			// s'il y a des cotes pour ce cours
+
 			if (isset($detailCotes[$matricule][$coursGrp])) {
 				$this->situationPrecedentePDF($pdf, $sitPrec[$matricule][$coursGrp], $bulletin, $degre);
 				$this->entetesColonnesPDF($pdf, $cotesPonderees[$matricule][$coursGrp]);
