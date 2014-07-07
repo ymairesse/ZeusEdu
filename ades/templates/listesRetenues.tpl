@@ -1,4 +1,3 @@
-{debug}
 <h3>Dates et modification des dates de retenues</h3>
 <h4>Type: {$infosRetenue.titreFait} Nombre: {$listeRetenues|@count}</h4>
 <form name="editRetenues" id="editRetenues" method="POST" action="index.php">
