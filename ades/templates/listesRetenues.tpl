@@ -1,3 +1,4 @@
+{debug}
 <h3>Dates et modification des dates de retenues</h3>
 <h4>Type: {$infosRetenue.titreFait} Nombre: {$listeRetenues|@count}</h4>
 <form name="editRetenues" id="editRetenues" method="POST" action="index.php">
@@ -12,7 +13,6 @@
 	<th>Places</th>
 	<th>Occupation</th>
 	<th>Visible</th>
-	<th style="display:none">&nbsp;</th>
 	<th>&nbsp;</th>
 	<th>&nbsp;</th>
 
@@ -28,14 +28,12 @@
 		<td class="occupation">{$uneRetenue.occupation}</td>
 		<td style="text-align:center; cursor:pointer" id="vis_{$uneRetenue.idretenue}" class="visible" title="cliquer pour changer l'état">
 			<a href="javascript:void(0)"><strong>{if $uneRetenue.affiche == 'O'}O{else}N{/if}</strong></a></td>
-		<td class="typeRetenue" style="display:none">{$infosRetenue.typeRetenue}</td>
 		<td title="Modifier"><a href="index.php?action=retenues&amp;mode=edit&amp;idretenue={$uneRetenue.idretenue}"><img src="images/editer.png" alt="O"></a></td>
 		<td title="Cloner" class="cloner"><a href="javascript:void(0)"><img src="images/clone.png" alt="Clone"></a></td>
 	</tr>
-	
 	{/foreach}
 </table>
-
+<input type="hidden" name="typeRetenue" value="{$infosRetenue.typeRetenue}" id="typeRetenue">
 </form>
 
 <script type="text/javascript">
@@ -73,11 +71,10 @@
 			var duree = ligne.find(".duree").text();
 			var local = ligne.find(".local").text();
 			var places = ligne.find(".places").text();
-			var typeRetenue = ligne.find(".typeRetenue").text();
+			var typeRetenue = $("#typeRetenue").val();
 
 			$.post(
-				'inc/saveCloneRetenue.inc.php',
-				{
+				'inc/saveCloneRetenue.inc.php', {
 				'ligne': ligne.html(),
 				'date': date,
 				'heure': heure,
