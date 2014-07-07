@@ -1,11 +1,10 @@
 <?php
+
 session_start();
 require_once("../../config.inc.php");
-
 // définition de la class Application
 require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
-
 $ligne = $_POST['ligne'];
 
 $date = $_POST['date'];
@@ -26,15 +25,11 @@ $data = array(
 		);
 
 $newId = $Retenue->saveRetenue($data);
-
-
 $res = array('id'=>$newId, 'date'=>$datePlus7);
 
 echo json_encode($res);
 
 // uniquement php 5.4
 // echo json_encode($res, JSON_UNESCAPED_SLASHES);
-
-
 
 ?>

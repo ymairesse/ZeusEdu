@@ -67,8 +67,6 @@ switch ($mode) {
 					);
 		// relire dans la BD
 		$Retenue->lireRetenue($idretenue);
-		// $smarty->assign('action',$action);
-		// $smarty->assign('mode','liste');
 		$typeRetenue = $Retenue->get('type');
 		// après enregistrement, relire la table pour avoir toutes les retenues, y compris la dernière enregistrée
 		if (isset($typeRetenue)) {
