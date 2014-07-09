@@ -2623,12 +2623,12 @@ class Bulletin {
 
 	
 	/**
-	 * function remarqueTitu
-	 * @param $listeEleves, $bulletin
-	 *
 	 * retourne les remarques du titulaire
 	 * pour une liste d'élèves donnée et
 	 * pour un  bulletin donné
+	 * @param $listeEleves
+	 * @param $bulletin
+	 * @return array
 	 */
 	public function remarqueTitu($listeEleves, $bulletin=Null) {
 		if (is_array($listeEleves))
@@ -2652,18 +2652,16 @@ class Bulletin {
 		return $listeRemarques;
 	}
 
-    /*
-     * function enregistrerRemarque
+    /**
+	 * enregistrement de la remarque du titulaire pour l'élève dont le matricule est indiqué, pour le bulletin donné
      * @param $commentaire
      * @param $matricule
      * @param $bulletin
-     *
-     * enregistrement de la remarque du titulaire pour l'élève dont le matricule
-     * est indiqué, pour le bulletin donné
-     */
+     * @return $resultat : nombre d'enregistrements réussis (normalement, 1)
+	 */
     function enregistrerRemarque($remarque, $matricule, $bulletin) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $remarque = addslashes(htmlspecialchars($remarque));
+        $remarque = addslashes(htmlspecialchars(self::corrigeWord($remarque)));
         $sql = "INSERT INTO ".PFX."bullTitus SET remarque = '$remarque',";
         $sql .= "matricule ='$matricule', bulletin='$bulletin' ";;
         $sql .= "ON DUPLICATE KEY UPDATE remarque = '$remarque'";
@@ -5065,26 +5063,35 @@ class Bulletin {
 				$matricule = $ligne['matricule'];
 				$coursGrp = $ligne['coursGrp'];
 				$cours = self::coursSansGrp($coursGrp);
-				$coteExterne = trim($ligne['coteExterne']);
-				$choixCote = $ligne['choixCote'];
-				switch ($choixCote) {
-					case 'coteExterne':
-						$situationsActuelles[$matricule][$cours]['sitDelibe']=$coteExterne;
-						$situationsActuelles[$matricule][$cours]['echec']=(($coteExterne < 50)&& (trim($coteExterne) != ''))?'echec':Null;
-						$situationsActuelles[$matricule][$cours]['attribut']='externe';
-						if ($coteExterne != '')
-							$situationsActuelles[$matricule][$cours]['symbole'] = self::attribut2Symbole('externe');
-							else $situationsActuelles[$matricule][$cours]['symbole'] = '';
-					break;
-					case 'reussite':
-						$situationsActuelles[$matricule][$cours]['sitDelibe']=50;
-						$situationsActuelles[$matricule][$cours]['echec']=Null;
-						$situationsActuelles[$matricule][$cours]['attribut']='reussite50';
-						$situationsActuelles[$matricule][$cours]['symbole']= self::attribut2Symbole('reussite50');
-					break;
-					case 'sitDelibe':
-						// do nothing : la cote est le situation choisie par le titulaire du cours dans le bulletin
-					break;
+				// si une cote de délibé a été choisie pour cet élève et ce cours, on évalue l'épreuve externe
+				if (isset($situationsActuelles[$matricule][$cours]) && trim($situationsActuelles[$matricule][$cours]['sitDelibe']) != '') {
+					$coteExterne = trim($ligne['coteExterne']);
+					$choixCote = $ligne['choixCote'];
+					switch ($choixCote) {
+						case 'coteExterne':
+							// on retient la situation interne
+							$situationsActuelles[$matricule][$cours]['sitInterne'] = $situationsActuelles[$matricule][$cours]['sitDelibe'];
+							// la cote externe remplace la situation de délibé (interne)
+							$situationsActuelles[$matricule][$cours]['sitDelibe']=$coteExterne;
+							$situationsActuelles[$matricule][$cours]['echec']=(($coteExterne < 50)&& (trim($coteExterne) != ''))?'echec':Null;
+							$situationsActuelles[$matricule][$cours]['attribut']='externe';
+							if ($coteExterne != '')
+								$situationsActuelles[$matricule][$cours]['symbole'] = self::attribut2Symbole('externe');
+								else $situationsActuelles[$matricule][$cours]['symbole'] = '';
+						break;
+						case 'reussite':
+							// on retient la situation interne
+							$situationsActuelles[$matricule][$cours]['sitInterne'] = $situationsActuelles[$matricule][$cours]['sitDelibe'];
+							// la cote externe remplace la situation de délibé (interne)
+							$situationsActuelles[$matricule][$cours]['sitDelibe']=50;
+							$situationsActuelles[$matricule][$cours]['echec']=Null;
+							$situationsActuelles[$matricule][$cours]['attribut']='reussite50';
+							$situationsActuelles[$matricule][$cours]['symbole']= self::attribut2Symbole('reussite50');
+						break;
+						case 'sitDelibe':
+							// do nothing : la cote est le situation choisie par le titulaire du cours dans le bulletin
+						break;
+						}
 					}
 				}
 			}
@@ -5115,11 +5122,13 @@ class Bulletin {
 				if (isset($listeSituations[$coursGrp][NBPERIODES]['sitDelibe']) && (trim($listeSituations[$coursGrp][NBPERIODES]['sitDelibe']) != '')) {
 					switch ($choixCote) {
 						case 'coteExterne':
+							$listeSituations[$coursGrp][NBPERIODES]['sitInterne']=$listeSituations[$coursGrp][NBPERIODES]['sitDelibe'];
 							$listeSituations[$coursGrp][NBPERIODES]['sitDelibe']=$coteExterne;
 							$listeSituations[$coursGrp][NBPERIODES]['symbole']=self::attribut2Symbole('externe');
 							$listeSituations[$coursGrp][NBPERIODES]['echec']=($coteExterne < 50)?'echec':Null;
 						break;
 						case 'reussite':
+							$listeSituations[$coursGrp][NBPERIODES]['sitInterne']=$listeSituations[$coursGrp][NBPERIODES]['sitDelibe'];
 							$listeSituations[$coursGrp][NBPERIODES]['sitDelibe']='50';
 							$listeSituations[$coursGrp][NBPERIODES]['symbole']=self::attribut2Symbole('reussite50');
 							$listeSituations[$coursGrp][NBPERIODES]['echec']=Null;
@@ -5173,6 +5182,54 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $liste;
 		}
+
+	/**
+	 * retourne les résultats des épreuves externes dans les branches indiquées
+	 * @param array $listeBranches
+	 * @return array
+	 */
+	public function cotesEprExternes () {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT de.matricule, nom, prenom, classe, SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) AS cours, coteExterne ";
+		$sql .= "FROM ".PFX."eleves AS de ";
+		$sql .= "LEFT JOIN ".PFX."bullEprExterne AS ex ON (ex.matricule = de.matricule) ";
+		$sql .= "WHERE SUBSTR(classe,1,1) = '2' AND classe != '2D' ";
+		$sql .= "ORDER BY groupe, nom, prenom, cours ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				if (!isset($liste[$matricule])) {
+					$liste[$matricule]['matricule'] = $ligne['matricule'];
+					$liste[$matricule]['nom'] = $ligne['nom'];
+					$liste[$matricule]['prenom'] = $ligne['prenom'];
+					$liste[$matricule]['classe'] = $ligne['classe'];
+					}
+				$cours = $ligne['cours'];
+				$liste[$matricule]['cotes'][] = $ligne['coteExterne'];
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		
+		$texte = "\"Matricule\", \"Classe\",\"Nom\",\"Prénom\",\"coteFR\",\"coteMATH\",\"coteNL\"".chr(10);
+		foreach ($liste as $matricule=>$data) {
+			$classe = $data['classe'];
+			$nom = $data['nom'];
+			$prenom = $data['prenom'];
+			$cote0 = $data['cotes'][0];
+			$cote1 = $data['cotes'][1];
+			$cote2 = $data['cotes'][2];
+			$texte .= "\"$matricule\", \"$classe\", \"$nom\", \"$prenom\", \"$cote0\",\"$cote1\", \"$cote2\"".chr(10);
+		}
+		if (!($fp = fopen ("eprExternes.csv", "w"))) die ("erreur à l'ouverture du fichier");
+		fwrite ($fp, $texte);
+		fclose ($fp);
+		
+		return $liste;
+		}
+		
 	
 	}
 ?>

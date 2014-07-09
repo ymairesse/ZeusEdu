@@ -22,21 +22,23 @@ $onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
 
 // liste des classes dont le prof utilisateur est titulaire
 $listeTitus = $user->listeTitulariats();
+// s'il n'y a qu'une classe dans la liste
+if (count($listeTitus) == 1)
+	// alors, on prend le premier élément de la liste des classes
+	$classe = array_shift(array_values($listeTitus));
 $smarty->assign('listeClasses', $listeTitus);
-$smarty->assign('matricule', $matricule);
 $smarty->assign('annee',$annee);
-$smarty->assign('classe', $classe);
 $smarty->assign('bulletin', $bulletin);
 $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
 $smarty->assign('onglet',$onglet);
 
-$smarty->assign("action",$action);
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
 
 switch ($mode) {
 	case 'verrous':
 		$smarty->assign ('selecteur','selectBulletinClasse');
-		$smarty->assign("mode",$mode);
 		$smarty->assign('etape','showVerrous');
 		switch ($etape) {
 			case 'enregistrer':
@@ -63,20 +65,24 @@ switch ($mode) {
 		break;
 	case 'remarques':
 		$smarty->assign ('selecteur','selectBulletinClasseEleve');
-		$smarty->assign('mode',$mode);
 		$smarty->assign('etape','showEleve');
-		if (isset($classe)) {
+		// si une classe a déjà été choisie -présente éventuellement dans un Cookie- ET que le prof est titulaire de cette classe
+		if (isset($classe) && in_array($classe,$listeTitus)) {
+			$smarty->assign('classe',$classe);
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			$smarty->assign('listeEleves', $listeEleves);
 			$prevNext = $Ecole->prevNext($matricule, $listeEleves);
-			$smarty->assign('prevNext',$prevNext);	
-		}
+			$smarty->assign('prevNext',$prevNext);
+			}
 
 		switch ($etape) {
 			case 'enregistrer':
 				$commentaire = isset($_POST['commentaire'])?$_POST['commentaire']:Null;
-				$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 				$nbResultats = $Bulletin->enregistrerRemarque($commentaire, $matricule, $bulletin);
+				$smarty->assign("message", array(
+					'title'=>SAVE,
+					'texte'=>"Commentaire enregistré")
+					);
 				// PAS DE BREAK;
 			case 'showEleve':
 				$annee = $Ecole->anneeDeClasse($classe);
@@ -94,7 +100,7 @@ switch ($mode) {
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
 				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 				
-				// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
+				// recherche des cotes de situation et délibé éventuelles pour toutes les périodes de l'année en cours
 				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
 				$listeCoursActuelle = $listeCoursActuelle[$matricule];
 				
@@ -110,7 +116,7 @@ switch ($mode) {
 				// s'il y a des remarques (possible qu'il n'y en ait pas à la période 1, avant le bulletin)
 				$remarqueTitulaire = isset($listeRemarquesTitulaire[$matricule])?$listeRemarquesTitulaire[$matricule]:Null;
 
-				// pas d'indication de bulletin afin de les avoir tous
+				// pas d'indication de numéro de bulletin afin de les avoir tous
 				$tableauAttitudes = $Bulletin->tableauxAttitudes($matricule, Null);
 				$smarty->assign('matricule', $matricule);
 				$smarty->assign('infoPerso', $infoPersoEleve);
