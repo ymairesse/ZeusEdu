@@ -23,8 +23,8 @@
 
 </head>
 <body>
-<div id="box" class="valign">
-	<fieldset style="display: none; width:45em; margin-left: auto; margin-right: auto" id="cadreFieldset" class="ombre">
+<div id="cadreFieldset" class="valign ombre" style="width:45em; margin-left: auto; margin-right: auto; display: none">
+	<fieldset>
 		<legend>Veuillez vous identifier</legend>
 		<h1>{$titre}</h1>
 		<form autocomplete="off" method="post" id="login" action="login.php" name="login">
@@ -36,14 +36,14 @@
 			<p><a href="javascript:void(0)" id="renvoimdp" title="Récupérer un mot de passe">Ciel! J'ai oublié mon mot de passe</a></p>
 			<p style="text-align: center"> <input value="Entrer" type="submit" tabindex="3" /></p>
 		</form>
-	
+	</fieldset>
 	<fieldset>
 		<legend>Avertissement!</legend> 
 		<p style="color:red"><img src="images/attention.png" alt="/!\" style="float:left; padding-right:1em">
-		<P class="tooltip">
+		<p class="tooltip">
 			<span class="tip">"Celui qui, sachant qu'il n'y est pas autorisé, accède à un système informatique ou s'y maintient, est puni d'un emprisonnement de trois mois à un an et d'une amende de vingt-six [euros] à vingt-cinq mille [euros] ou d'une de ces peines seulement."<br>(voir http://www.ejustice.just.fgov.be).</span>
 		Cette application gère des données privées et strictement confidentielles. Toute tentative d'accès sans autorisation est punissable au sens de la loi 
-		(<a href="http://www.ejustice.just.fgov.be/cgi_loi/change_lg.pl?language=fr&la=F&table_name=loi&cn=1867060801" target="_blank">Art. 550 bis du Code Pénal</a>).</p>
+		(<a href="http://www.ejustice.just.fgov.be/cgi_loi/change_lg.pl?language=fr&amp;la=F&amp;table_name=loi&amp;cn=1867060801" target="_blank">Art. 550 bis du Code Pénal</a>).</p>
 		<p>Votre adresse IP: <strong>{$identification.ip}</strong> {$identification.hostname}. Votre passage est enregistré.</p>
 	</fieldset>
 </div>
