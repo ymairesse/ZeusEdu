@@ -1,0 +1,24 @@
+.selectMail {
+	width:250px;
+	float:left;
+	}
+
+.selectMail ul {
+	list-style-type: none;
+	padding-left:0;
+	}
+
+.teteListe {
+	cursor:pointer;
+	}
+
+
+.gauche {
+	float: left;
+	width: 250px;
+}
+
+.droit {
+	margin-left: 255px;
+	padding: 0 1em;
+}
