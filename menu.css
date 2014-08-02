@@ -1,5 +1,5 @@
 .menu {
-    margin: 0; 
+    margin: 0;
 }
 
 ul.menu, ul.menu ul, ul.menu li {
@@ -30,7 +30,7 @@ ul.menu li a:hover, ul.menu li a:active {
     padding: 0;
     z-index: 10;
 }
-    
+
 #menuBas li {
     float: left;
     list-style-type: none;
@@ -68,6 +68,8 @@ ul.menu li a:hover, ul.menu li a:active {
     background: #FFE37F;
     color:black;
     opacity: 0.95;
+	z-index: 100;
+	position: relative;
 }
 
 #menuBas li ul li a:hover {
@@ -83,11 +85,11 @@ ul.menu li a:hover, ul.menu li a:active {
 li.titreMenu {padding: 0.2em; background-color: #E4E3E2; font-weight:bold; border: 2px inset #FFE37F}
 
 #widget li {
-	display: block; 
-	float:left; 
-	width: 100px; 
-	height: 100px; 
-	border: 1px solid black; 
+	display: block;
+	float:left;
+	width: 100px;
+	height: 100px;
+	border: 1px solid black;
 	margin: 1em;
 	text-align:center;
 	-moz-border-radius: 10px;
