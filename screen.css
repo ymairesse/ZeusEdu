@@ -187,7 +187,7 @@ box-shadow: 5px 5px 8px #ccc;
 margin-top: 0.8em;
 padding: 0.2em 1em;
 border-radius: 8px;
-  
+
 }
 .blocDroit {
   float: right;
@@ -297,9 +297,9 @@ span.error {
 
 .ombre {
   border: 5px solid #fff;
-  -moz-box-shadow: 8px 8px 12px #aaa; 
-  -webkit-box-shadow: 8px 8px 12px #aaa; 
-  box-shadow: 8px 8px 12px #555; 
+  -moz-box-shadow: 8px 8px 12px #aaa;
+  -webkit-box-shadow: 8px 8px 12px #aaa;
+  box-shadow: 8px 8px 12px #555;
 }
 
 .photo {
@@ -497,7 +497,7 @@ input:disabled {
 
 input:focus {
   background-color: #9f9;
-  
+
 }
 
 td.periode {
@@ -536,14 +536,14 @@ td.periode {
 	width: 100%
 }
 .formulaireske input  {
-	padding-left: 0; 
-	
+	padding-left: 0;
+
 }
 
 .competences a {
-	padding: 0.3em 2em; 
-	display:inline-block; 
-	margin-right: 2em; 
+	padding: 0.3em 2em;
+	display:inline-block;
+	margin-right: 2em;
 	text-decoration: none;
 background: #fceabb;
 background: -moz-linear-gradient(top, #fceabb 0%, #fccd4d 50%, #f8b500 51%, #fbdf93 100%);
@@ -555,7 +555,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
 background: linear-gradient(top, #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%);
 }
 .competences a:hover {
-	color: #555; 
+	color: #555;
 	background: #fbdf93;
 background: -moz-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fbdf93), color-stop(49%,#f8b500), color-stop(50%,#fccd4d), color-stop(100%,#fceabb));
@@ -602,13 +602,13 @@ background: linear-gradient(top, #fbdf93 0%,#f8b500 49%,#fccd4d 50%,#fceabb 100%
 
 .fauxBouton {
 	cursor: pointer;
-	display: inline-block; 
-	padding: 0.3em; 
-	// font-size: 120%; 
-	border: 1px solid black; 
-	// float:right; 
-	color: black; 
-	text-decoration: none; 
+	display: inline-block;
+	padding: 0.3em;
+	// font-size: 120%;
+	border: 1px solid black;
+	// float:right;
+	color: black;
+	text-decoration: none;
 	border-radius:5px;
 	background: #fbdf93;
 	background: -moz-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
@@ -624,7 +624,7 @@ a.fauxBouton:hover {
 	background: #fbdf93;
 	color: brown;
 	}
-	
+
 #wait {
 	position: absolute;
 	width: 100px;
@@ -633,6 +633,7 @@ a.fauxBouton:hover {
 	left: 50%;
 	margin-left: -50px;
 	margin-top: -50px;
+	z-index: 100;
 }
 
 .TJ {
@@ -660,7 +661,7 @@ margin: 1em;
 
 .notice  {
 	display: block;
-	width: 30%; 
+	width: 30%;
 	# min-height: 100px;
 	float:left;
 	padding: 10px 10px 1em 80px;
@@ -675,15 +676,15 @@ margin: 1em;
 	}
 
 .etiquette {
-	// display:block; 
-	width:10em; 
-	// float:left; 
+	// display:block;
+	width:10em;
+	// float:left;
 	margin-right:1em;
 	background-color: #ffc;
 }
 
 .flashInfo {
-	border: 1px solid black; 
+	border: 1px solid black;
 	padding: 0 1em;
 	margin: 1em;
 	box-shadow: 1px 1px 12px #555;
@@ -698,7 +699,7 @@ margin: 1em;
 .infoSup {
 	cursor:pointer;
     background:url(images/info.png) no-repeat;
-    background-color:#FFE37F; 
+    background-color:#FFE37F;
     padding: 0 3em;
     height: 2em;
     display: inline-block;
@@ -728,13 +729,13 @@ margin: 1em;
 	border-radius: 5px;
 	float:left;
 	overflow: auto;
-	-moz-box-shadow: 8px 8px 12px #aaa; 
-	-webkit-box-shadow: 8px 8px 12px #aaa; 
-	box-shadow: 8px 8px 12px #555;	
+	-moz-box-shadow: 8px 8px 12px #aaa;
+	-webkit-box-shadow: 8px 8px 12px #aaa;
+	box-shadow: 8px 8px 12px #555;
 	padding-left: 1em; margin:0;
     border-radius: 0 0 5px 5px;
     }
-    
+
 .widget-outer-480 {
 	width: 480px;
     margin: 0 10px;
@@ -742,7 +743,7 @@ margin: 1em;
 	padding-top: 1em;
 	border-radius: 5px;
 	}
-	
+
 .widget-outer-980 {
 	width: 980px;
     margin: 0 10px;
@@ -750,7 +751,7 @@ margin: 1em;
 	padding-top: 1em;
 	border-radius: 5px;
 	}
-	
+
 .widget-outer-480 h1, .widget-outer-980 h1 {
 	background: -moz-linear-gradient(center top , #FBDF93 0%, #F8B500 49%, #FCCD4D 50%, #FCEABB 100%) repeat scroll 0 0 transparent;
 	background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FBDF93), to(#FCCD4D));
@@ -761,15 +762,15 @@ margin: 1em;
 	text-align: left;
 	color: #555;
 	}
-	
+
 .widget-outer-480 h1 {
 	width: 485px;
 	}
-	
+
 .widget-outer-980 h1 {
 	width: 985px;
 	}
-	
+
 .lift {
 	overflow:scroll;
 	}
