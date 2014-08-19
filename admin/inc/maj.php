@@ -4,7 +4,7 @@ $table = isset($_REQUEST['table'])?$_REQUEST['table']:Null;
 
 switch ($mode) {
 	case 'resetLocks':
-		require_once(INSTALL_DIR.'/bullISND/inc/classes/classBulletin.inc.php');
+		require_once(INSTALL_DIR."$module/inc/classes/classBulletin.inc.php");
 		$Bulletin = new Bulletin();
 		$nb = $Bulletin->renewAllLocks();
 		$smarty->assign("message",
@@ -24,12 +24,11 @@ switch ($mode) {
 					$smarty->assign("message",
 						array(
 							'title'=>"Suppression des anciens élèves",
-							'texte'=>sprintf("Nombre d'élèves effacés: %d<br>Nombre de tables traitées: %d<br>Nombre total d'effacements %d",
+							'texte'=>sprintf("Nombre d'élèves concernés: %d<br>Nombre de tables traitées: %d<br>Nombre total d'effacements %d",
 											 $resultat['nbEleves'], $resultat['nbTables'], $resultat['nbSuppr']
 											 )
 						));
 					break;
-				
 				
 				case 'Envoyer':  // visualisation du fichier CSV envoyé et demande de confirmation
 					$nomTemporaire = $_FILES['nomFichierCSV']['tmp_name'];   // $_FILES provenant du formulaire
@@ -77,11 +76,11 @@ switch ($mode) {
 							}
 					// liste des tables affectées par la mise à jour (celles qui contiennent des champs nommmés 'matricule')
 					$listeTables = $Application->listeTablesAvecChamp('matricule');
-					$smarty->assign("listeTables", $listeTables);
-					$smarty->assign("rubriquesErreurs",$rubriquesErreurs);
-					$smarty->assign("action", "maj");
-					$smarty->assign("mode","Confirmer");
-					$smarty->assign("corpsPage","supprAnciens");		
+					$smarty->assign('listeTables', $listeTables);
+					$smarty->assign('rubriquesErreurs',$rubriquesErreurs);
+					$smarty->assign('action',$action);
+					$smarty->assign('mode','Confirmer');
+					$smarty->assign('corpsPage','supprAnciens');		
 					break;
 				default:
 					$champs = array(
@@ -90,12 +89,12 @@ switch ($mode) {
 							2=>array('Field'=>'prenom','Comment'=>'prénom de l\'élève'),
 							3=>array('Field'=>'classe', 'Comment'=>'classe')
 							);
-					$smarty->assign("champs", $champs);
-					$smarty->assign("table", $table);
-					$smarty->assign("CSVfile",'nomFichierCSV');				
-					$smarty->assign("action", "maj");
-					$smarty->assign("mode", "Envoyer");
-					$smarty->assign("corpsPage", "formulaireImport");
+					$smarty->assign('champs', $champs);
+					$smarty->assign('table', $table);
+					$smarty->assign('CSVfile','nomFichierCSV');				
+					$smarty->assign('action', $action);
+					$smarty->assign('mode', 'Envoyer');
+					$smarty->assign('corpsPage', 'formulaireImport');
 					break;
 			}
 			break;

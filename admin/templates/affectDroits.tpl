@@ -1,13 +1,14 @@
 <div id="selecteur" class="noprint" style="clear:both">
 <fieldset style="clear:both"><legend>Affectation des droits en masse</legend>
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+		<h3>Sélection: <span id="nbSelect">0</span> utilisateur(s)</h3>
 		<select multiple name="usersList[]" id="selectMultiUser" size="30">
 		{foreach from=$usersList key=abreviation item=prof}
 			<option value="{$abreviation}">{$prof.nom} {$prof.prenom} [{$abreviation}]</option>
 		{/foreach}
 	</select>
-		
-		
+
+
 	<select multiple name="applications[]" id="applications" size="10">
 		{foreach from=$listeApplications key=nomApplication item=data}
 		<option value="{$nomApplication}">{$data.nomLong}</option>
@@ -24,3 +25,12 @@
 	</form>
 </fieldset>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#selectMultiUser").change(function(){
+		var nb = $("#selectMultiUser :selected").length;
+		$("#nbSelect").text(nb);
+		})
+	})
+</script>

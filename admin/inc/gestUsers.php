@@ -1,20 +1,19 @@
 <?php
 $acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
-$smarty->assign("listeProfs", $Ecole->listeProfs());
 
 switch ($mode) {
 	case 'addUser':
 		// création d'un nouvel utilisateur vierge
 		$nouvelUtilisateur = new User();
-		$smarty->assign("user", $nouvelUtilisateur->identite());
-		$smarty->assign("userDroits", $nouvelUtilisateur->getApplications());
-		$smarty->assign("applications", $Application->listeApplis());
-		$smarty->assign("applicationDroits", $Application->listeDroits());
+		$smarty->assign('user', $nouvelUtilisateur->identite());
+		$smarty->assign('userDroits', $nouvelUtilisateur->getApplications());
+		$smarty->assign('applications', $Application->listeApplis());
+		$smarty->assign('applicationDroits', $Application->listeDroits());
 		// il s'agit d'un nouvel utilisateur; on doit pouvoir définir son acronyme
-		$smarty->assign("dejaConnu",false);
-		$smarty->assign("mode","saveUser");
-		$smarty->assign("corpsPage","formPerso");
+		$smarty->assign('dejaConnu',false);
+		$smarty->assign('mode','saveUser');
+		$smarty->assign('corpsPage','formPerso');
 		break;
 
 	case 'saveUser':
@@ -26,50 +25,46 @@ switch ($mode) {
 		$nbModifUser = $user->saveDataPerso($_POST);
 		// enregistrement des droits sur les différentes applications actives
 		$nbModifApplis = $user->saveDataApplis($_POST, $Application->listeApplis());
-		$smarty->assign("acronyme",$acronyme);
-		$smarty->assign("mode", "modifUser");
-		$smarty->assign("selecteur","selectNomProf");
-		$smarty->assign("message", array(
+		$smarty->assign('acronyme',$acronyme);
+		$mode = 'modifUser';
+		$smarty->assign('selecteur',"selectNomProf");
+		$smarty->assign('message', array(
 					'title'=>"Confirmation",
 					'texte'=>"Applications mises à jour: $nbModifApplis,<br>profil modifié ".$nbModifUser/2),
 				3000);
 		// break;  pas de break
 	case 'modifUser':
-		if ($acronyme) {
+		$smarty->assign('listeProfs', $Ecole->listeProfs());
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
+		$smarty->assign('etape','');
+		$smarty->assign('selecteur','selectNomProf');
+		if (isset($acronyme)) {
 			// recherche de toutes les infos sur l'utilisateur existant
 			$oldUser = new User($acronyme);
-			$smarty->assign("acronyme", $acronyme);
-			$smarty->assign("userIdentite", $oldUser->identite());
-			$smarty->assign("userApplications", $oldUser->getApplications());
-			$smarty->assign("applications", $Application->listeApplis());
-			$smarty->assign("applicationDroits", $Application->listeDroits());
-			$smarty->assign("dejaConnu", true);
-			$smarty->assign("action", "gestUsers");
-			$smarty->assign("etape",'');
-			$smarty->assign("mode","modifUser");
-			$smarty->assign("selecteur","selectNomProf");
-			$smarty->assign("corpsPage","formPerso");
+			$smarty->assign('acronyme', $acronyme);
+			$smarty->assign('userIdentite', $oldUser->identite());
+			$smarty->assign('userApplications', $oldUser->getApplications());
+			$smarty->assign('applications', $Application->listeApplis());
+			$smarty->assign('applicationDroits', $Application->listeDroits());
+			$smarty->assign('dejaConnu', true);
+			$smarty->assign('corpsPage','formPerso');
 			}
-			else {
-				$smarty->assign("action", "gestUsers");
-				$smarty->assign("mode", "modifUser");
-				$smarty->assign("etape",'');
-				$smarty->assign("selecteur","selectNomProf");
-				}
+
 		break;
 	case 'delUser':
 		switch ($etape) {
 			case 'confirmation':
 				$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
 				if (!($acronyme))
-					die("missing user");
+					die('missing user');
 				$user = $user->oldUser($acronyme,$Application);
-				$nomPrenom = $user['nom']." ".$user['prenom'];
-				$smarty->assign("acronyme", $acronyme);
-				$smarty->assign("nomPrenom", $nomPrenom);
-				$smarty->assign("mode", "delUser");
-				$smarty->assign("etape","effacement");
-				$smarty->assign("corpsPage", "confirmUserDel");		
+				$nomPrenom = $user['nom'].' '.$user['prenom'];
+				$smarty->assign('acronyme', $acronyme);
+				$smarty->assign('nomPrenom', $nomPrenom);
+				$smarty->assign('mode', 'delUser');
+				$smarty->assign('etape','effacement');
+				$smarty->assign('corpsPage', 'confirmUserDel');
 				break;
 			case 'effacement':
 				// suppression définitive de l'utilisateur
@@ -84,19 +79,19 @@ switch ($mode) {
 								3000);
 				break;
 			default:
-				$smarty->assign("listeProfs", $Application->listOrphanUsers());
-				$smarty->assign("action", "gestUsers");
-				$smarty->assign("mode", "delUser");
-				$smarty->assign("etape", "confirmation");
-				$smarty->assign("selecteur","selectNomProf");
-				break;				
+				$smarty->assign('listeProfs', $Application->listOrphanUsers());
+				$smarty->assign('action', 'gestUsers');
+				$smarty->assign('mode', 'delUser');
+				$smarty->assign('etape', 'confirmation');
+				$smarty->assign('selecteur','selectNomProf');
+				break;
 			}
 		break;
 	case 'affectation': // affectation en masse des utilisateurs aux applications
-		$smarty->assign("usersList", $Ecole->listeProfs());
-		$smarty->assign("listeApplications", $Application->listeApplis(true));
-		$smarty->assign("listeDroits", $Application->listeDroits());
-		$smarty->assign("corpsPage", "affectDroits");
+		$smarty->assign('usersList', $Ecole->listeProfs());
+		$smarty->assign('listeApplications', $Application->listeApplis(true));
+		$smarty->assign('listeDroits', $Application->listeDroits());
+		$smarty->assign('corpsPage', 'affectDroits');
 		break;
 	case 'saveDroits': // enregistrement des droits précisés dans l'option ci-dessus
 		if (isset($_POST['usersList']))

@@ -15,7 +15,6 @@
 		{include file="pageHiatus.tpl"}
 	{/if}
 {else}
-test
 	{include file="formConfirmSuppr.tpl"}
 	{include file="pageTableauImport.tpl"}
 {/if}

@@ -3,13 +3,13 @@
 	<select name="acronyme" id="selectUser">
 		<option value="">Sélectionner un utilisateur</option>
 		{foreach from=$listeProfs key=abreviation item=prof}
-			<option value="{$abreviation}"{if isset($acronyme) && ($acronyme == $abreviation)} selected{/if}>{$prof.nom} {$prof.prenom} [{$abreviation}]</option>
+			<option value="{$abreviation}"{if isset($acronyme) && ($acronyme == $abreviation)} selected="selected"{/if}>{$prof.nom} {$prof.prenom} [{$abreviation}]</option>
 		{/foreach}
 	</select>
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="{$etape}">
 	<input type="hidden" name="action" value="{$action}">
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<input type="submit" value="OK" name="OK">
 	</form>
 </div>
 

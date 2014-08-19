@@ -34,7 +34,7 @@ switch ($mode) {
 		break;
 	case 'switchApplications':
 		switch ($etape) {
-			case 'enregistrer': 
+			case 'enregistrer':
 				$enregistrements = $Application->saveApplisStatus($_POST);
 				$smarty->assign("message", array(
 							'title'=>"Enregistrement",
@@ -88,10 +88,10 @@ switch ($mode) {
 		$smarty->assign('etape','choixTitulaires');
 		$smarty->assign('listeTitus', $listeTitus);
 		$smarty->assign('listeGroupes', $listeGroupes);
-		$smarty->assign('selecteur', 'selectClasse');					
+		$smarty->assign('selecteur', 'selectClasse');
 		$smarty->assign('corpsPage', 'choixTitu');
 		break;
-		
+
 	case 'config':
 		switch ($etape) {
 			case 'save':
@@ -101,12 +101,12 @@ switch ($mode) {
 							'texte'=>"$nb modifications enregistrées.")
 							);
 				// pas de break;
-			default: 
+			default:
 				$parametres = $Application->lireParametres();
 				$smarty->assign('action', $action);
 				$smarty->assign('mode', $mode);
-				$smarty->assign("parametres", $parametres);
-				$smarty->assign("corpsPage", "paramGeneraux");
+				$smarty->assign('parametres', $parametres);
+				$smarty->assign('corpsPage', 'paramGeneraux');
 			break;
 		}
 	break;
