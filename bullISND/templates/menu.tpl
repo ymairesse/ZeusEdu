@@ -22,6 +22,7 @@
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
 			<li><a href="index.php?action=direction&amp;mode=eprExternes">Épreuves externes/délibés</a></li>
+			<li><a href="index.php?action=direction&amp;mode=cotesEprExternes">Exporte résultats épr. extenes</a></li>
 		</ul>
 	</li>
 	{/if}
@@ -71,22 +72,24 @@
 			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses par classe (toutes périodes)</a></li>
 		</ul>
 		</li>
-	{if $userStatus eq 'admin'}
-	<li><a href="javascript:void(0)">Admin</a>
+
+	<li><a href="javascript:void(0)">Préférences</a>
 		<ul>
+		<li><a href="index.php?action=admin&amp;mode=nommerCours">Nommer vos cours</a></li>
+		{if $userStatus eq 'admin'}
 		<li><a href="index.php?action=init">Initialisations</a></li>
 		<li><a href="index.php?action=admin&amp;mode=remplacants">Profs remplacés</a></li>
 		<li><a href="index.php?action=gestCours&amp;mode=matieres">Gestion des matières</a></li>
 		<li><a href="index.php?action=gestCours&amp;mode=editCours">Gestion des cours</a></li>
 		<li><a href="index.php?action=admin&amp;mode=attributionsProfs">Attrib. cours aux profs</a></li>
 		<li><a href="index.php?action=admin&amp;mode=attributionsEleves">Attrib. élèves aux cours</a></li>
-		<li><a href="index.php?action=admin&amp;mode=programmeEleve">Attrib. cours aux élèves</a></li>		
+		<li><a href="index.php?action=admin&amp;mode=programmeEleve">Attrib. cours aux élèves</a></li>
 		<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
 		<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
 		<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
+		{/if}
 		</ul>
 	</li>
-	{/if}
 </ul>
 
 <script type="text/javascript">

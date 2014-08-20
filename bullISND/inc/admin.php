@@ -1,5 +1,5 @@
 <?php
-if ($userStatus != 'admin') die('get out of here');
+
 $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $niveauEleves = isset($_POST['niveauEleves'])?$_POST['niveauEleves']:Null;
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
@@ -13,10 +13,12 @@ $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
 switch ($mode) {
 	case 'ajoutTV':
+		if ($userStatus != 'admin') die('get out of here');
 		// $Bulletin->ajouteTV();
 
 		break;
 	case 'eprExternes':
+		if ($userStatus != 'admin') die('get out of here');
 		// sélection d'un cours pour lequel il faut initialiser la table des épreuves externes
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
@@ -28,7 +30,7 @@ switch ($mode) {
 			// liste de tous les cours suivis par des élèves à ce niveau
 			$smarty->assign('listeCoursNiveau',$Bulletin->listeCoursSuivisNiveau($niveau));
 
-			$smarty->assign('etape','enregistrement');			
+			$smarty->assign('etape','enregistrement');
 			// recherche de tous les coursGrp pour le cours sélectionné	et initialisation de la table pour le cours choisi
 			if (isset($cours) && ($etape == 'enregistrement')) {
 				$listeElevesCoursGrp = $Bulletin->elevesCoursGrpDeCours($cours);
@@ -37,7 +39,7 @@ switch ($mode) {
 								'title'=>"Enregistrement",
 								'texte'=>"$nb enregistrement(s) effectué(s)"));
 				}
-			
+
 			// liste des cours à épreuve externe défjà définis, pour affichage sur la page
 			$smarty->assign('listeCours', $Bulletin->listeCoursEpreuveExterne($niveau));
 			// nombre de cotes déjà attribuées par coursGrp (nécessaire pour savoir si la suppression est possible)
@@ -47,6 +49,7 @@ switch ($mode) {
 		}
 		break;
 	case 'remplacants':
+		if ($userStatus != 'admin') die('get out of here');
 		$profsParCours = $Ecole->listeCoursGrpProf($Ecole->listeNiveaux());
 		$listeRemplacements = $Ecole->listeRemplacants($profsParCours);
 		$listeProfs = $Ecole->listeProfs();
@@ -55,8 +58,9 @@ switch ($mode) {
 		$smarty->assign("listeCoursEleves", $Ecole->listeCours($Ecole->listeNiveaux()));
 		$smarty->assign("corpsPage", "remplacants");
 		break;
-	
+
 	case 'attributionsProfs':
+		if ($userStatus != 'admin') die('get out of here');
 		if ($niveau) {
 			$listeCoursGrp = $Ecole->listeCoursGrp($niveau);
 			$smarty->assign('listeCoursGrp', $listeCoursGrp);
@@ -65,7 +69,7 @@ switch ($mode) {
 			$smarty->assign('coursGrp',$coursGrp);
 			$listeEleves = $Ecole->listeElevesCours($coursGrp);
 			$smarty->assign('listeEleves', $listeEleves);
-			$listeTousProfs = $Ecole->listeProfs();			
+			$listeTousProfs = $Ecole->listeProfs();
 			$smarty->assign('listeTousProfs', $listeTousProfs);
 			}
 
@@ -88,7 +92,7 @@ switch ($mode) {
 									);
 				break;
 			}
-			
+
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
 		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
@@ -97,16 +101,17 @@ switch ($mode) {
 		$smarty->assign("listeProfsTitulaires", $listeProfsTitulaires);
 		$smarty->assign('selecteur', 'selectNiveauCoursGrp');
 		$smarty->assign("corpsPage", "showProfsCours");
-		break; 
-	
+		break;
+
 	case 'attributionsEleves':
+		if ($userStatus != 'admin') die('get out of here');
 		if ($etape == 'enregistrer') {
 			$listeElevesAdd = isset($_POST['listeElevesAdd'])?array_flip($_POST['listeElevesAdd']):Null;
 			$listeElevesDel = isset($_POST['listeElevesDel'])?array_flip($_POST['listeElevesDel']):Null;
 			$listeCoursGrp = array($coursGrp=>$coursGrp);
 			$nb = 0;
 			if ((isset($listeElevesAdd) || isset($listeElevesDel)) && isset($coursGrp) && isset($bulletin)) {
-				if (isset($listeElevesAdd)) 
+				if (isset($listeElevesAdd))
 					$nb += $Ecole->addListeElevesListeCoursGrp($listeElevesAdd, $listeCoursGrp, $bulletin);
 				if (isset($listeElevesDel))
 					$nb += $Ecole->delListeElevesListeCoursGrp($listeElevesDel, $listeCoursGrp, $bulletin);
@@ -128,14 +133,14 @@ switch ($mode) {
 		$smarty->assign("listeNiveaux", $listeNiveaux);
 		$smarty->assign("listePeriodes", $Bulletin->listePeriodes(NBPERIODES));
 		$smarty->assign("listeCours", $Ecole->listeCours($listeNiveaux));
-		
+
 		$listeCoursGrp = isset($cours)?$Ecole->listeCoursGrpDeCours($cours):Null;
 
 		$smarty->assign("listeCoursGrp", $listeCoursGrp);
-		
+
 		$profs = isset($coursGrp)?$Ecole->listeProfsCoursGrp($coursGrp):Null;
 		$smarty->assign('profs',$profs);
-		
+
 		$listeElevesDel = isset($coursGrp)?$Ecole->listeElevesCours($coursGrp, 'alpha'):Null;
 		$smarty->assign('listeElevesDel', $listeElevesDel);
 
@@ -146,8 +151,9 @@ switch ($mode) {
 		$smarty->assign("selecteur", "selectMatieres");
 		$smarty->assign("corpsPage", "showAttributionsEleves");
 		break;
-	
+
 	case 'programmeEleve':
+		if ($userStatus != 'admin') die('get out of here');
 		$smarty->assign("listeClasses", $Ecole->listeClasses());
 		$smarty->assign("listePeriodes", $Bulletin->listePeriodes(NBPERIODES));
 
@@ -175,16 +181,16 @@ switch ($mode) {
 						$listeCoursGrp = array_fill_keys($listeCoursGrp, Null);
 						// la fonction delListeElevesListeCoursGrp attend un tableau indexé sur le matricule; on le lui fournit gentiment avec un seul matricule pour clef, le contenu n'a pas d'importance
 						$listeEleves = array($matricule=>'wtf');
-						
+
 						$nb = $Ecole->delListeElevesListeCoursGrp($listeEleves, $listeCoursGrp, $bulletin);
-												
+
 						$smarty->assign('etape','');
 						$smarty->assign("message", array(
 							'title'=>"Enregistrement",
 							'texte'=>"$nb modification(s) enregistrée(s)"));
 						}
 					break;
-				case 'ajouter': 
+				case 'ajouter':
 					if (isset($coursGrp)) {
 						$listeEleves = array($matricule=>$matricule);
 						$listeCoursGrp = array($coursGrp=>$coursGrp);
@@ -216,6 +222,7 @@ switch ($mode) {
 		break;
 
 	case 'poserVerrous':
+		if ($userStatus != 'admin') die('get out of here');
 		$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 		switch ($etape) {
 			case 'enregistrer':
@@ -237,7 +244,7 @@ switch ($mode) {
 			}
 
 		$verrou = isset($_POST['verrou'])?$_POST['verrou']:Null;
-		$smarty->assign("bulletin", $bulletin);		
+		$smarty->assign("bulletin", $bulletin);
 		$smarty->assign("verrou", $verrou);
 		$smarty->assign("action", $action);
 		$smarty->assign("mode", $mode);
@@ -245,6 +252,7 @@ switch ($mode) {
 		$smarty->assign("selecteur", "selectBulletin");
 		break;
 	case 'verrouClasseCoursEleve':
+		if ($userStatus != 'admin') die('get out of here');
 		$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 		switch ($etape) {
 			case 'enregistrer':
@@ -256,7 +264,7 @@ switch ($mode) {
 							);
 				// break;
 			case 'showNiveau':
-				// liste des verrous à inverser 
+				// liste des verrous à inverser
 				$listeVerrous = $Bulletin->listeLocksPeriode($bulletin, $niveau, !$verrouiller);
 				$listeVerrousIndetermines = $Bulletin->listeUndefinedLocks($niveau, $listeVerrous);
 
@@ -282,6 +290,7 @@ switch ($mode) {
 		break;
 
 	case 'competences':
+		if ($userStatus != 'admin') die('get out of here');
 		$listeNiveaux = $Ecole->listeNiveaux();
 		$smarty->assign("listeNiveaux", $listeNiveaux);
 		if ($niveau) {
@@ -306,6 +315,7 @@ switch ($mode) {
 		break;
 
 	case 'situations':
+		if ($userStatus != 'admin') die('get out of here');
 		$smarty->assign("action",$action);
 		$smarty->assign("mode",$mode);
 		$smarty->assign("etape","showCotes");
@@ -330,7 +340,7 @@ switch ($mode) {
 					$smarty->assign('etape','showCotes');
 				}
 				// pas de break;
-			case 'showCotes': 
+			case 'showCotes':
 				if ($classe) {
 					$listeEleves = $Ecole->listeEleves($classe,'groupe');
 					$listeSituations = $Bulletin->getSituations($bulletin, $listeEleves);
@@ -350,9 +360,10 @@ switch ($mode) {
 				// wtf;
 				break;
 		}
-		
+
 		break;
 	case 'alias':
+		if ($userStatus != 'admin') die('get out of here');
 		$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 		switch ($etape) {
 			case 'enregistrer':
@@ -378,7 +389,23 @@ switch ($mode) {
 				break;
 			}
 		break;
-	
+	case 'nommerCours':
+		$acronyme = $user->getAcronyme();
+		if ($etape == 'enregistrer') {
+			$nb = $Bulletin->enregistrerNomsCours($_POST, $acronyme);
+			$smarty->assign("message", array(
+						'title'=>SAVE,
+						'texte'=>"$nb enregistrement(s) dans la base de données")
+						);
+			}
+
+		$listeCours = $Ecole->listeCoursProf($acronyme);
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
+		$smarty->assign('etape','enregistrer');
+		$smarty->assign('listeCours',$listeCours);
+		$smarty->assign('corpsPage','nomCours');
+		break;
 	default: "missing mode";
 		break;
 	}

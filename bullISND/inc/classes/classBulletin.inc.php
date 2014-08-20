@@ -6,7 +6,7 @@ require(INSTALL_DIR."/inc/classes/class.pdf.php");
 
 
 class Bulletin {
-	
+
 	/**
 	 * retourne un array contenant une liste des périodes de l'année scolaire
 	 * @param $nbBulletins
@@ -15,7 +15,7 @@ class Bulletin {
 	public function listePeriodes ($nbBulletins, $debut=1) {
 		return range($debut,$nbBulletins);
 		}
-	
+
 	/**
 	 * fonction booleenne: détermine si une valeur est numérique et non Null
 	 * @param $data : valeur à tester
@@ -157,7 +157,7 @@ class Bulletin {
 
 	/**
 	 * retourne toutes les informations (libelle, heures, statut,...)
-	 * d'un coursGrp passé en argument	 
+	 * d'un coursGrp passé en argument
 	 * @param $cours
 	 * @return array
 	 */
@@ -183,7 +183,7 @@ class Bulletin {
 	 * vérification du fait qu'une pondération particulière à un élèves peut être supprimée
 	 * il faut que la pondération pour cet élève soit strictement équivalent à la pondération
 	 * pour l'ensemble des élèves du cours
-	 * 
+	 *
 	 * @param $cours, $matricule
 	 * @return boolean : selon que la suppression est possible ou non
 	 */
@@ -262,7 +262,7 @@ class Bulletin {
 		return $nbInsertions;
 	}
 
-	/*
+	/**
 	 * Suppression d'un barème particulier pour un élève et un cours
 	 * @param $cours
 	 * @param $matricule
@@ -277,7 +277,7 @@ class Bulletin {
 		return $resultat;
 	}
 
-	/*
+	/**
 	 * ajouter une ligne dans la table des pondérations
 	 * la ligne est identique à celle du barème général du cours
 	 * mais sera marquée pour l'élève sélectionné
@@ -318,7 +318,7 @@ class Bulletin {
 		return $retour;
 	}
 
-	/***
+	/**
 	 * liste des compétences appliquées à un cours dont on fournit le "coursGrp"; il suffit donc de supprimer le groupe
 	 * @param $coursGrp
 	 * @return array
@@ -343,7 +343,7 @@ class Bulletin {
 	}
 
 
-	/*
+	/**
 	 * function coursSansGrp
 	 * @param $coursGrp
 	 *
@@ -353,12 +353,10 @@ class Bulletin {
 		return substr($coursGrp, 0, strpos($coursGrp, "-", 0));
 	}
 
-	/*
-	 * function listeCompetencesListeCours
+	/**
+	 * retourne la liste ordonnées de toutes les compétences pour tous les cours passé en argument
 	 * @param $listeCours
-	 *
-	 * retourne la liste ordonnées de toutes les compétences pour tous les cours
-	 * passé en argument
+	 * @return array
 	 */
 	function listeCompetencesListeCours($listeCours) {
 		if (is_array($listeCours))
@@ -392,11 +390,10 @@ class Bulletin {
 		return self::listeCompetencesListeCours($listeCours);
 	}
 
-	/*
-	 * function listeCompetencesCours
-	 * @param $cours
-	 *
+	/**
 	 * retourne la liste des compétences liées à un cours
+	 * @param $cours
+	 * @return array
 	 */
 	function listeCompetencesCours($cours) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -417,10 +414,9 @@ class Bulletin {
 	}
 
 	/**
-	 * retourne la liste de toutes les compétences pour tous les cours passés en argument	 
+	 * retourne la liste de toutes les compétences pour tous les cours passés en argument
 	 * @param $listeCoursGrp
 	 * @return array : liste ordonnée sur le idComp
-	 *
 	 */
 	 function listeCompetencesTousEleves($listeCoursGrpEleves) {
 		 $listeCours = array();
@@ -446,15 +442,13 @@ class Bulletin {
 		return $listeCompetences;
 		}
 
-	/*
-	 * function listeLocksBulletin
+	/**
+	 * retourne la liste des fiches d'élèves bloquées pour la page d'encodage du bulletin
+	 * la liste d'élèves arrive sous la forme d'un tableau
 	 * @param $listeEleves
 	 * @param $coursGrp
 	 * @param $periode
-	 *
-	 * retourne la liste des fiches d'élèves bloquées pour la page d'encodage du bulletin
-	 * la liste d'élèves arrive sous la forme d'un tableau
-	 * */
+	 */
 	function listeLocksBulletin($listeEleves, $listeCoursGrp, $periode) {
 		$listeElevesString = implode(',', array_keys($listeEleves));
 		if (is_array($listeCoursGrp))
@@ -474,15 +468,11 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeLocks;
 	}
-	
-	/* 
-	 * function listeElevesCoursGrpNiveau
-	 * 
-	 * @param $niveau
-	 * 
+
+	/**
 	 * retourne une liste des élèves et de leurs cours à un niveau donné
-	 * 
-	 * */
+	 * @param $niveau
+	 */
 	public function listeElevesCoursGrpNiveau ($niveau) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT ".PFX."elevesCours.matricule, coursGrp, classe, CONCAT(nom,' ',prenom) AS nomPrenom ";
@@ -506,9 +496,8 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeElevesCoursGrp;
 		}
-		
-	
-	
+
+
 	/**
 	 * retourne la liste des verrous ouverts/fermés selon la valeur du paramètre $etatVerrou
 	 * pour la période donnée
@@ -542,7 +531,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeLocks;
 		}
-	
+
 	/**
 	 * Vidage de la table des verrous
 	 * @param
@@ -557,7 +546,7 @@ class Bulletin {
 		if ($resultat) return true;
 	}
 
-	
+
 	/**
 	 * Réinitialisation de tous les verrous à l'état "ouvert"
 	 * à faire en début d'année scolaire
@@ -589,15 +578,12 @@ class Bulletin {
 		return $resultat;
 	}
 
-	/** 
-	 * function listeUndefinedLocks
-	 * @param $niveau
-	 * @param $listeLocks
-	 * 
+	/**
 	 * retourne la liste des cours/eleves d'un niveau
 	 * dont les verrous sont dans un état indéterminé (jamais posés)
-	 * 
-	 * */
+	 * @param $niveau
+	 * @param $listeLocks
+	 */
 	public function listeUndefinedLocks ($niveau, $listeLocks) {
 		$listeCoursGrpNiveau = self::listeElevesCoursGrpNiveau($niveau);
 		$listeUndefined = array();
@@ -663,7 +649,7 @@ class Bulletin {
 	public function saveLocksAdmin($post, $bulletin) {
 		$verrouiller = isset($post['verrou'])?$post['verrou']:Null;
 		$nbResultats = 0;
-		
+
 		if (($verrouiller == 0) || ($verrouiller ==1)) {
 			$listeEleves = array();
 			foreach ($post as $key=>$value) {
@@ -691,21 +677,21 @@ class Bulletin {
 		return $nbResultats;
 		}
 
-	/** 
+	/**
 	 * Enregistre le verrouillage / déverrouillage des cotes par classe, par cours et par élève
 	 * On déverrouille ou on verrouille (voir le contenu de la variable $_POST['verrouiller']) au cas par cas
 	 * à envisager: un verrouillage pour l'ensemble d'une classe => 1 enregistrement dans la BD / classe
 	 *  et un verrouillage pour l'ensemble d'un cours => 1 enregistrement dans la BD / cours
-	 *  
+	 *
 	 * @param post
-	 * 
-	 * */
+	 *
+	 */
 	public function saveLocksClasseCoursEleve ($post) {
 		$verrouiller = isset($_POST['verrouiller'])?$_POST['verrouiller']:Null;
 		if (!(in_array($verrouiller,array('0','1')))) die('illegal lock');
 		$bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:Null;
 		if (!($bulletin)) die('illegal period');
-		
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."bullLockElevesCours ";
 		$sql .= "SET matricule=:matricule, coursGrp=:coursGrp, locked=:verrouiller, periode='$bulletin' ";
@@ -719,15 +705,15 @@ class Bulletin {
 				$eleve = $data[0];
 				$dataEleve = explode('%',$eleve);
 				$matricule = $dataEleve[1];
-			
+
 				$coursGrp = $data[1];
 				$dataCours = explode('%',$coursGrp);
 
 				// remplacement du code '#' utilisé pour remplacer le caractère ' ' dans le nom de champ
 				$coursGrp = str_replace('#',' ',$dataCours[1]);
 				$data = array(
-						':matricule'=>$matricule, 
-						':coursGrp'=>$coursGrp, 
+						':matricule'=>$matricule,
+						':coursGrp'=>$coursGrp,
 						':verrouiller'=>$verrouiller
 						);
 				$nb += $requete->execute($data);
@@ -779,7 +765,7 @@ class Bulletin {
 		return $listeAttitudes;
 	}
 
-	/* 
+	/*
 	 * retourne la liste de tous les commentaires pour un cours donné pour toutes les périodes pour tous les élèves d'une liste donnée
 	 * @param $listeEleves
 	 * @param $coursGrp
@@ -806,16 +792,14 @@ class Bulletin {
 		return $listeCommentaires;
 	}
 
-	/*
-	 * function listeCommentairesTousCours
-	 * @param $listeEleves, $bulletin
-	 *
-	 *
+	/**
 	 * liste des commentaires pour tous les cours d'une liste d'élèves passée en argument
 	 * pour un bulletin éventuellement donné
 	 * si pas de bulletin précisé, renvoie les commentaires de tous les bulletins
-	 * 
+	 *
 	 * Typiquement pour la génération d'un bulletin d'élève
+	 * @param $listeEleves
+	 * @param $bulletin
 	 */
 	public function listeCommentairesTousCours($listeEleves, $bulletin=Null) {
 		if (is_array($listeEleves))
@@ -849,7 +833,7 @@ class Bulletin {
 	 * pour une liste d'élèves donnés et pour un bulletin donné
 	 * la liste est indexée sur les matricules et les cours concernés
 	 * @param $listeEleves
-	 * @parem $bulletin
+	 * @param $bulletin
 	 */
 	public function sommesTjCertEleves ($listeEleves, $bulletin) {
 		if (is_array($listeEleves))
@@ -878,7 +862,7 @@ class Bulletin {
 				$cert = $this->sansVirg($ligne['cert']);	$maxCert = $this->sansVirg($ligne['maxCert']);
 				if (!(isset($listeCotes[$matricule][$coursGrp])))
 					$listeCotes[$matricule][$coursGrp] = $cotesVides;
-				
+
 				// s'il y a du **Formatif** pour cet enregistrement, on l'additionne
 				if (($form != '') && ($maxForm != '')) {
 					// si form et maxForm sont des informations numériques, on les additionne
@@ -895,25 +879,23 @@ class Bulletin {
 						$listeCotes[$matricule][$coursGrp]['cert']['max'] += $maxCert;
 						}
 					}  // if $cert...
-					
+
 			}  // while
 		} // if $resultat
 		Application::DeconnexionPDO($connexion);
 		return ($listeCotes);
 	}
-	
-	
-	
+
 	/**
 	 * produire un tableau reprenant les sommes des cotes TJ et les sommes des cotes CERT
-	 * pour une liste d'élèves, une liste de cours, une liste de compétences et un bulletin donnés 
+	 * pour une liste d'élèves, une liste de cours, une liste de compétences et un bulletin donnés
 	 *
 	 * @param $listeEleves: tableau dont les keys sont les $matricule
 	 * @param $listeCoursGrp: liste des coursGrp pour ces élèves
 	 * @param $listeCompetences: liste des compétences existantes pour ce cours
 	 * @param $bulletin: n° du bulletin concerné
-	 * 
-	 * @return tableau de la somme des cotes par élève, par cours et par compétence
+	 *
+	 * @return array tableau de la somme des cotes par élève, par cours et par compétence
 	 */
 	public function listeCotes($listeEleves, $listeCoursGrp, $listeCompetences, $bulletin) {
 		if (is_array($listeEleves))
@@ -941,7 +923,7 @@ class Bulletin {
 				$matricule = $ligne['matricule'];
 				$coursGrp = $ligne['coursGrp'];
 				$idComp = $ligne['idComp'];
-	
+
 				// remplir le tableau avec des vides si on n'a pas encore vu
 				// de competences pour cet élève (il n'est pas encore passé)
 				if (!(isset($listeCotes[$matricule][$coursGrp]))) {
@@ -951,7 +933,7 @@ class Bulletin {
 					foreach ($competences as $id => $data)
 						$listeCotes[$matricule][$coursGrp][$id] = $cotesVides;
 					}
-	
+
 				// s'il y a du **Formatif** pour la compétence $idComp, on le note pour cet élève et ce cours
 				if (($ligne['form'] != '') && ($ligne['maxForm'] != '')) {
 					$listeCotes[$matricule][$coursGrp][$idComp]['form']['cote'] = $this->sansVirg($ligne['form']);
@@ -961,7 +943,7 @@ class Bulletin {
 							$listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = 'echec';
 						}
 					}
-	
+
 				// ----------------------------------------------------------------
 				// s'il n'y a pas de cote mais seulement un maximum pour cette compétence (cote en attente)
 				if (($ligne['maxForm'] != '') && ($ligne['form'] == '')) {
@@ -969,7 +951,7 @@ class Bulletin {
 					$listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = '';
 					}
 				// ----------------------------------------------------------------
-				
+
 				// ----------------------------------------------------------------
 				// s'il n'y a qu'une mention non numérique (Abs, CM, NR, ...)
 				if (!is_numeric($this->sansVirg($ligne['form']))) {
@@ -977,7 +959,7 @@ class Bulletin {
 					$listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $ligne['maxForm'];
 					}
 				// ----------------------------------------------------------------
-	
+
 				// s'il y a du **Certificatif** pour la compétence $competence, on le note pour cet élève et ce cours
 				if (($ligne['cert'] != '') && ($ligne['maxCert'] != '')) {
 					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['cote'] = $this->sansVirg($ligne['cert']);
@@ -987,7 +969,7 @@ class Bulletin {
 							$listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = 'echec';
 						}
 					}
-	
+
 				// ----------------------------------------------------------------
 				// s'il n'y a pas de cote mais seulement un maximum pour cette compétence (cote en attente)
 				if (($ligne['maxCert'] != '') && ($ligne['cert'] == '')) {
@@ -995,7 +977,7 @@ class Bulletin {
 					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = '';
 					}
 				// ----------------------------------------------------------------
-				
+
 				// ----------------------------------------------------------------
 				// s'il n'y a qu'une mention non numérique (Abs, CM, NR, ...)
 				if (!is_numeric($this->sansVirg($ligne['cert']))) {
@@ -1003,7 +985,7 @@ class Bulletin {
 					$listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $ligne['maxCert'];
 					}
 				// ----------------------------------------------------------------
-				
+
 			}// while
 		} // if $resultat
 		Application::DeconnexionPDO($connexion);
@@ -1044,7 +1026,7 @@ class Bulletin {
 			}
 		return $listeCotesPonderees;
 	}
-	
+
 	/**
 	 * retourne les cotesGlobales pondérées, formatives et certificatives
 	 * à partir des cotes brutes et des pondérations
@@ -1075,7 +1057,7 @@ class Bulletin {
 					$ponderation = $poids['all'];
 				$cotesPonderees = array('form' => array('cote' => Null, 'max' => Null, 'echec' => Null),
 										'cert' => array('cote' => Null, 'max' => Null, 'echec' => Null));
-				
+
 				// s'il y a du formatif
 				if ($ponderation[$periode]['form'] && $maxForm > 0) {
 					$cote = $coteForm / $maxForm * $ponderation[$periode]['form'];
@@ -1101,14 +1083,14 @@ class Bulletin {
 					$cotesPonderees['cert']['max'] = $max;
 					$cotesPonderees['cert']['echec'] = $echec;
 				}
-				
+
 				$listeCotesGlobales[$matricule][$coursGrp] = $cotesPonderees;
 			}
 		}
 		return $listeCotesGlobales;
 	}
 
-	/** 
+	/**
 	 * retourne une liste des situations et cotes de délibé
 	 * pour la liste d'élèves donnée
 	 * pour une période donnée
@@ -1119,10 +1101,10 @@ class Bulletin {
 	 *  - sitDelibe
 	 *  - degre, hook, star
 	 *  - statut du cours (AC, FC,...)
-	 * 
-	 * @param $listeEleves 
+	 *
+	 * @param $listeEleves
 	 * @param $bulletin
-	 * 
+	 *
 	 */
 	public function listeSituationsClassePourDelibe($listeEleves, $bulletin) {
 		if (is_array($listeEleves))
@@ -1166,14 +1148,14 @@ class Bulletin {
 		$symbole = array_search($attribut, $symbolesAttributs);
 		return $symbole;
 	}
-		
+
 	/*
 	 * retourne la liste des situations de délibés provenant des bulletins
 	 * pour une liste d'élèves données
 	 * pour une liste de cours donnée et
 	 * pour un bulletin donné
 	 * Si le numéro du bulletin n'est pas précisé, la liste revient avec tous les bulletins
-	 * 
+	 *
 	 * @param string|array $listeEleves : matricule ou liste des matricules des élèves concernés
 	 * @param string|array $listeCoursGrp  : liste des coursGrp concernés
 	 * @param $bullletin : numéro du bulletin concerné
@@ -1198,7 +1180,7 @@ class Bulletin {
 		if ($bulletin)
 			$sql .= "AND bulletin='$bulletin' ";
 		$sql .= "ORDER BY bulletin, matricule";
-		
+
 		$resultat = $connexion -> query($sql);
 		$listeSituationsCours = array();
 		if ($resultat)
@@ -1220,7 +1202,7 @@ class Bulletin {
 				if ($situation != Null)
 					$situation = ($situation > 50) ? round($situation, 0) : round($situation, 1);
 				$situationPourCent = ($situation == Null) ? Null : round(100*$situation / $maxSituation,0);
-				
+
 				// sommes-nous dans une période avec délibé?
 				if ($isDelibe) {
 					$sitDelibe = $ligne['sitDelibe'];
@@ -1289,7 +1271,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $liste;
 		}
-	
+
 	/**
 	* recherche la dernière cotes de situation connue, avant le bulletin $bulletin
 	* parmi les situations transmises par $listeSituations
@@ -1335,7 +1317,7 @@ class Bulletin {
 		return $sitPrec;
 		}
 
-	/***
+	/**
 	 * calcule la nouvelle situation à partir de la situation précédente ($listeSituations)
 	 * et de la cote globale de période actuelle
 	 * pour le bulletin donné
@@ -1382,9 +1364,10 @@ class Bulletin {
 		return $listeSituations;
 	}
 
-	/** 
+	/**
 	 * Enregistrement des cotes de situations recalculées après remplissage du bulletin
-	 * @param $listeNouvellesSituations, $bulletin
+	 * @param $listeNouvellesSituations
+	 * @param $bulletin
 	 * @result Null
 	 */
 	 public function enregistrerSituations($listeSituations, $bulletin) {
@@ -1577,7 +1560,7 @@ class Bulletin {
 		return $nbResultats;
 		}
 
-    /***
+    /**
      * liste des élèves sous forme de tableau avec le suivant et le précédent
      * utile pour des listes chaînées
      * @param $listeEleves
@@ -1599,14 +1582,14 @@ class Bulletin {
 		return $liste;
 	}
 
-	/*
-	 * function listeSommesFormCert
-	 * @param $listeCotes
-	 *
+	/**
 	 * totaux bruts sans pondération pour le Formatif et le Certificatif
 	 * pour la liste des cotes d'une période donnée
 	 * concerne tous les élèves d'un cours
-	 * */
+	 * @param $listeCotes
+	 * @return array
+	 */
+
 	function listeSommesFormCert($listeCotes) {
 		$sommesFormCert = array();
 		foreach ($listeCotes as $matricule => $lesCours) {
@@ -1641,7 +1624,14 @@ class Bulletin {
 				$sommeCert = ($sommeMaxCert == '') ? '' : $sommeCert;
 				$pourcentCert = ($sommeMaxCert > 0) ? round(100 * $sommeCert / $sommeMaxCert) : Null;
 
-				$sommesFormCert[$matricule] = array('totalForm' => $sommeForm, 'maxForm' => $sommeMaxForm, 'pourcentForm' => $pourcentForm, 'totalCert' => $sommeCert, 'maxCert' => $sommeMaxCert, 'pourcentCert' => $pourcentCert);
+				$sommesFormCert[$matricule] = array(
+					'totalForm' => $sommeForm,
+					'maxForm' => $sommeMaxForm,
+					'pourcentForm' => $pourcentForm,
+					'totalCert' => $sommeCert,
+					'maxCert' => $sommeMaxCert,
+					'pourcentCert' => $pourcentCert
+					);
 			}
 		}
 		return $sommesFormCert;
@@ -1702,10 +1692,10 @@ class Bulletin {
 					break;
 			}
 		}
-		return array('cotes' => $listeCotesParCompetences, 
-					 'periode' => $listeCotesPeriode, 
-					 'attitudes' => $listeAttitudes, 
-					 'bulletin' => $listeCommentaires, 
+		return array('cotes' => $listeCotesParCompetences,
+					 'periode' => $listeCotesPeriode,
+					 'attitudes' => $listeAttitudes,
+					 'bulletin' => $listeCommentaires,
 					 'situations' => $listeSituations
 				);
 	}
@@ -1732,13 +1722,13 @@ class Bulletin {
 							$form = (isset($lesCotes['form']))?strtoupper(trim($lesCotes['form'])):Null;
 							$maxForm = (isset($lesCotes['maxForm']))?strtoupper(trim($lesCotes['maxForm'])):Null;
 							if (is_numeric($form)) {
-								if (is_numeric($maxForm)) 
+								if (is_numeric($maxForm))
 									$formOK = ($form <= $maxForm)?true:false;
 								}
-								else if ($form == '') 
+								else if ($form == '')
 										$formOK = true;
 										else $formOK =  (in_array($form, $texteLicite));
-									
+
 							if ($formOK) {
 								$boutSql = "form='$form', maxForm='$maxForm'";
 								$sql = "INSERT INTO " . PFX . "bullDetailsCotes SET ";
@@ -1754,11 +1744,11 @@ class Bulletin {
 							$cert = (isset($lesCotes['cert']))?strtoupper(trim($lesCotes['cert'])):Null;
 							$maxCert = (isset($lesCotes['maxCert']))?strtoupper(trim($lesCotes['maxCert'])):Null;
 							if (is_numeric($cert)) {
-								if (is_numeric($maxCert)) 
+								if (is_numeric($maxCert))
 									$certOK = ($cert <= $maxCert);
 									else $certOK = false;
 								}
-								else if ($cert == '') 
+								else if ($cert == '')
 										$certOK = true;
 										else $certOK =  (in_array($cert, $texteLicite));
 
@@ -1815,7 +1805,7 @@ class Bulletin {
 						$sql .= "ON DUPLICATE KEY UPDATE $boutSql ";
 						$resultat = $connexion -> exec($sql);
 
-						if (($sitDelibe <0) || ($sitDelibe >100)) 
+						if (($sitDelibe <0) || ($sitDelibe >100))
 							$tableErreurs[$matricule]['sitDelibe'] = true;
 						}
 					break;
@@ -1874,14 +1864,14 @@ class Bulletin {
 
 	/**
 	 * liste de tous les cours qui se donnent à une liste d'élèves
-	 * sans tenir compte des sous-groupes éventuels
-	 * 
+	 * sans tenir compte des cours-groupes éventuels
+	 *
 	 * @param $listeEleves
 	 * @highStatus : liste des statuts de cours de haut niveau ('FC','OB') -> permet d'écarter les cours de Rem, AC,... Utile pour les synthèses générales
 	 * @return array
 	 */
 	function listeCoursEleves($listeEleves, $highStatus=false) {
-		if (is_array($listeEleves)) 
+		if (is_array($listeEleves))
 			$listeMatricules = implode(",", array_keys($listeEleves));
 		else $listeMatricules = $listeEleves;
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1909,7 +1899,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeCours;
 	}
-	
+
 	/**
 	 * Établissement de la liste des coursGrp des élèves passés en argument
 	 * la liste est valable pour le bulletin donné et tient compte de l'historique des mouvements
@@ -1919,7 +1909,7 @@ class Bulletin {
 	 * @return array : liste des cours suivis par la liste des élèves à la période $bulletin
 	 */
 	public function listeCoursGrpEleves($listeEleves, $bulletin) {
-		if (is_array($listeEleves)) 
+		if (is_array($listeEleves))
 			$listeMatricules = implode(",", array_keys($listeEleves));
 		else $listeMatricules = $listeEleves;
 
@@ -1929,7 +1919,7 @@ class Bulletin {
 		$sql .= "FROM ".PFX."elevesCours ";
 		$sql .= "JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp, 1,LOCATE('-',coursGrp)-1)) ";
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX . "cours.cadre) ";
-		// LEFT JOIN pour les cas où un élève aurait été affecté à un cours qui n'existe plus dans la table des profs		
+		// LEFT JOIN pour les cas où un élève aurait été affecté à un cours qui n'existe plus dans la table des profs
 		$sql .= "LEFT JOIN ".PFX."profsCours ON (".PFX."profsCours.coursGrp = ".PFX."elevesCours.coursGrp) ";
 		$sql .= "LEFT JOIN ".PFX."profs ON (".PFX."profs.acronyme = ".PFX."profsCours.acronyme) ";
 		$sql .= "WHERE matricule IN ($listeMatricules) ";
@@ -1982,7 +1972,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeCours;
 	}
-	
+
 	/**
 	 * liste de tous les coursGrp ayant été affectés à un élève, y compris les cours supprimés dans l'historique
 	 * cette liste peut servir pour établir une liste cohérente des situations tout au long de l'année
@@ -1991,7 +1981,7 @@ class Bulletin {
 	 * @return array
 	 */
 	public function listeFullCoursGrpActuel($listeEleves) {
-		if (is_array($listeEleves)) 
+		if (is_array($listeEleves))
 			$listeMatricules = implode(",", array_keys($listeEleves));
 			else $listeMatricules = $listeEleves;
 		// liste des cours figurant officiellement dans la liste actuelle des cours des élèves concernés
@@ -2039,11 +2029,11 @@ class Bulletin {
 							'acronyme'=>$ligne['acronyme']
 							);
 				}
-			}			
+			}
 		Application::DeconnexionPDO($connexion);
-		return $listeCours;	
+		return $listeCours;
 	}
-	
+
 	/**
 	 * recherche de la situation pour le bulletin actuel sur base de la liste de l'ensemble des situations
 	 * de toutes les périodes de cours ($listeSituations)
@@ -2082,7 +2072,7 @@ class Bulletin {
 			}
 		return $situations;
 	}
-	
+
 
 	/***
 	 * retourne le cours correspondant au coursGrp passé en argument
@@ -2327,7 +2317,7 @@ class Bulletin {
         Application::DeconnexionPDO($connexion);
         return $listeCours;
 	 }
-	 
+
 	 /**
 	  * retourne la liste des cours réellemnent suivis par des élèves à un certain niveau d'études
 	  * @param $niveau
@@ -2501,14 +2491,14 @@ class Bulletin {
         return $resultat;
     }
 
-	
-	
-	/** 
+
+
+	/**
 	 * retourne une synthèse de toutes les cotes de l'élève pour toutes les années d'étude
 	 * sauf si l'année est précisée
 	 * @param $matricule : le matricule de l'élève concerné
 	 * @param $annee : l'année d'étude (en principe, entre 1 et 6, si nécessaire)
-	 * @return array 
+	 * @return array
 	 */
 	public function syntheseToutesAnnees ($matricule, $annee=Null) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -2569,7 +2559,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $synthese;
 		}
-		
+
 	/**
 	 * tableau des situations et des délibés pour l'année scolaire en cours
 	 * ce tableau est établi sur la base de la liste déclarée des cours suivis ou ayant été suivis par l'élève
@@ -2621,7 +2611,7 @@ class Bulletin {
 		}
 	}
 
-	
+
 	/**
 	 * retourne les remarques du titulaire
 	 * pour une liste d'élèves donnée et
@@ -2755,7 +2745,7 @@ class Bulletin {
 	}
 
 
-	/*** 
+	/***
 	 * retourne les situations sur 100 basées sur les cotes de situation calculées
 	 * pour le bulletin n° $bulletin
 	 * et pour les élèves dont la liste est fournie
@@ -2837,7 +2827,7 @@ class Bulletin {
 		$date = implode($glue, $phpArray);
 		return $date;
 	}
-	
+
 	/**
 	 * convertit une date contenant le séparateur $glue en date au format MySQL
 	 * @param $date : la date à convertir (Exemple: 07/10/2014)
@@ -2849,7 +2839,7 @@ class Bulletin {
 		$date = implode('-',$sqlArray);
 		return $date;
 		}
-	
+
 	/*
 	 * function listeCotesCarnet
 	 * @param $listeTravaux
@@ -2979,7 +2969,7 @@ class Bulletin {
 		$bulletin = isset($post['bulletin'])?$post['bulletin']:Null;
 		$coursGrp = isset($post['coursGrp'])?$post['coursGrp']:Null;
 		if (($bulletin == Null) || ($coursGrp == Null)) die('missing data');
-		
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."bullCarnetEleves ";
 		$sql .= "SET idCarnet=:idCarnet, matricule=:matricule, cote=:cote ";
@@ -3009,7 +2999,7 @@ class Bulletin {
 							}
 							// si ce n'est pas numérique => erreur
 							else $erreur = true;
-					
+
 				if ($erreur) {
 					// ajout d'un point d'exclamation pour signaler une erreur
 					$value = $value.'!';
@@ -3143,7 +3133,7 @@ class Bulletin {
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO($connexion);
 	}
-	
+
 	/**
 	 * Suppression de toutes les mentions dans la table des pondérations
 	 *	fonction très dangereuse
@@ -3184,7 +3174,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 	}
-	
+
 	/**
 	 * Suppression de tous les commentaires titulaires dans les bulletins
 	 *
@@ -3198,7 +3188,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 	}
-	
+
 	/**
 	 * Suppression des notices "coordinateurs"
 	 * @param
@@ -3211,7 +3201,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 	}
-	
+
 	/**
 	 * Suppression de toutes les mentions d'attitudes
 	 * @param
@@ -3224,7 +3214,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 	}
-	
+
 	/**
 	 * Archivage des matricules et classes des élèves pour l'année scolaire indiquée
 	 * @param $annee
@@ -3251,7 +3241,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $nb;
 	}
-	
+
 	/**
 	 * Archivage des cotes de situation des élèves pour l'année scolaire indiquée
 	 * @param $anneeScolaire
@@ -3267,7 +3257,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 		}
-		
+
 	/**
 	 * vide la table des situations après archivage
 	 * @param
@@ -3280,7 +3270,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 	}
-	
+
 	/**
 	 * retourne la liste des écoles fréquentées anciennement par les élèves du niveau indiqué
 	 * @param $niveau
@@ -3348,7 +3338,7 @@ class Bulletin {
 		}
 
 
-	/** 
+	/**
 	 * retourne la liste des colonnes de cotes à additionner
 	 * en séparant par compétence et form ou cert
 	 * @param coursGrp
@@ -3431,7 +3421,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeCotes;
 		}
-		
+
 	/**
 	 * vérifie qu'une cote passée en argument vaut pour "0"
 	 * la liste des cotes valant pour "0" se trouve dans la constante COTENULLE
@@ -3572,7 +3562,7 @@ class Bulletin {
 			$coursGrp = $uneCompetence['coursGrp'];
 			$sql = "SELECT poids ";
 			$sql .= "FROM ".PFX."bullCarnetPoidsCompetences ";
-			$sql .= "WHERE idComp = '$idComp' AND certForm = '$formCert' AND bulletin = '$bulletin' AND coursGrp ='$coursGrp' "; 
+			$sql .= "WHERE idComp = '$idComp' AND certForm = '$formCert' AND bulletin = '$bulletin' AND coursGrp ='$coursGrp' ";
 
 			$resultat = $connexion->query($sql);
 			// on n'attend qu'un seul résultat de poids pour une compétence dans un type donné
@@ -3621,7 +3611,7 @@ class Bulletin {
 				$coursGrp = explode('_', $data[1]); $coursGrp = $coursGrp[1];
 				$coursGrp = str_replace('$',' ',$coursGrp);
 				$coursGrp = str_replace('#','-',$coursGrp);
-				
+
 				$type = explode('_',$data[2]); $type = $type[1];
 				$idComp = explode('_',$data[3]); $idComp = $idComp[1];
 				$bulletin = explode('_',$data[4]); $bulletin = $bulletin[1];
@@ -3668,7 +3658,7 @@ class Bulletin {
 				} // if
 			} //foreach
 		Application::deconnexionPDO($connexion);
-		
+
 		return array('poidsOK'=>true, 'ok'=>$nbResultats,'ko'=>$nbRefus);
 		} // function
 
@@ -3710,7 +3700,7 @@ class Bulletin {
 						'nbEchecs'=>$nbEchecs, 'nbHeuresEchec'=>$nbHeuresEchec, 'coursEchec'=>implode('<br>',$coursEchecs)
 						);
 			}
-		return $liste;	
+		return $liste;
 		}
 
 
@@ -3732,7 +3722,7 @@ class Bulletin {
 					if (isset($lesSituations[$periode])) {
 						$sit = $this->sansVirg(trim($lesSituations[$periode]['sitDelibe']));
 						$attribut = $lesSituations[$periode];
-				
+
 						// si l'information est numérique, on en tient compte
 						if (is_numeric($sit)) {
 							// les cotes entre crochets sont négligées
@@ -3856,11 +3846,11 @@ class Bulletin {
 			$ligne = $resultat->fetch();
 			$classe = $ligne['classe'];
 		}
-		
+
 		Application::DeconnexionPDO($connexion);
 		return $classe;
 	}
-	
+
 	/**
 	 * retourne la liste des élèves d'un niveau donné (de la 1e à la 6e) pour une année scolaire indiquée
 	 * @param $annee string : annee scolaire passée (Ex: 2012-2013)
@@ -3884,7 +3874,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeEleves;
 	}
-	
+
 	/**
 	 * retourne la liste des années d'archives disponibles dans la table des archives
 	 * @param
@@ -4055,17 +4045,17 @@ class Bulletin {
 		return $vide;
 		}
 
-	/** 
+	/**
 	 * retourne la liste de situations des élèves pour la liste des cours passés en argument
 	 * on soustrait le situation de la période 0 de celle de la période $bulletin
-	 * 
+	 *
 	 * @param string|array $listeEleves : liste des élèves
 	 * @param string|array $listeCoursGrp: liste des coursGrp concernés
 	 * @param integer $bulletin : numéro du bulletin en cours
-	 * 
+	 *
 	 * @return array listeSituationsDeuxiemes
-	 * 
-	 */ 
+	 *
+	 */
 	public function situationsDeuxieme ($listeEleves, $listeCoursGrp, $bulletin) {
 		if (is_array($listeEleves))
 			$listeElevesString = implode(',', array_keys($listeEleves));
@@ -4101,7 +4091,7 @@ class Bulletin {
 				// cote de l'année
 				$sitPeriode = $cotes[$bulletin]['sit'];
 				$maxPeriode = $cotes[$bulletin]['max'];
-				
+
 				$sit2 = $sitPeriode - $sit0;
 				$max2 = $maxPeriode - $max0;
 				$listeSituations[$coursGrp][$matricule]['sit2'] = array('sit'=>$sit2, 'max'=>$max2);
@@ -4127,7 +4117,7 @@ class Bulletin {
 		$annee = $dataEleve['annee'];
 		$degre = $dataEleve['degre'];
 		$titulaires = $dataEleve['titulaires'];
-		
+
 		$eleve = new Eleve($matricule);
 		$infoPerso = $eleve->getDetailsEleve();
 		$Ecole = new Ecole();
@@ -4138,13 +4128,13 @@ class Bulletin {
 			// il n'y a qu'un élève, il n'y aura donc qu'une seule liste de pondérations
 			$listeCoursGrp = $listeCoursGrp[$matricule];
 			$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
-		
+
 			$listeSituations = $this->listeSituationsCours($matricule, array_keys($listeCoursGrp), Null, true);
 			$sitPrecedentes = $this->situationsPrecedentes($listeSituations,$bulletin);
 			$sitActuelles = $this->situationsPeriode($listeSituations, $bulletin);
 			$listeCompetences = $this->listeCompetencesListeCoursGrp($listeCoursGrp);
 			$listeCotes = $this->listeCotes($matricule, $listeCoursGrp, $listeCompetences, $bulletin);
-			$ponderations = $this->getPonderations($listeCoursGrp, $bulletin);		
+			$ponderations = $this->getPonderations($listeCoursGrp, $bulletin);
 			$cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 			$commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
 			$mention = $this->listeMentions($matricule, $bulletin,$annee);
@@ -4152,7 +4142,7 @@ class Bulletin {
 			$remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
 			$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;
 			$noticeDirection = $this->noteDirection($annee, $bulletin);
-			
+
 			$detailsBulletin = array(
 				'annee' => $annee,							'degre' => $degre,
 				'titulaires' => $titulaires,				'listeCoursEleve' => $listeCoursGrp,
@@ -4165,15 +4155,15 @@ class Bulletin {
 				'remTitu' => $remarqueTitulaire,			'mention' => $mention,
 				'noticeDirection' => $noticeDirection
 				);
-			
+
 			$pdf=new PDF('P','mm','A4');
 			$pdf->SetFillColor (230);
-			
+
 			$this->createBulletinEleve ($pdf, $detailsBulletin, $bulletin);
 			$pdf->Output("$matricule.pdf", 'D');
 			}
 		}
-	
+
 	/**
 	 * création du document PDF de bulletin pour l'ensemble d'une classe
 	 * le bulletin d'une classe est formé de la somme des bulletins individuels de chaque élève
@@ -4193,12 +4183,12 @@ class Bulletin {
 		$pdf->SetFillColor (230);
 		$pdf->SetY(100);
 		$pdf->Cell(0, 72, $classe, 0,0, 'C');
-		
+
 		$Ecole = new Ecole();
 		$annee = $Ecole->anneeDeClasse($classe);
 		$degre = $Ecole->degreDeClasse($classe);
 		$titulaires = $Ecole->titusDeGroupe($classe);
-		
+
 		// tous les cours donnés dans la classe (certains élèves ne suivent pas certains cours; tenir compte de l'historique)
 		$listeTousCoursGrp = $this->listeCoursGrpEleves($listeEleves, $bulletin);
 		foreach ($listeEleves as $matricule =>$dataEleve) {
@@ -4213,7 +4203,7 @@ class Bulletin {
 				$sitActuelles = $this->situationsPeriode($listeSituations, $bulletin);
 				$listeCompetences = $this->listeCompetencesListeCoursGrp($listeCoursGrp);
 				$listeCotes = $this->listeCotes($matricule, $listeCoursGrp, $listeCompetences, $bulletin);
-				$ponderations = $this->getPonderations($listeCoursGrp, $bulletin);		
+				$ponderations = $this->getPonderations($listeCoursGrp, $bulletin);
 				$cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 				$commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
 				$mention = $this->listeMentions($matricule, $bulletin, $annee);
@@ -4222,7 +4212,7 @@ class Bulletin {
 				// tableau des attitudes seulement au premier degré.
 				$tableauAttitudes = $degre==1?$this->tableauxAttitudes($matricule, $bulletin):Null;
 				$noticeDirection = $this->noteDirection($annee, $bulletin);
-				
+
 				$detailsBulletin = array(
 					'annee' => $annee,							'degre' => $degre,
 					'titulaires' => $titulaires,				'listeCoursEleve' => $listeCoursGrp,
@@ -4240,7 +4230,7 @@ class Bulletin {
 			}
 		}
 		// création éventuelle du répertoire au nom de l'utlilisateur
-		if (!(file_exists("pdf/$acronyme"))) 
+		if (!(file_exists("pdf/$acronyme")))
 			mkdir ("pdf/$acronyme");
 		// s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
 		$pdf->Output("pdf/$acronyme/$classe.pdf");
@@ -4250,13 +4240,13 @@ class Bulletin {
 		}
 
 	// --------------------------------------------------------------------
-	
+
 	function utf8($argument) {
 		return utf8_decode($argument);
 		}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function enteteBulletin ($pdf, $infoPerso, $titulaires, $bulletin) {
 		$classe = $this->utf8($infoPerso['classe']);
 		$eleve_nom = $this->utf8($infoPerso['nom']);
@@ -4266,7 +4256,7 @@ class Bulletin {
 		$y = 12;
 		$pdf->SetLineWidth(0.2);
 		$pdf->Image("../images/logo1.jpg",12,8,25);
-	
+
 		$pdf->SetXY($x+30,$y-2);
 		$pdf->SetFont('Arial','B',14);
 		$pdf->MultiCell(120,5,$this->utf8(ECOLE),0,'L');
@@ -4276,17 +4266,17 @@ class Bulletin {
 		$pdf->SetXY($x+30,$y+14);
 		$pdf->SetFont('Arial','U',9);
 		$pdf->MultiCell(120,5,SITEWEB,0,'L');
-	
+
 		$pdf->SetFont('Arial','B',11);
 		$pdf->SetXY(90,$y-2);
 		$jour = date("d"); $mois = date("m"); $annee = date("Y");
-		
+
 		$titreEleve = sprintf($this->utf8("%s %s \n %s \n Titulaire(s): %s \n"),$eleve_prenom, $eleve_nom, $classe, $titulaires);
 		$titreEleve .= sprintf($this->utf8("Le %02d-%02d-%04d, période %d"), $jour,$mois,$annee,$bulletin);
 		$pdf->MultiCell(110,5, $titreEleve, 0,'R');
 		$pdf->Ln();
 		}
-	
+
 	// -------------------------------------------------------------------
 	function situationPrecedentePDF ($pdf, $sitPrec, $bulletin, $degre) {
 		// la cote de situation précédente n'est indiquée qu'au D1
@@ -4308,7 +4298,7 @@ class Bulletin {
 			else // on n'est pas au D1;
 			$pdf->Cell(40+17,5,'',0,0,'R');
 		}
-	
+
 	// -------------------------------------------------------------------
 	function entetesColonnesPDF($pdf, $cotesPonderees) {
 		$pdf->SetFont('Arial','',7);
@@ -4317,7 +4307,7 @@ class Bulletin {
 		if (isset($cotesPonderees)) {
 			$form = $cotesPonderees['form']['cote'];
 			$maxForm = $cotesPonderees['form']['max'];
-	
+
 			// Entête de colonne pour le Formatif
 			$pdf->SetFontSize(5);
 			$pdf->Cell(4,5,'TJ',1,0,'C', true);
@@ -4329,7 +4319,7 @@ class Bulletin {
 				$this->noir($pdf);
 				}
 				else $pdf->Cell(10,5,'-', 1, 0,'C',true);
-	
+
 			$cert = $cotesPonderees['cert']['cote'];
 			$maxCert = $cotesPonderees['cert']['max'];
 			// Entête de colonne pour les Cert
@@ -4349,7 +4339,7 @@ class Bulletin {
 			$pdf->Cell(14,5,'',1,0,'C',true);
 			}
 		}
-	
+
 	// --------------------------------------------------------------------
 	function brancheProfPDF ($pdf, $unCours, $listeProfs) {
 		// nom de la branche et titulaire du cours
@@ -4359,7 +4349,7 @@ class Bulletin {
 		// $pdf->SetFont('Arial','B',8);
 		$nomCours = $this->utf8($unCours['libelle']);
 		$nbh = $unCours['nbheures'];
-		
+
 		$prof = $this->utf8($listeProfs);
 		$texte = "$nomCours [$nbh h] $prof";
 		// $limite = 48;
@@ -4368,7 +4358,7 @@ class Bulletin {
 			$texte = substr($texte, 0, $limite)."...";
 		$pdf->Cell(83,5,$texte, 1,0,'L',true);
 		$y = $pdf->GetY();
-	
+
 		// ligne de séparation entre les cours
 		$pdf->SetLineWidth(0.4);
 		$pdf->Line(6,$y,200,$y);
@@ -4378,21 +4368,21 @@ class Bulletin {
 		}
 
 
-	/*** 
+	/***
 	 * function situationActuellePDF
-	 * 
+	 *
 	 * @param $pdf			// objet PDF
-	 * @param $sitActuelle	
+	 * @param $sitActuelle
 	 * @param $bulletin		// période pour le bulletin à imprimer
 	 * @param $degre   		// la présentation du bulletin varie selon le degré
-	 */	
+	 */
 	function situationActuellePDF ($pdf, $sitActuelle, $bulletin, $degre) {
 		// tableau des périodes de délibés, sans espaces
 		$arrayDelibes = explode(',', str_replace(' ','',PERIODESDELIBES));
 		$pdf->SetFont('Arial','',8);
 		// encadrement pour situation actuelle
 		$pdf->SetLineWidth(0.2);
-		
+
 		if (in_array($bulletin, $arrayDelibes)) {	// sommes nous en période de délibé
 			// la situation de délibé est-elle connue?
 			$sitDelibe = trim($sitActuelle['sitDelibe']);
@@ -4448,7 +4438,7 @@ class Bulletin {
 			$pdf->SetX(10); $pdf->MultiCell(50,5,$this->utf8("Respect des consignes"),1,'L',1);
 			$pdf->SetX(10); $pdf->MultiCell(50,5,$this->utf8("Volonté de progresser"),1,'L',1);
 			$pdf->SetX(10); $pdf->MultiCell(50,5,$this->utf8("Ordre et soin"),1,'L',1);
-	
+
 			// position X = 10 + 50
 			$x = 60; $y+=5;
 			foreach ($attitudes as $coursGrp=>$unCours) {
@@ -4459,7 +4449,7 @@ class Bulletin {
 				// $cours = $unCours['coursGrp'];
 				$cours = substr($coursGrp, strpos($coursGrp,':')+1);
 				$cours = substr($cours, 0, strpos($cours,'-'));
-	
+
 				$pdf->RotatedText($x+5,$y+16, $cours, 90);
 				// ériture des différentes attitudes A ou N
 				$y1 = $y + 17;
@@ -4481,7 +4471,7 @@ class Bulletin {
 			$pdf->Ln(10);
 			}
 		}
-	
+
 		/***
 		 * corrige les caractères non standard de Word
 		 * @param $chaine : string la châine à corriger
@@ -4492,7 +4482,7 @@ class Bulletin {
 			$chaine = str_replace("’","'",$chaine);
 			return $chaine;
 		}
-		
+
 	// -------------------------------------------------------------------
 	function remarqueTituPDF ($pdf, $remarqueTitulaire) {
 		$pdf->SetLineWidth(0.2);
@@ -4504,7 +4494,7 @@ class Bulletin {
 		$pdf->MultiCell(194,4,$this->utf8(html_entity_decode($remarqueTitulaire)),1,'L',0);
 		$pdf->Ln();
 		}
-	
+
 	// -------------------------------------------------------------------
 	function mentionPDF ($pdf,$mention) {
 		$pdf->SetLineWidth(0.2);
@@ -4513,7 +4503,7 @@ class Bulletin {
 		$pdf->MultiCell(194,8,$this->utf8("Mention: ".$mention),1,'C');
 		$pdf->Ln();
 		}
-	
+
 	// -------------------------------------------------------------------
 	function commentaireProfPDF ($pdf, $commentaire, $y) {
 		$pdf->SetLineWidth(0.2);
@@ -4553,7 +4543,7 @@ class Bulletin {
 			$pdf->Ln();
 			}
 		}
-	
+
 	// -------------------------------------------------------------------
 	function notaBulletin ($pdf, $nota) {
 		if ($nota) {
@@ -4574,7 +4564,7 @@ class Bulletin {
 	function ecrireCotesPDF ($pdf, $cotes, $listeCompetences) {
 		$limite=57;
 		$pdf->SetFont('Arial','',8);
-	
+
 		foreach ($cotes as $idComp=>$lesCotes) {
 			// ligne descendante pour le bord gauche de l'encadrement
 			$pdf->SetLineWidth(0.4);
@@ -4584,7 +4574,7 @@ class Bulletin {
 			// S'il y a quelque chose dans la cote, alors on imprime
 			if (($lesCotes['form']['cote'] != '') || ($lesCotes['form']['maxForm'] != '')
 				|| ($lesCotes['cert']['cote'] != '') || ($lesCotes['cert']['maxCert'] != '')) {
-		
+
 				// écriture de la colonne de gauche: nom des compétences et cotes TJ/Cert
 				$libelle = $this->utf8($listeCompetences[$idComp]['libelle']);
 				if (strlen($libelle) > $limite)
@@ -4625,20 +4615,20 @@ class Bulletin {
 				return (($cote / $max) < 0.5);
 			else return false;
 		}
-	
+
 	function piedPage ($pdf, $page) {
 		$pdf->SetXY(180,270);
 		$pdf->SetFont('Arial','',8.5);
 		$pdf->MultiCell(20,5,"page $page / 2",0,'R',0);
 		}
-	
+
 	function newPage ($pdf, $infoPerso, $titulaires, $bulletin, $page) {
 		$this->piedPage ($pdf, $page);
 		$pdf->AddPage('P');
 		$pdf->SetLeftMargin(6);
 		$x = 10;
 		$y = 12;
-	
+
 		$this->enteteBulletin($pdf, $infoPerso, $titulaires, $bulletin);
 		$this->noir($pdf);
 		return $page+1;
@@ -4652,7 +4642,7 @@ class Bulletin {
 	 * @return void()
 	 */
 	public function createBulletinEleve ($pdf, $bulletinEleve, $bulletin) {
-		foreach ($bulletinEleve as $key=>$data) 
+		foreach ($bulletinEleve as $key=>$data)
 			$$key = $data;
 		/* $bulletinEleve
 			'annee' => $annee,		'degre' => $degre,			'titulaires' => $titulaires,			'listeCoursEleve' => $listeCoursGrp,
@@ -4674,7 +4664,7 @@ class Bulletin {
 
 		$this->enteteBulletin ($pdf, $infoPerso, $titulaires, $bulletin);
 		$pdf->SetFont('Arial','',8);
-		
+
 		// on passe tous les cours en revue
 		foreach ($listeCoursEleve as $coursGrp=>$dataCours) {
 			$debutX = $pdf->GetX(); $debutY = $pdf->GetY();
@@ -4685,51 +4675,51 @@ class Bulletin {
 				$this->entetesColonnesPDF($pdf, $cotesPonderees[$matricule][$coursGrp]);
 				}
 				else $pdf->setX(91); // il n'y a pas de cotes, déplacer la marge de gauche
-	
+
 			$profs = $listeProfs[$coursGrp];
 			$this->brancheProfPDF($pdf, $listeCoursEleve[$coursGrp], $profs);
-	
+
 			// on vérifie qu'il y a une situation actuelle pour ce cours; sinon, Null
 			$situationCours = isset($sitActuelles[$matricule][$coursGrp])?$sitActuelles[$matricule][$coursGrp]:Null;
 			$this->situationActuellePDF($pdf, $situationCours, $bulletin, $degre);
-	
+
 			// on retient la position Y du début d'écriture des cotes
 			// on en aura  besoin pour positionner le multicell du commentaire du prof
 			$yDebutCotes = $pdf->GetY();
-			
-			// s'il y a des cotes pour ce cours		
+
+			// s'il y a des cotes pour ce cours
 			if (isset($detailCotes[$matricule][$coursGrp])) {
 				$cours = $this->coursDeCoursGrp($coursGrp);
 				$this->ecrireCotesPDF($pdf, $detailCotes[$matricule][$coursGrp], $listeCompetences[$cours]);
 				}
-	
+
 			// quand toutes les cotes sont écrites, on récupère la valeur de Y
 			$yFinCotes = $pdf->GetY();
 			$prof = $listeProfs[$coursGrp];
-	
+
 			$commentaire = isset($commentairesCotes[$matricule][$coursGrp][$bulletin])?$commentairesCotes[$matricule][$coursGrp][$bulletin]:'';
 			$this->commentaireProfPDF($pdf, $commentaire, $yDebutCotes);
-	
+
 			$yFinCommentaire = $pdf->GetY();
 			// se positionner sous le bloc le plus haut: compétences ou commentaires
 			$pdf->SetY(max($yFinCotes, $yFinCommentaire));
-	
+
 			// vérifier s'il faut un saut de page préventif
 			if ($pdf->GetY() > 235)
 				$page = $this->newPage ($pdf, $infoPerso, $titulaires, $bulletin, $page);
 				else $pdf->Ln(1);
 			} // foreach $listeCoursEleve
-	
+
 		// Le tableau des attitudes et l'avis du titu sont toujours à la page 2
 		if ($page == 1)
 			$page = $this->newPage ($pdf, $infoPerso, $titulaires, $bulletin, $page);
 			else $pdf->Ln(1);
-	
+
 		if (isset($attitudes[$bulletin]))
 			$this->attitudesPDF($pdf, $attitudes[$bulletin][$matricule]);
-	
+
 		// *************************************************************************************
-	
+
 		if (isset($mention[$matricule][$annee][$bulletin]))
 			$this->mentionPDF($pdf,$mention[$matricule][$annee][$bulletin]);
 		if (isset($remTitu[$matricule][$bulletin]))
@@ -4741,13 +4731,13 @@ class Bulletin {
 		$this->signatures($pdf);
 		$this->piedPage ($pdf, $page);
 	}// fin fonction
-			
+
 	/**
-	 * /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! 
+	 * /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch!
 	 * réparation du hiatus entre la table des situations et la table des cours réellement suivis par les élèves
 	 * @param
 	 * @return integer : nombre de rectifications
-	 * /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! 
+	 * /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch! /!\ patch!
 	 */
 	public function listeErreursCours(){
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -4792,7 +4782,7 @@ class Bulletin {
 		$nombre = str_replace(' ','',$nombre);
 		return $nombre;
 		}
-		
+
 
 	/**
 	 * Ajout d'une "compétence" pour tous les cours
@@ -4827,7 +4817,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $elevesCoursGrp;
 	}
-	
+
 	/**
 	 * retourne le tableau des élèves par cours quand on fournit un tableau des élèves par coursGrp
 	 * @param array $listeCoursGrpListeEleves
@@ -4843,7 +4833,7 @@ class Bulletin {
 		}
 		return $liste;
 		}
-	
+
 
 	/**
 	 * initialisation de la table des résultats d'épreuves externes
@@ -4865,7 +4855,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $nb;
 	}
-	
+
 	/**
 	 * liste des cours (et des coursGrp correspondants) de la table des épreuves externes
 	 * @param integer $niveau : le niveau d'étude
@@ -4896,7 +4886,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $liste;
 		}
-		
+
 	/**
 	 * renvoie le nombre de cotes déjà encondées pour chacun des cours à épreuve externe dans le niveau donné
 	 * @param $niveau
@@ -4934,7 +4924,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $nb;
 		}
-		
+
 	/**
 	 * recherche la liste des cotes d'épreuve externe pour un cours-groupe donné
 	 * @param string $coursGrp
@@ -4957,7 +4947,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $liste;
 		}
-		
+
 	/**
 	 * retourne la liste des cours d'un prof qui sont concernés par une épreuve externe
 	 * @param array $listeCoursProf
@@ -4979,7 +4969,7 @@ class Bulletin {
 				$coursGrp = $ligne['coursGrp'];
 				$liste[$coursGrp] = $ligne;
 			}
-			
+
 		}
 		Application::DeconnexionPDO($connexion);
 		return $liste;
@@ -5010,7 +5000,7 @@ class Bulletin {
 				$type = 'choix_'.$matricule;
 				$choix = $post[$type];
 				$erreur = false;
-				
+
 				// la cote externe doit être numérique et comprise entre 0 et 100
 				if (is_numeric($cote) && (($cote > 100 ) || ($cote < 0))) $erreur = true;
 				// si cote d'absence, le choix ne peut être sur la cote externe
@@ -5022,7 +5012,7 @@ class Bulletin {
 						if ($choix == 'coteExterne') $cote = $cote;  // ;o)
 						// if ($choix == 'reussite') $cote = 50;  // on laisse la cote de l'épreuve externe; le 50% sera rétabli dans la feuille de délibé car choix='reussite50'
 						if ($choix == 'sitDelibe')
-							// si la cote n'est pas une mention d'absence régulière, on l'efface 
+							// si la cote n'est pas une mention d'absence régulière, on l'efface
 							if (!in_array($cote, $coteabs))
 								$cote = '';
 						$data = array(':cote'=>$cote,':choixCote'=>$choix,':matricule'=>$matricule,':coursGrp'=>$coursGrp);
@@ -5033,7 +5023,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return array('nb'=>$nb, 'erreurs'=>$tableErreurs);
 		}
-		
+
 	/**
 	 * retourne la liste liste des cotes de situation lors de la prise en compte de l'épreuve externe
 	 * soit la cote de l'épreuve externe, soit 50% (cas de la réussite interne), soit la cote de situation
@@ -5098,7 +5088,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $situationsActuelles;
 		}
-		
+
 	/**
 	 * retourne les cotes de situation en tenant compte des épreuves externes pour un élève donné
 	 * soit la cote de l'épreuve externe, soit 50% (cas de la réussite interne), soit la cote de situation
@@ -5143,7 +5133,7 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listeSituations;
 		}
-		
+
 	/**
 	 * 	retourne la liste des coursGrp pour lesquels une épreuve externe est définie dans la table correspondante et pour le niveau donné
 	 * 	@param $niveau
@@ -5212,7 +5202,7 @@ class Bulletin {
 				}
 			}
 		Application::DeconnexionPDO($connexion);
-		
+
 		$texte = "\"Matricule\", \"Classe\",\"Nom\",\"Prénom\",\"coteFR\",\"coteMATH\",\"coteNL\"".chr(10);
 		foreach ($liste as $matricule=>$data) {
 			$classe = $data['classe'];
@@ -5226,10 +5216,33 @@ class Bulletin {
 		if (!($fp = fopen ("eprExternes.csv", "w"))) die ("erreur à l'ouverture du fichier");
 		fwrite ($fp, $texte);
 		fclose ($fp);
-		
+
 		return $liste;
 		}
-		
-	
+
+	/**
+	 * enregistrement des noms attribués aux cours en provenance du formulaire ad hoc pour l'utilisateur actuel $acronyme
+	 * @param array : $post
+	 * @param string : $acronyme
+	 * @return integer : nombre d'enregistrements réalisés
+	 */
+	 public function enregistrerNomsCours ($post, $acronyme) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$resultat = 0;
+		foreach ($post as $champ=>$value) {
+			if (substr($champ,0,6) == 'field_') {
+				$coursGrp = explode('_',$champ);
+				$coursGrp = $coursGrp[1];
+				$nomCours = $value;
+				$sql = "INSERT INTO ".PFX."profsCours ";
+				$sql .= "SET acronyme='$acronyme', coursGrp='$coursGrp', nomCours='$nomCours' ";
+				$sql .= "ON DUPLICATE KEY UPDATE nomCours='$nomCours' ";
+				$resultat += $connexion->exec($sql);
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $resultat;
+		}
+
 	}
 ?>
