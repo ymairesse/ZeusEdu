@@ -1164,7 +1164,7 @@ class ecole {
     public function listeCoursProf ($acronyme) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT DISTINCT classe, ".PFX."profsCours.coursGrp, libelle, ";
-		$sql .= "SUBSTR(".PFX."profsCours.coursGrp,1,LOCATE(':', ".PFX."profsCours.coursGrp)-1) as niveau ";
+		$sql .= "SUBSTR(".PFX."profsCours.coursGrp,1,LOCATE(':', ".PFX."profsCours.coursGrp)-1) as niveau, nomCours ";
 		$sql .= "FROM ".PFX."profsCours ";
 		$sql .= "JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(".PFX."profsCours.coursGrp,1,LOCATE('-', ".PFX."profsCours.coursGrp)-1)) ";
 		$sql .= "JOIN ".PFX."elevesCours on (".PFX."elevesCours.coursGrp = ".PFX."profsCours.coursGrp) ";
@@ -1178,8 +1178,9 @@ class ecole {
 				$libelle = $ligne['libelle'];
 				$coursGrp = $ligne['coursGrp'];
 				$classe = $ligne['classe'];
+				$nomCours = $ligne['nomCours'];
 				if (!(isset($listeCoursGrp[$coursGrp])))
-					$listeCoursGrp[$coursGrp] = array('libelle'=>$libelle, 'classes'=>$classe);
+					$listeCoursGrp[$coursGrp] = array('libelle'=>$libelle, 'nomCours'=>$nomCours, 'classes'=>$classe);
 					else $listeCoursGrp[$coursGrp]['classes'].=",$classe";
 				}
 			}
