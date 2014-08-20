@@ -7,21 +7,25 @@ if (isset($_POST['classe'])) {
 	$classe = $_POST['classe'];
 	setcookie('classe',$classe,$unAn, null, null, false, true);
 	}
-	else $classe = $_COOKIE['classe'];
+	else if (isset($_COOKIE['classe']))
+			$classe = $_COOKIE['classe'];
+			else $classe = Null;
 $smarty->assign('classe', $classe);
 
 if (isset($_POST['matricule'])) {
 	$matricule = $_POST['matricule'];
 	setcookie('matricule',$matricule,$unAn, null, null, false, true);
 	}
-	else $matricule = $_COOKIE['matricule'];
+	else if (isset($_COOKIE['matricule']))
+			$matricule = $_COOKIE['matricule'];
+			else $matricule = Null;
 $smarty->assign('matricule',$matricule);
 
 switch ($mode) {
 	case 'bulletinIndividuel':
 		$listeClasses = $Ecole->listeGroupes(array('G','TT'));
-		
-		if ($classe != Null) 
+
+		if ($classe != Null)
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe', false);
 			else $listeEleves = Null;
 
@@ -54,13 +58,13 @@ switch ($mode) {
 
 				$commentairesCotes = $Bulletin->listeCommentairesTousCours($matricule, $bulletin);
 				$mentions = $Bulletin->listeMentions($matricule, $bulletin);
-				// $ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
+				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);
 				$remarqueTitulaire = $Bulletin->remarqueTitu($matricule, $bulletin);
 				if ($remarqueTitulaire != Null)
 					$remarqueTitulaire = $remarqueTitulaire[$matricule][$bulletin];
 				$tableauAttitudes = $Bulletin->tableauxAttitudes($matricule, $bulletin);
 				$noticeDirection = $Bulletin->noteDirection($annee, $bulletin);
-			
+
 				$smarty->assign('annee',$annee);
 				$smarty->assign('infoPerso', $infoPersoEleve);
 				$smarty->assign('listeCoursGrp', $listeCoursGrp);
@@ -78,9 +82,9 @@ switch ($mode) {
 				$smarty->assign('mention',$mentions);
 				$smarty->assign('noticeDirection', $noticeDirection);
 			}
-			$smarty->assign('corpsPage', 'showEleve'); 
+			$smarty->assign('corpsPage', 'showEleve');
 		}
-		break; 
+		break;
 	default: die ('missing mode');
 	}
 ?>
