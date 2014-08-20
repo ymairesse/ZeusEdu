@@ -17,15 +17,15 @@
 						<th>{$listeTitres.$champ}</th>
 						{/foreach}
 					</tr>
-					
+
 					{foreach from=$listeFaits key=wtf item=faits}
 					<tr>
 						{foreach from=$listeChamps.$typeFait key=wtf item=unChamp}
-						<td>{$faits.$unChamp}</td>
+						<td>{$faits.$unChamp|default:''}</td>
 						{/foreach}
 					</tr>
 					{/foreach}
-					
+
 				</table>
 		{/foreach}
 	<div class="noScreen">
