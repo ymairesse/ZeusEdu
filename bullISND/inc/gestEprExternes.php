@@ -5,7 +5,9 @@ if (isset($_POST['tri'])) {
 	$tri = $_POST['tri'];
 	setcookie('tri',$tri,$unAn, null, null, false, true);
 	}
-	else $tri = $_COOKIE['tri'];
+	else if (isset($_COOKIE['tri']))
+			$tri = $_COOKIE['tri'];
+			else $tri = Null;
 $smarty->assign('tri', $tri);
 
 // la liste de tous les cours du prof
@@ -39,7 +41,7 @@ if ($coursGrp) {
 	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('listeCotes',$listeCotes);
 	$smarty->assign('etape','enregistrer');
-		
+
 	$smarty->assign('intituleCours',$Bulletin->intituleCours($coursGrp));
 	$smarty->assign('listeClasses',$Bulletin->classesDansCours($coursGrp));
 
@@ -50,7 +52,7 @@ if ($coursGrp) {
 	//$smarty->assign('readonly', $readonly);
 	$smarty->assign('corpsPage', 'gestEprExternes');
 	}
-	
+
 // par défaut
 
 $smarty->assign('action',$action);
