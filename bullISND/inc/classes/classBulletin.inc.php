@@ -5233,7 +5233,7 @@ class Bulletin {
 			if (substr($champ,0,6) == 'field_') {
 				$coursGrp = explode('_',$champ);
 				$coursGrp = $coursGrp[1];
-				$nomCours = $value;
+				$nomCours = addslashes(htmlentities($value));
 				$sql = "INSERT INTO ".PFX."profsCours ";
 				$sql .= "SET acronyme='$acronyme', coursGrp='$coursGrp', nomCours='$nomCours' ";
 				$sql .= "ON DUPLICATE KEY UPDATE nomCours='$nomCours' ";
