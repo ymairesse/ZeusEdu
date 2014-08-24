@@ -31,11 +31,11 @@ if (($matricule != '') || ($matricule2 != '')) {
 $smarty->assign('lesGroupes', $Ecole->listeGroupes());
 $smarty->assign('classe',$classe);
 $smarty->assign('matricule',$matricule);
-$smarty->assign('matricule2',$matricule2);	
+$smarty->assign('matricule2',$matricule2);
 
 $listeEleves = $classe!=''?$Ecole->listeEleves($classe):Null;
 $smarty->assign('listeEleves',$listeEleves);
-	
+
 switch ($action) {
 	case 'parEleve':
 		if (isset($matricule)) {
@@ -112,7 +112,7 @@ switch ($action) {
             $smarty->assign("consultEleve",$infirmerie->getVisitesEleve($matricule));
             $smarty->assign("classe",$classe);
 			$action = 'parEleve';
-			$mode = 'wtf';			
+			$mode = 'wtf';
             $smarty->assign("corpsPage", "ficheEleve");
         }
         break;
@@ -157,6 +157,6 @@ $smarty->assign('mode',$mode);
 $smarty->assign('selecteur', 'selectClasseEleve');
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime",round(Application::chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display ("index.tpl");
 ?>

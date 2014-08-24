@@ -63,7 +63,7 @@ switch ($action) {
 			}
 			else die ("missing id");
         break;
-	
+
     default:
         $smarty->assign("nbEleves", $Ecole->nbEleves());
         $smarty->assign("nbClasses", $Ecole->nbClasses());
@@ -77,7 +77,7 @@ switch ($action) {
 //
 // ----------------------------------------------------------------------------
 $smarty->assign('selecteur','selectClasseEleve');
-$smarty->assign("executionTime",round(Application::chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display ("index.tpl");
 ?>
 

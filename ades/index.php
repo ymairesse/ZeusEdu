@@ -11,7 +11,7 @@ $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
 $acronyme = $user->getAcronyme();
 $smarty->assign('acronyme',$acronyme);
-	
+
 require_once(INSTALL_DIR."/$module/inc/classes/classAdes.inc.php");
 $Ades = new Ades();
 
@@ -22,7 +22,7 @@ if (($matricule != '') || ($matricule2 != '')) {
 	$matricule = ($matricule!='')?$matricule:$matricule2;
 	$eleve = new Eleve($matricule);
 	$ficheDisc = new EleveAdes($matricule);
-	
+
 	$titulaires = $eleve->titulaires($matricule);
 	$smarty->assign('matricule',$matricule);
 	$smarty->assign('eleve', $eleve->getDetailsEleve());
@@ -83,6 +83,6 @@ if (isset($afficherEleve) && ($afficherEleve == true)) {
 
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime",round(Application::chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display ("index.tpl");
 ?>

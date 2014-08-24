@@ -34,7 +34,7 @@ switch ($action) {
 			$listeElevesCours = $Ecole->listeElevesCours($cours);
 			$fichierPDF = pagePDF($listeElevesCours, $cours);
 			$fichierCSV = fichierCSV($listeElevesCours, $cours);
-			
+
 			$smarty->assign("fichierPDF", $fichierPDF);
 			$smarty->assign("fichierCSV", $fichierCSV);
 			$smarty->assign("cours", $cours);
@@ -62,6 +62,6 @@ switch ($action) {
 }
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime",round(Application::chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display ("index.tpl");
 ?>

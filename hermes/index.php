@@ -33,12 +33,12 @@ switch ($action) {
 		$smarty->assign('corpsPage','confirmMail');
 		break;
 	case 'archives':
-		$debut = isset($_POST['debut'])?$_POST['debut']:0;
+		$beginList = isset($_POST['debut'])?$_POST['debut']:0;
 		$nb = isset($_POST['nb'])?$_POST['nb']:10;
-		$listeArchives = $hermes->listeArchives($acronyme, $debut, $nb);
+		$listeArchives = $hermes->listeArchives($acronyme, $beginList, $nb);
 		$nbArchives = $hermes->nbArchives($acronyme);
 		$smarty->assign('acronyme',$acronyme);
-		$smarty->assign('debut',$debut);
+		$smarty->assign('debut',$beginList);
 		$smarty->assign('nb',$nb);
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
@@ -166,7 +166,7 @@ switch ($action) {
 
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime",round($Application->chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display("index.tpl");
 
 ?>

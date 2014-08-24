@@ -24,7 +24,7 @@ switch ($action) {
 			default:
 				$photo = $user->photoExiste()?$acronyme:Null;
 				$smarty->assign("photo",$photo);
-				$smarty->assign("corpsPage","formPerso");			
+				$smarty->assign("corpsPage","formPerso");
 				break;
 			}
 		break;
@@ -56,7 +56,7 @@ switch ($action) {
 				$nbModif = $user->savePwd($_POST);
 				$message = array('title'=>SAVE,'texte'=>"$nbModif ".MODIFRECORDS,'icon'=>'info');
 				$smarty->assign("message", $message);
-				$smarty->assign("logins", $user->getLogins());				
+				$smarty->assign("logins", $user->getLogins());
 				$smarty->assign("corpsPage","fichePerso");
 				$smarty->assign("message", array(
 					'title'=>"Confirmation",
@@ -67,7 +67,7 @@ switch ($action) {
 				$smarty->assign("corpsPage","mdp");
 				break;
 			}
-	
+
 		break;
 	default:
 		$photo = $user->photoExiste()?$acronyme:Null;
@@ -81,6 +81,6 @@ switch ($action) {
 //
 // ----------------------------------------------------------------------------
 
-$smarty->assign("executionTime",round($Application->chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display("index.tpl");
 ?>

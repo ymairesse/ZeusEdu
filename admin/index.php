@@ -50,7 +50,7 @@ if ($_SESSION[APPLICATION]->userStatus($module) == 'admin') {
 		}
 	//
 	// ----------------------------------------------------------------------------
-	$smarty->assign("executionTime",round($Application->chrono()-$debut,6));
+	$smarty->assign("executionTime", round($chrono->stop(),6));
 	$smarty->display("index.tpl");
 	}
 	else die ('get out of here')

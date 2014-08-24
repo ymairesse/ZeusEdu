@@ -12,6 +12,6 @@ $smarty->assign('cible',$cible);
 
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime",round(Application::chrono()-$debut,6));
+$smarty->assign("executionTime", round($chrono->stop(),6));
 $smarty->display ("index.tpl");
 ?>
