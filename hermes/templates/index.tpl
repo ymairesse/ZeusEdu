@@ -20,9 +20,9 @@
 
 <div class="attention">
 {if isset($message)}
-<span class="title">{$message.title}</span>
-<span class="texte">{$message.texte}</span>
-<span class="icon">{$message.icon}</span>
+<span class="title">{$message.title|default:''}</span>
+<span class="texte">{$message.texte|default:''}</span>
+<span class="icon">{$message.icon|default:''}</span>
 {/if}
 </div>
 

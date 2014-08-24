@@ -4,19 +4,45 @@
 
 	<div class="selectMail gauche">
 	<h3>Destinataires</h3>
-	{foreach from=$listes key=nomListe item=liste}
-		<ul>
-			<li style="font-weight:bold"><input type="checkbox" class="checkListe" title="cliquer pour tout sélectionner">
-				<span title="cliquer pour ouvrir" class="teteListe">{$nomListe}</span></li>
-			<li>
-				<ul style="display:none">
-				{foreach from=$liste key=acronyme item=prof}
-					<li><input class="selecteur" type="checkbox" name="mails[]" value="{$prof.mail}"> {$prof.nom|truncate:15:'...'} {$prof.prenom} {$prof.classe|default:''}
-					</li>
-				{/foreach}
-				</ul>
-			</li>
-		</ul>
+
+	<!--	tous les utilisateurs -->
+	<h4 class="teteListe" title="Cliquer pour ouvrir"><input type="checkbox" class="checkListe">{$listeProfs.nomListe}</h4>
+	<ul class="listeMails" style="display:none">
+	{assign var=membresProfs value=$listeProfs.membres}
+	{foreach from=$membresProfs key=acro item=prof}
+		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+			<span class="label">{$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
+		</li>
+	{/foreach}
+	</ul>
+
+	<!--	tous les titulaires (profs principaux) -->
+	<h4 class="teteListe" title="Cliquer pour ouvrir"><input type="checkbox" class="checkListe">{$listeTitus.nomListe}</h4>
+	<ul class="listeMails" style="display:none">
+	{assign var=membresProfs value=$listeTitus.membres}
+	{foreach from=$membresProfs key=acro item=prof}
+		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+			<span class="label">{$prof.classe} {$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
+		</li>
+	{/foreach}
+	</ul>
+
+	<!-- 	toutes les autres listes personnelles ou publiées -->
+	{foreach from=$listesAutres key=idListe item=listePerso}
+	{assign var=membresProfs value=$listePerso.membres}
+	<h4 class="teteListe" title="{if $membresProfs == Null}Liste vide{else}Cliquer pour ouvrir{/if} :
+		{if $listePerso.statut == 'publie'}Publié{elseif $listePerso.statut == 'abonne'}Abonné{else}Personnel{/if}">
+		<input type="checkbox" class="checkListe">{$listePerso.nomListe}
+		<img src="../images/{if $listePerso.statut == 'publie'}shared{elseif $listePerso.statut == 'abonne'}abonne{else}personal{/if}.png" alt="{$listePerso.statut}"></h4>
+	{if $membresProfs != Null}
+	<ul class="listeMails" style="display:none">
+			{foreach from=$membresProfs key=acro item=prof}
+			<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+			<span class="label">{$prof.nom|truncate:15:'...'} {$prof.prenom} {$prof.classe|default:''}</span>
+		</li>
+		{/foreach}
+	</ul>
+	{/if}
 	{/foreach}
 	</div>
 
@@ -24,21 +50,27 @@
 		<h3>Votre mail</h3>
 		<p><strong>Expéditeur:</strong>
 		{if $userStatus == 'direction' || $userStatus == 'admin'}
-			<input type="radio" class="expediteur" name="mailExpediteur" value="{$identite.mail}" checked="checked">
-			<span class="nomExpediteur" style="font-weight:bold" title="{$identite.mail}">{$identite.prenom} {$identite.nom}</span>
-			<input type="radio" class="expediteur" name="mailExpediteur" value="{$NOREPLY}">
-			<span class="nomExpediteur" style="font-weight:bold" title="{$NOREPLY}">Ne pas répondre</span>
+			<select name="mailExpediteur">
+				<option value="{$NOREPLY}">{$NOMNOREPLY}</option>
+			{foreach from=$listeDirection key=acro item=someone}
+				<option value="{$someone.mail}"{if $acronyme == $acro} selected="selected"{/if}>{$someone.nom}</option>
+			{/foreach}
+			</select>
 		{else}
 			<input type="hidden" name="mailExpediteur" value="{$identite.mail}">
 			<span style="font-weight:bold">{$identite.prenom} {$identite.nom}</span>
 		{/if}
 		</p>
+		<p><span id="grouper" title="créer un groupe" style="display:none"><img src="images/groupe.png" alt="grouper"></span>
+			<strong>Destinataire(s):</strong> <span style="font-weight:bold" id="destinataires"></span></p>
+		<p id="nomGroupe" style="display: none"> <strong>Nom du groupe: </strong> <input type="text" id="groupe" name="groupe" maxlength="30" size="30" placeholder="Nom du groupe"></p>
 		<p><strong>Objet:</strong> <input type="text" name="objet" id="objet" maxlength="80" size="75" placeholder="Objet de votre mail"></p>
 		<textarea id="texte" name="texte" cols="80" rows="15" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true"></textarea>
 		<input type="hidden" name="MAX_FILE_SIZE" value="4000000">
 		{foreach from=$nbPJ key=n item=wtf}
 			<div class="labelpj" id="pj{$n}" style="text-align:right;">Pièce jointe <input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}"></div>
 		{/foreach}
+		Ajout de disclaimer: <input type="checkbox" name="disclaimer" value="1" checked="checked">
 		<input type="hidden" id="nomExpediteur" name="nomExpediteur" value="{$identite.prenom} {$identite.nom}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="action" value="{$action}">
@@ -50,8 +82,12 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	$(".teteListe").click(function(){
-		$(this).parent().next().find('ul').fadeToggle('slow');
+	$("h4.teteListe").click(function(){
+		$(this).next(".listeMails").fadeToggle('slow');
+		})
+
+	$(".checkListe").click(function(event){
+		event.stopPropagation();
 		})
 
 	$(".checkListe").click(function(){
@@ -82,7 +118,7 @@ $(document).ready(function(){
 			okObjet = false;
 			message = 'Votre message n\'a pas d\'objet\n';
 			}
-		if ($(".selectMail").find("input:checkbox:checked").length == 0) {
+		if ($("#destinataires").text() == '') {
 			okMail = false;
 			message += 'Veuillez sélectionner au moins une adresse mail.\n';
 			}
@@ -92,14 +128,40 @@ $(document).ready(function(){
 			message += 'Votre mail est vide';
 			}
 
-		if (okObjet && okMail && okTexte)
+		if (okObjet && okMail && okTexte) {
+			$("#wait").show();
 			return true
+			}
 			else {
 				alert(message);
 				return false;
 				}
-
 			});
+
+	$(".selecteur").click(function(){
+		var nb = $(".selecteur:input:checked").length;
+		if (nb > 0) $("#grouper").show();
+			else $("#grouper").hide();
+		if (nb < 4) {
+			var checkedValues = $('.selecteur:input:checkbox:checked').map(function() {
+				destinataire = this.value.split('#');
+				return destinataire[0];
+			}).get();
+			$("#destinataires").text(checkedValues);
+			}
+			else $("#destinataires").text(nb+" destinataires");
+		})
+
+	$(".label").click(function(){
+		$(this).prev().trigger('click');
+		})
+
+
+	$("#grouper").click(function(){
+		var listeMails = $(".mails:input:checkbox:checked");
+		$("#nomGroupe").fadeIn(1000);
+		$("#groupe").focus();
+		})
 
 	})
 </script>
