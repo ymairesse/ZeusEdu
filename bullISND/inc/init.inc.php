@@ -13,7 +13,7 @@ switch ($mode) {
 		$smarty->assign("corpsPage", "imagesCours");
 		$ok = 'ok';
 		break;
-	
+
 	case 'resetSituations':
 		switch ($etape) {
 			case 'confirmer':
@@ -84,7 +84,7 @@ switch ($mode) {
 				$ok = 'ok';
 				break;
 		}
-		
+
 		break;
 	case 'resetCommentProfs':
 		switch ($etape) {
@@ -153,7 +153,7 @@ switch ($mode) {
 				$smarty->assign('corpsPage','confirmReset');
 				$ok = 'ok';
 				break;
-		}		
+		}
 		break;
 	case 'ponderations':
 		switch ($etape) {
@@ -163,6 +163,7 @@ switch ($mode) {
 					'title'=>"Enregistrement",
 					'texte'=>"$nbResultats ponderations initialisées")
 					);
+				$smarty->assign('etape',Null);  // pour pouvoir recommencer une pondération sur un autre groupe de cours
 				break;
 			default:
 				$listeCoursGrp = $Ecole->listeCoursGrp($Ecole->listeNiveaux());
