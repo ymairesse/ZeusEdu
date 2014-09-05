@@ -1380,5 +1380,26 @@ class Application {
 		}
 		return $listeMatricules;
 	}
+
+	/**
+	 * vider un répertoire complet et l'effacer
+	 * http://php.net/manual/fr/function.rmdir.php
+	 * @param $dir
+	 * @return void()
+	 */
+	function rrmdir($dir) {
+		if (is_dir($dir)) {
+		$objects = scandir($dir);
+		foreach ($objects as $object) {
+			if ($object != "." && $object != "..") {
+				if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object); else unlink($dir."/".$object);
+				}
+			}
+		reset($objects);
+		rmdir($dir);
+		}
+}
+
+
 }
 ?>
