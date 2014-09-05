@@ -683,9 +683,32 @@ class hermes {
 	 */
 	public function nettoyerListes() {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+		// suppression des pièces jointes des utilisateurs supprimés
+		$sql = "SELECT acronyme FROM ".PFX."hermesArchives ";
+		$sql .= "WHERE acronyme NOT IN (SELECT acronyme FROM ".PFX."profs) ";
+		$resultat = $connexion->exec($sql);
+		$liste = array();
+		if ($resultat) {
+			$liste = $resultat->fetchAll();
+			while ($ligne = $resultat->fetch()) {
+				$liste[]=$acronyme;
+				}
+			}
+		foreach ($liste as $acronyme) {
+			Application::rmdir($acronyme);
+			}
+
 		$sql = "DELETE FROM ".PFX."hermesListes ";
 		$sql .= "WHERE membre NOT IN (SELECT acronyme FROM ".PFX."profs) ";
 		$resultat = $connexion->exec($sql);
+		$sql = "DELETE FROM ".PFX."hermesArchives ";
+		$sql .= "WHERE acronyme NOT IN (SELECT acronyme FROM ".PFX."profs) ";
+		$resultat += $connexion->exec($sql);
+		$sql = "DELETE FROM ".PFX."hermesProprio ";
+		$sql .= "WHERE acronyme NOT IN (SELECT acronyme FROM ".PFX."profs) ";
+		$resultat += $connexion->exec($sql);
+
 		Application::DeconnexionPDO ($connexion);
 		return $resultat;
 		}
