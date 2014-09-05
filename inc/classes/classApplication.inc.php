@@ -2,7 +2,7 @@
 require_once (INSTALL_DIR."/phpMailer/class.phpmailer.php");
 
 class Application {
-		
+
 	function __construct() {
 		self::lireConstantes();
 		// sorties PHP en français
@@ -11,7 +11,7 @@ class Application {
 
 	/*
 	 * function lireConstantes
-	 * @param 
+	 * @param
 	 * @return : retourne les constantes globales pour toutes les applis
 	 */
 	public static function lireConstantes() {
@@ -36,7 +36,7 @@ class Application {
 			else die("config table not present");
 		self::DeconnexionPDO($connexion);
 	}
-	
+
 	/**
 	 * suppression de tous les échappements automatiques dans le tableau passé en argument
 	 * @param $tableau
@@ -52,8 +52,8 @@ class Application {
 			}
 	return $tableau;
 	}
-	
-	
+
+
 	### --------------------------------------------------------------------###
 	public function Normalisation() {
 		// si magic_quotes est "ON",
@@ -65,7 +65,7 @@ class Application {
 			}
 	}
 
-	/** 
+	/**
 	 * afficher proprement le contenu d'une variable précisée
 	 * le programme est éventuellement interrompu si demandé
 	 * @param : $data n'importe quel tableau ou variable
@@ -83,14 +83,14 @@ class Application {
 	/***
 	 * renvoie le temps écoulé depuis le déclenchement du chrono
 	 * @param
-	 * @return string 
+	 * @return string
 	 */
 	public static function chrono () {
 		$temps = explode(' ', microtime());
 		return $temps[0]+$temps[1];
 		}
-		
-	/*** 
+
+	/***
 	* vider le répertoire "$dir" de tous les fichiers qu'il contient
 	* @param sting $dir
 	* @return void()
@@ -102,7 +102,7 @@ class Application {
 			@unlink ("$dir/$unFichier");
 			}
 		}
-	
+
 	/***
 	 * Connexion à la base de données précisée
 	 * @param PARAM_HOST : serveur hôte
@@ -124,7 +124,7 @@ class Application {
 			echo ".erreurBD {width: 500px; margin-left: auto; margin-right: auto; border: 1px solid red; padding: 1em;}";
 			echo ".erreurBD .erreur {color: green; font-weight: bold}";
 			echo "</style>";
-			
+
 			echo ("<div class='erreurBD'>");
 			echo ("<h3>A&iuml;e, a&iuml;e, a&iuml;e... Caramba...</h3>");
 			echo ("<p>Une erreur est survenue lors de l'ouverture de la base de donn&eacute;es.<br>");
@@ -148,7 +148,7 @@ class Application {
 	public static function DeconnexionPDO ($connexion) {
 		$connexion = Null;
 		}
-	
+
 	/**
 	 * retourne un array contenant une liste des périodes de l'année scolaire
 	 * @param $nbBulletins
@@ -157,8 +157,8 @@ class Application {
 	public function listePeriodes ($nbBulletins, $debut=1) {
 		return range($debut,$nbBulletins);
 		}
-		
-	
+
+
 	/***
 	 * renvoie la liste des applications existantes (et, éventuellement, seulement celles qui sont activées)
 	 * @param boolean $active
@@ -182,7 +182,7 @@ class Application {
 		self::DeconnexionPDO($connexion);
 		return $liste;
 	}
-	
+
 	/***
 	 * liste de tous les droits existants dans la BD pour les différentes applications
 	 * educ, prof, admin, direction,... et tous les autres statuts éventuels existants
@@ -190,7 +190,7 @@ class Application {
 	 * @param
 	 * @return array
 	 */
-	
+
 	public function listeDroits () {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT userStatus FROM ".PFX."userStatus ORDER BY ordre";
@@ -204,7 +204,7 @@ class Application {
 		self::DeconnexionPDO($connexion);
 		return $liste;
 	}
-	
+
 	/**
 	 * retourne la liste des statuts disponibles dans l'application
 	 * semblable à la fonction listeDroits() mais retourne un tableau différent
@@ -229,8 +229,8 @@ class Application {
 
 		return $liste;
 	}
-	
-	
+
+
 	// --------------------------------------------------------------------
 	// enregistre le statut d'activation / désactivation des applis
 	function saveApplisStatus ($post) {
@@ -252,7 +252,7 @@ class Application {
 		self::DeconnexionPDO($connexion);
 		return $nbModifications;
 		}
-		
+
 	/**
 	 * modifie le statut de l'utilisateur pour l'application donnée
 	 * @param $acronyme
@@ -270,7 +270,7 @@ class Application {
 		self::DeconnexionPDO($connexion);
 		return $ok;
 	}
-	
+
 	/*
 	 * function affecteDroitsApplications
 	 * @param $usersList, $applications, $droits
@@ -288,7 +288,7 @@ class Application {
 				foreach ($applications as $uneAppli) {
 					$data = array(':application'=>$uneAppli, ':userStatus'=>$droits, ':acronyme'=>$acronyme);
 					$resultat = $requete->execute($data);
-					if ($resultat === false) 
+					if ($resultat === false)
 						$bilan[] = array("acronyme"=>$acronyme, "application"=>$application, "droit"=>$droits, "statut"=>"echec");
 						else $bilan[] = array("acronyme"=>$acronyme, "application"=>$uneAppli, "droit"=>$droits, "statut"=>"OK");
 					}
@@ -297,32 +297,36 @@ class Application {
 			}
 		return $bilan;
 		}
-	
-	
-	/*** 
+
+
+	/***
 	 * renvoie la liste des paramètres généraux de l'ensemble de l'application en provenance de la BD
-	 * @param 
+	 * @param
 	 * @result array $listeParametres
 	 */
 	public function lireParametres () {
 		$connexion = self::connectPDO (SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT parametre, valeur, signification ";
-		$sql .= "FROM ".PFX."config";
+		$sql = "SELECT ordre, size, label, parametre, valeur, signification ";
+		$sql .= "FROM ".PFX."config ";
+		$sql .= "ORDER BY ordre ";
 		$resultat = $connexion->query($sql);
 		$listeParametres = array();
 		while ($ligne = $resultat->fetch()) {
 			$parametre = $ligne['parametre'];
+			$listeParametres[$parametre]['ordre']=$ligne['ordre'];
+			$listeParametres[$parametre]['label'] = $ligne['label'];
 			$listeParametres[$parametre]['valeur'] = $ligne['valeur'];
 			$listeParametres[$parametre]['signification'] = $ligne['signification'];
+			$listeParametres[$parametre]['size'] = $ligne['size'];
 			}
 		self::DeconnexionPDO($connexion);
 		return $listeParametres;
 		}
-		
+
 	/***
 	 * enregistre les paramètres généraux de l'application et renvoie le nombre de paramètres enregistrés
 	 * @param post
-	 * @result $nb 
+	 * @result $nb
 	 */
 	function saveParametres ($post) {
 		$connexion = self::connectPDO (SERVEUR, BASE, NOM, MDP);
@@ -347,7 +351,7 @@ class Application {
 		self::DeconnexionPDO($connexion);
 		return $resultat;
 		}
-	 
+
 	/*
 	 * function renvoiMdp
 	 * @param $acronyme
@@ -381,16 +385,16 @@ class Application {
 			}
 		}
 		else echo USERNAME;
-	}	 
-	 
-	
+	}
+
+
 	public function listeFlashInfos ($module) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."flashInfos ";
 		$sql .= "WHERE application = '$module' ";
 		$sql .= "ORDER BY date DESC";
 		$resultat = $connexion->query($sql);
-	
+
 		$flashInfos = array();
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
@@ -401,13 +405,13 @@ class Application {
 		self::DeconnexionPDO($connexion);
 	return $flashInfos;
 	}
-	
+
 	### --------------------------------------------------------------------###
 	public static function repertoireActuel () {
 		$dir = array_reverse(explode("/",getcwd()));
 		return $dir[0];
 	}
-	
+
 	### --------------------------------------------------------------------###
 	public function accesApplication ($nomApplication) {
 		// vérifier que l'utilisateur est identifié pour l'application active
@@ -425,8 +429,8 @@ class Application {
 			header("Location: ".$BASEDIR."index.php");
 			else return true;
 	}
-	
-	
+
+
 	### --------------------------------------------------------------------###
 	private function generatePassword($length=9, $robustesse=0) {
 		$voyelles = "aeuy";
@@ -443,7 +447,7 @@ class Application {
 		if ($robustesse & 8) {
 			$consonnes .= "@#$%";
 		}
-	 
+
 		$password = "";
 		$alt = time() % 2;
 		for ($i = 0; $i < $length; $i++) {
@@ -457,7 +461,7 @@ class Application {
 		}
 		return $password;
 	}
-	
+
 	/**
 	* convertir les dates au format usuel jj/mm/AAAA en YY-mm-dd pour MySQL
 	* @param string $date date au format usuel
@@ -469,7 +473,7 @@ class Application {
 		$date = implode("-",$sqlArray);
 		return $date;
 		}
-	
+
 	/**
 	* convertir les date au format MySQL vers le format usuel
 	* @param string $date date au format MySQL
@@ -493,14 +497,14 @@ class Application {
 		$heure = implode(":",$sqlArray);
 		return $heure;
 		}
-		
+
 	public static function heurePHP ($heure) {
 		$heureArray = explode(":",$heure);
 		$sqlArray = array_reverse($heureArray);
 		$heure = implode(":",$sqlArray);
 		return $heure;
 		}
-		
+
 		/**
 		 * retourne le jour de la semaine correspondant à une date au format MySQL
 		 * @param string $dataMySQL
@@ -510,7 +514,7 @@ class Application {
 			$timeStamp = strtotime($dateMySQL);
 			return strftime("%A", $timeStamp);
 		}
-		
+
 		/**
 		* Fonction de conversion de date du format français (JJ/MM/AAAA) en Timestamp.
 		* @param string $date Date au format français (JJ/MM/AAAA)
@@ -522,7 +526,7 @@ class Application {
 			  $timestamp = mktime(0, 0, 0, $month, $day, $year);
 			  return $timestamp;
 			}
-		
+
 	/**
 	 * Extrait la liste des fichiers présentes dans un répertoire
 	 * @param $repertoire
@@ -534,8 +538,8 @@ class Application {
 		$liste = array_diff(scandir($repertoire, 0), $exclus);
 		return $liste;
 	}
-	
-	
+
+
 	/**
 	 * Recursive function to scan a directory with * scandir() *
 	 *
@@ -582,8 +586,8 @@ class Application {
 		}
 		return $allData;
 	}
-	
-		
+
+
 	/**
 	 * Établir la liste des utilisateurs (profs) sans cours
 	 * @param
@@ -596,7 +600,7 @@ class Application {
 		$sql .= "acronyme NOT IN (SELECT acronyme FROM ".PFX."profsCours) ";
 		$sql .= "ORDER BY REPLACE(REPLACE (nom,' ',''),'\'','')";
 		$resultat = $connexion->query($sql);
-	
+
 		$users = array();
 		while ($ligne = $resultat->fetch()){
 			$acronyme = $ligne['acronyme'];
@@ -624,7 +628,7 @@ class Application {
 	   self::DeconnexionPDO ($connexion);
 	   return !($erreur1 || $erreur2);
 	   }
-	   
+
 	/*
 	* function derniersConnectes
 	* @param $limite
@@ -643,7 +647,7 @@ class Application {
 	   self::DeconnexionPDO($connexion);
 	   return $tableau;
 	   }
-	
+
 	/**
 	* On fournit une liste de tables; la procédure fabrique un fichiers .sql permettant la restauration des tables désignées
 	* @param $post : formulaire dans lequel on a coché les noms des tables à sauvegarder
@@ -664,7 +668,7 @@ class Application {
 		if ($nb < $nbTotal)
 			$fileName = date("Y-m-d:Hms")."_$nb-tables.sql";
 			else $fileName = date("Y-m-d:Hms")."_complet.sql";
-		
+
 		try {
 		$output = exec("mysqldump -u ".NOM." --host=".SERVEUR." --password=".MDP." ".BASE." --tables $listeTables > save/$fileName") ;
 		}
@@ -674,7 +678,7 @@ class Application {
 		system("gzip save/$fileName");
 		return $fileName;
 		}
-		
+
 	/**
 	 * retourne le nombre total de tables de la BD
 	 * @param
@@ -717,20 +721,20 @@ class Application {
 	 * changement d'utilisateur en gardant les droits admins (Application)
 	 * @param $acronyme
 	 * @return string
-	 * 
+	 *
 	 */
 	public function changeUserAdmin ($acronyme) {
 		// liste de toutes les applications avec leurs droits
 		$listeApplications = $_SESSION[APPLICATION]->getApplications();
 		$appliAdmin = array('admin'=>$listeApplications['admin']);
-		
+
 		// prépartion d'un nouvel utilisateur
 		$toto = new user($acronyme);
 		// lui conférer les droits "admin" sur ses applications
 		$toto->setApplicationsAdmin();
 		// lui ajouter les droits "admin" sur l'admin
 		$toto->addAppli($appliAdmin);
-		// l'affecter à la session 
+		// l'affecter à la session
 		$_SESSION[APPLICATION] = $toto;
 		$qui = $_SESSION[APPLICATION]->identite();
 		return $qui['prenom']." ".$qui['nom'].": ".$qui['acronyme'];
@@ -740,10 +744,10 @@ class Application {
 	/**
 	 * renvoie la liste des utilisateurs qui disposent du statut global $status dans l'application
 	 * permet de retrouver tous les "admins", par exemple.
-	 * 
+	 *
 	 * @param $status : string
 	 * @return array
-	 * 
+	 *
 	 */
 	public function getUserByStatus ($status) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -760,14 +764,14 @@ class Application {
 		return $listeUsers;
 		}
 
-	/* 
-	 * function lastAccess 
-	 * 
+	/*
+	 * function lastAccess
+	 *
 	 * @param $user		nom de l'utilisateur concerné
 	 * @param $nombre  nombre d'accès à traiter
 	 * @param $from		nombre de lignes à laisser tomber en début
 	 * @return array : liste des derniers accès à l'application
-	 * 
+	 *
 	 * */
 	public function lastAccess ($from, $nombre, $user) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -788,11 +792,11 @@ class Application {
 		return $acces;
 		}
 
-	/** 
-	 * function bannedIP 
-	 * 
+	/**
+	 * function bannedIP
+	 *
 	 * @param $ip   	adresse IP
-	 * 
+	 *
 	 * retourne "vrai" si adresse IP bannie
 	 * */
 	public function bannedIP ($ip) {
@@ -804,17 +808,17 @@ class Application {
 		$listeIP = array();
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			while ($ligne = $resultat->fetch()) 
+			while ($ligne = $resultat->fetch())
 				$listeIP[] = $ligne['ip'];
 			}
 		Application::deconnexionPDO($connexion);
 		return (in_array($ip, $listeIP));
 		}
 
-	/* 
+	/*
 	 * function dirFiles
 	 * @param $dir : répertoire dont on veut obtenir la liste du contenu
-	 * 
+	 *
 	 * renvoie la liste de tous les fichiers d'un répertoire
 	 * */
 	public function dirFiles ($dir) {
@@ -824,7 +828,7 @@ class Application {
 				if (($file != '.') && ($file != '..'))
 					$listeFichiers[] = $file;
 				}
-			closedir($handle);			
+			closedir($handle);
 			}
 		return $listeFichiers;
 		}
@@ -832,7 +836,7 @@ class Application {
 
 	/***
 	 * crée un fichier zippé à partir de tous les fichiers qui se trouvent dans le répertoire désigné
-	 * 
+	 *
 	 * @param $dir : répertoire où se trouvent les fichiers à zipper et le fichier à enregistrer
 	 * @param $filename : nom du fichier à créer
 	 */
@@ -866,13 +870,13 @@ class Application {
 			}
 		$zip->close();
 		}
-		
-	/* 
-	 * function checkIP 
+
+	/*
+	 * function checkIP
 	 * @param $ip	: adresse IP
 	 * @param $user	: nom de l'utilisateur
 	 * renvoie "true" si l'adresse IP est déjà connue dans la table des logins pour cet utilisateur
-	 * */ 
+	 * */
 	 public function checkIP ($ip, $user){
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT COUNT(*) AS nb ";
@@ -889,13 +893,13 @@ class Application {
 		return $nb;
 		}
 
-	/** 
+	/**
 	 * function mailAlerte
 	 * @param $user	: paramètres utilisateurs
 	 * @param $type	: type d'alerte
-	 * 
+	 *
 	 * Envoie un mail d'alerte à l'utilisateur et aux admins
-	 * 
+	 *
 	 */
 	public function mailAlerte($user, $type, $data=Null){
 		// liste des mails des administrateurs
@@ -906,14 +910,14 @@ class Application {
 		$hostname = $identification['hostname'];
 		$acronyme = $user->getAcronyme();
 		$userMail = $user->getMail();
-		
+
 		$jSemaine = strftime('%A');
 		$date = date("d/m/Y");
 		$heure = date("H:i");
-		
+
 		switch ($type) {
 			case 'mdp':
-				$sujet = sprintf(ERREURLOGIN, TITRECOURT);			
+				$sujet = sprintf(ERREURLOGIN, TITRECOURT);
 				$texteAdmin = sprintf(ERREURLOGINADMIN, $acronyme, $data['mdp'], $jSemaine, $date, $heure, $ip, $hostname, $userMail);
 				if ($user->userExists($acronyme)) {
 					$texteUser = sprintf(ERREURLOGINUSER, $acronyme, $data['mdp'], $jSemaine, $date, $heure, TITRECOURT, $ip, $hostname);
@@ -922,14 +926,14 @@ class Application {
 			case 'newIP':
 				$sujet = sprintf(NOUVELLEIP, TITRECOURT);
 				$texteAdmin = sprintf(NOUVELLEIPADMIN, $ip, $hostname, $acronyme, $jSemaine, $date, $heure, $userMail);
-				if ($user->userExists($acronyme)) 
+				if ($user->userExists($acronyme))
 					$texteUser = sprintf(NOUVELLEIPUSER, $ip, $hostname, $jSemaine, $date, $heure, TITRECOURT);
 				break;
 			default:
 				//don't care
 				break;
 			}
-		$mail = new PHPmailer(); 
+		$mail = new PHPmailer();
 		$mail->IsHTML(true);
 		$mail->CharSet = 'UTF-8';
 		$mail->From=MAILADMIN;
@@ -937,13 +941,13 @@ class Application {
 		$envoiMail = true;
 		// avertir les administrateurs
 		foreach ($listeMailing as $admin) {
-			$mail->AddAddress($admin['mail']); 
-			$mail->Subject=$sujet; 
-			$mail->Body=$texteAdmin; 
+			$mail->AddAddress($admin['mail']);
+			$mail->Subject=$sujet;
+			$mail->Body=$texteAdmin;
 			}
 		if(!$mail->Send())
 			$envoiMail = false;
-			// echo $mail->ErrorInfo; 
+			// echo $mail->ErrorInfo;
 		// prévenir l'utilisateur
 			if ($userMail) {
 				$mail->ClearAddresses();
@@ -1028,7 +1032,7 @@ class Application {
 	fclose($handle);
 	return $tableau;
 	}
-		
+
 	/**
 	* liste de toutes les tables qui présentent un champ (typiquement, "matricule")
 	* destinée à la suppression des anciens élèves dans toutes les tables de la BD
@@ -1086,7 +1090,7 @@ class Application {
 		self::DeconnexionPDO ($connexion);
 	return $listeTables;
 	}
-	
+
 	/**
 	* fournit la liste *non triée* des tables et des applications liées comme indiqué dans la table appliTables
 	* @param
@@ -1110,7 +1114,7 @@ class Application {
 		self::DeconnexionPDO ($connexion);
 	return $listeTables;
 	}
-	
+
 	/**
 	* fournit la liste des associations entre les tables et les applis, y compris la valeur Null pour une table associée à aucune appli
 	* (ce qui serait une erreur du programmeur d'une appli)
@@ -1127,7 +1131,7 @@ class Application {
 			else $listeAssoc[$nomTable] = Null;
 	return $listeAssoc;
 	}
-	
+
 	/**
 	* enregistre les liens entre applications et tables à destination de la table appliTables
 	* @param array $post
@@ -1137,7 +1141,7 @@ class Application {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."appliTables ";
 		$sql .= "SET nomTable = :nomTable, application= :application ";
-		
+
 		$requete = $connexion->prepare($sql);
 		// suppression de la table existante
 		$sql = "TRUNCATE ".PFX."appliTables ";
@@ -1154,7 +1158,7 @@ class Application {
 	Application::DeconnexionPDO ($connexion);
 	return $nb;
 	}
-		
+
 	/**
 	 * fournit la liste des tables pour l'application donnée
 	 * si pas d'application précisée, donne la liste de toutes les tables
@@ -1202,11 +1206,11 @@ class Application {
 	   Application::DeconnexionPDO ($connexion);
 	   return $champs;
 	   }
-	   
+
 	/**
 	 * Enregistrement d'un fichier CSV dans la table MySQL correspondante
 	 * Le contenu du fichier CSV a été préalablement vérifié et validé à l'écran
-	 * 
+	 *
 	 * @param $table
 	 * @return array : 'erreurs'=>nbErreurs, 'ajouts'=>nbAjouts
 	 */
@@ -1219,14 +1223,14 @@ class Application {
 		$primKeys = $this->tablePrimKeys($table);
 		// détermination des champs pour la requête UPDATE
 		$champsUpdate = array_diff($champsInsert, $primKeys);
-	
+
 		$sql = "INSERT INTO ".PFX."$table (".implode(',', $champsInsert).") VALUES (";
 		$valuesInsert=array();
-		foreach ($champsInsert as $unChamp) 
+		foreach ($champsInsert as $unChamp)
 			$valuesInsert[] = ":".$unChamp;
 		$sql .= implode(',',$valuesInsert).") ";
 		$valuesUpdate = array();
-		foreach ($champsUpdate as $unChamp) 
+		foreach ($champsUpdate as $unChamp)
 			 $valuesUpdate[]= "$unChamp=:$unChamp";
 
 		// si tous les champs sont des clés primaires, il n'y a pas d'Update possible
@@ -1247,7 +1251,7 @@ class Application {
 	}
 
 	/**
-	 * function newPasswdAssign 
+	 * function newPasswdAssign
 	 *
 	 * @param array $table : liste des élèves dont il faut réinitialiser le pwd
 	 * @return array : liste des erreurs et des réussites
@@ -1282,13 +1286,13 @@ class Application {
 	return strtr($string,'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ',
 		'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
 		}
-		
+
 	private function stripIndesirables ($string) {
 		$indesirables = array(" ", "-", "'");
 		$string = str_replace($indesirables,"",$string);
 		return $string;
 		}
-		
+
 	/**
 	 * attribue un nom d'utilisateur à un élèves première lettre du prénom, 7 lettres du nom + matricule
 	 * @param $matricules
@@ -1310,11 +1314,11 @@ class Application {
 	 */
 	function nomsChampsBD($champs) {
 		$nomChamps = array();
-		foreach ($champs as $unChamp) 
+		foreach ($champs as $unChamp)
 			$nomChamps[] = $unChamp['Field'];
 		return $nomChamps;
 	}
-		
+
 	/**
 	 * function tablePrimKeys
 	 * retourne les noms des champs qui sont Primary keys
@@ -1360,7 +1364,7 @@ class Application {
 		Application::DeconnexionPDO ($connexion);
 		return $tableau;
 	}
-	
+
 	/**
 	 * produit un tableau de la liste des élèves provenant d'un fichier CSV transformé en array
 	 *

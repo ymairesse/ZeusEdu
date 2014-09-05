@@ -676,6 +676,21 @@ class hermes {
 		return $liste;
 		}
 
+	/**
+	 * nettoyage des listes de membres suite à suppression éventuelle d'un prof
+	 * @param void()
+	 * @return integer : nombre de suppression de membres de listes
+	 */
+	public function nettoyerListes() {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."hermesListes ";
+		$sql .= "WHERE membre NOT IN (SELECT acronyme FROM ".PFX."profs) ";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO ($connexion);
+		return $resultat;
+		}
+
+
 }
 
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 $acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
@@ -69,10 +70,15 @@ switch ($mode) {
 			case 'effacement':
 				// suppression définitive de l'utilisateur
 				$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
+
 				if (!($acronyme))
 					die("missing user");
 				if (!($Application->deleteUser($acronyme)))
 					die("user not deleted");
+
+				// appel de la class hermes pour le nettoyage des lists d'envoi
+				require_once(INSTALL_DIR.'/hermes/inc/classes/classHermes.inc.php');
+				$nb = hermes::nettoyerListes();
 				$smarty->assign("message", array(
 									'title'=>"Confirmation",
 									'texte'=>"Utilisateur $acronyme supprimé"),
