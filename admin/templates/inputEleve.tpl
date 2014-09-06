@@ -30,7 +30,7 @@ input.majuscule {
 		</select>
 		<br>
 	<label for="matricule">Matricule:</label>
-		<input type="text" maxlength="6" size="6" name="matricule" id="matricule" value="{$eleve.matricule}" 
+		<input type="text" maxlength="6" size="6" name="matricule" id="matricule" value="{$eleve.matricule}"
 	{if $recordingType == 'modif'}readonly="readonly"{/if}><span id="OK"></span>{if $recordingType == 'modif'} non modifiable.{/if} Veiller à indiquer exclusivement le matricule officiel<br>
 	<label for="DateNaiss">Date de naissance:</label>
 		<input type="text" name="DateNaiss" id="DateNaiss" maxlength="11" size="11" type="text" value="{$eleve.DateNaiss}"> Utiliser le format AAAA-MM-JJ<br>
@@ -69,7 +69,8 @@ input.majuscule {
 	</fieldset>
 	<fieldset><legend>Informatique</legend>
 	<label>Nom d'utilisateur</label><span class="code">{$info.user|default:''}</span><br>
-	<label>Mot de passe</label><span class="passwd code">{$info.passwd|default:''}</span>
+	<label>Mot de passe</label><span class="passwd code">{$info.passwd|default:''}</span><br>
+	<label for="mailDomain">Domaine mail</label><span class="code">{$eleve.mailDomain|default:''}</span>
 	</fieldset>
 	<div style="text-align:center">
 	<input name="enregistrer" id="enregistrer" value="Enregistrer" type="submit">
@@ -85,7 +86,7 @@ input.majuscule {
 <script type="text/javascript">
 {literal}
 	$(document).ready(function(){
-		
+
 		$("#formEleve").validate({
 		rules: {
             nom:    {required: true},
@@ -99,7 +100,7 @@ input.majuscule {
         },
 		errorElement: "span"
 	})
-	
+
 	$("#matricule").keyup(function (){
 		var matricule = $(this).val();
 		$.get("inc/verifMatricule.php",
@@ -115,18 +116,18 @@ input.majuscule {
 					}
 				})
 	})
-	
+
 	$("#formEleve").submit(function(){
-		
+
 		})
 
-	
+
 	$("input, textarea, select").each(function(i, value){
 		$(this).attr("tabindex",i+1);
 		})
-	
+
 		$(".passwd").hide();
-		
+
 		$(".passwd").prev().hover(function(){
 			$(".passwd").toggle();
 			})
