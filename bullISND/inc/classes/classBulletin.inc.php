@@ -331,12 +331,14 @@ class Bulletin {
 		$sql .= "WHERE cours='$cours' ";
 		$sql .= "ORDER BY ordre, libelle";
 		$resultat = $connexion -> query($sql);
-		if ($resultat)
+		$listeCompetences = array();
+		if ($resultat) {
 			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
-		while ($ligne = $resultat -> fetch()) {
-			$idComp = $ligne['id'];
-			$cours = $ligne['cours'];
-			$listeCompetences[$cours][$idComp] = $ligne;
+			while ($ligne = $resultat -> fetch()) {
+				$idComp = $ligne['id'];
+				$cours = $ligne['cours'];
+				$listeCompetences[$cours][$idComp] = $ligne;
+			}
 		}
 		Application::DeconnexionPDO($connexion);
 		return $listeCompetences;
@@ -344,10 +346,9 @@ class Bulletin {
 
 
 	/**
-	 * function coursSansGrp
-	 * @param $coursGrp
-	 *
 	 * retire le groupe d'un cours dont on passe le coursGroupe
+	 * @param sting $coursGrp
+	 * @return string
 	 */
 	private function coursSansGrp($coursGrp) {
 		return substr($coursGrp, 0, strpos($coursGrp, "-", 0));
