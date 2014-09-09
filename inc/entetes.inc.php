@@ -7,12 +7,17 @@ require_once (INSTALL_DIR."/inc/classes/classUser.inc.php");
 // définition de la class Application
 require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
-$debut = $Application->chrono();
+
+// définition de la class Chrono
+require_once (INSTALL_DIR."/inc/classes/classChrono.inc.php");
+$chrono = new chrono();
+
 $Application->Normalisation();
 $module = $Application->repertoireActuel();
 
 session_start();
 $user = $_SESSION[APPLICATION];
+
 // si pas d'utilisateur authentifié en SESSION, on renvoie à l'accueil
 if (!(isset($user)))
     header ("Location: ../accueil.php");
@@ -39,7 +44,7 @@ $smarty->assign("module", $module);
 $smarty->assign("identite",$user->identite());
 // toutes les informations d'identification réseau (adresse IP, jour et heure)
 $smarty->assign ("identification", $user->identification());
-
+// liste des classes dont le prof est titulaire (prof principal)
 $smarty->assign("titulaire",$user->listeTitulariats());
 
 $userStatus = $user->userStatus($module);
@@ -49,6 +54,5 @@ $smarty->assign("userStatus", $userStatus);
 // d'autres paramètres peuvent être récupérés plus loin
 $action = isset($_REQUEST['action'])?$_REQUEST['action']:Null;
 $mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
-$modeCorps = isset($_REQUEST['modeCorps'])?$_REQUEST['modeCorps']:Null;
 
-/* pas de balise finale ?> */
+/* pas de balise ?> finale, c'est volontaire */
