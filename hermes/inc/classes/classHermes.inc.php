@@ -696,7 +696,7 @@ class hermes {
 				}
 			}
 		foreach ($liste as $acronyme) {
-			Application::rmdir($acronyme);
+			Application::rmdir("upload/$acronyme");
 			}
 
 		$sql = "DELETE FROM ".PFX."hermesListes ";

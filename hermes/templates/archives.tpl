@@ -122,7 +122,7 @@ $(document).ready(function(){
 				$(".cadreCache").first().fadeIn(1000);
             },
             "NON": function() {
-                $( this ).dialog( "close" );
+                $( this ).dialog("close");
             }
         }
 		});

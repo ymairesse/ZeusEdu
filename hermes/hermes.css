@@ -1,17 +1,29 @@
 .selectMail {
-	width:250px;
-	float:left;
+    float: left;
+    height: 350px;
+    overflow: scroll;
+    width: 250px;
 	}
 
-.selectMail ul {
+h4.teteListe {
+    background-color: #ffe37f;
+    cursor: pointer;
+    margin: 0 0 0.5em 0;
+}
+
+
+.titreListe {
+  background-color: #FFE37F;
+	width: 90%;
+  }
+
+.listeMails {
 	list-style-type: none;
-	padding-left:0;
-	}
+	padding: 0;
+}
 
-.teteListe {
-	cursor:pointer;
-	}
-
+.listeMails li {
+}
 
 .gauche {
 	float: left;
@@ -22,3 +34,72 @@
 	margin-left: 255px;
 	padding: 0 1em;
 }
+
+.champ {
+	border: 1px solid grey;
+	width:100%;
+	padding: 0.2em 0.5em;
+	background-color: #ffd;
+  box-shadow: 2px 2px 5px #aaa;
+}
+
+.label {
+	cursor:pointer;
+}
+
+#cadre {
+	width: 90%;
+	margin-left:auto;
+	margin-right: auto;
+	border: 1px solid orange;
+	padding: 2em;
+	border-radius: 15px;
+	margin-top: 1em;
+	box-shadow: 10px 10px 5px #656565;
+	min-height: 30em;
+}
+
+.cadreCache {
+	width: 90%;
+	margin-left:auto;
+	margin-right: auto;
+	border: 1px solid orange;
+	padding: 2em;
+	border-radius: 15px;
+	margin-top: 1em;
+	box-shadow: 10px 10px 5px #656565;
+	min-height: 30em;
+}
+
+.microForm {
+	margin: 0;
+	padding: 0;
+}
+
+.tableauHermes {
+	width: 100%;
+}
+
+.tableauHermes td {
+  border: 1px solid #dddddd;
+  font-size: 0.9em;
+}
+.tableauHermes th {
+  border: 1px outset black;
+  padding: 0;
+  background-color: #dddddd;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.blocMails {
+    border: 1px solid #777;
+    float: left;
+    height: 15em;
+    margin: 0 1em;
+    overflow: auto;
+    padding: 0.5em;
+    width: 15em;
+}
+
+.blocMails h5 {margin-top: 0;}
