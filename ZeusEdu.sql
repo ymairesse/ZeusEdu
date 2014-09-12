@@ -1177,3 +1177,49 @@ CREATE TABLE IF NOT EXISTS `didac_bullTQtypologie` (
   `type` enum('general','option') COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`coursGrp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+--
+-- Structure de la table `didac_hermesArchives`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_hermesArchives` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `acronyme` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `mailExp` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `date` date NOT NULL,
+  `heure` time NOT NULL,
+  `objet` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `texte` blob NOT NULL,
+  `destinataires` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `PJ` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `acronyme` (`acronyme`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Archive des mails envoyés';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `didac_hermesListes`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_hermesListes` (
+  `id` int(3) NOT NULL,
+  `membre` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`,`membre`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `didac_hermesProprio`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_hermesProprio` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `proprio` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `nomListe` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `statut` enum('prive','publie','abonne') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'prive',
+  PRIMARY KEY (`id`,`proprio`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
