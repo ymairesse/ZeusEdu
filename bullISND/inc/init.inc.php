@@ -34,6 +34,25 @@ switch ($mode) {
 				break;
 		}
 		break;
+
+	case 'resetHistorique':
+		switch ($etape) {
+			case 'confirmer':
+				$listeEleves = $Ecole->listeEleves();
+				$Bulletin->deleteHistoriques();
+				$smarty->assign('message', array(
+									'title'=>'Réinitialisation',
+									'texte'=>'Tous les historiques sont effacés')
+									);
+				break;
+			default:
+				$smarty->assign('etape','confirmer');
+				$smarty->assign('type','resetHistorique');
+				$smarty->assign('corpsPage','confirmReset');
+				$ok = 'ok';
+				break;
+			}
+		break;
 	case 'resetAttitudes':
 		switch ($etape) {
 			case 'confirmer':

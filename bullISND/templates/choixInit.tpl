@@ -5,6 +5,7 @@
 	<ul>
 		<li class="danger"><input type="radio" name="mode" value="resetSituations"{if (isset($mode)) && ($mode == 'resetSituations')} chacked="checked"{/if}><span>Archivage et initialisation des situations</span></li>
 		<li class="danger"><input type="radio" name="mode" value="resetDetailsCotes"{if (isset($mode)) && ($mode == 'resetDetailsCotes')} checked="checked"{/if}><span>Effacement du détail des cotes par compétences dans les bulletins</span></li>
+		<li class="danger"><input type="radio" name="mode" value="resetHistorique"{if (isset($mode)) && ($mode == 'resetHistorique')} checked="checked"{/if}><span>Effacement de l'historique des changements de cours</span></li>
 		<li class="danger"><input type="radio" name="mode" value="resetCommentProfs"{if (isset($mode) && ($mode == 'resetCommentProfs'))} checked="checked"{/if}><span>Effacement des commentaires aux bulletins</span></li>
 		<li class="danger"><input type="radio" name="mode" value="resetCommentTitus"{if (isset($mode) && ($mode == 'resetCommentTitus'))} checked="checked"{/if}><span>Effacement des commentaires des titulaires aux bulletins</span></li>
 		<!-- <li class="danger"><input type="radio" name="mode" value="sitArchives"{if (isset($mode)) && ($mode == 'sitArchives')} checked="checked"{/if}><span>Transfert des situations vers les archives</span></li> -->
@@ -37,7 +38,7 @@ $(document).ready(function(){
 			}
 		else return false;
 		})
-	
+
 	})
 {/literal}
 </script>

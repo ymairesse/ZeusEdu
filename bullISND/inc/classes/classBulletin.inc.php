@@ -1322,7 +1322,6 @@ class Bulletin {
 	 * calcule la nouvelle situation à partir de la situation précédente ($listeSituations)
 	 * et de la cote globale de période actuelle
 	 * pour le bulletin donné
-
 	 * @param $listeSituations
 	 * @param $listeGlobalPeriodePondere
 	 * @param $bulletin
@@ -3271,6 +3270,21 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
 	}
+
+	/**
+	 * effacement de tous les historiques des mouvements de cours
+	 * @param void()
+	 * @return integer: nombre de suppressions
+	 */
+	public function deleteHistoriques(){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."bullHistoCours ";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO($connexion);
+		return $resultat;
+		}
+
+
 
 	/**
 	 * retourne la liste des écoles fréquentées anciennement par les élèves du niveau indiqué
