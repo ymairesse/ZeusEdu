@@ -311,13 +311,15 @@ class Application {
 		$sql .= "ORDER BY ordre ";
 		$resultat = $connexion->query($sql);
 		$listeParametres = array();
-		while ($ligne = $resultat->fetch()) {
-			$parametre = $ligne['parametre'];
-			$listeParametres[$parametre]['ordre']=$ligne['ordre'];
-			$listeParametres[$parametre]['label'] = $ligne['label'];
-			$listeParametres[$parametre]['valeur'] = $ligne['valeur'];
-			$listeParametres[$parametre]['signification'] = $ligne['signification'];
-			$listeParametres[$parametre]['size'] = $ligne['size'];
+		if ($resultat) {
+			while ($ligne = $resultat->fetch()) {
+				$parametre = $ligne['parametre'];
+				$listeParametres[$parametre]['ordre']=$ligne['ordre'];
+				$listeParametres[$parametre]['label'] = $ligne['label'];
+				$listeParametres[$parametre]['valeur'] = $ligne['valeur'];
+				$listeParametres[$parametre]['signification'] = $ligne['signification'];
+				$listeParametres[$parametre]['size'] = $ligne['size'];
+				}
 			}
 		self::DeconnexionPDO($connexion);
 		return $listeParametres;
