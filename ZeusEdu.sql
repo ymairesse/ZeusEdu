@@ -176,10 +176,11 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
 ('pad', 'Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
 ('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
-('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 12),
 ('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
 ('infirmerie', 'Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
-('bullISND', 'Bulletin', 'bullISND', 'bullISND.png', 1, 14),
+('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
+('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
+('hermes', 'Hermes: envoi de mails groupés', 'hermes', 'hermes.png', 1, 8),
 ('manuel', 'Manuel d''utilisation', 'manuel', 'manuel.png', 1, 98);
 
 -- --------------------------------------------------------
@@ -201,6 +202,7 @@ CREATE TABLE IF NOT EXISTS `didac_appliTables` (
 INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('ades', 'adesChamps'),
 ('ades', 'adesFaits'),
+('ades', 'adesMemo'),
 ('ades', 'adesRetenues'),
 ('ades', 'adesTextes'),
 ('ades', 'adesTypesFaits'),
@@ -247,12 +249,11 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('bullTQ', 'bullTQQualif'),
 ('bullTQ', 'bullTQTitus'),
 ('bullTQ', 'bullTQtypologie'),
+('Hermes', 'hermesListes'),
+('Hermes', 'hermesProprio'),
 ('infirmerie', 'infirmConsult'),
 ('infirmerie', 'infirmerie'),
 ('pad', 'pad'),
-('presences', 'delibeEducCotes'),
-('presences', 'delibeEducMentions'),
-('presences', 'delibeEducQualif'),
 ('presences', 'presencesAbsences'),
 ('presences', 'presencesAutorisations'),
 ('presences', 'presencesHeures');
@@ -1117,7 +1118,8 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 ('infirmerie', 'ADM', 'admin'),
 ('bullISND', 'ADM', 'admin'),
 ('pad', 'ADM', 'admin'),
-('manuel', 'ADM', 'admin');
+('manuel', 'ADM', 'admin'),
+('hermes', 'ADM','admin');
 
 -- --------------------------------------------------------
 
