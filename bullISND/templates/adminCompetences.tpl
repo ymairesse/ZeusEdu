@@ -6,8 +6,8 @@
         {assign var=competences value=$listeCompetences.$cours}
 
         {foreach from=$competences key=idComp item=data}
-        <input type="checkBox" name="suppr_{$idComp}" class="supprComp"> 
-        <input type="text" name="libelle_{$idComp}" value="{$data.libelle}" size="50" class="lblComp">
+        <input type="checkBox" name="suppr_{$idComp}" class="supprComp" id="chck_{$idComp}">
+        <input type="text" name="libelle_{$idComp}" value="{$data.libelle}" size="50" class="lblComp" id="lbl_{$idComp}">
         <input type="text" name="ordre_{$idComp}" value="{$data.ordre}" size="3">
             <br>
         {/foreach}
@@ -19,7 +19,7 @@
     <h3>Nouvelle(s) compétence(s)</h3>
         <button type="button" id="ajouter">Ajouter</button>
         <div id="newComp">
-        
+
         </div>
         <hr>
         <div style="float:right">
@@ -37,17 +37,16 @@
 {literal}
     $(document).ready(function(){
         var nbNewComp = 1;
-        
+
         $("#toutCocher").click(function(){
             $(".supprComp").click();
             })
 
         $("#effacer").click(function(){
             $(".supprComp").each(function(no){
-                if ($(this).attr("checked")== "checked")
-                    {
-                    $(this).next().val('').css({ 'opacity' : 0.8});
-                    $(this).css({ 'opacity' : 0.7});
+                if ($(this).prop("checked")) {
+                    $(this).css({ 'opacity' : 0.5});
+                    $(this).next().val('').css({ 'opacity' : 0.5});
                     }
                 })
             })
@@ -60,14 +59,14 @@
                     })
                 }
             })
-        
+
         $("#ajouter").click(function(){
                 $('<div class="blockNewComp">'+nbNewComp+'. <input type="text" class="newComp" name="newComp[]" value="" size="50"></div>').fadeIn('slow').appendTo('#newComp');
                 $(".newComp").last().focus();
                 nbNewComp++;
 
             })
-        
+
         $("#adminCompetences").submit(function(){
 			$.blockUI();
             $("#wait").show();
