@@ -55,12 +55,14 @@ switch ($action) {
 	case 'fait':
 		include('inc/fait.inc.php');
 		break;
-	case 'eleves':
-		include('inc/eleve.inc.php');
+	case 'news':
+		if (in_array($userStatus, array('admin')))
+			include ("inc/delEditNews.php");
 		break;
 	default:
-		// wtf
+		include('inc/eleve.inc.php');
 		break;
+
 }
 
 // pour les différents cas où il faut afficher une fiche d'élève, on affiche
@@ -79,7 +81,7 @@ if (isset($afficherEleve) && ($afficherEleve == true)) {
 	$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 	$smarty->assign('listeElevesClasse', $listeEleves);
 	$smarty->assign('corpsPage','ficheEleve');
-}
+	}
 
 //
 // ----------------------------------------------------------------------------
