@@ -28,7 +28,7 @@ $acronyme = $_SESSION[APPLICATION]->getAcronyme();
 
 switch ($mode) {
 	case 'archive':
-		$annee = isset($_POST['annee'])?$_POST['annee']:Null;
+		$anneeScolaire = isset($_POST['anneeScolaire'])?$_POST['anneeScolaire']:Null;
 
 		$smarty->assign('listeAnnees', $Bulletin->anneesArchivesDispo());
 		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
@@ -37,10 +37,10 @@ switch ($mode) {
 		$smarty->assign('etape','showEleve');
 		$smarty->assign('selecteur','selectAnneeNiveauEleve');
 		if ($etape == 'showEleve') {
-			$listeElevesArchives = $Bulletin->listeElevesArchives($annee, $niveau);
+			$listeElevesArchives = $Bulletin->listeElevesArchives($anneeScolaire, $niveau);
 			$smarty->assign('listeEleves', $listeElevesArchives);
 			$nomEleve = isset($_POST['nomEleve'])?$_POST['nomEleve']:Null;
-			$anneeScolaire = isset($_POST['annee'])?$_POST['annee']:Null;
+			$anneeScolaire = isset($_POST['anneeScolaire'])?$_POST['anneeScolaire']:Null;
 			$smarty->assign('nomEleve', $nomEleve);
 			$smarty->assign('anneeScolaire', $anneeScolaire);
 			$classeArchive = $Bulletin->classeArchiveEleve($matricule, $anneeScolaire);
@@ -49,10 +49,10 @@ switch ($mode) {
 			$smarty->assign('corpsPage','bulletinsArchive');
 		}
 		break;
-	
+
 	case 'bulletinIndividuel':
 		$listeClasses = $Ecole->listeGroupes(array('G','TT','S'));
-		if ($classe != Null) 
+		if ($classe != Null)
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			else $listeEleves = Null;
 		$smarty->assign('listeClasses', $listeClasses);
@@ -117,7 +117,7 @@ switch ($mode) {
 		$smarty->assign('bulletin',$bulletin);
 		$smarty->assign('action',$action);
 		$smarty->assign('mode', $mode);
-		
+
 		if ($etape == 'showNiveau') {
 			if ($niveau) {
 				$listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', array('G','TT','S'));
@@ -139,12 +139,12 @@ switch ($mode) {
 	case 'delete':
 		if ($etape == 'confirmation') {
 			foreach ($_POST as $nomChamp=>$value) {
-				if (preg_match('/^del#/',$nomChamp)) 
+				if (preg_match('/^del#/',$nomChamp))
 					@unlink("./pdf/$acronyme/$value");
 				}
-			}	
+			}
 		// break;  pas de break
-	default: 
+	default:
 		$listeFichiers = $Application->scanDirectories ("./pdf/$acronyme/");
 		$smarty->assign('action', $action);
 		$smarty->assign('mode', 'delete');
