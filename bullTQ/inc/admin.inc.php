@@ -13,6 +13,7 @@ switch ($mode) {
 		break;
 
 	case 'initialiser':
+		if ($userStatus != 'admin') die('get out of here');
 		if ($etape == 'confirmer') {
 			$init = $BullTQ->init('CommentProfs');
 			$init += $BullTQ->init('CotesCompetences');
