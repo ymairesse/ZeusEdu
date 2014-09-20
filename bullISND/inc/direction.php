@@ -4,14 +4,14 @@ if (isset($_POST['classe'])) {
 	$classe = $_POST['classe'];
 	setcookie('classe',$classe,$unAn, null, null, false, true);
 	}
-	else $classe = $_COOKIE['classe'];
+	else $classe = isset($_COOKIE['classe'])?$_COOKIE['classe']:Null;
 $smarty->assign('classe',$classe);
 
 if (isset($_POST['matricule'])) {
 	$matricule = $_POST['matricule'];
 	setcookie('matricule',$matricule,$unAn, null, null, false, true);
 	}
-	else $matricule = $_COOKIE['matricule'];
+	else $matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
 $smarty->assign('matricule',$matricule);
 
 $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
@@ -87,8 +87,7 @@ switch ($mode) {
 			$smarty->assign('corpsPage','gestEprExternes');
 			}
 
-		if (isset($niveau))
-			$listeCoursGrp = $Bulletin->listeEprExterne($niveau);
+		$listeCoursGrp = (isset($niveau))?$Bulletin->listeEprExterne($niveau):Null;
 		$smarty->assign('listeCoursGrp',$listeCoursGrp);
 		$smarty->assign('listeNiveaux',Ecole::listeNiveaux());
 		$smarty->assign('selecteur','selectNiveauEprExterne');

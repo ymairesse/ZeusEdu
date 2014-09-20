@@ -6,14 +6,14 @@ if (isset($_POST['ecole'])) {
 	$ecole = $_POST['ecole'];
 	setcookie('ecole',$ecole,$unAn, null, null, false, true);
 	}
-	else $ecole = $_COOKIE['ecole'];
+	else $ecole = isset($_COOKIE['ecole'])?$_COOKIE['ecole']:Null;;
 $smarty->assign('ecole',$ecole);
 
 if (isset($_POST['niveau'])) {
 	$niveau = $_POST['niveau'];
 	setcookie('niveau',$niveau,$unAn, null, null, false, true);
 	}
-	else $niveau = $_COOKIE['niveau'];
+	else $niveau = isset($_COOKIE['niveau'])?$_COOKIE['niveau']:Null;
 $smarty->assign('niveau', $niveau);
 
 $ecole = isset($_POST['ecole'])?$_POST['ecole']:Null;

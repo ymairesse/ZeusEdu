@@ -6,14 +6,14 @@ if (isset($_POST['coursGrp'])) {
 	$coursGrp = $_POST['coursGrp'];
 	setcookie('coursGrp',$coursGrp,$unAn, null, null, false, true);
 	}
-	else $coursGrp = $_COOKIE['coursGrp'];
+	else $coursGrp = isset($_COOKIE['coursGrp'])?$_COOKIE['coursGrp']:Null;
 $smarty->assign('coursGrp', $coursGrp);
 
 if (isset($_POST['matricule'])) {
 	$matricule = $_POST['matricule'];
 	setcookie('matricule',$matricule,$unAn, null, null, false, true);
 	}
-	else $matricule = $_COOKIE['matricule'];
+	else $matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
 $smarty->assign('matricule', $matricule);
 
 $listeCours = $user->listeCoursProf("'G','S','TT'");

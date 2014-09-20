@@ -121,22 +121,22 @@ switch ($mode) {
 				}
 			}
 
-		$smarty->assign("mode",$mode);
-		$smarty->assign("action",$action);
-		$smarty->assign("cours", $cours);
-		$smarty->assign("coursGrp", $coursGrp);
-		$smarty->assign("bulletin", $bulletin);
+		$smarty->assign('mode',$mode);
+		$smarty->assign('action',$action);
+		$smarty->assign('cours', $cours);
+		$smarty->assign('coursGrp', $coursGrp);
+		$smarty->assign('bulletin', $bulletin);
 		if (!(isset($niveau)) && (isset($cours)))
 			$niveau = substr($cours,0,1);
-		$smarty->assign("niveau", $niveau);
+		$smarty->assign('niveau', $niveau);
 		$listeNiveaux = $Ecole->listeNiveaux();
-		$smarty->assign("listeNiveaux", $listeNiveaux);
-		$smarty->assign("listePeriodes", $Bulletin->listePeriodes(NBPERIODES));
-		$smarty->assign("listeCours", $Ecole->listeCours($listeNiveaux));
+		$smarty->assign('listeNiveaux', $listeNiveaux);
+		$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
+		$smarty->assign('listeCours', $Ecole->listeCours($listeNiveaux));
 
 		$listeCoursGrp = isset($cours)?$Ecole->listeCoursGrpDeCours($cours):Null;
 
-		$smarty->assign("listeCoursGrp", $listeCoursGrp);
+		$smarty->assign('listeCoursGrp', $listeCoursGrp);
 
 		$profs = isset($coursGrp)?$Ecole->listeProfsCoursGrp($coursGrp):Null;
 		$smarty->assign('profs',$profs);
@@ -148,20 +148,20 @@ switch ($mode) {
 
 		$smarty->assign('listeElevesAdd', $listeElevesAdd);
 
-		$smarty->assign("selecteur", "selectMatieres");
-		$smarty->assign("corpsPage", "showAttributionsEleves");
+		$smarty->assign('selecteur', 'selectMatieres');
+		$smarty->assign('corpsPage', 'showAttributionsEleves');
 		break;
 
 	case 'programmeEleve':
 		if ($userStatus != 'admin') die('get out of here');
-		$smarty->assign("listeClasses", $Ecole->listeClasses());
-		$smarty->assign("listePeriodes", $Bulletin->listePeriodes(NBPERIODES));
+		$smarty->assign('listeClasses', $Ecole->listeClasses());
+		$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
 
-		$smarty->assign("bulletin", $bulletin);
-		$smarty->assign("action", $action);
-		$smarty->assign("mode", $mode);
-		$smarty->assign("classe", $classe);
-		$smarty->assign("selecteur", "selectClasseEleve");
+		$smarty->assign('bulletin', $bulletin);
+		$smarty->assign('action', $action);
+		$smarty->assign('mode', $mode);
+		$smarty->assign('classe', $classe);
+		$smarty->assign('selecteur', 'selectClasseEleve');
 		if (isset($classe)) {
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			$smarty->assign("listeEleves", $listeEleves);

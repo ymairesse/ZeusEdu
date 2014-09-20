@@ -64,22 +64,22 @@ function sansVirg ($nombre) {
 
 // --------------------------------------------------------------------
 // liste des dates (et lieux) de naissance des élèves de la liste
-function listeNaissanceEleves ($listeEleves) {
-	$listeElevesString = implode(',', array_keys($listeEleves));
-	$connexion = connexion (NOM, MDP, BASE, SERVEUR);
-	$sql = "SELECT codeInfo, DateNaiss ";
-	$sql .= "FROM ".PFX."eleves ";
-	$sql .= "WHERE codeInfo in ($listeElevesString)";
-	$resultat = ExecuteRequete($sql, $connexion);
-	Deconnexion($connexion);
-	$liste = array();
-	while ($ligne = ligneSuivante($resultat)) {
-		$codeInfo = $ligne['codeInfo'];
-		$dateNaiss = $ligne['DateNaiss'];
-		$liste[$codeInfo] = array('date'=>$dateNaiss);
-		}
-	return ($liste);
-	}
+//~ function listeNaissanceEleves ($listeEleves) {
+	//~ $listeElevesString = implode(',', array_keys($listeEleves));
+	//~ $connexion = connexion (NOM, MDP, BASE, SERVEUR);
+	//~ $sql = "SELECT codeInfo, DateNaiss ";
+	//~ $sql .= "FROM ".PFX."eleves ";
+	//~ $sql .= "WHERE codeInfo in ($listeElevesString)";
+	//~ $resultat = ExecuteRequete($sql, $connexion);
+	//~ Deconnexion($connexion);
+	//~ $liste = array();
+	//~ while ($ligne = ligneSuivante($resultat)) {
+		//~ $codeInfo = $ligne['codeInfo'];
+		//~ $dateNaiss = $ligne['DateNaiss'];
+		//~ $liste[$codeInfo] = array('date'=>$dateNaiss);
+		//~ }
+	//~ return ($liste);
+	//~ }
 	
 	
 // --------------------------------------------------------------------
