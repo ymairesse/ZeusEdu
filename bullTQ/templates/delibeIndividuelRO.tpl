@@ -1,47 +1,8 @@
-{assign var=inputOK value=(in_array($classe,$titulaire) || ($userStatus == 'admin'))}
-{if ($inputOK)}
-<div id="boiteOutils" class="noprint">
-	<img class="lock" src="images/lock.png" alt="lock" title="Dé-verrouiller"><img class="lock" src="images/unlock.png" alt="unlock" style="display:none" title="Verrouiller">
-	<img id="save" src="images/disk.png" alt="save" title="Enregistrer">
-	<img id="cancel" src="images/cancel.png" alt="cancel" title="Annuler">
-</div>
-{/if}
 
-{if $inputOK}
-<form action="index.php" id="cotesCours" name="cotesCours" method="POST">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
-	<input type="hidden" name="etape" value="{$etape}">
-	<input type="hidden" value="{$matricule}" name="matricule" id="matricule">
-	<input type="hidden" name="classe" value="{$classe}">
-{/if}
 	{* ------------------------------------------------------------------ *}
 	{* moitié gauche de l'écran ------------------------------------------*}
 	{* ------------------------------------------------------------------ *}
 	<div style="margin: 0pt; width: 48%; padding: 0 1em 5em 0; float: left;">
-		<img src="../photos/{$nomPrenomClasse.photo}.jpg" alt="{$matricule}" height="80px" style="float:right;">
-		<table style="width: 80%;" class="tableauBull">
-			<tbody>
-			<tr>
-				<td>Année scolaire</td>
-				<td colspan="2"><strong>{$anneeScolaire}</strong></td>
-			</tr>
-			<tr>
-				<td>Nom</td>
-				<td class="tooltip">
-					<span class="tip">
-					<img src="../photos/{$nomPrenomClasse.photo}.jpg" alt="{$matricule}" height="140px"><br>
-					<span class="micro">{$nomPrenomClasse.nom } - {$matricule}</span>
-					</span>
-				<strong>{$nomPrenomClasse.nom} {$nomPrenomClasse.prenom}</strong>
-				</td>
-			</tr>
-			<tr>
-				<td>Classe</td>
-				<td><strong>{$nomPrenomClasse.classe}</strong></td>
-			</tr>
-			</tbody>
-		</table>
 	
 		<table style="width:100%;" class="tableauBull">
 		<tr>
@@ -53,7 +14,7 @@
 		</tr>
 		{foreach from=$listeCotes item=type}
 			{foreach from=$type item=unCours}
-			<tr class="{$unCours.statut}" title="{$unCours.nomProf} [{$unCours.acronyme}]">
+			<tr class="{$unCours.statut}">
 				{assign var="nomProf" value=$unCours.nomProf}
 				<td>{$unCours.libelle}</td>
 				<td>{$unCours.nbheures} h</td>
@@ -256,74 +217,3 @@
 
 	{/foreach}
 	</div>
-{if $inputOK}
-</form>
-{/if}
-<hr style="clear:both">
-
-<script type="text/javascript">
-{literal}
-	var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e)."
-	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page."
-	var desactive = "Désactivé: modification en cours. Enregistrez ou Annulez.";
-	var modifie = false;
-	var locked = true;
-	
-	function modification () {
-	if (!(modifie)) {
-		modifie = true;
-		$("#selectClasse").attr("disabled","disabled").attr("title",desactive);
-		$("#selectEleve").attr("disabled","disabled").attr("title",desactive);
-		window.onbeforeunload = function(){
-			return confirm (confirmationBeforeUnload);
-		};
-		}
-	}
-	
-	$(document).ready(function(){
-		$("input:text").each(
-		function(index) {
-			$(this).attr("readonly", true).attr("tabIndex",index+1);
-			}
-		)
-		$("input").tabEnter();
-	
-		$(".lock").click(function(){
-			if (locked) {
-				$("input:text").removeAttr("readonly");
-				$(this).attr("src","images/unlock.png");
-				$(this).attr("title","Verrouiller");
-				}
-				else {
-				$("input:text").attr("readonly", true);
-				$(this).attr("src","images/lock.png");
-				$(this).attr("title","Déverrouiller");
-				}
-			locked = !(locked);
-		})
-		
-		$("input").keyup(function(e){
-			if (!(locked)) {
-				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-				if ((key > 31) || (key == 8)) {
-					modification();
-					$(this).val($(this).val().toUpperCase());
-					}
-			}
-		})
-		
-		$("#cancel").click(function(){
-			if (confirm(confirmationReset))
-				$("#cotesCours")[0].reset();
-			modifie = false;
-		})
-		
-		$("#save").click(function(){
-			$("#wait").show();
-			window.onbeforeunload = function(){};
-			$("#cotesCours").submit();
-		})
-		
-	})
-{/literal}
-</script>

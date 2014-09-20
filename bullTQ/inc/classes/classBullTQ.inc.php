@@ -540,8 +540,8 @@ class bullTQ {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT id, cours, ordre, libelle ";
 		$sql .= "FROM " . PFX . "bullTQCompetences ";
-		$sql .= "WHERE cours IN ($listeCoursString)";
-        $sql .= "ORDER BY ordre";
+		$sql .= "WHERE cours IN ($listeCoursString) ";
+        $sql .= "ORDER BY ordre ";
 		$resultat = $connexion->query($sql);
 		$listeCompetences = array();
 		if ($resultat) {
@@ -839,13 +839,13 @@ class bullTQ {
 		$sql = "SELECT DISTINCT cg.coursGrp, cg.matricule, cg.bulletin, global, ";
 		$sql .= "SUBSTR(cg.coursGrp, 1, LOCATE('-',cg.coursGrp)-1) AS cours, libelle, nbheures, sc.statut, ";
 		$sql .= "p.acronyme, p.nom, p.prenom ";
-		$sql .= "FROM didac_bullTQCotesGlobales AS cg ";
-		$sql .= "JOIN didac_profsCours AS pc ON (pc.coursGrp = cg.coursGrp) ";
-		$sql .= "JOIN didac_profs AS p ON (p.acronyme = pc.acronyme) ";
-		$sql .= "JOIN didac_cours AS c ON (c.cours = SUBSTR(cg.coursGrp, 1, LOCATE('-',cg.coursGrp)-1)) ";
-		$sql .= "JOIN didac_statutCours AS sc ON (sc.cadre = c.cadre) ";
+		$sql .= "FROM ".PFX."bullTQCotesGlobales AS cg ";
+		$sql .= "JOIN ".PFX."profsCours AS pc ON (pc.coursGrp = cg.coursGrp) ";
+		$sql .= "JOIN ".PFX."profs AS p ON (p.acronyme = pc.acronyme) ";
+		$sql .= "JOIN ".PFX."cours AS c ON (c.cours = SUBSTR(cg.coursGrp, 1, LOCATE('-',cg.coursGrp)-1)) ";
+		$sql .= "JOIN ".PFX."statutCours AS sc ON (sc.cadre = c.cadre) ";
 		$sql .= "WHERE cg.matricule = '$matricule' AND bulletin IN ($listePeriodesString) ";
-		$sql .= "ORDER BY cg.bulletin, statut, nbheures, rang ";
+		$sql .= "ORDER BY cg.bulletin, statut, nbheures, libelle, rang ";
 		$resultat = $connexion->query($sql);
 		$cotesEleve = array();
 		if ($resultat) {
@@ -1406,7 +1406,99 @@ class bullTQ {
 		$this->piedPageFinal($pdf, $page);
 		}
 
+	/** 
+	 * Initialisation de la table passée en paramètre
+	 * @param $table string
+	 * @return nombre d'actions réussies sur la BD
+	 */
+	public function init ($table) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."bullTQ".$table." WHERE 1 > 0 ";
+		$resultat = $connexion->exec($sql);
+		Application::deconnexionPDO($connexion);
+		return 1;
+		}
 
+   /**
+     * enregistrement des compétences provenant du formulaire "adminCompetences.tpl"
+     * @param $post
+     * @return integer : nombre de modifications dans la BD
+     */
+    function enregistrerCompetences($post) {
+        $cours = $post['cours'];
+        $resultat = 0;
+        // mise en ordre des données reçues
+        $dataExiste = array();  $dataNew=array();
+        foreach ($post as $field=>$value) {
+            $champ = explode("_", $field);
+            // mises à jour et suppression des compétences
+            if ($champ[0] == "libelle") {
+                $idComp = $champ[1];    $dataExiste[$idComp]['libelle'] = addslashes($value);
+            }
+            if ($champ[0] == "ordre") {
+                $idComp = $champ[1];    $dataExiste[$idComp]['ordre'] = addslashes($value);
+            }
+
+            // nouvelles compétences
+            if ($field == 'newComp')
+                $dataNew = $value;
+            }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        foreach ($dataExiste as $idComp=>$data) {
+            if ($data['libelle'] == "") {
+                $sql = "DELETE FROM ".PFX."bullTQCompetences ";
+                $sql .= "WHERE id='$idComp'";
+                $resultat += $connexion->exec($sql);
+                }
+                else {
+                    $ordre = $data['ordre'];
+                    $libelle = $data['libelle'];
+                    $sql = "UPDATE ".PFX."bullTQCompetences ";
+                    $sql .= "SET ordre='$ordre', libelle='$libelle' ";
+                    $sql .= "WHERE id = '$idComp'";
+                    $resultat += $connexion->exec($sql);
+                    }
+            }
+        foreach ($dataNew as $libelle) {
+            $libelle = addslashes($libelle);
+            if ($libelle != '') {
+                $sql = "INSERT INTO ".PFX."bullTQCompetences ";
+                $sql .= "SET libelle='$libelle', cours='$cours'";
+                $resultat += $connexion->exec($sql);
+                }
+        }
+        Application::DeconnexionPDO($connexion);
+        return $resultat;
+    }
+
+
+	/***
+	 * retourne la liste des cours pour la liste de niveaux donnée
+	 * @param $listeNiveaux
+	 * @return array
+	 */
+	public function listeCoursNiveaux ($listeNiveaux) {
+	 	if (is_array($listeNiveaux))
+			$listeNiveauxString = implode(',',$listeNiveaux);
+			else $listeNiveauxString = $listeNiveaux;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT cours, libelle, nbheures, section, statut ";
+		$sql .= "FROM ".PFX."cours ";
+		$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX."cours.cadre) ";
+		$sql .= "WHERE SUBSTR(cours, 1,1) IN ($listeNiveauxString) AND section='TQ' ";
+        $sql .= "ORDER BY libelle";
+		$listeCours = array();
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$cours = $ligne['cours'];
+				$listeCours[$cours] = $ligne;
+				}
+			}
+        Application::DeconnexionPDO($connexion);
+        return $listeCours;
+	 }
 
 }      
 
