@@ -138,15 +138,17 @@ CREATE TABLE IF NOT EXISTS `didac_adesTypesFaits` (
 -- Contenu de la table `didac_adesTypesFaits`
 --
 
+
 INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleurTexte`, `typeRetenue`, `imprimable`, `ordre`, `listeChamps`, `focus`) VALUES
-(0, 'Retard après-midi', 'ccbb68', '000000', 0, '0', 1, 'ladate,matricule,idfait,type,qui', ''),
-(1, 'Retard au cours', '187718', 'ffffff', 0, '0', 2, 'ladate,matricule, idfait, qui, type, professeur', 'professeur'),
-(3, 'Exclusion du cours', 'aaaaaa', 'ffffff', 0, '0', 3, 'ladate, matricule, idfait, qui, type, professeur, motif', 'professeur'),
-(4, 'Retenue de travail', '6cec05', '000000', 1, '1', 5, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local', 'motif'),
-(5, 'Retenue Disciplinaire', 'ffffff', '000000', 2, '1', 6, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local', 'motif'),
-(6, 'Retenue Bleue', '8888ff', '000000', 3, '1', 7, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local', 'motif'),
-(7, 'Renvoi', 'ff0000', 'ffffff', 0, '0', 8, 'ladate, matricule, idfait, type, qui, motif, sanction, nopv', 'motif'),
-(2, 'Fait disciplinaire', 'F19D9D', '000000', 0, '0', 4, 'ladate,matricule,idfait,qui,type,professeur,motif', '');
+(0, 'Retard après-midi', 'ccbb68', '000000', 0, '0', 1, 'ladate,matricule,idfait,type,qui,anneeScolaire', ''),
+(1, 'Retard au cours', '187718', 'ffffff', 0, '0', 2, 'ladate,matricule, idfait, qui, type, professeur,anneeScolaire', 'professeur'),
+(3, 'Exclusion du cours', 'aaaaaa', 'ffffff', 0, '0', 3, 'ladate, matricule, idfait, qui, type, professeur, motif,anneeScolaire', 'professeur'),
+(4, 'Retenue de travail', '6cec05', '000000', 1, '1', 5, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
+(5, 'Retenue Disciplinaire', 'ffffff', '000000', 2, '1', 6, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
+(6, 'Retenue Bleue', '8888ff', '000000', 3, '1', 7, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
+(7, 'Renvoi', 'ff0000', 'ffffff', 0, '0', 8, 'ladate, matricule, idfait, type, qui, motif, sanction, nopv, anneeScolaire', 'motif'),
+(2, 'Fait disciplinaire', 'F19D9D', '000000', 0, '0', 4, 'ladate,matricule,idfait,qui,type,professeur,motif,anneeScolaire', '');
+
 
 -- --------------------------------------------------------
 
