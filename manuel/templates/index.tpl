@@ -42,11 +42,11 @@
 		
 		$("*[title], .tooltip").tooltip();
 		
-		// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
-		if ($("#corpsPage").html() != '\n') 
-			$("#corpsPage form :input:visible:enabled:first").focus();
-			else 
-			$("form :input:visible:enabled:first").focus();
+	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
+	if ($("#corpsPage form").length != 0)
+		$("#corpsPage form :input:visible:enabled").first().focus();
+		else
+		$("form :input:visible:enabled:first").focus();
 		
 		$(".attention").hide(); 
 		if ($(".attention .texte").html() != null) {

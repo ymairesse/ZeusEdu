@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -10,7 +10,8 @@
 {include file='../../styles.sty'}
 
 </head>
-<body>
+<body id="top">
+
 {include file="menu.tpl"}
 {include file="../../templates/menuHaut.tpl"}
 {if isset($selecteur)}
@@ -36,16 +37,16 @@
 <script type="text/javascript">
 	{literal}
 	$(document).ready(function(){
-		
+
 		$("*[title], .tooltip").tooltip();
-		
+
 		// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
-		if ($("#corpsPage").html() != '\n') 
-			$("#corpsPage form :input:visible:enabled:first").focus();
-			else 
+		if ($("#corpsPage form").length != 0)
+			$("#corpsPage form :input:visible:enabled").first().focus();
+			else
 			$("form :input:visible:enabled:first").focus();
-		
-		$(".attention").hide(); 
+
+		$(".attention").hide();
 		if ($(".attention .texte").html() != null) {
 			$.growlUI(
 				$(".attention .title").html(),
@@ -53,7 +54,7 @@
 				3000
 			)
 		}
-		
+
 		$("#messageErreur").dialog({
 			modal: true,
 			width: 400,
@@ -63,16 +64,16 @@
 					}
 				}
 			});
-		
-	
+
+
 		$("input").tabEnter();
-		
+
 		$("*[title], .tooltip").tooltip();
-		
+
 		$(".draggable" ).draggable();
-		
+
 		$("input").not(".autocomplete").attr("autocomplete","off");
-		
+
 	});
 	{/literal}
 </script>

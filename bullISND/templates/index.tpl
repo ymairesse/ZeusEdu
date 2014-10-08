@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -22,7 +22,7 @@
 {if isset($message)}
 <span class="title">{$message.title}</span>
 <span class="texte">{$message.texte}</span>
-<span class="icon">{$message.icon}</span>
+<span class="icon">{$message.icon|default:''}</span>
 {/if}
 </div>
 
@@ -35,9 +35,9 @@
 <script type="text/javascript">
 {literal}
 $(document).ready (function() {
-	
+
 	$(".attention").hide();
-	
+
 	if ($(".attention .texte").html() != null) {
 
 		$.growlUI(
@@ -46,21 +46,21 @@ $(document).ready (function() {
 			3000
 		)
 	}
-	
+
 	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
-		if ($("#corpsPage").html() != '\n') 
-			$("#corpsPage form :input:visible:enabled:first").focus();
-			else 
-			$("form :input:visible:enabled:first").focus();
+	if ($("#corpsPage form").length != 0)
+		$("#corpsPage form :input:visible:enabled").first().focus();
+		else
+		$("form :input:visible:enabled:first").focus();
 
 	$("*[title], .tooltip").tooltip();
-	
+
 	$( ".draggable" ).draggable();
-		
+
 	$("input").not(".autocomplete").attr("autocomplete","off");
-	
+
 	$(".widget").hide();
-	
+
 	$(".widget").each(function(){
 		if ($(this).hasClass("lift")) {
 			var hauteur = $(this).height();
@@ -68,15 +68,15 @@ $(document).ready (function() {
 			$(this).css("height","150px");
 			var titre = $(this).find("h1").append("<span class='minMax'>+</span>");
 			}
-		
-		if ($(this).hasClass("w50")) 
+
+		if ($(this).hasClass("w50"))
 			$(this).wrap("<div class='widget-outer-480' />");
 			else $(this).wrap("<div class='widget-outer-980' />");
 		$(this).parent().prepend(titre);
 		})
-	
+
 	$(".widget").show();
-		
+
 	$(".minMax").click(function(){
 		if ($(this).text() == '+') {
 			var hauteur = $(this).parent().parent().find(".widget").data("hauteur");
@@ -88,7 +88,7 @@ $(document).ready (function() {
 				$(this).parent().parent().find(".widget").animate({"height": "150px"}, "slow");
 				}
 		})
-	
+
 })
 {/literal}
 </script>
