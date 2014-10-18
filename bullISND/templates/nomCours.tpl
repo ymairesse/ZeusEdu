@@ -1,7 +1,7 @@
 <h3>Attribuer un nom personnel à vos cours</h3>
 
 <form name="nomCours" action="index.php" method="POST" id="nomCours">
-{assign var=tabIndex value=0}
+{assign var=tabIndex value=1}
 {foreach from=$listeCours key=coursGrp item=data}
 	
 	{* remplacement de l'espace possible dans le nom du cours par un caractère ~ *}
