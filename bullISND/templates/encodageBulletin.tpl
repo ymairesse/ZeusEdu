@@ -1,9 +1,8 @@
 {assign var="ancre" value=$matricule}
 <h2 title="cours {$intituleCours.coursGrp}">Bulletin {$bulletin} - {$intituleCours.statut} {$intituleCours.annee}
-	{if $intituleCours.nomCours} {$intituleCours.nomCours}
-	{else}
-	{$intituleCours.libelle} {$intituleCours.nbheures}h -> {$listeClasses|@implode:', '}
-	{/if}</h2>
+	{$intituleCours.libelle} {$intituleCours.nbheures}h -> {$listeClasses|@implode:', '} 
+	[{if $intituleCours.nomCours} {$intituleCours.nomCours} {/if}]
+	</h2>
 <form name="encodage" id="encodage" action="index.php" method="POST" autocomplete="off" >
 <input type="submit" name="submit" value="Enregistrer tout" class="noprint enregistrer" id="enregistrer">
 <input type="reset" name="annuler" id="annuler" value="Annuler">
@@ -45,9 +44,9 @@
 
 	<input type="submit" name="submit" value="Enregistrer tout" id="{$matricule}"
 	title="Enregistre l'ensemble des modifications de la page" class="noprint enregistrer"><span></span>
-	
+
 	</div>
-	
+
 	<div class="blocDroitBulletin">
 	{assign var=formExiste value=(isset($ponderations.$coursGrp.all.$bulletin.form) && ($ponderations.$coursGrp.all.$bulletin.form != '')) ||
 				(isset($ponderations.$coursGrp.$matricule.$bulletin.form) && ($ponderations.$coursGrp.$matricule.$bulletin.form != ''))}
@@ -73,41 +72,41 @@
 		</tr>
 	{assign var=cotes value=$listeCotes.$matricule.$coursGrp|default:Null}
 	{assign var=blocage value=$listeVerrous.$matricule|default:Null}
-	
+
 	{foreach from=$listeCompetences key=cours item=lesCompetences}
 		{foreach from=$lesCompetences key=idComp item=uneCompetence}
 			<tr{if isset($tableErreurs.$matricule.$idComp)} class="erreurEncodage"{/if}>
 				<td style="text-align:right" title="comp_{$idComp}"> {$uneCompetence.libelle}</td>
-				
+
 				{if $formExiste}
 					{* Il y a, au moins, une pondération pour le "Formatif" durant cette période *}
-					<td style="width:6em; text-align:center" 
+					<td style="width:6em; text-align:center"
 					{if $cotes.$idComp.form.echec}class="echecEncodage"{/if}>
-					<input tabIndex="{$tabIndexForm}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if} 
-					name="cote-eleve_{$matricule}-comp_{$idComp}-form" 
+					<input tabIndex="{$tabIndexForm}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					name="cote-eleve_{$matricule}-comp_{$idComp}-form"
 						value="{$cotes.$idComp.form.cote}" maxlength="5" size="2" class="cote"></td>
-						
+
 					{* Le max de Formatif pour cette compétence *}
 					<td style="width:6em; text-align:center">
-					<input tabIndex="{$tabIndexForm+1}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if} 
-					name="cote-eleve_{$matricule}-comp_{$idComp}-maxForm" 
+					<input tabIndex="{$tabIndexForm+1}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					name="cote-eleve_{$matricule}-comp_{$idComp}-maxForm"
 						value="{$cotes.$idComp.form.maxForm}" maxlength="4" size="2" class="maxForm-comp_{$idComp} cote">
 						{if !($blocage.$coursGrp)}<img src="images/flcBas.png" alt="flc" class="report noprint">{/if}</td>
 					{assign var="tabIndexForm" value=$tabIndexForm+2}
 				{/if}
-				
+
 				{if $certExiste}
 					{* Il y a, au moins, une pondération générale pour le "Certificatif" durant cette période *}
 					<td style="width:8em; text-align:center"
 					{if $cotes.$idComp.cert.echec}class="echecEncodage"{/if}>
-					<input tabIndex="{$tabIndexCert}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if} 
-					name="cote-eleve_{$matricule}-comp_{$idComp}-cert" 
+					<input tabIndex="{$tabIndexCert}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					name="cote-eleve_{$matricule}-comp_{$idComp}-cert"
 						value="{$cotes.$idComp.cert.cote}" maxlength="5" size="2" class="cote"></td>
-		
+
 					{* Le max de Certificatif pour cette compétence *}
 					<td style="width:6em; text-align:center">
-					<input tabIndex="{$tabIndexCert+1}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if} 
-					name="cote-eleve_{$matricule}-comp_{$idComp}-maxCert" 
+					<input tabIndex="{$tabIndexCert+1}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					name="cote-eleve_{$matricule}-comp_{$idComp}-maxCert"
 						value="{$cotes.$idComp.cert.maxCert}" maxlength="3" size="2" class="maxCert-comp_{$idComp} cote">
 						{if !($blocage.$coursGrp)}<img src="images/flcBas.png" alt="flc" class="report noprint">{/if}</td>
 					{assign var="tabIndexCert" value=$tabIndexCert+2}
@@ -115,17 +114,18 @@
 			</tr>
 		{/foreach}
 	{/foreach}
+
 		{assign var="totaux" value=$listeSommesFormCert.$matricule|default:Null}
 		<tr>
 			<th>Totaux</th>
 
 			{if $formExiste}
 				<td class="totaux">
-					<input type="text" id="totalForm-{$matricule}" maxlength="3" size="3" disabled="disabled" 
+					<input type="text" id="totalForm-{$matricule}" maxlength="3" size="3" disabled="disabled"
 					value="{$totaux.totalForm}">
 				</td>
 				<td class="totaux">
-					<input type="text" id="maxCert-{$matricule}" maxlength="3" size="3" disabled="disabled" 
+					<input type="text" id="maxCert-{$matricule}" maxlength="3" size="3" disabled="disabled"
 					value="{$totaux.maxForm}">
 					{if !($blocage.$coursGrp)}<img src="images/flcBasDummy.png" alt="O">{/if}
 				</td>
@@ -139,7 +139,7 @@
 					{if !($blocage.$coursGrp)}<img src="images/flcBasDummy.png" alt="O">{/if}
 				</td>
 			{/if}
-			
+
 		</tr>
 	</table>
 	<span class="tooltip" style="float:right">
@@ -152,8 +152,9 @@
 	<!-- blocGaucheBulletin -->
 	{if $listeAttitudes}<div class="blocRemarque">{/if}
 		<h3>Remarque pour la période {$bulletin}</h3>
-		<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque" rows="8" 
-			cols="{if isset($listeAttitudes)}50{else}80{/if}" 
+		{* si $blocage.$coursGrp > 1, les commentaires sont verrouillés *}
+		<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 1)} readonly="readonly"{/if} class="remarque" rows="8"
+			cols="{if isset($listeAttitudes)}50{else}80{/if}"
 			name="commentaire-eleve_{$matricule}"
 			tabIndex="{$tabIndexAutres}">{$listeCommentaires.$matricule.$bulletin|default:Null}</textarea>
 	{if $listeAttitudes}</div>{/if}
@@ -170,16 +171,16 @@
 		<tr>
 			<td {if $attitudes[1] == 'N'} class="echec"{/if}>Respect des autres</td>
 			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att1" 
+			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att1"
 				value="NE" {if $attitudes[1] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+1}"> | 
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att1" 
+				tabIndex="{$tabIndexAutres+1}"> |
+			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att1"
 				value="A" {if $attitudes[1] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+1}"> | 
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att1" 
+				tabIndex="{$tabIndexAutres+1}"> |
+			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att1"
 				value="N" {if $attitudes[1] == 'N'}checked="checked"{/if} class="radioAcquis"
 				tabIndex="{$tabIndexAutres+1}">
 			</td>
@@ -187,16 +188,16 @@
 		<tr>
 			<td {if $attitudes[2] == 'N'} class="echec"{/if}>Respect des consignes</td>
 			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att2" 
+			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att2"
 				value="NE" {if $attitudes[2] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+2}"> | 
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att2" 
+				tabIndex="{$tabIndexAutres+2}"> |
+			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att2"
 				value="A" {if $attitudes[2] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+2}"> | 
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att2" 
+				tabIndex="{$tabIndexAutres+2}"> |
+			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att2"
 				value="N" {if $attitudes[2] == 'N'}checked="checked"{/if} class="radioAcquis"
 				tabIndex="{$tabIndexAutres+2}">
 			</td>
@@ -204,16 +205,16 @@
 		<tr>
 			<td {if $attitudes[3] == 'N'} class="echec"{/if}>Volonté de progresser</td>
 			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att3" 
+			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att3"
 				value="NE" {if $attitudes[3] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+3}"> | 
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att3" 
+				tabIndex="{$tabIndexAutres+3}"> |
+			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att3"
 				value="A" {if $attitudes[3] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+3}"> | 
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att3" 
+				tabIndex="{$tabIndexAutres+3}"> |
+			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att3"
 				value="N" {if $attitudes[3] == 'N'}checked="checked"{/if} class="radioAcquis"
 				tabIndex="{$tabIndexAutres+3}">
 			</td>
@@ -221,16 +222,16 @@
 		<tr>
 			<td {if $attitudes[4] == 'N'} class="echec"{/if}>Ordre et soin</td>
 			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att4" 
+			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att4"
 				value="NE" {if $attitudes[1] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+4}"> | 
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att4" 
+				tabIndex="{$tabIndexAutres+4}"> |
+			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att4"
 				value="A" {if $attitudes[4] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+4}"> | 
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if} 
-				name="attitudes-eleve_{$matricule}-att4" 
+				tabIndex="{$tabIndexAutres+4}"> |
+			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att4"
 				value="N" {if $attitudes[4] == 'N'}checked="checked"{/if} class="radioAcquis"
 				tabIndex="{$tabIndexAutres+4}">
 			</td>
@@ -251,8 +252,7 @@
 			<th width="20%">Sit. Préc.</th>
 			<th width="20%">Période</th>
 			<th width="20%">Sit. (bull. <strong>{$bulletin}</strong>)</th>
-			<th width="20%">Choix de situation
-			</th>
+			<th width="20%">Choix de situation</th>
 			<th width="20%">Délibé</th>
 		</tr>
 		<tr>
@@ -266,12 +266,12 @@
 			<div class="fraction">
 				<div class="num">{$sit|default:'&nbsp;'}</div>
 				<div class="den">{$max|default:'&nbsp;'}</div>
-			</div> 
+			</div>
 			{assign var=pourcent value= 100 * $sit / $max}
 			<span class="micro">= {$pourcent|string_format:"%.0f"} %</span>
 			{/if}
 			</td>
-			
+
 			{* ------------------------------------------------------ *}
 			{* cotes de période, Formatif et/ou Certificatif ---------*}
 			{* ------------------------------------------------------ *}
@@ -291,7 +291,7 @@
 				</div>
 				{/if}
 			</td>
-			
+
 			{* -------------------------------------------------------*}
 			{* nouvelle cote de situation y compris en % -------------*}
 			{* ------------------------------------------------------ *}
@@ -302,7 +302,7 @@
 						<div class="fraction">
 							<div class="num">{$listeSituations.$matricule.$coursGrp.$bulletin.sit}</div>
 							<div class="den">{$listeSituations.$matricule.$coursGrp.$bulletin.max}</div>
-						</div> 
+						</div>
 						<span class="micro">= {$listeSituations.$matricule.$coursGrp.$bulletin.pourcent}%</span>
 						{/if}
 					{/if}
@@ -310,10 +310,10 @@
 				&nbsp;
 				{/if}
 			</td>
-			
+
 			{* Faut-il traiter le cas d'une période avec délibération? *}
 			{if in_array($bulletin,$PERIODESDELIBES)}
-			
+
 			{* ------------------------------------------------------ *}
 			{*  Choix de la cote de délibé     ---------------------- *}
 			{* ------------------------------------------------------ *}
@@ -327,7 +327,7 @@
 					{assign var=attribut value=Null}
 				{/if}
 				{* ----->>>> attribut de la cote de délibé: * ² [] ... --------*}
-				<input type="hidden" name="attribut-eleve_{$matricule}" 
+				<input type="hidden" name="attribut-eleve_{$matricule}"
 					id="attribut-eleve_{$matricule}" value="{$attribut}"
 					{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}>
 
@@ -337,11 +337,11 @@
 				{* ------------------------------------------------------ *}
 
 					{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
-						<input style="font-size:8pt" type="button" name="btnHook-eleve_{$matricule}" 
+						<input style="font-size:8pt" type="button" name="btnHook-eleve_{$matricule}"
 							tabIndex="{$tabIndexAutres+1}"
 							class="hook" value="[{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent|default:''} %]"
 							{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}>
-						<input style="font-size:8pt" type="button" name="btnNohook-eleve_{$matricule}" 
+						<input style="font-size:8pt" type="button" name="btnNohook-eleve_{$matricule}"
 							tabIndex="{$tabIndexAutres+2}"
 							class="nohook" value="{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent|default:''} %"
 							{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}>
@@ -359,32 +359,32 @@
 				{* Quand le bulletin est le dernier de l'année            *}
 				{* ------------------------------------------------------ *}
 				{if $bulletin == $nbBulletins}
-				
+
 					{* cote étoilée? -----------------------------------------*}
 					{* Un bouton à cliquer si la situation le permet----------*}
 					{if isset($listeSituations.$matricule.$coursGrp.$bulletin) && ($listeSommesFormCert.$matricule.pourcentCert > $listeSituations.$matricule.$coursGrp.$bulletin.pourcent)}
-					<input style="font-size:8pt" type="button" name="btnStar-eleve_{$matricule}" 
+					<input style="font-size:8pt" type="button" name="btnStar-eleve_{$matricule}"
 						tabIndex="{$tabIndexAutres+3}"
 						class="star" value="{$listeSommesFormCert.$matricule.pourcentCert} % *"
 						{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
 						>
 					{/if}
-					
+
 					{* baguette magique? -----------------------------------------*}
-					<button type="button" name="magic-eleve_{$matricule}" class="magic" 
+					<button type="button" name="magic-eleve_{$matricule}" class="magic"
 						{if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
 						><img width="16" src="images/magic.png" alt="/"></button>
-					
-					
+
+
 					{* cote réussite du degré? ------------------------------------*}
 					{* Un bouton à cliquer si l'élève est en échec pour le degré---*}
 					{* et s'il y a une cote de première année du degré             *}
-					{if isset($listeSituations.$matricule.$coursGrp.$bulletin)&& ($listeSituations.$matricule.$coursGrp.$bulletin.pourcent < 50) 
+					{if isset($listeSituations.$matricule.$coursGrp.$bulletin) && ($listeSituations.$matricule.$coursGrp.$bulletin.pourcent < 50)
 							&& ($sitDeuxiemes.$coursGrp.$matricule.sit2)}
 					<div class="cote1erDegre">
 					{* attribution de la cote 50% en cas de réussite en deuxième; la cote de deuxième se trouve dans sit2 *}
 					{* la cote de deuxième exclusivement est affichée pour information *}
-					
+
 						{$sitDeuxiemes.$coursGrp.$matricule.sit2}% en 2<sup>e</sup>
 						{if $sitDeuxiemes.$coursGrp.$matricule.sit2 >= 50}
 						=>
@@ -399,7 +399,7 @@
 					{/if}
 				{/if}
 			</td>
-			
+
 			{* ------------------------------------------------------- *}
 			{* situation de délibé de l'élève -------------------------*}
 			{* Une fois dans un texte à l'écran -----------------------*}
@@ -422,9 +422,9 @@
 			&nbsp;
 			{/if}
 			</strong>
-			<input type="text" maxlength="4" size="3" name="situation-eleve_{$matricule}" 
+			<input type="text" maxlength="4" size="3" name="situation-eleve_{$matricule}"
 				id="situation-eleve_{$matricule}" value="{$sitDelibe}" class="sitDelibe" style="display:none">
-				
+
 				{* balayette pour effacer la cote de délibé *}
 				{if $sitDelibe != ''}
 					<img src="images/balai.png" alt="X" title="Effacer la cote de délibération" id="bal_{$matricule}" class="balayette">
@@ -437,7 +437,7 @@
 		</tr>
 	</table>
 	{assign var="tabIndexAutres" value=$tabIndexAutres+5}
-	
+
 	{* -------------------------------------------------------------- *}
 	<p class="ouvrir" style="clear:both">Remarques des autres périodes</p>
 	<ul class="commentaires" style="display:none">
@@ -463,7 +463,7 @@
 
 </form>
 <script type="text/javascript">
-	
+
 var show = "Cliquer pour voir";
 var hide = "Cliquer pour cacher";
 var showAll = "Déplier Remarques et Situations";
@@ -486,9 +486,9 @@ var toutesAttitudes = "Cliquez pour attribuer en groupe"
 $(document).ready(function(){
 
 	$("input").tabEnter();
-	
+
 	$().UItoTop({ easingType: 'easeOutQuart' });
-	
+
 	$(".ouvrir").prepend("[+]").next().hide();
 	$(".ouvrir").css("cursor","pointer").attr("title",show);
 	$("#ouvrirTout").css("cursor","pointer");
@@ -497,13 +497,13 @@ $(document).ready(function(){
 		if ($(this).val() == "N" && $(this).attr("checked"))
 			$(this).parent().addClass("echecEncodage");
 	})
-	
+
 	$(".cote, .remarque, .radioAcquis").each(function(numero){
 		var element = $(".cote, .remarque, .radioAcquis").eq(numero);
 		if (element.attr("readonly") || element.attr("disabled"))
 			element.parent().parent().attr("title",noAccess);
 	})
-	
+
 	$(".ouvrir").click(function(){
 		$(this).next().toggle("fast");
 		var texte = $(this).text();
@@ -516,9 +516,9 @@ $(document).ready(function(){
 				$(this).attr("title",show);
 			}
 		})
-	
+
 	$(".report").attr("title",report).css("cursor","pointer");
-	
+
 	$(".report").click(function(){
 		var max = $(this).prev().val();
 		var prevClass = $(this).prev().attr("class");
@@ -530,24 +530,24 @@ $(document).ready(function(){
 			modification();
 			}
 		});
-	
+
 	// le copier/coller provoque aussi  une "modification"
 	$("input, textarea").bind('paste', function(){
 		modification()
 	});
-	
+
 	$("#ouvrirTout").html(function(){
 		texte = hiddenAll?showAll:hideAll;
 		$(this).html(texte);
 	});
-	
+
 	$("#ouvrirTout").click(function(){
 		$(".ouvrir").click();
 		hiddenAll = !(hiddenAll);
 		var texte = hiddenAll?showAll:hideAll;
 		$(this).html(texte);
 	})
-	
+
 	function modification () {
 		if (!(modifie)) {
 			modifie = true;
@@ -571,7 +571,7 @@ $(document).ready(function(){
 			}
 		}
 	})
-	
+
 	$(".cote").keyup(function(e){
 		var readonly = $(this).attr("readonly");
 		if (!(readonly)) {
@@ -580,16 +580,16 @@ $(document).ready(function(){
 			var type = eleve[4];
 		}
 	})
-	
+
 	$(".radioAcquis").click(function(){
 		if ($(this).val()=="N")
 			$(this).parent().addClass("echecEncodage");
 			else $(this).parent().removeClass("echecEncodage");
 		modification();
 		})
-	
+
 	$(".enregistrer, #annuler").hide();
-	
+
 	$("#annuler").click(function(){
 		if (confirm(confirmationReset)) {
 			this.form.reset();
@@ -608,7 +608,7 @@ $(document).ready(function(){
 			return false
 		}
 		})
-	
+
 	$(".enregistrer").click(function(){
 		$(this).val("Un moment").addClass("patienter");
 		$.blockUI();
@@ -623,21 +623,21 @@ $(document).ready(function(){
 		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 		// Retrouver le matricule dans Ex: "btnHook-eleve_5042"
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
-		
+
 		// cacher le champ Input (éventuellement utilisé par la baguette magique)
 		$("#situation-eleve_"+matricule).hide();
 		// attribution d'une valeur affichée
-		if ($(this).hasClass('hook')) 
+		if ($(this).hasClass('hook'))
 			$("#situationFinale_"+matricule).html('['+cote+']%').show();
 			else $("#situationFinale_"+matricule).html(cote+'%').show();
 		// attribution d'une valeur au champ input situation-eleve pour$_POST
 		$("#situation-eleve_"+matricule).val(cote);
 		// indicateur d'attribut de la situation de délibé
-		if ($(this).hasClass('hook')) 
+		if ($(this).hasClass('hook'))
 			$("#attribut-eleve_"+matricule).val('hook');
 			else $("#attribut-eleve_"+matricule).val('');
 		})
-	
+
 	$(".star").click(function(){
 		modification();
 		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
@@ -647,29 +647,29 @@ $(document).ready(function(){
 		$("#situation-eleve_"+matricule).hide();
 		// attribution d'une valeur affichée et affichage du texte
 		$("#situationFinale_"+matricule).html(cote+'*%').show();
-		
+
 		// attribution d'une valeur au champ input situation-eleve
 		$("#situation-eleve_"+matricule).val(cote);
 		// indicateur d'attribut de la situation de délibé
 		$("#attribut-eleve_"+matricule).val('star');
 	})
-	
+
 	$(".degre").click(function(){
 		modification();
 		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
-		
+
 		// cacher le champ Input (pas de baguette magique)
 		$("#situation-eleve_"+matricule).hide();
 		// attribution d'une valeur affichée
 		$("#situationFinale_"+matricule).html(cote+'²%').show();
-		
+
 		// attribution d'une valeur au champ input situation-eleve
 		$("#situation-eleve_"+matricule).val(cote);
 		$("#attribut-eleve_"+matricule).val('degre');
 	})
 
-	
+
 	$(".magic").click(function(){
 		if (confirm(coteArbitraire)) {
 			modification();
@@ -680,11 +680,11 @@ $(document).ready(function(){
 			$("#situation-eleve_"+matricule).css('display','block');
 			// attribution d'une valeur affichée et affichage du texte
 			$("#situationFinale_"+matricule).hide();
-			
+
 			$("#attribut-eleve_"+matricule).val('magique');
 		}
 	})
-	
+
 	$(".balayette").click(function(){
 		modification();
 		var matricule = parseInt($(this).attr("id").substr(4,10));
@@ -693,7 +693,7 @@ $(document).ready(function(){
 		$("#situation-eleve_"+matricule).val('');
 		})
 
-		
+
 	function goToByScroll(matricule){
      	$('html,body').animate({
 			scrollTop: $("#"+matricule).offset().top-100
@@ -706,15 +706,8 @@ $(document).ready(function(){
 		var matricule = $(this).val();
 		goToByScroll("el"+matricule);
 		})
-	
-	//$(".remarque").focus(function(){
-	//	var center = $(window).height()/2;
-	//	var top = $(this).offset().top ;
-	//	if (top > center){
-	//		$(window).scrollTop(top-center);
-	//	}
-	//});
-	
+
+
 	$(".clickNE, .clickNA, .clickA").attr('title',toutesAttitudes);
 
 	$(".clickNE").click(function(){

@@ -1,6 +1,5 @@
 <h2>Voir et modfier les pondérations</h2>
 Bulletin en cours: {$bulletin}
-{include file="noticeBaremes.html"}
 <h3 title="{$intituleCours.coursGrp}">
 	{$intituleCours.annee} : {$intituleCours.statut}
 	{if $intituleCours.nomCours}  {$intituleCours.nomCours} 
@@ -41,7 +40,7 @@ Bulletin en cours: {$bulletin}
 	<input type="reset" name="reset" value="Annuler">
 	<a href="index.php?action=gestionBaremes&mode=voir&amp;coursGrp={$coursGrp}"><span class="fauxBouton">Retour sans enregistrer</span></a></p>
 </form>
-
+{include file="noticeBaremes.html"}
 <script type="text/javascript" src="../js/jquery.validate.js"></script>
 <script type="text/javascript">
 {literal}

@@ -3,8 +3,12 @@
 <form name="nomCours" action="index.php" method="POST" id="nomCours">
 {assign var=tabIndex value=0}
 {foreach from=$listeCours key=coursGrp item=data}
+	
+	{* remplacement de l'espace possible dans le nom du cours par un caractère ~ *}
+	{assign var=coursGrpPROT value=$coursGrp|replace:' ':'~'}
+	
 	<label>{$data.libelle} {$data.classes} {$coursGrp}</label>
-	<input tabIndex="{$tabIndex}" type="text" size="20" maxlength="20" name="field_{$coursGrp}" value="{$data.nomCours}"> <br>
+	<input tabIndex="{$tabIndex}" type="text" size="20" maxlength="20" name="field_{$coursGrpPROT}" value="{$data.nomCours}"> <br>
 	{assign var=tabIndex value=$tabIndex+1}
 {/foreach}
 <br>

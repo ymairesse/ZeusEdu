@@ -4,19 +4,21 @@
 <input type="hidden" name="etape" value="enregistrer">
 <input type="hidden" name="bulletin" value="{$bulletin}">
 <input type="hidden" name="classe" value="{$classe}">
-<table class="tableauAdmin" style="clear:both">
+<table class="tableauBull">
 <tr>
-    <th colspan="2">
+    <th colspan="3">
 		<h2>Classe: {$classe}</h2>
 		<input type="submit" name="submit" value="Enregistrer" id="submit" style="display:none; color:red;"><br>
-		<img id="lockAll" src="images/lock.png" alt="0" title="Bloquer/débloquer TOUT" style="margin-top:2em">
+		Bloquer toutes les cotes et commentaires <img id="lockAll" src="images/lock.png" alt="0" title="Bloquer/débloquer TOUTES LES COTES ET COMMENTAIRES"><br>
+		Bloquer toutes les cotes <img id="lockCotes" src="images/lockCotes.png" alt="1" title="Bloquer/débloquer les COTES SEULEMENT">
     </th>
 	{foreach from=$listeCoursGrpClasse key=coursGrp item=unCours}
 		{* remplacement de l'espace possible dans le nom du cours par un caractère ~ *}
 		{assign var=coursGrpPROT value=$coursGrp|replace:' ':'~'}
 		<th>
 		<img src="imagesCours/{$unCours.cours}.png" title="{$unCours.libelle} ({$coursGrp}) {$unCours.nbheures}h" alt="{$unCours.libelle}"><br>
-		<img class="lockCours" id="cours_{$coursGrpPROT}" src="images/lock.png" alt="1" title="Verrouiller/déverrouiller le cours de {$unCours.acronyme}">
+		<img class="lockCoursComment" id="coursComment_{$coursGrpPROT}" src="images/lock.png" alt="0" title="Verrouiller/déverrouiller le cours et les commentaires de {$unCours.acronyme}">
+		<img class="lockCours" id="cours_{$coursGrpPROT}" src="images/lockCotes.png" alt="1" title="Verrouiller/déverrouiller le cours de {$unCours.acronyme}">
 		</th>
 	{/foreach}
 </tr>
@@ -25,7 +27,11 @@
     <td title="matr. {$matricule}">{$unEleve.nom} {$unEleve.prenom}</td>
     <td>
 		<img class="lockEleve" id="eleve_{$matricule}" src="images/lock.png" 
-		alt="1" title="Verrouiller/déverrouiller {$unEleve.nom} {$unEleve.prenom}">
+		alt="1" title="Verrouiller/déverrouiller les cotes et les commentaires pour {$unEleve.nom} {$unEleve.prenom}">
+	</td>
+	<td>
+		<img class="lockEleveCotes" id="eleve_Cotes{$matricule}" src="images/lockCotes.png" 
+		alt="1" title="Verrouiller/déverrouiller les cotes seulement pour {$unEleve.nom} {$unEleve.prenom}">
 	</td>
 	{* on prend un à un la liste de tous les cours de cette classe *}
 	{foreach from=$listeCoursGrpClasse key=coursGrp item=unCours}
@@ -33,7 +39,7 @@
 		{assign var=coursGrpPROT value=$coursGrp|replace:' ':'~'}
 		<td class="cellVerrou cote">
 			{* L'élève a-t-il ce cours? *}
-			{if $listeCoursGrpEleves.$matricule.$coursGrp != Null}
+			{if isset($listeCoursGrpEleves.$matricule.$coursGrp) && $listeCoursGrpEleves.$matricule.$coursGrp != Null}
 				<select name="lock#{$coursGrpPROT}#{$matricule}" class="eleve_{$matricule} cours_{$coursGrpPROT} selVerrou" style="display:none">
 					<option value="0" 
 					{if ($listeVerrous.$matricule.$coursGrp == Null) || $listeVerrous.$matricule.$coursGrp == 0}
@@ -109,13 +115,10 @@ $(document).ready(function(){
 		})
 	
 	$("#lockAll").click(function(){
-		$("#wait").show();
 		$(".cellVerrou").each(function(index){
 			$(this).trigger("click");
-		$("#wait").hide();
 		})
 		modification();
-		$("#wait").hide();
 	})
 	
 	$("#formVerrous").submit(function(){

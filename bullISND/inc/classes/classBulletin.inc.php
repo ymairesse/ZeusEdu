@@ -1150,7 +1150,7 @@ class Bulletin {
 		return $symbole;
 	}
 
-	/*
+	/**
 	 * retourne la liste des situations de délibés provenant des bulletins
 	 * pour une liste d'élèves données
 	 * pour une liste de cours donnée et
@@ -1589,7 +1589,6 @@ class Bulletin {
 	 * @param $listeCotes
 	 * @return array
 	 */
-
 	function listeSommesFormCert($listeCotes) {
 		$sommesFormCert = array();
 		foreach ($listeCotes as $matricule => $lesCours) {
@@ -1636,6 +1635,26 @@ class Bulletin {
 		}
 		return $sommesFormCert;
 	}
+
+	/** 
+	 * retourne les cotes de CEB d'un élève dont on fournit le matricule
+	 * @param $matricule
+	 * @return array
+	 */
+	public function getCEB($matricule) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT fr, math, sc, hg, l2 ";
+		$sql .= "FROM ".PFX."bullCE1B ";
+		$sql .= "WHERE matricule = '$matricule' ";
+		$resultat = $connexion->query($sql);
+		$CEB = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			$CEB = $resultat->fetch();
+			}
+		Application::DeconnexionPDO($connexion);
+		return $CEB;
+		}
 
 	/**
 	 * organisation rationnelle des cotes: une ligne par compétence extraite
@@ -2502,7 +2521,7 @@ class Bulletin {
 	 */
 	public function syntheseToutesAnnees ($matricule, $annee=Null) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT SUBSTR(cours,1,1) as annee, bulletin, statut, ".PFX."bullSitArchives.coursGrp, situation, maxSituation, ";
+		$sql = "SELECT annee AS anScolaire, SUBSTR(cours,1,1) as annee, bulletin, statut, ".PFX."bullSitArchives.coursGrp, situation, maxSituation, ";
 		$sql .= "round(situation*100/maxSituation) as pourcent, sitDelibe, hook, star, degre, cours, nbheures, libelle ";
 		$sql .= "FROM ".PFX."bullSitArchives ";
 		$sql .= "LEFT JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1)) ";
@@ -2510,13 +2529,14 @@ class Bulletin {
 		$sql .= "WHERE matricule = '$matricule' ";
 		if ($annee != Null)
 			$sql .= "AND SUBSTR(cours,1,1)='$annee' ";
-		$sql .= "ORDER BY annee, bulletin, statut DESC, nbheures DESC ";
+		$sql .= "ORDER BY anScolaire DESC, annee DESC, bulletin, statut DESC, nbheures DESC ";
 
 		$synthese = array();
 		$resultat = $connexion->query($sql);
 		if ($resultat) {
 			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
+				$anScolaire = $ligne['anScolaire'];
 				$bulletin = $ligne['bulletin'];
 				$annee = $ligne['annee'];
 				$sitDelibe = $ligne['sitDelibe'];
@@ -2536,25 +2556,32 @@ class Bulletin {
 						$ligne['echec'] = 'echec';
 					}
 				$coursGrp = $ligne['coursGrp'];
-				$synthese[$annee]['resultats'][$bulletin][$coursGrp] = $ligne;
+				$synthese[$anScolaire][$annee]['resultats'][$bulletin][$coursGrp] = $ligne;
 				}
 			}
+
 		// recherche de la liste de tous les cours qui figurent dans la synthèse
-		$listeCours = array();
-		foreach ($synthese as $annee=>$data) {
-			foreach ($synthese[$annee]['resultats'] as $periode => $details) {
-				foreach ($details as $unCoursGrp => $details) {
-					$coursGrp = $details['coursGrp'];
-					if (!isset($listeCours[$coursGrp]))
-						$listeCours[$coursGrp] = array(
-							'cours'=>$details['cours'],
-							'libelle'=>$details['libelle'],
-							'nbheures'=>$details['nbheures'],
-							'statut'=>$details['statut']
-							);
+		foreach ($synthese as $anScolaire=>$dataAnScol) {
+			$listeCours = array();
+			foreach ($dataAnScol as $annee=>$data) {
+				foreach ($synthese[$anScolaire][$annee]['resultats'] as $periode => $details) {
+					foreach ($details as $unCoursGrp => $details) {
+						// on ne reprend pas les cours pour lesquels il n'y a pas de cote de situation...
+						// => pas de colonne vide pour les élèves qui ont changé de cours avant le bulletin 1
+						if ($details['situation'] != '') {
+							$coursGrp = $details['coursGrp'];
+							if (!isset($listeCours[$coursGrp]))
+								$listeCours[$coursGrp] = array(
+									'cours'=>$details['cours'],
+									'libelle'=>$details['libelle'],
+									'nbheures'=>$details['nbheures'],
+									'statut'=>$details['statut']
+									);
+							}
+						}
 					}
+					$synthese[$anScolaire][$annee]['listeCours'] = $listeCours;
 				}
-				$synthese[$annee]['listeCours'] = $listeCours;
 			}
 		Application::DeconnexionPDO($connexion);
 		return $synthese;
@@ -4355,13 +4382,17 @@ class Bulletin {
 			}
 		}
 
-	// --------------------------------------------------------------------
-	function brancheProfPDF ($pdf, $unCours, $listeProfs) {
-		// nom de la branche et titulaire du cours
-		// encadrement du nom du cours et du prof
+	/** 
+	 * nom de la branche et titulaire du cours
+	 * encadrement du nom du cours et du prof
+	 * @param $pdf			// objet PDF
+	 * @param array $unCours : description du cours
+	 * @param string $listeProfs : liste des profs pour ce cours
+	 * @return void()
+	 */
+	public function brancheProfPDF ($pdf, $unCours, $listeProfs) {
 		$pdf->SetLineWidth(0.2);
 		$pdf->SetFont('Arial','B',7);
-		// $pdf->SetFont('Arial','B',8);
 		$nomCours = $this->utf8($unCours['libelle']);
 		$nbh = $unCours['nbheures'];
 
@@ -4383,9 +4414,8 @@ class Bulletin {
 		}
 
 
-	/***
-	 * function situationActuellePDF
-	 *
+	/**
+	 * écriture de la situation actuelle dans le PDF
 	 * @param $pdf			// objet PDF
 	 * @param $sitActuelle
 	 * @param $bulletin		// période pour le bulletin à imprimer
@@ -4488,7 +4518,7 @@ class Bulletin {
 		}
 
 		/***
-		 * corrige les caractères non standard de Word
+		 * corrige certains caractères non standard de Word
 		 * @param $chaine : string la châine à corriger
 		 * @return string : la chaîne corrigée
 		 */
@@ -4544,6 +4574,7 @@ class Bulletin {
 		$pdf->MultiCell(40,5,$this->utf8('L\'élève'),0,'C');
 		$pdf->Ln();
 		}
+
 	// -------------------------------------------------------------------
 	function educPDF ($pdf, $rubriques) {
 		$ficheDisc = $rubriques['fiche'];
@@ -5247,8 +5278,10 @@ class Bulletin {
 		foreach ($post as $champ=>$value) {
 			if (substr($champ,0,6) == 'field_') {
 				$coursGrp = explode('_',$champ);
-				$coursGrp = $coursGrp[1];
-				$nomCours = addslashes(htmlentities($value));
+				// dans le coursGrp, un espace éventuel avait été remplacé par un "~" dans le template;
+				// il faut remettre l'espace
+				$coursGrp = str_replace('~',' ',$coursGrp[1]);
+				$nomCours = addslashes($value);
 				$sql = "INSERT INTO ".PFX."profsCours ";
 				$sql .= "SET acronyme='$acronyme', coursGrp='$coursGrp', nomCours='$nomCours' ";
 				$sql .= "ON DUPLICATE KEY UPDATE nomCours='$nomCours' ";

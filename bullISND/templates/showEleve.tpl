@@ -114,25 +114,25 @@
 		<tr>
 			<td>Respect des autres</td>
 			{foreach from=$attitudes.$bulletin.$matricule item=uneBranche}
-				<td {if $uneBranche.att1 == 'NA'}class="echec"{/if}>{$uneBranche.att1}</td>
+				<td {if $uneBranche.att1 == 'N'}class="echec"{/if}>{$uneBranche.att1}</td>
 			{/foreach}
 		</tr>
 			<tr>
 			<td>Respect des consignes</td>
 			{foreach from=$attitudes.$bulletin.$matricule item=uneBranche}
-				<td {if $uneBranche.att2 == 'NA'}class="echec"{/if}>{$uneBranche.att2}</td>
+				<td {if $uneBranche.att2 == 'N'}class="echec"{/if}>{$uneBranche.att2}</td>
 			{/foreach}
 		</tr>
 			<tr>
 			<td>Volonté de progresser</td>
 			{foreach from=$attitudes.$bulletin.$matricule item=uneBranche}
-				<td {if $uneBranche.att3 == 'NA'}class="echec"{/if}>{$uneBranche.att3}</td>
+				<td {if $uneBranche.att3 == 'N'}class="echec"{/if}>{$uneBranche.att3}</td>
 			{/foreach}
 		</tr>
 			<tr>
 			<td>Ordre et soin</td>
 			{foreach from=$attitudes.$bulletin.$matricule item=uneBranche}
-				<td {if $uneBranche.att4 == 'NA'}class="echec"{/if}>{$uneBranche.att4}</td>
+				<td {if $uneBranche.att4 == 'N'}class="echec"{/if}>{$uneBranche.att4}</td>
 			{/foreach}
 		</tr>
 	</table>

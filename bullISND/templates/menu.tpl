@@ -14,7 +14,7 @@
 			{/if}
 		</ul>
 	</li>
-	{if ($userStatus == 'admin') || ($userStatus == 'direction')}
+		{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 	<li><a href="javascript:void(0)">Coordinateurs</a>
 		<ul>
 			<li><a href="index.php?action=nota">Notices coordinateurs</a></li>
@@ -22,7 +22,8 @@
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
 			<li><a href="index.php?action=direction&amp;mode=eprExternes">Épreuves externes/délibés</a></li>
-			<li><a href="index.php?action=direction&amp;mode=cotesEprExternes">Exporte résultats épr. extenes</a></li>
+			<li><a href="index.php?action=direction&amp;mode=cotesEprExternes">Exporte résultats épr. externes</a></li>
+			<li><a href="index.php?action=direction&amp;mode=pia">Couverture PIA</a></li>
 		</ul>
 	</li>
 	{/if}
@@ -61,6 +62,7 @@
 	<li><a href="javascript:void(0)">Titulaire de {','|implode:$titulaire}</a>
 		<ul>
 			<li><a href="index.php?action=titu&amp;mode=remarques">Remarques aux bulletins</a></li>
+			<li><a href="index.php?action=titu&amp;mode=padEleve">Bloc Note Élèves</a></li>
 			<li><a href="index.php?action=titu&amp;mode=verrous">(Dé)-verrouiller les bulletins</a></li>
 		</ul>
 	</li>

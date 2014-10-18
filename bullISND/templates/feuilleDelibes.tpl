@@ -38,7 +38,10 @@
 				{assign var=coursGrp value=$listeSituations.$matricule.$cours.coursGrp|default:Null}
 				{if $coursGrp != Null}
 				<td class="{$listeSituations.$matricule.$cours.statut} {$listeSituations.$matricule.$cours.echec}"
-					title="{$coursGrp}<br>{if $listeSituations.$matricule.$cours.symbole == '$'}Épreuve externe{/if}|{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}">
+					title="{$coursGrp}<br>{if $listeSituations.$matricule.$cours.symbole == '$'}Épreuve externe{/if}|{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}
+					{if isset($listeSituations.$matricule.$cours.sitInterne)}
+					<br>Sit. interne {$listeSituations.$matricule.$cours.sitInterne}%
+					{/if}">
 					{if $listeSituations.$matricule.$cours.attribut == 'hook'}
 						[{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}]
 					{else}
@@ -72,7 +75,7 @@
 {$listeEleves|@count} élèves
 
 <p>Symbolique:</p>
-<ul>
+<ul class="symbolique">
 <li>² => réussite degré</li>
 <li>* => cote étoilée</li>
 <li>↗ => baguette magique</li>

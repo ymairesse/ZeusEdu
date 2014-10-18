@@ -1,5 +1,4 @@
 <?php
-
 $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $niveauEleves = isset($_POST['niveauEleves'])?$_POST['niveauEleves']:Null;
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;

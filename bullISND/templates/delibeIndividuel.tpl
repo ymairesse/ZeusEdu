@@ -23,13 +23,23 @@
 				 {$unCours.statut}: {$unCours.libelle}</td>
 		<td>{$unCours.nbheures}h</td>
 		{foreach from=$listePeriodes item=periode}
+			{if isset($listeSituations.$coursGrp.$periode)}
 			<td class="cote 
-				{if ($listeSituations.$coursGrp.$periode.sitDelibe < 50) && ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '') && ($listeSituations.$coursGrp.$periode.attribut != 'hook')}echec{/if}">
+				{if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
+					&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
+					&& ($listeSituations.$coursGrp.$periode.attribut != 'hook')}echec{/if}"
+				{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
+				{if isset($listeSituations.$coursGrp.$periode.sitInterne)}
+					title="Cote interne {$listeSituations.$coursGrp.$periode.sitInterne}%"
+				{/if}>
 				{if $listeSituations.$coursGrp.$periode.attribut == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}]
 					{else}
 					{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}<sup>{$listeSituations.$coursGrp.$periode.symbole|default:''}</sup>
 				{/if}
 			</td>
+			{else}
+			<td>&nbsp;</td>
+			{/if}
 		{/foreach}
 		
 		<td class="remarqueDelibe" title="{$listeRemarques.$matricule.$coursGrp.2|default:''}">
@@ -78,7 +88,7 @@
 		&nbsp;
 		{/if}
 		</td>
-		<td>
+		<td class="cote">
 		{if $delibe[5].nbHeuresEchec > 0}
 			<strong>{$delibe[5].nbHeuresEchec}h</strong>
 		{else}
@@ -140,7 +150,7 @@
 </table>
 </form>
 <p>Symbolique:</p>
-<ul>
+<ul class="symbolique">
 <li>² => réussite degré</li>
 <li>* => cote étoilée</li>
 <li>↗ => baguette magique</li>
