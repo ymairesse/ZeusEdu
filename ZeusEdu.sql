@@ -1132,7 +1132,7 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 CREATE TABLE IF NOT EXISTS `didac_profsCours` (
   `acronyme` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 3 lettres',
   `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'anff:nom du cours en 5 caractères-groupe Ex: 3:FR5-2',
-  `nomCours` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'rempli par le prof: laisser vide',
+  `nomCours` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'rempli par le prof: laisser vide',
   PRIMARY KEY (`acronyme`,`coursGrp`),
   KEY `coursGrp` (`coursGrp`),
   KEY `acronyme` (`acronyme`)
