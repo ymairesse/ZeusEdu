@@ -35,7 +35,9 @@ switch ($mode) {
 				$smarty->assign('listeCompetences', $listeCompetences);
 
 				$listeCotesGlobales = $BullTQ->listeCotesGlobales($listeCoursGrp, $bulletin);
-				$smarty->assign('cotesGlobales',$listeCotesGlobales[$bulletin]);
+				if ($listeCotesGlobales != Null)
+					$smarty->assign('cotesGlobales',$listeCotesGlobales[$bulletin]);
+					else $smarty->assign('cotesGlobales',Null);
 
 				$listeCotesGeneraux = $BullTQ->toutesCotesCoursGeneraux($listeCoursGrp, $matricule, $bulletin);
 				$smarty->assign('listeCotesGeneraux', $listeCotesGeneraux);

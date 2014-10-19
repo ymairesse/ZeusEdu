@@ -1500,6 +1500,54 @@ class bullTQ {
         return $listeCours;
 	 }
 
+	/** 
+	 * retourne les types définis (option ou formation générale) pour les cours dont on fournit la liste
+	 * @param array $listeCours
+	 * @return array liste des types associés aux cours
+	 */
+	public function listeTypes($listeCours) {
+		if (is_array($listeCours))
+			$listeCoursString = "'" . implode("','", array_keys($listeCours)) . "'";
+			else $listeCoursString = "'".$liseCours."'";
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT libelle, coursGrp, type ";
+		$sql .= "FROM ".PFX."bullTQtypologie AS tp ";
+		$sql .= "JOIN ".PFX."cours AS dc ON dc.cours = tp.coursGrp ";
+		$sql .= "WHERE coursGrp IN ($listeCoursString) ";
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$cours = $ligne['coursGrp'];
+				$listeCours[$cours]['type']=$ligne['type'];
+				}
+			}
+        Application::DeconnexionPDO($connexion);
+        return $listeCours;
+		}
+
+	/** 
+	 * enregistre les associations cours / type (option ou général) provenant du formulaire ad-hoc
+	 * @param $post array : provenant du formulaire
+	 * @return integer : nombre de modifications dans la BD
+	 */
+	public function enregistrerTypes($post) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$nbResultats = 0;
+		foreach ($post as $champ=>$value) {
+			if (substr($champ,0,6) == 'field_') {
+				$champ = explode('_',$champ);
+				$champ = str_replace('~',' ',$champ[1]);
+				$sql = "INSERT INTO ".PFX."bullTQtypologie ";
+				$sql .= "SET coursGrp='$champ', type='$value' ";
+				$sql .= "ON DUPLICATE KEY UPDATE type='$value' ";
+				$nbResultats += $connexion->exec($sql);
+				}
+			}
+        Application::DeconnexionPDO($connexion);
+        return $nbResultats;		
+		}
+
 }      
 
 ?>

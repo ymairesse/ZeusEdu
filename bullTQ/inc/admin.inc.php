@@ -1,5 +1,4 @@
 <?php
-
 $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $cours = isset($_POST['cours'])?$_POST['cours']:Null;
@@ -53,6 +52,27 @@ switch ($mode) {
 		$smarty->assign('listeCompetences', $listeCompetences);
 		$smarty->assign('corpsPage', 'adminCompetences');
 		$smarty->assign('selecteur', 'selectNiveauCours');
+		break;
+	case 'typologie':
+		if ($niveau != Null) {
+			if ($etape == 'enregistrer') {
+				// afficher($_POST);
+				$nbResultats = $BullTQ->enregistrerTypes($_POST);
+				$smarty->assign('message', array(
+						'title'=>"Enregistrement",
+						'texte'=>"$nbResultats types(s) modifié(s)"));
+				}
+			$listeCours = $BullTQ->listeCoursNiveaux($niveau);
+			$listeCoursTypes = $BullTQ->listeTypes($listeCours);
+			$smarty->assign('etape','enregistrer');
+			$smarty->assign('listeCoursTypes',$listeCoursTypes);
+			$smarty->assign('corpsPage','editTypesCours');
+			}
+		$smarty->assign('listeNiveaux',array('5','6'));
+		$smarty->assign('niveau',$niveau);
+		$smarty->assign('selecteur','selectNiveau');
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);	
 		break;
 	default:
 		break;

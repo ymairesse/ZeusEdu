@@ -32,6 +32,7 @@
 	<li><a href="javascript:void(0)">Admin</a>
 		<ul>
 			<li><a href="index.php?action=admin&amp;mode=imagesCours">Initialiser images des noms des cours</a></li>
+			<li><a href="index.php?action=admin&amp;mode=typologie">Typologie des cours</a></li>
 			<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
 			<li><a href="index.php?action=admin&amp;mode=initialiser">Initialiser les bulletins</a></li>
 		</ul>
