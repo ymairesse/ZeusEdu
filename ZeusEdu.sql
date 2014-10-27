@@ -1107,6 +1107,11 @@ CREATE TABLE IF NOT EXISTS `didac_profsApplications` (
   UNIQUE KEY `acronyme` (`acronyme`,`application`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Contenu de la table `didac_profsApplications`
+--
+
+INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) VALUES
 ('admin', 'ADM', 'admin'),
 ('logout', 'ADM', 'admin'),
 ('profil', 'ADM', 'admin'),
@@ -1166,7 +1171,8 @@ INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`) VALUES
 (58, 'AC', 9),
 (75, 'Renf.', 8),
 (81, 'Rem', 10);
-----------------------------------------
+
+-- --------------------------------------
 
 --
 -- Structure de la table `didac_titus`
@@ -1206,6 +1212,4 @@ INSERT INTO `didac_userStatus` (`ordre`, `userStatus`, `color`, `nomStatut`) VAL
 (4, 'direction', '#4AFF49', 'Direction'),
 (5, 'admin', '#FF0000', 'Administrateur');
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
