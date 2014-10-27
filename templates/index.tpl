@@ -25,7 +25,7 @@
 
 <style type="text/css">
 {literal}
-#menu {	
+#menu {
 	position: absolute;
 	width: 800px;
 	height: 640px;
@@ -41,14 +41,13 @@
 {literal}
 $(document).ready(function(){
 	var titreGeneral = $("#titreAppli").text();
-	
+
 	$(".sousPrg a img").mouseenter(function(){
 		var texte = $(this).attr("title");
 		$("#titreAppli").html(texte);
 		}).mouseleave(function(){
 			$("#titreAppli").html(titreGeneral);
 			})
-		
 	});
 {/literal}
 </script>
@@ -76,9 +75,9 @@ $(document).ready(function(){
 <script type="text/javascript">
 {literal}
 	$(document).ready(function(){
-		
+
 		$("*[title], .tooltip").tooltip();
-		
+
 		$("#avertissement").dialog({
 			modal: true,
 			width: 400,
@@ -88,7 +87,7 @@ $(document).ready(function(){
 					}
 				}
 			});
-		
+
 		})
 {/literal}
 </script>

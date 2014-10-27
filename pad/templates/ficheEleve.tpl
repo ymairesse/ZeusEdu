@@ -1,5 +1,12 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
+<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}
+{if ($cours != '')}
+	{if $listeCours.$cours.nomCours != ''}
+		{$listeCours.$cours.nomCours}
+		{else}
+		{$listeCours.$cours.statut} {$listeCours.$cours.libelle} {$listeCours.$cours.nbheures}h
+	{/if}
+{/if}</h2>
 
 <div id="tabs">
 	<ul>
@@ -12,9 +19,11 @@
 		<p><img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
 			id="photo" style="width:100px; top:-60px; position: relative" /></p>
 		<form name="padEleve" id="padEleve" method="POST" action="index.php">
-			<input type="hidden" name="classe" value="{$classe}">
+			<input type="hidden" name="classe" value="{$classe|default:''}">
 			<input type="hidden" name="matricule" value="{$matricule}">
-			<input type="Submit" id="save" name="action" value="Enregistrer">
+			<input type="hidden" name="cours" value="{$cours|default:''}">
+			<input type="hidden" name="action" value="{$action}">
+			<input type="Submit" name="mode" value="Enregistrer" class="fauxBouton">
 			<hr>
 			<textarea name="texte" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true">{$padEleve->getPadText()}</textarea>
 		</form>

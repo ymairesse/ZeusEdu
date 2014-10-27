@@ -23,6 +23,8 @@ $(document).ready(function(){
 			<li><a href="index.php?action=import&amp;table=bullCompetences">Compétences</a></li>
 			<li><a href="index.php?action=import&amp;table=ecoles">Écoles</a></li>
 			<li><a href="index.php?action=import&amp;table=elevesEcoles">Élèves/écoles</a></li>
+			<li><a href="index.php?action=import&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
+			<li><a href="index.php?action=import&amp;table=infirmInfos">Informations médicales</a></li>
 			<li><a href="index.php?action=import&amp;table=passwd">Mots de passe élèves</a></li>
         </ul>
 	</li>
@@ -50,7 +52,9 @@ $(document).ready(function(){
 			<li><a href="index.php?action=look&amp;table=titus">Titulaires</a></li>
 			<li><a href="index.php?action=look&amp;table=bullCompetences">Compétences</a></li>
 			<li><a href="index.php?action=look&amp;table=ecoles">Écoles</a></li>
+			<li><a href="index.php?action=look&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
 			<li><a href="index.php?action=look&amp;table=elevesEcoles">Élèves/écoles</a></li>
+			<li><a href="index.php?action=look&amp;table=infirmInfos">Informations médicales</a></li>
 
 		</ul>
 	</li>
@@ -65,7 +69,10 @@ $(document).ready(function(){
 			<li><a href="index.php?action=clear&amp;table=elevesEcoles">Élèves/écoles</a></li>
 			<li><a href="index.php?action=clear&amp;table=titus">Titulaires</a></li>
 			<li><a href="index.php?action=clear&amp;table=bullCompetences">Compétences</a></li>
+			<li><a href="index.php?action=clear&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
 			<li><a href="index.php?action=clear&amp;table=passwd">Mots de passe élèves</a></li>
+			<li><a href="index.php?action=clear&amp;table=infirmInfos">Informations médicales</a></li>
+			
 		</ul>
 	</li>
 	<li><a href="javascript:void(0)">Utilisateurs</a>
@@ -94,7 +101,6 @@ $(document).ready(function(){
 			<li><a href="index.php?action=autres&amp;mode=alias">Prendre un alias</a></li>
 			<li><a href="index.php?action=autres&amp;mode=switchApplications">Activer/désactiver les applications</a></li>
 			<li><a href="index.php?action=autres&amp;mode=config">Paramètres généraux</a></li>
-			<li><a href="index.php?action=autres&amp;mode=titulaires">Titulariats</a></li>
 		</ul>
 	</li>
 

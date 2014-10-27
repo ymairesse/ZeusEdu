@@ -1,11 +1,11 @@
-<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.prenom} {$eleve.nom}" 
+<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.prenom} {$eleve.nom}"
 		title="{$eleve.prenom} {$eleve.nom}" id="photo" style="width:150px; float:right;" class="photoEleve" />
 <h2 title="{$eleve.matricule}">{$eleve.nom} {$eleve.prenom}: {$eleve.groupe}</h2>
 <div id="accordion" style="width:auto; margin-right: 160px;">
 	<h3>Coordonnées de l'élève</h3>
 	<div>
 	<p><label>Classe</label> {$eleve.classe}
-	{if $eleve.classe != $eleve.groupe} - <small>{$eleve.groupe}{/if} [Titulaire(s): {", "|implode:$titulaires}]</small> </p> 
+	{if $eleve.classe != $eleve.groupe} - <small>{$eleve.groupe}{/if} [Titulaire(s): {", "|implode:$titulaires}]</small> </p>
 	<p><label>Date de naissance</label> {$eleve.DateNaiss}
 	<small>[Âge approx. {$age.Y} ans {if !($age.m == 0)}{$age.m} mois{/if}
 		{if !($age.d == 0)}{$age.d} jour(s){/if}]</small></p>
@@ -13,6 +13,7 @@
 	<p><label>Adresse</label>{$eleve.adresseEleve}</p>
 	<p><label>Code Postal</label>{$eleve.cpostEleve}</p>
 	<p><label>Commune</label>{$eleve.localiteEleve}</p>
+	<p><label>Mail</label><a href="mailto:{$eleve.user}@{$eleve.mailDomain}">{$eleve.user}@{$eleve.mailDomain}</a></p>
 	</div>
 	<h3>Coordonnées de la personne responsable</h3>
 	<div>

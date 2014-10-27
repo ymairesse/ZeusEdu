@@ -1,7 +1,8 @@
 body {
   margin: auto;
   padding: 0 0 2em;
-  background: #ffffff url(images/logoFiligrane.png) no-repeat fixed center;
+  background: #ffffff url(images/bg.jpg) fixed;
+  background-position:center center;
   font-family: Verdana,Arial,sans-serif;
   font-size: 10pt;
   width: 1000px;
@@ -442,9 +443,12 @@ input[readonly] {
   padding: 1em;
   float: left;
   list-style-type: none;
+box-shadow: 1px 1px 12px #555555  
 }
 .sousPrg:hover {
-box-shadow: 1px 1px 12px #555555
+box-shadow: 1px 1px 3px #555555;
+  position: relative;
+  left: 3px;
 }
 .sousPrg a img {
   border:  none;
@@ -737,7 +741,7 @@ margin: 1em;
     }
 
 .widget-outer-480 {
-	width: 480px;
+	width: 470px;
     margin: 0 10px;
 	float:left;
 	padding-top: 1em;

@@ -9,7 +9,7 @@
 	<input type="hidden" name="id" value="{$id|default:''}">
 	<input type="hidden" name="user" value="{$user}">
 	<p>Noté par: <strong>{$user}</strong></p>
-	
+
 	<p><label for="selectParent">Demandé par </label>
 	<input type="text" name="parent" id="parent" size="30" maxlength="30" value="{$parent}">
 	<select name="selectParent" id="selectParent" height="3">
@@ -20,7 +20,7 @@
 		<option value="Autre"{if $parent == 'Autre'} selected="selected"{/if}>Autre</option>
 	</select>
 	</p>
-	
+
 	<p><label for="selectMedia">Média</label>
 	<input type="text" name="media" id="media" size="30" maxlength="30" value="{$media}">
 	<select name="selectMedia" id="selectMedia" height="5">
@@ -32,10 +32,10 @@
 	</select>
 
 	</p>
-	
-	<p><label for="datepicker">Date: </label><input type="text" name="date" value="{$date}" id="datepicker" size="10"></p>
-	<p><label for="timepicker">Heure:</label> <input type="text" name="heure" value="{$heure}" id="timepicker" size="6"></p>
-	
+
+	<p><label for="datepicker">Date: </label><input type="text" name="date" value="{$date|default:''}" id="datepicker" size="10"></p>
+	<p><label for="timepicker">Heure:</label> <input type="text" name="heure" value="{$heure|default:''}" id="timepicker" size="6"></p>
+
 	<input type="submit" name="submit" value="Enregistrer" id="submit">
 	<input type="reset" name="reset" value="Annuler">
 </form>
@@ -47,7 +47,7 @@
 			var parent = $(this).val();
 			$("#parent").val(parent);
 			})
-		
+
 		$("#selectMedia").change(function(){
 			var media = $(this).val();
 			$("#media").val(media);
@@ -62,7 +62,7 @@
 		// sans cette nouvelle règle, les dates du type 15-09-2012 sont refusées sous Webkit
 		// https://github.com/jzaefferer/jquery-validation/issues/20
 		// -------------------------------------------------------------------------------------
-		jQuery.validator.addMethod('uneDate', function(value, element) { 
+		jQuery.validator.addMethod('uneDate', function(value, element) {
 			var reg=new RegExp("/", "g");
 			var tableau=value.split(reg);
 			jour = parseInt(tableau[0],10); mois = parseInt(tableau[1],10); annee = parseInt(tableau[2],10);
@@ -74,19 +74,19 @@
 			condJour = ((jour >=1) && (jour <= lgMois[mois-1]));
 			condAnnee = ((annee > 1900) && (annee < 2100));
 			var testDateOK = (condMois && condJour && condAnnee);
-			return this.optional(element) || testDateOK; 
+			return this.optional(element) || testDateOK;
 			}, "Date incorrecte");
 
-		
-		$("#datepicker").datepicker({ 
+
+		$("#datepicker").datepicker({
 		dateFormat: "dd/mm/yy",
 		prevText: "Avant",
 		nextText: "Après",
 		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
 		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-		firstDay: 1	
+		firstDay: 1
 		});
-			
+
 	$('#timepicker').timepicker({
 		hourText: 'Heures',
 		minuteText: 'Minutes',
@@ -101,7 +101,7 @@
 		hours: {starts: 8, ends: 17},
 		showDeselectButton: false
 		});
-	
+
 	$("#newAutorisation").validate({
 		errorElement: "em",
 		errorClass: "erreurEncodage",
@@ -119,10 +119,10 @@
 			media: {
 				required: true
 				}
-			} 
+			}
 		});
 
 	})
-	
+
 {/literal}
 </script>

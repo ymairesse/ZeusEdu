@@ -11,6 +11,7 @@
     max-width:20em;
     border: 1px solid #444;
 	border-radius: 5px;
+	padding: 0;
 	}
 	
 *[title], .tooltip {cursor:pointer}
@@ -19,7 +20,7 @@
 *html #tooltip {margin-bottom:-6px;}
 
 #tooltip h3 {
-	background-color: #FED841;
+	background-color: #F8BF24;
     border: 1px solid #999999;
     color: #000;
     margin: 0;

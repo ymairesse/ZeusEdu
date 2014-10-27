@@ -27,9 +27,11 @@
 <script type="text/javascript">
 	<!-- quel est l'onglet actif? -->
 	var onglet = "{$onglet|default:''}";
-
+;
 {literal}
 	$(document).ready(function(){
+		
+		window.location.hash = '#top';
 		
 		$("#tabs").tabs();
 

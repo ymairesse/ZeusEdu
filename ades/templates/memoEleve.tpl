@@ -1,5 +1,6 @@
 <p><img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
 	id="photo" style="width:100px; top:-60px; position: relative" /></p>
+
 	<form name="padEleve" id="padEleve" method="POST" action="index.php">
 		<input type="hidden" name="classe" value="{$classe}">
 		<input type="hidden" name="matricule" value="{$matricule}">

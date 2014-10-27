@@ -3,14 +3,12 @@
 class user {
 	private $acronyme;
 	private $identite;			// données personnelles
-	private $identification;  // données réseau IP,...
+	private $identification;  	// données réseau IP,...
 	private $applicationName;
-	// les applications accessibles par l'utilisateur
-	private $applications;
-	// les cours de ce prof
-	private $listeCours;
-	private $titulaire;
-	
+	private $applications;		// les applications accessibles par l'utilisateur
+	private $listeCours;		// les cours de ce prof
+	private $titulaire;			// la ou les classes dont il/elle est titulaire
+
 	// --------------------------------------------
 	// fonction constructeur
 	function __construct($acronyme=Null) {
@@ -24,16 +22,20 @@ class user {
 		$this->titulaire = $this->listeTitulariats($acronyme);
 		}
 	}
-	/*
+	/**
 	 * retourne toutes les informations de la table des profs pour l'utilisateur actif
-	 * @param 
+	 * @param
 	 * @return array
 	 */
 	public function identite ($refresh=false){
 		if (!(isset($this->identite)) || $refresh) {
+			if (is_array($this->acronyme))
+				$acronyme = (string)$this->acronyme[0];
+				else $acronyme = $this->acronyme;
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 			$sql = "SELECT * FROM ".PFX."profs ";
-			$sql .= "WHERE acronyme = '$this->acronyme' LIMIT 1";
+			$sql .= "WHERE acronyme = '$acronyme' LIMIT 1";
+
 			$resultat = $connexion->query($sql);
 			if ($resultat) {
 				$resultat->setFetchMode(PDO::FETCH_ASSOC);
@@ -43,7 +45,7 @@ class user {
 			}
 		return $this->identite;
 		}
-		
+
 	/***
 	 * une fonction qui retourne l'acronyme de l'utilisateur
 	 * @param
@@ -52,7 +54,7 @@ class user {
 	public function acronyme(){
 		return $this->acronyme;
 		}
-	
+
 	/**
 	 * retourne le nom de l'application; permet de ne pas confondre deux applications
 	 * différentes qui utiliseraient la variable de SESSION pour retenir MDP et USERNAME
@@ -63,18 +65,21 @@ class user {
 	function applicationName() {
 		return $this->applicationName;
 	}
-	
+
 	/**
 	 * @return array : liste des titulariats de classe exercés par l'utilisateur en cours
 	 * @param
 	 * @return array : tableau des classes dont l'utilisateur est titulaire
 	 */
-	public function listeTitulariats () {
+	public function listeTitulariats ($sections=Null) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$acronyme = $this->getAcronyme();
 		$sql = "SELECT classe ";
 		$sql .= "FROM ".PFX."titus ";
-		$sql .= "WHERE acronyme='$this->acronyme' ";
-		$sql .= "ORDER BY classe";
+		$sql .= "WHERE acronyme='$acronyme' ";
+		if ($sections != Null)
+			$sql .= "AND section IN ($sections) ";
+		$sql .= "ORDER BY classe ";
 		$resultat = $connexion->query($sql);
 		$titulariats = array();
 		if ($resultat) {
@@ -105,19 +110,20 @@ class user {
 		Application::DeconnexionPDO($connexion);
 		return ($ligne['acronyme']);
 		}
-	
+
 	/**
 	 * détermine les applications autorisées (en excluant éventuellement les application inactives) pour l'utilisateur courant
 	 * @param $active : boolean true si l'on souhaite ne sélectionner que les applications non désactivées par l'administrateur
-	 * #return array
+	 * @return array
 	 */
 	private function applications($actives=false) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$acronyme = $this->getAcronyme();
 		$sql = "SELECT a.*, pa.userStatus ";
 		$sql .= "FROM ".PFX."applications AS a ";
 		$sql .= "JOIN ".PFX."profsApplications AS pa ON ";
 		$sql .= "(a.nom = pa.application) ";
-		$sql .= "WHERE acronyme = '$this->acronyme' AND userStatus != 'none' ";
+		$sql .= "WHERE acronyme = '$acronyme' AND userStatus != 'none' ";
 		if ($actives) $sql .= "AND active = 1 ";
 		$sql .= "ORDER BY ordre, lower(nom), userStatus ";
 		$resultat = $connexion->query($sql);
@@ -134,16 +140,16 @@ class user {
 		Application::DeconnexionPDO($connexion);
 		return $applis;
 	}
-	
-	/*
+
+	/**
 	 * renvoie la liste des applications accessibles à l'utilisateur actif
-	 * @param 
+	 * @param
 	 */
 	public function getApplications() {
 		return $this->applications;
 	}
-	
-	/*
+
+	/**
 	 * rend l'utilisateur actif "admin" de toutes les applications pour lesquelles il a des droits
 	 * @param
 	 * @return void()
@@ -153,11 +159,11 @@ class user {
 			$detailsAppli['userStatus'] = 'admin';
 			}
 		}
-	
+
 	/**
 	 * on ajoute une application disponible à la liste des applications de l'utilistateur
 	 * typiquement, l'application 'admin' lorsque l'on prend un alias
-	 * @param array $appli 
+	 * @param array $appli
 	 * @return void()
 	 */
 	function addAppli($appli) {
@@ -166,7 +172,7 @@ class user {
 		$this->applications[$key] = $module;
 	}
 
-	/***
+	/**
 	 * vérifie que l'on dispose d'un nom d'utilisateur et d'un mot de passe pour l'application
 	 * le nom de l'application est vérifié au cas où deux applications différentes utiliseraient
 	 * les sessions de la même façon
@@ -176,12 +182,12 @@ class user {
 	function accesApplication ($nomApplication) {
 		// vérifier que l'utilisateur est identifié pour l'application active
 		$identite = $this->identite();
-		return (($this->applicationName() == $nomApplication) && isset($identite['acronyme']) && isset($identite['mdp']));	
+		return (($this->applicationName() == $nomApplication) && isset($identite['acronyme']) && isset($identite['mdp']));
 	}
-	
-	/***
+
+	/**
 	 * Vérification que l'utilisateur actuel a les droits pour accéder à un module de l'application
-	 * @param $BASE
+	 * @param $BASEDIR
 	 * @return boolean
 	 */
 	public function accesModule($BASEDIR) {
@@ -192,7 +198,7 @@ class user {
 			header("Location: ".BASEDIR."index.php");
 			else return true;
 	}
-	
+
 	/**
 	 * renvoie la liste des cours donnés par l'utilisateur courant; possibilité de demander les cours par section (GT, TQ, ...)
 	 * @param string sections : liste des sections, chacune étant entourée de guillemets simples
@@ -218,9 +224,6 @@ class user {
 		if ($resultat) {
 			while ($ligne = $resultat->fetch()) {
 				$coursGrp = $ligne['coursGrp'];
-				// si l'utilisateur a changé le nom du cours...
-				if ($ligne['nomCours'] != '')
-					$ligne['libelle'] = $ligne['nomCours'];
 				$listeCours[$coursGrp] = array(
 						'libelle'=>$ligne['libelle'],
 						'nomCours'=>$ligne['nomCours'],
@@ -235,7 +238,7 @@ class user {
 		$this->listeCours = $listeCours;
 		return $this->listeCours;
 	}
-	
+
 	### --------------------------------------------------------------------###
 	function toArray () {
 		return (array) $this;
@@ -252,7 +255,7 @@ class user {
 		$date = date("Y-m-d");
 		$heure = date("H:i");
 		$user = $acronyme;
-		
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."logins ";
 		$sql .= "SET user='$user', date='$date', heure='$heure', ip='$ip', host='$hostname'";
@@ -260,18 +263,6 @@ class user {
 		Application::DeconnexionPDO ($connexion);
 		return $n;
 	}
-
-
-	/***
-	 * raffraîchit les informations concernant l'utilisateur courant à partir des informations passées en $data
-	 * @param $data : array
-	 * @return void()
-	 */
-	//private function session_refresh($data) {
-	//	foreach ($data as $key=>$info) 
-	//		$_SESSION[APPLICATION]['identite'][$key] = $info;
-	//	}
-
 
 	/***
 	 * enregistrement des données personnelles de l'utilisateur, provenant d'un formulaire
@@ -289,7 +280,7 @@ class user {
 		$data['prenom'] = (isset($post['prenom']))?$post['prenom']:Null;
 		$data['sexe'] = (isset($post['sexe']))?$post['sexe']:Null;
 		// ----------------------------------------------------------------
-		
+
 		$data['mail'] = $post['mail'];
 		$data['telephone'] = $post['telephone'];
 		$data['GSM'] = $post['GSM'];
@@ -301,20 +292,20 @@ class user {
 			$data['pays'] = $post['pays'];
 			}
 		// si le mot de passe est indiqué, il doit être présent deux fois
-		if (isset($post['mdp']) && isset($post['mdp2'])) 
+		if (isset($post['mdp']) && isset($post['mdp2']))
 			if ($post['mdp'] != $post['mdp2']) die(PASSWDNOTMATCH);
 		// s'il y a un mot de passe, alors on en tient compte
 		if (isset($post['mdp']) && ($post['mdp'] != ''))
 			$data['mdp'] = md5($post['mdp']);
 		$data['statut'] = $post['statut'];
-			
+
 		$tableauSqlInsert = $tableauSqlUpdate = array();
 		foreach ($data as $key=>$value)
 			$tableauSqlInsert[] = "$key = '$value'";
 		unset($data['acronyme']);
 		foreach ($data as $key=>$value)
 			$tableauSqlUpdate[] = "$key = '$value'";
-			
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."profs SET ";
 		$sql .= implode(",",$tableauSqlInsert);
@@ -325,7 +316,7 @@ class user {
 		return $resultat;
 	}
 
-	/***
+	/**
 	* enregistrement des droits sur les différentes applications; données
 	* issues du formulaire de modification des données personnelles
 	* @param $post
@@ -356,7 +347,7 @@ class user {
 	   Application::DeconnexionPDO($connexion);
 	   return $nbResultats;
 	   }
-	
+
 	/**
 	 * Enregistrement du mot de passe dans la BD à partir des informations provenant d'un formulaire
 	 * function savePwd
@@ -381,22 +372,22 @@ class user {
 	}
 
 	/**
-	 * fournit le mot de passe MD5 de l'utilisateur 
+	 * fournit le mot de passe MD5 de l'utilisateur
 	 * @param
 	 * @return string
 	 */
 	public function getPasswd() {
 		return $this->identite['mdp'];
 	}
-	
+
 	/**
 	 * renvoie l'acronyme (userName) de l'utilisateur courant
-	 * @param 
+	 * @param
 	 */
 	public function getAcronyme() {
 		return $this->identite['acronyme'];
 	}
-	
+
 	/**
 	 * renvoie le statut global de l'utlilisateur
 	 * @param
@@ -405,7 +396,7 @@ class user {
 	public function getStatut() {
 		return $this->identite['statut'];
 	}
-	
+
 	/**
 	 * fixer le statut global de l'application à un niveau donné
 	 * @param $statut
@@ -414,15 +405,15 @@ class user {
 	public function setStatut($statut) {
 		$this->identite['statut'] = $statut;
 		}
-	
-	/***
+
+	/**
 	 * renvoie l'adresse mail de l'utilisateur courant
 	 */
 	public function getMail() {
 		return $this->identite['mail'];
 		}
 
-	/***
+	/**
 	 * renvoie les informations d'identification réseau de l'utilisateur courant
 	 * @param
 	 * @return array ip, hostname, date, heure
@@ -435,8 +426,8 @@ class user {
 		$data['heure'] = date("H:i");
 		return $data;
 	}
-	
-	/*** 
+
+	/**
 	 * renvoie l'adresse IP de connexion de l'utilisateur actuel
 	 * @param
 	 * @return string
@@ -445,8 +436,8 @@ class user {
 		$data = $this->identification();
 		return $data['ip'];
 		 }
-	
-	/***
+
+	/**
 	 * renvoie le nom de l'hôte correspondant à l'IP de l'utilisateur en cours
 	 * @param
 	 * @return string
@@ -455,8 +446,8 @@ class user {
 		$data = $this->identification();
 		return $data['hostname'];
 		}
-	 
-	/***
+
+	/**
 	 * si une photo est présente, retourne l'acronyme du prof; sinon, retourne Null
 	 * @param $acronyme
 	 */
@@ -466,7 +457,7 @@ class user {
 			else return Null;
 	}
 
-	/***
+	/**
 	 * renvoie la liste des logs de l'utilisateur en cours
 	 * @param $acronyme
 	 * @return array
@@ -489,7 +480,7 @@ class user {
 	* @return string
 	*/
    public function verifFormulairePerso ($post) {
-	   foreach ($post as $key=>$value) 
+	   foreach ($post as $key=>$value)
 		   $$key = $value;
 	   $erreur = "";
 	   if ($acronyme == Null) $erreur = MISSINGUSERNAME;
@@ -505,7 +496,7 @@ class user {
 	   return $erreur;
 	   }
 
-	/** 
+	/**
 	 * retourne le statut de l'utilisateur dans l'application donnée
 	 * @param $appli
 	 * @return string
@@ -517,7 +508,7 @@ class user {
 	return $resultat;
 	}
 
-	/***
+	/**
 	 * retourne toutes les informations d'identité d'un utilisateur "prof"
 	 * @param $acronyme
 	 * @return array
@@ -531,12 +522,10 @@ class user {
 	return $ligne;
 }
 
-	/***
-	 * 
+	/**
 	 * @param $acronyme
 	 * @param $Application : objet Application
-	 * 
-	 * */
+	 */
 	public function oldUser ($acronyme, $Application) {
 	$user = $this->identiteProf($acronyme);
 	// liste de toutes les applications actives dans l'application (Zeus)
@@ -552,7 +541,7 @@ class user {
 	return $user;
 	}
 
-	/***
+	/**
 	 * retourne toutes les applis accessibles à un utilisateur et le statut de l'utilisateur dans chacune d'elles
 	 * @param $acronyme
 	 * @return array
@@ -572,7 +561,7 @@ class user {
 			$tableauApplisUser[$nom]= array('userStatus'=>$userStatus, 'nomLong'=>$nomLong);
 			}
 		Application::DeconnexionPDO ($connexion);
-		return $tableauApplisUser;	
+		return $tableauApplisUser;
 	}
 
 	/***
@@ -582,7 +571,7 @@ class user {
 	 */
 	public function getUserStatus($module) {
 		return $this->applications[$module]['userStatus'];
-	}	
-	
+	}
+
 }
 ?>

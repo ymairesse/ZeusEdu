@@ -55,42 +55,6 @@ switch ($mode) {
 				break;
 			}
 		break;
-	case 'titulaires':
-		switch ($etape) {
-			case 'supprimer':
-				$nb = $Ecole->supprTitulariat ($classe, $acronyme);
-				$smarty->assign("message", array(
-							'title'=>"Suppression",
-							'texte'=>"$nb modification(s) enregistrée(s).")
-							);
-				break;
-			case 'ajouter':
-				$nb = $Ecole->addTitulariat($classe,$acronyme);
-				$smarty->assign("message", array(
-							'title'=>"Ajouts",
-							'texte'=>"$nb modification(s) enregistrée(s).")
-							);
-				break;
-			}
-		// si une classe a été choisie, on montre la page de sélection/désélection
-		// des titulaires
-		if (isset($classe)) {
-			$listeProfs = $Ecole->listeProfs();
-			$listeTitusGroupe = $Ecole->titusDeGroupe($classe);
-			$smarty->assign('listeProfs', $listeProfs);
-			$smarty->assign('listeTitusGroupe', $listeTitusGroupe);
-			}
-		// dans tous les cas, on montre le sélecteur de groupe/classe
-		$listeTitus = $Ecole->listeTitus();
-		$listeGroupes = $Ecole->listeGroupes();
-		$smarty->assign('action',$action);
-		$smarty->assign('mode',$mode);
-		$smarty->assign('etape','choixTitulaires');
-		$smarty->assign('listeTitus', $listeTitus);
-		$smarty->assign('listeGroupes', $listeGroupes);
-		$smarty->assign('selecteur', 'selectClasse');
-		$smarty->assign('corpsPage', 'choixTitu');
-		break;
 
 	case 'config':
 		switch ($etape) {

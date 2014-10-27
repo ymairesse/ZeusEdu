@@ -5,15 +5,15 @@
  */
 
 class EleveAdes {
-	
+
 	private $listeFaits;
 	private $listeRetenues;
-	
+
 	function __construct ($matricule){
 		$this->listeFaits = $this->getListeFaits($matricule);
 		$this->listeRetenues = $this->getListeRetenues($matricule);
 	}
-	
+
 
 	/**
 	 * renvoie la liste structurée des faits disciplinaires d'un élève donné
@@ -23,26 +23,27 @@ class EleveAdes {
 	private function getListeFaits ($matricule, $admin=false) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * ";
-		$sql .= "FROM ".PFX."adesFaits ";
-		$sql .= "JOIN ".PFX."adesTypesFaits ON (".PFX."adesFaits.type = ".PFX."adesTypesFaits.type) ";
-		$sql .= "WHERE matricule = '$matricule' AND ladate > '".BEGINDATE."' ";
-		$sql .= "ORDER BY ".PFX."adesTypesFaits.ordre, ladate, idFait ";
+		$sql .= "FROM ".PFX."adesFaits AS af ";
+		$sql .= "JOIN ".PFX."adesTypesFaits AS atf ON (af.type = atf.type) ";
+		$sql .= "WHERE matricule = '$matricule' ";
+		$sql .= "ORDER BY anneeScolaire DESC, atf.ordre, ladate, idFait ";
 
 		$resultat = $connexion->query($sql);
-		$listeFaits = array();
+		$listeFaits = array(ANNEESCOLAIRE=>Null);
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
+				$anneeScolaire = $ligne['anneeScolaire'];
 				$idfait = $ligne['idfait'];
 				$type = $ligne['type'];
 				$ligne['ladate'] = Application::datePHP($ligne['ladate']);
-				$listeFaits[$type][$idfait] = $ligne; 
-			} 
+				$listeFaits[$anneeScolaire][$type][$idfait] = $ligne;
+			}
 		}
 		Application::deconnexionPDO($connexion);
 		return $listeFaits;
 		}
-		
+
 	/**
 	 * rafraîchir la liste des faits (après une édition ou un ajout)
 	 * @param integer $matricule : matricule de l'élève
@@ -52,7 +53,7 @@ class EleveAdes {
 		$this->listeFaits = $this->getListeFaits($matricule);
 		$this->listeRetenues = $this->getListeRetenues($matricule);
 	}
-	
+
 	/**
 	 * renvoie la liste des idRetenues pour l'élève dont on fournit le matricule
 	 * @param integer $matricule
@@ -71,7 +72,7 @@ class EleveAdes {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$idretenue = $ligne['idretenue'];
-				$listeRetenues[] = $idretenue; 
+				$listeRetenues[] = $idretenue;
 				}
 			}
 
@@ -89,13 +90,13 @@ class EleveAdes {
 			while ($ligne = $resultat->fetch()) {
 				$idretenue = $ligne['idretenue'];
 				$ligne['dateRetenue'] = Application::datePHP($ligne['dateRetenue']);
-				$listeRetenues[$idretenue] = $ligne; 
+				$listeRetenues[$idretenue] = $ligne;
 				}
 		}
 		Application::DeconnexionPDO($connexion);
 		return $listeRetenues;
 	}
-	
+
 	/**
 	 * lecture d'un seul fait disciplinaire en vue d'édition
 	 * @param integer $idfait
@@ -103,7 +104,7 @@ class EleveAdes {
 	 */
 	public function lireUnFait ($idfait) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT idfait, matricule, type, ladate, motif, professeur, idretenue, travail, materiel, sanction, nopv, qui ";
+		$sql = "SELECT idfait, anneeScolaire, matricule, type, ladate, motif, professeur, idretenue, travail, materiel, sanction, nopv, qui ";
 		$sql .= "FROM ".PFX."adesFaits ";
 		$sql .= "WHERE idfait = '$idfait' ";
 		$resultat = $connexion->query($sql);
@@ -116,7 +117,7 @@ class EleveAdes {
 		Application::DeconnexionPDO($connexion);
 		return $liste;
 	}
-	
+
 	/**
 	 * création d'un nouveau fait vide
 	 * @param array $prototype : prototype du fait provenant de la class Ades
@@ -127,8 +128,8 @@ class EleveAdes {
 		$structure = array();
 		foreach ($lesChamps as $champ=>$data) {
 			if (in_array('formulaire',explode(',',$data['contextes']))) {
-				// trois champs peuvent contenir des données par défaut
-				if (!in_array($champ,array('ladate','qui','type')))
+				// quatre champs peuvent contenir des données par défaut
+				if (!in_array($champ,array('ladate','qui','type','anneeScolaire')))
 					$structure[$champ] = '';
 					else switch ($champ) {
 						case 'ladate':
@@ -143,25 +144,29 @@ class EleveAdes {
 							// le type de fait disciplinaire
 							$structure[$champ] = $type;
 							break;
+						case 'anneeScolaire':
+							// l'année scolaire en cours
+							$structure[$champ] = ANNEESCOLAIRE;
+							break;
 					}
 				}
 			}
 		return $structure;
 	}
-	
+
 	/**
 	 * Enregistrement d'un fait disciplinaire nouveau ou édité
 	 * @param array $post : données provenant d'un formulaire
 	 * @param $prototype : description de ce type de fait disciplinaire (rubriques)
-	 * 
+	 *
 	 * @return integer : nombre de fiches enregistrées (normalement, une seule)
 	 */
 	public function enregistrerFaitDisc ($post, $prototype, $retenue) {
 
 		// est-ce une retenue?
 		if ($prototype['structure']['typeRetenue'] != 0) {
-			// c'en est une, 
-			
+			// c'en est une,
+
 			// dans le cas d'une édition, $oldIdretenue retient l'ancien $id de la retenue en cours d'édition
 			$oldIdretenue = isset($post['oldIdretenue'])?$post['oldIdretenue']:Null;
 			$idretenue = isset($post['idretenue'])?$post['idretenue']:Null;
@@ -193,14 +198,14 @@ class EleveAdes {
 					$idfait = $value;
 					else
 					$listeSQL[]="$unChamp='".$value."'";
+				}
 			}
-		}
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$listeSQL = implode(',', $listeSQL);
 		if ($idfait != '') {
 			$sql = "UPDATE ".PFX."adesFaits ";
 			$sql .= "SET ".$listeSQL." ";
-			$sql .= "WHERE idfait = '$idfait' "; 
+			$sql .= "WHERE idfait = '$idfait' ";
 			}
 			else {
 				$sql = "INSERT INTO ".PFX."adesFaits ";
@@ -228,7 +233,7 @@ class EleveAdes {
 		Application::DeconnexionPDO($connexion);
 		return $resultat;
 	}
-		
+
 		/**
 		 * incrémentation du nombre d'inscriptions à une retenue
 		 * @param integer $idretenue
@@ -244,12 +249,12 @@ class EleveAdes {
 			Application::DeconnexionPDO($connexion);
 			if ($resultat) return true;
 		}
-		
+
 		/**
 		 * décrémentation du nombre d'inscriptions à une retenue
 		 * @param integer $idretenue
 		 * @result boolean: true si tout s'est bien passé
-		 */		
+		 */
 		public function liberePlaceRetenue ($idretenue) {
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 			$sql = "UPDATE ".PFX."adesRetenues ";
@@ -259,8 +264,8 @@ class EleveAdes {
 			Application::DeconnexionPDO($connexion);
 			if ($resultat) return true;
 		}
-		
-		
+
+
 	/**
 	 * renvoie la variable $listeFaits de l'objet EleveAdes
 	 * @param

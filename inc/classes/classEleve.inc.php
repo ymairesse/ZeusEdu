@@ -5,7 +5,7 @@
  */
 
 class eleve {
-    
+
     private $detailsEleve;
 
     /*
@@ -15,7 +15,7 @@ class eleve {
     function __construct($matricule) {
         if ($matricule != Null)
         $this->setDetailsEleve($matricule);
-		else $this->DetailsEleve = Null;
+		else $this->detailsEleve = Null;
     }
 
     /*
@@ -27,21 +27,23 @@ class eleve {
     function setDetailsEleve($matricule){
         if (!(isset($this->detailsEleve))) {
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = "SELECT * FROM ".PFX."eleves ";
-            $sql .= "WHERE matricule = '$matricule'";
+            $sql = "SELECT de.*, user, mailDomain FROM ".PFX."eleves AS de ";
+            $sql .= "LEFT JOIN ".PFX."passwd AS dp ON (de.matricule = dp.matricule) ";
+            $sql .= "WHERE de.matricule = '$matricule'";
             $resultat = $connexion->query($sql);
             if ($resultat) {
                 $resultat->setFetchMode(PDO::FETCH_ASSOC);
                 $this->detailsEleve =  $resultat->fetch();
                 }
             Application::DeconnexionPDO($connexion);
+            $this->detailsEleve['age'] = $this->age();
+            $this->detailsEleve['photo'] = Ecole::photo($this->detailsEleve['matricule']);
             }
-
-        if ($this->detailsEleve['DateNaiss'] != '0000-00-00')
-			$this->detailsEleve['age'] = $this->age();
-		$this->detailsEleve['photo'] = Ecole::photo($this->detailsEleve['matricule']);
+//        if ($this->detailsEleve['DateNaiss'] != '0000-00-00')
+//			$this->detailsEleve['age'] = $this->age();
+		
         }
-        
+
     /*
      * function getDetailsEleve
      * @param
@@ -62,7 +64,7 @@ class eleve {
             return $this->detailsEleve['classe'];
             else return '';
         }
-		
+
 	/**
 	 * année d'étude de l'élève concerné
 	 * @return integer : l'année d'étude
@@ -73,7 +75,7 @@ class eleve {
 			return substr($classe,0,1);
 			else return '';
 		}
-	
+
     /*
 	 * function groupe
 	 * @param :
@@ -84,7 +86,7 @@ class eleve {
             return $this->detailsEleve['groupe'];
             else return '';
         }
-	
+
 	/*
 	 * function matricule
 	 * @param :
@@ -95,18 +97,18 @@ class eleve {
 			return $this->detailsEleve['matricule'];
 			else return '';
 		}
-        
+
     /**
      * calcule un array contenant AA MM et JJ d'âge de l'élève à partir de la date de naissance
      * function age
-     * @param 
+     * @param
      */
     function age() {
         list($ajd['Y'], $ajd['m'], $ajd['d']) = explode("-",date("Y-m-d"));
-        list($nais['Y'], $nais['m'], $nais['d']) = explode ('-', $this->detailsEleve['DateNaiss']); 
-        // calcul du nombre d'années d'âge    
+        list($nais['Y'], $nais['m'], $nais['d']) = explode ('-', $this->detailsEleve['DateNaiss']);
+        // calcul du nombre d'années d'âge
         $age['Y'] = $ajd['Y']-$nais['Y'];
-    
+
         // calcul du nombre de mois d'âge en plus des années
         // L'anniversaire est-il passé, cette année?
         if ($ajd['m'] >= $nais['m']) {
@@ -118,7 +120,7 @@ class eleve {
             // combien de mois avant l'anniversaire?
             $age['m'] = 12-$nais['m']+$ajd['m'];
             }
-    
+
         // calcul du nombre de jours après la date-jour de l'anniversaire
         if ($ajd['d'] >= $nais['d']) {
             // la date-jour est passée, le calcul est simple
@@ -135,7 +137,7 @@ class eleve {
         return $age;
     }
 
-	
+
     /*
      * fonction utilisée par jquery pour rechercher les élèves qui correspondent à un critère donné
      * on cherche un élève par son nom ou par son prénom
@@ -147,7 +149,7 @@ class eleve {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = "SELECT matricule, nom, prenom, CONCAT(nom,' ',prenom, ' : ',classe) AS nomPrenom ";
 		$sql .= "FROM ".PFX."eleves ";
-		$sql .= "WHERE (nom LIKE '%$fragment%' OR prenom LIKE '%$fragment%') AND section != 'PARTI' ";	
+		$sql .= "WHERE (nom LIKE '%$fragment%' OR prenom LIKE '%$fragment%') AND section != 'PARTI' ";
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom";
 
         $resultat = $connexion->query($sql);
@@ -155,7 +157,7 @@ class eleve {
         if ($resultat) {
         while ($ligne = $resultat->fetch()) {
             array_push($listeEleves, array(
-                    'value'=>$ligne['nomPrenom'], 'matricule'=>$ligne['matricule'], 
+                    'value'=>$ligne['nomPrenom'], 'matricule'=>$ligne['matricule'],
                     'nom'=>$ligne['nom'], 'prenom'=>$ligne['prenom'])
                     );
                 }
@@ -163,7 +165,7 @@ class eleve {
         Application::DeconnexionPDO($connexion);
         return $listeEleves;
 	}
-	
+
     /*
      * fonction utilisée par jquery pour rechercher les élèves qui correspondent à un critère donné
      * on cherche un élève par son nom, par son prénom ou par sa classe
@@ -177,7 +179,7 @@ class eleve {
 		$sql .= "FROM ".PFX."eleves ";
         switch ($critere) {
             case 'nom':
-                $sql .= "WHERE nom LIKE '%$fragment%' ";	
+                $sql .= "WHERE nom LIKE '%$fragment%' ";
                 break;
             case 'prenom':
                 $sql .= "WHERE prenom LIKE '%$fragment%' ";
@@ -194,7 +196,7 @@ class eleve {
         if ($resultat) {
         while ($ligne = $resultat->fetch()) {
             array_push($listeEleves, array(
-                    'value'=>$ligne['nomPrenom'], 'matricule'=>$ligne['matricule'], 
+                    'value'=>$ligne['nomPrenom'], 'matricule'=>$ligne['matricule'],
                     'nom'=>$ligne['nom'], 'prenom'=>$ligne['prenom'],
                     'classe'=>$ligne['classe'])
                     );
@@ -228,8 +230,8 @@ class eleve {
         Application::DeconnexionPDO($connexion);
         return $listeTitus;
         }
-        
-        
+
+
         /*
          * function enregistrer
          * @param $post
@@ -250,9 +252,9 @@ class eleve {
                 $listeChamps[$nomChamp] = $nomChamp;
 				}
             $sqlInsert = array();
-            foreach ($listeChamps as $unChamp) 
+            foreach ($listeChamps as $unChamp)
                 $sqlInsert[$unChamp] = "$unChamp='".addslashes($post[$unChamp])."'";
-            
+
             $sqlUpdate = $sqlInsert;
             // suppression du champ "clef primaire"
             unset($sqlUpdate['matricule']);
@@ -264,9 +266,9 @@ class eleve {
 
         }
 
-	/* 
-	 * function ecoleOrigine 
-	 * 
+	/*
+	 * function ecoleOrigine
+	 *
 	 * retourne la liste des écoles d'origine connues de l'élève dont on fournit le matricule
 	 * */
 	public function ecoleOrigine () {
@@ -277,7 +279,7 @@ class eleve {
 		$sql .= "JOIN ".PFX."ecoles ON (".PFX."ecoles.ecole = ".PFX."elevesEcoles.ecole) ";
 		$sql .= "WHERE matricule='$matricule' ";
 		$sql .= "ORDER BY annee ";
-		
+
 		$resultat = $connexion->query($sql);
 		$ecoles = array();
 		if ($resultat) {

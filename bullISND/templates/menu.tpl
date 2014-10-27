@@ -58,7 +58,7 @@
 	</li>
 	{/if}
 	*}
-	{if ($titulaire) }
+	{if $titulaire }
 	<li><a href="javascript:void(0)">Titulaire de {','|implode:$titulaire}</a>
 		<ul>
 			<li><a href="index.php?action=titu&amp;mode=remarques">Remarques aux bulletins</a></li>
@@ -88,6 +88,7 @@
 		<li><a href="index.php?action=admin&amp;mode=programmeEleve">Attrib. cours aux élèves</a></li>
 		<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
 		<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
+		<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats</a></li>
 		<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
 		{/if}
 		</ul>

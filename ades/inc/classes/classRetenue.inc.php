@@ -66,24 +66,35 @@ class Retenue {
 		$idretenue = isset($post['idretenue'])?$post['idretenue']:Null;
 		$type = $post['typeRetenue'];
 		$date = Application::dateMysql($post['date']);
-		
+
 		$heure = $post['heure'];
 		$duree = $post['duree'];
 		$local = addslashes(htmlspecialchars($post['local']));
 		$places = $post['places'];
 		$occupation = $post['occupation'];
 		$affiche = isset($post['affiche'])?'O':'N';
-		if (isset($idretenue)) {
-			$sql = "UPDATE ".PFX."adesRetenues ";
-			$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
-			$sql .= "WHERE idretenue = '$idretenue' ";
-			}
-			else {
-				$sql = "INSERT INTO ".PFX."adesRetenues ";
+		$recurrence = isset($post['recurrence'])?$post['recurrence']:0;
+		
+		foreach (range(0,$recurrence) as $semaine) {
+			if (isset($idretenue)) {
+				$sql = "UPDATE ".PFX."adesRetenues ";
 				$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
+				$sql .= "WHERE idretenue = '$idretenue' ";
+				}
+				else {
+					$sql = "INSERT INTO ".PFX."adesRetenues ";
+					$sql .= "SET type='$type', dateRetenue='$date', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
+				}
+			$resultat = $connexion->exec($sql);
+			if ($recurrence > 0) {
+				$timeStamp = list($year, $month, $day) = explode('-', $date);
+				$timestamp = mktime(0, 0, 0, $month, $day, $year);
+				$datePlus7 = date('d/m/Y', strtotime("+$semaine+1 week", $timestamp));
+				// la nouvelle date devient la date+7 et idretenue n'est plus défini car ce n'est plus une édition
+				$date = Application::dateMysql($datePlus7);
+				unset($idretenue);
+				}
 			}
-
-		$resultat = $connexion->exec($sql);
 		if (!(isset($idretenue)))
 			$idretenue = $connexion->lastInsertId();
 		Application::DeconnexionPDO($connexion);
@@ -137,10 +148,5 @@ class Retenue {
 		Application::DeconnexionPDO($connexion);
 		return $occupations;
 	}
-
 	
 }
-
-
-
-

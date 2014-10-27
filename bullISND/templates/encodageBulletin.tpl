@@ -224,7 +224,7 @@
 			<td>
 			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
 				name="attitudes-eleve_{$matricule}-att4"
-				value="NE" {if $attitudes[1] == 'NE'}checked="checked"{/if} class="radioAcquis"
+				value="NE" {if $attitudes[4] == 'NE'}checked="checked"{/if} class="radioAcquis"
 				tabIndex="{$tabIndexAutres+4}"> |
 			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
 				name="attitudes-eleve_{$matricule}-att4"

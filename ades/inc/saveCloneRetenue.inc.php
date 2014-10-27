@@ -8,7 +8,7 @@ $Application = new Application();
 $ligne = $_POST['ligne'];
 
 $date = $_POST['date'];
-$timestamp = $Application->dateFR2Time($_POST['date']);
+$timestamp = $Application->dateFR2Time($date);
 $datePlus7 = date('d/m/Y', strtotime('+1 week', $timestamp));
 
 require_once (INSTALL_DIR."/ades/inc/classes/classRetenue.inc.php");

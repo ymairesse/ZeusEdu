@@ -13,7 +13,8 @@
 		{if isset($listeCours)}
 		{foreach from=$listeCours key=unCoursGrp item=unCours}
 			<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected{/if}>
-				{$unCours.statut} {$unCours.nbheures}h - {$unCours.libelle} {$unCours.annee} ({$unCours.coursGrp})</option>
+				{$unCours.statut} {$unCours.nbheures}h - {if ($unCours.nomCours != '')} [{$unCours.nomCours}] {/if}
+				{$unCours.libelle} {$unCours.annee} ({$unCours.coursGrp})</option>
 		{/foreach}
 		{/if}
 	</select>

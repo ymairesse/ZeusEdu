@@ -13,6 +13,10 @@ $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $classes = isset($_POST['classes'])?$_POST['classes']:Null;
 $laClasse = isset($_POST['laClasse'])?$_POST['laClasse']:Null;
 
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
+$smarty->assign('etape',$etape);
+
 $listeClasses = $Ecole->listeClasses();
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('laClasse', $laClasse);
@@ -22,11 +26,10 @@ if ($laClasse != '') {
 	}
 if (isset($matricule))
 	$Eleve = new Eleve($matricule);
-	
+
 switch ($mode) {
 	case 'addEleve':
 		$smarty->assign('eleve',Null);
-		$smarty->assign('action',$action);
 		$smarty->assign('mode','save');
 		$smarty->assign('recordingType','new');
 		$smarty->assign('corpsPage', 'inputEleve');
@@ -38,11 +41,10 @@ switch ($mode) {
 				$smarty->assign('info', $Ecole->getUserPasswdEleve($matricule));
 				$smarty->assign('matricule', $matricule);
 				$smarty->assign('selecteur','selectClasseEleve');
-				$smarty->assign('action','gestEleves');
 				$smarty->assign('mode', 'save');
 				// on ouvre le formulaire en modification
 				$smarty->assign("recordingType","modif");
-				$smarty->assign("corpsPage", "inputEleve");				
+				$smarty->assign("corpsPage", "inputEleve");
 				break;
 			default:
 				// choix de l'élève
@@ -54,10 +56,9 @@ switch ($mode) {
 		$nbModifications = $Eleve->enregistrer($_POST);
 		$smarty->assign('laClasse', $laClasse);
 		$smarty->assign('message', array(
-				'title'=>'Information', 
+				'title'=>'Information',
 				'texte'=>"$nbModifications modifications"));
 		$smarty->assign('matricule',$matricule);
-
 		$smarty->assign('etape','showEleve');
 		$smarty->assign('selecteur','selectClasseEleve');
 		break;
@@ -72,7 +73,7 @@ switch ($mode) {
 					));
 				// break; pas de break
 			default:
-				$smarty->assign('listeEleves', $Ecole->listOrphanEleves());	
+				$smarty->assign('listeEleves', $Ecole->listOrphanEleves());
 				$smarty->assign('corpsPage', 'selectEleveDel');
 				break;
 			}
@@ -102,11 +103,21 @@ switch ($mode) {
 		require ("envoiPhotosZip.inc.php");
 		break;
 	case 'attribMdp':
-		$nbResultats = $Ecole->attribPasswdEleves();
-		$smarty->assign("message", array(
-			'title'=>"Mots de passe",
-			'texte'=>"$nbResultats mot(s) de passe attribué(s)")
-		);
+		switch ($etape) {
+			case 'save':
+				$longueur = isset($_POST['longueur'])?$_POST['longueur']:Null;
+				if (!(isset($longueur)) || !(is_numeric($longueur)) || ($longueur < 3) || $longueur > 12)
+					die('incorrect value');
+				$nbResultats = $Ecole->attribPasswdEleves($longueur);
+				$smarty->assign("message", array(
+					'title'=>"Mots de passe",
+					'texte'=>"$nbResultats mot(s) de passe attribué(s)")
+				);
+			break;
+			default:
+				$smarty->assign('corpsPage','complexitePasswd');
+			break;
+		}
 		break;
 	default: die("missing mode");
 	}

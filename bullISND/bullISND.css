@@ -170,9 +170,6 @@ select[disabled] {color: #ccc}
 	border: 1px dotted red;
 	}
 	
-.cote1erDegre:after {
-	content:' ²'
-	}
 
 .patienter {
 	background-color: orange;
@@ -478,3 +475,64 @@ th.cert, td.cert, .cert {
     background-color: #ddd;
     text-align:center;
     }
+	
+.symbolique {
+	padding: 0 0 1em 0;
+	font-size: 8pt
+	}
+
+.symbolique li {
+	display: block;
+	float:left;
+	padding: 3px;
+	border: 1px solid black;
+	margin: 0 0 0 3px
+	}
+
+#pia h1 {
+	font-size: 300%;
+}
+#pia p {
+	font-size: 12pt;
+	}	
+
+#pia #entetePIA {
+	padding: 5em 0;
+	}
+#pia .coursProf {
+	padding: 2em 0 0 0;
+	}
+	
+#pia #blocNom {
+	display: block;
+	font-size: 150%;
+  width: 45%;
+  height: 160px;
+  border: 1px solid black;
+  margin-left: 50%;
+  padding: 1em;
+}
+
+#pia #nomPrenom {
+	text-align:right;
+	heigth: 200px;
+	}
+
+#pia .shadow {
+	display: none;
+  border: 5px solid #ff0;
+  -moz-box-shadow: 8px 8px 12px #aaa;
+  -webkit-box-shadow: 8px 8px 12px #aaa;
+  box-shadow: 8px 8px 12px #555;
+}
+
+
+
+
+
+
+
+
+
+
+

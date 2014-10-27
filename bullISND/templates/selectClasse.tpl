@@ -3,7 +3,7 @@
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if $uneClasse == $classe} selected="selected"{/if}>{$uneClasse}</option>
+			<option value="{$uneClasse}"{if (isset($classe)) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
 		
@@ -26,6 +26,11 @@ $(document).ready (function() {
 			}
 			else return false;
 	})
+	
+	$("#selectClasse").change(function(){
+		if ($(this).val() != '')
+			$("#formSelecteur").submit();
+		})
 
 })
 {/literal}

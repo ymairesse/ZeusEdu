@@ -56,7 +56,7 @@ switch ($action) {
 		include('inc/fait.inc.php');
 		break;
 	case 'news':
-		if (in_array($userStatus, array('admin')))
+		if (in_array($userStatus, array('admin','educ')))
 			include ("inc/delEditNews.php");
 		break;
 	default:

@@ -651,7 +651,7 @@ class Application {
 	   }
 
 	/**
-	* On fournit une liste de tables; la procédure fabrique un fichiers .sql permettant la restauration des tables désignées
+	* On fournit une liste de tables; la procédure fabrique un fichier .sql permettant la restauration des tables désignées
 	* @param $post : formulaire dans lequel on a coché les noms des tables à sauvegarder
 	* @return string : nom du fichier .sql.gz créé
 	*/
@@ -1072,7 +1072,7 @@ class Application {
 
 	/**
 	* fournit la liste triée des tables pour l'ensemble des applications commen indiqué dans la table appliTables
-	* @param
+	* @param void()
 	* @return array
 	*/
 	function listeTablesParAppli() {
@@ -1095,7 +1095,7 @@ class Application {
 
 	/**
 	* fournit la liste *non triée* des tables et des applications liées comme indiqué dans la table appliTables
-	* @param
+	* @param void()
 	* @return array
 	*/
 	public function listeTablesEtApplis(){

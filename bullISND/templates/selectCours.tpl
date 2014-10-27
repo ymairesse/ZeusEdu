@@ -4,10 +4,8 @@
 		<option value="">Cours</option>
 		{foreach from=$listeCours key=k item=unCours}
 			<option value="{$k}"{if $k == $coursGrp} selected="selected"{/if}>
-				{if ($unCours.nomCours != '')} {$unCours.nomCours}
-				{else}
+				{if ($unCours.nomCours != '')} [{$unCours.nomCours}] {/if}
 				{$unCours.statut} {$unCours.nbheures}h {$unCours.libelle} - {$unCours.annee} ({$k})
-				{/if}
 			</option>
 		{/foreach}
 	</select>

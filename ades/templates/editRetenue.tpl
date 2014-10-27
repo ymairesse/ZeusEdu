@@ -34,9 +34,11 @@
 	
 	<label>Visible</label>
 	<input type="checkbox" name="affiche" value="O"{if $retenue->get('affiche') == 'O'} checked="checked"{/if}><br>
+	<label>Répéter</label>
+	<input type="text" name="recurrence" id="recurrence" size="2" value="0"> semaine(s)<br>
 	{if $idretenue != Null}<input type="hidden" name="idretenue" value="{$idretenue}">{/if}
 
-	<input type="submit" value="Enregistrer" name="mode">
+	<input type="submit" value="Enregistrer" name="mode" class="fauxBouton">
 	<input type="reset" value="Réinitialiser" name="Submit">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="type" value="{$retenue->get('type')}">
@@ -98,7 +100,12 @@
 				places: {
 					required: true,
 					min: $("#occupation").val()
-					}
+					},
+				recurrence: {
+					required: true,
+					number: true,
+					range:[0,30]
+				}
 				},
 			errorElement: "span"
 			});

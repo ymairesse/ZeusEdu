@@ -36,9 +36,10 @@ function fichierCSV ($listeEleves, $groupeCours) {
 }
 
 
-// ----------------------------------------------------------------------------
-// Création d'une ou plusieurs pages de trombinoscope en PDF
-// on passe un nom de groupe/classe ou une abréviation de cours
+/** 
+/* Création d'une ou plusieurs pages de trombinoscope en PDF
+/* on passe un nom de groupe/classe ou une abréviation de cours
+*/
 function pagePDF ($listeEleves, $fichier) {
 	require_once("classPDF.inc.php");	
 	//Instanciation of inherited class

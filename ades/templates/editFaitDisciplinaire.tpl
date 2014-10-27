@@ -10,37 +10,36 @@
 
 	{foreach from=$prototype.champs key=unChamp item=data}
 	{if in_array($contexte, explode(',',$data.contextes))}
-	
+
 		{if $data.typeChamp != 'hidden'}
 			<label for="{$unChamp}">{$data.label}</label>
 		{/if}
-		
+
 		{strip}
 		{if $data.typeChamp == 'text'}
 		<input type="{$data.typeChamp}" name="{$unChamp}" id="{$unChamp}" class="
-				{$data.classCSS} 
+				{$data.classCSS}
 				{if ($data.typeDate == 1)} uneDate{/if}
 				{if ($data.autocomplete == 'O')} autocomplete{/if}
 				" value="{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}"
-			{if $data.size > 0} size="{$data.size}"{/if}
-			{if $data.maxlength > 0} maxlength="{$data.maxlength}"{/if}
-			{if $data.colonnes > 0} cols="{$data.colonnes}"{/if}
-			{if $data.lignes > 0} rows="{$data.lignes}"{/if}
-			tabIndex="{$tabIndex}">
+			{if $data.size > 0} size="{$data.size} "{/if} 
+			{if $data.maxlength > 0} maxlength="{$data.maxlength}" {/if} 
+			{if $data.colonnes > 0} cols="{$data.colonnes}" {/if} 
+			{if $data.lignes > 0} rows="{$data.lignes}" {/if} tabIndex="{$tabIndex}">
 			{if $unChamp == 'professeur'} <span id="nomPrenom"></span>{/if}
 			<br>
 			{assign var="tabIndex" value=$tabIndex+1}
 		{/if}
 		{/strip}
-		
+
 		{strip}
 		<span class="textEtMemo">
 		{if $data.typeChamp == 'textarea'}
-			<textarea {if $data.colonnes > 0}cols="{$data.colonnes}" {/if}
-				{if $data.lignes > 0}rows="{$data.lignes}" {/if}
-				name="{$unChamp}"
-				tabIndex="{$tabIndex}">{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}
-				</textarea>
+			<textarea 
+				{if $data.colonnes > 0} cols="{$data.colonnes}" {/if}
+				{if $data.lignes > 0} rows="{$data.lignes}" {/if}
+				name="{$unChamp}" tabIndex="{$tabIndex}"
+				>{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}</textarea>
 				{assign var="tabIndex" value=$tabIndex+1}
 				<span class="saveMotif" id="{$unChamp}" title="Enregistrer"><img src="../images/disk.png" alt="xx"></span>
 				<span class="saveOK_{$unChamp}"></span><br>
@@ -58,12 +57,12 @@
 				<a href="javascript:void(0)" class="copier" title="copier le texte" tabIndex="{$tabIndex}"><span ><img src="../images/up.png" alt="^"></span></a>
 				{assign var="tabIndex" value=$tabIndex+1}
 				{/if}
-				
+
 			<br>
 		{/if}
 		</span>
 		{/strip}
-		
+
 		{strip}
 		{if $data.typeChamp == 'select'}
 			{if $unChamp == 'idretenue'}
@@ -83,7 +82,7 @@
 			<br>
 		{/if}
 		{/strip}
-		
+
 		{strip}
 		{if $data.typeChamp == hidden}
 		<input type="hidden" name="{$unChamp}" id="{$unChamp}" {if $unChamp == 'qui'}
@@ -96,15 +95,16 @@
 			   {/if}>
 		{/if}
 		{/strip}
-		
+
 	{/if}
-	
+
 	{/foreach}
 	<input type="submit" name="submit" value="Enregistrer" tabIndex="{$tabIndex}">
 	{assign var="tabIndex" value=$tabIndex+1}
 	<input type="reset" name="reset" value="Annuler" tabIndex="{$tabIndex}">
 	{assign var="tabIndex" value=$tabIndex+1}
 	<a href="index.php?action=eleves&amp;classe={$classe}&amp;matricule={$matricule}" style="float:right" tabIndex="{$tabIndex}"><span class="fauxBouton">Retour sans enregistrer</span></a>
+	<input type="hidden" name="anneeScolaire" value="{$fait.anneeScolaire}">
 	<input type="hidden" name="classe" value="{$eleve.groupe}">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
@@ -166,15 +166,15 @@ $(document).ready(function(){
 			errorElement: "span"
 			}
 	)
-	
-	$("#ladate").datepicker({ 
+
+	$("#ladate").datepicker({
 		dateFormat: "dd/mm/yy",
 		prevText: "",
 		nextText: "",
 		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
 		dayNames: [ "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" ],
 		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-		firstDay: 1	
+		firstDay: 1
 		});
 
 	$('#timepicker').timepicker({
@@ -193,13 +193,13 @@ $(document).ready(function(){
 		});
 
 	$(".saveMotif").css("cursor","pointer");
-	
+
 	$(".saveMotif").click(function(){
 		var test = $(this);
 		var texte = $(this).prev().val();
 		var qui = $("form").find("input#qui").val();
 		var champ = $(this).attr("id");
-		
+
 		if (texte != '') {
 			$.post("inc/saveTexte.inc.php",
 				{'texte': texte,
@@ -212,20 +212,20 @@ $(document).ready(function(){
 		}
 		$(this).hide();
 		})
-	
+
 	$(".textEtMemo textarea").keyup(function(){
 		$(this).parent().find(".saveMotif").show();
 		})
-	
+
 	$(".copier").click(function(){
 		var test = $(this);
 		var ajout = $(this).parent().find("select option:selected").text();
 		var texte = $(this).parent().find("textarea").val();
 		texte = texte + " " + ajout;
 		$(this).parent().find("textarea").val(texte);
-		$(this).parent().find(".saveMotif").show();	
+		$(this).parent().find(".saveMotif").show();
 		})
-	
+
 	$("#professeur").blur(function(){
 		var acronyme = $(this).val().toUpperCase();
 		$(this).val(acronyme);

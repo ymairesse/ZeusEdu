@@ -18,7 +18,9 @@
 		<a href="index.php?action=parEleve&amp;matricule={$matricule}&amp;classe={$unEleve.classe}">
 		<img src="../photos/{$unEleve.photo}.jpg" style="width:128px; height:190px" alt="{$matricule}"
 		 title="Détails de {$unEleve.nom} {$unEleve.prenom}"><br /></a>
+		 <a href="mailto:{$unEleve.mail}" title="{$unEleve.mail}"><img src="images/emailIco.png"></a>
 		{$unEleve.classe} {$unEleve.nom}  {$unEleve.prenom}
+
 		</li>
 	{/foreach}
 </ul>

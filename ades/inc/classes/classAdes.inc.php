@@ -97,9 +97,9 @@ class Ades {
 		return $liste;
 	}
 
-	/** 
+	/**
 	 * Lecture de la description des champs dans la BD
-	 * @param 
+	 * @param
 	 * @return array
 	 */
 	private function lireDescriptionChamps(){
@@ -206,9 +206,6 @@ class Ades {
 	public function listeRetenues ($typeRetenue, $affiche=true) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT type, idretenue, dateRetenue, heure, duree, local, places, affiche ";
-		//$sql .= "(SELECT COUNT(*) ";
-		//$sql .= "FROM ".PFX."adesFaits ";
-		//$sql .= "WHERE ".PFX."adesFaits.idretenue = ".PFX."adesRetenues.idretenue) as occupation ";
 		$sql .= "FROM ".PFX."adesRetenues ";
 		$sql .= "WHERE type='$typeRetenue' ";
 		if ($affiche == true)
@@ -419,9 +416,9 @@ class Ades {
 		return $infos;
 	}
 
-function utf8($argument) {
-	return utf8_decode($argument);
-	}
+	function utf8($argument) {
+		return utf8_decode($argument);
+		}
 
 	/**
 	 * Impression d'un billet de retenue
@@ -498,7 +495,7 @@ function utf8($argument) {
 		$pdf->Output("pdf/$acronyme/".$data['eleve']['matricule'].".pdf",'D');
 	}
 
-	/***
+	/**
 	 * renvoie la liste des champs qui doivent apparaître dans un "contexte" donné pour chaque élément d'un fait disciplinaire
 	 * @param $contexte : string
 	 * @return array
@@ -536,7 +533,7 @@ function utf8($argument) {
 		return $listeFaits;
 	}
 
-	/***
+	/**
 	 * renvoie une table de correspondance entre les noms et les titres des champs à exposer
 	 * @param
 	 * @return array
@@ -638,7 +635,7 @@ function utf8($argument) {
 		return $listeFiches;
 	}
 
-	/***
+	/**
 	 * inverse le mode d'affichage des retenues dans leur liste; une retenue affichée devient cachée et inversement
 	 * renvoie un string indiquant le mode d'affichage ("O" ou "N")
 	 * @param $idRetenue

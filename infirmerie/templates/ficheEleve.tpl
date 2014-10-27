@@ -6,7 +6,7 @@
 	<ul>
 		<li><a href="#tabs-1">Données personnelles</a></li>
 		<li><a href="#tabs-2">Parents et responsables</a></li>
-		<li><a href="#tabs-3">Informations médicales {if $medicEleve}<span style="color:red">V</span>{/if}</a></li>
+		<li><a href="#tabs-3">Informations médicales {if $medicEleve}<span style="color:red">V</span>{/if}</a>{if ($infoMedic != '')}<img src="images/led.gif" alt="xx">{/if}</li>
 		<li><a href="#tabs-4">Visites à l'infirmerie [<span style="color:red">{$consultEleve|@count}</span>]</a></li>
 	</ul>
 	
@@ -56,6 +56,9 @@
 		</div>
 		
 	<div id="tabs-3">
+		{if $infoMedic != ''}
+		<strong style="border:2px solid red; width:80%; padding: 1em; display: block; font-size:200%;">{$infoMedic}</strong>
+		{/if}
 		<form name="modifMedical" method="POST" action="index.php" class="microForm">
 		<input type="submit" name="submit" value="Modifier">
 		<input type="hidden" name="action" value="modifier">

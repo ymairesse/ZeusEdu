@@ -29,28 +29,28 @@ switch ($mode) {
 											 )
 						));
 					break;
-				
+
 				case 'Envoyer':  // visualisation du fichier CSV envoyé et demande de confirmation
 					$nomTemporaire = $_FILES['nomFichierCSV']['tmp_name'];   // $_FILES provenant du formulaire
 					// vérification du type de fichier
 					$fileType = $Application->checkFileType($nomTemporaire);
 					// au minimum, 'text/plain'
 					$textPlainOK = (strpos($fileType,'text/plain')===0);
-					
+
 					// liste des champs attendus (le minimum pour pouvoir contrôler les suppressions)
 					$nomsChamps = array(0=>'matricule', 1=>'nom', 2=>'prenom', 3=>'classe');
-					
+
 					$rubriquesErreurs = array();
 					if ($textPlainOK) { // c'est bien un fichier "text"
 						if (!(move_uploaded_file($nomTemporaire, $table.".csv")))  die("upload failed");
-						
+
 						$tableau = $Application->csv2array($table);
 						$listeEleves = $Application->tableau2listeEleves($tableau);
 						// on ne retient que l'entête
 						$entete = array_shift($tableau);
 						$smarty->assign("tableau",$tableau);
 						$smarty->assign("table",$table);
-	
+
 						// Il y a peut-être des différences entre les deux modèles
 						$differences = $Application->hiatus($entete, $nomsChamps);
 						if ($differences == Null) {
@@ -80,7 +80,7 @@ switch ($mode) {
 					$smarty->assign('rubriquesErreurs',$rubriquesErreurs);
 					$smarty->assign('action',$action);
 					$smarty->assign('mode','Confirmer');
-					$smarty->assign('corpsPage','supprAnciens');		
+					$smarty->assign('corpsPage','supprAnciens');
 					break;
 				default:
 					$champs = array(
@@ -91,7 +91,7 @@ switch ($mode) {
 							);
 					$smarty->assign('champs', $champs);
 					$smarty->assign('table', $table);
-					$smarty->assign('CSVfile','nomFichierCSV');				
+					$smarty->assign('CSVfile','nomFichierCSV');
 					$smarty->assign('action', $action);
 					$smarty->assign('mode', 'Envoyer');
 					$smarty->assign('corpsPage', 'formulaireImport');

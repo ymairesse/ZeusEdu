@@ -30,8 +30,7 @@ switch ($mode) {
 	case 'gererCotes':
 		$smarty->assign('selecteur', 'selectBulletinCours');
 		$smarty->assign('mode','gererCotes');
-		//if ($coursGrp)
-		//	$smarty->assign ('corpsPage', 'showCarnet');
+
 		switch ($etape) {
 			case 'recordEnteteCote':
 				$nb = $Bulletin->recordEnteteCote($_POST);
@@ -107,7 +106,7 @@ switch ($mode) {
 						$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
 					}
 				// pas de break;
-			case 'showCotes':
+			default:
 				$listeColonnes = $Bulletin->colonnesCotesBulletin ($coursGrp, $bulletin);
 				// s'il n'y a pas de cotes, on arrête là...
 				if (count($listeColonnes) > 0) {
@@ -127,9 +126,6 @@ switch ($mode) {
 						$smarty->assign('erreurTransfert', true);
 						$smarty->assign('corpsPage', 'noTransfert');
 						}
-				break;
-			default:
-				// don't care
 				break;
 			}
 		break;

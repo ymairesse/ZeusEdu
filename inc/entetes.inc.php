@@ -45,8 +45,7 @@ $smarty->assign("identite",$user->identite());
 // toutes les informations d'identification réseau (adresse IP, jour et heure)
 $smarty->assign ("identification", $user->identification());
 // liste des classes dont le prof est titulaire (prof principal)
-$smarty->assign("titulaire",$user->listeTitulariats());
-
+$smarty->assign("titulaire",$user->listeTitulariats("'G','TT','S','C','D'"));
 $userStatus = $user->userStatus($module);
 $smarty->assign("userStatus", $userStatus);
 

@@ -4,7 +4,7 @@
 	
 	{* remplacement de l'espace possible dans le nom du cours par un caractère ~ *}
 	{assign var=coursPROT value=$dataCours.cours|replace:' ':'~'}
-	<select name="field_{$coursPROT}">
+	<select name="field_{$coursPROT}" title="{$dataCours.cours}">
 		<option value="">Sélectionner un type</option>
 		{if isset($dataCours.type)}
 		<option value="option" {if $dataCours.type == 'option'} selected="selected"{/if}>Cours d'option</option>
@@ -14,7 +14,7 @@
 		<option value="general">Cours général</option>
 		{/if}
 	</select>
-	<span {if !(isset($dataCours.type)) || $dataCours.type == Null}class="erreur"{/if}>{$dataCours.libelle} {$dataCours.statut} {$dataCours.nbheures}h</span>
+	<span {if !(isset($dataCours.type)) || $dataCours.type == Null}class="erreur"{/if} title="{$dataCours.cours}">{$dataCours.libelle} {$dataCours.statut} {$dataCours.nbheures}h</span>
 	<br>
 {/foreach}
 <br>

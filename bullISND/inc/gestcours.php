@@ -35,7 +35,17 @@ switch ($mode) {
 		$smarty->assign('selecteur', 'selectNiveauMatiere');
 		$smarty->assign('corpsPage','editMatiere');
 		break;
-	
+	case 'deleteCours':
+		echo "delete";
+		$nb = $Bulletin->deleteOrphanCours($cours);
+		$smarty->assign('message',
+				array(
+					'title'=>'Suppression',
+					'texte'=>"$nb cours supprimé")
+					);
+		$cours = Null;
+		$smarty->assign('mode','editCours');
+		// break;  pas de break, on continue sur l'édition
 	case 'editCours':
 		if ($etape == 'enregistrer') {
 			$groupe = isset($_POST['groupe'])?$_POST['groupe']:Null;
@@ -58,7 +68,7 @@ switch ($mode) {
 			$smarty->assign('listeMatieres', $listeMatieres);
 			}
 		if (isset($cours)) {
-			$listeCoursGrp = $Ecole->listeCoursGrpDeCours ($cours);
+			$listeCoursGrp = $Ecole->listeCoursGrpDeCours($cours);
 			$smarty->assign('listeCoursGrp', $listeCoursGrp);
 			$smarty->assign('cours', $cours);
 			$smarty->assign('corpsPage','tableauMatieres');

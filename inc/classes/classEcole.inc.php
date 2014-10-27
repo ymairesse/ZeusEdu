@@ -152,13 +152,13 @@ class ecole {
       * @param $listeAcronymes
       * @return integer : nombre d'écriture réussies dans la BD
       */
-    public function addTitulariat ($groupe, $listeAcronymes) {
+    public function addTitulariat ($groupe, $listeAcronymes, $section) {
 		if (($groupe == Null) || ($listeAcronymes == Null)) die();
 		$connexion = Application::connectPDO (SERVEUR, BASE, NOM, MDP);
 		$resultat = 0;
 		foreach ($listeAcronymes as $acronyme) {
 			$sql = "INSERT IGNORE INTO ".PFX."titus ";
-			$sql .= "SET acronyme='$acronyme', classe='$groupe' ";
+			$sql .= "SET acronyme='$acronyme', classe='$groupe', section='$section' ";
 			$resultat += $connexion->exec($sql);
 			}
 		return $resultat;
@@ -322,10 +322,11 @@ class ecole {
 		$supSQL = implode(' AND ',$supSQL);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-        $sql = "SELECT matricule, nom, prenom, classe, DateNaiss, commNaissance ";
+        $sql = "SELECT de.matricule, nom, prenom, classe, DateNaiss, commNaissance, user, mailDomain ";
 		if ($extended)
 			$sql .= ", sexe, nomResp, adresseResp, cpostResp, localiteResp ";
-        $sql .= "FROM ".PFX."eleves ";
+        $sql .= "FROM ".PFX."eleves AS de ";
+        $sql .= "LEFT JOIN ".PFX."passwd AS dp ON (de.matricule = dp.matricule) ";
 		if ($supSQL != '')
 			$sql .= "WHERE ".$supSQL;
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom";
@@ -337,6 +338,7 @@ class ecole {
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
 				$dateNaiss = $ligne['DateNaiss'];
+				$ligne['mail'] = $ligne['user'].'@'.$ligne['mailDomain'];
 				$listeEleves[$matricule] = $ligne;
 
 				$listeEleves[$matricule]['DateNaiss'] = Application::datePHP($dateNaiss);
@@ -446,9 +448,10 @@ class ecole {
      */
     public function listeElevesCours($coursGrp, $tri=Null, $parti=false) {
         $connexion = Application::connectPDO (SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT ".PFX."elevesCours.matricule, nom, prenom, classe ";
+        $sql = "SELECT ".PFX."elevesCours.matricule, nom, prenom, classe, user, mailDomain ";
         $sql .= "FROM ".PFX."elevesCours ";
         $sql .= "JOIN ".PFX."eleves ON (".PFX."eleves.matricule = ".PFX."elevesCours.matricule) ";
+        $sql .= "LEFT JOIN ".PFX."passwd ON (".PFX."eleves.matricule = ".PFX."passwd.matricule) ";
         $sql .= "WHERE coursGrp = '$coursGrp' ";
 		if ($parti==false)
 			$sql .= "AND section != 'PARTI' ";
@@ -465,10 +468,12 @@ class ecole {
                 $prenom = $ligne['prenom'];
                 $matricule = $ligne['matricule'];
                 $classe = $ligne['classe'];
+                $mail = $ligne['user'].'@'.$ligne['mailDomain'];
                 $listeEleves[$matricule] = array(
                         'nom'=>$ligne['nom'],
                         'prenom'=>$ligne['prenom'],
                         'classe'=>$ligne['classe'],
+                        'mail'=>$mail,
                         'photo'=>self::photo($matricule)
                     );
                 }
@@ -1007,14 +1012,16 @@ class ecole {
 
     /**
 	 * Attribution de mots de passe aléatoires aux élèves qui n'en ont pas encore reçu
-	 * @param
+	 * les noms d'utilisateurs sont également définis dans $this->userNameEleve
+	 * @param integer $longueur : longueur du mot de passe (par défaut: 8 caractères)
 	 * @return integer : nmbre de passwd attribués
 	 */
-    public function attribPasswdEleves () {
+    public function attribPasswdEleves ($longueur=8) {
 		// tous les élèves
 		$listeTousEleves = $this->listeEleves();
 		// liste des élèves qui ont déjà reçu un passwd
 		$listeElevesPasswd = $this->listeElevesPasswd();
+
         // construire la liste des élèves sans MDP
 		$listeElevesSansPasswd = array();
 		foreach ($listeTousEleves as $matricule=>&$eleve) {
@@ -1022,15 +1029,14 @@ class ecole {
 			if ($passwd == Null)
 				$listeElevesSansPasswd[$matricule]=array('nom'=>$eleve['nom'], 'prenom'=>$eleve['prenom']);
 			}
-
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."passwd ";
-		$sql .= "SET passwd=:passwd, matricule=:matricule, user=:user";
+		$sql .= "SET passwd=:passwd, matricule=:matricule, user=:user ";
 		$requete = $connexion->prepare($sql);
 		$resultat = 0;
 		foreach ($listeElevesSansPasswd as $matricule=>$unEleve) {
 			$user = $this->userNameEleve($unEleve['nom'], $unEleve['prenom'],$matricule);
-			$passwd = $this->randomPasswdEleve(6);
+			$passwd = $this->randomPasswdEleve($longueur);
 			$data = array(':passwd'=>$passwd,':matricule'=>$matricule, ':user'=>$user);
 			$resultat += $requete->execute($data);
 			}
@@ -1797,9 +1803,8 @@ class ecole {
 		return array($nb, $cours);
 		}
 
-	/***
+	/**
 	 * renvoie la liste des sections organisées à l'école
-
 	 * @param
 	 * @return : array
 	 */
@@ -1807,6 +1812,32 @@ class ecole {
 		$sections = explode(',',SECTIONS);
 		return $sections;
 	}
+
+	/**
+	 * renvoie la liste des élèves, user et passwd pour un groupe classe donné
+	 * @param string $groupe
+	 * @return array
+	 */
+	public function listePasswd($groupe) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT de.matricule, nom, prenom, groupe, user, passwd ";
+		$sql .= "FROM ".PFX."eleves AS de ";
+		$sql .= "JOIN ".PFX."passwd AS dp ON (dp.matricule = de.matricule) ";
+		$sql .= "WHERE groupe = '$groupe' ";
+		$sql .= "ORDER BY nom, prenom ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$liste[$matricule] = $ligne;
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+
+		}
 
 }
 

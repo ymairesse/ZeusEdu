@@ -2,7 +2,7 @@
 
 {if ($userStatus == 'educ') || ($userStatus == 'admin')}
 {* boutons pour ajouter un fait disciplinaire *}
-<ul class="boutonFait">
+<ul class="boutonFait" style="height: 3em">
 {foreach from=$listeTypesFaits item=unTypeFait}
 	<li style="background-color:#{$unTypeFait.couleurFond};" class="photo">
 		<a href="index.php?action=fait&mode=new&amp;matricule={$eleve.matricule}&amp;type={$unTypeFait.type}" style="color:#{$unTypeFait.couleurTexte}">{$unTypeFait.titreFait}</a>
@@ -11,10 +11,20 @@
 </ul>
 {/if}
 
-{assign var=listeFaits value=$ficheDisc->laListeFaits()}
+{assign var=listeFaitsAnnees value=$ficheDisc->laListeFaits()}
 {assign var=listeRetenues value=$ficheDisc->laListeRetenues()}
 
+{* des onglets pour les différentes années scolaires *}
+{if count($listeFaitsAnnees)>0}
+<div id="tabsDisc">
+	<ul>
+		{foreach from=$listeFaitsAnnees key=anneeScolaire item=wtf}
+			<li><a href="#tab{$anneeScolaire}">{$anneeScolaire}</a></li>
+		{/foreach}
+	</ul>
 
+{foreach from=$listeFaitsAnnees key=anneeScolaire item=listeFaits}
+<div id="tab{$anneeScolaire}">
 {* on prend tous les types de faits disponibles et on les évalue *}
 {* pour chaque type de fait, on considère ses caractéristiques propres (titre, couleurs, liste des champs,...) *}
 	{foreach from=$listeTypesFaits key=typeFait item=descriptionTypeFait}
@@ -25,7 +35,7 @@
 		{* on indique le titre de ce type de faits *}
 		<h3 style="clear:both;background-color: #{$descriptionTypeFait.couleurFond}; color: #{$descriptionTypeFait.couleurTexte}">
 			{$descriptionTypeFait.titreFait}</h3>
-		
+
 		<table class="tableauBull">
 			{* ----------------- ligne de titre du tableau  -------------------------- *}
 			<tr>
@@ -45,7 +55,7 @@
 				{/strip}
 			</tr>
 			{* ----------------- ligne de titre du tableau  -------------------------- *}
-			
+
 			{foreach from=$listeFaits.$typeFait key=idfait item=unFaitDeCeType}
 			<tr>
 				{strip}
@@ -67,12 +77,15 @@
 						{strip}
 						{* s'il s'agit d'une retenue (typeFait 4, 5 ou 6), les informations suivantes se trouvent dans la liste des retenues de cet élève *}
 						{if in_array($typeFait,array('4','5','6')) && (in_array($champ,array('dateRetenue','heure','duree','local')))}
-						{assign var=idretenue value=$unFaitDeCeType.idretenue}
-						{assign var=typeRetenue value=$listeRetenues.$idretenue}
-							{if $descriptionChamps.$champ.typeDate == '1'}
-							{$listeRetenues.$idretenue.$champ}
-							{else}
-							{$listeRetenues.$idretenue.$champ|default:'&nbsp;'}
+
+							{assign var=idretenue value=$unFaitDeCeType.idretenue}
+							{if isset($listeRetenues.$idretenue)}
+								{assign var=typeRetenue value=$listeRetenues.$idretenue}
+								{if $descriptionChamps.$champ.typeDate == '1'}
+									{$listeRetenues.$idretenue.$champ|default:'&nbsp;'}
+									{else}
+									{$listeRetenues.$idretenue.$champ|default:'&nbsp;'}
+								{/if}
 							{/if}
 						{else}
 						{$unFaitDeCeType.$champ|default:'&nbsp;'}
@@ -84,7 +97,7 @@
 				<td style="width:16px">
 					{strip}
 					{if ($userStatus == 'educ') || ($userStatus == 'admin')}
-					<a href="index.php?action=fait&amp;mode=edit&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}"  title="Modifier ce fait"><img src="../images/edit.png" alt="E"></a> 
+					<a href="index.php?action=fait&amp;mode=edit&amp;idfait={$idfait}&amp;matricule={$eleve.matricule}"  title="Modifier ce fait"><img src="../images/edit.png" alt="E"></a>
 					{else}&nbsp;
 					{/if}
 					{/strip}
@@ -96,4 +109,14 @@
 		</table>
 		{/if}
 	{/foreach}
+</div>
+{/foreach}
 
+</div> <!-- tabsDisc -->
+{/if}
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#tabsDisc").tabs({ heightStyle: "auto" });
+	})
+</script>

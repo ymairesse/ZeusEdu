@@ -6,7 +6,7 @@
 		<ul>
 			<li><a href="index.php?action=presences&amp;mode=cours">Présences par cours</a></li>
 			<li><a href="index.php?action=presences&amp;mode=eleve">Présences par élèves</a></li>
-		</ul>	
+		</ul>
 	</li>
 	<li><a href="javascript:void(0)">Liste des absences</a>
 		<ul>
@@ -14,11 +14,12 @@
 			<li><a href="index.php?action=listeAbsences&amp;mode=parEleve">Absences par élève</a></li>
 		</ul>
 	</li>
-	
-	<li><a href="javascript:void(0)">Autorisations de sorties</a>
+
+	<li><a href="javascript:void(0)">Absences régulières</a>
 		<ul>
-			<li><a href="index.php?action=autorisations&amp;mode=listes">Listes des autorisations</a></li>
-			<li><a href="index.php?action=autorisations&amp;mode=encoder">Nouvel(le) élève</a></li>
+			<li><a href="index.php?action=autorisations&amp;mode=listes">Listes des absences régulières</a></li>
+			<li><a href="index.php?action=autorisations&amp;mode=encoder">Autorisations de sorties</a></li>
+			<li><a href="index.php?action=autorisations&amp;mode=annonce">Absences signalées</a></li>
 		</ul>
 	</li>
 	{if $userStatus == 'admin'}

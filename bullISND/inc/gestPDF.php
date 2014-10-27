@@ -55,13 +55,13 @@ switch ($mode) {
 		if ($classe != Null)
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			else $listeEleves = Null;
-		$smarty->assign('listeClasses', $listeClasses);
-		$smarty->assign('listeEleves', $listeEleves);
-		$smarty->assign('nbBulletins', NBPERIODES);
-		$smarty->assign('bulletin', $bulletin);
+		$smarty->assign('listeClasses',$listeClasses);
+		$smarty->assign('listeEleves',$listeEleves);
+		$smarty->assign('nbBulletins',NBPERIODES);
+		$smarty->assign('bulletin',$bulletin);
 		$smarty->assign('etape','showEleve');
-		$smarty->assign('action', $action);
-		$smarty->assign('mode', $mode);
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
 		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
 
 		if ($etape == 'showEleve') {

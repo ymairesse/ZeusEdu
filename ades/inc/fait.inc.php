@@ -1,4 +1,5 @@
 <?php
+
 	$idfait = isset($_REQUEST['idfait'])?$_REQUEST['idfait']:Null;
 	$type = isset($_REQUEST['type'])?$_REQUEST['type']:Null;
 	switch ($mode) {
@@ -16,6 +17,7 @@
 	case 'new':
 		$prototype = $Ades->prototypeFait($type);
 		$faitVide = $ficheDisc->faitVide($prototype,$type,$user->identite());
+		$smarty->assign('anneeScolaire',ANNEESCOLAIRE);
 		$smarty->assign('fait',$faitVide);
 		$smarty->assign('type',$type);
 		// break;  pas de break, on poursuit sur l'édition du fait vide
@@ -27,17 +29,18 @@
 			$type = $fait['type'];
 			$smarty->assign('type',$type);
 		}
+
 		// liste nécessaire pour obtenir une liste des profs à l'origine du signalement du fait
 		$smarty->assign('listeProfs',$Ecole->listeProfs(false));
 		// acronyme de l'utilisateur pour indiquer qui a pris note du fait
 		$smarty->assign('acronyme',$user->acronyme());
-		
+
 		$prototype = $Ades->prototypeFait($type);
 		$smarty->assign('prototype', $prototype);
 		$listeRetenues = $Ades->listeRetenues($prototype['structure']['typeRetenue'], true);
 		$smarty->assign('listeRetenues', $listeRetenues);
 		$smarty->assign('listeMemos',$Ades->listeMemos($user->acronyme()));
-	
+
 		$smarty->assign('action',$action);
 		$smarty->assign('mode','enregistrer');
 		$smarty->assign('classe',$classe);
@@ -52,7 +55,6 @@
 		$idretenue = (isset($_POST['idretenue']) && $_POST['idretenue'] != '')?$_POST['idretenue']:$oldIdretenue;
 		$prototype = $Ades->prototypeFait($type);
 		$retenue = ($prototype['structure']['typeRetenue'] != 0)?$Ades->detailsRetenue($idretenue):Null;
-	
 		$nb = $ficheDisc->enregistrerFaitDisc($_POST, $prototype, $retenue);
 		$smarty->assign("message", array(
 			'title'=>"Enregistrement",

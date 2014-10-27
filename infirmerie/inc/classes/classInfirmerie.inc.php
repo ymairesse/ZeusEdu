@@ -52,14 +52,33 @@ class eleveInfirmerie {
         Application::DeconnexionPDO($connexion);
 		return $listeVisites;
         }
-        
-	/* 
-	 * function enregistrerMedical
-	 * @param $data données $_POST provenant d'un formulaire
-	 * 
+
+	/** 
+	 * retourne les informations médicales importantes pour un élève donné
+	 * @param $matricule
+	 * @return string
+	 */
+	public function getInfoMedic ($matricule) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT info ";
+		$sql .= "FROM ".PFX."infirmInfos ";
+		$sql .= "WHERE matricule='$matricule' ";
+		$resultat = $connexion->query($sql);
+		$info = '';
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$ligne = $resultat->fetch();
+			$info = $ligne['info'];
+			}
+		Application::DeconnexionPDO($connexion);
+		return $info;
+		}
+
+	/**
 	 * Enregistrement des données médicales d'un élève
-	 * 
-	 * */
+	 * @param $data données $_POST provenant d'un formulaire
+	 * @return integer : nombre de modifications dans la BD
+	 */
     function enregistrerMedical ($data) {
         $medecin = addslashes($data['medecin']);
         $telMedecin = addslashes($data['telMedecin']);

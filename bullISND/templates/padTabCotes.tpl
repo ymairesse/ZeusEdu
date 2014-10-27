@@ -27,7 +27,7 @@
 	<tr>
 		<th>&nbsp;</th>
 	{foreach from=$listeCoursGrp key=coursGrp item=dataCours}
-		<th>{$dataCours.cours} {$dataCours.nbheures}h<br>{$dataCours.statut} </th>
+		<th title="{$dataCours.libelle}|{$dataCours.coursGrp} <br>{$dataCours.prenom} {$dataCours.nom}">{$dataCours.cours} {$dataCours.nbheures}h<br>{$dataCours.statut}</th>
 	{/foreach}
 	<th>Mentions</th>
 	</tr>
@@ -67,7 +67,7 @@
 			<tr>
 				<th>&nbsp;</th>
 				{foreach from=$listeCoursGrp key=coursGrp item=data}
-					<th title="{$data.libelle} {$coursGrp}">{$data.cours} {$data.nbheures}h {$data.statut} </th>
+					<th title="{$data.libelle}<br>{$coursGrp}">{$data.cours} {$data.nbheures}h {$data.statut} </th>
 				{/foreach}
 				<th>Mentions</th>
 			</tr>

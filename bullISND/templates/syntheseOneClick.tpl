@@ -46,11 +46,13 @@
 				<span class="tip">{$data.libelle}<br>{$idComp}</span>
 					{$type}<br>
 					{$data.libelle|truncate:6}<br>
-					<strong>{$poidsCompetences.$idComp.$type}</strong>
-					{assign var=validCoursGrp value=$coursGrp|replace:' ':'$'|replace:'-':'#'}
-					<input type="hidden" 
-					name="poids-coursGrp_{$validCoursGrp}-type_{$type}-comp_{$idComp}-bulletin_{$bulletin}"
-					value="{$poidsCompetences.$idComp.$type}">
+					{if isset($poidsCompetences.$idComp)}
+						<strong>{$poidsCompetences.$idComp.$type}</strong>
+						{assign var=validCoursGrp value=$coursGrp|replace:' ':'$'|replace:'-':'#'}
+						<input type="hidden" 
+						name="poids-coursGrp_{$validCoursGrp}-type_{$type}-comp_{$idComp}-bulletin_{$bulletin}"
+						value="{$poidsCompetences.$idComp.$type}">
+					{/if}
 			</th>
 			{/foreach}
 		{/foreach}
@@ -71,12 +73,12 @@
 			{assign var=couleur value=$idComp|substr:-1}
 			{foreach $dataCompetence key=type item=data}
 			<td title="{$data.libelle}" class="couleur{$couleur} cote micro">
-
+				
 				{if isset($sommesCotes.$matricule.$type.$idComp.cote) && ($sommesCotes.$matricule.$type.$idComp.cote >=0)}
 				{$sommesCotes.$matricule.$type.$idComp.cote} / {$sommesCotes.$matricule.$type.$idComp.max}
 				{else}&nbsp;
 				{/if}
-				</td>
+			</td>
 			{/foreach}
 		{/foreach}
 		
@@ -85,16 +87,17 @@
 			{assign var=couleur value=$idComp|substr:-1}
 			{foreach $dataCompetence key=type item=data}
 				<td title="{$data.libelle}" class="couleur{$couleur} cote" style="border:2px solid black">
-					
-					{if ($poidsCompetences.$idComp.$type != '') && isset($sommesCotes.$matricule.$type.$idComp.cote) &&($sommesCotes.$matricule.$type.$idComp.cote >= 0)}
-					{assign var=validCoursGrp value=$coursGrp|replace:' ':'$'|replace:'-':'#'}
-					<input type="text" 
-					name="bull-matr_{$matricule}-coursGrp_{$validCoursGrp}-type_{$type}-comp_{$idComp}-bulletin_{$bulletin}" 
-					value="{$tableauBulletin.$matricule.$type.$idComp|default:''}"
-					size="3" maxlength="5">
+					{if isset($poidsCompetences.$idComp)}
+						{if ($poidsCompetences.$idComp.$type != '') && isset($sommesCotes.$matricule.$type.$idComp.cote) &&($sommesCotes.$matricule.$type.$idComp.cote >= 0)}
+						{assign var=validCoursGrp value=$coursGrp|replace:' ':'$'|replace:'-':'#'}
+						<input type="text" 
+						name="bull-matr_{$matricule}-coursGrp_{$validCoursGrp}-type_{$type}-comp_{$idComp}-bulletin_{$bulletin}" 
+						value="{$tableauBulletin.$matricule.$type.$idComp|default:''}"
+						size="3" maxlength="5">
 
-					{else}
-					&nbsp;
+						{else}
+						&nbsp;
+						{/if}
 					{/if}
 				</td>
 			{/foreach}

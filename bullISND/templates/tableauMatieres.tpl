@@ -21,6 +21,7 @@
 	<input type="hidden" name="etape" value="enregistrer">
 </form>
 
+{if !(empty($listeCoursGrp))}
 <h3>Action sur les cours</h3>
 
 <table class="tableauBull">
@@ -64,6 +65,19 @@
 	</tr>
 {/foreach}
 </table>
+{/if}
+
+{if empty($listeCoursGrp)}
+<h3>Suppression d'un cours</h3>
+<form name="supprCours" id="supprCours" method="POST" action="index.php">
+	<p>Le cours <strong>{$cours} {$listeMatieres.$cours.statut} {$listeMatieres.$cours.libelle} {$listeMatieres.$cours.nbheures}h</strong> est orphelin (ni professeur, ni élèves).</p>
+	<input type="submit" name="Submit" value="Supprimer ce cours">
+	<input type="hidden" name="cours" value="{$cours}">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="deleteCours">
+	<input type="hidden" name="niveau" value="{$niveau}">
+</form>
+{/if}
 
 <script type="text/javascript">
 {literal}
@@ -87,6 +101,17 @@
 					},
 				errorElement: "span"
 			});
+
+		$("#supprCours").submit(function(){
+			if (!(confirm("La suppression de ce cours est définitive. Veuillez confirmer.")))
+				return false;
+				else {
+					$("#wait").show();
+					$.blockUI();
+					}
+			
+			})
+
 		})
 	
 	$.validator.addMethod(

@@ -1,5 +1,5 @@
 <h3>Dates et modification des dates de retenues</h3>
-<h4>Type: {$infosRetenue.titreFait} Nombre: {$listeRetenues|@count}</h4>
+<h4>Type: {$infosRetenue.titreFait} Nombre: <span id="nbRetenues">{$listeRetenues|@count}</span></h4>
 <form name="editRetenues" id="editRetenues" method="POST" action="index.php">
 	<span class="fauxBouton" id="cache">Cacher/Montrer</span>
 <table class="tableauAdmin" id="tableRetenues">
@@ -19,7 +19,7 @@
 	{foreach from=$listeRetenues key=id item=uneRetenue}
 	<tr id="{$id}" class="{if $uneRetenue.occupation < $uneRetenue.places}libre {else}rempli {/if}{if $uneRetenue.affiche == 'N'}cache{/if}">
 		<td class="del"><a href="javascript:void(0)">{if $uneRetenue.occupation == 0}<img src="images/suppr.png" alt="x">{/if}&nbsp;</a></td>
-		<td class="date">{$uneRetenue.dateRetenue}</td>
+		<td>{$uneRetenue.jourSemaine|upper|truncate:3:''} <span class="date">{$uneRetenue.dateRetenue}</span></td>
 		<td class="heure">{$uneRetenue.heure}</td>
 		<td class="duree">{$uneRetenue.duree}h</td>
 		<td class="local">{$uneRetenue.local}</td>
@@ -63,7 +63,6 @@
 		$("#tableRetenues").on("click", ".cloner", function(){
 			var moi = $(this);
 			var ligne = $(this).parent().clone(true);
-
 			var id = ligne.attr("id");
 			var date = ligne.find(".date").text();
 			var heure = ligne.find(".heure").text();
@@ -100,22 +99,20 @@
 		$("#tableRetenues").on("click", ".del", function(){
 			if (confirm('Veuillez confirmer la suppression de cette retenue')) {
 			var moi = $(this);
-			var idretenue = $(this).parent().attr("id");
+			var idretenue = moi.parent().attr("id");
 			$.post('inc/delRetenue.inc.php',
 				{'idretenue': idretenue},
 				function(resultat) {
 					if (resultat == 1) {
 						moi.parent().fadeOut().remove();
+						nb = $("#nbRetenues").text();
+						$("#nbRetenues").text(nb-resultat);
 						}
 					}
 				);
-
 			}
 			})
-	
 	})
-	
-
 	{/literal}
 </script>
 

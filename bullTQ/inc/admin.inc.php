@@ -3,7 +3,6 @@ $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $cours = isset($_POST['cours'])?$_POST['cours']:Null;
 $bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:PERIODEENCOURS;
-
 switch ($mode) {
 	case 'imagesCours':
 		$listeImages = $BullTQ->imagesPngBranches(200);
@@ -56,7 +55,6 @@ switch ($mode) {
 	case 'typologie':
 		if ($niveau != Null) {
 			if ($etape == 'enregistrer') {
-				// afficher($_POST);
 				$nbResultats = $BullTQ->enregistrerTypes($_POST);
 				$smarty->assign('message', array(
 						'title'=>"Enregistrement",
@@ -73,6 +71,37 @@ switch ($mode) {
 		$smarty->assign('selecteur','selectNiveau');
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);	
+		break;
+	case 'titulaires':
+		if (isset($niveau)) {
+			$smarty->assign('listeProfs',$Ecole->listeProfs());			
+			$listeAcronymes = isset($_POST['listeAcronymes'])?$_POST['listeAcronymes']:Null;
+			switch ($etape) {
+				case 'supprimer':
+					$nb = $Ecole->supprTitulariat($niveau,$listeAcronymes);
+					$smarty->assign('message', array(
+								'title'=>'Suppression',
+								'texte'=>"$nb modification(s) enregistrée(s).")
+								);
+					break;
+				case 'ajouter':
+					$nb = $Ecole->addTitulariat($niveau,$listeAcronymes,'TQ');
+					$smarty->assign('message', array(
+								'title'=>'Ajouts',
+								'texte'=>"$nb modification(s) enregistrée(s).")
+								);
+					break;
+				}
+			$listeTitus = $Ecole->titusDeGroupe($niveau);
+			$smarty->assign('listeTitus',$listeTitus);
+			}
+
+		$smarty->assign('listeNiveaux',$Ecole->listeGroupes(array('TQ')));
+		$smarty->assign('selecteur','selectNiveau');
+		$smarty->assign('corpsPage','choixTitu');
+		$smarty->assign('niveau',$niveau);
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);		
 		break;
 	default:
 		break;

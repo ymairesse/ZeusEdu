@@ -16,7 +16,7 @@
 	</li>
 
 	{if ($tituTQ)}
-	<li><a href="javascript:void(0)">Titulaire</a>
+	<li><a href="javascript:void(0)">Titulaire {','|implode:$tituTQ}</a>
 		<ul>
 			<li><a href="index.php?action=titu&amp;mode=remarques">Remarques aux bulletins</a></li>
 		</ul>
@@ -35,6 +35,7 @@
 			<li><a href="index.php?action=admin&amp;mode=typologie">Typologie des cours</a></li>
 			<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
 			<li><a href="index.php?action=admin&amp;mode=initialiser">Initialiser les bulletins</a></li>
+			<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats</a></li>
 		</ul>
 	</li>
 	{/if}

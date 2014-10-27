@@ -41,6 +41,7 @@ switch ($action) {
 	case 'parEleve':
 		if (isset($matricule)) {
             $smarty->assign('medicEleve',$infirmerie->getMedicEleve($matricule));
+            $smarty->assign('infoMedic',$infirmerie->getInfoMedic($matricule));
             $smarty->assign('consultEleve',$infirmerie->getVisitesEleve($matricule));
             }
 		$action = $action;

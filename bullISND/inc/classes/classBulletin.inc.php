@@ -2491,25 +2491,23 @@ class Bulletin {
         return $listeOrphanCours;
     }
 
-    /*
-     * function deleteOrphanCours
-     * @param $listeOrphans
-     *
+    /**
      * supprime la liste des cours passés en argument de la table des cours
      * ces cours sont, en principe, orphelins (pas d'élève, pas de prof)
+     * @param array/string $listeOrphans
+     * @return integer : nombre de suppressions de la BD
      */
-    function deleteOrphanCours($listeOrphans) {
+    public function deleteOrphanCours($listeOrphans) {
         if (is_array($listeOrphans))
             $listeOrphansString = "'".implode("','", $listeOrphans)."'";
-            else $listeOrphansString = $listeOrphans;
+            else $listeOrphansString = "'".$listeOrphans."'";
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = "DELETE FROM ".PFX."cours ";
         $sql .= "WHERE cours IN ($listeOrphansString) ";
         $resultat = $connexion->exec($sql);
         Application::DeconnexionPDO($connexion);
         return $resultat;
-    }
-
+		}
 
 
 	/**
@@ -3555,7 +3553,7 @@ class Bulletin {
 				foreach ($listeCompetences as $idComp => $uneCote) {
 					$cote = $uneCote['cote'];
 					$max = $uneCote['max'];
-					$poids = $listePoids[$idComp][$formCert];
+					$poids = isset($listePoids[$idComp])?$listePoids[$idComp][$formCert]:'';
 					// on utilise la cote si
 					// - elle est numérique
 					// - ou s'il s'agit d'une cote nulle (Non remis = nr, ou autre éventuel)
@@ -4096,7 +4094,6 @@ class Bulletin {
 	 * @param integer $bulletin : numéro du bulletin en cours
 	 *
 	 * @return array listeSituationsDeuxiemes
-	 *
 	 */
 	public function situationsDeuxieme ($listeEleves, $listeCoursGrp, $bulletin) {
 		if (is_array($listeEleves))
@@ -4191,7 +4188,7 @@ class Bulletin {
 				'listeProfs' => $listeProfsCoursGrp,		'baremes' => $ponderations,
 				'infoPerso' => $infoPerso,					'sitPrec' => $sitPrecedentes,
 				'sitActuelles' => $sitActuelles,			'detailCotes' => $listeCotes,
-				'listeCompetences'=>$listeCompetences,		'cotesPonderees' => $cotesPonderees,
+				'listeCompetences'=> $listeCompetences,		'cotesPonderees' => $cotesPonderees,
 				'listeProfs' => $listeProfsCoursGrp,		'commentairesCotes' => $commentairesCotes,
 				'ficheEduc' => $ficheEduc,					'attitudes' => $tableauAttitudes,
 				'remTitu' => $remarqueTitulaire,			'mention' => $mention,
@@ -5290,6 +5287,20 @@ class Bulletin {
 			}
 		Application::DeconnexionPDO($connexion);
 		return $resultat;
+		}
+
+	/** 
+	 * extraction de la liste des cours orphelins: sans prof et sans élève
+	 * /!\ cette fonction existe déjà (voir plus haut) mais intégrée différemment
+	 * @param void()
+	 * @return array 
+	 */
+	public function listeOrphanCours2(){
+		// SELECT cours FROM didac_cours WHERE cours NOT IN
+		//(SELECT SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) FROM didac_elevesCours) AND cours NOT IN (SELECT SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) FROM didac_profsCours)
+		
+		//  SELECT cours FROM didac_cours WHERE cours NOT IN
+		// (SELECT SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) FROM didac_elevesCours UNION SELECT SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) FROM didac_profsCours)
 		}
 
 	}
