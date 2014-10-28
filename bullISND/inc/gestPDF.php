@@ -124,15 +124,18 @@ switch ($mode) {
 				if ($user->userStatus($Application->repertoireActuel()) != 'admin')
 					$Application->vider("./pdf/$acronyme");
 				// accumuler tous les bulletins dans des fichiers par classe
+				$listeEleves = Null;
 				foreach ($listeClasses as $classe) {
 					$listeEleves = $Ecole->listeEleves($classe,'groupe');
 					$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme, true);
 					}
 				// zipper l'ensemble des fichiers
-				$Application->zipFilesNiveau ("pdf/$acronyme", $listeClasses);
-				$smarty->assign('acronyme', $acronyme);
-				$smarty->assign('link',$niveau);
-				$smarty->assign('corpsPage','corpsPage');
+				if ($listeEleves != Null) {
+					$Application->zipFilesNiveau("pdf/$acronyme", $listeClasses);
+					$smarty->assign('acronyme', $acronyme);
+					$smarty->assign('link',$niveau);
+					$smarty->assign('corpsPage','corpsPage');
+					}
 				}
 			}
 		break;
