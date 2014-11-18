@@ -1,8 +1,25 @@
 <?php 
+require_once('config.inc.php');
+
+// définition de la class USER utilisée en variable de SESSION
+require_once (INSTALL_DIR."/inc/classes/classUser.inc.php");
+
+// définition de la class Application
+require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
+$Application = new Application();
+
 session_start();
+$user = $_SESSION[APPLICATION];
+
+// définition de la class USER utilisée en variable de SESSION
+require_once (INSTALL_DIR."/inc/classes/classUser.inc.php");
+$user = $_SESSION[APPLICATION];
+// suppression de la notification en BD
+$user->delogger();
+
 session_destroy();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />

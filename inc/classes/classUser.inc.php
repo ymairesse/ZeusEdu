@@ -244,7 +244,7 @@ class user {
 		return (array) $this;
 		}
 
-	/***
+	/**
 	 * ajout de l'utilisateur dans le journal des logs
 	 * @param $acronyme	: acronyme de l'utilisateur
 	 * @return integer
@@ -260,9 +260,46 @@ class user {
 		$sql = "INSERT INTO ".PFX."logins ";
 		$sql .= "SET user='$user', date='$date', heure='$heure', ip='$ip', host='$hostname'";
 		$n = $connexion->exec($sql);
+		
+		$sql = "INSERT IGNORE INTO ".PFX."sessions ";
+		$sql .= "SET user='$user', ip='$ip' ";
+		$n = $connexion->exec($sql);
 		Application::DeconnexionPDO ($connexion);
 		return $n;
 	}
+	
+	/** 
+	 * délogger l'utilisateur indiqué de la base de données (table des sessions actives)
+	 * @param $acronyme : acronyme de l'utilisateur
+	 * @return integer : nombre d'effacement dans la BD
+	 */
+	public function delogger() {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$acronyme = $this->acronyme();
+		$sql = "DELETE FROM ".PFX."sessions ";
+		$sql .= "WHERE user='$acronyme' ";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO ($connexion);
+		return $resultat;
+		}
+		
+	/** 
+	 * vérifier que l'utilisateur dont on fournit l'acronyme est signalé comme loggé depuis l'adresse ip dans la BD
+	 * @param $acronyme : string
+	 * @param $ip : string
+	 */
+	public function islogged($acronyme,$ip) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);		
+		$sql = "SELECT user, ip ";
+		$sql .= "FROM ".PFX."sessions ";
+		$sql .= "WHERE user='$acronyme' AND ip='$ip' ";
+		$resultat = $connexion->query($sql);
+		if ($resultat) {
+			$verif = $resultat->fetchAll();
+			}
+		Application::DeconnexionPDO ($connexion);
+		return (count($verif) > 0);
+		}
 
 	/***
 	 * enregistrement des données personnelles de l'utilisateur, provenant d'un formulaire

@@ -19,8 +19,9 @@ session_start();
 $user = $_SESSION[APPLICATION];
 
 // si pas d'utilisateur authentifié en SESSION, on renvoie à l'accueil
-if (!(isset($user)))
+if (!(isset($user)) || !($user->islogged($user->acronyme(),$_SERVER['REMOTE_ADDR'])))
     header ("Location: ../accueil.php");
+
 // Vérification de l'autorisation d'accès à l'application et au module en cours
 if (!($user->accesApplication(APPLICATION) && $user->accesModule(BASEDIR)))
 	header("Location: ../index.php");

@@ -22,21 +22,19 @@ if (!empty($acronyme) && !empty($mdp)) {
 	// noter le passage de l'utilisateur dans les logs
 	$user->logger($acronyme);
 	$identification = $user->identification();
-	if (!$Application->bannedIP($identification['ip'])) {
-		// vérification du mot de passe
-		if ($user->getPasswd() == md5($mdp)) {
-			// mettre à jour la session avec les infos de l'utilisateur
-			$_SESSION[APPLICATION] = $user;
-			header("Location: index.php");
+
+	// vérification du mot de passe
+	if ($user->getPasswd() == md5($mdp)) {
+		// mettre à jour la session avec les infos de l'utilisateur
+		$_SESSION[APPLICATION] = $user;
+		header("Location: index.php");
+		}
+		else {
+			$data['mdp']= $mdp;
+			if ($Application->mailAlerte($user,'mdp', $data))
+				header("Location: accueil.php?erreur=faux");
+				else header("Location: accueil.php?erreur=faux&noMail=true");
 			}
-			else {
-				$data['mdp']= $mdp;
-				if ($Application->mailAlerte($user,'mdp', $data))
-					header("Location: accueil.php?erreur=faux");
-					else header("Location: accueil.php?erreur=faux&noMail=true");
-				}
-			}
-			else die("banni");
 	}
 	else
 	// le nom d'utilisateur ou le mot de passe n'ont pas été donnés

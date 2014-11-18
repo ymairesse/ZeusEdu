@@ -631,10 +631,10 @@ class Application {
 	   return !($erreur1 || $erreur2);
 	   }
 
-	/*
-	* function derniersConnectes
-	* @param $limite
+	/**
 	* liste des derniers utilisateurs connectés
+	* @param $limite
+	* @return array
 	*/
 	public function derniersConnectes($limite) {
 	   $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -723,7 +723,6 @@ class Application {
 	 * changement d'utilisateur en gardant les droits admins (Application)
 	 * @param $acronyme
 	 * @return string
-	 *
 	 */
 	public function changeUserAdmin ($acronyme) {
 		// liste de toutes les applications avec leurs droits
@@ -749,7 +748,6 @@ class Application {
 	 *
 	 * @param $status : string
 	 * @return array
-	 *
 	 */
 	public function getUserByStatus ($status) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -766,15 +764,13 @@ class Application {
 		return $listeUsers;
 		}
 
-	/*
-	 * function lastAccess
-	 *
+	/**
+	 * liste les accès de l'utilisateur indiqué entre deux bornes
 	 * @param $user		nom de l'utilisateur concerné
 	 * @param $nombre  nombre d'accès à traiter
 	 * @param $from		nombre de lignes à laisser tomber en début
 	 * @return array : liste des derniers accès à l'application
-	 *
-	 * */
+	 */
 	public function lastAccess ($from, $nombre, $user) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT ip,host,date,DATE_FORMAT(heure,'%H:%i') as heure ";
@@ -795,34 +791,10 @@ class Application {
 		}
 
 	/**
-	 * function bannedIP
-	 *
-	 * @param $ip   	adresse IP
-	 *
-	 * retourne "vrai" si adresse IP bannie
-	 * */
-	public function bannedIP ($ip) {
-		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT ip ";
-		$sql .= "FROM ".PFX."banIP ";
-		$sql .= "WHERE ip='$ip' ";
-		$resultat = $connexion->query($sql);
-		$listeIP = array();
-		if ($resultat) {
-			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			while ($ligne = $resultat->fetch())
-				$listeIP[] = $ligne['ip'];
-			}
-		Application::deconnexionPDO($connexion);
-		return (in_array($ip, $listeIP));
-		}
-
-	/*
-	 * function dirFiles
-	 * @param $dir : répertoire dont on veut obtenir la liste du contenu
-	 *
 	 * renvoie la liste de tous les fichiers d'un répertoire
-	 * */
+	 * @param $dir : répertoire dont on veut obtenir la liste du contenu
+	 * @return array
+	 */
 	public function dirFiles ($dir) {
 		$listeFichiers = array();
 		if ($handle = @opendir("$dir")) {
@@ -836,9 +808,8 @@ class Application {
 		}
 
 
-	/***
+	/**
 	 * crée un fichier zippé à partir de tous les fichiers qui se trouvent dans le répertoire désigné
-	 *
 	 * @param $dir : répertoire où se trouvent les fichiers à zipper et le fichier à enregistrer
 	 * @param $filename : nom du fichier à créer
 	 */
@@ -874,11 +845,10 @@ class Application {
 		}
 
 	/*
-	 * function checkIP
+	 * renvoie "true" si l'adresse IP est déjà connue dans la table des logins pour cet utilisateur
 	 * @param $ip	: adresse IP
 	 * @param $user	: nom de l'utilisateur
-	 * renvoie "true" si l'adresse IP est déjà connue dans la table des logins pour cet utilisateur
-	 * */
+	 */
 	 public function checkIP ($ip, $user){
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT COUNT(*) AS nb ";
@@ -896,12 +866,9 @@ class Application {
 		}
 
 	/**
-	 * function mailAlerte
+	 * Envoie un mail d'alerte à l'utilisateur et aux admins
 	 * @param $user	: paramètres utilisateurs
 	 * @param $type	: type d'alerte
-	 *
-	 * Envoie un mail d'alerte à l'utilisateur et aux admins
-	 *
 	 */
 	public function mailAlerte($user, $type, $data=Null){
 		// liste des mails des administrateurs
@@ -999,7 +966,7 @@ class Application {
 					);
 	}
 
-	/***
+	/**
 	 * recherche les éventuels hiatus entre la table importée et la structure de la base de données
 	 * @param $entete
 	 * @param array $champs : liste des champs à trouver
@@ -1400,7 +1367,7 @@ class Application {
 		reset($objects);
 		rmdir($dir);
 		}
-}
+	}
 
 
 }
