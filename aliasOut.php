@@ -9,20 +9,21 @@ require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
 
 session_start();
+
+// définition de la class USER utilisée en variable de SESSION
+require_once (INSTALL_DIR."/inc/classes/classUser.inc.php");
 $user = $_SESSION[APPLICATION];
-
-// suppression de la notification en BD
-$user->delogger();
-
-session_destroy();
+// retour de la session de l'administrateur, sauvegardée dans la variable de session
+$_SESSION[APPLICATION] = $user->getAlias();
+$user = $_SESSION[APPLICATION];
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Déconnexion</title>
-	<link type="text/css" rel="stylesheet" media="all" href="screen.css">
-	<link type="text/css" rel="stylesheet" media="screen" href="js/blockUI.css">	
+	<link type="text/css" media="all" rel="stylesheet" href="screen.css">
+	<link type="text/css" media="screen" rel="stylesheet" href="js/blockUI.css">	
 	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery.blockUI.js"></script>
 
@@ -32,7 +33,7 @@ session_destroy();
 	window.location = "index.php";  
   } 
 $(document).ready(function(){
-	setTimeout('delayRedirect()', 1000);
+	setTimeout('delayRedirect()', 500);
 	$.growlUI(
 				$(".attention .title").html(),
 				$(".attention .texte").html(),
