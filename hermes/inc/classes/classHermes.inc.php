@@ -82,8 +82,11 @@ class hermes {
 	 */
 	public function archiveMail($acronyme,$post,$files) {
 		// création éventuelle du répertoire au nom de l'utlilisateur
-		if (!(file_exists("upload/$acronyme")))
+		if (!(file_exists("upload/$acronyme"))){
 			mkdir("upload/$acronyme");
+			$handle = fopen("upload/$acronyme/index.php", 'w') or die("can't open file");
+			fclose($handle);
+			}
 		// sauvegarde des fichiers joints
 		foreach ($files as $wtf=>$data) {
 			if ($data['error'] == 0) {
