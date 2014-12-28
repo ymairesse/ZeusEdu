@@ -299,7 +299,7 @@ class Application {
 		}
 
 
-	/***
+	/**
 	 * renvoie la liste des paramètres généraux de l'ensemble de l'application en provenance de la BD
 	 * @param
 	 * @result array $listeParametres
@@ -507,27 +507,27 @@ class Application {
 		return $heure;
 		}
 
-		/**
-		 * retourne le jour de la semaine correspondant à une date au format MySQL
-		 * @param string $dataMySQL
-		 * @return string
-		 */
-		public static function jourSemaineMySQL ($dateMySQL) {
-			$timeStamp = strtotime($dateMySQL);
-			return strftime("%A", $timeStamp);
-		}
+	/**
+	 * retourne le jour de la semaine correspondant à une date au format MySQL
+	 * @param string $dataMySQL
+	 * @return string
+	 */
+	public static function jourSemaineMySQL ($dateMySQL) {
+		$timeStamp = strtotime($dateMySQL);
+		return strftime("%A", $timeStamp);
+	}
 
-		/**
-		* Fonction de conversion de date du format français (JJ/MM/AAAA) en Timestamp.
-		* @param string $date Date au format français (JJ/MM/AAAA)
-		* @return integer Timestamp en seconde
-		* http://www.julien-breux.com/2009/02/17/fonction-php-date-francaise-vers-timestamp/
-		*/
-		public static function dateFR2Time($date)	{
-			  list($day, $month, $year) = explode('/', $date);
-			  $timestamp = mktime(0, 0, 0, $month, $day, $year);
-			  return $timestamp;
-			}
+	/**
+	* Fonction de conversion de date du format français (JJ/MM/AAAA) en Timestamp.
+	* @param string $date Date au format français (JJ/MM/AAAA)
+	* @return integer Timestamp en seconde
+	* http://www.julien-breux.com/2009/02/17/fonction-php-date-francaise-vers-timestamp/
+	*/
+	public static function dateFR2Time($date)	{
+		  list($day, $month, $year) = explode('/', $date);
+		  $timestamp = mktime(0, 0, 0, $month, $day, $year);
+		  return $timestamp;
+		}
 
 	/**
 	 * Extrait la liste des fichiers présentes dans un répertoire
@@ -540,6 +540,15 @@ class Application {
 		$liste = array_diff(scandir($repertoire, 0), $exclus);
 		return $liste;
 	}
+
+	/** 
+	 * date d'aujourd'hui
+	 * @param void()
+	 * @return string
+	 */
+	public static function dateNow(){
+		return date('d/m/Y');
+		}
 
 
 	/**
@@ -725,18 +734,14 @@ class Application {
 	 * @return string
 	 */
 	public function changeUserAdmin ($acronyme) {
-		// liste de toutes les applications avec leurs droits
-		$listeApplications = $_SESSION[APPLICATION]->getApplications();
-		$appliAdmin = array('admin'=>$listeApplications['admin']);
-
+		// conserver la session de l'admin courant
+		$admin = $_SESSION[APPLICATION];
 		// prépartion d'un nouvel utilisateur
-		$toto = new user($acronyme);
-		// lui conférer les droits "admin" sur ses applications
-		$toto->setApplicationsAdmin();
-		// lui ajouter les droits "admin" sur l'admin
-		$toto->addAppli($appliAdmin);
-		// l'affecter à la session
-		$_SESSION[APPLICATION] = $toto;
+		$alias = new user($acronyme);
+		// mise en mémoire de l'administrateur
+		$alias->setAlias($admin);
+
+		$_SESSION[APPLICATION] = $alias;
 		$qui = $_SESSION[APPLICATION]->identite();
 		return $qui['prenom']." ".$qui['nom'].": ".$qui['acronyme'];
 	}
@@ -1369,6 +1374,29 @@ class Application {
 		}
 	}
 
+	/** 
+	 * retourne la liste des $nbJours dates ouvrables suivantes d'une date donnée
+	 * @param string $date
+	 * @param integer $nbJours : nombre de jours ouvrables souhaités
+	 * @return array
+	 */
+	public function datesSuivantes($date, $nbJours='1', $debutInclus=true) {
+		$fetes = array('25/12/2014','01/01/2015');
+		$listeDates = array();
+		$dateLendemain = $date;
+		if ($debutInclus) 
+			$listeDates = array($date);
+			else $listeDates = array();
+		while ($nbJours >= 1) {
+			$timeStamp = strtotime(str_replace('/','-',$dateLendemain).'1 weekday');
+			$dateLendemain = date('d/m/Y',$timeStamp);
+			if (!(in_array($dateLendemain, $fetes))){
+				$listeDates[]=$dateLendemain;
+				$nbJours--;
+			}
+		}
+		return $listeDates;
+		}
 
 }
 ?>

@@ -359,17 +359,22 @@ class ecole {
 			$listeElevesString = implode(",",array_keys($listeEleves));
 			else $listeElevesString = $listeEleves;
 		$connexion = Application::connectPDO (SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT matricule, nom, prenom, groupe, classe ";
-        $sql .= "FROM ".PFX."eleves ";
-		$sql .= "WHERE matricule IN ($listeElevesString) ";
-		$sql .= "ORDER BY classe, REPLACE(REPLACE (nom, ' ', ''),'''',''), prenom";
+        $sql = "SELECT de.matricule, nom, prenom, groupe, classe, DateNaiss, commNaissance, user, mailDomain ";
+        $sql .= "FROM ".PFX."eleves AS de ";
+		$sql .= "LEFT JOIN ".PFX."passwd AS dp ON (de.matricule = dp.matricule) ";
+		$sql .= "WHERE de.matricule IN ($listeElevesString) ";
+		$sql .= "ORDER BY classe, REPLACE(REPLACE (nom, ' ', ''),'''',''), prenom ";
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$matricule = $ligne['matricule'];
+				$dateNaiss = $ligne['DateNaiss'];
+				$ligne['mail'] = $ligne['user'].'@'.$ligne['mailDomain'];
 				$liste[$matricule]=$ligne;
+				$liste[$matricule]['DateNaiss'] = Application::datePHP($dateNaiss);				
+				$liste[$matricule]['photo']=self::photo($matricule);
 				}
 			}
 		Application::DeconnexionPDO($connexion);
@@ -541,21 +546,21 @@ class ecole {
         }
 
     /**
-     * function listeProfsListeCoursGrp
-     * @param $listeCoursGrp
-     *
      * liste structurée des profs liés à une liste de coursGrp (liste indexée par coursGrp)
+     * @param string | array : $listeCoursGrp
+     * @return array
      */
     public function listeProfsListeCoursGrp($listeCoursGrp, $type='string') {
         if (is_array($listeCoursGrp))
             $listeCoursGrpString = "'" . implode("','", array_keys($listeCoursGrp)) . "'";
             else $listeCoursGrpString = "'".$listeCoursGrp."'";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT coursGrp, nom, prenom, ".PFX."profsCours.acronyme ";
+        $sql = "SELECT coursGrp, nom, prenom, sexe, ".PFX."profsCours.acronyme ";
         $sql .= "FROM ".PFX."profsCours ";
         $sql .= "JOIN ".PFX."profs ON (".PFX."profsCours.acronyme = ".PFX."profs.acronyme) ";
         $sql .= "WHERE coursGrp IN ($listeCoursGrpString) ";
 		$sql .= "ORDER BY nom";
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -563,10 +568,12 @@ class ecole {
 			while ($ligne = $resultat->fetch()) {
 				$coursGrp = $ligne['coursGrp'];
 				$acronyme = $ligne['acronyme'];
+				$sexe = $ligne['sexe'];
+				$ved = ($sexe=='M')?'Mr ':'Mme';
 				if ($type == 'string') {
 					if (isset($liste[$coursGrp]))
-						$liste[$coursGrp] .= ', '.$ligne['prenom'].' '.$ligne['nom'];
-						else $liste[$coursGrp] = $ligne['prenom'].' '.$ligne['nom'];
+						$liste[$coursGrp] .= ', '.$ved.' '.$ligne['prenom'].' '.$ligne['nom'];
+						else $liste[$coursGrp] = $ved.' '.$ligne['prenom'].' '.$ligne['nom'];
 					}
 					else $liste[$coursGrp][$acronyme] = $ligne;
 				// on supprime le cours dont le prof a été trouvé
@@ -957,6 +964,33 @@ class ecole {
 			'classe'=>$ligne['groupe'],
 			'photo'=> self::photo($matricule));
     }
+
+	/** 
+	 * renvoie la liste des adresses mail et des passwd des élèves dont on fournit le matricule
+	 * @param string|array $listeEleves
+	 * @return array()
+	 */
+	public function listeMailsEleves ($listeEleves) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",",array_keys($listeEleves));
+			else $listeElevesString = $listeEleves;
+		$connexion = Application::connectPDO (SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, user, passwd, mailDomain ";
+		$sql .= "FROM ".PFX."passwd ";
+		$sql .= "WHERE matricule IN ($listeElevesString) ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$liste[$matricule]=array('mail'=>$ligne['user'].$ligne['mailDomain'], 'passwd'=>$ligne['passwd']);
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+		}
+
+
 
     function listeElevesPasswd () {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);

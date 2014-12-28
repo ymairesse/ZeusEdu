@@ -8,6 +8,7 @@ class user {
 	private $applications;		// les applications accessibles par l'utilisateur
 	private $listeCours;		// les cours de ce prof
 	private $titulaire;			// la ou les classes dont il/elle est titulaire
+	private $aliase;
 
 	// --------------------------------------------
 	// fonction constructeur
@@ -20,6 +21,7 @@ class user {
 		$this->applications = $this->applications($acronyme);
 		$this->listeCours = $this->listeCoursProf();
 		$this->titulaire = $this->listeTitulariats($acronyme);
+		$this->alias = Null;
 		}
 	}
 	/**
@@ -46,7 +48,7 @@ class user {
 		return $this->identite;
 		}
 
-	/***
+	/**
 	 * une fonction qui retourne l'acronyme de l'utilisateur
 	 * @param
 	 * @return string
@@ -93,7 +95,7 @@ class user {
 		return $titulariats;
 		}
 
-	/***
+	/**
 	 * vérifie que l'utilisateur dont on fournit l'acronyme existe dans la table des profs
 	 * @param $acronyme
 	 * @return array : l'acronyme effectivement trouvé dans la BD ou rien si pas trouvé
@@ -109,6 +111,24 @@ class user {
 			}
 		Application::DeconnexionPDO($connexion);
 		return ($ligne['acronyme']);
+		}
+
+	/** 
+	 * fixe la valeur de l'alias éventuel en mémorisant la $_SESSION de l'admin
+	 * @param $session : la session de l'amdin
+	 * @return 
+	 */
+	public function setAlias($session){
+		$this->alias = $session;
+		}
+
+	/** 
+	 * retourne l'acronyme éventuel de l'admin qui utilise un alias
+	 * @param void()
+	 * @return string
+	 */
+	public function getAlias(){
+		return $this->alias;
 		}
 
 	/**
@@ -155,9 +175,9 @@ class user {
 	 * @return void()
 	 */
 	public function setApplicationsAdmin() {
-		foreach ($this->applications as $nomAppli=>&$detailsAppli) {
-			$detailsAppli['userStatus'] = 'admin';
-			}
+		//foreach ($this->applications as $nomAppli=>&$detailsAppli) {
+			//$detailsAppli['userStatus'] = 'admin';
+			// }
 		}
 
 	/**
@@ -261,8 +281,10 @@ class user {
 		$sql .= "SET user='$user', date='$date', heure='$heure', ip='$ip', host='$hostname'";
 		$n = $connexion->exec($sql);
 		
-		$sql = "INSERT IGNORE INTO ".PFX."sessions ";
+		$sql = "INSERT INTO ".PFX."sessions ";
 		$sql .= "SET user='$user', ip='$ip' ";
+		$sql .= "ON DUPLICATE KEY UPDATE ip='$ip' ";
+
 		$n = $connexion->exec($sql);
 		Application::DeconnexionPDO ($connexion);
 		return $n;
@@ -301,7 +323,7 @@ class user {
 		return (count($verif) > 0);
 		}
 
-	/***
+	/**
 	 * enregistrement des données personnelles de l'utilisateur, provenant d'un formulaire
 	 * @param $post
 	 * @return integer : nombre de modifications dans la BD
@@ -541,7 +563,7 @@ class user {
 	public function userStatus ($appli) {
 		$applications = $_SESSION[APPLICATION]->applications;
 		if (isset($applications[$appli]))
-		$resultat = isset($applications[$appli])?$applications[$appli]['userStatus']:Null;
+			$resultat = isset($applications[$appli])?$applications[$appli]['userStatus']:Null;
 	return $resultat;
 	}
 
@@ -588,7 +610,7 @@ class user {
 		$sql = "SELECT application as nom, nomLong, userStatus ";
 		$sql .= "FROM ".PFX."profsApplications AS pa ";
 		$sql .= "JOIN ".PFX."applications AS a ON (a.nom = pa.application) ";
-		$sql .= "WHERE acronyme='$acronyme' AND active";
+		$sql .= "WHERE acronyme='$acronyme' AND active ";
 		$resultat = $connexion->query($sql);
 		$tableauApplisUser = array();
 		while ($ligne = $resultat->fetch()) {
@@ -601,7 +623,7 @@ class user {
 		return $tableauApplisUser;
 	}
 
-	/***
+	/**
 	 * renvoie le statut de l'utilisateur actuel pour le module $module
 	 * @param string $module : le module concerné
 	 * @return string : le statut de l'utilsateur
