@@ -40,23 +40,12 @@
 		{if ($noCol mod 2) == 0}<tr>{/if}
 		<th>{$unEleve.classe|default:'&nbsp;'}</th>
 
-		<td class="tooltip">
-			<span class="tip"><img src="../photos/{$unEleve.photo}.jpg" alt="{$matricule}" style="display:none; width: 100px"></span>
-			{$unEleve.nom|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'}
-		</td>
+		<td>{$unEleve.nom|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'}</td>
 
 		{* on passe le différentes périodes existantes en revue *}
 		{foreach from=$lesPeriodes item=noPeriode}
 			{assign var=statut value=$listePr.$noPeriode.statut|default:''}
-			{assign var=educ value=$listePr.$noPeriode.educ|default:''}
-			{assign var=quand value=$listePr.$noPeriode.quand|default:''}
-			{assign var=heure value=$listePr.$noPeriode.heure|default:''}
-			{if ($statut!='')}
-				{assign var=titre value=$educ|cat:' ['|cat:$quand|cat:' à '|cat:$heure|cat:']'}
-				{else}
-				{assign var=titre value='indetermine'}
-			{/if}
-			<td class="{$statut}" title="{$titre}">
+			<td class="{$statut}">
 				{* s'il s'agit de la période actuelle, on présente la case à cocher (éventuellement cochée) *}
 				{if ($noPeriode == $periode)}
 						<input type="checkbox" value="absent" name="matr-{$matricule}_periode-{$noPeriode}" class="cb" 
@@ -66,11 +55,6 @@
 					<strong>{$noPeriode}</strong>
 				{/if}
 			</td>
-			{if ($quand!='')}
-				{assign var=lastSaveDate value=$quand}
-				{assign var=lastSaveTime value=$heure}
-				{assign var=lastSaveEduc value=$educ}
-			{/if}
 		{/foreach}
 				
 		{* si c'est la deuxième colonne, on clôture la ligne *}
@@ -84,9 +68,7 @@
 	{/if}
 
 </table>
-{if isset($lastSaveDate)}
-<strong>Dernier enregistrement: {$lastSaveDate|default:'-'} à {$lastSaveTime|default:'-'} par {$lastSaveEduc|default:'-'}</strong>
-{/if}
+
 </form>
 
 <script type="text/javascript">
@@ -144,7 +126,7 @@
 				else if ($(this).parent().hasClass('absent'))
 					$(this).parent().removeClass('absent').addClass('present');
 					else if ($(this).parent().hasClass('indetermine'))
-						$(this).parent().removeClass('indetermine').addClass('absent')
+						$(this).parent().removeClass('indetermine').addClass('absent');
 			modification();
 			// le click est géré au niveau du <td>
 			event.stopPropagation();
