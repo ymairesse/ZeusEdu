@@ -1,4 +1,3 @@
-{debug}
 <h3>Absences de {$detailsEleve.nom} {$detailsEleve.prenom} {$detailsEleve.classe}</h3>
 {if $listePresences|count == 0}
 <p>Aucune absence</p>
