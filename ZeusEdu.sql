@@ -1208,6 +1208,21 @@ INSERT INTO `didac_userStatus` (`ordre`, `userStatus`, `color`, `nomStatut`) VAL
 (4, 'direction', '#4AFF49', 'Direction'),
 (5, 'admin', '#FF0000', 'Administrateur');
 
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `didac_sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_sessions` (
+  `user` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
+
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
