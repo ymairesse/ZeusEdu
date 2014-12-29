@@ -1,3 +1,18 @@
+<div id="selectAutocomplete" class="noprint" style="float:left;">
+<form name="selecteurAuto" id="formSelecteurAuto" method="POST" action="index.php">
+	<p class="ui-widget" style="margin:0">
+		<input type="text" id="nom" name="nom" size="15" value="nom de l'élève" class="inputDefault">
+		<input type="text" id="prenom" name="prenom" size="15" value="prenom de l'élève" class="inputDefault">
+		<input type="text" id="classe" name="classe" size="4" value="classe" class="inputDefault">
+		<input type="submit" value="OK" name="OK" id="envoi">
+		<span id="photo" style="float:right"></span>
+	</p>
+	<input type="hidden" id="matricule" name="matricule" value="">
+	<input type="hidden" name="action" value="parEleve">
+
+</form>
+</div>
+
 <script type="text/javascript">
 {literal}
 	$(document).ready(function() {
@@ -64,18 +79,3 @@
 	})
 {/literal}
 </script>
-<div id="selectAutocomplete" class="noprint" style="float:left;">
-<form name="selecteurAuto" id="formSelecteurAuto" method="POST" action="index.php">
-	<p class="ui-widget" style="margin:0">
-		<input type="text" id="nom" name="nom" size="15" value="nom de l'élève" class="inputDefault">
-		<input type="text" id="prenom" name="prenom" size="15" value="prenom de l'élève" class="inputDefault">
-		<input type="text" id="classe" name="classe" size="4" value="classe" class="inputDefault">
-		<input type="submit" value="OK" name="OK" id="envoi">
-		<span id="photo" style="float:right"></span>
-	</p>
-	<input type="hidden" id="matricule" name="matricule" value="">
-	<input type="hidden" name="action" value="parEleve">
-	
-
-</form>
-</div>

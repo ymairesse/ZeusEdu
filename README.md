@@ -12,3 +12,6 @@ Installation
  - vérifier le fonctionnement de l'application avec l'utilisateur ADM et le mot de passe 123456
  - configurer le fichier /config.ini pour l'établissement scolaire
  - importer les contenus des tables depuis les fichiers .csv
+ 
+ Informations plus détaillées sur le wiki http://sio2.be/wiki/doku.php
+

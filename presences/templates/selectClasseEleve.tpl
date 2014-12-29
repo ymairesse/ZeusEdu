@@ -24,19 +24,19 @@
 		 <img src="../images/right.png" alt=">" style="width:18px" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 		{/if}
 	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}
 		<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
 		<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
 	{/if}
-	<input type="hidden" name="etape" value="showEleve">
+	<input type="hidden" name="etape" value="{$etape|default:Null}">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -56,7 +56,7 @@ $(document).ready (function() {
 			}
 		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
 		$.post("inc/listeEleves.inc.php",
-			{'classe': classe},
+			{ 'classe': classe },  // ne pas oublier les "espaces" autour...
 				function (resultat){
 					$("#choixEleve").html(resultat)
 				}
@@ -86,8 +86,7 @@ $(document).ready (function() {
 	})
 	
 	$("#nom").on("focus", function(){
-		$("#selectEleve").val('');
-		$("#selectClasse").val('');
+		// $("#selectEleve").val('');
 		})
 	
 	$("#nom").autocomplete({
@@ -101,5 +100,5 @@ $(document).ready (function() {
 		});
 
 })
-{/literal}
+
 </script>

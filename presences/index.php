@@ -9,21 +9,24 @@ $Presences = new Presences();
 
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 
+$acronyme = $user->getAcronyme();
+$smarty->assign('user',$acronyme);
+
 switch ($action) {
-	case 'admin':
-		include('inc/gestAdmin.inc.php');
-		break;
 	case 'presences':
 		include('inc/gestPresences.inc.php');
 		break;
-	case 'listeAbsences':
-		include ('inc/gestAbsences.inc.php');
+	case 'listes':
+		include ('inc/gestListes.inc.php');
 		break;
 	case 'autorisations':
 		include('inc/autorisations.inc.php');
 		break;
-	default:
-		include('inc/gestPresences.inc.php');
+	case 'signalements':
+		include ('inc/signalements.inc.php');
+		break;
+	case 'admin':
+		include('inc/gestAdmin.inc.php');
 		break;
 	}
 

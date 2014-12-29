@@ -3,10 +3,11 @@
 switch ($etape) {
   case 'enregistrer':
     $resultats = $Presences->enregistrerHeures($_POST);
-    $smarty->assign("message", array(
-									'title'=> SAVE,
-									'texte'=>sprintf(NBSAVE,$resultats['ok'])
-									));
+    $smarty->assign("message", 
+						array(
+							'title'=> SAVE,
+							'texte'=>sprintf(NBSAVE,$resultats['ok'])
+							));
     $smarty->assign("erreurs", $resultats['ko']);  
 
     $listePeriodesCours = $Presences->lirePeriodesCours();

@@ -12,12 +12,10 @@ class presences {
     function __construct() {
         }
 		
-	/*
-	* function lirePeriodesCours
-	*
-	* @param
-	*
-	* @return $listeHeures  renvoie la liste des heures de cours données dans l'école
+	/**
+	* renvoie la liste des heures de cours données dans l'école
+	* @param void()
+	* @return array $listeHeures  
 	*/
 	public function lirePeriodesCours () {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -39,9 +37,9 @@ class presences {
 		return $listePeriodes;
 	}
 	
-	/**
+	/** 
+	 * Enregistrement des définitions des périodes de cours
 	 * renvoie le nombre d'enregistrements effectivement réalisés et la liste des erreurs
-	 *
 	 * @param $post : ensemble des informations provenant du formulaire de définition des heures de cours
 	 * @return array : résultat de l'enregistrement
 	 */
@@ -92,12 +90,11 @@ class presences {
 		return array('ok'=>$ok, 'ko'=>$ko);
 	 }
 
-	 /**
-	  * ajoute une période de cours dans la table de la base de données
-	  *
-	  * @param
-	  * @return $nb  nombre de périodes ajoutées (normalement, une seule)
-	  */
+	/**
+	 * ajoute une période de cours dans la table de la base de données
+	 * @param void()
+	 * @return $nb  nombre de périodes ajoutées (normalement, une seule)
+	 */
 	public function ajoutPeriode () {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."presencesHeures ";
@@ -107,10 +104,9 @@ class presences {
 		return $resultat;
 	}
 
-	/*
-	 * function periodeActuelle
+	/**
+	 * retourne le numéro de la période actuelle
 	 * @param $listePeriodes : liste des périodes de cours, y compris les heures de début et de fin
-	 *
 	 * @return integer => numéro de la période en cours
 	 */
 	public function periodeActuelle($listePeriodes) {
@@ -123,325 +119,185 @@ class presences {
 		return $periode;
 		}
 
-	/* function enregistrerAbsences
-	 *
-	 * @param $post : ensemble des informations provenant du formulaire ad hoc
-	 * @return integer : nombre d'enregistrements d'absences effectués
-	 */
-	public function enregistrerAbsences ($post, $listeEleves) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-		$periode = $post['periode'];
-		
-		$educ = $post['educ'];
-		$date = Application::dateMysql($post['date']);
-		$selectProf = $post['selectProf'];
-		$coursGrp = $post['coursGrp'];
-		$heure = date("H:i");
-		
-		// suppression de toutes les absences pour la période et pour tous les élèves du groupe
-		// méthode drastique permettant les corrections immédiatement
-		if ($listeEleves) {
-			$listeEleves = implode(',',array_keys($listeEleves));
-		
-			$sql = "DELETE FROM ".PFX."presencesAbsences ";
-			$sql .= "WHERE date='$date' AND matricule IN ($listeEleves) AND periode='$periode'";
-			$resultat = $connexion->exec($sql);
-			}
 
-		// introduction des nouvelles notifications d'absences
-		$sql = "INSERT INTO ".PFX."presencesAbsences ";
-		$sql .= "SET date=:date, periode=:periode, heure=:heure, educ=:educ, coursGrp=:coursGrp, prof=:prof, ";
-		$sql .= "matricule=:matricule";
-		$requete = $connexion->prepare($sql);
-		
-		$resultat = 0;
-		foreach ($post as $key=>$value) {
-			$key = explode('_',$key);
-			if ($key[0] == 'abs') {
-				$matricule = $key[1];
-				$data = array(':periode'=>$periode,':educ'=>$educ, ':date'=>$date, ':prof'=>$selectProf, ':coursGrp'=>$coursGrp,
-							  ':matricule'=>$matricule, ':heure'=>$heure);
-				$resultat += $requete->execute($data);
-				}
-			}
-		Application::deconnexionPDO($connexion);
-		return $resultat;
-	}
-	
-	/**
-	 * enregistrement des absences depuis la fiche de notation des absences par élève
-	 * @param $post
-	 * @return integer : nombre d'enregistrements effectués
-	 */
-	public function enregistrerAbsencesEleves ($post) {
-		$date = Application::dateMysql($post['date']);
-		$educ = $post['educ'];
-		$heure = date("H:i");
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$nb = 0;
-		foreach ($post as $nomChamp=>$value) {
-			$nomChamp = explode('_', $nomChamp);
-			// les champs à enregistrer se présentent sous la forme matr-xxxx_per-YY dont il faut extraire XXXX et YY
-			if (substr($nomChamp[0], 0, 5) == 'matr-') {
-				$wtf = explode('-',$nomChamp[0]);
-				$matricule = $wtf[1];
-				$wtf = explode('-',$nomChamp[1]);
-				$periode = $wtf[1];
-				$sql = "INSERT INTO ".PFX."presencesAbsences ";
-				$sql .= "SET date='$date', periode='$periode', heure='$heure', educ='$educ', coursGrp='', matricule='$matricule', prof='' ";
-				$sql .= "ON DUPLICATE KEY UPDATE educ='$educ', heure='$heure' ";
-				$nb += $connexion->exec($sql);
-				}
-			}
-		Application::deconnexionPDO($connexion);
-		return $nb;
-	}
+// ******************************************************************************************************
 
-	/**
-	 * lecture de la liste des absences pour un jour donné dans un coursGrp donné
-	 * @param $date
-	 * @param $coursGrp
+
+	/** 
+	 * retourne la liste des présences et absences pour un élève et pour une série de dates données
+	 * @param integer : $matricule
+	 * @param array|string: $listeDates (au format PHP)
 	 * @return array
 	 */
-	public function lireAbsences ($date, $coursGrp) {
-		$date = Application::dateMysql($date);
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT matricule, periode ";
-		$sql .= "FROM ".PFX."presencesAbsences ";
-		$sql .= "WHERE date='$date' AND coursGrp='$coursGrp' ";
-		$sql .= "ORDER BY matricule, periode";
-		$resultat = $connexion->query($sql);
-		$listeAbsences = array();
-		if ($resultat) {
-			while ($ligne = $resultat->fetch()) {
-				$matricule = $ligne['matricule'];
-				$listeAbsences[$matricule][] = $ligne['periode'];
+	public function listePresencesEleveMultiDates($listeDates, $matricule) {
+		foreach ($listeDates as $k=>$uneDate) {
+			$listeDatesSQL[$k] = Application::dateMysql($listeDates[$k]);
 			}
-		}
-		Application::deconnexionPDO($connexion);
-		return $listeAbsences;
-		}
-		
-	/**
-	 * retourne la liste des absences pour toute l'école et pour une date donnée
-	 * @param $date : date au format ordinaire
-	 * @return $listeAbsences : liste des absences pour la date indiquée
-	 */
-	public function listeParDate ($date) {
-		$date = Application::dateMysql($date);
+		$listeDatesString = "'".implode("','",$listeDatesSQL)."'";
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT ".PFX."presencesAbsences.matricule, nom, prenom, groupe, periode, heure, educ ";
-		$sql .= "FROM ".PFX."presencesAbsences ";
-		$sql .= "JOIN ".PFX."eleves ON (".PFX."presencesAbsences.matricule = ".PFX."eleves.matricule ) ";
-		$sql .= "WHERE date = '$date' ";
-		$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, classe, periode";
+		$sql = "SELECT educ, periode, statut, date, quand, heure, parent, media ";
+		$sql .= "FROM ".PFX."presencesEleves AS dpe ";
+		$sql .= "LEFT JOIN ".PFX."presencesLogs AS dpl ON dpl.id = dpe.id ";
+		$sql .= "WHERE matricule = '$matricule' ";
+		$sql .= "AND date IN ($listeDatesString) ";
+		$sql .= "ORDER BY date ";
+
 		$resultat = $connexion->query($sql);
-		$listeAbsences = array();
+		$liste = array();
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
-				$matricule = $ligne['matricule'];
-				$photo = Ecole::photo($matricule);
+				$date=Application::datePHP($ligne['date']);
+				$ligne['date']=$date;
+				$ligne['quand'] = APPLICATION::datePHP($ligne['quand']);
 				$periode = $ligne['periode'];
-				$heure = $ligne['heure'];
-				$educ = $ligne['educ'];
-				$nom = $ligne['nom'];
-				$prenom = $ligne['prenom'];
-				$groupe = $ligne['groupe'];
-				if (!isset($listeAbsences[$matricule]))
-					$listeAbsences[$matricule] = array('nom'=>$nom, 'prenom'=>$prenom, 'classe'=>$groupe, 'photo'=>$photo, 'periodes'=>array());
-				$listeAbsences[$matricule]['periodes'][$periode] = array('heure'=>$heure, 'educ'=>$educ);
+				$liste[$date][$periode]=$ligne;
 				}
 			}
 		Application::deconnexionPDO($connexion);
-		return $listeAbsences;
-	}
-	
-	/**
-	 * retourne la liste des autorisations de sortie pour une période donnée entre $dateDebut et $dateFin
-	 * @param $dateDebut
-	 * @param $dateFin
-	 * @return array
-	 */
-	public function listeParPeriode($dateDebut, $dateFin) {
-		$dateDebut = Application::dateMysql($dateDebut);
-		$dateFin = Application::dateMysql($dateFin);
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT id, pa.matricule, nom, prenom, groupe, date, heure, educ ";
-		$sql .= "FROM ".PFX."presencesAutorisations AS pa ";
-		$sql .= "JOIN ".PFX."eleves AS e ON (pa.matricule = e.matricule ) ";
-		if ($dateFin == '') 
-			$sql .= "WHERE date = '$dateDebut' ";
-			else $sql .= "WHERE (date >= '$dateDebut') AND (date <= '$dateFin') ";
-		$sql .= "ORDER BY date, heure, REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, classe";
-		$resultat = $connexion->query($sql);
-		$listeAutorisations = array();
-		if ($resultat) {
-			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			while ($ligne = $resultat->fetch()) {
-				$ligne['date'] = Application::datePHP($ligne['date']);
-				$date = $ligne['date'];
-				$heure = $ligne['heure'];
-				$matricule = $ligne['matricule'];
-				$listeAutorisations[$date][$matricule][$heure] = $ligne;
+
+		$listePeriodes = self::lirePeriodesCours();
+
+		$listePresences = array();
+		foreach ($liste as $uneDate=>$dataUneDate) {
+			// on prépare une journée générique sans prise de présences
+			foreach ($listePeriodes as $noPeriode=>$wtf) {
+				$listePresences[$uneDate][$noPeriode] = array('educ'=>'', 'statut'=>'indetermine', 'quand'=>'', 'heure'=>'', 'parent'=>'', 'media'=>'');
+				}
+			// on ajoute les informations dont on dispose aux endroits ad hoc
+			foreach ($dataUneDate as $noPeriode=>$data) {
+				$listePresences[$uneDate][$noPeriode]['educ'] = $data['educ'];
+				$listePresences[$uneDate][$noPeriode]['statut'] = $data['statut'];
+				$listePresences[$uneDate][$noPeriode]['quand'] = $data['quand'];
+				$listePresences[$uneDate][$noPeriode]['heure'] = $data['heure'];
+				$listePresences[$uneDate][$noPeriode]['parent'] = $data['parent'];
+				$listePresences[$uneDate][$noPeriode]['media'] = $data['media'];
+				}
 			}
-		}
-		Application::deconnexionPDO($connexion);
-		return $listeAutorisations;
+		return $listePresences;		
 		}
 
-	/**
-	 * function absencesEleve
-	 * @param $matricule : matricule de l'élève dont von veut connaître les dates d'absences
-	 *
-	 * @return array $listeAbsences : liste des absences de l'élève
-	 */
-	function absencesEleve ($matricule) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT matricule, periode,date,coursGrp,periode, prof, educ, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) AS cours, ";
-		$sql .= "libelle, nom, prenom  ";
-		$sql .= "FROM ".PFX."presencesAbsences ";
-		$sql .= "JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1)) ";
-		$sql .= "JOIN ".PFX."profs ON (".PFX."profs.acronyme = prof) ";
-		$sql .= "WHERE matricule = '$matricule' ";
-		$sql .= "ORDER BY date, periode ";
-		$resultat = $connexion->query($sql);
-		$liste = array();
-		if ($resultat) {
-			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			$liste = $resultat->fetchAll();
-			}
-		Application::deconnexionPDO($connexion);
-		$listeAbsences = array();
-		foreach ($liste as $uneAbsence) {
-			$date = Application::datePHP($uneAbsence['date']);
-			$periode = $uneAbsence['periode'];
-			$listeAbsences[$date][$periode] = $uneAbsence;
-		}
-		return $listeAbsences;
-	}
-	
-	/**
-	 * retourne les périodes d'absences pour une date déterminée pour un élève ou une liste d'élèves donnés
-	 * @param $date : la date au format ordinaire
-	 * @param $listeEleves
+	/** 
+	 * retourne la liste des présences et absences pour une liste d'élèves donnée et pour une date donnée
+	 * @param string : $datePHP (au format PHP)
+	 * @param array | string: $listeEleves
 	 * @return array
 	 */
-	public function absencesEleveDate($date, $listeEleves) {
+	public function listePresencesElevesDate($datePHP, $listeEleves) {
 		if (is_array($listeEleves))
-			$listeElevesString = implode(",", array_keys($listeEleves));
-		else $listeElevesString = $listeEleves;
-		$dateSQL = Application::dateMysql($date);
+			$listeElevesString = implode(',',array_keys($listeEleves));
+			else $listeElevesString = $listeEleves;
+		$date = Application::dateMysql($datePHP);
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT matricule, coursGrp, periode, prof, educ, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) AS cours, ";
-		$sql .= "libelle, nom, prenom  ";
-		$sql .= "FROM ".PFX."presencesAbsences ";
-		$sql .= "LEFT JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1)) ";
-		$sql .= "LEFT JOIN ".PFX."profs ON (".PFX."profs.acronyme = prof) ";
-		$sql .= "WHERE date = '$dateSQL' AND matricule IN ($listeElevesString) ";
-		$sql .= "ORDER BY matricule, periode ";
+		$sql = "SELECT dpe.matricule, nom, prenom, groupe, educ, periode, statut, date, quand, heure, parent, media ";
+		$sql .= "FROM ".PFX."presencesEleves AS dpe ";
+		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = dpe.matricule ";
+		$sql .= "LEFT JOIN ".PFX."presencesLogs AS dpl ON dpl.id = dpe.id ";
+		$sql .= "WHERE dpe.matricule IN ($listeElevesString) ";
+		$sql .= "AND date = '$date' ";
+
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			$liste = $resultat->fetchAll();
-			}
-		Application::deconnexionPDO($connexion);
-		$listeAbsences = array();
-		foreach ($liste as $uneAbsence) {
-			$periode = $uneAbsence['periode'];
-			$matricule = $uneAbsence['matricule'];
-			$listeAbsences[$matricule][$periode] = $uneAbsence;
-			}
-		return $listeAbsences;
-		}
-	
-
-	/**
-	 * listes des autorisations de sorties pour un élève dont on fournit le matricule
-	 * @param $matricule
-	 * @return array
-	 */
-	public function listeAutorisations ($matricule) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT id, matricule, educ, parent, media, date, heure ";
-		$sql .= "FROM ".PFX."presencesAutorisations AS aut ";
-		$sql .= "WHERE matricule = '$matricule' ";
-		$sql .= "ORDER BY date, heure ";
-		$resultat = $connexion->query($sql);
-		$liste = array();
-		if ($resultat) {
-			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
-				$id = $ligne['id'];
-				$date = $ligne['date'];
-				$ligne['date'] = Application::datePHP($date);
-				$liste[$id] = $ligne;
+				$matricule = $ligne['matricule'];
+				$periode = $ligne['periode'];
+				$ligne['date'] = Application::datePHP($ligne['date']);
+				$ligne['quand']  = Application::datePHP($ligne['quand']);
+				$liste[$matricule][$periode]=$ligne;
 				}
 			}
 		Application::deconnexionPDO($connexion);
-		return $liste;
-	}
 
-	/**
-	 * enregistrement des données d'autorisation de sortie
-	 * @param $post : données sortant d'un formulaire écran
-	 * @return $nb : nombre de modifications dans la BD (normalement 1)
+		$listePeriodes = self::lirePeriodesCours();
+		// pour chaque élève, on prépare une journée sans prise de présences
+		$journee = array();
+		foreach ($listePeriodes as $noPeriode=>$wtf) {
+			$journee[$noPeriode] = array('educ'=>'', 'statut'=>'indetermine', 'quand'=>'', 'heure'=>'', 'parent'=>'', 'media'=>'');
+			}
+
+		if (!(is_array($listeEleves)))
+			$listeEleves = array($listeEleves=>'wtf');
+
+		$listePresences = array();
+		foreach ($listeEleves as $matricule=>$wtf) {
+			$listePresences[$matricule] = $journee;	// initialisation de la journée vide (aucune présence prise)
+			// on parcourt la liste des présences prises
+			foreach ($liste as $matricule=>$dataJournee) {
+				// et on y met les informations des présences prises
+				foreach ($dataJournee as $periode=>$data) {
+						$listePresences[$matricule][$periode] = array(
+							'educ'=>$liste[$matricule][$periode]['educ'],
+							'statut'=>$liste[$matricule][$periode]['statut'],
+							'quand'=>$liste[$matricule][$periode]['quand'],
+							'heure'=>$liste[$matricule][$periode]['heure'],
+							'parent'=>$liste[$matricule][$periode]['parent'],
+							'media'=>$liste[$matricule][$periode]['media']
+							);
+					}
+				}
+			}
+		return $listePresences;
+		}
+
+	/** 
+	 * retourne la liste des absences et des présences pour une date donnée pour l'ensemble de l'école
+	 * @param $date
+	 * @param array('liste1'=>...,'liste2'=>...)  $statutsAbs : les statuts des types d'absences qui doivent être recensées
+	 * @return array $listeAbsences: deux listes des absences pour la date donnée et triées par statuts d'absences
 	 */
-	public function saveAutorisation($post) {
-		$id = isset($post['id'])?$post['id']:Null;
-		$educ = isset($post['user'])?$post['user']:Null;
-		$matricule = isset($post['matricule'])?$post['matricule']:Null;
-		$parent = isset($post['parent'])?$post['parent']:Null;
-		$media = isset($post['media'])?$post['media']:Null;
-		$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
-		$heure = isset($post['heure'])?$post['heure']:Null;
+	public function listePresencesDate($date, $statutsAbs) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "INSERT INTO ".PFX."presencesAutorisations ";
-		$sql .= "SET id='$id', matricule='$matricule', educ='$educ', parent='$parent', media='$media', date='$date', heure='$heure' ";
-		$sql .= "ON DUPLICATE KEY UPDATE educ='$educ', parent='$parent', media='$media', date='$date', heure='$heure' ";
-		$nb = $connexion->exec($sql);
-		Application::deconnexionPDO($connexion);
-		return $nb;
-	}
-	
-	/**
-	 * renvoie les informations relatives à l'autorisation enregistrée sous $id dans la base de données
-	 * @param $id
-	 * @return array
-	 */
-	public function getAutorisation($id) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT id, matricule, educ, parent, media, date, heure ";
-		$sql .= "FROM ".PFX."presencesAutorisations ";
-		$sql .= "WHERE id='$id' ";
-		$sql .= "ORDER BY date, heure ";
+		$date = Application::dateMysql($date);
+		$sql = "SELECT date, periode, educ, dpe.matricule, statut, nom, prenom, groupe AS classe, quand, heure, parent, media ";
+		$sql .= "FROM ".PFX."presencesEleves AS dpe ";
+		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = dpe.matricule ";
+		$sql .= "JOIN ".PFX."presencesLogs AS dpl ON dpl.id = dpe.id ";
+		$sql .= "WHERE date = '$date' ";
+		$sql .= "ORDER BY nom, prenom, classe, date ASC, periode ASC ";
+
 		$resultat = $connexion->query($sql);
-		$ligne = array();
+		$statutsAbsMerge = array_merge($statutsAbs['liste1'],$statutsAbs['liste2']);
+		$liste = array();
+		$absentsListe1 = $absentsListe2 = array();
+
 		if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			$ligne = $resultat->fetch();
-			$ligne['date'] = Application::datePHP($ligne['date']);
-		}
-		Application::deconnexionPDO($connexion);
-		return $ligne;
-	}
-	
-	/**
-	 * Suppression de l'autorisation de sortie enregistrée sous $id dans la base de données
-	 * @param $id
-	 * @return $nb : nombre de suppressions
-	 */
-	public function delAutorisation($id) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "DELETE FROM ".PFX."presencesAutorisations ";
-		$sql .= "WHERE id='$id' ";
-		$nb = $connexion->exec($sql);
-		Application::deconnexionPDO($connexion);
-		return $nb;
-	}
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$periode = $ligne['periode'];
+				$liste[$matricule]['identite']['nom']=$ligne['nom'].' '.$ligne['prenom'];
+				$liste[$matricule]['identite']['classe']=$ligne['classe'];
+				$liste[$matricule]['identite']['photo']=Ecole::photo($matricule);
+				
+				// il y a une mention de statut de présence dans la journée: il faudra que l'élève soit mentionné dans la liste des absents
+				// est-ce autre chose qu'une mention de présence ou pas de prise de présence?
+				if (in_array($ligne['statut'], $statutsAbsMerge)) {
+					// dans ce cas, est-ce une absence de la liste 1?
+					if (in_array($ligne['statut'],$statutsAbs['liste1']))
+						$absentsListe1[$matricule][$periode] = true;
+					// ou est-ce une absence de la liste 2?
+					if (in_array($ligne['statut'], $statutsAbs['liste2']))
+						$absentsListe2[$matricule][$periode] = true;
+					}
 
+				$ligne['date']=APPLICATION::datePHP($ligne['date']);
+				$ligne['quand']=APPLICATION::datePHP($ligne['quand']);
+				$liste[$matricule]['presences'][$periode] = $ligne;
+				}
+			}
+
+		Application::deconnexionPDO($connexion);
+		// on ne retient que les fiches pour lesquelles il y a une absence au moins
+		$liste1 = array_intersect_key($liste, $absentsListe1);
+		$liste2 = array_intersect_key($liste, $absentsListe2);		
+		return array('liste1'=>$liste1,'liste2'=>$liste2);
+		}
+
+	
 	/**
 	 * enregistrement du local, de la période, du jour de la semaine (numérique commençant par 1 pour lundi), du prof et du cours
 	 * @param $local
@@ -462,7 +318,310 @@ class presences {
 		return $nb;
 	}
 
+	/** 
+	 * fonction générale d'enregistrement des présences et des absences, quel que soit le statut
+	 * @param array $post : données sortant d'un formulaire écran
+	 * @return $nb : nombre de modifications dans la BD 
+	 */
+	public function savePresences($post, $listeEleves,$listePeriodes) {
+		$educ = isset($post['educ'])?$post['educ']:Null;
+		$matricule = isset($post['matricule'])?$post['matricule']:Null;
+		$parent = isset($post['parent'])?$post['parent']:Null;
+		$media = isset($post['media'])?$post['media']:Null;
+		$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
+		$heure = date("H:i");
+		$quand = date("Y-m-d");
+		
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		// introduction dans la table des logs et récupération de l'id autoIncrementé
+		$sql = "INSERT INTO ".PFX."presencesLogs ";
+		$sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
+
+		$resultat = $connexion->exec($sql);
+		$id=$connexion->lastInsertId();
+
+		$nb = 0;
+		foreach ($listePeriodes as $noPeriode=>$wtf) {
+			foreach ($listeEleves as $matricule=>$wtf) {
+				// si pas de statut dans le formulaire, l'élève est marqué présent. Permet la prise de présence absent/présent en classe
+				$statut = (isset($post['matr-'.$matricule.'_periode-'.$noPeriode]))?$post['matr-'.$matricule.'_periode-'.$noPeriode]:'present';
+				$sql = "INSERT INTO ".PFX."presencesEleves ";
+				$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
+				$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
+				$resultat += $connexion->exec($sql);
+				$nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
+				}
+			}
+		Application::deconnexionPDO($connexion);
+		return $nb;
+	}
 	
+	/** 
+	 * enregistrement des signalements d'absences (éventuellement sur plusieurs jours
+	 * @param array $post : les informations provenant du formulaire de saisie
+	 * @param int $matricule : le matricule de l'élève concerné
+	 */
+	public function saveAbsences($post, $matricule) {
+		$educ = isset($post['educ'])?$post['educ']:Null;
+		$matricule = isset($post['matricule'])?$post['matricule']:Null;
+		$parent = isset($post['parent'])?$post['parent']:Null;
+		$media = isset($post['media'])?$post['media']:Null;
+		$heure = date("H:i");
+		$quand = date("Y-m-d");
+		
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		// introduction dans la table des logs et récupération de l'id autoIncrementé
+		$sql = "INSERT INTO ".PFX."presencesLogs ";
+		$sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
+		$resultat = $connexion->exec($sql);
+		$id=$connexion->lastInsertId();
+		
+		$nb = 0;
+		foreach ($post as $champ=>$statut) {
+			if (substr($champ, 0, 8) == 'periode-') {
+				$pieces = explode('_',$champ,2);
+				
+				$noPeriode = explode('-',$pieces[0]); $noPeriode = $noPeriode[1];
+				$date = explode('-',$pieces[1]); $date = $date[1];
+				// on n'enregistre que ce qui a été modifié
+				if ($post['modif-'.$noPeriode.'_date-'.$date] == 'oui') {
+					$date = Application::dateMysql($date);
+					$sql = "INSERT INTO ".PFX."presencesEleves ";
+					$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
+					$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
+					$resultat = $connexion->exec($sql);
+					if ($resultat)
+						$nb++;	// ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
+					}
+				}
+			}
+		Application::deconnexionPDO($connexion);
+		return $nb;
+		 }
+	
+	/** 
+	 * enregistrement des autorisations de sorties
+	 * @param array $post : les informations provenant du formulaire de saisie
+	 * @param int $matricule : le matricule de l'élève concerné
+	 */
+	// public function saveSorties($post, $matricule) {
+		//$educ = isset($post['educ'])?$post['educ']:Null;
+		//$matricule = isset($post['matricule'])?$post['matricule']:Null;
+		//$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
+		//$parent = isset($post['parent'])?$post['parent']:Null;
+		//$media = isset($post['media'])?$post['media']:Null;
+		//$heure = date("H:i");
+		//$quand = date("Y-m-d");
+		
+		//$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		//// introduction dans la table des logs et récupération de l'id autoIncrementé
+		//$sql = "INSERT INTO ".PFX."presencesLogs ";
+		//$sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
+		//$resultat = $connexion->exec($sql);
+		//$id=$connexion->lastInsertId();
+		
+		//$nb = 0;
+		//foreach ($post as $champ=>$statut) {
+			//if (substr($champ, 0, 7) == 'statut_') {
+				//$pieces = explode('_',$champ);
+				//$noPeriode = $pieces[1];
+				
+				//// le champ a-t-il été modifié durant l'édition?
+				//if ($post['modif_'.$noPeriode] == 'oui') {
+					//// alors on enregistre la nouvelle valeur
+					//$sql = "INSERT INTO ".PFX."presencesEleves ";
+					//$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
+					//$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
+					//$resultat = $connexion->exec($sql);
+					//if ($resultat)
+						//$nb++;	// ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
+					//}
+				//}
+			//}
+		//Application::deconnexionPDO($connexion);
+		//return $nb;
+		// }
+
+	/** 
+	 * retourne la liste des jours d'absences d'un élève dont on fournit le matricule
+	 * @param $matricule
+	 * @return array
+	 */
+	 public function listePresencesEleve($matricule) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT date, periode, statut, educ, heure, quand, parent, media ";
+		$sql .= "FROM ".PFX."presencesEleves AS dpe ";
+		$sql .= "JOIN ".PFX."presencesLogs AS dpl ON dpl.id = dpe.id ";
+		$sql .= "WHERE matricule='$matricule' ORDER BY date ";
+
+		$resultat = $connexion->query($sql);
+		$statutsAbs = array('absent','signale','justifie','sortie');
+		$listePeriodes = $this->lirePeriodesCours();
+		$empty = array('statut'=>'','quand'=>'','heure'=>'','educ'=>'','parent'=>'', 'media'=>'');
+		$liste = array();
+		$absents = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$date = Application::datePHP($ligne['date']);
+				if (!(isset($liste[$date]))) {
+					foreach ($listePeriodes as $noPeriode=>$bornes) {
+						$liste[$date][$noPeriode]=$empty;
+						}
+					}
+				$ligne['date']=$date;
+				$quand = Application::datePHP($ligne['quand']);
+				$ligne['quand']=$quand;
+				// il y a une absence dans la ligne? On le note
+				if (in_array($ligne['statut'],$statutsAbs))
+					$absents[$date] = true;
+				$periode = $ligne['periode'];
+				$liste[$date][$periode] = $ligne;
+				}
+			}
+		Application::deconnexionPDO($connexion);
+		// on ne retient que les fiches pour lesquelles il y a une absence au moins
+		$liste = array_intersect_key($liste, $absents);
+		return $liste;
+		 }
+
+	/**
+	 * retourne la liste des autorisations de sortie pour une période donnée entre $dateDebut et $dateFin
+	 * @param $dateDebut
+	 * @param $dateFin
+	 * @return array
+	 */
+	// public function listeParPeriode($dateDebut, $dateFin) {
+		//$dateDebut = Application::dateMysql($dateDebut);
+		//$dateFin = Application::dateMysql($dateFin);
+		//$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		//$sql = "SELECT id, pa.matricule, nom, prenom, groupe, date, heure, educ ";
+		//$sql .= "FROM ".PFX."presencesSorties AS pa ";
+		//$sql .= "JOIN ".PFX."eleves AS e ON (pa.matricule = e.matricule ) ";
+		//if ($dateFin == '') 
+			//$sql .= "WHERE date = '$dateDebut' ";
+			//else $sql .= "WHERE (date >= '$dateDebut') AND (date <= '$dateFin') ";
+		//$sql .= "ORDER BY date, heure, REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom, classe";
+		//$resultat = $connexion->query($sql);
+		//$listeSorties = array();
+		//if ($resultat) {
+			//$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			//while ($ligne = $resultat->fetch()) {
+				//$ligne['date'] = Application::datePHP($ligne['date']);
+				//$date = $ligne['date'];
+				//$heure = $ligne['heure'];
+				//$matricule = $ligne['matricule'];
+				//$listeSorties[$date][$matricule][$heure] = $ligne;
+			//}
+		//}
+		//Application::deconnexionPDO($connexion);
+		//return $listeSorties;
+		// }
+
+
+	/** 
+	 * retourne les données de présences (et d'absences) d'un élève ou d'une liste d'élèves pour une date donnée
+	 * @param $matricule
+	 * @param $date
+	 * @return array
+	 */
+	// public function presencesEleveDate($date,$listeEleves) {
+		//if (is_array($listeEleves))
+			//$listeElevesString = implode(",", array_keys($listeEleves));
+		//else $listeElevesString = $listeEleves;
+		//$dateSQL = Application::dateMysql($date);
+		//$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		//$sql = "SELECT matricule, present, educ, periode ";
+		//$sql .= "FROM ".PFX."presencesEleves  ";
+		//$sql .= "WHERE date = '$dateSQL' AND matricule IN ($listeElevesString) ";
+		//$sql .= "ORDER BY matricule, periode ";
+//die($sql);
+		//$resultat = $connexion->query($sql);
+		//$listePresences = array();
+		//if ($resultat) {
+			//$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			//while ($ligne = $resultat->fetch()) {
+				//$matricule = $ligne['matricule'];
+				//$periode = $ligne['periode'];
+				//$listePresences[$matricule][$periode]=$ligne;
+				//}
+			//}
+		//Application::deconnexionPDO($connexion);
+		//return $listePresences;
+		// }
+
+
+	/**
+	 * listes des autorisations de sorties pour un élève dont on fournit le matricule
+	 * @param $matricule
+	 * @return array
+	 */
+	// public function listeSorties ($matricule) {
+		//$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		//$sql = "SELECT matricule, educ, parent, media, date, heure ";
+		//$sql .= "FROM ".PFX."presencesSorties AS aut ";
+		//$sql .= "WHERE matricule = '$matricule' ";
+		//$sql .= "ORDER BY date, heure ";
+		//$resultat = $connexion->query($sql);
+		//$liste = array();
+		//if ($resultat) {
+			//$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			//while ($ligne = $resultat->fetch()) {
+				//$matricule = $ligne['matricule'];
+				//$date = APPLICATION::datePHP($ligne['date']);
+				//$ligne['date'] = $date;
+				//$liste[$matricule][$date] = $ligne;
+				//}
+			//}
+		//Application::deconnexionPDO($connexion);
+		//return $liste;
+	// }
+
+
+	/** 
+	 * lecture de la liste des présences et des absences (tous statuts confondus) pour un jour donné pour une liste d'élèves donnée
+	 * @param $date
+	 * @param $periode ou Null pour toutes les périodes de la journée
+	 * @param $listeEleves array | string : liste des matricules ou matricule d'un seul élève
+	 * @return array
+	 */
+	//public function lirePresences($date, $listeEleves) {
+		//if (is_array($listeEleves))
+			//$listeElevesString = implode(',',array_keys($listeEleves));
+			//else $listeElevesString = $listeEleves;
+		//$date = Application::dateMysql($date);
+
+		//$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		//$sql = "SELECT dpe.id, dpe.matricule, nom, prenom, groupe, date, periode, educ, quand, heure, statut, parent, media ";
+		//$sql .= "FROM ".PFX."presencesEleves AS dpe ";
+		//$sql .= "JOIN ".PFX."eleves AS de ON (de.matricule = dpe.matricule) ";
+		//$sql .= "LEFT JOIN ".PFX."presencesLogs AS dpl ON (dpl.id = dpe.id) ";
+		//$sql .= "WHERE date = '$date' AND dpe.matricule IN ($listeElevesString) ";
+		//$sql .= "ORDER BY nom, prenom ";
+
+		//$resultat = $connexion->query($sql);
+		//// prépartion de la liste des présences pour tous les élèves concernés
+		//if (is_array($listeEleves)) {
+			//foreach ($listeEleves as $matricule=>$wtf) {
+				//$listePresences[$matricule]=array();
+				//}
+			//}
+			//else $listePresences[$listeEleves]=array();
+		//if ($resultat) {
+			//$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			//while ($ligne = $resultat->fetch()) {
+				//$matricule = $ligne['matricule'];
+				//$periode = $ligne['periode'];
+				//$ligne['quand']=Application::datePHP($ligne['quand']);
+				//$ligne['date']=Application::datePHP($ligne['date']);
+				//$listePresences[$matricule][$periode] = $ligne;
+				//}
+			//}
+		//Application::deconnexionPDO($connexion);
+		//return $listePresences;
+		//}
+
+
 }      
 
 ?>

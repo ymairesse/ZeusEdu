@@ -1,8 +1,9 @@
-<div class="noprint">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Période <span class="micro" title="{if !$freePeriode}Période actuelle{else}période {$periode}{/if}">[{$periode}]</span>
-			<input type="checkbox" value="1" id="freePeriode" name="freePeriode"{if $freePeriode} checked="checked"{/if}>
+<div class="noprint" class="noprint" style="clear:both">
 	
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+		
+		Période <span class="micro" title="{if !$freePeriode}Période actuelle{else}période {$periode}{/if}">[{$periode}]</span>
+		<input type="checkbox" value="1" id="freePeriode" name="freePeriode"{if $freePeriode} checked="checked"{/if}>
 		<select name="periode" id="selectPeriode"{if !($freePeriode)} style="display:none"{/if}>
 			<option value=''>Période</option>
 			{foreach from=$listePeriodes key=laPeriode item=data}
@@ -41,7 +42,8 @@
 		</span>
 		
 		<input type="submit" value="OK" name="OK" id="envoi">
-		<input type="hidden" name="action" value="listeEleves">
+		<input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="mode" value="{$mode}">
 	</form>
 
 

@@ -11,6 +11,7 @@ $Ecole = new Ecole();
 
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 if ($classe == Null) die();
+$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $partis = isset($_POST['partis'])?$_POST['partis']:false;
 
 $listeEleves = $Ecole->listeEleves($classe,'groupe',$partis);

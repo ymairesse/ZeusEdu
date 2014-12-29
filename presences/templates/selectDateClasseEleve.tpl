@@ -1,8 +1,6 @@
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 		
-		<input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$date}">
-		
 		<input type="hidden" name="matricule2" id="matricule2">
 		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
 			
@@ -26,7 +24,10 @@
 			{assign var=matrNext value=$prevNext.next}
 		 <img src="../images/right.png" alt=">" style="width:18px" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 		{/if}
-	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
+		
+	<input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$date}" placeholder="Date">
+
+	<input type="submit" value="OK" name="OK" id="envoi">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}
@@ -39,52 +40,68 @@
 </div>
 
 <script type="text/javascript">
-{literal}
-$(document).ready (function() {
+
+$(document).ready(function(){
+
+	$( ".datepicker").datepicker({ 
+		dateFormat: "dd/mm/yy",
+		prevText: "Avant",
+		nextText: "Après",
+		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
+		firstDay: 1	
+		});
 
 	$("#formSelecteur").submit(function(){
-		if (($("#selectEleve").val() != '') || ($("#matricule2").val() != '')) {
+		var cond1 = $("#selectEleve").val() > 0;
+		var cond2 = $("#matricule2").val() > 0;
+		var cond3 = $("#date").val() != '';		
+		if ((cond1 || cond2) && cond3) {
 			$("#wait").show();
 			$.blockUI();
 			}
 			else return false;
-	})
+	})	
 	
+	$("#nom").on("focus", function(){
+		$("#selectEleve").val('');
+		$("#selectClasse").val('');
+		})
+	
+	$("#nom").autocomplete({
+		source: "inc/searchNom.php?critere=nom",
+		minLength: 2,
+		select: function(event,ui) {
+			var matricule = ui.item.matricule;
+			var classe = ui.item.classe;
+			$("#selectClasse").val(classe);
+			$("#matricule2").val(matricule);
+			$("#formSelecteur").submit();
+			}
+		});
+
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
 		if (classe != '') {
 			$("#envoi").show();
 			$("#next, #prev").hide();
+			$.post('inc/listeEleves.inc.php', 
+				{ 'classe': classe },  // attention à bien mettre des "espaces"
+					function (resultat){
+						$("#choixEleve").html(resultat)
+						}
+					)
 			}
-		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
-		$.post("inc/listeEleves.inc.php",
-			{'classe': classe},
-				function (resultat){
-					$("#choixEleve").html(resultat)
-				}
-			)
-	});
-
-	$("#choixEleve").on("change", "#selectEleve", function(){
-		if ($(this).val() > 0) {
-			// si la liste de sélection des élèves renvoie une valeur significative
-			// le formulaire est soumis
-			$("#formSelecteur").submit();
-			$("#envoi").show();
-		}
-			else $("#envoi").hide();
-		})
-	
-	$(".datepicker").datepicker({
-		dateFormat: "dd/mm/yy",
-		prevText: "Avant",
-		nextText: "Après",
-		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
-		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-		firstDay: 1
+			else $("#choixEleve").html('');
 		});
-	
+		
+	$("#choixEleve").on("change", "#selectEleve", function(){
+	if ($(this).val() > 0) {
+		// si la liste de sélection des élèves renvoie une valeur significative le formulaire est soumis
+		$("#formSelecteur").submit();
+		}
+	})
 		
 	$("#prev").click(function(){
 		var matrPrev = $("#matrPrev").val();
@@ -98,21 +115,6 @@ $(document).ready (function() {
 		$("#formSelecteur").submit();
 	})
 	
-	$("#nom").on("focus", function(){
-		$("#selectEleve").val('');
-		$("#selectClasse").val('');
-		})
-	
-	$("#nom").autocomplete({
-		source: "inc/searchNom.php?critere=nom",
-		minLength: 2,
-		select: function(event,ui) {
-			var matricule = ui.item.matricule;
-			$("#matricule2").val(matricule);
-			$("#formSelecteur").submit();
-			}
-		});
+	})
 
-})
-{/literal}
 </script>

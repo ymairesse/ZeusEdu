@@ -44,19 +44,53 @@ input[type=submit], input[type=reset], input[type=button] {
 
 }
 
-.absent {
-    color: red;
+.periode {
+	display: inline-block;
+    width: 0.9em;
+    text-align:center;
     font-weight: bolder;
-}
+    margin:0;
+    padding:0;
+	}
+
+.absent {
+	background-color: #f77;
+	color:white;
+	text-align:center;
+	}
 .present {
-    color: #AAAAAA;
-    padding: 0 1px;
+	color: #000;
+	background-color:#7f7;
+	text-align:center;
+	}
+	
+.signale {
+	background-color: #FEDB68	;
+	color: black;
+	text-align:center;
+	}
+	
+.justifie {
+	background-color: #77f;
+	color: #fff;
+	text-align:center;
 }
+
+.sortie {
+	background-color: #FF00FF;
+	color: #000;
+	text-align:center;
+}
+	
+.indetermine {
+	background: #ddd;
+	color:#000;
+	text-align:center;
+	}
 
 .size150 {
 	font-size: 150%;
 }
-
 
 .listeAbsences {
     list-style-type: none;
@@ -76,4 +110,20 @@ input[type=submit], input[type=reset], input[type=button] {
 .erreurEncodage {
 	background-color: red;
 	color:white;
+	}
+
+.tableauPresences {
+	width: 100%;
+	}
+
+.tableauPresences td {
+  border: 1px solid #dddddd;
+}
+
+.tableauPresences th {
+	border: 1px outset black;
+	padding: 0;
+	background-color: #dddddd;
+	font-weight: normal;
+	font-size: 0.9em;
 	}

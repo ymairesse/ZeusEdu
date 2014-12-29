@@ -26,7 +26,7 @@ body {
 {if isset($message)}
 <span class="title">{$message.title}</span>
 <span class="texte">{$message.texte}</span>
-<span class="icon">{$message.icon}</span>
+<span class="icon">{$message.icon|default:''}</span>
 {/if}
 </div>
 
@@ -38,7 +38,7 @@ body {
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 	
 	$(".attention").hide();
@@ -79,23 +79,24 @@ $(document).ready (function() {
 			else $(this).wrap("<div class='widget-outer-980' />");
 		$(this).parent().prepend(titre);
 		})
+
 	
 	$(".widget").show();
 		
 	$(".minMax").click(function(){
 		if ($(this).text() == '+') {
 			var hauteur = $(this).parent().parent().find(".widget").data("hauteur");
-			$(this).parent().parent().find(".widget").animate({"height": hauteur}, "slow");
+			$(this).parent().parent().find('.widget').animate({ 'height': hauteur }, 'slow');
 			$(this).text('-');
 			}
 			else {
 				$(this).text('+');
-				$(this).parent().parent().find(".widget").animate({"height": "150px"}, "slow");
+				$(this).parent().parent().find('.widget').animate({ 'height': '150px' }, 'slow');
 				}
 		})
 	
 })
-{/literal}
+
 </script>
 
 </body>

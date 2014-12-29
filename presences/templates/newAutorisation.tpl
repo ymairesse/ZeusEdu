@@ -3,10 +3,9 @@
 <form name="newAutorisation" id="newAutorisation" method="POST" action="index.php">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
-	<input type="hidden" name="etapeFormulaire" value="{$etapeFormulaire}">
+	<input type="hidden" name="etape" value="enregistrer">
 	<input type="hidden" name="matricule" value="{$matricule}">
 	<input type="hidden" name="classe" value="{$eleve.classe}">
-	<input type="hidden" name="id" value="{$id|default:''}">
 	<input type="hidden" name="user" value="{$user}">
 	<p>Noté par: <strong>{$user}</strong></p>
 
@@ -30,18 +29,39 @@
 		<option value="Mail"{if $media == 'Mail'} selected="selected"{/if}>Mail</option>
 		<option value="Autre"{if $media == 'Autre'} selected="selected"{/if}>Autre</option>
 	</select>
-
 	</p>
 
 	<p><label for="datepicker">Date: </label><input type="text" name="date" value="{$date|default:''}" id="datepicker" size="10"></p>
 	<p><label for="timepicker">Heure:</label> <input type="text" name="heure" value="{$heure|default:''}" id="timepicker" size="6"></p>
-
+	
+	<table class="tableauAdmin">
+		<tr>
+		{foreach from=$listePeriodes key=noPeriode item=bornes}
+			<th>{$noPeriode}<br>{$bornes.debut} - {$bornes.fin}</th>
+		{/foreach}
+		</tr>
+		
+		<tr class="presences" id="presencesJour">
+			{include file="presencesJour.tpl"}
+		</tr>
+		
+	</table>
 	<input type="submit" name="submit" value="Enregistrer" id="submit">
-	<input type="reset" name="reset" value="Annuler">
+
+{include file='legendeAbsences.html'}
+
 </form>
 
+<form name="retour" action="index.php" method="POST">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="classe" value="{$classe}">
+	<input type="hidden" name="matricule" value="{$matricule}" id="matricule">
+	<input type="submit" style="float:right" tabIndex="{$tabIndex|default:0}" class="fauxBouton" value="Retour sans enregistrer">
+</form>
+
+
 <script type="text/javascript">
-{literal}
+
 	$(document).ready(function(){
 		$("#selectParent").change(function(){
 			var parent = $(this).val();
@@ -78,7 +98,7 @@
 			}, "Date incorrecte");
 
 
-		$("#datepicker").datepicker({
+	$("#datepicker").datepicker({
 		dateFormat: "dd/mm/yy",
 		prevText: "Avant",
 		nextText: "Après",
@@ -98,13 +118,13 @@
 		showCloseButton: true,
 		deselectButtonText: 'Désélectionner',
 		showDeselectButton: true,
-		hours: {starts: 8, ends: 17},
+		hours: { starts: 8, ends: 17 },
 		showDeselectButton: false
 		});
-
+		
 	$("#newAutorisation").validate({
-		errorElement: "em",
-		errorClass: "erreurEncodage",
+		errorElement: 'em',
+		errorClass: 'erreurEncodage',
 		rules: {
 			date: {
 				required: true,
@@ -122,7 +142,30 @@
 			}
 		});
 
+	$("#presencesJour").on("change",".statut",function(){
+		var statut = $(this).val();
+		// noter que le champ a été modifié
+		$(this).next('input').val('oui');
+		$(this).next().next('img').show();
+		$(this).parent().removeClass();
+		$(this).parent().addClass(statut);
+		})
+
+		
+	$("#datepicker").change(function(){
+		var date = $(this).val();
+		var matricule = $("#matricule").val();
+		// rétablit la liste des présences pour la date
+		$.post("inc/presencesJour.inc.php",	{
+			'date': date,
+			'matricule': matricule 
+			},
+			function (resultat){
+				$("#presencesJour").html(resultat)
+				}
+			)
+		});
+
 	})
 
-{/literal}
 </script>
