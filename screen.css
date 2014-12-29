@@ -74,7 +74,7 @@ form {
 	padding: 0;
 	}
 
-input[type='text'], select, textarea {
+input[type='text'], input[type='passwd'], select, textarea {
   border: 1px solid #ccc;
   background: #eeeeee repeat scroll 0% 50%;
   color: #111111;
