@@ -1107,7 +1107,7 @@ CREATE TABLE IF NOT EXISTS `didac_profsApplications` (
   `userStatus` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0' COMMENT 'Voir la table "_statuts"',
   UNIQUE KEY `acronyme` (`acronyme`,`application`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
+INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) VALUES
 ('admin', 'ADM', 'admin'),
 ('logout', 'ADM', 'admin'),
 ('profil', 'ADM', 'admin'),
@@ -1167,7 +1167,8 @@ INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`) VALUES
 (58, 'AC', 9),
 (75, 'Renf.', 8),
 (81, 'Rem', 10);
-----------------------------------------
+
+-- --------------------------------------
 
 --
 -- Structure de la table `didac_titus`
