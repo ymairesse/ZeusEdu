@@ -22,29 +22,29 @@
         </p>
         <p>
         <label for="sexe">Sexe:</label>
-        <input name="sexe" type="radio" value="M" {if isset($userIdentite.sexe) && ($userIdentite.sexe =="M")} checked="checked"{/if} class="required" />M&nbsp;
-        <input name="sexe" type="radio" value="F" {if isset($userIdentite.sexe) && ($userIdentite.sexe =="F")} checked="checked"{/if} class="required" />F
+        <input name="sexe" type="radio" value="M" {if isset($userIdentite.sexe) && ($userIdentite.sexe =="M")} checked="checked"{/if} class="required">M&nbsp;
+        <input name="sexe" type="radio" value="F" {if isset($userIdentite.sexe) && ($userIdentite.sexe =="F")} checked="checked"{/if} class="required">F
         </p>
         <p>
 		</div>
 		
 		<div class="blocDroit">
         <label for="mail">Mail: </label>
-        <input type="text" maxlength="40" size="15" name="mail" id="mail" value="{$userIdentite.mail|default:''}" class="required mail" />
+        <input type="text" maxlength="40" size="15" name="mail" id="mail" value="{$userIdentite.mail|default:''}" class="required mail">
         </p>
         <p>
         <label for="telephone">Téléphone: </label>
-        <input type="text" maxlength="40" size="15" name="telephone" id="telephone" value="{$userIdentite.telephone|default:''}" />
+        <input type="text" maxlength="40" size="15" name="telephone" id="telephone" value="{$userIdentite.telephone|default:''}">
         </p>
         <p>
         <label for="GSM">GSM: </label>
-        <input maxlength="40" size="15" name="GSM" id="GSM" value="{$userIdentite.GSM|default:''}" />
+        <input type="text" maxlength="40" size="15" name="GSM" id="GSM" value="{$userIdentite.GSM|default:''}">
         </p>
 		<p>
         <label for="mdp">Mot de passe: </label>
         {* Le mot de passe est obligatoire pour les nouveaux utilisateurs seulement *}
         <input type="passwd" maxlenght="20" size="12" name="mdp" id="mdp" value=""
-			{if $dejaConnu eq false} class="required" {else} title="Laisser vide pour ne pas modifier le mot de passe"{/if} />
+			{if $dejaConnu eq false} class="required" {else} title="Laisser vide pour ne pas modifier le mot de passe"{/if}>
 		<input type="hidden" name="oldUser" value="{$dejaConnu}">
 		<input type="hidden" name="action" value="gestUsers">
         </p>
