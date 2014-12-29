@@ -88,9 +88,12 @@ $(document).ready(function(){
 		var $checkBoxes=$(this).find('input[type=checkbox]');
 		var cb=$checkBoxes[0];
 		cb.checked = !(cb.checked);
-		if (cb.checked == true)
+		if ($(this).hasClass('present')) 
 			$(this).removeClass('present').addClass('absent');
-			else $(this).removeClass('absent').addClass('present');
+			else if ($(this).hasClass('absent'))
+				$(this).removeClass('absent').addClass('present');
+				else if ($(this).hasClass('indetermine'))
+					$(this).removeClass('indetermine').addClass('absent')			
 		})
 		
 })
