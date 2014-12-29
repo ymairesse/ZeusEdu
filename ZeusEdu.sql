@@ -203,8 +203,8 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 --
 
 CREATE TABLE IF NOT EXISTS `didac_appliTables` (
-  `application` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `nomTable` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `application` varchar(20) CHARACTER SET latin1 NOT NULL,
+  `nomTable` varchar(30) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`application`,`nomTable`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des tables par application (pour backup)';
 
@@ -233,6 +233,7 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('all', 'profs'),
 ('all', 'profsApplications'),
 ('all', 'profsCours'),
+('all', 'sessions'),
 ('all', 'statutCours'),
 ('all', 'titus'),
 ('all', 'userStatus'),
@@ -264,15 +265,16 @@ INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
 ('bullTQ', 'bullTQTitus'),
 ('bullTQ', 'bullTQtypologie'),
 ('hermes', 'hermesArchives'),
+('hermes', 'hermesListes'),
+('hermes', 'hermesProprio'),
 ('infirmerie', 'infirmConsult'),
 ('infirmerie', 'infirmerie'),
 ('infirmerie', 'infirmInfos'),
 ('pad', 'pad'),
-('presences', 'hermesListes'),
-('presences', 'hermesProprio'),
-('presences', 'presencesAbsences'),
-('presences', 'presencesAutorisations'),
-('presences', 'presencesHeures');
+('pad', 'padGuest'),
+('presences', 'presencesEleves'),
+('presences', 'presencesHeures'),
+('presences', 'presencesLogs');
 
 -- --------------------------------------------------------
 
@@ -1003,40 +1005,21 @@ CREATE TABLE IF NOT EXISTS `didac_passwd` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `didac_presencesAbsences`
+-- Structure de la table `didac_presencesEleves`
 --
 
-CREATE TABLE IF NOT EXISTS `didac_presencesAbsences` (
-  `date` date NOT NULL COMMENT 'date de l''absence',
-  `periode` tinyint(4) NOT NULL COMMENT 'période de cours',
-  `heure` time NOT NULL COMMENT 'heure de la notification',
-  `educ` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'éducateur responsable',
-  `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Cours/groupe',
-  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
-  `prof` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Professeur du cours',
-  PRIMARY KEY (`date`,`periode`,`matricule`),
-  KEY `matricule` (`matricule`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications des absences des élèves';
-
--- --------------------------------------------------------
-
---
--- Structure de la table `didac_presencesAutorisations`
---
-
-CREATE TABLE IF NOT EXISTS `didac_presencesAutorisations` (
+CREATE TABLE IF NOT EXISTS `didac_presencesEleves` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricule` int(6) NOT NULL,
-  `educ` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
-  `parent` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `media` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
-  `heure` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `matricule` (`matricule`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Autorisations de sorties' AUTO_INCREMENT=446 ;
+  `periode` tinyint(1) NOT NULL,
+  `statut` enum('indetermine','present','absent','signale','justifie','sortie') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève',
+  PRIMARY KEY (`matricule`,`date`,`periode`),
+  KEY `matricule` (`matricule`),
+  KEY `n` (`id`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
 
--- --------------------------------------------------------
 
 --
 -- Structure de la table `didac_presencesHeures`
@@ -1063,6 +1046,24 @@ INSERT INTO `didac_presencesHeures` (`debut`, `fin`) VALUES
 ('13:40:00', '14:20:00'),
 ('14:35:00', '15:25:00'),
 ('15:25:00', '16:15:00');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `didac_presencesLogs`
+--
+
+CREATE TABLE `didac_presencesLogs` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `educ` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `parent` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
+  `media` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `quand` date NOT NULL,
+  `heure` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `matricule` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Logs des prises de présences';
+
 
 -- --------------------------------------------------------
 
@@ -1107,11 +1108,6 @@ CREATE TABLE IF NOT EXISTS `didac_profsApplications` (
   UNIQUE KEY `acronyme` (`acronyme`,`application`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Contenu de la table `didac_profsApplications`
---
-
-INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) VALUES
 ('admin', 'ADM', 'admin'),
 ('logout', 'ADM', 'admin'),
 ('profil', 'ADM', 'admin'),
@@ -1171,8 +1167,7 @@ INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`) VALUES
 (58, 'AC', 9),
 (75, 'Renf.', 8),
 (81, 'Rem', 10);
-
--- --------------------------------------
+----------------------------------------
 
 --
 -- Structure de la table `didac_titus`
@@ -1212,4 +1207,6 @@ INSERT INTO `didac_userStatus` (`ordre`, `userStatus`, `color`, `nomStatut`) VAL
 (4, 'direction', '#4AFF49', 'Direction'),
 (5, 'admin', '#FF0000', 'Administrateur');
 
-
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
