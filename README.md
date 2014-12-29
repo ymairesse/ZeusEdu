@@ -13,5 +13,7 @@ Installation
  - configurer le fichier /config.ini pour l'établissement scolaire
  - importer les contenus des tables depuis les fichiers .csv
  
+ Des fichiers .csv d'exemples se trouvent dans le répertoire /admin/exemples
+ 
  Informations plus détaillées sur le wiki http://sio2.be/wiki/doku.php
 
