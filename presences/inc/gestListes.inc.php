@@ -14,7 +14,8 @@ switch ($mode) {
 		$date = isset($_POST['date'])?$_POST['date']:strftime("%d/%m/%Y");
 		$smarty->assign('date',$date);
 		$statutsAbs = array(
-				'liste1'=> array('signale','justifie','sortie'),
+				// 'liste1'=> array('signale','justifie','sortie'),
+				'liste1'=> array('signale','sortie'),
 				'liste2'=>array('absent')
 				);
 		$smarty->assign('statutsAbs',$statutsAbs);

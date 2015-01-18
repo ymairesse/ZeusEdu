@@ -1,19 +1,17 @@
-<h2>Signalement des absences de <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
+<h2>Autorisation de sortie pour <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
 <form name="signalement" method="POST" action="index.php" id="signalement">
 	
 <input type="hidden" name="heure" id="heure" value="{$heure}">
 <input type="hidden" name="matricule" id="matricule" value="{$matricule}">
 <input type="hidden" name="educ" value="{$identite.acronyme}">
 
-
-	
 <div class="row">
 <div class="col-md-8" style="float:left">
 <p><label for="selectParent">Signalé par </label>
-<input type="text" name="parent" id="parent" size="20" maxlength="40" value="{$post.parent|default:''}"> << 
+<input type="text" name="parent" id="parent" size="20" maxlength="40" value="Parents"> << 
 <select name="selectParent" id="selectParent" height="3" style="width:20em">
 	<option>Sélectionner un correspondant</option>
-	<option value="Parents"{if isset($post) && ($post.parent == 'Parents')} selected="selected"{/if}>Parents</option>
+	<option value="Parents"{if (isset($post) && ($post.parent == 'Parents')) || (!(isset($post)))} selected="selected"{/if}>Parents</option>
 	<option value="{$eleve.nomResp}">Responsable: {$eleve.nomResp|truncate:40}</option>
 	<option value="{$eleve.nomMere}"{if isset($post) && ($post.parent == $eleve.nomMere)} selected="selected"{/if}>Mère: {$eleve.nomMere|truncate:40}</option>
 	<option value="{$eleve.nomPere}"{if isset($post) && ($post.parent == $eleve.nomPere)} selected="selected"{/if}>Père: {$eleve.nomPere|truncate:40}</option>
@@ -22,10 +20,10 @@
 </p>
 
 <p><label for="selectMedia">Média</label>
-<input type="text" name="media" id="media" size="20" maxlength="30" value="{$post.media|default:''}"> << 
+<input type="text" name="media" id="media" size="20" maxlength="30" value="Journal de Classe"> << 
 <select name="selectMedia" id="selectMedia" height="5" style="width:20em">
 	<option>Sélectionner un média</option>
-	<option value="Journal de Classe"{if isset($post) && ($post.media == 'Journal de Classe')} selected="selected"{/if}>Journal de Classe</option>
+	<option value="Journal de Classe"{if (isset($post) && ($post.media == 'Journal de Classe')) || (!(isset($post)))} selected="selected"{/if}>Journal de Classe</option>
 	<option value="Motif manuscrit"{if isset($post) && ($post.media == 'Motif mansucrit')} selected="selected"{/if}>Motif mansucrit</option>
 	<option value="Téléphone"{if isset($post) && ($post.media == 'Téléphone')} selected="selected"{/if}>Par téléphone</option>
 	<option value="Mail"{if isset($post) && ($post.media == 'Mail')} selected="selected"{/if}>Mail</option>
@@ -33,16 +31,15 @@
 </select>
 </p>
 </div>
-
 <div class="col-md-2" style="float:left">
 	<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" style="width:100px" title="{$eleve.matricule}">
 </div>
-
 <div class="col-md-2" style="float:left">
-	<input type="submit" name="submit" value="Enregistrer" id="submit" style="float:right; clear:both;">
+	<input type="submit" name="submit" value="Enregistrer" id="submit" style="float:right; clear:both;">	
 </div>
 
 </div>
+
 <label for="date">Date de début</label>
 {if (!(isset($listeDates)))}
 	{assign var=dateDebut value=$dateNow}
@@ -50,15 +47,13 @@
 	{assign var=dateDebut value=$listeDates.0}
 {/if}
 <input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$dateDebut}" placeholder="Date">
-
+	
 <p>Notification par <strong>{$identite.prenom} {$identite.nom}</strong></p>
 
 <div id="presencesJour" style="clear:both">
-	{if $mode == 'absence'}
-		{include file="presencesJourDate.tpl"}
-	{else}
-		{include file="presencesJourDateSortie.tpl"}
-	{/if}
+
+	{include file="presencesJourDateSortie.tpl"}
+
 </div>
 
 <input type="hidden" name="educ" value="{$identite.acronyme}">
@@ -74,9 +69,13 @@
 
 	var modifie = false;
 	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
-	var mode = "{$mode}";
+	var mode="{$mode}"
+	var ajd = "{$dateNow}"
+	var periodeActuelle="{$periodeActuelle}"
 
 $(document).ready(function(){
+	
+
 	
 	$("#selectParent").change(function(){
 		var parent = $(this).val();
@@ -110,16 +109,16 @@ $(document).ready(function(){
 		$("#plusUn").show();
 		if ((date != '') && (matricule != '')) {
 			$("#submit").show();
-			$.post("inc/genererAjd.inc.php",
-				{ 'date':  date,
-				  'matricule': matricule,
-				  'mode': mode
-				  },
+			$.post("inc/genererAjd.inc.php", {
+				'date':  date,
+				'matricule': matricule,
+				'mode': mode
+				},
 				function (resultat){
 					$("#presencesJour").html(resultat)
 					}
 				)
-				}		
+			}
 		});
 		
 		
@@ -140,6 +139,11 @@ $(document).ready(function(){
 		$(this).next().next('img').show();		
 		}
 		)
+	
+	$("#presencesJour").on("click",".listePeriodes",function(){
+		var rang = parseInt($(this).index())+1;
+		$(this).parent().next('tr').find('td:nth-child('+rang+') select').val('sortie').trigger('change');
+		})
 	
 	$( ".datepicker").datepicker({ 
 	dateFormat: "dd/mm/yy",

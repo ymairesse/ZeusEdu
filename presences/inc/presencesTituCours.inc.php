@@ -1,5 +1,5 @@
 <?php
-// prise de présence par cours
+// prise de présence par cours par le titulaire du cours
 if ($etape == 'enregistrer') {
 	if (isset($coursGrp)) {
 	$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
@@ -12,33 +12,34 @@ if ($etape == 'enregistrer') {
 		}
 	}
 
-// un nom de prof a été sélectionné?
-if ($selectProf) {
-	$smarty->assign('acronyme', $selectProf);
-	$listeCoursGrp = $Ecole->listeCoursProf($selectProf);
-	if ($coursGrp) {
-		if (!(isset($listeEleves))) {
-			// si on a enregistré, $listeEleves est déjà connu
-			$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
-			}
-		$smarty->assign('listeEleves',$listeEleves);
-		$smarty->assign('nbEleves',count($listeEleves));
-		}
-	}
-	else $listeCoursGrp = Null;
-	
+$coursGrp = isset($_REQUEST['coursGrp'])?$_REQUEST['coursGrp']:Null;
+$acronyme = $user->getAcronyme();
+$smarty->assign('acronyme',$acronyme);
+
+$listeCoursGrp = $Ecole->listeCoursProf($acronyme);
+$smarty->assign('listeCoursGrp',$listeCoursGrp);
 $smarty->assign('listeProfs', $Ecole->listeProfs(true));
+
+if (isset($coursGrp)) {
+	if (!(isset($listeEleves))) {
+		// si on a enregistré, $listeEleves est déjà connu
+		$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
+		}
+	$smarty->assign('listeEleves',$listeEleves);
+	$smarty->assign('nbEleves',count($listeEleves));
+	}
+	
 $smarty->assign('date',$date);
-$smarty->assign('listeCoursGrp', $listeCoursGrp);
 
 if (isset($coursGrp)) {
 	$listePresences = $Presences->listePresencesElevesDate($date,$listeEleves);
 	$smarty->assign('coursGrp', $coursGrp);
 	}
+
 $listePresences = isset($listePresences)?$listePresences:Null;
 $smarty->assign('listePresences', $listePresences);
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
-$smarty->assign('selecteur', 'selectHeureProfCours');		
+$smarty->assign('selecteur', 'selectPeriodeCours');		
 $smarty->assign('corpsPage','feuillePresencesCours');
 ?>

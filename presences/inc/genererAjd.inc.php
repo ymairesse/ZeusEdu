@@ -19,15 +19,19 @@ $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $smarty->assign('matricule',$matricule);
 
 $date = isset($_POST['date'])?$_POST['date']:Null;
+$mode = isset($_POST['mode'])?$_POST['mode']:Null;
+
+
+
 $smarty->assign('date',$date);
 
 $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes',$listePeriodes);
 
-$html = '';
 $smarty->assign('listePresences',$Presences->listePresencesElevesDate($date,$matricule));
-
-$html = $smarty->display('presencesJourDate.tpl');
+if ($mode == 'absence')
+	$html = $smarty->display('presencesJourDate.tpl');
+	else $html = $smarty->display('presencesJourDateSortie.tpl');
 
 echo $html;
 ?>

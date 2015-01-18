@@ -34,7 +34,9 @@ body {
 <div id="corpsPage">
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
-{/if}</div>
+{/if}
+</div>
+
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">

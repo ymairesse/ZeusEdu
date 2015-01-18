@@ -10,7 +10,7 @@ $lesPeriodes = range(1, count($listePeriodes));
 $smarty->assign('lesPeriodes', $lesPeriodes);
 
 // fonctionnalités seulement si prise de présence par cours ou par classe
-if (in_array($mode,array('cours','classe'))) {
+if (in_array($mode,array('cours','classe','tituCours'))) {
 	// l'utilisateur peut-il changer de période de prise de présence?
 	$freePeriode = isset($_POST['freePeriode'])?$_POST['freePeriode']:Null;
 	// retrouver la période actuelle à partir de l'heure ou accepter l'heure si heure libre souhaitée
@@ -33,6 +33,9 @@ if (in_array($mode,array('cours','classe'))) {
 $smarty->assign('date',$date);
 
 switch ($mode) {
+	case 'tituCours':
+		require('presencesTituCours.inc.php');
+		break;
 	case 'eleve':
 		require('presencesEleve.inc.php');
 		break;

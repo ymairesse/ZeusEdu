@@ -18,7 +18,7 @@
 			<option value="present">PRES (Présent)</option>
 			<option value="absent">ABS (Absent)</option>
 			<option value="signale">SIGN (Absence signalée)</option>
-			<option value="justifie">JUST (Absence justifiée)</option>
+			<!-- <option value="justifie">JUST (Absence justifiée)</option> -->
 			<option value="sortie">SORT (Sortie autorisée)</option>
 		</select>
 		</td>
@@ -32,7 +32,7 @@
 				<option value="present"{if $statut == 'present'} selected="selected"{/if}>PRES (Présent)</option>
 				<option value="absent"{if $statut == 'absent'} selected="selected"{/if}>ABS (Absent)</option>
 				<option value="signale"{if $statut == 'signale'} selected="selected"{/if}>SIGN (Absence signalée)</option>
-				<option value="justifie"{if $statut == 'justifie'} selected="selected"{/if}>JUST (Absence justifiée)</option>
+				<!-- <option value="justifie"{if $statut == 'justifie'} selected="selected"{/if}>JUST (Absence justifiée)</option> -->
 				<option value="sortie"{if $statut == 'sortie'} selected="selected"{/if}>SORT (Sortie autorisée)</option>
 			</select>
 			<input type="hidden" name="modif-{$noPeriode}_date-{$uneDate}" id="modif-{$noPeriode}_date-{$uneDate}" value="non" class="modif">
@@ -51,7 +51,7 @@
 			<option value="present">PRES (Présent)</option>
 			<option value="absent">ABS (Absent)</option>
 			<option value="signale">SIGN (Absence signalée)</option>
-			<option value="justifie">JUST (Absence justifiée)</option>
+			<!-- <option value="justifie">JUST (Absence justifiée)</option> -->
 			<option value="sortie">SORT (Sortie autorisée)</option>
 		</select>
 		</td>
@@ -65,7 +65,7 @@
 				<option value="present"{if $statut == 'present'} selected="selected"{/if}>PRES (Présent)</option>
 				<option value="absent"{if $statut == 'absent'} selected="selected"{/if}>ABS (Absent)</option>
 				<option value="signale"{if $statut == 'signale'} selected="selected"{/if}>SIGN (Absence signalée)</option>
-				<option value="justifie"{if $statut == 'justifie'} selected="selected"{/if}>JUST (Absence justifiée)</option>
+				<!-- <option value="justifie"{if $statut == 'justifie'} selected="selected"{/if}>JUST (Absence justifiée)</option> -->
 				<option value="sortie"{if $statut == 'sortie'} selected="selected"{/if}>SORT (Sortie autorisée)</option>
 			</select>
 			<input type="hidden" name="modif-{$noPeriode}_date-{$date}" id="modif-{$noPeriode}_date-{$date}" value="non" class="modif">

@@ -17,19 +17,26 @@ $smarty->compile_dir = "../templates_c";
 
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $smarty->assign('matricule',$matricule);
+
 $date = isset($_POST['date'])?$_POST['date']:Null;
+$mode = isset($_POST['mode'])?$_POST['mode']:Null;
 
 $dateSuivante = $Application->datesSuivantes($date,1,false);
 $dateSuivante = current($dateSuivante);
+$smarty->assign('date',$dateSuivante);
 
 $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes',$listePeriodes);
 
-$html = '';
 $smarty->assign('listePresences',$Presences->listePresencesElevesDate($dateSuivante,$matricule));
-$smarty->assign('date',$dateSuivante);
+// il s'agit d'un ajout d'un jour: ne pas remettre la ligne de titre du tableau
 $smarty->assign('ajout',true);
-$html = $smarty->display('presencesJourDate.tpl');
+// s'agit-il de gérer les absences annoncées?
+if ($mode == 'absence')
+	// alors on présente la page complète
+	$html = $smarty->display('presencesJourDate.tpl');
+	// sinon, on présente la page simplifiée pour les sorties autorisées
+	else $html = $smarty->display('presencesJourDateSortie.tpl');
 
 echo $html;
 ?>

@@ -86,7 +86,7 @@ $(document).ready (function() {
 	})
 	
 	$("#nom").on("focus", function(){
-		// $("#selectEleve").val('');
+		$("#selectEleve").val('');
 		})
 	
 	$("#nom").autocomplete({

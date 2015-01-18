@@ -43,6 +43,20 @@
 	</table>
 	</form>
 	
+	<table class="tableauPresences" style="padding-top:2em">
+	<tr>
+	<th>Période</th>
+	{foreach from=$listePeriodes key=noPeriode item=periode}
+		<th>{$noPeriode}</th>
+	{/foreach}
+	</tr>
+	<tr>
+	<th>Heures</th>
+	{foreach from=$listePeriodes key=noPeriode item=periode}
+		<td style="text-align:center">{$periode.debut} à {$periode.fin}</td>
+	{/foreach}
+	</tr>
+</table>
 {/if}
 
 <script type="text/javascript">

@@ -289,11 +289,18 @@ class presences {
 				$liste[$matricule]['presences'][$periode] = $ligne;
 				}
 			}
-
 		Application::deconnexionPDO($connexion);
 		// on ne retient que les fiches pour lesquelles il y a une absence au moins
 		$liste1 = array_intersect_key($liste, $absentsListe1);
-		$liste2 = array_intersect_key($liste, $absentsListe2);		
+		$liste2 = array_intersect_key($liste, $absentsListe2);
+
+		// on retire de la liste 1 tous ceux qui se trouvent aussi dans la liste 2		
+		$listeMatricules = array_keys($liste1);
+		foreach ($listeMatricules as $matricule)	{
+			if (isset($liste2[$matricule]))
+				unset($liste1[$matricule]);
+			}
+
 		return array('liste1'=>$liste1,'liste2'=>$liste2);
 		}
 
@@ -331,7 +338,6 @@ class presences {
 		$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
 		$heure = date("H:i");
 		$quand = date("Y-m-d");
-		
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		// introduction dans la table des logs et récupération de l'id autoIncrementé
 		$sql = "INSERT INTO ".PFX."presencesLogs ";
@@ -345,11 +351,15 @@ class presences {
 			foreach ($listeEleves as $matricule=>$wtf) {
 				// si pas de statut dans le formulaire, l'élève est marqué présent. Permet la prise de présence absent/présent en classe
 				$statut = (isset($post['matr-'.$matricule.'_periode-'.$noPeriode]))?$post['matr-'.$matricule.'_periode-'.$noPeriode]:'present';
-				$sql = "INSERT INTO ".PFX."presencesEleves ";
-				$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
-				$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
-				$resultat += $connexion->exec($sql);
-				$nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
+				// on n'enregistre que s'il s'agit d'une absence ou d'une présence (pas les autres statuts d'absences)
+				if (in_array($statut,array('absent','present'))) {
+					$sql = "INSERT INTO ".PFX."presencesEleves ";
+					$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
+					$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
+					$resultat += $connexion->exec($sql);
+					$nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table					
+					}
+
 				}
 			}
 		Application::deconnexionPDO($connexion);

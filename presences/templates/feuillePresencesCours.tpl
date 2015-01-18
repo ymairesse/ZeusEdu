@@ -1,4 +1,4 @@
-{if isset($selectProf)}
+{if isset($acronyme)}
 
 <form name="listeEleves" id="listeEleves" action="index.php" method="POST" style="padding:0; margin:0">
 
@@ -13,9 +13,9 @@
 <input type="hidden" name="media" value="en classe">
 <input type="hidden" name="periode" value="{$periode}">
 <input type="hidden" name="coursGrp" value="{$coursGrp}">
-<input type="hidden" name="selectProf" value="{$selectProf|default:''}">
+<input type="hidden" name="selectProf" value="{$acronyme|default:''}">
 
-<h2>{$listeProfs.$selectProf.prenom} {$listeProfs.$selectProf.nom|truncate:20} | {$listeCoursGrp.$coursGrp.libelle} -> [{$coursGrp}]</h2>
+<h2>{$listeProfs.$acronyme.prenom} {$listeProfs.$acronyme.nom|truncate:20} | {$listeCoursGrp.$coursGrp.libelle} -> [{$coursGrp}]</h2>
 
 <strong>{$jourSemaine|ucwords} {$date}</strong>
 <strong style="float:right">
@@ -45,13 +45,16 @@
 		{* on passe le différentes périodes existantes en revue *}
 		{foreach from=$lesPeriodes item=noPeriode}
 			{assign var=statut value=$listePr.$noPeriode.statut|default:''}
-			<td class="{$statut}">
+			<td class="{$statut}{if $noPeriode==$periode} now{/if}">
 				{* s'il s'agit de la période actuelle, on présente la case à cocher (éventuellement cochée) *}
 				{if ($noPeriode == $periode)}
-						<input type="checkbox" value="absent" name="matr-{$matricule}_periode-{$noPeriode}" class="cb" 
-						{if $statut=='absent'} checked="checked"{/if}
-						{if (in_array($statut, array('sortie','signale','justifie')))}disabled="disabled"{/if}>
+					{if (in_array($statut, array('sortie','signale','justifie')))}
+						<input type="hidden" name="matr-{$matricule}_periode-{$noPeriode}" value="{$statut}">
 					{else}
+						<input type="checkbox" value="absent" name="matr-{$matricule}_periode-{$noPeriode}" class="cb" 
+							{if $statut=='absent'} checked="checked"{/if}>
+					{/if}
+				{else}
 					<strong>{$noPeriode}</strong>
 				{/if}
 			</td>
@@ -71,6 +74,21 @@
 
 </form>
 
+<table class="tableauPresences" style="padding-top:2em">
+	<tr>
+	<th>Période</th>
+	{foreach from=$listePeriodes key=noPeriode item=periode}
+		<th>{$noPeriode}</th>
+	{/foreach}
+	</tr>
+	<tr>
+	<th>Heures</th>
+	{foreach from=$listePeriodes key=noPeriode item=periode}
+		<td style="text-align:center">{$periode.debut} à {$periode.fin}</td>
+	{/foreach}
+	</tr>
+</table>
+
 <script type="text/javascript">
 
 	var modifie = false;
@@ -78,7 +96,7 @@
 
 	$(document).ready(function(){
 
-		var nombre = $("#listeEleves").find("input:checked").length;
+		var nombre = $(".now.absent").length+$(".now.signale").length+$(".now.sortie").length+$(".now.justifie").length;
 		var modifie = false;
 		
 		$("#nb").text(nombre);
@@ -100,7 +118,7 @@
 		}
 
 		$("#listeEleves").click(function(){
-			var nombre = $(this).find("input:checked").length;
+			var nombre = $(".now.absent").length+$(".now.signale").length+$(".now.sortie").length+$(".now.justifie").length;
 			$("#nb").text(nombre)
 			})
 

@@ -19,13 +19,6 @@
 		<input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$date}"{if !($freeDate)} style="display:none"{/if}>
 		{/if}
 		
-		<select name="selectProf" id="selectProf">
-		<option value="">Professeur</option>
-			{foreach from=$listeProfs item=unProf}
-				<option value="{$unProf.acronyme}" {if isset($acronyme) && ($unProf.acronyme == $acronyme)}selected{/if}>{$unProf.nom|truncate:15} {$unProf.prenom}</option>
-			{/foreach}
-		</select>
-
 		<span id="selectCoursGrp">		
 		{if $listeCoursGrp}
 		<select name="coursGrp" id="coursGrp">
@@ -53,11 +46,9 @@
 </div>
 {/if}
 	
-	
 </div>
 
 <script type="text/javascript">
-{literal}
 
 	var freePeriode = false;
 	var freeDate = false;
@@ -65,18 +56,6 @@
 	$(document).ready (function() {
 
 		$("#dialog").dialog();
-		
-		// ajustement de la liste des cours en fonction du prof sélectionné
-		$("#selectProf").change(function(){
-			var acronyme = $(this).val();
-			if (acronyme != '')
-				$.post("inc/listeCoursProf.inc.php",
-				{'acronyme': acronyme},
-					function (resultat){
-						$("#selectCoursGrp").html(resultat)
-					}
-				)
-			})
 
 		$(".datepicker").datepicker({
 			dateFormat: "dd/mm/yy",
@@ -114,7 +93,7 @@
 		
 		// on vérifie que le formulaire peut être soumis si toutes les informations sont présentes
 		$("#formSelecteur").submit(function(){
-			if (($("#selectProf").val() == '') || ($("#coursGrp").val() == '') || $("#selectPeriode").val() == '') {
+			if (($("#coursGrp").val() == '') || $("#selectPeriode").val() == '') {
 				return false;
 				}
 				else {
@@ -124,5 +103,5 @@
 			})
 		
 	})
-{/literal}
+
 </script>

@@ -38,6 +38,7 @@ $smarty->assign('listePeriodes',$listePeriodes);
 $dateNow = Application::dateNow();
 $smarty->assign('dateNow',$dateNow);
 $smarty->assign('heure',date('H:i'));
+$smarty->assign('periodeActuelle', $Presences->periodeActuelle($listePeriodes));
 
 // liste des absences existantes pour le jour d'aujourd'hui (par défaut) ou pour les dates figurant dans le $_POST après enregistrement
 if ($matricule != Null) {
@@ -52,7 +53,11 @@ if ($matricule != Null) {
 			$listePresences = $Presences->listePresencesElevesDate($dateNow,$matricule);
 			}
 	$smarty->assign('listePresences', $listePresences);
-	$smarty->assign('corpsPage','signalement');	
+
+	if ($mode == 'sortie') 
+		$smarty->assign('corpsPage','sortie');
+		else $smarty->assign('corpsPage','signalement');
+
 	}
 
 // informations pour le sélecteur classe/élève

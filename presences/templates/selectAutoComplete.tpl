@@ -14,7 +14,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 	$(document).ready(function() {
 
 		$("#matricule").attr('value','');
@@ -77,5 +77,5 @@
 			else $("#wait").css("z-index","999").show();
 		})
 	})
-{/literal}
+
 </script>

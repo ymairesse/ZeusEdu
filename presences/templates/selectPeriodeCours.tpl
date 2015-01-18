@@ -10,42 +10,12 @@
 			<option value="{$laPeriode}"{if $laPeriode==$periode} selected="selected"{/if}>[{$laPeriode}] : {$data.debut}-{$data.fin}</option>
 			{/foreach}
 		</select>
-	
-		{if $userStatus == 'admin'}
-		<span>
-			<span title="{if $freeDate}{$date} {else}Aujourd'hui{/if}">Date</span>
-			<input type="checkbox" value="1" id="freeDate" name="freeDate"{if $freeDate} checked="checked"{/if}>
-		</span>
-		<input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$date}"{if !($freeDate)} style="display:none"{/if}>
-		{/if}
 		
-		<select name="selectProf" id="selectProf">
-		<option value="">Professeur</option>
-			{foreach from=$listeProfs item=unProf}
-				<option value="{$unProf.acronyme}" {if isset($acronyme) && ($unProf.acronyme == $acronyme)}selected{/if}>{$unProf.nom|truncate:15} {$unProf.prenom}</option>
-			{/foreach}
-		</select>
-
-		<span id="selectCoursGrp">		
-		{if $listeCoursGrp}
-		<select name="coursGrp" id="coursGrp">
-			<option value="">Sélectionnez un cours</option>
-		{foreach from=$listeCoursGrp key=cours item=data}
-			<option value="{$cours}"{if $cours == $coursGrp} selected="selected"{/if}>{$data.libelle|truncate:25} ({$data.classes})</option>
-		{/foreach}
-		</select>
-		{else}
-		<select name="coursGrp" id="coursGrp">
-			<option value=''>Cours</option>
-		</select>
-		{/if}
-		</span>
-		
+		<input type="hidden" value="{$coursGrp}" name="coursGrp">
 		<input type="submit" value="OK" name="OK" id="envoi">
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 	</form>
-
 
 {if (empty($listePeriodes))}
 <div id="dialog" title="Avertissement">

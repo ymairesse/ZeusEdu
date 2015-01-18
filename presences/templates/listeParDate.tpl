@@ -9,7 +9,7 @@
 		<th>Classe</th>		
 		<th>Nom</th>
 		{foreach from=$listePeriodes key=periode item=limitesPeriode}
-		<th style="width:3em"><strong>{$periode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
+		<th style="width:3.5em"><strong>{$periode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
 		{/foreach}
 		<td>&nbsp;</td>
 	</tr>
@@ -25,9 +25,15 @@
 			{assign var=statut value=$p.statut}
 			{assign var=titre value='<h3>'|cat:$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'|cat:'</h3>'|cat:$p.parent|cat:'<br>'|cat:$p.media}
 			<td title="{$titre}">
-				<span style="display:block; width:2em" class="periode {$statut}"><img src="images/{$statut}.png" alt="{$statut}"</span>
+				<span style="display:block; width:2em" class="periode {$statut}">
+					{$p.educ|default:'???'}
+					<!-- <img src="images/{$statut}.png" alt="{$statut}"> -->
+				</span>
 		{else}
-			<td title="indetermine"><span style="display:block; width:2em" class="periode indetermine"><img src="images/indetermine.png" alt="indetermine"></span></td>
+			<td title="indetermine"><span style="display:block; width:2em" class="periode indetermine">
+			<!-- <img src="images/indetermine.png" alt="indetermine"> -->
+			-
+			</span></td>
 		{/if}
 	{/foreach}
 	<td class="micro">{$smarty.foreach.boucle.iteration}</td>	
@@ -45,7 +51,7 @@
 		<th>Classe</th>
 		<th>Nom</th>
 		{foreach from=$listePeriodes key=periode item=limitesPeriode}
-		<th style="width:3em"><strong>{$periode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
+		<th style="width:3.5em"><strong>{$periode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
 		{/foreach}
 		<td>&nbsp;</td>
 	</tr>
@@ -61,9 +67,14 @@
 			{assign var=statut value=$p.statut}
 			{assign var=titre value='<h3>'|cat:$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'|cat:'</h3>'|cat:$p.parent|cat:'<br>'|cat:$p.media}
 			<td title="{$titre}">
-				<span style="display:block; width:2em" class="periode {$statut}"><img src="images/{$statut}.png" alt="{$statut}"</span>
+				<span style="display:block; width:2em" class="periode {$statut}">
+					<!-- <img src="images/{$statut}.png" alt="{$statut}"</span> -->
+					{$p.educ|default:'???'}
 		{else}
-			<td title="indetermine"><span style="display:block; width:2em" class="periode indetermine"><img src="images/indetermine.png" alt="indetermine"></span></td>
+			<td title="indetermine"><span style="display:block; width:2em" class="periode indetermine">
+			<!-- <img src="images/indetermine.png" alt="indetermine"> -->
+			-
+			</span></td>
 		{/if}
 	{/foreach}
 	<td class="micro">{$smarty.foreach.boucle.iteration}</td>	
