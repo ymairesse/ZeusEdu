@@ -1,4 +1,5 @@
 <?php
+
 $unAn = time() + 365*24*3600;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
@@ -19,7 +20,8 @@ $smarty->assign('tri', $tri);
 $bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:PERIODEENCOURS;
 $idCarnet = isset($_POST['idCarnet'])?$_POST['idCarnet']:Null;
 
-$smarty->assign('action','carnet');
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
 $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('bulletin',$bulletin);
 $smarty->assign('COTEABS',COTEABS);
@@ -29,7 +31,6 @@ $smarty->assign('NOMSPERIODES',explode(',',NOMSPERIODES));
 switch ($mode) {
 	case 'gererCotes':
 		$smarty->assign('selecteur', 'selectBulletinCours');
-		$smarty->assign('mode','gererCotes');
 
 		switch ($etape) {
 			case 'recordEnteteCote':
@@ -57,7 +58,6 @@ switch ($mode) {
 				break;
 			}
 		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
-			$smarty->assign ('corpsPage', 'showCarnet');
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 			$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
 			$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
@@ -68,10 +68,12 @@ switch ($mode) {
 			$smarty->assign('listeCotes', $listeCotes);
 			$smarty->assign('listeMoyennes', $listeMoyennes);
 			$smarty->assign('listeCompetences', $listeCompetences);
+			$smarty->assign ('corpsPage', 'showCarnet');			
 			}
 		break;
 	case 'oneClick':
-		$smarty->assign('mode','oneClick');
+		$effaceDetails = isset($_POST['effaceDetails'])?true:Null;
+		$smarty->assign('effaceDetails',$effaceDetails);
 		$smarty->assign('selecteur', 'selectBulletinCours');
 		switch ($etape) {
 			case 'transfert':
@@ -84,6 +86,10 @@ switch ($mode) {
 					else {
 						$listeEleves = $Ecole->listeElevesCours($coursGrp);
 						$listeLocks = $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin);
+						// effacement préalable du bulletin si souhaité
+						if ($effaceDetails == true) {
+							$Bulletin->effaceDetailsBulletin($bulletin,current($listeCompetences),$coursGrp, $listeLocks,$listeEleves);
+							}
 						$Res = $Bulletin->transfertCarnetCotes($_POST, $listeLocks);
 						
 						// -------------------------------------------------------------------------------------
@@ -99,9 +105,12 @@ switch ($mode) {
 						// calcule les nouvelles situations pour ce bulletin, à partir des situations existantes et du globalPeriode
 						$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
 						$Bulletin->enregistrerSituations($listeSituations, $bulletin);
+						$texte = sprintf('%d cotes enregistré(s)<br>%d cotes refusées', $Res['ok'],$Res['ko']);
+						if ($Res['ko']>0)
+							$texte .= ' (bulletin verrouillé?)';
 						$smarty->assign('message', array(
 								'title'=>'Enregistrement',
-								'texte'=>sprintf('%d cotes enregistré(s)<br>%d cotes refusées (bulletin verrouillé?)', $Res['ok'],$Res['ko'])
+								'texte'=>$texte
 								));
 						$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
 					}
@@ -131,7 +140,6 @@ switch ($mode) {
 		break;
 	case 'poidsCompetences':
 		$smarty->assign('selecteur', 'selectCours');
-		$smarty->assign('mode', 'poidsCompetences');
 		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			switch ($etape) {
 				case 'enregistrer':
@@ -143,12 +151,13 @@ switch ($mode) {
 				// pas de break;
 				// break;
 				default: 
-					$listePonderations = current($Bulletin->getPonderations($coursGrp));
+					// $listePonderations = current($Bulletin->getPonderations($coursGrp));
+					$sommesPonderations = $Bulletin->sommesPonderations($coursGrp);
 					$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
 					$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
 					$tableauPoids = $Bulletin->listePoidsCompetences($coursGrp, $listeCompetences);
 					$listeCotes = ($listeTravaux != Null)?$Bulletin->listeCotesCarnet($listeTravaux):Null;
-					$smarty->assign('ponderations', $listePonderations);
+					$smarty->assign('ponderations', $sommesPonderations);
 					$smarty->assign('listeCompetences', $listeCompetences);
 					$smarty->assign('tableauPoids', $tableauPoids);
 					$smarty->assign('etape', 'enregistrer');

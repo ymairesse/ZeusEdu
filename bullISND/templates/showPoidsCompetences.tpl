@@ -27,13 +27,13 @@
 					<input type="text" size="4" maxlength="4" name="comp_{$idComp}-bull_{$nbull}-form" 
 						value="{$tableauPoids.$nbull.$idComp.form|default:''}" tabIndex="{$tabIndex}" 
 						class="poids"
-						{if $ponderations.all.$nbull.form == ''}readonly="readonly"{/if}>
+						{if ($ponderations.$nbull.form == '0')} readonly="readonly"{/if}>
 				</td>
 				<td class="cote">
 					<input type="text" size="4" name="comp_{$idComp}-bull_{$nbull}-cert" 
 					value="{$tableauPoids.$nbull.$idComp.cert|default:''}" tabIndex="{$tabIndex+$nbComp}" 
 					class="poids"
-					{if $ponderations.all.$nbull.cert == ''}readonly="readonly"{/if}>
+					{if $ponderations.$nbull.cert == '0'} readonly="readonly"{/if}>
 				</td>
 				{assign var=tabIndex value=$tabIndex+2*$nbComp}
 			{/section}

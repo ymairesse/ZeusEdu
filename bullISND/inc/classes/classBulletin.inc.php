@@ -55,6 +55,26 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $listePonderations;
 	}
+	
+	/**
+	 * retourne les sommes des pondérations [all] et par matricule pour un cours donné
+	 * fonction artificielle pour déterminer s'il faut ouvrir ou non les cases de poids de bulletin dans le carnet de cotes
+	 * si les sommes des pondérations pour une périoe ([all] et par matricule) sont 0, alors c'est que personne n'a de pondération pour la période
+	 * et il ne faut pas ouvrir la possibilité de mettre un poids pour la compétence correspondante.
+	 */
+	public function sommesPonderations($coursGrp) {
+		$listePonderations = current(self::getPonderations($coursGrp));
+		$liste = array();
+		foreach ($listePonderations as $key=>$lesPonderations) {
+			foreach ($lesPonderations as $periode=>$ponderation) {
+				if (!(isset($liste[$periode])))
+					$liste[$periode] = array('form'=>0,'cert'=>0);
+				$liste[$periode]['form'] += $ponderation['form'];
+				$liste[$periode]['cert'] += $ponderation['cert'];
+				}
+			}
+		return $liste;
+	}
 
 	/**
 	 * introduction d'une pondération vide lors du premier accès
@@ -323,7 +343,7 @@ class Bulletin {
 	 * @param $coursGrp
 	 * @return array
 	 */
-	function listeCompetences($coursGrp) {
+	public function listeCompetences($coursGrp) {
 		$cours = self::coursDeCoursGrp($coursGrp);
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT id, cours, ordre, libelle ";
@@ -481,7 +501,6 @@ class Bulletin {
 		$sql .= "JOIN ".PFX."eleves ON (".PFX."eleves.matricule = ".PFX."elevesCours.matricule) ";
 		$sql .= "WHERE SUBSTR(".PFX."eleves.groupe,1,1) = '$niveau' ";
 		$sql .= "ORDER BY classe";
-
 		$resultat = $connexion->query($sql);
 		$listeElevesCoursGrp = array();
 		if ($resultat) {
@@ -498,6 +517,35 @@ class Bulletin {
 		return $listeElevesCoursGrp;
 		}
 
+	/** 
+	 * retourne la liste de tous les cours suivis par chaque élève
+	 * @param void()
+	 * @return array()
+	 */
+	public function listeElevesCoursGrp($niveau=Null) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT dc.matricule, coursGrp, classe, CONCAT(nom,' ',prenom) AS nomPrenom ";
+		$sql .= "FROM ".PFX."elevesCours AS dc ";
+		$sql .= "JOIN ".PFX."eleves AS de ON (de.matricule = dc.matricule) ";
+		if ($niveau != Null)
+			$sql .= "WHERE SUBSTR(classe,1,1) = '$niveau' ";
+		$sql .= "ORDER BY classe ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$liste = $resultat->fetchAll();
+			}
+		Application::DeconnexionPDO($connexion);
+		$listeElevesCours = array();
+		while ($liste != Null) {
+			$data = array_pop($liste);
+			$matricule = $data['matricule'];
+			$coursGrp = $data['coursGrp'];
+			$listeElevesCours[$matricule][$coursGrp]=array('classe'=>$data['classe'],'nomPrenom'=>$data['nomPrenom']);
+			}
+		return $listeElevesCours;
+		}
 
 	/**
 	 * retourne la liste des verrous ouverts/fermés selon la valeur du paramètre $etatVerrou
@@ -555,23 +603,20 @@ class Bulletin {
 	 * @return integer : nombre d'enregistrements modifiés dans la BD
 	 */
 	function renewAllLocks () {
-		$this->resetLocks();
-		$listeNiveaux = Ecole::listeNiveaux();
+		// $this->resetLocks();
 		$listePeriodes = $this->listePeriodes(NBPERIODES);
-		unset($listePeriodes[0]);
+		$listeElevesCours = $this->listeElevesCoursGrp();
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "INSERT INTO ".PFX."bullLockElevesCours ";
+		$sql = "INSERT IGNORE INTO ".PFX."bullLockElevesCours ";
 		$sql .= "SET matricule=:matricule, coursGrp=:coursGrp, periode=:periode, locked='0' ";
 		$requete = $connexion->prepare($sql);
 		$resultat = 0;
-		foreach ($listeNiveaux as $unNiveau) {
-			$listeElevesCours = current($this->listeElevesCoursGrpNiveau($unNiveau));
-			foreach ($listeElevesCours as $matricule=>$listeCoursGrp) {
-				foreach ($listeCoursGrp as $coursGrp=>$wtf) {
-					foreach ($listePeriodes as $periode) {
-						$data = array(':matricule'=>$matricule, ':coursGrp'=>$coursGrp, ':periode'=>$periode);
-						$resultat += $requete->execute($data);
-						}
+		$liste = array();
+		foreach ($listeElevesCours as $matricule=>$listeCoursGrp) {
+			foreach ($listeCoursGrp as $coursGrp=>$wtf) {
+				foreach ($listePeriodes as $periode) {
+					$data = array(':matricule'=>$matricule, ':coursGrp'=>$coursGrp, ':periode'=>$periode);
+					$resultat += $requete->execute($data);
 					}
 				}
 			}
@@ -585,27 +630,26 @@ class Bulletin {
 	 * @param $niveau
 	 * @param $listeLocks
 	 */
-	public function listeUndefinedLocks ($niveau, $listeLocks) {
-		$listeCoursGrpNiveau = self::listeElevesCoursGrpNiveau($niveau);
-		$listeUndefined = array();
-		foreach ($listeCoursGrpNiveau as $classe=>$dataClasse) {
-			foreach($dataClasse as $matricule=>$dataEleve) {
-				foreach ($dataEleve as $coursGrp=>$nomPrenom) {
-					if (!(isset($listeLocks[$niveau][$classe][$coursGrp][$matricule])))
-						$listeUndefined[$niveau][$classe][$coursGrp][$matricule] = $nomPrenom;
-					}
-				}
-			}
-		return $listeUndefined;
-		}
+	//public function listeUndefinedLocks ($niveau, $listeLocks) {
+		//$listeCoursGrpNiveau = self::listeElevesCoursGrpNiveau($niveau);
+		//$listeUndefined = array();
+		//foreach ($listeCoursGrpNiveau as $classe=>$dataClasse) {
+			//foreach($dataClasse as $matricule=>$dataEleve) {
+				//foreach ($dataEleve as $coursGrp=>$nomPrenom) {
+					//if (!(isset($listeLocks[$niveau][$classe][$coursGrp][$matricule])))
+						//$listeUndefined[$niveau][$classe][$coursGrp][$matricule] = $nomPrenom;
+					//}
+				//}
+			//}
+		//return $listeUndefined;
+		//}
 
 
-	/*
-	 * function saveLocksBulletin
+	/**
+	 * Enregistrement des positions des verrous depuis le formulaire
 	 * @param $post
 	 * @param $periode
-	 *
-	 *
+	 * @return nombre d'enregistrements réalisés
 	 */
 	function saveLocksBulletin($post, $periode) {
 	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -634,18 +678,15 @@ class Bulletin {
 			}
 		}
 	Application::DeconnexionPDO($connexion);
-
 	return $nbResultats;
 	}
 
 
 	/**
-	 * function saveLocksAdmin
-	 *
-	 * @param $post
-	 *
 	 * pose les verrous sur tous les cours des classes passées dans $post
-	 * $post preovenant du formulaire de l'administrateur du bulletin
+	 * $post provenant du formulaire de l'administrateur du bulletin
+	 * @param $post
+	 * @return nombre de verrous enregistrés
 	 */
 	public function saveLocksAdmin($post, $bulletin) {
 		$verrouiller = isset($post['verrou'])?$post['verrou']:Null;
@@ -685,7 +726,7 @@ class Bulletin {
 	 *  et un verrouillage pour l'ensemble d'un cours => 1 enregistrement dans la BD / cours
 	 *
 	 * @param post
-	 *
+	 * @return nombre d'enregistrements
 	 */
 	public function saveLocksClasseCoursEleve ($post) {
 		$verrouiller = isset($_POST['verrouiller'])?$_POST['verrouiller']:Null;
@@ -766,7 +807,7 @@ class Bulletin {
 		return $listeAttitudes;
 	}
 
-	/*
+	/**
 	 * retourne la liste de tous les commentaires pour un cours donné pour toutes les périodes pour tous les élèves d'une liste donnée
 	 * @param $listeEleves
 	 * @param $coursGrp
@@ -801,6 +842,7 @@ class Bulletin {
 	 * Typiquement pour la génération d'un bulletin d'élève
 	 * @param $listeEleves
 	 * @param $bulletin
+	 * @return array
 	 */
 	public function listeCommentairesTousCours($listeEleves, $bulletin=Null) {
 		if (is_array($listeEleves))
@@ -835,6 +877,7 @@ class Bulletin {
 	 * la liste est indexée sur les matricules et les cours concernés
 	 * @param $listeEleves
 	 * @param $bulletin
+	 * @return array
 	 */
 	public function sommesTjCertEleves ($listeEleves, $bulletin) {
 		if (is_array($listeEleves))
@@ -5288,6 +5331,29 @@ class Bulletin {
 		Application::DeconnexionPDO($connexion);
 		return $resultat;
 		}
+
+	/** 
+	 * Effacement de toutes les cotes d'un bulletin donné (avant transfert du carnet de cotes)
+	 * @param $bulletin
+	 * @param $listeCompetences
+	 * @param $coursGrp
+	 * @return void()
+	 */
+	public function effaceDetailsBulletin ($bulletin, $listeCompetences, $coursGrp, $listeLocks, $listeEleves) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		foreach ($listeCompetences as $idCompetence=>$wtf) {
+			foreach ($listeEleves as $matricule=>$wtf2) {
+				// on n'efface que ce qui n'est pas verrouillé
+				if (isset($listeLocks[$matricule][$coursGrp]) && $listeLocks[$matricule][$coursGrp]==0) {
+					$sql = "UPDATE ".PFX."bullDetailsCotes ";
+					$sql .= "SET form='', maxForm='', cert='', maxCert='' ";
+					$sql .= "WHERE idComp='$idCompetence' AND coursGrp='$coursGrp' AND matricule='$matricule' AND bulletin='$bulletin' ";
+					$resultat = $connexion->exec($sql);
+					}
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+	}
 
 	/** 
 	 * extraction de la liste des cours orphelins: sans prof et sans élève
