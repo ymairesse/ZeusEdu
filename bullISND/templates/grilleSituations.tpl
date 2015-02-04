@@ -34,14 +34,17 @@
 		<td class="inputSituations">
 				{if isset($listeSituations.$matricule.$cours)}
 					{assign var=dataCote value=$listeSituations.$matricule.$cours}
+					{else}
+					{assign var=dataCote value=Null}
 				{/if}
 				<!-- si l'élève suit ce cours -->
 				{if isset($listeCoursEleves.$cours.$matricule)}
 					{* suppression de l'espace dans le nom de champ et remplacement par un '!' -nécessaire pour D2 et D3 *}
-					{assign var=coursGrp value=$listeCoursEleves.$cours.$matricule.coursGrp|replace:' ':'!'}
-					<input type="text" size="1em" name="sit#eleve_{$matricule}#coursGrp_{$coursGrp}"
+					{assign var=coursGrp value=$listeCoursEleves.$cours.$matricule.coursGrp}
+					{assign var=coursGrpProtect value=$coursGrp|replace:' ':'!'}
+					<input type="text" size="1em" name="sit#eleve_{$matricule}#coursGrp_{$coursGrpProtect}"
 					value="{$dataCote.sit|default:''}" tabIndex="{$tabIndex}" title="{$coursGrp}: {$listeCoursClasse.$cours.profs.$coursGrp.acronyme}">/
-					<input type="text" size="1em" name="max#eleve_{$matricule}#coursGrp_{$coursGrp}"
+					<input type="text" size="1em" name="max#eleve_{$matricule}#coursGrp_{$coursGrpProtect}"
 					value="{$dataCote.max|default:''}" tabIndex="{$tabIndex+1}" class="max">
 					{assign var=tabIndex value=$tabIndex+2}
 				{else}&nbsp;
@@ -62,7 +65,7 @@
 </form>
 
 <script type="text/javascript">
-{literal}
+
 	$(document).ready(function(){
 
 		$("#formSituations").submit(function(){
@@ -88,7 +91,5 @@
 			$(this).closest('table').find('tr :nth-child('+col+')').removeClass('eleveActif');
 			}
 			);
-
-{/literal}
 
 </script>
