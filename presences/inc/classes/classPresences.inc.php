@@ -409,48 +409,6 @@ class presences {
 		return $nb;
 		 }
 	
-	/** 
-	 * enregistrement des autorisations de sorties
-	 * @param array $post : les informations provenant du formulaire de saisie
-	 * @param int $matricule : le matricule de l'élève concerné
-	 */
-	// public function saveSorties($post, $matricule) {
-		//$educ = isset($post['educ'])?$post['educ']:Null;
-		//$matricule = isset($post['matricule'])?$post['matricule']:Null;
-		//$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
-		//$parent = isset($post['parent'])?$post['parent']:Null;
-		//$media = isset($post['media'])?$post['media']:Null;
-		//$heure = date("H:i");
-		//$quand = date("Y-m-d");
-		
-		//$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		//// introduction dans la table des logs et récupération de l'id autoIncrementé
-		//$sql = "INSERT INTO ".PFX."presencesLogs ";
-		//$sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
-		//$resultat = $connexion->exec($sql);
-		//$id=$connexion->lastInsertId();
-		
-		//$nb = 0;
-		//foreach ($post as $champ=>$statut) {
-			//if (substr($champ, 0, 7) == 'statut_') {
-				//$pieces = explode('_',$champ);
-				//$noPeriode = $pieces[1];
-				
-				//// le champ a-t-il été modifié durant l'édition?
-				//if ($post['modif_'.$noPeriode] == 'oui') {
-					//// alors on enregistre la nouvelle valeur
-					//$sql = "INSERT INTO ".PFX."presencesEleves ";
-					//$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
-					//$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
-					//$resultat = $connexion->exec($sql);
-					//if ($resultat)
-						//$nb++;	// ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
-					//}
-				//}
-			//}
-		//Application::deconnexionPDO($connexion);
-		//return $nb;
-		// }
 
 	/** 
 	 * retourne la liste des jours d'absences d'un élève dont on fournit le matricule
