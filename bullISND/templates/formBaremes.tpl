@@ -1,4 +1,4 @@
-<h2>Voir et modfier les pondérations</h2>
+<h2>Voir et modifier les pondérations</h2>
 Bulletin en cours: {$bulletin}
 <h3 title="{$intituleCours.coursGrp}">
 	{$intituleCours.annee} : {$intituleCours.statut}

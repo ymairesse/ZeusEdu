@@ -1,4 +1,4 @@
-<h2>Voir et modfier les pondérations par périodes</h2>
+<h2>Voir et modifier les pondérations par périodes</h2>
 
 <h3>{$intituleCours.coursGrp} | {$intituleCours.nomCours} {$intituleCours.nbheures}h {$intituleCours.statut} ({$listeClasses})</h3>
 <table class="tableauAdmin">

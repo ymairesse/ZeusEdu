@@ -1,4 +1,4 @@
-{if $degre == 1}
+{if isset($degre) && ($degre == 1)}
 <h3>Résultats du CEB</h3>
 <table style="font-size:0.8em; width:100%" class="tableauTitu">
 	<tr>

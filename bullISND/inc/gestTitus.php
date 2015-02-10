@@ -145,24 +145,27 @@ switch ($mode) {
 			$smarty->assign('listeEleves',$listeEleves);
 			}
 
-		if (isset($matricule) && ($matricule != '') && is_numeric($matricule)) {
-			// si un matricule est donné et qu'il est numérique (!= 'all'), on aura sans doute besoin des données de l'élève
+		if (isset($matricule) && ($matricule != '') && ($matricule != 'all')) {  // le cookie pourrait contenir la valeur 'all' qui n'aurait pas de sens ici
+			// si un matricule est donné, on aura sans doute besoin des données de l'élève
 			$eleve = new Eleve($matricule);
+			
 			require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
 			$padEleve = new padEleve($matricule, $acronyme);
-
 			if (isset($etape) && ($etape == 'enregistrer')) {
 				$nb = $padEleve->savePadEleve($_POST);
-				$smarty->assign("message", array(
-						'title'=>"Enregistrement",
-						'texte'=>"Note enregistrée"));
+				$texte = ($nb>0)?"$nb enregistrement(s) réussi(s)":"Pas de modification";
+				$smarty->assign('message', array(
+					'title'=>"Enregistrement",
+					'texte'=>$texte)
+					);
 				}
-			$smarty->assign("padEleve", $padEleve);
-
+			$padEleve = new padEleve($matricule, $acronyme);
+			$smarty->assign('padsEleve', $padEleve->getPads());
+			
 			// recherche des infos personnelles de l'élève
-			$smarty->assign("eleve", $eleve->getDetailsEleve());
+			$smarty->assign('eleve', $eleve->getDetailsEleve());
 			// recherche des infos concernant le passé scolaire
-			$smarty->assign("ecoles", $eleve->ecoleOrigine());
+			$smarty->assign('ecoles', $eleve->ecoleOrigine());
 	
 			// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
 			$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);

@@ -53,6 +53,7 @@ switch ($mode) {
 				$sitActuelles = $Bulletin->situationsPeriode($listeSituations, $bulletin);
 				$listeCompetences = $Bulletin->listeCompetencesListeCoursGrp($listeCoursGrp);
 				$listeCotes = $Bulletin->listeCotes($matricule, $listeCoursGrp, $listeCompetences, $bulletin);
+
 				$ponderations = $Bulletin->getPonderations($listeCoursGrp, $bulletin);
 				$cotesPonderees = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 

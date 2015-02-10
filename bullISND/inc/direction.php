@@ -15,6 +15,8 @@ if (isset($_POST['matricule'])) {
 	else $matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
 $smarty->assign('matricule',$matricule);
 
+$bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
+
 $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
@@ -104,16 +106,19 @@ switch ($mode) {
 		if (isset($matricule) && ($matricule != '') && ($matricule != 'all')) {  // le cookie pourrait contenir la valeur 'all' qui n'aurait pas de sens ici
 			// si un matricule est donné, on aura sans doute besoin des données de l'élève
 			$eleve = new Eleve($matricule);
+			
 			require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
 			$padEleve = new padEleve($matricule, $acronyme);
-
 			if (isset($etape) && ($etape == 'enregistrer')) {
 				$nb = $padEleve->savePadEleve($_POST);
-				$smarty->assign("message", array(
-						'title'=>"Enregistrement",
-						'texte'=>"Note enregistrée"));
-					}
-			$smarty->assign("padEleve", $padEleve);
+				$texte = ($nb>0)?"$nb enregistrement(s) réussi(s)":"Pas de modification";
+				$smarty->assign('message', array(
+					'title'=>"Enregistrement",
+					'texte'=>$texte)
+					);
+				}
+			$padEleve = new padEleve($matricule, $acronyme);
+			$smarty->assign('padsEleve', $padEleve->getPads());
 
 			// recherche des infos personnelles de l'élève
 			$smarty->assign('eleve', $eleve->getDetailsEleve());
@@ -142,7 +147,6 @@ switch ($mode) {
 		
 			$smarty->assign('prevNext', $prevNext);
 			$smarty->assign('etape','enregistrer');
-			$smarty->assign('selecteur', 'selectClasseEleve');			
 			$smarty->assign('corpsPage', 'ficheEleve');
 		}
 		$smarty->assign('selecteur','selectClasseEleve');
@@ -150,45 +154,74 @@ switch ($mode) {
 		$smarty->assign('mode',$mode);
 		break;
 	case 'pia':
+		$smarty->assign('classe',$classe);
+		$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null; // on ne prend pas la valeur du cookie qui pourrait ne pas correspondre à la classe
+		$smarty->assign('matricule',$matricule);
+		$smarty->assign('listeClasses',$Ecole->listeClasses());
+		if (isset($classe)) {
+			$listeEleves = $Ecole->listeEleves($classe,'groupe');
+			$smarty->assign('listeEleves',$listeEleves);
+			}
+			
 		if ($etape == 'showEleve') {
-			$smarty->assign('corpsPage','couverturePIA');
-			if (isset($matricule)) {
-				require_once('../infirmerie/inc/classes/classInfirmerie.inc.php');
-				$infirmerie = new eleveInfirmerie($matricule);
+			require_once('../infirmerie/inc/classes/classInfirmerie.inc.php');
+			if (isset($matricule) && ($matricule != Null) )
+				$listeFichesEleves = array($matricule=>$matricule);
+				else $listeFichesEleves = $Ecole->listeEleves($classe,'groupe');
+			$listePIA = array();
+			foreach ($listeFichesEleves as $matricule=>$wtf) {
 				$eleve = new Eleve($matricule);
-				$smarty->assign('eleve',$eleve->getDetailsEleve());
-				$smarty->assign('degre',$Ecole->degreDeClasse($eleve->groupe()));
-				// le CEB
-				$smarty->assign('ceb',$Bulletin->getCEB($matricule));
-				// informations médicales
-				$smarty->assign('infosMedic',$infirmerie->getInfoMedic($matricule));
-				// tout le tableau des résultats des années précédentes
+				$detailsEleve = $eleve->getDetailsEleve();
+				$degre = $Ecole->degreDeClasse($detailsEleve['groupe']);
+				$ceb = ($degre==1)?$Bulletin->getCEB($matricule):Null;
+				$infirmerie = new eleveInfirmerie($matricule);
+				$infosMedic = $infirmerie->getInfoMedic($matricule);
 				$resultatsPre = $Bulletin->syntheseToutesAnnees($matricule);
+				$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin);
+				$listeCoursGrp = $listeCoursGrp[$matricule];
+				$listeProfs = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
+				$listeMails = $Ecole->listeMailsEleves($listeFichesEleves);
 				if ($resultatsPre != Null) {
 					//millésimes de l'année précédente
 					$anPrec = array_keys($resultatsPre); 
 					$anPrec = $anPrec[0];
-					$smarty->assign('anScolaire',$anPrec);
+					$anScolaire = $anPrec;
 					// année d'étude précédente
 					$resultatsPre = array_shift($resultatsPre);
 					$niveauPre = array_keys($resultatsPre); $niveauPre = $niveauPre[0];
-					$smarty->assign('annee',$niveauPre);
+					$annee = $niveauPre;
 					// les résultats rien que pour l'année précédente
-					$resultatsPre = array_shift($resultatsPre);
-					$smarty->assign('resultatsPrec',$resultatsPre);
+					$resultatsPrec = array_shift($resultatsPre);
 					// les mentions obtenues
-					$smarty->assign('mentions', $Bulletin->listeMentions($matricule, Null, Null));
+					$mentions = $Bulletin->listeMentions($matricule, Null, Null);
 					}
+					else {
+						$anScolaire = Null;
+						$niveauPre = Null;
+						$resultatsPrec = Null;
+						$mentions = Null;
+						}
+				$listePIA[$matricule] = array(
+					'detailsEleve'=>$detailsEleve,
+					'degre'=>$degre,
+					'ceb'=>$ceb,
+					'annee'=>$niveauPre,
+					'anScolaire'=>$anScolaire,
+					'listeCoursActuelle'=>$listeCoursGrp,
+					'infosMedic'=>$infosMedic,
+					'resultats'=>$resultatsPrec['resultats'],
+					'listeCours'=>$resultatsPrec['listeCours'],
+					'listeProfs'=>$listeProfs,
+					'mentions'=>$mentions
+					);
 				}
+			$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
+			$smarty->assign('listePIA',$listePIA);
+			$smarty->assign('corpsPage','couverturePIA');
 			}
-		$listeEleves = isset($classe)?$Ecole->listeEleves($classe,'groupe'):Null;
-		$smarty->assign('listeEleves',$listeEleves);
-		$smarty->assign('classe',$classe);
-		$smarty->assign('matricule',$matricule);
-		$smarty->assign('listeClasses',$Ecole->listeClasses());
-		$smarty->assign('selecteur','selectClasseEleve');
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
+		$smarty->assign('selecteur','selectClasseOuEleve');		
 		break;
 	}
 ?>

@@ -7,7 +7,6 @@ $bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:PERIODEENCOURS;
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
-$verrouiller = isset($_POST['verrouiller'])?$_POST['verrouiller']:0;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
 switch ($mode) {
@@ -252,40 +251,33 @@ switch ($mode) {
 		break;
 	case 'verrouClasseCoursEleve':
 		if ($userStatus != 'admin') die('get out of here');
-		$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-		switch ($etape) {
-			case 'enregistrer':
-				$nb = $Bulletin->saveLocksClasseCoursEleve($_POST);
-				$stxt = ($verrouiller ==1)?"posés":"supprimés";
-				$smarty->assign("message", array(
-							'title'=>"Verrouillage des bulletins n0 $bulletin",
-							'texte'=>"$nb verrous $stxt")
-							);
-				// break;
-			case 'showNiveau':
-				// liste des verrous à inverser
-				$listeVerrous = $Bulletin->listeLocksPeriode($bulletin, $niveau, !$verrouiller);
-				$listeVerrousIndetermines = $Bulletin->listeUndefinedLocks($niveau, $listeVerrous);
-
-				$listeProfs = $Ecole->listeCoursGrpProf($niveau);
-				$smarty->assign("bulletin",$bulletin);
-				$smarty->assign("niveau",$niveau);
-				$smarty->assign("verrouiller", $verrouiller);
-				$smarty->assign("listeVerrous", $listeVerrous);
-				$smarty->assign("listeProfs", $listeProfs);
-				$smarty->assign("corpsPage","verrousOuverts");
-				break;
-			default:
-				// wtf
-				break;
+		$verrouiller = isset($_POST['verrouiller'])?$_POST['verrouiller']:0;
+		if ($etape == 'enregistrer') {
+			$nb = $Bulletin->saveLocksClasseCoursEleve($_POST);
+			$stxt = ($verrouiller ==1)?"posés":"supprimés";
+			$smarty->assign("message", array(
+						'title'=>"Verrouillage des bulletins n0 $bulletin",
+						'texte'=>"$nb verrous $stxt")
+						);
 			}
-		$smarty->assign("nbBulletins", NBPERIODES);
-		$smarty->assign("listeNiveaux", $Ecole->listeNiveaux());
-		$smarty->assign("niveau", $niveau);
-		$smarty->assign("bulletin", $bulletin);
+		// liste des verrous à inverser
+		$listeVerrous = $Bulletin->listeLocksPeriode($bulletin, $niveau, !$verrouiller);
+//		$listeVerrousIndetermines = $Bulletin->listeUndefinedLocks($niveau, $listeVerrous);
+		$listeProfs = $Ecole->listeCoursGrpProf($niveau);
+		$smarty->assign('bulletin',$bulletin);
+		$smarty->assign('niveau',$niveau);
+		$smarty->assign('verrouiller', $verrouiller);
+		$smarty->assign('listeVerrous', $listeVerrous);
+		$smarty->assign('listeProfs', $listeProfs);
+
+		$smarty->assign('nbBulletins', NBPERIODES);
+		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
+		$smarty->assign('niveau', $niveau);
+		$smarty->assign('bulletin', $bulletin);
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
-		$smarty->assign("selecteur","selectBulletinNiveauVerrou");
+		$smarty->assign('corpsPage','verrousOuverts');		
+		$smarty->assign('selecteur','selectBulletinNiveauVerrou');
 		break;
 
 	case 'competences':
@@ -306,23 +298,23 @@ switch ($mode) {
 			}
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
-		$smarty->assign("cours",$cours);
+		$smarty->assign('cours',$cours);
 		$listeCompetences = $Bulletin->listeCompetencesListeCours($cours);
-		$smarty->assign("listeCompetences", $listeCompetences);
-		$smarty->assign("corpsPage", "adminCompetences");
-		$smarty->assign("selecteur", "selectNiveauCours");
+		$smarty->assign('listeCompetences', $listeCompetences);
+		$smarty->assign('corpsPage', 'adminCompetences');
+		$smarty->assign('selecteur', 'selectNiveauCours');
 		break;
 
 	case 'situations':
 		if ($userStatus != 'admin') die('get out of here');
-		$smarty->assign("action",$action);
-		$smarty->assign("mode",$mode);
-		$smarty->assign("etape","showCotes");
-		$smarty->assign("nbBulletins", NBPERIODES);
-		$smarty->assign("bulletin",$bulletin);
-		$smarty->assign("listeClasses", $Ecole->listeClasses());
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
+		$smarty->assign('etape','showCotes');
+		$smarty->assign('nbBulletins', NBPERIODES);
+		$smarty->assign('bulletin',$bulletin);
+		$smarty->assign('listeClasses', $Ecole->listeClasses());
 		// sélecteur incluant la période "0" pour les élèves de 2e
-		$smarty->assign("selecteur", "selectBulletin0Classe");
+		$smarty->assign('selecteur', 'selectBulletin0Classe');
 		$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 
 		switch ($etape) {

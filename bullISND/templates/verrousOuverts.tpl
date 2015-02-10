@@ -3,6 +3,8 @@
 {if $listeVerrous|@count == 0}
 	Rien à modifier
 	{else}
+	<div style="width:40%; float:right" class="inv" id="notice">Attention! Cette fonctionnalité peut demander plusieurs passages si le nombre de verrous à modifier est trop grand</div>
+	
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="enregistrer">

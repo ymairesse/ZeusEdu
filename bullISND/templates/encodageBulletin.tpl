@@ -1,3 +1,4 @@
+{debug}
 {assign var="ancre" value=$matricule}
 <h2 title="cours {$intituleCours.coursGrp}">Bulletin {$bulletin} - {$intituleCours.statut} {$intituleCours.annee}
 	{$intituleCours.libelle} {$intituleCours.nbheures}h -> {$listeClasses|@implode:', '} 
@@ -76,19 +77,19 @@
 	{foreach from=$listeCompetences key=cours item=lesCompetences}
 		{foreach from=$lesCompetences key=idComp item=uneCompetence}
 			<tr{if isset($tableErreurs.$matricule.$idComp)} class="erreurEncodage"{/if}>
-				<td style="text-align:right" title="comp_{$idComp}"> {$uneCompetence.libelle}</td>
+				<td style="text-align:right"> {$uneCompetence.libelle}</td>
 
 				{if $formExiste}
 					{* Il y a, au moins, une pondération pour le "Formatif" durant cette période *}
 					<td style="width:6em; text-align:center"
 					{if $cotes.$idComp.form.echec}class="echecEncodage"{/if}>
-					<input tabIndex="{$tabIndexForm}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					<input tabIndex="{$tabIndexForm}" type="text" {if (!(isset($blocage.$coursGrp)) || ($blocage.$coursGrp > 0))}readonly="readonly"{/if}
 					name="cote-eleve_{$matricule}-comp_{$idComp}-form"
 						value="{$cotes.$idComp.form.cote}" maxlength="5" size="2" class="cote"></td>
 
 					{* Le max de Formatif pour cette compétence *}
 					<td style="width:6em; text-align:center">
-					<input tabIndex="{$tabIndexForm+1}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					<input tabIndex="{$tabIndexForm+1}" type="text" {if (!(isset($blocage.$coursGrp)) || ($blocage.$coursGrp > 0))}readonly="readonly"{/if}
 					name="cote-eleve_{$matricule}-comp_{$idComp}-maxForm"
 						value="{$cotes.$idComp.form.maxForm}" maxlength="4" size="2" class="maxForm-comp_{$idComp} cote">
 						{if !($blocage.$coursGrp)}<img src="images/flcBas.png" alt="flc" class="report noprint">{/if}</td>
@@ -99,13 +100,13 @@
 					{* Il y a, au moins, une pondération générale pour le "Certificatif" durant cette période *}
 					<td style="width:8em; text-align:center"
 					{if $cotes.$idComp.cert.echec}class="echecEncodage"{/if}>
-					<input tabIndex="{$tabIndexCert}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					<input tabIndex="{$tabIndexCert}" type="text" {if (!(isset($blocage.$coursGrp)) || ($blocage.$coursGrp > 0))}readonly="readonly"{/if}
 					name="cote-eleve_{$matricule}-comp_{$idComp}-cert"
 						value="{$cotes.$idComp.cert.cote}" maxlength="5" size="2" class="cote"></td>
 
 					{* Le max de Certificatif pour cette compétence *}
 					<td style="width:6em; text-align:center">
-					<input tabIndex="{$tabIndexCert+1}" type="text" {if ($blocage.$coursGrp > 0)}readonly="readonly"{/if}
+					<input tabIndex="{$tabIndexCert+1}" type="text" {if (!(isset($blocage.$coursGrp)) || ($blocage.$coursGrp > 0))}readonly="readonly"{/if}
 					name="cote-eleve_{$matricule}-comp_{$idComp}-maxCert"
 						value="{$cotes.$idComp.cert.maxCert}" maxlength="3" size="2" class="maxCert-comp_{$idComp} cote">
 						{if !($blocage.$coursGrp)}<img src="images/flcBas.png" alt="flc" class="report noprint">{/if}</td>
@@ -153,7 +154,7 @@
 	{if $listeAttitudes}<div class="blocRemarque">{/if}
 		<h3>Remarque pour la période {$bulletin}</h3>
 		{* si $blocage.$coursGrp > 1, les commentaires sont verrouillés *}
-		<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 1)} readonly="readonly"{/if} class="remarque" rows="8"
+		<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp >= 1)} readonly="readonly"{/if} class="remarque" rows="8"
 			cols="{if isset($listeAttitudes)}50{else}80{/if}"
 			name="commentaire-eleve_{$matricule}"
 			tabIndex="{$tabIndexAutres}">{$listeCommentaires.$matricule.$bulletin|default:Null}</textarea>
@@ -162,80 +163,33 @@
 	{if $listeAttitudes}
 	<div class="blocAttitudes">
 	<h3>Attitudes</h3>
-	{assign var="attitudes" value=$listeAttitudes.$matricule}
+	{assign var="lesAttitudes" value=$listeAttitudes.$matricule}
 	<table class="tableauBull attitudes">
 		<tr>
-			<th>Attitude</th>
-			<th><span class="clickNE">Non Évalué</span> / <span class="clickA">Acquis</span> / <span class="clickNA">Non Acquis</span></th>
+			<td>Attitude</td>
+			<td class="clickNE">Non Év. <br><img title="reporter partout" src="images/flcGDbas.png"></td>
+			<td class="clickA">Acquis <br><img title="reporter partout" src="images/flcGDbas.png"></td>
+			<td class="clickNA">Non Acq. <br><img title="reporter partout" src="images/flcGDbas.png"></td>
 		</tr>
+		
+		{foreach from=range(1,4) item=n}
 		<tr>
-			<td {if $attitudes[1] == 'N'} class="echec"{/if}>Respect des autres</td>
-			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att1"
-				value="NE" {if $attitudes[1] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+1}"> |
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att1"
-				value="A" {if $attitudes[1] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+1}"> |
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att1"
-				value="N" {if $attitudes[1] == 'N'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+1}">
-			</td>
+			<td {if $lesAttitudes[{$n}] == 'N'} class="echec"{/if}>{$nomsAttitudes.$n}</td>
+
+			<td class="nonEvalue">NE <input class="nonEvalue" type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att{$n}"
+				value="NE" {if $lesAttitudes[{$n}] == 'NE'}checked="checked"{/if} class="radioAcquis"
+				tabIndex="{$tabIndexAutres+1}"></td>
+			<td class="acquis">A <input class="acquis" type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att{$n}"
+				value="A" {if $lesAttitudes[{$n}] == 'A'}checked="checked"{/if} class="radioAcquis"
+				tabIndex="{$tabIndexAutres+1}"></td>
+			<td class="nonAcquis">NA <input class="nonAcquis" type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
+				name="attitudes-eleve_{$matricule}-att{$n}"
+				value="N" {if $lesAttitudes[{$n}] == 'N'}checked="checked"{/if} class="radioAcquis"
+				tabIndex="{$tabIndexAutres+1}"></td>
 		</tr>
-		<tr>
-			<td {if $attitudes[2] == 'N'} class="echec"{/if}>Respect des consignes</td>
-			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att2"
-				value="NE" {if $attitudes[2] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+2}"> |
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att2"
-				value="A" {if $attitudes[2] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+2}"> |
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att2"
-				value="N" {if $attitudes[2] == 'N'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+2}">
-			</td>
-		</tr>
-		<tr>
-			<td {if $attitudes[3] == 'N'} class="echec"{/if}>Volonté de progresser</td>
-			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att3"
-				value="NE" {if $attitudes[3] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+3}"> |
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att3"
-				value="A" {if $attitudes[3] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+3}"> |
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att3"
-				value="N" {if $attitudes[3] == 'N'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+3}">
-			</td>
-		</tr>
-		<tr>
-			<td {if $attitudes[4] == 'N'} class="echec"{/if}>Ordre et soin</td>
-			<td>
-			<span class="nonEvalue">NE</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att4"
-				value="NE" {if $attitudes[4] == 'NE'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+4}"> |
-			<span class="acquis">A</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att4"
-				value="A" {if $attitudes[4] == 'A'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+4}"> |
-			<span class="nonAcquis">NA</span> <input type="radio" {if ($blocage.$coursGrp > 0)}disabled="disabled"{/if}
-				name="attitudes-eleve_{$matricule}-att4"
-				value="N" {if $attitudes[4] == 'N'}checked="checked"{/if} class="radioAcquis"
-				tabIndex="{$tabIndexAutres+4}">
-			</td>
-		</tr>
+		{/foreach}
 	</table>
 
 	{assign var="tabIndexAutres" value=$tabIndexAutres+5}
@@ -498,10 +452,10 @@ $(document).ready(function(){
 			$(this).parent().addClass("echecEncodage");
 	})
 
-	$(".cote, .remarque, .radioAcquis").each(function(numero){
-		var element = $(".cote, .remarque, .radioAcquis").eq(numero);
+	$(".cote, .remarque").each(function(numero){
+		var element = $(".cote, .remarque").eq(numero);
 		if (element.attr("readonly") || element.attr("disabled"))
-			element.parent().parent().attr("title",noAccess);
+			element.parent().parent().parent().attr("title",noAccess);
 	})
 
 	$(".ouvrir").click(function(){
@@ -708,16 +662,14 @@ $(document).ready(function(){
 		})
 
 
-	$(".clickNE, .clickNA, .clickA").attr('title',toutesAttitudes);
-
 	$(".clickNE").click(function(){
-		$(this).parent().parent().nextAll().find('.nonEvalue').next('input').trigger('click')
+		$(this).parent().parent().find('.nonEvalue input').trigger('click')
 		})
 	$(".clickNA").click(function(){
-		$(this).parent().parent().nextAll().find('.nonAcquis').next('input').trigger('click')
+		$(this).parent().parent().find('.nonAcquis input').trigger('click')
 		})
 	$(".clickA").click(function(){
-		$(this).parent().parent().nextAll().find('.acquis').next('input').trigger('click')
+		$(this).parent().parent().find('.acquis input').trigger('click');
 		})
 
 	{if (isset($ancre))}

@@ -64,7 +64,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 		}
 
 	$situationsPrecedentes = $Bulletin->situationsPrecedentes($listeSituations, $bulletin);
-	$listeLockElevesCours = $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin);
+	// $listeLockElevesCours = $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin);
 	$annee = substr($coursGrp,0,1);
 	// pour le premier degré seulement, classes de 1e et 2e
 	if ($annee < 3)
@@ -78,6 +78,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 	$smarty->assign('situationsPrecedentes', $situationsPrecedentes);
 	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('listeCotes',$listeCotes);
+	$smarty->assign('nomsAttitudes',$Bulletin->attitudes());
 	
 	$smarty->assign('listeVerrous',$Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin));
 	$smarty->assign('listeCommentaires', $Bulletin->listeCommentaires($listeEleves, $coursGrp));

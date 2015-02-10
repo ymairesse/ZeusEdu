@@ -4315,9 +4315,9 @@ class Bulletin {
 		if (!(file_exists("pdf/$acronyme")))
 			mkdir ("pdf/$acronyme");
 		// s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
-		$pdf->Output("pdf/$acronyme/$classe.pdf");
+		$pdf->Output("pdf/$acronyme/$classe-$bulletin.pdf");
 		if ($parNiveau == false)
-			return "pdf/$acronyme/$classe.pdf";
+			return "pdf/$acronyme/$classe-$bulletin.pdf";
 			else return Null;
 		}
 

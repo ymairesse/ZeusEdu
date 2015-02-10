@@ -12,7 +12,6 @@ $Ecole = new Ecole();
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 if ($classe == Null) die();
 $partis = isset($_POST['partis'])?$_POST['partis']:false;
-
 $listeEleves = $Ecole->listeEleves($classe,'groupe',$partis);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");

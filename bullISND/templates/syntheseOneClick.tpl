@@ -12,6 +12,8 @@
 {/foreach}
 <form name="formTransfert" id="formTransfert" action="index.php" method="POST">
 	<div style="float:right">
+	Effacer le contenu existant du bulletin (conseillé) 
+	<input type="checkbox" name="effaceDetails" value="1"{if ($effaceDetails == true)} checked="checked"{/if}">
 	<span title="Annuler" id="boutonReset" class="fauxBouton">
 		Annuler <img alt="annuler" src="../images/suppr.png">
 	</span>

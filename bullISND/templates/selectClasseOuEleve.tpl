@@ -41,7 +41,7 @@
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
-		if ($("#selectEleve").val() != '') {
+		if (($("#selectEleve").val() != '') || ($("#selectClasse").val() != '')) {
 			$("#wait").show();
 			$.blockUI();
 			}
@@ -69,8 +69,7 @@ $(document).ready (function() {
 			// si la liste de sélection des élèves renvoie une valeur significative, le formulaire est soumis
 			$("#formSelecteur").submit();
 			$("#envoi").show();
-		}
-			// else $("#envoi").hide();
+			}
 		})
 		
 	$("#prev").click(function(){

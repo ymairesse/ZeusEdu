@@ -16,7 +16,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -33,5 +33,5 @@ $(document).ready (function() {
 		})
 
 })
-{/literal}
+
 </script>

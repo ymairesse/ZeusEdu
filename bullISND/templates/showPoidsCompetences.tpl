@@ -1,6 +1,7 @@
 <h2>Poids des compétences par période {$coursGrp}</h2>
 <form name="poidsCompetences" method="POST" action="index.php" id="formPoids">
-
+<input type="submit" class="fauxBouton" name="Enregistrer" value="Enregistrer" id="submit">
+<input type="reset" name="reset" value="Annuler" id="reset">
 <table class="tableauAdmin">
 	<tr>
 	<th>&nbsp;</th>
@@ -43,8 +44,6 @@
 	{/foreach}
 </table>
 
-<input type="submit" name="Enregistrer" value="Enregistrer" id="submit">
-<input type="reset" name="reset" value="Annuler" id="reset">
 <input type="hidden" name="coursGrp" value="{$coursGrp}">
 <input type="hidden" name="action" value="{$action}">
 <input type="hidden" name="mode" value="{$mode}">

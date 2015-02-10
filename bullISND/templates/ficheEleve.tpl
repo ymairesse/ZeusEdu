@@ -1,6 +1,6 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 <h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
-
+<img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}"  id="photo">
 <div id="tabs">
 	<ul>
 		<li><a href="#tabs-1">Notes <span id="mod">*</span></a></li>
@@ -10,18 +10,47 @@
 	</ul>
 	
 	<div id="tabs-1">
-		<p><img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
-			id="photo" style="width:100px; top:-60px; position: relative" /></p>
-		<form name="padEleve" id="padEleve" method="POST" action="index.php">
-			<input type="hidden" name="classe" value="{$classe}">
-			<input type="hidden" name="matricule" value="{$matricule}">
-			<input type="Submit" id="save" name="action" value="Enregistrer">
-			<input type="hidden" name="action" value="{$action}">
-			<input type="hidden" name="mode" value="{$mode}">
-			{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
-			<hr>
-			<textarea name="texte" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true">{$padEleve->getPadText()}</textarea>
-		</form>
+
+		<div id="sousTabs">
+			<form name="padEleve" id="padEleve" method="POST" action="index.php">
+				<input type="hidden" name="classe" value="{$classe}">
+				<input type="hidden" name="matricule" value="{$matricule}">
+				<input type="Submit" id="save" name="action" value="Enregistrer" class="fauxBouton" style="float:right">
+				<input type="hidden" name="action" value="{$action}">
+				<input type="hidden" name="mode" value="{$mode}">
+				{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
+				
+				{* s'il n'y a pas de pad "guest", il ne faut pas montrer des onglets *}
+				{if $padsEleve.guest|count != 0}	
+				<ul>
+					{foreach from=$padsEleve.proprio key=id item=unPad}
+						{* il y aura toujours un seul pad proprio *}
+						<li><a href="#sousTabs-{$id}">{$padsEleve.proprio.$id.proprio}</a></li>
+					{/foreach}
+					{foreach from=$padsEleve.guest key=id item=unPad}
+						<li><a href="#sousTabs-{$id}">{$unPad.proprio} 
+						{if $unPad.mode == 'rw'}<img src="images/padIco.png" alt=";o)">{/if}</a></li>
+					{/foreach}
+				</ul>
+				{/if}
+				
+				{* il y aura toujours un seul pad proprio, mais bon... *}
+				{foreach from=$padsEleve.proprio key=id item=unPad}
+					<div id="sousTabs-{$id}">
+						<hr>
+						<textarea name="texte_{$id}" id="texte_{$id}" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true">{$unPad.texte}</textarea>
+					</div>
+				{/foreach}
+
+				{* les pads "guest" *}
+				{foreach from=$padsEleve.guest key=id item=unPad}
+				<div id="sousTabs-{$id}">
+					<hr>
+					<textarea name="texte_{$id}" id="texte_{$id}" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true" {if $unPad.mode != 'rw'} disabled="disabled"{/if}>{$unPad.texte}</textarea>
+				</div>
+				{/foreach}
+			</form>
+		</div>
 	</div>
 	
 	<div id="tabs-2">
@@ -98,8 +127,6 @@
 	<!-- quel est l'onglet actif? -->
 	var onglet = "{$onglet|default:''}";
 
-{literal}
-
 $(document).ready(function(){
 	
 	var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";
@@ -109,6 +136,8 @@ $(document).ready(function(){
 	$("#mod").hide();
 	
 	$("#tabs").tabs();
+	
+	$("#sousTabs").tabs();
 	
 	<!-- activer l'onglet dont le numéro a été passé -->
 	$('#tabs').tabs("option", "active", onglet);
@@ -170,5 +199,4 @@ $(document).ready(function(){
 	
 	})
 
-{/literal}
 </script>

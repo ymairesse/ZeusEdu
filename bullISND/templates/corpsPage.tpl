@@ -7,7 +7,7 @@
 			<img class="photoEleve" src="../photos/{$listeElevesClasse.$matricule.photo}.jpg" alt="{$matricule}" style="width:150px">
 			{$matricule}.pdf</a>
 	{/if}
-	{if $mode == 'bulletinClasse'}<a href='pdf/{$acronyme}/{$classe}.pdf'>Classe {$classe}</a>{/if}
+	{if $mode == 'bulletinClasse'}<a href='pdf/{$acronyme}/{$classe}-{$bulletin}.pdf'>Classe {$classe} Bulletin {$bulletin}</a>{/if}
 	{if $mode == 'niveau'}<a href='pdf/{$acronyme}/niveau_{$niveau}.zip'>Bulletins Niveau {$niveau}</a>{/if}
 </span>
 {else}
