@@ -331,13 +331,17 @@ class user {
 	public function saveDataPerso ($post) {
 		$data = array();
 
-		// nom, prenom, sexe ne peuvent être modifiés que par l'administrateur
+		// nom, prenom, sexe et statut ne peuvent être modifiés que par l'administrateur
 		// si les infos proviennent d'un formulaire 'utilisateur', il n'a pas pu
 		// les modifier: on n'en tient donc pas compte
 		$data['acronyme'] = (isset($post['acronyme']))?$post['acronyme']:Null;
 		$data['nom'] = (isset($post['nom']))?$post['nom']:Null;
 		$data['prenom'] = (isset($post['prenom']))?$post['prenom']:Null;
 		$data['sexe'] = (isset($post['sexe']))?$post['sexe']:Null;
+		// le changement de statut n'est possible que pour l'administrateur
+		// le champ "statut" n'est pas disponible dans le formulaire de modification du profil de l'utilisateur
+		if (isset($post['statut']))
+			$data['statut'] = $post['statut'];
 		// ----------------------------------------------------------------
 
 		$data['mail'] = $post['mail'];
@@ -356,20 +360,27 @@ class user {
 		// s'il y a un mot de passe, alors on en tient compte
 		if (isset($post['mdp']) && ($post['mdp'] != ''))
 			$data['mdp'] = md5($post['mdp']);
-		$data['statut'] = $post['statut'];
-
-		$tableauSqlInsert = $tableauSqlUpdate = array();
-		foreach ($data as $key=>$value)
-			$tableauSqlInsert[] = "$key = '$value'";
-		unset($data['acronyme']);
-		foreach ($data as $key=>$value)
-			$tableauSqlUpdate[] = "$key = '$value'";
 
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+		$tableauSqlInsert = $tableauSqlUpdate = array();
+		foreach ($data as $key=>$value) {
+			// échappement des caractères spéciaux avec PDO
+			$value = $connexion->quote($value);
+			$tableauSqlInsert[] = "$key = $value";
+		}
+		unset($data['acronyme']);
+		foreach ($data as $key=>$value) {
+			// échappement des caractères spéciaux avec PDO
+			$value = $connexion->quote($value);
+			$tableauSqlUpdate[] = "$key = $value";
+		}
+
 		$sql = "INSERT INTO ".PFX."profs SET ";
 		$sql .= implode(",",$tableauSqlInsert);
 		$sql .= " ON DUPLICATE KEY UPDATE ";
 		$sql .= implode(",",$tableauSqlUpdate);
+
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO ($connexion);
 		return $resultat;
