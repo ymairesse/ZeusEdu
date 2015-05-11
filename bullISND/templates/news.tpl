@@ -1,84 +1,99 @@
-<div style="width: 750px; float:left; clear:both">
-	{if $userStatus == 'admin'}
-		<a href="index.php?action=news&amp;mode=edit" style="float:right" class="newInfo fauxBouton"><img src="../images/iconPlus.png" alt="+">Ajouter une nouvelle</a>
-	{/if}
-	{if $flashInfos|@count > 0}
-	<h2>Dernières nouvelles</h2>
+<div class="container">
 
-{foreach from=$flashInfos item="uneInfo"}
-	<div id="flashInfo{$uneInfo.id}">
-		<h3 style="clear:both">Ce {$uneInfo.date|date_format:"%d/%m/%Y"} - <span id="titre{$uneInfo.id}">{$uneInfo.titre}</span></h3>
-		{if $userStatus == 'admin'}
-			<a style="float:left" href="index.php?action=news&amp;mode=edit&amp;id={$uneInfo.id}" class="editInfo"><img src="../images/edit-icon.png" alt="Éditer"></a> 
-			<a style="float:right" href="index.php?action=news&amp;mode=del&amp;id={$uneInfo.id}" class="delInfo"><img src="../images/iconMoins.png" alt="Supprimer"></a>
-		{/if}
-		<div class="flashInfo"><p>{$uneInfo.texte}</p></div>
-	</div>
-{/foreach}
-</div>
-{/if}
+	<div class="row">
+		
+		<div class="col-md-9 col-sm-12">
 
-	<div id="dialog-confirm" title="Suppression de la nouvelle">
-	<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
-	La nouvelle "<span id="titreNews">x</span>" sera supprimée. Veuillez confirmer.</p>
+			{if $userStatus == 'admin'}
+				<a class="btn btn-primary pull-right" href="index.php?action=news&amp;mode=edit"><span class="glyphicon  glyphicon-envelope"></span> Ajouter une nouvelle</a>
+			{/if}
+			
+			{if $flashInfos|@count > 0}
+			<h2>Dernières nouvelles</h2>
+			
+			{foreach from=$flashInfos item="uneInfo"}
+				<div id="flashInfo{$uneInfo.id}">
+					<h3 style="clear:both">Ce {$uneInfo.date|date_format:"%d/%m/%Y"} - <span id="titre{$uneInfo.id}">{$uneInfo.titre}</span></h3>
+					{if $userStatus == 'admin'}
+					<a style="float:left" href="index.php?action=news&amp;mode=edit&amp;id={$uneInfo.id}" class="editInfo"><span class="glyphicon glyphicon glyphicon-edit" style="color: green; font-size: 200%"></span></a>
+					<a href="javascript:void()" style="float:right" id="{$uneInfo.id}" class="delInfo"><span class="glyphicon glyphicon glyphicon-remove" style="color:red; font-size:200%"></span></a>
+					{/if}
+					<div class="flashInfo"><p>{$uneInfo.texte}</p></div>
+				</div>  <!-- flashInfo id -->
+			{/foreach}
+
+			{/if}  {* flashinfo count > 0 *}
+
+				
+		</div>  <!-- col-md... -->
+		
+		<div class="col-md-3 col-sm-12">
+
+			<h3>Table des matières</h3>
+			<ul>
+			{foreach from=$flashInfos item="uneInfo"}
+			<li><a href="#flashInfo{$uneInfo.id}">{$uneInfo.titre}</a></li>
+			{/foreach}
+
+		</div>  <!-- col-md... -->
+	</div>  <!-- row -->
+
+</div>  <!-- container -->
+
+<!-- ......................   Boîte modale pour la suppression d'une news ..................... -->
+
+<div class="modal fade" id="modalDel" tabindex="-1" role="dialog" aria-labelledby="titreSuppression" aria-hidden="true">
+	
+	<div class="modal-dialog">
+		
+		<div class="modal-content">
+			
+			<div class="modal-header">
+				
+				<h4 class="modal-title" id="titreSuppression">Suppression de la nouvelle</h4>
+				
+			</div>
+			
+			<div class="modal-body">
+				
+                <p><span class="glyphicon glyphicon-warning-sign" style="font-size:2em; color: red"></span> Voulez-vous vraiment supprimer la nouvelle intitulée</p>
+				<p><strong id="newsTitle"></strong>?</p>
+				
+			</div>
+			
+			<div class="modal-footer">
+				
+				<form name="formSuppr" action="index.php" method="POST" class="form-vertical" role="form">
+					<button type="submit" class="btn btn-primary pull-rigth">Supprimer</button>
+					<button class="btn btn-default pull-right" data-dismiss="modal" type="reset">Annuler</button>
+					<input type="hidden" name="id" id="newsId" value="">
+					<input type="hidden" name="action" value="news">
+					<input type="hidden" name="mode" value="del">
+				</form>
+				
+			</div>
+			
+		</div>
+		
 	</div>
 	
 </div>
 
-<div id="menuLateral" 
-	style="float:right; min-height:600px; width:200px; margin: 2em 0; padding: 10px; border:1px solid grey; background-image:url(../images/back.jpg);" class="ombre">
-	<h3>Table des matières</h3>
-	<ul>
-	{foreach from=$flashInfos item="uneInfo"}
-	<li><a href="#flashInfo{$uneInfo.id}">{$uneInfo.titre}</a></li>
-	{/foreach}
-	</ul>
-</div>
+
 
 <script type="text/javascript">
 
-var id;
-var titre
-{literal}
 
 $(document).ready(function(){
 	
-	$().UItoTop({ easingType: 'easeOutQuart' });
-	
-	$("a.delInfo").click(function(e){
-		e.preventDefault();
-		var url=$(this).attr("href");
-		id=url.substring(url.indexOf("id=")+3);
-		titre = $("#titre"+id).text();
-		$("#titreNews").html(titre);
-		$("#dialog-confirm").dialog("open");
-		return false;
+	$("a.delInfo").click(function(){
+		var id=$(this).attr('id');
+		var titre = $("#titre"+id).text();
+		$("#newsId").val(id);
+		$("#newsTitle").text(titre);
+		$("#modalDel").modal('show');
 		})
-		
-	$( "#dialog-confirm" ).dialog({
-		resizable: false,
-		height:200,
-		width: 400,
-		modal: true,
-		autoOpen: false,
-		buttons : {
-			"Effacer" : function() {
-				$(this).dialog("close");
-				$.post("inc/deleteFlashInfo.inc.php",
-					{'id': id, 
-					 'titre': titre},
-					function (resultat) {
-						$("#flashInfo"+id).html(resultat);
-						}
-					);
-					},
-			"Annuler" : function() {
-				$(this).dialog("close");
-				}
-			}
-		});
 		
 })
 
-{/literal}
 </script>

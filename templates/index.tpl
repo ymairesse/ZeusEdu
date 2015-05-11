@@ -2,70 +2,44 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{$titreApplication}</title>
 
 <link rel="stylesheet" href="menu.css" type="text/css" media="screen">
 <link rel="stylesheet" href="screen.css" type="text/css" media="screen">
 <link rel="stylesheet" href="print.css" type="text/css" media="print">
-<link rel="stylesheet" href="js/jquery-ui-themes-1.10.3/themes/sunny/jquery-ui.css" media="screen, print">
-<link rel="stylesheet" href="js/ymtooltip.css" type="text/css" media="screen,print">
 
-<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.form.js"></script>
-<script type="text/javascript" src="js/jquery.validate.js"></script>
-<script type="text/javascript" src="js/jquery.blockUI.js"></script>
-<script type="text/javascript" src="js/jquery.enter2tab.js"></script>
-<script type="text/javascript" src="js/jquery.valign.js"></script>
-<script type="text/javascript" src="js/toTop/jquery.ui.totop.js"></script>
-<script type="text/javascript" src="js/menuBas.js"></script>
-<script type="text/javascript" src="js/toTop/jquery.easing.1.3.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/jquery.align.js"></script>
-<script type="text/javascript" src="js/jquery.ymtooltip.js"></script>
+<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+<link type="text/css" media="all" rel="stylesheet" href="bootstrap/css/bootstrap.css">
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
-<style type="text/css">
-{literal}
-#menu {
-	position: absolute;
-	width: 800px;
-	height: 640px;
-	left: 50%;
-	top: 40%;
-	margin-left: -400px;
-	margin-top: -160px;
-}
-
-{/literal}
-</style>
-<script type="text/javascript">
-{literal}
-$(document).ready(function(){
-	var titreGeneral = $("#titreAppli").text();
-
-	$(".sousPrg a img").mouseenter(function(){
-		var texte = $(this).attr("title");
-		$("#titreAppli").html(texte);
-		}).mouseleave(function(){
-			$("#titreAppli").html(titreGeneral);
-			})
-	});
-{/literal}
-</script>
 </head>
+
 <body>
 
-	<div id="menu" class="valign">
-		<ul>
-		{foreach from=$applisDisponibles key=k item=v}
-			{if $v.userStatus neq 'none'}
-			<li class="sousPrg">
-				<a href="{$v.URL}"><img src="images/{$v.icone}" alt="{$k}" title="{$v.nomLong}"></a>
-			</li>
-			{/if}
-		{/foreach}
-		</ul>
-	<div id="titreAppli" style="clear:both; display:block">{$titreApplication}</div>
-	</div>
+<div class="vertical-align">
+
+	<div class="container">
+		{if isset($alias)}
+		<span class="glyphicon glyphicon-star" style="color:red"></span>
+		{/if}
+
+		<div class="col-md-offset-2 col-md-9 col-sm-12 col-xs-12">
+			
+			{foreach from=$applisDisponibles key=k item=v}
+				<div class="sousPrg btn btn-primary" title="{$v.nomLong}">
+					<a href="{$v.URL}"><img src="images/{$v.icone}" alt="{$k}" style="float:left">
+					<span class="titreSousPrg">{$v.nomLong}</span></a>
+				</div>
+			{/foreach}
+	
+			<div id="titreAppli" style="clear:both">{$titre}</div>
+
+		</div>  <!-- col-md... -->
+
+	</div>  <!-- container -->
+
+</div>
 
 {include file="footer.tpl"}
 {if isset($avertissementIP)	}
@@ -73,23 +47,25 @@ $(document).ready(function(){
 {/if}
 
 <script type="text/javascript">
-{literal}
-	$(document).ready(function(){
 
-		$("*[title], .tooltip").tooltip();
+var titreGeneral = $("#titreAppli").text();
 
-		$("#avertissement").dialog({
-			modal: true,
-			width: 400,
-			buttons: {
-				Ok: function() {
-					$( this ).dialog("close" );
-					}
-				}
-			});
+$(document).ready(function(){
 
+	$(".sousPrg").mouseenter(function(){
+		var texte = $(this).attr("title");
+		$("#titreAppli").html(texte);
+		}).mouseleave(function(){
+			$("#titreAppli").html(titreGeneral);
+			})		
+
+	$(".sousPrg").click(function(){
+		var link = $(this).children('a').attr('href');
+		window.location.assign(link+"/index.php");
 		})
-{/literal}
+
+})
+
 </script>
 </body>
 </html>

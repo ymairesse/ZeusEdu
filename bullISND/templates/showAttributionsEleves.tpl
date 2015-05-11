@@ -1,51 +1,56 @@
+<div class="container">
+
 {* le corps de page ne doit apparaître que si une matière a été sélectionnée et une liste de cours formée *}
-
-	<form name="mouvementsEleves" id="mouvementsEleves" method="POST" action="index.php">
 {if ($listeCoursGrp|@count > 0)}
-<h2>Attribution des élèves aux cours</h2>
-	<table class="tableauBull">
-		<tr class="ombre">
-			<td colspan="3" style="padding: 0.8em 0.2em; border:1px solid black">
-				<strong>Cours</strong>
-				<select name="coursGrp" id="coursGrp">
-					<option value=''>Sélectionnez un cours</option>
-					{foreach from=$listeCoursGrp key=leCoursGrp item=details}
-					<option value="{$leCoursGrp}"{if isset($coursGrp) && ($coursGrp == $leCoursGrp)} selected="selected"{/if}>{$leCoursGrp} - {$details.statut} {$details.libelle} {$details.nbheures}h {$details.acronyme}</option>
-					{/foreach}
-				</select>
-				<strong>Depuis la période</strong>
-					{foreach from=$listePeriodes key=wtf item=periode}
-					<strong>{$periode}></strong><input type="radio" name="bulletin" value="{$periode}"{if isset($bulletin) && ($periode == $bulletin)} checked="checked"{/if}>
-					{/foreach}
-		</tr>
-		<tr>
-			<th><h3>Élèves à enlever</h3></th>
-			<th>&nbsp;</th>
-			<th><h3>Élèves à ajouter</h3></th>
-		</tr>
-		<tr>
-			<td style="vertical-align:top">
-				&nbsp;
-				<div id="blocGauche">
-				{* ---Liste des élèves suivant le cours avec possibilité de suppression -------------------------*}
-					<div id="profsElevesDel">
-					{if isset($coursGrp)}
-						{include file='listeElevesDel.tpl'}
-					{/if}
-					</div>
-					<a href="javascript:void(0)"><span id="nbDel" title="Désélectionner tout"></span></a>
-				</div>
-			</td>
-				
-			<td style="text-align:center">
-				<input type="submit" value = "<<<  >>>" id="moveEleves">
-			</td>
-				
-			<td style="vertical-align:top">
-			&nbsp;
-			{* ---Liste des élèves candidats à être inscrits au cours + bouton d'addition --------------------*}
 
+<form name="mouvementsEleves" id="mouvementsEleves" method="POST" action="index.php">
+
+	<h2>Attribution des élèves aux cours</h2>
+
+	<div class="row">
+	
+		<div class="col-md-12 col-xs-12">
+	
+			<strong>Cours</strong>
+			<select name="coursGrp" id="coursGrp">
+				<option value=''>Sélectionnez un cours</option>
+				{foreach from=$listeCoursGrp key=leCoursGrp item=details}
+				<option value="{$leCoursGrp}"{if isset($coursGrp) && ($coursGrp == $leCoursGrp)} selected="selected"{/if}>{$leCoursGrp} - {$details.statut} {$details.libelle} {$details.nbheures}h {$details.acronyme}</option>
+				{/foreach}
+			</select>
+			<strong>Depuis la période</strong>
+				{foreach from=$listePeriodes key=wtf item=periode}
+				<strong>{$periode}></strong><input type="radio" name="bulletin" value="{$periode}"{if isset($bulletin) && ($periode == $bulletin)} checked="checked"{/if}>
+				{/foreach}
+					
+		</div>  <!-- col-md... -->
+		
+	</div>  <!-- row -->
+	
+	<div class="row">
+		
+		<div class="col-md-5 col-sm-12">
+			<h3>Élèves à enlever</h3>
+			{* ---Liste des élèves suivant le cours avec possibilité de suppression -------------------------*}
+			<div id="profsElevesDel">
+			{if isset($coursGrp)}
+				{include file='listeElevesDel.tpl'}
+			{/if}
+			</div>
+			<a href="javascript:void(0)"><span id="nbDel" title="Désélectionner tout"></span></a>
+
+		</div>  <!-- col-md... -->
+			
+		<div class="col-md-2 col-sm-12">
+			<div style="padding-top:10em">
+				<input type="submit" value = "<<<  >>>" id="moveEleves">
+			</div>
+		</div>  <!-- col-md... -->
+				
+		<div class="col-md-5 col-sm-12">
+			{* ---Liste des élèves candidats à être inscrits au cours + bouton d'addition --------------------*}
 			<div id="blocDroit"  style="display:none"> <!-- à droite du flottant "gauche" -->
+				<h3>Élèves à ajouter</h3>
 				<label for="niveau">Niveau</label><select name="niveau" id="niveau">
 					<option value="">Niveau d'étude</option>
 					{foreach from=$listeNiveaux item=unNiveau}
@@ -59,22 +64,27 @@
 				<a href="javascript:void(0)"><span id="nbAdd" title="Désélectionner tout"></span></a>
 		
 			</div>
-			</td>
-		</tr>
+		</div>  <!-- col-md... -->
+		
 	
-	</table>
 		{* ----------------------------------------------------------------------------------------------*}
 			
 		<input type="hidden" name="cours" value="{$cours}">
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="enregistrer">
-	{/if}
-	</form>
+			
+		</div>  <!-- row -->
 
+	
+	</form>
+{/if}
+
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
-{literal}
+
 	$(document).ready(function(){
 		
 		if ($("#coursGrp").val() != '') {
@@ -85,8 +95,9 @@
 		$("#coursGrp").change(function(){
 			var coursGrp = $(this).val();
 			if (coursGrp != '') {
-				$.post('inc/profsElevesDel.inc.php',
-					   {'coursGrp':coursGrp},
+				$.post('inc/profsElevesDel.inc.php', {
+					'coursGrp':coursGrp
+					},
 					   function (resultat) {
 							$("#profsElevesDel").html(resultat);
 						}
@@ -102,8 +113,9 @@
 		$("#niveau").change(function(){
 			var niveau = $(this).val();
 			if (niveau != '') 
-				$.post('inc/listeElevesNiveau.inc.php',
-					{'niveau':niveau},
+				$.post('inc/listeElevesNiveau.inc.php', {
+					'niveau':niveau
+					},
 					function (resultat) {
 						$("#blocElevesAdd").html(resultat);
 						}
@@ -151,5 +163,5 @@
 			$(this).fadeOut();
 			})
 	})
-{/literal}
+
 </script>

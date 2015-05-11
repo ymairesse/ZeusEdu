@@ -1,3 +1,5 @@
+<div class="container">
+	
 <div class="questionImportante">
 <fieldset style="clear:both">
 	<legend>Effacement définitif</legend>
@@ -13,6 +15,8 @@
 	</form>
 </fieldset>
 </div>
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
 

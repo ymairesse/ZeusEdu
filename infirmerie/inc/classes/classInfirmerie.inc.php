@@ -7,16 +7,21 @@
 class eleveInfirmerie {
 
 
-    /*
-     * function getMedicEleve
-     * @param
-     * 
+    /**
      * recherche les informations médicales générales sur l'élève dans la BD
+     * @param $matricule
+     * @return array
      */
     public function getMedicEleve ($matricule) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT * FROM ".PFX."infirmerie WHERE matricule='$matricule'";
+		$sql = "SELECT de.matricule, medecin, telMedecin, sitFamiliale, anamnese, medical, psy, traitement, info ";
+		$sql .= "FROM ".PFX."eleves AS de ";
+		$sql .= "LEFT JOIN ".PFX."infirmerie AS inf ON inf.matricule = de.matricule ";
+		$sql .= "LEFT JOIN ".PFX."infirmInfos AS infInfo ON infInfo.matricule = de.matricule ";
+		$sql .= "WHERE de.matricule = '$matricule' ";
+
         $resultat = $connexion->query($sql);
+		$ligne = array();
         if ($resultat) {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			$ligne = $resultat->fetch();
@@ -79,7 +84,7 @@ class eleveInfirmerie {
 	 * @param $data données $_POST provenant d'un formulaire
 	 * @return integer : nombre de modifications dans la BD
 	 */
-    function enregistrerMedical ($data) {
+    public function enregistrerMedical ($data) {
         $medecin = addslashes($data['medecin']);
         $telMedecin = addslashes($data['telMedecin']);
         $sitFamiliale = addslashes($data['sitFamiliale']);
@@ -98,22 +103,42 @@ class eleveInfirmerie {
         Application::DeconnexionPDO($connexion);
         return $resultat; // nombre de lignes modifiées dans la BD
         }
+		
+	/**
+	 * Enregistrement de l'information médicale primordiale d'un élève (en exergue sur sa fiche)
+	 * @param $matricule
+	 * @param $infoMedic
+	 * @return nb d'enregistrements
+	 */
+	public function saveInfoMedic ($matricule, $infoMedic) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$infoMedic = addslashes($infoMedic);
+		$sql = "INSERT INTO ".PFX."infirmInfos ";
+		$sql .= "SET matricule='$matricule', info='$infoMedic' ";
+		$sql .= "ON DUPLICATE KEY UPDATE ";
+		$sql .= "info='$infoMedic' ";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO($connexion);
+        return $resultat; // nombre de lignes modifiées dans la BD
+	}
     
     /**
      * Enregistrement des informations concernant une visite à l'infirmerie
-     * @param $data données $_POST provenant d'un formulaire
-     * @return integer : nombre de lignes modifiées dan sla BD
+     * @param $post données $_POST provenant d'un formulaire
+     * @return integer : nombre de lignes modifiées dans la BD
      */
-    public function enregistrerVisite($data) {
-        $consultID=$data['consultID'];
-        $acronyme = addslashes($data['acronyme']);
-        $matricule=addslashes($data['matricule']);
-        $date=addslashes($data['date']);
+    public function enregistrerVisite($post) {
+		
+        $consultID=$post['consultID'];
+        $acronyme = addslashes($post['acronyme']);
+        $matricule=addslashes($post['matricule']);
+        $date=addslashes($post['date']);
         $date = Application::dateMySql($date);
-        $heure=addslashes($data['heure']);
-        $motif=addslashes($data['motif']);
-        $traitement=addslashes($data['traitement']);
-        $aSuivre=addslashes($data['aSuivre']);
+        $heure=addslashes($post['heure']);
+        $motif=addslashes($post['motif']);
+        $traitement=addslashes($post['traitement']);
+        $aSuivre=addslashes($post['aSuivre']);
+		
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($consultID) {
             // c'est une mise à jour d'une visite précédente

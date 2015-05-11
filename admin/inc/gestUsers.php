@@ -28,11 +28,11 @@ switch ($mode) {
 		$nbModifApplis = $user->saveDataApplis($_POST, $Application->listeApplis());
 		$smarty->assign('acronyme',$acronyme);
 		$mode = 'modifUser';
-		$smarty->assign('selecteur',"selectNomProf");
+		$smarty->assign('selecteur','selectNomProf');
 		$smarty->assign('message', array(
-					'title'=>"Confirmation",
-					'texte'=>"Applications mises à jour: $nbModifApplis,<br>profil modifié ".$nbModifUser/2),
-				3000);
+					'title'=>'Confirmation',
+					'texte'=>"Applications mises à jour: $nbModifApplis,<br>profil modifié ".$nbModifUser,
+					'urgence'=>'success'));
 		// break;  pas de break
 	case 'modifUser':
 		$smarty->assign('listeProfs', $Ecole->listeProfs());
@@ -76,18 +76,18 @@ switch ($mode) {
 				if (!($Application->deleteUser($acronyme)))
 					die("user not deleted");
 
-				// appel de la class hermes pour le nettoyage des lists d'envoi
+				// appel de la class hermes pour le nettoyage des listes d'envoi
 				require_once(INSTALL_DIR.'/hermes/inc/classes/classHermes.inc.php');
 				$nb = hermes::nettoyerListes();
-				$smarty->assign("message", array(
-									'title'=>"Confirmation",
-									'texte'=>"Utilisateur $acronyme supprimé"),
-								3000);
-				break;
+				$smarty->assign('message', array(
+									'title'=>'Confirmation',
+									'texte'=>'Utilisateur $acronyme supprimé',
+									'urgence'=>'danger'));
+				// break; pas de  break
 			default:
 				$smarty->assign('listeProfs', $Application->listOrphanUsers());
-				$smarty->assign('action', 'gestUsers');
-				$smarty->assign('mode', 'delUser');
+				$smarty->assign('action', $action);
+				$smarty->assign('mode', $mode);
 				$smarty->assign('etape', 'confirmation');
 				$smarty->assign('selecteur','selectNomProf');
 				break;
@@ -110,8 +110,8 @@ switch ($mode) {
 		$nb = count($bilan);
 		$smarty->assign("message", array(
 			'title'=>"Modifications",
-			'texte'=>"$nb droit(s) affecté(s)"),
-		3000);
+			'texte'=>"$nb droit(s) affecté(s)",
+			'urgence'=>'info'));
 		$smarty->assign("bilan", $bilan);
 		$smarty->assign("corpsPage", "bilanDroits");
 		break;

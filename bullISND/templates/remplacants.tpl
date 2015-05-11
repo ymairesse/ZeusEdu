@@ -1,9 +1,14 @@
-<h1>Liste des profs remplacés</h1>
-<table class="tableauAdmin">
+<div class="container">
+	
+<h2>Liste des profs remplacés</h2>
+
+<table class="tableauAdmin table">
+	<thead>
 	<tr>
 		<th>Cours</th>
 		<th>Prof</th>
 	</tr>
+	</thead>
 	{foreach from=$listeRemplacements key=coursGrp item=remplacants}
 		{assign var=pos value=$coursGrp|strpos:'-'}
 		{assign var=cours value=$coursGrp|substr:0:(pos-3)}
@@ -19,3 +24,5 @@
 		{/foreach}
 	{/foreach}
 </table>
+
+</div>

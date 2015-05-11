@@ -6,4 +6,3 @@ define ('NOM', 'root');
 define ('MDP', '123456');
 define ('SERVEUR', 'localhost');
 define ('BASE', 'ZeusEdu');
-

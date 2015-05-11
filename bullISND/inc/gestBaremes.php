@@ -36,7 +36,6 @@ switch ($mode) {
 					$ponderations = $Bulletin->getPonderations($coursGrp);
 					$intituleCours = $Bulletin->intituleCours($coursGrp);
 					$listeEleves = $Ecole->listeElevesCours($coursGrp);
-					$smarty->assign('selecteur', 'selectCours');
 					$smarty->assign('periodes', explode(',', NOMSPERIODES));					
 					$smarty->assign('nbPeriodes', NBPERIODES);
 					$smarty->assign('listeEleves', $listeEleves);
@@ -45,8 +44,10 @@ switch ($mode) {
 					$smarty->assign('mode','voir');
 					$smarty->assign("message", array(
 									'title'=>"Enregistrement",
-									'texte'=>"$nbInsert pondérations modifiées")
+									'texte'=>"$nbInsert pondération(s) modifiée(s)",
+									'urgence'=>'success')
 									);
+					$smarty->assign('selecteur', 'selectCours');					
 					$smarty->assign('corpsPage', 'showPonderations');
 					break;
 				default:

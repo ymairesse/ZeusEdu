@@ -1,5 +1,6 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+	
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 		<select name="typeRetenue" id="selectType">
 		<option value="">Type de retenue</option>
 		{foreach from=$listeTypes key=ceType item=unType}
@@ -7,7 +8,7 @@
 		{/foreach}
 		</select>
 		
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
@@ -15,7 +16,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 	
 	$("#selectType").change(function(){
@@ -33,5 +34,5 @@ $(document).ready (function() {
 	})
 
 })
-{/literal}
+
 </script>

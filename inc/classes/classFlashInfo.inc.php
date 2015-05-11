@@ -1,5 +1,7 @@
 <?php
 
+// les flashInfo sont destinés à apparaître sur la page d'accueil d'une application
+
 class flashInfo {
 	private $id;
 	private $data;
@@ -13,15 +15,12 @@ class flashInfo {
 		}
 	}
 	
-	/* 
-	 * function getData
+	/**
+	 * recherche dans la base de données le FlahsInfo correspondant à l'élément dont l'id est passé en paramètre
 	 * @param $id
-	 * 
-	 * recherche dans la base de données, 
-	 * les informations correspondant à l'élément dont l'id est passé en paramètre
-	 * */
-
-	public static function getData ($id=Null) {
+	 * @return array
+	 */
+	public function getData ($id=Null) {
 		if ($id) {
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 			$sql = "SELECT * FROM ".PFX."flashInfos ";
@@ -39,7 +38,7 @@ class flashInfo {
 		else {
 				$data = array(
 					'id'=>'',
-					'date'=>'',
+					'date'=>date("d/m/Y"),
 					'heure'=>'',
 					'titre'=>'',
 					'texte'=>'',
@@ -49,30 +48,28 @@ class flashInfo {
 		return $data;
 		}
 
-	/* 
-	 * function delFlashInfo
-	 * @param $id
-	 * 
+	/**
 	 * Supprime de la base de données l'élémnet dont l'id est passé en paramètre
 	 * retourne le nombre de suppressions effectuées (une ou aucune)
-	 * */
-	public static function delFlashInfo ($id) {
+	 * @param $id
+	 * @return integer : nombre de suppression (en principe, une seule)
+	 */
+	public function delFlashInfo ($id,$module) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "DELETE FROM ".PFX."flashInfos ";
-		$sql .= "WHERE id = '$id' ";
+		$sql .= "WHERE id = '$id' AND application='$module' ";
 		$resultat = $connexion->exec($sql);
 		Application::deconnexionPDO($connexion);
 		return $resultat;
 		}
 		
-	/* 
-	 * function saveFlashInfo
-	 * @param $data
-	 * 
+	/**
 	 * Enregistre les données passées dans le tableau $data dans la base de données
 	 * retourne le nombre d'enregistrements effectués (un ou zéro si erreur ou inchangé)
-	 * */
-	public static function saveFlashInfo ($data) {
+	 * @param $data
+	 * 
+	 */
+	public function saveFlashInfo ($data) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$id = $data['id'];
 		$date = Application::dateMysql($data['date']);
@@ -91,13 +88,12 @@ class flashInfo {
 		return $nb;
 		}
 
-	/*
-	 * function listeFlashInfos
-	 * @param $module
-	 * 
+	/**
 	 * retourne la liste des flashInfos pour le module indiqué et par ordre de dates décroissantes
-	 * */
-	public static function listeFlashInfos ($module) {
+	 * @param $module
+	 * @return array()
+	 */
+	public function listeFlashInfos ($module) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."flashInfos ";
 		$sql .= "WHERE application = '$module' ";
@@ -112,8 +108,8 @@ class flashInfo {
 				}
 			}
 		Application::DeconnexionPDO($connexion);
-	return $flashInfos;
-	}
+		return $flashInfos;
+		}
 
 
 }

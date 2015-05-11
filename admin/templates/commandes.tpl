@@ -1,8 +1,4 @@
-<h1>Commandes rapides</h1>
-<ul>
-<li><strong><a href="index.php?action=news">BuuuuuUUUGS!!!!!!!!!</a></strong></li>
-<li><a href="index.php?action=autres&mode=alias">Prendre un alias</a></li>
-<li><a href="index.php?action=gestUsers&mode=addUser">Ajouter un utilisateur</a></li>
-<li><a href="index.php?action=autres&mode=config">Paramètres généraux</a></li>
-<li><a href="index.php?action=autres&mode=titulaires">Titulariats</a></li>
-</ul>
+<h4>Commandes rapides</h4>
+<a type="button" class="btn btn-danger btn-sm" href="index.php?action=autres&mode=alias"><i class="fa fa-user-secret fa-2x"></i> Prendre un alias</a>
+<a type="button" class="btn btn-primary btn-sm" href="index.php?action=news"><i class="fa fa-bell fa-2x"></i></span> Pad Admin</a>
+<a type="button" class="btn btn-success btn-sm" href="index.php?action=gestUsers&mode=addUser"><i class="fa fa-user-plus fa-2x"></i> Ajouter un utilisateur</a>

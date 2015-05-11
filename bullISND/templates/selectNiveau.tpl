@@ -7,7 +7,7 @@
 		{/foreach}
 	</select>
 
-	<input type="submit" value="OK" name="OK">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="show">
@@ -15,7 +15,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#niveau").change(function(){
@@ -31,5 +31,5 @@ $(document).ready (function() {
 	})
 
 })
-{/literal}
+
 </script>

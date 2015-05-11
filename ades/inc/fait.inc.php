@@ -6,10 +6,10 @@
 	case 'suppr':
 		if ($idfait != Null) {
 		$nb = $ficheDisc->supprFait($idfait);
-		$smarty->assign("message", array(
-			'title'=>"Suppression",
-			'texte'=>"Effacement de: $nb fait(s)"),
-		3000);
+		$smarty->assign('message', array(
+			'title'=>DELETE,
+			'texte'=>"Effacement de: $nb fait(s)",
+			'urgence'=>'danger'));
 		$ficheDisc->relireFaitsDisciplinaires($matricule);
 		$afficherEleve = true;
 		}
@@ -56,10 +56,10 @@
 		$prototype = $Ades->prototypeFait($type);
 		$retenue = ($prototype['structure']['typeRetenue'] != 0)?$Ades->detailsRetenue($idretenue):Null;
 		$nb = $ficheDisc->enregistrerFaitDisc($_POST, $prototype, $retenue);
-		$smarty->assign("message", array(
-			'title'=>"Enregistrement",
-			'texte'=>"Enregistrement de: $nb fait(s)"),
-			3000);
+		$smarty->assign('message', array(
+			'title'=>SAVE,
+			'texte'=>"Enregistrement de: $nb fait(s)",
+			'urgence'=>'success'));
 		$ficheDisc->relireFaitsDisciplinaires($matricule);
 		$afficherEleve = true;
 		$action = Null; $mode= Null;

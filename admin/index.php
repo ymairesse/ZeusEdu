@@ -9,6 +9,7 @@ $id = isset($_REQUEST['id'])?$_REQUEST['id']:Null;
 
 require_once (INSTALL_DIR."/inc/classes/classFlashInfo.inc.php");
 $flashInfo = new flashInfo();
+
 if ($_SESSION[APPLICATION]->userStatus($module) == 'admin') {
 	switch ($action) {
 		case 'import':
@@ -44,14 +45,14 @@ if ($_SESSION[APPLICATION]->userStatus($module) == 'admin') {
 		}
 	// si rien n'est décidé, présenter la page d'accueil
 	if (!isset($smarty->tpl_vars['corpsPage']) && (!isset($smarty->tpl_vars['selecteur']))) {
-		$smarty->assign("listeFichiers", $Application->scanDirectories("./save"));
-		$smarty->assign("derniersConnectes", $Application->derniersConnectes(60));
+		$smarty->assign('listeFichiers', $Application->scanDirectories("./save"));
+		$smarty->assign('derniersConnectes', $Application->derniersConnectes(60));
 		$smarty->assign('corpsPage', 'bilan');
 		}
 	//
 	// ----------------------------------------------------------------------------
-	$smarty->assign("executionTime", round($chrono->stop(),6));
-	$smarty->display("index.tpl");
+	$smarty->assign('executionTime', round($chrono->stop(),6));
+	$smarty->display('index.tpl');
 	}
 	else die ('get out of here')
 ?>

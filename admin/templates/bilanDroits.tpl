@@ -1,3 +1,5 @@
+<div class="container">
+
 <h3>Affection en masse: bilan</h3>
 <table class="tableauAdmin">
 	<tr>
@@ -14,3 +16,5 @@
 		<td>{$unBilan.statut}</td>
 	{/foreach}
 </table>
+
+</div>

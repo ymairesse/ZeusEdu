@@ -13,7 +13,7 @@ $hermes = new hermes();
 $id = isset($_POST['id'])?$_POST['id']:Null;
 
 $listeMembres = $hermes->membresListe($id);
-$listeHTML = '<table class="tableauHermes">';
+$listeHTML = '<table class="table table-condensed table-striped">';
 $listeHTML .= '<tr><th>Membres actuels</th></tr>';
 foreach ($listeMembres as $acronyme => $data) {
 	$listeHTML .= "<tr><td>".$data['nom']." ".$data['prenom']."</td></tr>";

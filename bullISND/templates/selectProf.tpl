@@ -1,4 +1,5 @@
 <div id="selecteur" class="noprint" style="clear:both">
+	
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 	<select name="acronyme" id="selectUser">
 		<option value="">Sélectionner un utilisateur</option>
@@ -9,12 +10,13 @@
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="{$etape}">
 	<input type="hidden" name="action" value="{$action}">
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	</form>
+
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
 
 	$("#selectUser").change(function(){
@@ -29,5 +31,5 @@ $(document).ready(function(){
 		})
 
 })
-{/literal}
+
 </script>

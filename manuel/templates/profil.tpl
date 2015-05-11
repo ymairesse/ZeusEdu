@@ -1,3 +1,5 @@
+<div class="container">
+
 <h2>Le profil personnel</h2>
 
 <h3 id="general">Généralités</h3>
@@ -12,3 +14,5 @@
 <h3 id="listeconnexions">La liste des connexions</h3>
 <p>Vous retrouverez ici une liste reprenant vos diverses connexions au logiciel.</p>
 <p>Avertissez un Administrateur si vous constatez une connexion "suspecte".</p>
+
+</div>

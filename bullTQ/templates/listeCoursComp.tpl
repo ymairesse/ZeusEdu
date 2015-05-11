@@ -7,10 +7,10 @@
 </select>
 
 <script type="text/javascript">
-{literal}
+
 	$("#cours").change(function(){
 		if ($(this).val() != '')
 			$("#formSelecteur").submit();
 		})
-{/literal}
+
 </script>

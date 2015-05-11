@@ -3,9 +3,10 @@ switch ($mode) {
 	case 'tables':
 		if ($etape == 'Enregistrer') {
 			$nb = $Application->saveLinkApplisTables($_POST);
-			$smarty->assign("message", array(
-					'title'=>"Enregistrement",
-					'texte'=>"$nb enregistrements(s")
+			$smarty->assign('message', array(
+					'title'=>SAVE,
+					'texte'=>"$nb enregistrements(s",
+					'urgence'=>'success')
 					);
 			}
 		$listeTablesEtApplis = $Application->listeTablesEtApplis();
@@ -27,7 +28,10 @@ switch ($mode) {
 		$listeFichiers = $Application->scanDirectories ('./save');
 		$smarty->assign('listeFichiers', $listeFichiers);
 		$smarty->assign('fileName',$fileName);
-		$smarty->assign('corpsPage','tableauFichiersBU');
+		$listeFichiers = $Application->scanDirectories ('./save');
+		$smarty->assign('listeFichiers',$listeFichiers);
+		$smarty->assign('derniersConnectes', $Application->derniersConnectes(60));		
+		$smarty->assign('corpsPage','bilan');
 		break;
 	case 'choose':
 		$listeToutesTables = $Application->listeTablesAvecChamp();
@@ -38,15 +42,21 @@ switch ($mode) {
 		$smarty->assign('corpsPage','choixTables');
 		break;
 	case 'delete':
-		$fileName = isset($_GET['fileName'])?$_GET['fileName']:Null;
+		$fileName = isset($_POST['fileName'])?$_POST['fileName']:Null;
 		$listeNomsFichiers = $Application->listeFichiers('./save');
 		if (!(in_array($fileName, $listeNomsFichiers))) die('invalid file name');
 		unlink("./save/".$fileName);
+		$smarty->assign('message', array(
+			'title'=>DELETE,
+			'texte'=>"Le fichier $fileName a été effacé",
+			'urgence'=>'warning')
+			);
 		$smarty->assign('fileName',$fileName);
 		$smarty->assign('confirmDeleteBU','confirmDelete');
 		$listeFichiers = $Application->scanDirectories ('./save');
 		$smarty->assign('listeFichiers',$listeFichiers);
-		$smarty->assign('corpsPage','tableauFichiersBU');		
+		$smarty->assign('derniersConnectes', $Application->derniersConnectes(60));		
+		$smarty->assign('corpsPage','bilan');
 		break;
 	default:
 		$listeFichiers = $Application->scanDirectories('./save');

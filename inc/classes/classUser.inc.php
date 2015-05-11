@@ -21,6 +21,7 @@ class user {
 		$this->applications = $this->applications($acronyme);
 		$this->listeCours = $this->listeCoursProf();
 		$this->titulaire = $this->listeTitulariats($acronyme);
+		// variable de session de l'administrateur qui a pris un alias
 		$this->alias = Null;
 		}
 	}
@@ -333,7 +334,7 @@ class user {
 
 		// nom, prenom, sexe et statut ne peuvent être modifiés que par l'administrateur
 		// si les infos proviennent d'un formulaire 'utilisateur', il n'a pas pu
-		// les modifier: on n'en tient donc pas compte
+		// les modifier: ces infos ne figurent pas dans le formulaire "utlisateur"
 		$data['acronyme'] = (isset($post['acronyme']))?$post['acronyme']:Null;
 		$data['nom'] = (isset($post['nom']))?$post['nom']:Null;
 		$data['prenom'] = (isset($post['prenom']))?$post['prenom']:Null;
@@ -354,7 +355,8 @@ class user {
 			$data['codePostal'] = $post['codePostal'];
 			$data['pays'] = $post['pays'];
 			}
-		// si le mot de passe est indiqué, il doit être présent deux fois
+		// si le mot de passe est indiqué, il est présent deux fois dans le formulaire "utilisateur"
+		// dans ce cas, il faut vérifier la correspondance
 		if (isset($post['mdp']) && isset($post['mdp2']))
 			if ($post['mdp'] != $post['mdp2']) die(PASSWDNOTMATCH);
 		// s'il y a un mot de passe, alors on en tient compte
@@ -368,22 +370,24 @@ class user {
 			// échappement des caractères spéciaux avec PDO
 			$value = $connexion->quote($value);
 			$tableauSqlInsert[] = "$key = $value";
-		}
+			}
 		unset($data['acronyme']);
 		foreach ($data as $key=>$value) {
 			// échappement des caractères spéciaux avec PDO
 			$value = $connexion->quote($value);
 			$tableauSqlUpdate[] = "$key = $value";
-		}
-
+			}
+		$nb = 0;
 		$sql = "INSERT INTO ".PFX."profs SET ";
 		$sql .= implode(",",$tableauSqlInsert);
 		$sql .= " ON DUPLICATE KEY UPDATE ";
 		$sql .= implode(",",$tableauSqlUpdate);
 
 		$resultat = $connexion->exec($sql);
+		if ($resultat > 0)
+			$nb++;  // en cas de "update", le nombre figurant dans $resultat = 2!!!
 		Application::DeconnexionPDO ($connexion);
-		return $resultat;
+		return $nb;
 	}
 
 	/**
@@ -433,7 +437,7 @@ class user {
 				$mdp = md5($mdp);
 				$sql = "UPDATE ".PFX."profs ";
 				$sql .= "SET mdp = '$mdp' ";
-				$sql .= "WHERE acronyme = '$acronyme'";
+				$sql .= "WHERE acronyme = '$acronyme' ";
 				$nbModif = $connexion->exec($sql);
 				Application::DeconnexionPDO($connexion);
 				return $nbModif;

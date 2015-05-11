@@ -1,3 +1,4 @@
+<div class="container">
 <h2>Administration des compétences {$cours}</h2>
 
 <form name="adminCompetences" id="adminCompetences" method="POST" action="index.php">
@@ -33,8 +34,10 @@
         </div>
 </form>
 
+</div>
+
 <script type="text/javascript">
-{literal}
+
     $(document).ready(function(){
         var nbNewComp = 1;
 
@@ -44,7 +47,7 @@
 
         $("#effacer").click(function(){
             $(".supprComp").each(function(no){
-                if ($(this).prop("checked")) {
+                if ($(this).prop('checked')) {
                     $(this).css({ 'opacity' : 0.5});
                     $(this).next().val('').css({ 'opacity' : 0.5});
                     }
@@ -53,7 +56,7 @@
         $("#annuler").click(function(){
             if (confirm("Êtes-vous sûr(e) de vouloir annuler?")) {
                 $(".lblComp").each(function(no){
-                    $(this).css({'opacity':1});
+                    $(this).css({ 'opacity':1 });
                     $(".blockNewComp").remove();
                     nbNewComp = 1;
                     })
@@ -72,5 +75,5 @@
             $("#wait").show();
             })
         })
-{/literal}
+
 </script>

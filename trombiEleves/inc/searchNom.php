@@ -6,13 +6,13 @@ require_once("../../config.inc.php");
 require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
 
-// définition de la class Eleve
 require_once (INSTALL_DIR."/inc/classes/classEleve.inc.php");
 
+$fragment = isset($_REQUEST['query'])?$_REQUEST['query']:Null;
 
-$fragment = isset($_GET['term'])?$_GET['term']:Null;
-$critere = isset($_GET['critere'])?$_GET['critere']:Null;
+$fragment = trim($fragment);
 
-$listeEleves = Eleve::searchEleve($fragment, $critere);
+$listeEleves = Eleve::searchEleve2($fragment);
+
 echo json_encode($listeEleves);
 ?>

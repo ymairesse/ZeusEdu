@@ -1,6 +1,6 @@
 <table class="micro">
 <tr>
-	<td colspan="6">Code de couleurs</td>
+	<td colspan="9">Code de couleurs</td>
 </tr>
 <tr>
 	<td class="mentionI">< 50</td>

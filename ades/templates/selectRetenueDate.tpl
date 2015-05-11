@@ -1,5 +1,6 @@
-<div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+<div id="selecteur" class="noprint">
+	
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 		<select name="typeRetenue" id="selectType">
 		<option value="">Type de retenue</option>
 		{foreach from=$listeTypes key=ceType item=unType}
@@ -9,11 +10,11 @@
 
 		<span id="choixDateRetenue">
 
-		{include file="listeRetenues.tpl"}
+		{include file="selectListesRetenues.tpl"}
 
 		</span>
-		
-	<input type="submit" value="OK" name="OK" id="envoi" {if (!isset($listeRetenues))}style="display:none"{/if}>
+
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi" {if (!isset($listeRetenues))}style="display:none"{/if}>OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
@@ -21,7 +22,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -38,10 +39,10 @@ $(document).ready (function() {
 		var type = $(this).val();
 
 		if (type != '') $("#envoi").show();
-		// la fonction listeRetenues.inc.php renvoie la liste déroulante
-		// des retenues du type sélectionné
-		$.post("inc/listeRetenues.inc.php",
-			{'type': type},
+		// la fonction listeRetenues.inc.php renvoie la liste déroulante des retenues du type sélectionné
+		$.post("inc/listeRetenues.inc.php", {
+			'type': type
+			},
 				function (resultat){
 					$("#choixDateRetenue").html(resultat)
 				}
@@ -54,7 +55,6 @@ $(document).ready (function() {
 			}
 		})
 		
-
 })
-{/literal}
+
 </script>

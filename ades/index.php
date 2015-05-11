@@ -4,9 +4,12 @@ include (INSTALL_DIR."/inc/entetes.inc.php");
 // ----------------------------------------------------------------------------
 //
 
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
+
 $classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
 $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
-$matricule2 = isset($_POST['matricule2'])?$_POST['matricule2']:Null;
+
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
 $acronyme = $user->getAcronyme();
@@ -15,11 +18,9 @@ $smarty->assign('acronyme',$acronyme);
 require_once(INSTALL_DIR."/$module/inc/classes/classAdes.inc.php");
 $Ades = new Ades();
 
-if (($matricule != '') || ($matricule2 != '')) {
+if ($matricule != '') {
     // si un matricule est donné, on aura sans doute besoin des données de l'élève
 	require_once(INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php");
-	// on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
-	$matricule = ($matricule!='')?$matricule:$matricule2;
 	$eleve = new Eleve($matricule);
 	$ficheDisc = new EleveAdes($matricule);
 
@@ -67,24 +68,23 @@ switch ($action) {
 
 // pour les différents cas où il faut afficher une fiche d'élève, on affiche
 if (isset($afficherEleve) && ($afficherEleve == true)) {
-	require_once(INSTALL_DIR."/$module/inc/classes/classMemo.inc.php");
-	$memoEleve = new memoAdes($matricule,'ades');
-	$smarty->assign('memoEleve',$memoEleve);
+	require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
+	$memoEleve = new padEleve($matricule,'ades');
+	$smarty->assign('memoEleve', $memoEleve->getPads());
+	
 	$smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
 	$smarty->assign('descriptionChamps', $Ades->listeChamps());
-	$smarty->assign('action',$action);
-	$smarty->assign('mode',$mode);
 	$smarty->assign('etape','showEleve');
 	$smarty->assign('classe',$classe);
 	$smarty->assign('matricule',$matricule);
 	$smarty->assign('listeClasses', $Ecole->listeGroupes());
 	$listeEleves = $Ecole->listeEleves($classe, 'groupe');
-	$smarty->assign('listeElevesClasse', $listeEleves);
+	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('corpsPage','ficheEleve');
 	}
 
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime", round($chrono->stop(),6));
-$smarty->display ("index.tpl");
+$smarty->assign('executionTime', round($chrono->stop(),6));
+$smarty->display ('index.tpl');
 ?>

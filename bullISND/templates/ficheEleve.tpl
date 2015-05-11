@@ -1,131 +1,58 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<div class="container">
+	
 <h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
-<img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}"  id="photo">
-<div id="tabs">
-	<ul>
-		<li><a href="#tabs-1">Notes <span id="mod">*</span></a></li>
-		<li><a href="#tabs-2">Données scolaires</a></li>
-		<li><a href="#tabs-3">Données personnelles</a></li>
-		<li><a href="#tabs-4">Parents et responsables</a></li>
-	</ul>
-	
-	<div id="tabs-1">
 
-		<div id="sousTabs">
-			<form name="padEleve" id="padEleve" method="POST" action="index.php">
-				<input type="hidden" name="classe" value="{$classe}">
-				<input type="hidden" name="matricule" value="{$matricule}">
-				<input type="Submit" id="save" name="action" value="Enregistrer" class="fauxBouton" style="float:right">
-				<input type="hidden" name="action" value="{$action}">
-				<input type="hidden" name="mode" value="{$mode}">
-				{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
+	<div class="row">
+		
+		<div class="col-md-11 col-sm-9">
+			
+			<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+				<li class="active"><a href="#tabs-1" data-toggle="tab">Notes</a></li>
+				<li><a href="#tabs-2" data-toggle="tab">Données scolaires</a></li>
+				<li><a href="#tabs-3" data-toggle="tab">Données personnelles</a></li>
+				<li><a href="#tabs-4" data-toggle="tab">Parents et responsable</a></li>
+			</ul>
+			
+			<div class="tab-content">
 				
-				{* s'il n'y a pas de pad "guest", il ne faut pas montrer des onglets *}
-				{if $padsEleve.guest|count != 0}	
-				<ul>
-					{foreach from=$padsEleve.proprio key=id item=unPad}
-						{* il y aura toujours un seul pad proprio *}
-						<li><a href="#sousTabs-{$id}">{$padsEleve.proprio.$id.proprio}</a></li>
-					{/foreach}
-					{foreach from=$padsEleve.guest key=id item=unPad}
-						<li><a href="#sousTabs-{$id}">{$unPad.proprio} 
-						{if $unPad.mode == 'rw'}<img src="images/padIco.png" alt=";o)">{/if}</a></li>
-					{/foreach}
-				</ul>
-				{/if}
+				<div class="tab-pane active" id="tabs-1">
+				{include file="inc/tabEleve1.inc.tpl"}
+				</div>  <!-- tabs-1 -->
 				
-				{* il y aura toujours un seul pad proprio, mais bon... *}
-				{foreach from=$padsEleve.proprio key=id item=unPad}
-					<div id="sousTabs-{$id}">
-						<hr>
-						<textarea name="texte_{$id}" id="texte_{$id}" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true">{$unPad.texte}</textarea>
-					</div>
-				{/foreach}
+				<div class="tab-pane" id="tabs-2">
+				{include file="inc/tabEleve2.inc.tpl"}
+				</div>  <!-- tabs-2 -->
+				
+				<div class="tab-pane" id="tabs-3">
+				{include file="inc/tabEleve3.inc.tpl"}
+				</div>  <!-- tabs-3 -->
+				
+				<div class="tab-pane" id="tabs-4">
+				{include file="inc/tabEleve4.inc.tpl"}
+				</div> <!-- tabs-4 -->
 
-				{* les pads "guest" *}
-				{foreach from=$padsEleve.guest key=id item=unPad}
-				<div id="sousTabs-{$id}">
-					<hr>
-					<textarea name="texte_{$id}" id="texte_{$id}" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true" {if $unPad.mode != 'rw'} disabled="disabled"{/if}>{$unPad.texte}</textarea>
-				</div>
-				{/foreach}
-			</form>
-		</div>
-	</div>
-	
-	<div id="tabs-2">
-		{include file="padTabCotes.tpl"}
+			</div>  <!-- my-tab-content -->
+			
+		</div>  <!-- col-md-10 ... -->
 		
-		{if $ecoles}
-		<table class="tableauAdmin">
-			<tr>
-			<th>Année</th>
-			<th>École</th>
-			<th>Adresse</th>
-			</tr>
-			{foreach from=$ecoles item=uneEcole}
-			<tr>
-			<td>{$uneEcole.annee}</td>
-			<td>{$uneEcole.nomEcole}</td>
-			<td>{$uneEcole.adresse} {$uneEcole.cPostal} {$uneEcole.commune}</td>
-			</tr>
-			{/foreach}
-		</table>
-		{/if}
-	</div>
-	
-	<div id="tabs-3">
-		<p><img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
-			id="photo" style="width:100px; top:-60px; position: relative" /> </p>
-		<p><label>Commune de naissance</label>{$eleve.commNaissance|default:'&nbsp;'}</p>
-		<p><label>Classe</label> {$eleve.groupe} {if $titulaires} [{", "|implode:$titulaires}]{/if}</p>
-		<p><label>Date de naissance</label> {$eleve.DateNaiss} 
-		<small>[Âge approx. {$eleve.age.Y} ans {if !($eleve.age.m == 0)}{$eleve.age.m} mois{/if} 
-			{if !($eleve.age.d == 0)}{$eleve.age.d} jour(s){/if}]</small></p>
-		<p><label>Sexe</label>{$eleve.sexe}</p>
-		<p><label>Adresse</label>{$eleve.adresseEleve}</p>
-		<p><label>Code Postal</label>{$eleve.cpostEleve} <label>Commune</label>{$eleve.localiteEleve}</p>
-	</div>
-	
-	<div id="tabs-4">
-		<p><img src="../photos/{$eleve.matricule}.jpg" class="photo" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
-			id="photo" style="width:100px; top:-60px; position: relative" /> </p>
-			<ul class="detailsEleve">
-			<li>Coordonnées de la personne responsable
-				<ul>
-					<li><label>Responsable</label>{$eleve.nomResp}</li>
-					<li><label>e-mail</label>&nbsp;<a href="mailto:{$eleve.courriel}">{$eleve.courriel}</a></li>
-					<li><label>Téléphone</label>&nbsp;{$eleve.telephone1}</li>
-					<li><label>GSM</label>&nbsp;{$eleve.telephone2}</li>
-					<li><label>Téléphone bis</label>&nbsp;{$eleve.telephone3}</li>
-					<li><label>Adresse</label>{$eleve.adresseResp}</li>
-					<li><label>Code Postal</label>{$eleve.cpostResp} <label>Commune</label>{$eleve.localiteResp}</li>
-				</ul>
-			</li>
-			<li>Coordonnées du père de l'élève
-				<ul>
-					<li><label>Nom</label>{$eleve.nomPere}</li>
-					<li><label>e-mail</label><a href="mailto:{$eleve.mailPere}">{$eleve.mailPere}</a></li>
-					<li><label>Téléphone</label>{$eleve.telPere|default:''}</li>
-					<li><label>GSM</label>{$eleve.gsmPere}</li>
-				</ul>
-			</li>
-			<li>Coordonnées de la mère de l'élève
-				<ul>
-					<li><label>Nom</label>{$eleve.nomMere}</li>
-					<li><label>e-mail</label><a href="mailto:{$eleve.mailMere}">{$eleve.mailMere}</a></li>
-					<li><label>Téléphone</label>{$eleve.telMere|default:''}</li>
-					<li><label>GSM</label>{$eleve.gsmMere}</li>
-				</ul>
-			</li>
-		</ul>
+		<div class="col-md-1 col-sm-3">
+
+			<img src="../photos/{$eleve.photo}.jpg"  class="photo img-responsive" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}">
+				
 		</div>
-		
-</div> <!-- tabs -->
+
+	</div>  <!-- row -->
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
-	<!-- quel est l'onglet actif? -->
-	var onglet = "{$onglet|default:''}";
+
+<!-- quel est l'onglet actif? -->
+var onglet = "{$onglet|default:''}";
+
+<!-- activer l'onglet dont le numéro a été passé -->
+$(".nav-tabs li a[href='#tabs-"+onglet+"']").tab('show');
 
 $(document).ready(function(){
 	
@@ -133,20 +60,13 @@ $(document).ready(function(){
 	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
 	var modifie = false;
 	
-	$("#mod").hide();
 	
-	$("#tabs").tabs();
+	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet' -->
+	$("#tabs li a").click(function(){
+		var ref=$(this).attr("href").split("-")[1];
+		$(".onglet").val(ref);
+		});
 	
-	$("#sousTabs").tabs();
-	
-	<!-- activer l'onglet dont le numéro a été passé -->
-	$('#tabs').tabs("option", "active", onglet);
-		
-	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont l'id est 'onglet' -->
-	$("#tabs ul li a").click(function(){
-		var no = $(this).attr("href").substr(6,1);
-		$(".onglet").val(no-1);
-		});	
 
 	function modification () {
 		if (!(modifie)) {

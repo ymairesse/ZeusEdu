@@ -67,6 +67,7 @@ switch ($mode) {
 				$noticeDirection = $Bulletin->noteDirection($annee, $bulletin);
 
 				$smarty->assign('annee',$annee);
+				$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
 				$smarty->assign('infoPerso', $infoPersoEleve);
 				$smarty->assign('listeCoursGrp', $listeCoursGrp);
 				$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);

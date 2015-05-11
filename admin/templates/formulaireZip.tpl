@@ -1,3 +1,4 @@
+<div class="container">
 <h2>Envoi des photos d'élèves</h2>
 
 <form enctype="multipart/form-data" method="POST" action="index.php" style="min-height:600px">
@@ -8,8 +9,14 @@
 	{/if}	
 	<input type="hidden" name="action" value="gestEleves">
 	<input type="hidden" name="mode" value="envoiPhotos">
-	<input type="file" name="file">
-	<input type="submit" name="etape" value="Envoyer" />
+	<input type="hidden" name="etape" value="Envoyer">
+		
+	<div class="btn-group">
+		<span class="btn btn-default btn-file">
+			<span>Sélectionner un fichier</span><input type="file" name="file">
+		</span>		
+		<button type="submit" class="btn btn-primary">Envoyer</button>
+	</div>
 
 	<div style="overflow:scroll; width: 100%; height: 100px; margin-top: 2em;">
 	{if isset($listeImages)}
@@ -23,32 +30,31 @@
 	</div>
 </form>
 
-{if isset($info)}
-	<div id="info" title="Information">
-		{$info}
-	</div>
-{/if}
 
+</div>  <!-- container -->
 
 <script type="text/javascript">
-{literal}
-	$(document).ready(function(){
-	$("#info").dialog({
-		modal: true,
-		autoOpen: true,
-		width: 400,
-		buttons: {
-			Ok: function() {
-				$( this ).dialog("close" );
-				}
-			}
-		});
+	
+$(document).on('change', '.btn-file :file', function() {
+    var input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label]);
+});	
+	
+
+$(document).ready(function(){
 			
 	$("form").submit(function(){
 		$.blockUI();		
 		$("#wait").show();
 		})
+
+	$('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        $(".btn-file span").text(label);
+		});
+
 		
-	})
-{/literal}
+})
+
 </script>

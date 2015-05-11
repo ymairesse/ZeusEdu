@@ -9,8 +9,8 @@ switch ($mode) {
 
 	case 'images':
 		$listeImages = $Bulletin->imagesPngBranches(200);
-		$smarty->assign("listeImages", $listeImages);
-		$smarty->assign("corpsPage", "imagesCours");
+		$smarty->assign('listeImages', $listeImages);
+		$smarty->assign('corpsPage', 'imagesCours');
 		$ok = 'ok';
 		break;
 
@@ -21,9 +21,12 @@ switch ($mode) {
 				$Bulletin->archiveEleves(ANNEESCOLAIRE, $listeEleves);
 				$Bulletin->archiveSituations(ANNEESCOLAIRE);
 				$Bulletin->deleteSituations();
-				$smarty->assign("message", array(
+				$Bulletin->archiveEprExternes();
+				$Bulletin->deleteEprExternes();
+				$smarty->assign('message', array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Toutes les Situations sont transférées")
+									'texte'=>'Toutes les Situations et toutes les épreuves externes sont transférées',
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -42,7 +45,8 @@ switch ($mode) {
 				$Bulletin->deleteHistoriques();
 				$smarty->assign('message', array(
 									'title'=>'Réinitialisation',
-									'texte'=>'Tous les historiques sont effacés')
+									'texte'=>'Tous les historiques sont effacés',
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -59,7 +63,8 @@ switch ($mode) {
 				$Bulletin->resetAttitudes();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Toutes les 'Attitudes' sont effacées")
+									'texte'=>"Toutes les 'Attitudes' sont effacées",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -76,7 +81,8 @@ switch ($mode) {
 				$Bulletin->resetCommentTitus();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Tous les commentaires des titulaires sont effacés")
+									'texte'=>"Tous les commentaires des titulaires sont effacés",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -93,7 +99,8 @@ switch ($mode) {
 				$Bulletin->resetCoordinateurs();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Toutes les notices 'Coordinateurs' aux bulletins sont effacées")
+									'texte'=>"Toutes les notices 'Coordinateurs' aux bulletins sont effacées",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -111,7 +118,8 @@ switch ($mode) {
 				$Bulletin->resetCommentProfs();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Tous les commentaires aux bulletins sont effacés")
+									'texte'=>"Tous les commentaires aux bulletins sont effacés",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -128,7 +136,8 @@ switch ($mode) {
 				$Bulletin->resetDetailsCotes();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Toutes les cotes du bulletin sont vidées")
+									'texte'=>"Toutes les cotes du bulletin sont vidées",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -139,13 +148,16 @@ switch ($mode) {
 				break;
 		}
 		break;
+	
+
 	case 'initCarnet':
 		switch ($etape) {
 			case 'confirmer':
 				$Bulletin->resetCcotes();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Les carnets de cotes sont vidés")
+									'texte'=>"Les carnets de cotes sont vidés",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -163,7 +175,8 @@ switch ($mode) {
 				$Bulletin->resetPonderations();
 				$smarty->assign("message", array(
 									'title'=>"Réinitialisation",
-									'texte'=>"Toutes les pondérations sont effacées")
+									'texte'=>"Toutes les pondérations sont effacées",
+									'urgence'=>'danger')
 									);
 				break;
 			default:
@@ -179,17 +192,18 @@ switch ($mode) {
 			case 'enregistrer':
 				$nbResultats = $Bulletin->enregistrerPonderations($_POST, NBPERIODES);
 				$smarty->assign("message", array(
-					'title'=>"Enregistrement",
-					'texte'=>"$nbResultats ponderations initialisées")
+					'title'=>SAVE,
+					'texte'=>"$nbResultats ponderations initialisées",
+					'urgence'=>'success')
 					);
 				$smarty->assign('etape',Null);  // pour pouvoir recommencer une pondération sur un autre groupe de cours
 				break;
 			default:
 				$listeCoursGrp = $Ecole->listeCoursGrp($Ecole->listeNiveaux());
 				$smarty->assign('etape','enregistrer');
-				$smarty->assign("listeCoursGrp", $listeCoursGrp);
-				$smarty->assign("nbPeriodes", NBPERIODES);
-				$smarty->assign("corpsPage", "initPonderations");
+				$smarty->assign('listeCoursGrp', $listeCoursGrp);
+				$smarty->assign('nbPeriodes', NBPERIODES);
+				$smarty->assign('corpsPage', 'initPonderations');
 				$ok='ok';
 				break;
 			}
@@ -199,7 +213,8 @@ switch ($mode) {
 		$smarty->assign("message",
 						array(
 							'title'=>"Initialisation des verrous",
-							'texte'=>sprintf("%d verrous initialisés (ouverts)",$nb)
+							'texte'=>sprintf("%d verrous initialisés (ouverts)",$nb),
+							'urgence'=>'info'
 						));
 		break;
 

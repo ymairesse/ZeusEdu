@@ -8,7 +8,7 @@
 		{/section}
 	</select>
 	
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="{$etape}">

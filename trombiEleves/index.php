@@ -20,13 +20,13 @@ switch ($action) {
             $tituClasse = $Ecole->titusDeGroupe($classe);
             $fichierPDF = pagePDF($listeElevesClasse, $classe);
             $fichierCSV = fichierCSV($listeElevesClasse, $classe);
-            $smarty->assign("fichierPDF", $fichierPDF);
-            $smarty->assign("fichierCSV", $fichierCSV);
-            $smarty->assign("classe", $classe);
+            $smarty->assign('fichierPDF', $fichierPDF);
+            $smarty->assign('fichierCSV', $fichierCSV);
+            $smarty->assign('classe', $classe);
 			$smarty->assign('action',$action);
-            $smarty->assign("tableauEleves", $listeElevesClasse);
-            $smarty->assign("titulaires", $tituClasse);
-            $smarty->assign("corpsPage", "trombinoscope");
+            $smarty->assign('tableauEleves', $listeElevesClasse);
+            $smarty->assign('titulaires', $tituClasse);
+            $smarty->assign('corpsPage', 'trombinoscope');
         }
         break;
     case 'parCours':
@@ -35,33 +35,32 @@ switch ($action) {
 			$fichierPDF = pagePDF($listeElevesCours, $cours);
 			$fichierCSV = fichierCSV($listeElevesCours, $cours);
 
-			$smarty->assign("fichierPDF", $fichierPDF);
-			$smarty->assign("fichierCSV", $fichierCSV);
-			$smarty->assign("cours", $cours);
-			$smarty->assign("tableauEleves", $listeElevesCours);
-			$smarty->assign("corpsPage", "trombinoscope");
+			$smarty->assign('fichierPDF', $fichierPDF);
+			$smarty->assign('fichierCSV', $fichierCSV);
+			$smarty->assign('cours', $cours);
+			$smarty->assign('tableauEleves', $listeElevesCours);
+			$smarty->assign('corpsPage', 'trombinoscope');
 		}
         break;
 	case 'parEleve':
 		if ($matricule != Null) {
 			$eleve = new Eleve($matricule);
-			$smarty->assign("eleve", $eleve->getDetailsEleve());
+			$smarty->assign('eleve', $eleve->getDetailsEleve());
 			$smarty->assign('classe', $eleve->classe());
-			$smarty->assign("age", $eleve->age());
-			$smarty->assign("titulaires", $eleve->titulaires());
-			$smarty->assign("corpsPage", "infoEleves");
+			$smarty->assign('titulaires', $eleve->titulaires());
+			$smarty->assign('corpsPage', 'infoEleves');
 		}
 		break;
     default:
 		$smarty->assign('action','parClasses');
-        $smarty->assign("nbEleves", $Ecole->nbEleves());
-        $smarty->assign("nbClasses", $Ecole->nbClasses());
-        $smarty->assign("statAccueil", $Ecole->anniversaires());
-        $smarty->assign("corpsPage", "accueil");
+        $smarty->assign('nbEleves', $Ecole->nbEleves());
+        $smarty->assign('nbClasses', $Ecole->nbClasses());
+        $smarty->assign('statAccueil', $Ecole->anniversaires());
+        $smarty->assign('corpsPage', 'accueil');
         break;
 }
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime", round($chrono->stop(),6));
-$smarty->display ("index.tpl");
+$smarty->assign('executionTime', round($chrono->stop(),6));
+$smarty->display ('index.tpl');
 ?>

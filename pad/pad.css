@@ -97,3 +97,28 @@ fieldset p {
  .mentionE {
 	background-color: #D2AAE6;
 	}
+
+#photo {
+	width: 100px;
+	z-index:9999;
+	top: 50px;
+	right: 50px;
+	position: fixed;
+	}
+
+#photo.floatable {
+	position: fixed;
+	width: 100px;
+	right: 50px;
+	top: 10px; // non-obligatoire
+	z-index:1999;
+}
+
+.r {
+	background-color: #4444ff;
+	color: yellow;
+	}
+	
+.rw {background-color: #44ff44;
+	color: black;
+	}

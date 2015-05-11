@@ -11,14 +11,14 @@ $smarty->assign('tri', $tri);
 
 if (isset($_POST['coursGrp'])) {
 	$coursGrp = $_POST['coursGrp'];
-	setcookie('coursGrp',$coursGrp,$unAn, null, null, false, true);
+	setcookie('coursGrp',$coursGrp,$unAn,null,null,false,true);
 	}
 	else $coursGrp = isset($_COOKIE['coursGrp'])?$_COOKIE['coursGrp']:Null;
 
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 
-$smarty->assign('bulletin', $bulletin);
+$smarty->assign('bulletin',$bulletin);
 $smarty->assign('coursGrp',$coursGrp);
 $smarty->assign('tableErreurs',Null);
 
@@ -36,7 +36,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			// organiser les données: cotes, attitudes, commentaires dans des tableaux séparés
 			$dataFromBulletin = $Bulletin->organiserData($_POST);
 			$tableErreurs = $Bulletin->enregistrerBulletin($dataFromBulletin, $coursGrp, $bulletin);
-			$smarty->assign("tableErreurs", $tableErreurs);
+			$smarty->assign('tableErreurs', $tableErreurs);
 			
 			// -------------------------------------------------------------------------------------
 			// recalculs APRES ENREGISTREMENT ------------------------------------------------------
@@ -48,6 +48,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			$listeSituationsAvant = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);
 			// calcule les nouvelles situations pour ce bulletin, à partir des situations existantes et du globalPeriode
 			$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
+
 			$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 			// break;  pas de break, on continue
 		default:
@@ -70,15 +71,17 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 	if ($annee < 3)
 		$listeAttitudes = $Bulletin->listeAttitudes($listeEleves, $coursGrp, $bulletin);
 		else $listeAttitudes = Null;
-	// calcul de la situation sans tenir compte de la première année
-	if (($annee == 2) && ($bulletin == NBPERIODES))
+	
+	// calcul de la situation sans tenir compte de la première année du degré (uniquement pour les années d'études concernées)
+	// en 2015, seulement la 2ème à l'ISND
+	if (in_array($annee,explode(',',ANNEEDEGRE)) && ($bulletin == NBPERIODES)) {
 		$sitDeuxiemes = $Bulletin->situationsDeuxieme ($listeEleves, $coursGrp, $bulletin);
+		}
 		else $sitDeuxiemes = Null;
 
 	$smarty->assign('situationsPrecedentes', $situationsPrecedentes);
 	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('listeCotes',$listeCotes);
-	$smarty->assign('nomsAttitudes',$Bulletin->attitudes());
 	
 	$smarty->assign('listeVerrous',$Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin));
 	$smarty->assign('listeCommentaires', $Bulletin->listeCommentaires($listeEleves, $coursGrp));
@@ -101,8 +104,8 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 	// PERMETTRE AUX ADMIN DE PASSER OUTRE LE READONLY
 	if ($user->userStatus($module) == 'admin')
 		$readonly = "";
-	$smarty->assign("readonly", $readonly);	
-	$smarty->assign("corpsPage", "encodageBulletin");
+	$smarty->assign('readonly', $readonly);	
+	$smarty->assign('corpsPage', 'encodageBulletin');
 	}
 	
 // par défaut

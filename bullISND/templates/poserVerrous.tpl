@@ -1,42 +1,67 @@
+<div class="container">
+
 <h2 style="clear:both">Verrouillage des bulletins n° {$bulletin}</h2>
-<form name="formulaire" id="formulaire" method="POST" action="index.php">
-<input type="hidden" name="action" value="admin">
-<input type="hidden" name="mode" value="poserVerrous">
-<input type="hidden" name="etape" value="enregistrer">
-<input type="hidden" name="bulletin" value="{$bulletin}">
-<div style="float:left; padding: 1em; border:1px solid grey; width: 80%; display: inline-block"  id="niveaux">
-	<h3>Choix des classes</h3>
-	{foreach from=$listeClasses key=degre item=niveauxDegre}
-	<div style="width:32%;display:inline-block;">
-	<h4>Degré {$degre}</h4>
-	<ul>
-	{foreach from=$niveauxDegre key=niveaux item=classes}
-		<li><span class="collapsible">Classes de {$niveaux}e</span>
-			<input type="radio" value="{$niveaux}" name="radioNiveau" class="niveau">
-		<ul>
-			{foreach from=$classes item=uneClasse}
-				<li>{$uneClasse}
-				<input type="checkbox" name="classe_{$uneClasse}" value="1" class="classe">
-				</li>
-			{/foreach}
-		</ul>
-		</li>
-	{/foreach}
-	</ul>
-	</div>
-{/foreach}
-	<input type="reset" name="annuler" value="Annuler" id="reset" style="clear:both">
-</div>
-<div style="float:left; margin-left:1em; padding: 1em; border:1px solid grey">
-	<h3>Action</h3>
-Déverrouiller: <input type="radio" name="verrou" value="0" {if $verrou == 0}checked="checked"{/if}><br>
-Verrouiller: <input type="radio" name="verrou" value="1" {if $verrou == 1}checked="checked"{/if}><br>
-<input type="submit" name="submit" value="Enregistrer">
-</div>
-</form>
-</div>
+			
+	<form name="formulaire" id="formulaire" class="form" method="POST" action="index.php">
+
+		<input type="hidden" name="action" value="admin">
+		<input type="hidden" name="mode" value="poserVerrous">
+		<input type="hidden" name="etape" value="enregistrer">
+		<input type="hidden" name="bulletin" value="{$bulletin}">
+	
+		<div class="row">
+			
+			<div class="col-md-10 col-xs-12">
+				<h3>Choix des classes</h3>
+				<div class="row">
+					
+					{foreach from=$listeClasses key=degre item=niveauxDegre}
+					
+					<div class="col-md-4 col-sm-6">
+						<h4>Degré {$degre}</h4>
+						<ul>
+						{foreach from=$niveauxDegre key=niveaux item=classes}
+							<li><span class="collapsible">Classes de {$niveaux}e</span>
+								<input type="radio" value="{$niveaux}" name="radioNiveau" class="niveau">
+							<ul>
+								{foreach from=$classes item=uneClasse}
+									<li>{$uneClasse}
+									<input type="checkbox" name="classe_{$uneClasse}" value="1" class="classe">
+									</li>
+								{/foreach}
+							</ul>
+							</li>
+						{/foreach}
+						</ul>
+					</div>  <!-- col-md-4.. -->
+					
+					{/foreach}
+				
+				</div>  <!-- row -->
+						
+			</div>   <!-- col-md-10... -->
+				
+			<div class="col-md-2 col-xs-12">
+				<h3>Action</h3>
+				Déverrouiller: <input type="radio" name="verrou" value="0" {if $verrou == 0}checked="checked"{/if}><br>
+				Verrouiller: <input type="radio" name="verrou" value="1" {if $verrou == 1}checked="checked"{/if}><br>
+				<div class="btn-group-vertical">
+					<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
+					<button type="reset" class="btn btn-default pull-right">Annuler</button>
+				</div>
+			</div>
+				
+			<div class="clearfix"></div>
+			
+		</div>  <!-- row -->
+	
+	</form>
+	
+</div>  <!-- container -->
+
+
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
 
 	$(".niveau").click(function(){
@@ -67,5 +92,5 @@ $(document).ready(function(){
 		$("#wait").show();
 		})
 })	
-{/literal}
+
 </script>

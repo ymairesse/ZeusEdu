@@ -30,6 +30,7 @@ class eleve {
             $sql = "SELECT de.*, user, mailDomain FROM ".PFX."eleves AS de ";
             $sql .= "LEFT JOIN ".PFX."passwd AS dp ON (de.matricule = dp.matricule) ";
             $sql .= "WHERE de.matricule = '$matricule'";
+			
             $resultat = $connexion->query($sql);
             if ($resultat) {
                 $resultat->setFetchMode(PDO::FETCH_ASSOC);
@@ -38,18 +39,18 @@ class eleve {
             Application::DeconnexionPDO($connexion);
             $this->detailsEleve['age'] = $this->age();
             $this->detailsEleve['photo'] = Ecole::photo($this->detailsEleve['matricule']);
+			$this->detailsEleve['DateNaiss'] = Application::datePHP($this->detailsEleve['DateNaiss']);
             }
 //        if ($this->detailsEleve['DateNaiss'] != '0000-00-00')
 //			$this->detailsEleve['age'] = $this->age();
 		
         }
 
-    /*
-     * function getDetailsEleve
-     * @param
+    /**
      * retourne toutes les informations connues sur cet élève
+     * @param
      */
-    function getDetailsEleve() {
+    public function getDetailsEleve() {
         if ($this->detailsEleve)
             return $this->detailsEleve;
             else return Null;
@@ -100,12 +101,13 @@ class eleve {
 
     /**
      * calcule un array contenant AA MM et JJ d'âge de l'élève à partir de la date de naissance
-     * function age
      * @param
+     * @return string
      */
-    function age() {
+    public function age() {
         list($ajd['Y'], $ajd['m'], $ajd['d']) = explode("-",date("Y-m-d"));
         list($nais['Y'], $nais['m'], $nais['d']) = explode ('-', $this->detailsEleve['DateNaiss']);
+		
         // calcul du nombre d'années d'âge
         $age['Y'] = $ajd['Y']-$nais['Y'];
 
@@ -136,7 +138,7 @@ class eleve {
                 }
         return $age;
     }
-
+	
 
     /*
      * fonction utilisée par jquery pour rechercher les élèves qui correspondent à un critère donné
@@ -147,68 +149,49 @@ class eleve {
     public static function searchEleve2($fragment) {
         if (!($fragment)) die();
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT matricule, nom, prenom, CONCAT(nom,' ',prenom, ' : ',classe) AS nomPrenom ";
+        $sql = "SELECT matricule, nom, prenom, classe, CONCAT(nom,' ',prenom, ' : ',classe) AS nomPrenom ";
 		$sql .= "FROM ".PFX."eleves ";
-		$sql .= "WHERE (nom LIKE '%$fragment%' OR prenom LIKE '%$fragment%') AND section != 'PARTI' ";
-        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom";
+		$sql .= "WHERE (CONCAT(nom,' ',prenom) LIKE '%$fragment%') AND section != 'PARTI' ";
+        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
+		$sql .= "LIMIT 0,10 ";
 
         $resultat = $connexion->query($sql);
         $listeEleves = array();
+		$listeMatricules = array();
         if ($resultat) {
-        while ($ligne = $resultat->fetch()) {
-            array_push($listeEleves, array(
-                    'value'=>$ligne['nomPrenom'], 'matricule'=>$ligne['matricule'],
-                    'nom'=>$ligne['nom'], 'prenom'=>$ligne['prenom'])
-                    );
-                }
+			while ($ligne = $resultat->fetch()) {
+				$listeEleves[] = $ligne['nomPrenom'];
+				}
             }
         Application::DeconnexionPDO($connexion);
-        return $listeEleves;
+
+		return $listeEleves;
 	}
 
-    /*
-     * fonction utilisée par jquery pour rechercher les élèves qui correspondent à un critère donné
-     * on cherche un élève par son nom, par son prénom ou par sa classe
-     * function searchEleve
-     * @param $fragment, critere
-     */
-    public static function searchEleve($fragment, $critere) {
-        if (!($fragment && $critere)) die("");
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT matricule, CONCAT(nom,' ',prenom,': ', classe) AS nomPrenom, nom, prenom, classe ";
+	/**
+	 * recherche le matricule de l'élève dont la combinaison nom, prenom, classe est fournie
+	 * cette combinaison est générée par la fonction searchEleve2
+	 * @param $nomPrenomClasse : string
+	 * @return $matricule : integer
+	 */
+	public static function searchMatricule($nomPrenomClasse) {
+		if (!($nomPrenomClasse)) die();
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule ";
 		$sql .= "FROM ".PFX."eleves ";
-        switch ($critere) {
-            case 'nom':
-                $sql .= "WHERE nom LIKE '%$fragment%' ";
-                break;
-            case 'prenom':
-                $sql .= "WHERE prenom LIKE '%$fragment%' ";
-                break;
-            case 'classe':
-                $sql .= "WHERE classe LIKE '%$fragment%' ";
-                break;
-            default:
-                die("inapproprieted criteria");
-            }
-        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom";
-        $resultat = $connexion->query($sql);
-        $listeEleves = array();
-        if ($resultat) {
-        while ($ligne = $resultat->fetch()) {
-            array_push($listeEleves, array(
-                    'value'=>$ligne['nomPrenom'], 'matricule'=>$ligne['matricule'],
-                    'nom'=>$ligne['nom'], 'prenom'=>$ligne['prenom'],
-                    'classe'=>$ligne['classe'])
-                    );
-                }
-            }
-        Application::DeconnexionPDO($connexion);
-        return $listeEleves;
-	}
-
-    /*
+		$sql .= "WHERE CONCAT(nom,' ',prenom, ' : ',classe) = '$nomPrenomClasse' ";
+		$resultat = $connexion->query($sql);
+		$matricule = Null;
+		if ($resultat) {
+			$ligne = $resultat->fetch();
+			$matricule = $ligne['matricule'];
+			}
+		Application::DeconnexionPDO($connexion);
+		return $matricule;
+		}
+	
+    /**
      *retourne la liste des titulaires de la classe d'un élève
-     * function titulaires
      * @param
      * @return $titulaire : array liste des titulaires de l'élève
      */
@@ -232,15 +215,12 @@ class eleve {
         }
 
 
-        /*
-         * function enregistrer
+        /**
+         * enregistre les informations relatives à un élève et issue d'un formulaire les données sont passées dans le paramètre $post
          * @param $post
          * @return integer: nombre d'enregistrements 0 ou 1
-         *
-         * enregistre les informations relatives à un élève et issue d'un formulaire
-         * les données sont passées dans le paramètre $post
          */
-        function enregistrer($post) {
+        public function enregistrer($post) {
             $matricule = $post['matricule'];
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 			// recherche des noms des champs à enregistrer
@@ -252,25 +232,30 @@ class eleve {
                 $listeChamps[$nomChamp] = $nomChamp;
 				}
             $sqlInsert = array();
-            foreach ($listeChamps as $unChamp)
+            foreach ($listeChamps as $unChamp) {
+				// convertir les dates au format MySQL
+				if (substr($unChamp,0,4)=='Date')
+					$post[$unChamp] = Application::dateMysql($post[$unChamp]);
                 $sqlInsert[$unChamp] = "$unChamp='".addslashes($post[$unChamp])."'";
-
+				}
+				
             $sqlUpdate = $sqlInsert;
             // suppression du champ "clef primaire"
             unset($sqlUpdate['matricule']);
+			$n = 0;
             $sql = "INSERT INTO ".PFX."eleves SET ".implode(",",$sqlInsert);
             $sql .= " ON DUPLICATE KEY UPDATE ".implode(",",$sqlUpdate);
 			$resultat = $connexion->exec($sql);
+			if ($resultat > 0) $n++;
 			Application::DeconnexionPDO($connexion);
-            return $resultat;
+            return $n;
 
         }
 
-	/*
-	 * function ecoleOrigine
-	 *
-	 * retourne la liste des écoles d'origine connues de l'élève dont on fournit le matricule
-	 * */
+	/**
+	 * retourne la liste des écoles d'origine connues de l'élève courant
+	 * @return array
+	 */
 	public function ecoleOrigine () {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$matricule = $this->matricule();
@@ -292,8 +277,9 @@ class eleve {
 		Application::DeconnexionPDO($connexion);
 		return $ecoles;
 		}
+		
 	/**
-	 * function generatePassword
+	 * renvoie un mot de passe aléatoire de longueur et de robustesse choisies
 	 * @param integer $length : longueur de mot de passe
 	 * @param integer $robustesse: niveau de robustesse souhaité
 	 *

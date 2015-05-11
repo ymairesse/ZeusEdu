@@ -210,7 +210,6 @@ class Ades {
 		$sql .= "WHERE type='$typeRetenue' ";
 		if ($affiche == true)
 			$sql .= "AND affiche = 'O' ";
-		$sql .= "AND dateRetenue > '".BEGINDATE."' ";
 		$sql .= "ORDER BY dateRetenue, heure ";
 		$resultat = $connexion->query($sql);
 		$liste = array();
@@ -276,7 +275,6 @@ class Ades {
 		$sql = "INSERT INTO ".PFX."adesTextes ";
 		$sql .= "SET idTexte = '$idTexte', user='$user', free='$free', texte='$texte', champ='$champ' ";
 		$sql .= "ON DUPLICATE KEY UPDATE user='$user', free='$free', texte='$texte', champ='$champ' ";
-
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO($connexion);
 		return $resultat;
@@ -292,7 +290,7 @@ class Ades {
 		$sql = "DELETE FROM ".PFX."adesTextes ";
 		$sql .= "WHERE idTexte='$id' ";
 		$resultat = $connexion->exec($sql);
-		Application::DeconnexionPOD($connexion);
+		Application::DeconnexionPDO($connexion);
 		return $resultat;
 	}
 
@@ -602,7 +600,7 @@ class Ades {
 		$fin = Application::dateMysql($fin);
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT af.idFait, af.type, af.*, titreFait, ae.groupe AS classe, ";
-		$sql .= "dateRetenue, heure, duree, ap.nom, ap.prenom, ap.sexe ";
+		$sql .= "dateRetenue, local, heure, duree, ap.nom, ap.prenom, ap.sexe ";
 		$sql .= "FROM ".PFX."adesFaits AS af ";
 		$sql .= "JOIN ".PFX."eleves AS ae ON (ae.matricule = af.matricule ) ";
 		$sql .= "JOIN ".PFX."adesTypesFaits AS atf ON (atf.type = af.type) ";

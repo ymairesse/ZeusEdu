@@ -505,6 +505,7 @@ class bullTQ {
 		$sql .= "FROM ".PFX."titus ";
 		$sql .= "WHERE acronyme = '$acronyme' AND section = 'TQ' ";
 		$sql .= "ORDER BY classe ";
+
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
@@ -877,6 +878,7 @@ class bullTQ {
 		$lesEchecs = array("I", "TI");
 		$init = array("nbCotes"=>0, "nbheures"=>0);
 
+		$tableauStat = array();
 		foreach ($cotesParPeriode as $periode=>$cotesDePeriode) {
 			// initialisation des données statistiques
 			$tableauStat[$periode] = array(

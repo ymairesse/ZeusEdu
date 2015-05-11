@@ -1,38 +1,32 @@
-<div id="selecteur" class="noprint" style="clear:both">
-	<form name="choixDate" action="index.php" method="POST" id="choixDate">
+<div id="selecteur" class="noprint">
 
-	Date: <input type="text" name="date" value="{$date}" id="date" size="15">
-	<input type="Submit" name="OK" value="OK" id="submit">
+	<form name="formSelecteur" action="index.php" method="POST" id="formSelecteur" role="form" class="form-inline">
+	<div class="input-group">
+		<label for="date">Date:</label>
+		<input type="text" name="date" value="{$date}" id="date" class="datepicker form-control-inline">
+	</div>
+	<button type="Submit" class="btn btn-primary btn-sm" id="submit">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="{$etape}">
+	
 	</form>
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
+	
 	$("#date").datepicker({ 
-		closeText: 'Fermer',
-		prevText: '&#x3c;Préc',
-		nextText: 'Suiv&#x3e;',
-		currentText: 'Courant',
-		monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin',
-		'Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
-		monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun',
-		'Jul','Aoû','Sep','Oct','Nov','Déc'],
-		dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
-		dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
-		dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],
-		weekHeader: 'Sm',
-		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
-		isRTL: false,
-		showMonthAfterYear: false,
-		yearSuffix: ''
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
 		});
 
-	$("#Date").submit(function(){
+	$("#formSelecteur").submit(function(){
 		$("#wait").show();
 		$.blockUI();
 		$("#corpsPage").hide();
@@ -47,6 +41,4 @@ $(document).ready(function(){
 		})
 })
 
-
-{/literal}
 </script>

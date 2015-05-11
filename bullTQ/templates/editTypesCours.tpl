@@ -1,3 +1,4 @@
+<div class="container">
 <h3>Définition des types de cours</h3>
 <form name="formTypesCours" id="formTypesCours" action="index.php" method="POST">
 {foreach from=$listeCoursTypes key=cours item=dataCours}
@@ -18,11 +19,16 @@
 	<br>
 {/foreach}
 <br>
-<input type="submit" name="submit" value="Enregister" id="submit" class="fauxBouton">
-<input type="reset" name="reset" value="Annuler">
+<div class="btn-group pull-right">
+<button type="submit" class="btn btn-primary" id="submit">Enregistrer</button>
+<button type="reset" class="btn btn-default">Annuler</button>
+</div>
+
 <input type="hidden" name="etape" value="{$etape}">
 <input type="hidden" name="action" value="{$action}">
 <input type="hidden" name="mode" value="{$mode}">
 <input type="hidden" name="niveau" value="{$niveau}">
 
 </form>
+
+</div>

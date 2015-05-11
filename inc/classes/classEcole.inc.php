@@ -222,7 +222,8 @@ class ecole {
 
 	/**
      * retourne la liste de tous les groupes/classes existants dans l'école pour les sections demandées
-     * @param array $sections  liste des sections dont on souhaite connaître les groupes constitutifs
+     * @param array $sections liste des sections dont on souhaite connaître les groupes constitutifs
+     * @return array
      */
 	function listeGroupes($sections=Null) {
 		if ($sections) $sections = "'".implode("','",$sections)."'";
@@ -230,7 +231,7 @@ class ecole {
 		$sql = "SELECT DISTINCT groupe ";
 		$sql .= "FROM ".PFX."eleves ";
 		if ($sections) $sql .= "WHERE section IN ($sections) ";
-		$sql .= "ORDER BY groupe";
+		$sql .= "ORDER BY groupe ";
 		$resultat = $connexion->query($sql);
 		$listeGroupes = array();
 		if ($resultat) {
@@ -245,14 +246,13 @@ class ecole {
     }
 
 
-    /*
-     * function listeGroupesEtClasses
-     * @param $compact : true si on ne souhaite que les groupes effectivement formés de plusieurs classes
-     * @param $section : section concernée; si Null, on cherche dans toutes les sections
-     *
+    /**
      * liste tous les groupes formés de plusieurs classes
      * pour chaque groupe, on indique les classes qui en font partie
      * seuls les groupes constitués de plusieurs classes sont retournés
+     * @param $compact : true si on ne souhaite que les groupes effectivement formés de plusieurs classes
+     * @param $section : section concernée; si Null, on cherche dans toutes les sections
+     * @return array
      */
     public static function listeGroupesEtClasses($compact=false, $sections=Null) {
 		if ($sections) $sections = "'".implode("','", $sections)."'";
@@ -279,7 +279,6 @@ class ecole {
 	return $listeGroupes;
     }
 
-
     /*
      * function listeNiveaux
      * @param
@@ -288,9 +287,9 @@ class ecole {
      */
     public static function listeNiveaux () {
 		// si la liste des niveaux est définies dans les constantes
-		// if (LISTENIVEAUX) return explode(',',str_replace(' ','',LISTENIVEAUX));
 		if (LISTENIVEAUX) return explode(',',LISTENIVEAUX);
 		}
+
 
 	/**
 	 * si une photo est présente, retourne le matricule de l'élève; sinon, retourne la chaîne 'nophoto'
@@ -330,7 +329,7 @@ class ecole {
 		if ($supSQL != '')
 			$sql .= "WHERE ".$supSQL;
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom";
-
+	
         $resultat = $connexion->query($sql);
         $listeEleves = array();
         if ($resultat) {
@@ -397,11 +396,10 @@ class ecole {
 		}
 
 
-    /*
+    /**
      * retourne la liste des élèves d'un niveau d'étude (1,2,3,4,5 ou 6)
      * @param string|array $listeNiveaux
      * @return array
-     *
      */
     public function listeElevesNiveaux($listeNiveaux, $partis=false) {
         if (is_array($listeNiveaux))
@@ -427,7 +425,7 @@ class ecole {
         return $listeEleves;
         }
 
-	/***
+	/**
 	 * retourne un tableau contenant x sous-tableaux
 	 * chacun contenant les élèves sélectionnés par niveau d'étude
 	 * @param $listeNiveaux
@@ -446,7 +444,7 @@ class ecole {
 		 }
 
 
-    /***
+    /**
      * retourne la liste des élèves qui suivent un coursGrp donné
      * @param $cours
      * @return array
@@ -569,7 +567,7 @@ class ecole {
 				$coursGrp = $ligne['coursGrp'];
 				$acronyme = $ligne['acronyme'];
 				$sexe = $ligne['sexe'];
-				$ved = ($sexe=='M')?'Mr ':'Mme';
+				$ved = ($sexe=='M')?'M. ':'Mme';
 				if ($type == 'string') {
 					if (isset($liste[$coursGrp]))
 						$liste[$coursGrp] .= ', '.$ved.' '.$ligne['prenom'].' '.$ligne['nom'];
@@ -767,7 +765,7 @@ class ecole {
 		return $liste;
 		}
 
-	/***
+	/**
 	 * retourne la liste des cours qui se donnent dans une liste de sections passées en paramètre
 	 * @param $listeSections
 	 * @return array
@@ -794,7 +792,7 @@ class ecole {
 		}
 
 
-	/***
+	/**
 	* retourne la liste des coursGrp qui sont donnés dans une classe
 	* ne tient pas compte de l'historique. Devrait disparaître au profit de
 	* $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin)
@@ -887,7 +885,7 @@ class ecole {
 		return $nbClasses;
 		}
 
-	/***
+	/**
 	 * function nbEleves
 	 * @param
 	 * renvoie le nombre total d'élèves de l'école
@@ -902,7 +900,7 @@ class ecole {
 		return $nbEleves;
 		}
 
-    /***
+    /**
      * retourne la liste des élèves dont l'annniversaire a lieu dans x jours
      * @param $jours
      * @return array
@@ -991,7 +989,11 @@ class ecole {
 		}
 
 
-
+	/**
+	 * liste de tous les mots de passe associés aux matricules et noms d'utilisateurs des élèves
+	 * @param void()
+	 * @return array
+	 */
     function listeElevesPasswd () {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT matricule, passwd, user FROM ".PFX."passwd ";
@@ -1078,7 +1080,7 @@ class ecole {
 		return $resultat;
 		}
 
-	/***
+	/**
 	 * retourne le nom d'utilisateur et le mot de passe d'un élève
 	 * dont on fournit le matricule
 	 * @param $matriucle string
@@ -1124,7 +1126,7 @@ class ecole {
         return $resultat;
         }
 
-    /***
+    /**
      * ré-initialise les groupes aux valeurs des classes pour le groupe donné
      * @param $groupe
      * @return integer : nombre d'actions réussies sur la BD
@@ -1142,7 +1144,7 @@ class ecole {
         return substr($classe,0,1);
     }
 
-    /***
+    /**
      * renvoie la liste des cours pour les niveaux (1,2,3,4,5,6) passés en paramètre
      * @param $listeNiveaux
      * @return array
@@ -1170,7 +1172,7 @@ class ecole {
         return $listeCours;
     }
 
-    /***
+    /**
 	 * retourne la liste ordonnée des coursGrp et de leurs profs titulaires pour les niveaux donnés
      * @param $listeNiveaux : array
      * @return array
@@ -1196,7 +1198,7 @@ class ecole {
         return $listeCoursGrp;
     }
 
-    /***
+    /**
      * renvoie la liste des cours d'un prof donné liée à la liste des classes où ces cours sont donnés
      * @param $acronyme : acronyme du prof
      * @return array
@@ -1228,7 +1230,7 @@ class ecole {
 		return $listeCoursGrp;
 		}
 
-	/***
+	/**
      * fournit la liste des coursGrp donnés aux différentes niveaux passés en paramètre
      * recherche en deux temps: 1. dans la table des élèves/cours & 2. dans la table des profs/cours
      * certains cours peuvent n'avoir aucun élève ou aucun prof titulaire
@@ -1286,7 +1288,7 @@ class ecole {
         return $listeCoursGrp;
     }
 
-    /***
+    /**
 	 * retourne la liste des coursGrp d'un élève dont on fournit le matricule
      * @param $matricule
      * @return array
@@ -1318,7 +1320,7 @@ class ecole {
 		return $listeCoursGrp;
 		}
 
-	/***
+	/**
 	 * retourne la liste des cours effectivement suivis par chacun des élèves d'une classe
 	 * @param $classe string: la classe de ces élèves
 	 * @return array
@@ -1345,7 +1347,7 @@ class ecole {
 		return $listeCours;
 		}
 
-	/***
+	/**
 	 * retourne les informations détaillées sur un cours/groupe donné ou le cours correspondant
 	 * s'il s'agit d'un coursGrp, on ne prend que la partie avant le "-"
 	 * @param string $coursGrp/$cours
@@ -1391,7 +1393,7 @@ class ecole {
 	}
 
 
-    /***
+    /**
 	 * retourne la liste des profs en doublon sur un coursGrp
      * permet de repérer les remplacements terminés (interims)
      * @param listeCoursGrpProfs
@@ -1406,7 +1408,7 @@ class ecole {
         return $listeRemplacements;
     }
 
-    /***
+    /**
      * retourne la liste des profs titulaires d'un coursGrp
      * @param $coursGrp
      * @return array
@@ -1430,7 +1432,7 @@ class ecole {
         return $listeProfs;
     }
 
-    /***
+    /**
     * affecter la liste de profs passée en argument au coursGrp indiqué
     * @param $listeProfs
     * @param $coursGrp
@@ -1449,7 +1451,7 @@ class ecole {
         return $nbResultats;
     }
 
-    /***
+    /**
      * supprime la liste des profs de l'affectation du coursGrp passé en argument
      * @param $supprProf
      * @param $coursGrp
@@ -1469,7 +1471,7 @@ class ecole {
         return $nbResultats;
     }
 
-    /***
+    /**
 	 * Ajouter la liste d'élèves fournie à la liste des cours(Grp) fournie
 	 * la table historique des mouvements est mise à jour en même temps
 	 * @param $listeEleves
@@ -1520,7 +1522,7 @@ class ecole {
 		return $nbResultats;
 	}
 
-	/***
+	/**
 	 * Supprimer la liste d'élèves communiquées de la liste des cours(Grp) fournie
 	 * la table historique des mouvements est mise à jour en même temps
 	 * @param $listeEleves
@@ -1571,7 +1573,7 @@ class ecole {
 	}
 
 
-	/***
+	/**
 	 * retourne la liste des coursGrp correspondant à une matière donnée ($cours)
 	 * les données proviennent de la table des affectations profs->cours
 	 * @param $cours
@@ -1645,7 +1647,7 @@ class ecole {
 		}
 
 
-	 /***
+	 /**
 	  * retourne la liste de tous les cours en les triant par niveau d'étude
 	  * @params
 	  * @return array
@@ -1657,7 +1659,7 @@ class ecole {
 		$sql .= "SUBSTR(cours,1,LOCATE(':',cours)-1) AS niveau ";
 		$sql .= "FROM ".PFX."cours ";
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX."cours.cadre) ";
-		$sql .= "ORDER BY niveau, cours, nbheures";
+		$sql .= "ORDER BY niveau, cours, nbheures ";
 
 		$resultat = $connexion->query($sql);
 		$listeCoursNiveaux = array();
@@ -1673,7 +1675,7 @@ class ecole {
 		}
 
 
-    /***
+    /**
      * retourne l'historique des cours d'un élève dont on fournit le matricule
      * @param $matricule
      * @return array
@@ -1696,8 +1698,7 @@ class ecole {
 		return $listeHistorique;
 		 }
 
-
-	/***
+	/**
 	 * vérifie que l'élève dont on fournit le matricule existe dans la BD
 	 * @param $matricule: integer
 	 * @return boolean
@@ -1714,7 +1715,7 @@ class ecole {
 		return ($ligne['matricule'] == $matricule);
 		}
 
-	/***
+	/**
 	 * Suppression définitive d'une liste d'élèves dans la BD
 	 * la vérification de l'intégrité référentielle doit être faite avant d'appeler cette fonction
 	 * @param $listeEleves : liste des élèves à supprimer de la BD
@@ -1778,7 +1779,7 @@ class ecole {
 		return $liste;
 	}
 
-	/***
+	/**
 	 * liste des couples cadre / statut existants
 	 * le "cadre" d'un cours est un code conventionnel en Belgique qui correspond au statut d'un cours dans la formation
 	 * voir la table statutCours dans la base de données pour trouver les correspondances
@@ -1801,7 +1802,7 @@ class ecole {
 		return $liste;
 	}
 
-	/***
+	/**
 	 * enregistrement d'une nouvelle matière (méta-cours) dans la base de données
 	 * la fonction retourne le nombre d'enregistrements réalisés (normalement, un seul ou aucun) et le nom du cours enregistré
 	 * cette dernière information est utile si le cours a été édité

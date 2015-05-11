@@ -17,7 +17,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
 	
 	$(".check").click(function(){
@@ -25,25 +25,14 @@ $(document).ready(function(){
 		$(this).parent().children().children().filter("li").children().filter("input").attr("checked",checked)	
 	})
 	
-	$(".date").datepicker({ 
-		closeText: 'Fermer',
-		prevText: '&#x3c;Préc',
-		nextText: 'Suiv&#x3e;',
-		currentText: 'Courant',
-		monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin',
-		'Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
-		monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun',
-		'Jul','Aoû','Sep','Oct','Nov','Déc'],
-		dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
-		dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
-		dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],
-		weekHeader: 'Sm',
-		dateFormat: 'dd-mm-yy',
-		firstDay: 1,
-		isRTL: false,
-		showMonthAfterYear: false,
-		yearSuffix: ''
+	$("#dateDebut, #dateFin").datepicker({ 
+		dateFormat: "dd/mm/yy",
+		prevText: "Avant",
+		nextText: "Après",
+		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
+		firstDay: 1	'
 		});
 })	
-{/literal}
+
 </script>

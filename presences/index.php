@@ -27,7 +27,7 @@ switch ($action) {
 		include('inc/signalements.inc.php');
 		break;
 	default:
-		// wtf
+		include('inc/gestPresences.inc.php');
 		break;
 	}
 

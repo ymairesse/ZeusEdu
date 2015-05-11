@@ -1,74 +1,123 @@
-<h2>Signalement des absences de <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
-<form name="signalement" method="POST" action="index.php" id="signalement">
+<div class="container">
+{if $mode == 'sortie'}
+	<h2>Autorisation de sortie pour <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
+	{else}
+	<h2>Signalement des absences de <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
+{/if}
+
+<form name="signalement" method="POST" action="index.php" id="signalement" role="form" class="form-vertical">
 	
 <input type="hidden" name="heure" id="heure" value="{$heure}">
 <input type="hidden" name="matricule" id="matricule" value="{$matricule}">
 <input type="hidden" name="educ" value="{$identite.acronyme}">
-
-
 	
 <div class="row">
-<div class="col-md-8" style="float:left">
-<p><label for="selectParent">Signalé par </label>
-<input type="text" name="parent" id="parent" size="20" maxlength="40" value="{$post.parent|default:''}"> << 
-<select name="selectParent" id="selectParent" height="3" style="width:20em">
-	<option>Sélectionner un correspondant</option>
-	<option value="Parents"{if isset($post) && ($post.parent == 'Parents')} selected="selected"{/if}>Parents</option>
-	<option value="{$eleve.nomResp}">Responsable: {$eleve.nomResp|truncate:40}</option>
-	<option value="{$eleve.nomMere}"{if isset($post) && ($post.parent == $eleve.nomMere)} selected="selected"{/if}>Mère: {$eleve.nomMere|truncate:40}</option>
-	<option value="{$eleve.nomPere}"{if isset($post) && ($post.parent == $eleve.nomPere)} selected="selected"{/if}>Père: {$eleve.nomPere|truncate:40}</option>
-	<option value="Autre">Autre</option>
-</select>
-</p>
+	
+	<div class="col-md-5 col-sm-12">
+		
+		<div class="input-group">
+			<label>Notification par <label>
+			<p class="form-control-static">{$identite.prenom} {$identite.nom}</p>
+		</div>
+		
+		<div class="input-group">
 
-<p><label for="selectMedia">Média</label>
-<input type="text" name="media" id="media" size="20" maxlength="30" value="{$post.media|default:''}"> << 
-<select name="selectMedia" id="selectMedia" height="5" style="width:20em">
-	<option>Sélectionner un média</option>
-	<option value="Journal de Classe"{if isset($post) && ($post.media == 'Journal de Classe')} selected="selected"{/if}>Journal de Classe</option>
-	<option value="Motif manuscrit"{if isset($post) && ($post.media == 'Motif mansucrit')} selected="selected"{/if}>Motif mansucrit</option>
-	<option value="Téléphone"{if isset($post) && ($post.media == 'Téléphone')} selected="selected"{/if}>Par téléphone</option>
-	<option value="Mail"{if isset($post) && ($post.media == 'Mail')} selected="selected"{/if}>Mail</option>
-	<option value="Autre">Autre</option>
-</select>
-</p>
-</div>
+			{if $mode == 'sortie'}
+			<input type="text" name="parent" id="parent" maxlength="40" value="Parents" placeholder="Correspondant" class="form-control">
+				{else}
+			<input type="text" name="parent" id="parent" maxlength="40" value="{$post.parent|default:''}" placeholder="Correspondant" class="form-control">
+			{/if}
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+					Choisir <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu pull-right" id="choixCorrespondant">
+					<li><a href="javascript:void(0)" data-value="Parents">Parents</a></li>
+					<li><a href="javascript:void(0)" data-value="{$eleve.nomResp}"><strong>Responsable:</strong> {$eleve.nomResp|truncate:40}</a></li>
+					<li><a href="javascript:void(0)" data-value="{$eleve.nomMere}"><strong>Mère:</strong> {$eleve.nomMere|truncate:40}</a></li>
+					<li><a href="javascript:void(0)" data-value="{$eleve.nomPere}"><strong>Père:</strong> {$eleve.nomPere|truncate:40}</a></li>
+					<li><a href="javascript:void(0)" data-value="Autre">Autre</a></li>
+				</ul>
+			</div>
+		</div>  <!-- input-group -->
+				
+		<div class="input-group">
+			{if $mode == 'sortie'}
+			<input type="text" name="media" id="media" maxlength="30" value="Journal de classe" placeholder="Média" class="form-control">
+				{else}
+			<input type="text" name="media" id="media" maxlength="30" value="{$post.media|default:''}" placeholder="Média" class="form-control">
+			{/if}
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+					Choisir <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu pull-right" id="choixMedia">
+					<li ><a href="javascript:void(0)" data-value="Journal de Classe">Journal de Classe</a></li>
+					<li ><a href="javascript:void(0)" data-value="Motif manuscrit">Motif mansucrit</a></li>
+					<li ><a href="javascript:void(0)" data-value="Téléphone">Par téléphone</a></li>
+					<li ><a href="javascript:void(0)" data-value="Mail">Mail</a></li>
+					<li ><a href="javascript:void(0)" data-value="Autre">Autre</a></li>
+				</ul>
+			</div>  <!-- input-group-btn -->
+		</div>  <!-- input-group -->
+		
+	</div>  <!-- col-md-... -->
+	
+	<div class="col-md-5 col-sm-12">
 
-<div class="col-md-2" style="float:left">
-	<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" style="width:100px" title="{$eleve.matricule}">
-</div>
-
-<div class="col-md-2" style="float:left">
-	<input type="submit" name="submit" value="Enregistrer" id="submit" style="float:right; clear:both;">
-</div>
-
-</div>
-<label for="date">Date de début</label>
-{if (!(isset($listeDates)))}
-	{assign var=dateDebut value=$dateNow}
-	{else}
-	{assign var=dateDebut value=$listeDates.0}
-{/if}
-<input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$dateDebut}" placeholder="Date">
-
-<p>Notification par <strong>{$identite.prenom} {$identite.nom}</strong></p>
-
-<div id="presencesJour" style="clear:both">
-	{if $mode == 'absence'}
-		{include file="presencesJourDate.tpl"}
-	{else}
-		{include file="presencesJourDateSortie.tpl"}
+	{if (!(isset($listeDates)))}
+		{assign var=dateDebut value=$dateNow}
+		{else}
+		{assign var=dateDebut value=$listeDates.0}
 	{/if}
+	
+	<div class="control-group">
+		<label for="datepicker" class="control-label">Date de début</label>
+		<div class="controls">
+			<div class="input-group">
+				<label for="datepicker" class="input-group-addon btn">
+					<span class="glyphicon glyphicon-calendar"></span>
+				</label>
+				<input id="datepicker" type="text" class="form-control" placeholde="Date" value="{$dateDebut}" maxlength="10">
+			</div>  <!-- input-group -->
+		</div>  <!-- controls -->
+	</div>  <!-- control-group -->
+	
+	</div>  <!-- col-md-... -->
+
+	<div class="col-md-2 col-sm-12">
+		<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" style="width:100px" title="{$eleve.matricule}">
+	</div>
+
+</div>  <!-- row -->
+
+<div class="table-responsive">
+	<div id="presencesJour" style="clear:both">
+		{if $mode == 'absence'}
+			{include file="presencesJourDate.tpl"}
+		{else}
+			{include file="presencesJourDateSortie.tpl"}
+		{/if}
+	</div>
+</div>  <!-- table-responsive -->
+
+<div class="row">
+	
+	<input type="hidden" name="educ" value="{$identite.acronyme}">
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="{$mode}">
+	<input type="hidden" name="etape" value="enregistrer">
+	<button type="button" id="plusUn" class="btn btn-primary">+1 jour</button>
+	<button class="btn btn-primary pull-right" type="submit">Enregistrer</button>
+	
 </div>
-
-<input type="hidden" name="educ" value="{$identite.acronyme}">
-<input type="hidden" name="action" value="{$action}">
-<input type="hidden" name="mode" value="{$mode}">
-<input type="hidden" name="etape" value="enregistrer">
-<button type="button" name="plusUn" id="plusUn" class="fauxBouton">+1 jour</button> <br>
+	
 </form>
+	
+	{include file='legendeAbsences.html'}
 
-{include file='legendeAbsences.html'}
+	</div>
+</div>
 
 <script type="text/javascript">
 
@@ -77,6 +126,14 @@
 	var mode = "{$mode}";
 
 $(document).ready(function(){
+	
+	$("#choixCorrespondant li a").click(function(){
+		$("#parent").val($(this).attr("data-value"))
+		})
+	
+	$("#choixMedia li a").click(function(){
+		$("#media").val($(this).attr("data-value"));
+		})
 	
 	$("#selectParent").change(function(){
 		var parent = $(this).val();
@@ -98,13 +155,13 @@ $(document).ready(function(){
 				  'mode': mode
 				  },
 				function (resultat){
-					$("#presencesJour").append(resultat)
+					$('#presencesJour tr:last').after(resultat);
 					}
 				)
 			}
 		})
 
-	$("#date").change(function(){
+	$("#datepicker").change(function(){
 		var date = $(this).val();
 		var matricule = $("#matricule").val();
 		$("#plusUn").show();
@@ -141,13 +198,13 @@ $(document).ready(function(){
 		}
 		)
 	
-	$( ".datepicker").datepicker({ 
-	dateFormat: "dd/mm/yy",
-	prevText: "Avant",
-	nextText: "Après",
-	monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
-	dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-	firstDay: 1	
+	$( "#datepicker").datepicker({ 
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
 	});
 
 	// -------------------------------------------------------------------------------------

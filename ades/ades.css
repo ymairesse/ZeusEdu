@@ -112,7 +112,9 @@ h2 {
 	font-size: 200%;
 	}
 	
-.pageBreak { page-break-before:always; }
+.pageBreak {
+	page-break-before:always;
+	}
 
 .noScreen {
 	display: block;
@@ -121,3 +123,5 @@ h2 {
 .noScreen tr td {
 	text-align: center;
 	}
+
+}

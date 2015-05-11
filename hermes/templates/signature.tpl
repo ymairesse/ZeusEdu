@@ -2,10 +2,10 @@
 	<tbody>
 		<tr>
 			<td style="width:150px">
-			<p style="text-align: center;">LOGO ECOLE</p>
+			<p>LOGO ECOLE</p>
 			</td>
 			<td>##expediteur##<br />
-			NOM DE L'ECOLE<br />
+			NOM DE L&#39;ECOLE<br />
 			ADRESSE<br />
 			TELEPHONE<br />
 			<a href="mailto:##mailExpediteur##">##mailExpediteur##</a><br />

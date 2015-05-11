@@ -3,7 +3,7 @@
 function uploadFile ($files, $acronyme) {
 	$erreur = '';
 	$nomFichier = $files['nomFichier']['name'];
-	if ($nomFichier) {
+	if (isset($nomFichier)) {
 		// vérification du type de fichier
 		$type=$files['nomFichier']['type'];
 		$typesAutorises = array('image/jpeg');

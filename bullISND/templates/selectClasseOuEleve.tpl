@@ -12,7 +12,7 @@
 			<img src="images/left.png" style="position: relative; width:18px; top:4px" alt="<" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
 		{/if}
 		
-		{assign var=placeHolder value='Choisir un élève'}
+
 		<span id="choixEleve">
 			
 		{include file='listeEleves.tpl'}
@@ -24,7 +24,7 @@
 		 <img src="images/right.png" style="position: relative; width:18px; top:4px" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 		{/if}
 		
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}

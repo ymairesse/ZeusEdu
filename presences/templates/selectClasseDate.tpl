@@ -1,13 +1,15 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		<select name="classe" id="selectClasse">
+
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
+		
+		<select name="classe" id="selectClasse" class="form-control-inline">
 		<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}" {if isset($classe) && ($uneClasse == $classe)}selected{/if}>{$uneClasse}</option>
 			{/foreach}
 		</select>
 		<input type="text" name="date" id="date" class="datepicker" maxlength="10" size="10" value="{$date}" placeholder="Date">
-		<input type="submit" value="OK" name="OK" id="envoi">
+		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="showClasse">
@@ -19,12 +21,12 @@
 	$(document).ready (function() {
 		
 	$( ".datepicker").datepicker({ 
-		dateFormat: "dd/mm/yy",
-		prevText: "Avant",
-		nextText: "Après",
-		monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
-		dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-		firstDay: 1	
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
 		});
 	
 	$("#selectClasse").change(function(){

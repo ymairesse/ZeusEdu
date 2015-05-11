@@ -1,4 +1,5 @@
 <div id="selecteur" class="noprint" style="clear:both">
+	
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
 		<label for="niveau">Niveau</label>
 		<select name="niveau" id="niveau">
@@ -14,7 +15,7 @@
 		{include file='listeMatieres.tpl'}
 		</span>
 
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showMatiere">
@@ -22,8 +23,9 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
+	
 	$("#choixMatiere").on("change", "#matiere", function(){
 		if ($(this).val() != '') {
 			$("#wait").show();
@@ -35,8 +37,9 @@ $(document).ready (function() {
 	$("#niveau").change(function(){
 		var niveau = $(this).val();
 		if (niveau != '') {
-			$.post('inc/listeMatieres.inc.php',
-				{'niveau':niveau},
+			$.post('inc/listeMatieres.inc.php', {
+				'niveau':niveau
+				},
 				function (resultat) {
 					$("#choixMatiere").html(resultat)
 					}
@@ -52,7 +55,6 @@ $(document).ready (function() {
 		}
 		})
 	
-	
 })
-{/literal}
+
 </script>

@@ -28,7 +28,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -49,8 +49,9 @@ $(document).ready (function() {
 		if (classe != '') $("#envoi").show();
 		// la fonction listeEleves.inc.php renvoie la liste déroulante
 		// des élèves de la classe sélectionnée
-		$.post("inc/listeEleves.inc.php",
-			{'classe': classe},
+		$.post("inc/listeEleves.inc.php", {
+			'classe': classe
+			},
 				function (resultat){
 					$("#choixEleve").html(resultat)
 				}
@@ -67,5 +68,5 @@ $(document).ready (function() {
 			else $("#envoi").hide();
 		})
 })
-{/literal}
+
 </script>

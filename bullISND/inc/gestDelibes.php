@@ -45,7 +45,8 @@ switch ($mode) {
 				$nb = $Bulletin->enregistrerMentions($_POST);
 				$smarty->assign('message', array(
 									'title'=>'Enregistrement',
-									'texte'=>"$nb mention(s) enregistrée(s)")
+									'texte'=>"$nb mention(s) enregistrée(s)",
+									'urgence'=>'success')
 									);
 				// pas de break;
 			case 'showEleve':
@@ -57,8 +58,7 @@ switch ($mode) {
 					$listeSituations = $Bulletin->eleveSitDelibeExternes($matricule, $listeSituations);
 				$moyenneSituations = $Bulletin->moyennesSituations($listeSituations, $listePeriodes);
 				$mentionsJuinDec = $Bulletin->calculeMentionsDecJuin($moyenneSituations);
-				$listeMentions = $Bulletin->listeMentions($matricule,Null,$annee);
-				
+				$listeMentions = $Bulletin->listeMentions($matricule,Null,$annee,ANNEESCOLAIRE);
 				$prevNext = $Bulletin->prevNext($matricule,$listeEleves);
 				$remarques = $Bulletin->listeCommentairesTousCours($matricule, $listePeriodes);
 				$estTitulaire = in_array($classe,$user->listeTitulariats());
@@ -72,7 +72,7 @@ switch ($mode) {
 
 				$smarty->assign('mentions',$mentionsJuinDec);
 				$smarty->assign ('delibe',$moyenneSituations);
-				$smarty->assign ('mentionsAttribuees',$listeMentions);
+				$smarty->assign ('mentionsAttribuees',$listeMentions[$matricule][ANNEESCOLAIRE][$annee]);
 				$smarty->assign('corpsPage','delibeIndividuel');
 				break;
 			default:
@@ -93,7 +93,6 @@ switch ($mode) {
 			$listeSituations100 = $Bulletin->getSituations100($bulletin, $listeEleves);
 			$listeCours = $Ecole->listeCoursClassePourDelibe($classe);
 			
-			// $smarty->assign('classe',$classe);
 			$smarty->assign('listeSituations100', $listeSituations100);
 			$smarty->assign('listeCours', $listeCours);
 			$smarty->assign('listeCoursGrpListeEleves',$listeCoursGrpListeEleves);
@@ -113,7 +112,7 @@ switch ($mode) {
 
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 			if (in_array($bulletin, explode(',', str_replace(' ','',PERIODESDELIBES))))
-				$listeMentions = $Bulletin->listeMentions($listeEleves,$bulletin,$annee);
+				$listeMentions = $Bulletin->listeMentions($listeEleves,$bulletin,$annee,ANNEESCOLAIRE);
 				else $listeMentions = Null;
 			$listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
 			$listeCoursListeEleves = $Bulletin->listeCoursSansGrp($listeCoursGrpListeEleves);
@@ -121,10 +120,12 @@ switch ($mode) {
 			$listeCours = $Ecole->listeCoursClassePourDelibe($classe);
 
 			$listeSituations = $Bulletin->listeSituationsDelibe($listeEleves, array_keys($listeCoursGrp), $bulletin);
+
 			// À LA DERNIÈRE PÉRIODE DE L'ANNÉE, ON TIENT COMPTE DES ÉPREUVES EXTERNES ÉVENTUELLES
 			if ($bulletin == NBPERIODES)
 				$listeSituations = $Bulletin->listeSitDelibeExternes($listeSituations, $listeEleves, $listeCoursGrp);
 			$delibe = $Bulletin->echecMoyennesDecisions($listeSituations);
+			$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
 			$smarty->assign('delibe',$delibe);
 			$smarty->assign('listeEleves', $listeEleves);
 			$smarty->assign('listeCoursListeEleves',$listeCoursListeEleves);

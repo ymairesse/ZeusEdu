@@ -1,5 +1,4 @@
 <?php
-
 $unAn = time() + 365*24*3600;
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 
@@ -22,7 +21,7 @@ $idCarnet = isset($_POST['idCarnet'])?$_POST['idCarnet']:Null;
 
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
-$smarty->assign('nbBulletins', NBPERIODES);
+$smarty->assign('nbBulletins',NBPERIODES);
 $smarty->assign('bulletin',$bulletin);
 $smarty->assign('COTEABS',COTEABS);
 $smarty->assign('COTENULLE',COTENULLE);
@@ -30,14 +29,13 @@ $smarty->assign('NOMSPERIODES',explode(',',NOMSPERIODES));
 
 switch ($mode) {
 	case 'gererCotes':
-		$smarty->assign('selecteur', 'selectBulletinCours');
-
 		switch ($etape) {
 			case 'recordEnteteCote':
 				$nb = $Bulletin->recordEnteteCote($_POST);
 				$smarty->assign('message', array(
 					'title'=>'Enregistrement',
-					'texte'=>"$nb modification(s) enregistrée(s)")
+					'texte'=>"$nb modification(s) enregistrée(s)",
+					'urgence'=>'success')
 					);
 				break;
 			case 'recordCotes':
@@ -45,7 +43,8 @@ switch ($mode) {
 				$smarty->assign('listeErreurs', $listeErreurs);
 				$smarty->assign('message', array(
 					'title'=>'Enregistrement',
-					'texte'=>count($listeErreurs).' erreur(s)')
+					'texte'=>count($listeErreurs).' erreur(s)',
+					'urgence'=>'success')
 					);
 				break;
 			case 'delCote':
@@ -53,13 +52,16 @@ switch ($mode) {
 				$nb = $Bulletin->effacementLiciteCarnet($idCarnet, $listeCours);
 				$smarty->assign('message', array(
 					'title'=>'Effacement',
-					'texte'=>'cote effacée')
+					'texte'=>'Cette cote a été effacée',
+					'urgence'=>'warning')
 					);
 				break;
 			}
-		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
+		$smarty->assign('selecteur','selectBulletinCours');
+		if (isset($coursGrp) && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 			$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
+			
 			$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
 			$listeCotes = ($listeTravaux != Null)?$Bulletin->listeCotesCarnet($listeTravaux):Null;
 			$listeMoyennes = $Bulletin->listeMoyennesCarnet($listeCotes);
@@ -71,6 +73,7 @@ switch ($mode) {
 			$smarty->assign ('corpsPage', 'showCarnet');			
 			}
 		break;
+	
 	case 'oneClick':
 		$effaceDetails = isset($_POST['effaceDetails'])?true:Null;
 		$smarty->assign('effaceDetails',$effaceDetails);
@@ -105,20 +108,31 @@ switch ($mode) {
 						// calcule les nouvelles situations pour ce bulletin, à partir des situations existantes et du globalPeriode
 						$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
 						$Bulletin->enregistrerSituations($listeSituations, $bulletin);
-						$texte = sprintf('%d cotes enregistré(s)<br>%d cotes refusées', $Res['ok'],$Res['ko']);
-						if ($Res['ko']>0)
-							$texte .= ' (bulletin verrouillé?)';
-						$smarty->assign('message', array(
-								'title'=>'Enregistrement',
-								'texte'=>$texte
-								));
 						$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
+						
+						$texte = sprintf('%d cotes enregistré(s)<br>%d cotes refusées', $Res['ok'],$Res['ko']);
+						if ($Res['ko']>0) {
+							$texte .= ' (bulletin verrouillé?)';
+							$erreurVerrou = true;
+							$smarty->assign('erreurVerrou',$erreurVerrou);
+							}
+							else {
+								$texte .= '<br>Le bulletin complété est <a href="index.php?action=gestEncodageBulletins">à votre disposition</a>';
+								$smarty->assign('noError',true);
+								}
+
+						$smarty->assign('texte',$texte);
 					}
 				// pas de break;
 			default:
-				$listeColonnes = $Bulletin->colonnesCotesBulletin ($coursGrp, $bulletin);
+				$listeColonnes = $Bulletin->colonnesCotesBulletin($coursGrp, $bulletin);
 				// s'il n'y a pas de cotes, on arrête là...
-				if (count($listeColonnes) > 0) {
+				if (count($listeColonnes) == 0) {
+						$smarty->assign('erreurTransfert', true);
+						$smarty->assign('corpsPage', 'noTransfert');
+						}
+					else {
+					$smarty->assign('erreurTransfert',false);						
 					$listeCompetences = $Bulletin->listeCompetencesBulletin ($coursGrp, $bulletin);
 					$listeCotesEleves = $Bulletin->listeCotesCompFormCert ($listeColonnes);
 					$sommesBrutesCotes = $Bulletin->sommesBruteCotes($listeColonnes, $listeCotesEleves);
@@ -131,27 +145,23 @@ switch ($mode) {
 					$smarty->assign('sommesCotes', $sommesBrutesCotes);
 					$smarty->assign('corpsPage', 'syntheseOneClick');
 					}
-					else {
-						$smarty->assign('erreurTransfert', true);
-						$smarty->assign('corpsPage', 'noTransfert');
-						}
+
 				break;
 			}
 		break;
 	case 'poidsCompetences':
-		$smarty->assign('selecteur', 'selectCours');
 		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			switch ($etape) {
 				case 'enregistrer':
 					$nbResultats = $Bulletin->recordPoidsCompetences($_POST);
 					$smarty->assign('message', array(
 						'title'=>'Enregistrement',
-						'texte'=> "$nbResultats poids enregistré(s)")
+						'texte'=> "$nbResultats poids enregistré(s)",
+						'urgence'=>'success')
 						);
 				// pas de break;
 				// break;
 				default: 
-					// $listePonderations = current($Bulletin->getPonderations($coursGrp));
 					$sommesPonderations = $Bulletin->sommesPonderations($coursGrp);
 					$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
 					$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
@@ -160,7 +170,7 @@ switch ($mode) {
 					$smarty->assign('ponderations', $sommesPonderations);
 					$smarty->assign('listeCompetences', $listeCompetences);
 					$smarty->assign('tableauPoids', $tableauPoids);
-					$smarty->assign('etape', 'enregistrer');
+					$smarty->assign('selecteur', 'selectCours');
 					$smarty->assign('corpsPage', 'showPoidsCompetences');
 					break;
 			}

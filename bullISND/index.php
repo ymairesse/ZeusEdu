@@ -11,15 +11,15 @@ $smarty->assign('mode',$mode);
 require_once("inc/classes/classBulletin.inc.php");
 $Bulletin = new Bulletin();
 
-$smarty->assign("listeCours",$user->listeCoursProf("'G','S','TT'"));
+$smarty->assign('listeCours',$user->listeCoursProf("'G','S','TT'"));
 $smarty->assign('sections',"'G','S','TT'");
 $acronyme = $user->getAcronyme();
 
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $smarty->assign('etape',$etape);
 
-$smarty->assign("corpsPage",Null);
-$smarty->assign("selecteur",Null);
+$smarty->assign('corpsPage',Null);
+$smarty->assign('selecteur',Null);
 
 switch ($action) {
 	case 'init':

@@ -1,95 +1,62 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}
-{if ($cours != '')}
-	{if $listeCours.$cours.nomCours != ''}
-		{$listeCours.$cours.nomCours}
-		{else}
-		{$listeCours.$cours.statut} {$listeCours.$cours.libelle} {$listeCours.$cours.nbheures}h
-	{/if}
-{/if}</h2>
+<div class="container">
+	
+	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}
+	{if (isset($coursGrp) && ($coursGrp != ''))}
+			{$listeCours.$coursGrp.nomCours|default:''} - [{$coursGrp}] {$listeCours.$coursGrp.statut} {$listeCours.$coursGrp.libelle} {$listeCours.$coursGrp.nbheures}h
+	{/if}</h2>
 
-<div id="tabs">
-	<ul>
-		<li><a href="#tabs-1">Notes <span id="mod">*</span></a></li>
-		<li><a href="#tabs-2">Données personnelles</a></li>
-		<li><a href="#tabs-3">Parents et responsables</a></li>
-	</ul>
-	
-	<div id="tabs-1">
-		<p><img src="../photos/{$eleve.photo}.jpg" class="photo draggable" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
-			id="photo" style="width:100px; top:-60px; position: relative" /></p>
-		<form name="padEleve" id="padEleve" method="POST" action="index.php">
-			<input type="hidden" name="classe" value="{$classe|default:''}">
-			<input type="hidden" name="matricule" value="{$matricule}">
-			<input type="hidden" name="cours" value="{$cours|default:''}">
-			<input type="hidden" name="action" value="{$action}">
-			<input type="Submit" name="mode" value="Enregistrer" class="fauxBouton">
-			<hr>
-			<textarea name="texte" cols="90" rows="20" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true">{$padEleve->getPadText()}</textarea>
-		</form>
-	</div>
-	
-	<div id="tabs-2">
-		<p><img src="../photos/{$eleve.photo}.jpg" class="photo" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
-			id="photo" style="width:100px; top:-60px; position: relative" /> </p>
-		<p><label>Commune de naissance</label>{$eleve.commNaissance|default:'&nbsp;'}</p>
-		<p><label>Classe</label> {$eleve.groupe} {if $titulaires} [{", "|implode:$titulaires}]{/if}</p>
-		<p><label>Date de naissance</label> {$eleve.DateNaiss} 
-		<small>[Âge approx. {$eleve.age.Y} ans {if !($eleve.age.m == 0)}{$eleve.age.m} mois{/if} 
-			{if !($eleve.age.d == 0)}{$eleve.age.d} jour(s){/if}]</small></p>
-		<p><label>Sexe</label>{$eleve.sexe}</p>
-		<p><label>Adresse</label>{$eleve.adresseEleve}</p>
-		<p><label>Code Postal</label>{$eleve.cpostEleve} <label>Commune</label>{$eleve.localiteEleve}</p>
-	</div>
-	
-	<div id="tabs-3">
-		<p><img src="../photos/{$eleve.photo}.jpg" class="photo" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}" 
-			id="photo" style="width:100px; top:-60px; position: relative" /> </p>
-			<ul class="detailsEleve">
-			<li>Coordonnées de la personne responsable
-				<ul>
-					<li><label>Responsable</label>{$eleve.nomResp}</li>
-					<li><label>e-mail</label>&nbsp;<a href="mailto:{$eleve.courriel}">{$eleve.courriel}</a></li>
-					<li><label>Téléphone</label>&nbsp;{$eleve.telephone1}</li>
-					<li><label>GSM</label>&nbsp;{$eleve.telephone2}</li>
-					<li><label>Téléphone bis</label>&nbsp;{$eleve.telephone3}</li>
-					<li><label>Adresse</label>{$eleve.adresseResp}</li>
-					<li><label>Code Postal</label>{$eleve.cpostResp} <label>Commune</label>{$eleve.localiteResp}</li>
-				</ul>
-			</li>
-			<li>Coordonnées du père de l'élève
-				<ul>
-					<li><label>Nom</label>{$eleve.nomPere}</li>
-					<li><label>e-mail</label><a href="mailto:{$eleve.mailPere}">{$eleve.mailPere}</a></li>
-					<li><label>Téléphone</label>{$eleve.telPere|default:''}</li>
-					<li><label>GSM</label>{$eleve.gsmPere}</li>
-				</ul>
-			</li>
-			<li>Coordonnées de la mère de l'élève
-				<ul>
-					<li><label>Nom</label>{$eleve.nomMere}</li>
-					<li><label>e-mail</label><a href="mailto:{$eleve.mailMere}">{$eleve.mailMere}</a></li>
-					<li><label>Téléphone</label>{$eleve.telMere|default:''}</li>
-					<li><label>GSM</label>{$eleve.gsmMere}</li>
-				</ul>
-			</li>
-		</ul>
-		</div>
+	<div class="row">
 		
-</div> <!-- tabs -->
+		<div class="col-md-10 col-sm-9">
+			
+			<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+				<li class="active"><a href="#tabs-1" data-toggle="tab">Notes</a></li>
+				<li><a href="#tabs-2" data-toggle="tab">Données personnelles</a></li>
+				<li><a href="#tabs-3" data-toggle="tab">Parents et responsable</a></li>
+			</ul>
+			
+			<div id="my-tab-content" class="tab-content">
+				
+				<div class="tab-pane active" id="tabs-1">
+				{include file="inc/tabEleve1.inc.tpl"}
+				</div>  <!-- tabs-1 -->
+				
+				<div class="tab-pane" id="tabs-2">
+				{include file="inc/tabEleve2.inc.tpl"}
+				</div>  <!-- tabs-2 -->
+				
+				<div class="tab-pane" id="tabs-3">
+				{include file="inc/tabEleve3.inc.tpl"}
+				</div> <!-- tabs-3 -->
+
+			</div>  <!-- my-tab-content -->
+			
+		</div>  <!-- col-md-10 ... -->
+		
+		<div class="col-md-2 col-sm-3">
+
+			<img src="../photos/{$eleve.photo}.jpg" class="photo img-responsive" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}">
+				
+		</div>
+
+	</div>  <!-- row -->
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
-{literal}
+	
+var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";
+var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
+var modifie = false;
 
 $(document).ready(function(){
-	
-	var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";
-	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
-	var modifie = false;
 	
 	$("#mod").hide();
 	
 	$("#tabs").tabs();
+	
+	$("#sousTabs").tabs();
 
 	function modification () {
 		if (!(modifie)) {
@@ -135,12 +102,13 @@ $(document).ready(function(){
 			}
 	})
 	
-	// le copier/coller provoque aussi  une "modification"
+	// le copier/coller provoque aussi une "modification"
 	$("input, textarea").bind('paste', function(){
 		modification()
 	});
 	
-	})
+	
+})
 
-{/literal}
+
 </script>

@@ -19,7 +19,7 @@
 	{/if}
 	</span>
 	
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="show"><br>
@@ -28,7 +28,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -45,8 +45,9 @@ $(document).ready (function() {
 		$("#wait").show();
 		var niveau = $(this).val();
 		if (niveau)
-			$.post("inc/listeCoursNiveau.inc.php",
-				{niveau: niveau},
+			$.post("inc/listeCoursNiveau.inc.php", {
+				niveau: niveau
+				},
 					function (resultat){
 						$("#choixCours").html(resultat)
 					}
@@ -59,5 +60,5 @@ $(document).ready (function() {
 		})
 	
 })
-{/literal}
+
 </script>

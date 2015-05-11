@@ -5,12 +5,14 @@ require_once("../../config.inc.php");
 // définition de la class Application
 require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
-// définition de la class Eleve
+
 require_once (INSTALL_DIR."/inc/classes/classEleve.inc.php");
 
-$fragment = isset($_GET['term'])?$_GET['term']:Null;
-$critere = isset($_GET['critere'])?$_GET['critere']:Null;
+$fragment = isset($_REQUEST['query'])?$_REQUEST['query']:Null;
 
-$listeEleves = Eleve::searchEleve($fragment, $critere);
+$fragment = trim($fragment);
+
+$listeEleves = Eleve::searchEleve2($fragment);
+
 echo json_encode($listeEleves);
 ?>

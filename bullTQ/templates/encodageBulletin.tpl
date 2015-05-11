@@ -1,12 +1,15 @@
+<div class="container">
+
 {assign var="ancre" value=$matricule}
 <h2 title="{$libelleCours.coursGrp}">Bulletin {$bulletin} - {$libelleCours.cours} {$libelleCours.libelle} {$libelleCours.nbheures}h </h2>
 
-<form name="formBulletin" id="formBulletin" action="index.php" method="POST">
+<form name="formBulletin" id="formBulletin" action="index.php" method="POST" role="form" class="form-vertical">
 	
-	<p id="ouvrirTout" class="fauxBouton noprint" title="Déplier ou replier les Remarques pour tous les élèves"></p>
-	<input type="submit" name="submit" value="Enregistrer tout" class="noprint enregistrer" id="enregistrer">
-	<input type="reset" name="annuler" id="annuler" value="Annuler">
-
+	<p id="ouvrirTout" class="btn btn-primary noprint">Déplier/replier toutes les remarques</p>
+	<div class="btn-group">
+		<button type="submit" class="btn btn-primary noprint enregistrer" name="submit" id="enregistrer">Enregistrer tout</button>
+		<button type="reset" class="btn btn-default noprint" name="annuler" id="annuler">Annuler</button>
+	</div>
 	<input type="hidden" name="action" value="bulletin">
 	<input type="hidden" name="mode" value="enregistrer">
 	<input type="hidden" name="bulletin" value="{$bulletin}">
@@ -21,31 +24,40 @@
 	
 	<hr>
 	{foreach from=$listeEleves key=matricule item=unEleve}
-	
-		<div class="blocGaucheBulletin photo" style="text-align:center; clear:both;">
-		<div style="text-align:right">
-		{if isset($listeElevesSuivPrec.$matricule.prev) && ($listeElevesSuivPrec.$matricule.prev != Null)}
-			<a href="#el{$listeElevesSuivPrec.$matricule.prev}">
-				<img src="images/up.png" alt="^" title="Précédent"></a>
-		{/if}
-		{if isset($listeElevesSuivPrec.$matricule.next) && ($listeElevesSuivPrec.$matricule.next != Null)}
-			<a href="#el{$listeElevesSuivPrec.$matricule.next}">
-				<img src="images/down.png" alt="^" title="Suivant"></a>
-		{/if}
-		</div>
 		
-		<p id="el{$matricule}"><strong>{$unEleve.nom} {$unEleve.prenom}</strong></p>
-		<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$unEleve.nom} {$unEleve.prenom} {$matricule}">
-		<p><strong>Classe: {$unEleve.classe}</strong></p>
+	<div class="row" style="padding:2em 0">
+		
+		<div class="col-md-2 col-sm-12 blocGaucheBulletin">
 	
-		<input type="submit" name="submit" value="Enregistrer tout"
-		title="Enregistre l'ensemble des modifications de la page" class="noprint enregistrer"><span></span>
-		</div>
-	
+			<div style="text-align:center;">
+				
+				<div class="pull-rigth">
+					{if isset($listeElevesSuivPrec.$matricule.prev) && ($listeElevesSuivPrec.$matricule.prev != Null)}
+						<a href="#el{$listeElevesSuivPrec.$matricule.prev}">
+							<span class="glyphicon glyphicon-chevron-up" title="Précédent"></span></a>
+					{/if}
+					{if isset($listeElevesSuivPrec.$matricule.next) && ($listeElevesSuivPrec.$matricule.next != Null)}
+						<a href="#el{$listeElevesSuivPrec.$matricule.next}">
+							<span class="glyphicon glyphicon-chevron-down" title="Suivant"></a>
+					{/if}
+				</div>
+			
+				<p id="el{$matricule}"><strong>{$unEleve.nom} {$unEleve.prenom}</strong></p>
+			
+				<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$unEleve.nom} {$unEleve.prenom} {$matricule}">
+				<p><strong>Classe: {$unEleve.classe}</strong></p>
+		
+				<button type="submit" class="btn  btn-primary enregistrer noprint" title="Enregistre l'ensemble des modifications de la page">Enregistrer tout</button>
+				<span></span>
+			</div>
+		
+		</div>  <!-- col-md-... -->
+		
 
-		<div class="blocDroitBulletin">
+		<div class="col-md-10 col-sm-12">
+			
 			<h3>Mentions Globales</h3>
-			<table class="tableauBull">
+			<table class="tableauBull table table-condensed">
 				<tr style="height:2em; background-color: #FECF69; font-weight:bolder; text-align:right">
 					<td style="width:12%">TJ</td>
 					<td style="width:12%; text-align: center"><input class="majuscule" type="text" name="TJ-{$matricule}" value="{$cotesGlobales.$matricule.Tj|default:''}" maxlength="4" size="2"></td>
@@ -62,67 +74,78 @@
 			{if isset($listeCompetences)}
 			
 				<h3>Détails par compétences</h3>
-				<table class="tableauBull">
-				<tr>
-					<th>Compétences</th>
-					<th>TJ</th>
-					<th>Examen</th>
-				</tr>
+				<table class="tableauBull table table-condensed table-hover">
+					<thead>
+					<tr>
+						<th>Compétences</th>
+						<th>TJ</th>
+						<th>Examen</th>
+					</tr>
+					</thead>
 			
-				{foreach from=$listeCompetences key=cours item=lesCompetences}
-					{foreach from=$lesCompetences key=idComp item=uneCompetence}
-						<tr>
-							
-							<td style="text-align:right" title="comp_{$idComp}"> {$uneCompetence.libelle}</td>
-						
-							<td style="width:6em; text-align:center">
-							<input type="text" name="coteTJ-{$matricule}-comp_{$idComp}" 
-								value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Tj|default:''}" maxlength="5" size="2" class="cote majuscule">
-							</td>
+					{foreach from=$listeCompetences key=cours item=lesCompetences}
+						{foreach from=$lesCompetences key=idComp item=uneCompetence}
+							<tr>
 								
-							<td style="width:8em; text-align:center">
-							<input type="text" name="coteEX-{$matricule}-comp_{$idComp}-Ex" 
-								value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Ex|default:''}" maxlength="5" size="2" class="cote majuscule">
-							</td>
-			
-						</tr>
-					{/foreach}
-				{/foreach}
-	
-			</table>
+								<td style="text-align:right" data-container="body" title="comp_{$idComp}"> {$uneCompetence.libelle}</td>
+							
+								<td style="width:6em; text-align:center">
+								<input type="text" name="coteTJ-{$matricule}-comp_{$idComp}" 
+									value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Tj|default:''}" maxlength="5" size="2" class="cote majuscule form-control">
+								</td>
+									
+								<td style="width:8em; text-align:center">
+								<input type="text" name="coteEX-{$matricule}-comp_{$idComp}-Ex" 
+									value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Ex|default:''}" maxlength="5" size="2" class="cote majuscule form-control">
+								</td>
 				
-		{/if}
+							</tr>
+						{/foreach}
+					{/foreach}
+	
+				</table>
+				
+			{/if}
 		
-		<h3>Remarque pour la période {$bulletin}</h3>
-			<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque" rows="8" 
-			cols="80" 
-			name="COMMENTAIRE-{$matricule}">{$listeCommentaires.$bulletin.$coursGrp.$matricule|default:Null}</textarea>
+			<h3>Remarque pour la période {$bulletin}</h3>
+				<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque form-control" rows="8" 
+				name="COMMENTAIRE-{$matricule}">{$listeCommentaires.$bulletin.$coursGrp.$matricule|default:Null}</textarea>
 
-		<p class="ouvrir" style="clear:both">Remarques des autres périodes</p>
-			<ul class="commentaires" style="display:none">
-			{section name=annee start=1 loop=$nbBulletins+1}
-			{assign var="periode" value=$smarty.section.annee.index}
-				<li>{$periode} => {$listeCommentaires.$periode.$coursGrp.$matricule|default:Null}
-			{/section}
-			</ul>
+			<div class="accordion-group">
+				<div class="accordion-heading">
+					<a class="accordion-toggle" data-toggle="collapse" href="#collapseRem{$matricule}" title="Cliquer pour ouvrir">
+						<span class="glyphicon glyphicon-play"></span> Remarques de toutes les périodes
+					</a>
+				</div>  <!-- accordion-heading -->
+				<div id="collapseRem{$matricule}" class="accordion-body collapse" style="height:0px;">
+					<div class="accordion-inner">
+						<ul>
+							{section name=annee start=1 loop=$nbBulletins+1}
+							{assign var="periode" value=$smarty.section.annee.index}
+							<li>{$periode} => {$listeCommentaires.$periode.$coursGrp.$matricule|default:Null}
+							{/section}
+						</ul>
+					</div>
+				</div>
+			</div>  <!-- accordion-group -->
 		
 		</div>
-	<div style="clear:both; padding: 1em 0;"></div>
 	
+	</div style="padding:1em 0">  <!-- row -->
 	
 	{/foreach}
 	
 	
 </form>
 
-<hr>
+</div>
+
 <script type="text/javascript">
 
 {if isset($ancre)}
 	window.location.href="index.php#{$ancre}"
 {/if}
 
-{literal}
 var show = "Cliquer pour voir";
 var hide = "Cliquer pour cacher";
 var showAll = "Déplier Remarques";
@@ -165,16 +188,15 @@ $(document).ready(function(){
 		modification()
 	});
 	
-	$("#ouvrirTout").html(function(){
-		texte = hiddenAll?showAll:hideAll;
-		$(this).html(texte);
-	});
-	
 	$("#ouvrirTout").click(function(){
-		$(".ouvrir").click();
-		hiddenAll = !(hiddenAll);
-		var texte = hiddenAll?showAll:hideAll;
-		$(this).html(texte);
+		if (hiddenAll == true) {
+			$(".collapse").collapse('show');
+			hiddenAll = false;
+			}
+			else {
+				$(".collapse").collapse('hide');
+				hiddenAll = true;
+			}
 	})
 	
 	function modification () {
@@ -239,7 +261,7 @@ $(document).ready(function(){
 	function goToByScroll(id){
 		var adresse = "#"+id;
 		var offset = $(adresse).offset();
-     	$('html,body').animate({scrollTop: $("#"+id).offset().top-100},'slow');
+     	$('html,body').animate({ scrollTop: $("#"+id).offset().top-100 },'slow');
 	}
 
 	$("#selectEleve").change(function(){
@@ -254,7 +276,6 @@ $(document).ready(function(){
 
 });
 
-{/literal}
 
 {if isset($tableErreurs)} alert(erreursEncodage){/if}
 </script>

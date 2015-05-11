@@ -1,64 +1,74 @@
-<div id="resultat">
+<div class="container">
+	
 <h3 style="clear:both" title="{$infoPerso.matricule}">
 	{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}</h3>
-<div id="tabsul">
-	<ul>
-		<li><a href="#tabs-cotes">Cotes</a></li>
-		<li><a href="#tabs-remarques">Remarques toutes périodes</a></li>
-	</ul>
+
+
+<ul class="nav nav-tabs">
+	<li class="active"><a data-toggle="tab" href="#tabs-cotes">Cotes</a></li>
+	<li><a data-toggle="tab" href="#tabs-remarques">Remarques toutes périodes</a></li>
+</ul>
 	
+<div class="tab-content">
 	
-	<div id="tabs-cotes">
+	<div id="tabs-cotes" class="tab-pane fade in active">
 		{include file="tabCotes.tpl"}
-		{* if in_array($bulletin, $PERIODESDELIBES) *}
-			{*include file="delibeIndividuelRO.tpl" *}
-		{* /if *}
 	</div>
 	
-	<div id="tabs-remarques">
-		<table class="tableauTitu" style="width:100%">
+	<div id="tabs-remarques" class="tab-pane fade">
+		<table class="table table-condensed table-hover">
 			<tr>
-			<th style="width:3em">Bulletin</th>
-			<th style="text-align:center">Remarques</th>
+				<th style="width:3em">Bulletin</th>
+				<th style="text-align:center">Remarques</th>
 			</tr>
 		{foreach from=$listePeriodes item=periode}
 			<tr>
 				<th>{$periode}</th>
-				<td style="font-size:0.8em; padding:0.4em 1em; text-align:left;">{$listeRemarquesTitu.$periode.$matricule|default:'&nbsp;'}</td>
+				<td>{$listeRemarquesTitu.$periode.$matricule|default:'&nbsp;'}</td>
 			</tr>
 		{/foreach}
 		</table>
 	</div>
 	
-</div>
+</div>  <!-- tab-content -->
+
 <hr style="clear:both">
-	<form name="avisTitu" id="avisTitu" action="index.php" method="POST" style="border-radius: 15px; box-shadow: 1px 1px 12px #555;">
-	<img src="../photos/{$infoPerso.photo}.jpg" title="{$infoPerso.matricule}" alt="{$infoPerso.matricule}"
-		style="width: 100px; float:right" class="photo">
-	<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin}</h4>
-		{if isset($mentions.$matricule.$bulletin)}
-		<p>Mention accordée <strong>{$mentions.$matricule.$bulletin}</strong>.</p>
-		{/if}
-		 <textarea name="commentaire" id="commentaire" rows="7" cols="80">{$listeRemarquesTitu.$bulletin.$matricule|default:'&nbsp;'}</textarea>
-			  <br>
-			  <input type="submit" name="Enregistrer" value="Enregistrer" id="enregistrer">
-			  <input type="reset" name="Annuler" value="Annuler"><br>
-			  <input type="hidden" name="action" value="titu">
-			  <input type="hidden" name="mode" value="remarques">
-			  <input type="hidden" name="etape" value="enregistrer">
-			  <input type="hidden" name="bulletin" value="{$bulletin}">
-			  <input type="hidden" name="matricule" value="{$matricule}">
-			  <input type="hidden" name="classe" value="{$classe}">
+	<form name="avisTitu" id="avisTitu" action="index.php" method="POST" style="border-radius: 15px; box-shadow: 1px 1px 12px #555;" role="form" class="form-vertical">
+		
+		<div class="row">
+			
+			<div class="col-md-10 col-sm-12">
+				<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin}</h4>
+				{if isset($mentions.$matricule.$bulletin)}
+				<p>Mention accordée <strong>{$mentions.$matricule.$bulletin}</strong>.</p>
+				{/if}
+				<textarea name="commentaire" id="commentaire" rows="7" class="form-control">{$listeRemarquesTitu.$bulletin.$matricule|default:'&nbsp;'}</textarea>
+				<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
+				<button type="reset" class="btn btn-default pull-right">Annuler</button>
+				<input type="hidden" name="action" value="titu">
+				<input type="hidden" name="mode" value="remarques">
+				<input type="hidden" name="etape" value="enregistrer">
+				<input type="hidden" name="bulletin" value="{$bulletin}">
+				<input type="hidden" name="matricule" value="{$matricule}">
+				<input type="hidden" name="classe" value="{$classe}">		
+			</div>  <!-- col-md-.. -->
+			
+			<div class="col-md-2 col-sm-12">
+				<img src="../photos/{$infoPerso.photo}.jpg" title="{$infoPerso.matricule}" alt="{$infoPerso.matricule}" style="width: 100px; float:right" class="photo">
+			</div>  <!-- col-md-.. -->
+			
+		</div>  <!-- row -->
+		
 	</form>
-</div>
+
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
 var periode={$bulletin};
-{literal}
+
 	$(document).ready(function(){
 
-	$(".photo").draggable();
-	
 	$("#tabsul").tabs();
 
 	$("#tabsAttitudes").tabs().show();
@@ -70,6 +80,5 @@ var periode={$bulletin};
 		})
 	
 	})
-{/literal}
 
 </script>

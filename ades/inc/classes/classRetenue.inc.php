@@ -71,7 +71,7 @@ class Retenue {
 		$duree = $post['duree'];
 		$local = addslashes(htmlspecialchars($post['local']));
 		$places = $post['places'];
-		$occupation = $post['occupation'];
+		// $occupation = $post['occupation'];  // l'occupation est toujours calculée en temps réel
 		$affiche = isset($post['affiche'])?'O':'N';
 		$recurrence = isset($post['recurrence'])?$post['recurrence']:0;
 		

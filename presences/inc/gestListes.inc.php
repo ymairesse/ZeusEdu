@@ -1,10 +1,20 @@
 <?php
-
 $selectProf = isset($_POST['selectProf'])?$_POST['selectProf']:Null;
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
-$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 $date = isset($_POST['date'])?$_POST['date']:Null;
+
+$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
+$matricule2 = isset($_POST['matricule2'])?$_POST['matricule2']:Null;
+// on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
+$matricule = ($matricule!='')?$matricule:$matricule2;
+$smarty->assign('matricule',$matricule);
+
+if ($matricule2 != Null) {
+	// récuperer la classe de l'élève si le matricule provient de la liste autocompletée
+	$detailsEleve = $Ecole->nomPrenomClasse($matricule2);
+	$classe = $detailsEleve['classe'];
+	}
 
 $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes',$listePeriodes);
@@ -15,7 +25,7 @@ switch ($mode) {
 		$smarty->assign('date',$date);
 		$statutsAbs = array(
 				// 'liste1'=> array('signale','justifie','sortie'),
-				'liste1'=> array('signale','sortie'),
+				'liste1'=> array('signale','sortie','renvoi'),
 				'liste2'=>array('absent')
 				);
 		$smarty->assign('statutsAbs',$statutsAbs);
@@ -51,8 +61,8 @@ switch ($mode) {
 			$smarty->assign('corpsPage','presencesEleve');
 			}
 		$smarty->assign('etape','showEleve');
-		$smarty->assign('action', $action);
-		$smarty->assign('mode', $mode);
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
 		$smarty->assign('selecteur','selectClasseEleve');
 		break;
 	case 'parClasse':

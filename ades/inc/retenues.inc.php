@@ -15,6 +15,7 @@ switch ($mode) {
 					$smarty->assign('etape',$etape);
 					$smarty->assign('idretenue',$idretenue);
 					$listeRetenues = $Ades->listeRetenues($typeRetenue, true);
+
 					$smarty->assign('listeRetenues',$listeRetenues);
 					$infosRetenue = $Ades->infosRetenue($idretenue);
 					$smarty->assign('infosRetenue',$infosRetenue);
@@ -45,11 +46,11 @@ switch ($mode) {
 		$smarty->assign('mode',$mode);
 		break;
 	case 'edit':
+		$typeRetenue = isset($_REQUEST['typeRetenue'])?$_REQUEST['typeRetenue']:Null;
 		$idretenue = isset($_REQUEST['idretenue'])?$_REQUEST['idretenue']:Null;
-		$retenue = new Retenue($idretenue);
-		$typeRetenue = $retenue->get('type');
-		$smarty->assign('typeRetenue',$typeRetenue);
+		$retenue = current((array) new Retenue($idretenue));
 		$smarty->assign('idretenue',$idretenue);
+		$smarty->assign('typeRetenue',$typeRetenue);
 		$smarty->assign('retenue',$retenue);
 		$smarty->assign('action',$action);
 		$smarty->assign('corpsPage','editRetenue');
@@ -59,7 +60,9 @@ switch ($mode) {
 		$idretenue = $Retenue->saveRetenue($_POST);
 		$smarty->assign("message", array(
 					'title'=>"Enregistrement",
-					'texte'=>"Retenue enregistrée")
+					'texte'=>"Retenue enregistrée",
+					'urgence'=>'success'
+					)
 					);
 		// relire dans la BD
 		$Retenue->lireRetenue($idretenue);

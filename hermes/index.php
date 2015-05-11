@@ -2,6 +2,9 @@
 require_once("../config.inc.php");
 include (INSTALL_DIR.'/inc/entetes.inc.php');
 
+$smarty->assign('action',$action);
+$smarty->assign('mode',$mode);
+
 $onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
 $smarty->assign('onglet',$onglet);
 
@@ -15,9 +18,12 @@ $smarty->assign('acronyme',$acronyme);
 switch ($action) {
 	case 'Envoyer':
 		$ok = $hermes->send_mail($_POST, $_FILES);
-		if ($ok == true)
-			$texte = MAILOK;
-			else $texte = MAILKO;
+		$smarty->assign('message',array(
+			'title'=>"Envoi d'un mail",
+			'texte'=>$ok==true?MAILOK:MAILKO,
+			'urgence'=>$ok==true?'success':'danger'
+			));
+
 		// traiter le cas de l'expéditeur NOREPLY
 		$mailExpediteur = $_POST['mailExpediteur'];
 		$_POST['nomExpediteur'] = ($mailExpediteur == NOREPLY)?NOMNOREPLY:$_POST['nomExpediteur'];
@@ -26,13 +32,31 @@ switch ($action) {
 		if ($_POST['groupe'] != '') {
 			$hermes->creerGroupe($acronyme,$_POST['groupe'],$_POST['mails']);
 			}
-		$smarty->assign('reussite',$texte);
+
 		$smarty->assign('detailsMail', array('post'=>$_POST,'files'=>$_FILES));
 		$destinataires = $hermes->listeNomsFromDestinataires($_POST['mails']);
 		$smarty->assign('destinatairesString', implode(', ',$destinataires));
 		$smarty->assign('corpsPage','confirmMail');
 		break;
 	case 'archives':
+		if ($mode == 'delArchive') {
+			$idArchive = isset($_POST['idArchive'])?$_POST['idArchive']:Null;
+			$mail = $hermes->archive($idArchive);
+			// suppression des pièces jointes
+			$PJ = explode(',',$mail['PJ']);
+			foreach ($PJ as $unePJ) {
+				$unePJ = trim($unePJ);
+				if ($unePJ != '')
+					@unlink("upload/$acronyme/$unePJ");
+				}
+			// suppression de la référence dans la BD
+			$n = $hermes->delArchive($idArchive);
+			$smarty->assign('message', array(
+				'title'=>DELETE,
+				'texte'=>"$n courriel(s) supprimé(s)",
+				'urgence'=>'warning')
+				);
+			}
 		$beginList = isset($_POST['debut'])?$_POST['debut']:0;
 		$nb = isset($_POST['nb'])?$_POST['nb']:10;
 		$listeArchives = $hermes->listeArchives($acronyme, $beginList, $nb);
@@ -68,20 +92,22 @@ switch ($action) {
 						$listeDel[] = $idListe;
 						}
 					}
-					// effacements effectifs des membres des listes et des listes vides
-					$nbMailing = $hermes->delMembresListe($mailingDel);
-					$nbListes = $hermes->delListes($listeDel, $acronyme);
-
-				$smarty->assign('deleted', array('nbMailing'=>$nbMailing, 'nbListes'=>$nbListes));
+				// effacements effectifs des membres des listes et des listes vides
+				$nbMailing = $hermes->delMembresListe($mailingDel);
+				$nbListes = $hermes->delListes($listeDel, $acronyme);
+				$smarty->assign('message',array(
+						'title'=>DELETE,
+						'texte'=> "$nbMailing destinataire(s) supprimé(s)<br>$nbListes liste(s) vide(s) supprimée(s)<br>Les listes non vides ne sont pas supprimées",
+						'urgence'=>'warning'));
 				break;
 			case 'creationListe':
 				$nomListe = isset($_POST['nomListe'])?$_POST['nomListe']:Null;
 				$idListe = $hermes->creerGroupe($acronyme,$nomListe);
 				$smarty->assign('nomListe',$nomListe);
-				$smarty->assign("message", array(
+				$smarty->assign('message', array(
 					'title'=>SAVE,
-					'texte'=>"La liste $nomListe a été créée"),
-					3000);
+					'texte'=>"La liste $nomListe a été créée",
+					'urgence'=>'success'));
 				break;
 			case 'ajoutMembres':
 				$listeMembres = isset($_POST['mails'])?$_POST['mails']:Null;
@@ -90,23 +116,23 @@ switch ($action) {
 					$nb = $hermes->addMembresListe ($idListe,$listeMembres);
 					$smarty->assign("message", array(
 						'title'=>SAVE,
-						'texte'=>"$nb membres(s) ajouté(s)"),
-						3000);
+						'texte'=>"$nb membres(s) ajouté(s)",
+						'urgence'=>'success'));
 					}
 				break;
 			case 'statutListe':
 				$nb = $hermes->saveListStatus($_POST, $acronyme);
 				$smarty->assign("message", array(
 					'title'=>SAVE,
-					'texte'=>"$nb modification(s) enregistrée(s)"),
-					3000);
+					'texte'=>"$nb modification(s) enregistrée(s)",
+					'urgence'=>'success'));
 				break;
 			case 'abonnement':
 				$nb = $hermes->gestAbonnements($_POST, $acronyme);
 				$smarty->assign("message", array(
 					'title'=>SAVE,
-					'texte'=>"$nb abonnement(s) modifié(s)"),
-					3000);
+					'texte'=>"$nb abonnement(s) modifié(s)",
+					'urgence'=>'success'));
 				break;
 			default:
 				// wtf
@@ -134,13 +160,18 @@ switch ($action) {
 		if ($mode == 'enregistrer') {
 			$signature = $_POST['signature'];
 			$nb = file_put_contents ('templates/signature.tpl', $signature);
-			if ($nb != false)
+			if ($nb != false) {
 				$texte = "$nb octet(s) enregistré(s)";
-				else $texte = "Échec de l'enregistrement";
+				$urgence = 'success';
+				}
+				else {
+					$texte = "Échec de l'enregistrement";
+					$urgence = 'danger';
+					}
 			$smarty->assign("message", array(
 					'title'=>SAVE,
-					'texte'=>$texte),
-					3000);
+					'texte'=>$texte,
+					'urgence'=>$urgence));
 			}
 			else $signature = file_get_contents('templates/signature.tpl');
 		$smarty->assign('action',$action);
@@ -166,7 +197,7 @@ switch ($action) {
 
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime", round($chrono->stop(),6));
-$smarty->display("index.tpl");
+$smarty->assign('executionTime', round($chrono->stop(),6));
+$smarty->display('index.tpl');
 
 ?>

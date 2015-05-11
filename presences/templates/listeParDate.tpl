@@ -1,9 +1,12 @@
+<div class="container">
 <h3>Liste des absences du {$date}</h3>
 <h4>Liste 1 
 {foreach from=$statutsAbs['liste1'] key=wtf item=statut}
-	<span class="{$statut}"><img src="images/{$statut}.png" alt="{$statut}">{$statut}
+	<span class="{$statut}"><img src="images/{$statut}.png" alt="">{$statut}
 {/foreach}</h4>
-<table class="tableauAdmin">
+
+<div class="table-responsive">
+<table class="tableauPresences table table-hover table-condensed">
 	<tr>
 		<th>Matricule</th>
 		<th>Classe</th>		
@@ -18,22 +21,43 @@
 	<tr style="font-size:1.3em">
 	<td>{$matricule}</td>
 	<td>{$unEleve.identite.classe}</td>	
-	<td class="tooltip"><span class="tip"><img src="../photos/{$unEleve.identite.photo}.jpg" alt="{$matricule}" style="width:100px"></span>{$unEleve.identite.nom}</td>
+	<td class="pop"
+		data-toggle="popover"
+		data-content="<img src='../photos/{$unEleve.identite.photo}.jpg' alt='{$matricule}' style='width:100px'>"
+		data-html="true"
+		data-container="body"
+		data-original-title="{$unEleve.identite.nom|truncate:15}">
+		{$unEleve.identite.nom}
+	</td>
 	{foreach from=$listePeriodes key=laPeriode item=wtf}
 		{if isset($unEleve.presences.$laPeriode)}
 			{assign var=p value=$unEleve.presences.$laPeriode}
 			{assign var=statut value=$p.statut}
-			{assign var=titre value='<h3>'|cat:$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'|cat:'</h3>'|cat:$p.parent|cat:'<br>'|cat:$p.media}
-			<td title="{$titre}">
-				<span style="display:block; width:2em" class="periode {$statut}">
-					{$p.educ|default:'???'}
+			{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
+			<td>
+				<span
+					style="display:block; width:100%"
+					class="periode {$statut} pop"
+					data-toggle="popover"
+					data-content="{$p.parent|cat:'<br>'|cat:$p.media}"
+					data-html="true"
+					data-container="body"
+					data-original-title="{$titre}">
+					{if $p.statut == 'absent'}
+						{$p.educ|default:'???'}
+					{else}
+						<span class="micro">{$p.statut|truncate:2:''}</span>
+					{/if}
 					<!-- <img src="images/{$statut}.png" alt="{$statut}"> -->
 				</span>
+			</td>
 		{else}
-			<td title="indetermine"><span style="display:block; width:2em" class="periode indetermine">
-			<!-- <img src="images/indetermine.png" alt="indetermine"> -->
-			-
-			</span></td>
+			<td title="indetermine" data-container="body" data-html="true">
+				<span style="display:block; width:2em" class="periode indetermine">
+				<!-- <img src="images/indetermine.png" alt="indetermine"> -->
+				-
+				</span>
+			</td>
 		{/if}
 	{/foreach}
 	<td class="micro">{$smarty.foreach.boucle.iteration}</td>	
@@ -41,11 +65,16 @@
 	{/foreach}
 </table>
 
+</div>
+
 <h4>Liste 2 
 {foreach from=$statutsAbs['liste2'] key=wtf item=statut}
-	<span class="{$statut}"><img src="images/{$statut}.png" alt="{$statut}">{$statut}
+	<span class="{$statut}"><img src="images/{$statut}.png" alt="{$statut}">{$statut}</span>
 {/foreach}</h4>
-<table class="tableauAdmin">
+
+<div class="table-responsive">
+	
+<table class="tableauPresences table table-hover table-condensed">
 	<tr>
 		<th>Matricule</th>
 		<th>Classe</th>
@@ -60,44 +89,50 @@
 	<tr style="font-size:1.3em">
 	<td>{$matricule}</td>
 	<td>{$unEleve.identite.classe}</td>
-	<td class="tooltip"><span class="tip"><img src="../photos/{$unEleve.identite.photo}.jpg" alt="{$matricule}" style="width:100px"></span>{$unEleve.identite.nom}</td>
+	<td class="pop"
+		data-toggle="popover"
+		data-content="<img src='../photos/{$unEleve.identite.photo}.jpg' alt='{$matricule}' style='width:100px'>"
+		data-html="true"
+		data-container="body"
+		data-original-title="{$unEleve.identite.nom}">
+		{$unEleve.identite.nom}
+	</td>
 	{foreach from=$listePeriodes key=laPeriode item=wtf}
 		{if isset($unEleve.presences.$laPeriode)}
 			{assign var=p value=$unEleve.presences.$laPeriode}
 			{assign var=statut value=$p.statut}
-			{assign var=titre value='<h3>'|cat:$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'|cat:'</h3>'|cat:$p.parent|cat:'<br>'|cat:$p.media}
-			<td title="{$titre}">
-				<span style="display:block; width:2em" class="periode {$statut}">
-					<!-- <img src="images/{$statut}.png" alt="{$statut}"</span> -->
-					{$p.educ|default:'???'}
+			{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
+			<td>
+				<span style="display:block; width:100%"
+					  class="periode {$statut} pop"
+					  data-toggle="popover"
+					  data-content="{$p.parent|cat:'<br>'|cat:$p.media}"
+					  data-html="true"
+					  data-container="body"
+					  data-original-title="{$titre}">
+					{if $p.statut == 'absent'}
+						{$p.educ|default:'???'}
+					{else}
+						<span class="micro">{$p.statut|truncate:2:''}</span>
+					{/if}
+					<!-- <img src="images/{$statut}.png" alt="{$statut}"> -->
+				</span>
+			</td>
 		{else}
-			<td title="indetermine"><span style="display:block; width:2em" class="periode indetermine">
-			<!-- <img src="images/indetermine.png" alt="indetermine"> -->
-			-
-			</span></td>
+			<td title="indetermine" data-container="body" data-html="true">
+				<span style="display:block; width:2em" class="periode indetermine">
+				<!-- <img src="images/indetermine.png" alt="indetermine"> -->
+				-
+				</span>
+			</td>
 		{/if}
 	{/foreach}
 	<td class="micro">{$smarty.foreach.boucle.iteration}</td>	
 	</tr>
 	{/foreach}
 </table>
+</div>
 
 {include file='legendeAbsences.html'}
+</div>
 
-
-<script type="text/javascript">
-	
-	$(document).ready(function(){
-	
-	$(".tableauAdmin tr").hover(
-		function() {
-			$(this).addClass('mev')
-			},
-		function() {
-			$(this).removeClass('mev')
-			}
-		)
-		
-	})
-	
-</script>

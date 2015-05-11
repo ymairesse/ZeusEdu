@@ -1,6 +1,7 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
+	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
+		<label for="bulletin">Bulletin n° </label>
+		<select name="bulletin" id="bulletin">
 		{section name=boucleBulletin start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.boucleBulletin.index}"
 					{if isset($bulletin) && $smarty.section.boucleBulletin.index == $bulletin} selected="selected"{/if}>
@@ -19,14 +20,14 @@
 		{/if}
 	</select>
 
-	Ordre
+	<label for="tri">Ordre</label>
 	<select name="tri" id="tri">
 		<option value="alpha"{if $tri == 'alpha'} selected="selected"{/if}>Alphabétique</option>
 		<option value="classes"{if $tri == 'classes'} selected="selected"{/if}>Par classes</option>
 	</select>
 	
 	{* si un cours est sélectionné, on présente le bouton OK *}
-	{if isset($coursGrp)}<input type="submit" value="OK" name="OK" id="envoi">{/if}
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showCotes">
@@ -34,8 +35,9 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
+	
 	$("#formSelecteur").submit(function(){
 		if ($("#coursGrp").val() == '')
 			return false;
@@ -58,5 +60,5 @@ $(document).ready (function() {
 				else $("#envoi").hide();
 	})
 })
-{/literal}
+
 </script>

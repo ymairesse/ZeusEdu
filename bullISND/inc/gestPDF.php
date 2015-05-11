@@ -86,11 +86,11 @@ switch ($mode) {
 	case 'bulletinClasse':
 		// liste complète des noms des classes en rapport avec leur classe
 		$listeClasses = $Ecole->listeGroupes(array('G','TT','S'));
-		$smarty->assign('selecteur', 'selectBulletinClasse');
-		$smarty->assign('listeClasses', $listeClasses);
-		$smarty->assign('nbBulletins', NBPERIODES);
-		$smarty->assign('bulletin', $bulletin);
-		$smarty->assign('action', $action);
+		$smarty->assign('selecteur','selectBulletinClasse');
+		$smarty->assign('listeClasses',$listeClasses);
+		$smarty->assign('nbBulletins',NBPERIODES);
+		$smarty->assign('bulletin',$bulletin);
+		$smarty->assign('action',$action);
 		$smarty->assign('mode', $mode);
 		$smarty->assign('etape', 'showClasse');
 
@@ -101,7 +101,6 @@ switch ($mode) {
 				// effacement de tous les fichiers PDF de l'utilisateur sauf pour les admins
 				if ($user->userStatus($Application->repertoireActuel()) != 'admin')
 					$Application->vider ("./pdf/$acronyme");
-
 				$link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme);
 				$smarty->assign('acronyme', $acronyme);
 				$smarty->assign('link',$link);
@@ -131,7 +130,7 @@ switch ($mode) {
 					}
 				// zipper l'ensemble des fichiers
 				if ($listeEleves != Null) {
-					$Application->zipFilesNiveau("pdf/$acronyme", $listeClasses);
+					$Application->zipFilesNiveau("pdf/$acronyme", $bulletin, $listeClasses);
 					$smarty->assign('acronyme', $acronyme);
 					$smarty->assign('link',$niveau);
 					$smarty->assign('corpsPage','corpsPage');
@@ -141,9 +140,27 @@ switch ($mode) {
 		break;
 	case 'delete':
 		if ($etape == 'confirmation') {
+			$listeFichiers = array();
 			foreach ($_POST as $nomChamp=>$value) {
 				if (preg_match('/^del#/',$nomChamp))
+					$listeFichiers[] = $value;
 					@unlink("./pdf/$acronyme/$value");
+				}
+			$nb = count($listeFichiers);
+			if ($nb > 0) {
+				$listeFichiers = implode(', ',$listeFichiers);
+				$smarty->assign('message',array(
+					'title'=>'Confirmation',
+					'texte'=>"Le(s) fichier(s) $listeFichiers a/ont été effacé(s)",
+					'urgence'=>'warning'
+					));
+				}
+				else {
+					$smarty->assign('message',array(
+					'title'=>'Désolé',
+					'texte'=>'Aucun fichier effacé',
+					'urgence'=>'danger'
+					));
 				}
 			}
 		// break;  pas de break

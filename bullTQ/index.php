@@ -2,11 +2,11 @@
 require_once("../config.inc.php");
 include (INSTALL_DIR.'/inc/entetes.inc.php');
 
-
 // ----------------------------------------------------------------------------
 //
 require_once("inc/classes/classBullTQ.inc.php");
 $BullTQ = new bullTQ();
+
 $acronyme = $user->getAcronyme();
 $smarty->assign('tituTQ', $BullTQ->tituTQ($acronyme));
 
@@ -43,6 +43,8 @@ switch ($action) {
 
 //
 // ----------------------------------------------------------------------------
-$smarty->assign("executionTime", round($chrono->stop(),6));
-$smarty->display ("index.tpl");
+
+
+$smarty->assign('executionTime', round($chrono->stop(),6));
+$smarty->display ('index.tpl');
 ?>

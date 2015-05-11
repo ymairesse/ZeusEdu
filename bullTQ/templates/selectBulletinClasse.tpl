@@ -1,4 +1,4 @@
-<div id="selecteur" class="noprint" style="clear:both">
+<div id="selecteur" class="noprint" style="clear:both" role="form">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 		Bulletin n° <select name="bulletin" id="bulletin">
 		{section name=bidule start=1 loop=$nbBulletins+1}

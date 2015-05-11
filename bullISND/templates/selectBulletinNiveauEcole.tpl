@@ -16,13 +16,13 @@
 		{include file="listeEcoles.tpl"}
 	{/if}</span>
 	
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="etape" value="show">
 	</form>
 </div>
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -36,8 +36,8 @@ $(document).ready (function() {
 	$("#niveau").change(function(){
 		$("#wait").show();
 		var niveau = $(this).val();
-		$.post("inc/listeEcoles.inc.php",
-			{niveau: niveau},
+		$.post("inc/listeEcoles.inc.php", {
+			niveau: niveau},
 				function (resultat){
 					$("#choixEcole").html(resultat)
 				}
@@ -58,5 +58,5 @@ $(document).ready (function() {
 			$("#formSelecteur").submit();
 	})
 })
-{/literal}
+
 </script>

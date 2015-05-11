@@ -9,13 +9,17 @@ require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
 
 session_start();
-$user = $_SESSION[APPLICATION];
+if (isset($_SESSION[APPLICATION])) {
 
-// suppression de la notification en BD
-$user->delogger();
+	$user = $_SESSION[APPLICATION];
 
+	// suppression de la notification en BD
+	$user->delogger();
+	}
 session_destroy();
+header('Location: ./accueil.php?message=logout');
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,20 +30,6 @@ session_destroy();
 	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery.blockUI.js"></script>
 
-<script type="text/javascript">
-  
-  function delayRedirect(){  
-	window.location = "index.php";  
-  } 
-$(document).ready(function(){
-	setTimeout('delayRedirect()', 1000);
-	$.growlUI(
-				$(".attention .title").html(),
-				$(".attention .texte").html(),
-				2000
-			)
-	})
-</script>
 </head>
 <body>
 <img src="images/bigwait.gif" id="wait" alt="wait">
@@ -47,5 +37,6 @@ $(document).ready(function(){
     <span class="title">Confirmation</span>
     <span class="texte">Déconnexion en cours</span>
 </div>
+
 </body>
 </html>

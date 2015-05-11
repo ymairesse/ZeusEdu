@@ -31,8 +31,8 @@ if (!empty($acronyme) && !empty($mdp)) {
 		else {
 			$data['mdp']= $mdp;
 			if ($Application->mailAlerte($user,'mdp', $data))
-				header("Location: accueil.php?erreur=faux");
-				else header("Location: accueil.php?erreur=faux&noMail=true");
+				header("Location: accueil.php?message=erreurMDP");
+				else header("Location: accueil.php?message=erreurMDP");
 			}
 	}
 	else

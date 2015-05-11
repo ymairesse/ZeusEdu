@@ -1,5 +1,7 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
+		
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
@@ -7,24 +9,28 @@
 		{/foreach}
 		</select>
 
-		{if isset($prevNext) && isset($prevNext.prev)}
+		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
-			<img src="images/left.png" style="position: relative; width:18px; top:4px" alt="<" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</button>
 		{/if}
 		
-		{assign var=placeHolder value='Choisir un élève'}
 		<span id="choixEleve">
 			
 		{include file='listeEleves.tpl'}
 	
 		</span>
 		
-		{if isset($prevNext) && isset($prevNext.next)}
+		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
-		 <img src="images/right.png" style="position: relative; width:18px; top:4px" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+			 </button> 
 		{/if}
 		
-	<input type="submit" value="OK" name="OK" id="envoi">
+		
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}

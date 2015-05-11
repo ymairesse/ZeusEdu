@@ -10,7 +10,7 @@
 <script type="text/javascript">
 var id={$id};
 
-{literal}
+
 $(document).ready(function(){
 	
 	 $( "#dialog-confirm" ).dialog({
@@ -22,7 +22,7 @@ $(document).ready(function(){
 			"Effacer" : function() {
 				$(this).dialog("close");
 				$.post("inc/deleteFlashInfo.inc.php",
-					{'id': id},
+					{ 'id': id },
 					function (resultat) {
 						$("#flashInfo"+id).html(resultat);
 						}
@@ -35,5 +35,5 @@ $(document).ready(function(){
 		});
 
 	})
-{/literal}
+
 </script>

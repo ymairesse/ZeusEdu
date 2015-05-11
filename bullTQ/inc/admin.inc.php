@@ -19,7 +19,8 @@ switch ($mode) {
 			$init += $BullTQ->init('Mentions');
 			$smarty->assign('message', array(
 				'title'=>'Enregistrement',
-				'texte'=>"$init tables(s) vidée(s)")
+				'texte'=>"$init tables(s) vidée(s)",
+				'urgence'=>'danger')
 				);
 			}
 			else {
@@ -58,7 +59,8 @@ switch ($mode) {
 				$nbResultats = $BullTQ->enregistrerTypes($_POST);
 				$smarty->assign('message', array(
 						'title'=>"Enregistrement",
-						'texte'=>"$nbResultats types(s) modifié(s)"));
+						'texte'=>"$nbResultats types(s) modifié(s)",
+						'urgence'=>'warning'));
 				}
 			$listeCours = $BullTQ->listeCoursNiveaux($niveau);
 			$listeCoursTypes = $BullTQ->listeTypes($listeCours);

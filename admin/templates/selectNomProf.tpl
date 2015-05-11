@@ -1,20 +1,26 @@
-<div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+<div class="container">
+	
+<div id="selecteur" class="noprint">
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 	<select name="acronyme" id="selectUser">
 		<option value="">Sélectionner un utilisateur</option>
 		{foreach from=$listeProfs key=abreviation item=prof}
-			<option value="{$abreviation}"{if isset($acronyme) && ($acronyme == $abreviation)} selected="selected"{/if}>{$prof.nom} {$prof.prenom} [{$abreviation}]</option>
+			<option value="{$abreviation}"{if isset($acronyme) && ($acronyme == $abreviation)} selected="selected"{/if}>
+				{$prof.nom} {$prof.prenom} [{$abreviation}]
+			</option>
 		{/foreach}
 	</select>
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="{$etape}">
 	<input type="hidden" name="action" value="{$action}">
-	<input type="submit" value="OK" name="OK">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	</form>
 </div>
 
+</div>  <!-- container -->
+
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
 
 	$("#selectUser").change(function(){
@@ -29,5 +35,5 @@ $(document).ready(function(){
 		})
 
 })
-{/literal}
+
 </script>

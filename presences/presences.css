@@ -2,10 +2,6 @@
 	background-color: #FFE37F;
 }
 
-.tableauPresences td {
-	cursor: pointer;
-	}
-
 .up, .down {
 	cursor:pointer;
 	padding: 0 1em;
@@ -55,13 +51,15 @@ input[type=submit], input[type=reset], input[type=button] {
 
 .absent {
 	background-color: #f77;
-	color:white;
+	color: #fff;
 	text-align:center;
+	// border:2px solid black;	
 	}
 .present {
 	color: #000;
 	background-color:#7f7;
 	text-align:center;
+	// border:2px solid black;
 	}
 	
 .signale {
@@ -87,6 +85,12 @@ input[type=submit], input[type=reset], input[type=button] {
 	color:#000;
 	text-align:center;
 	}
+	
+.renvoi {
+	background: #333;
+	color: #fff;
+	text-align:center;
+}
 
 .size150 {
 	font-size: 150%;
@@ -116,14 +120,27 @@ input[type=submit], input[type=reset], input[type=button] {
 	width: 100%;
 	}
 
+
+
+
 .tableauPresences td {
-  border: 1px solid #dddddd;
+	cursor: pointer;	
+	border: 1px solid #dddddd;
 }
 
 .tableauPresences th {
-	border: 1px outset black;
+	border: 1px outset #999;
 	padding: 0;
 	background-color: #dddddd;
 	font-weight: normal;
 	font-size: 0.9em;
 	}
+
+td.now {
+	border: 2px solid orange;
+	font-size:1.3em;
+	}
+	
+td.notNow {
+	color:#aaa;
+}

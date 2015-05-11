@@ -1,29 +1,67 @@
-<ul class="detailsEleve">
-	<li>Coordonnées de la personne responsable
-		<ul>
-			<li><label>Responsable</label>{$eleve.nomResp}</li>
-			<li><label>e-mail</label>&nbsp;<a href="mailto:{$eleve.courriel}">{$eleve.courriel}</a></li>
-			<li><label>Téléphone</label>&nbsp;{$eleve.telephone1}</li>
-			<li><label>GSM</label>&nbsp;{$eleve.telephone2}</li>
-			<li><label>Téléphone bis</label>&nbsp;{$eleve.telephone3}</li>
-			<li><label>Adresse</label>{$eleve.adresseResp}</li>
-			<li><label>Code Postal</label>{$eleve.cpostResp} <label>Commune</label>{$eleve.localiteResp}</li>
-		</ul>
-	</li>
-	<li>Coordonnées du père de l'élève
-		<ul>
-			<li><label>Nom</label>{$eleve.nomPere}</li>
-			<li><label>e-mail</label><a href="mailto:{$eleve.mailPere}">{$eleve.mailPere}</a></li>
-			<li><label>Téléphone</label>{$eleve.telPere}</li>
-			<li><label>GSM</label>{$eleve.gsmPere}</li>
-		</ul>
-	</li>
-	<li>Coordonnées de la mère de l'élève
-		<ul>
-			<li><label>Nom</label>{$eleve.nomMere}</li>
-			<li><label>e-mail</label><a href="mailto:{$eleve.mailMere}">{$eleve.mailMere}</a></li>
-			<li><label>Téléphone</label>{$eleve.telMere}</li>
-			<li><label>GSM</label>{$eleve.gsmMere}</li>
-		</ul>
-	</li>
-</ul>
+<div class="row">
+
+	<div class="col-md-10 col-sm-10">
+
+		<div class="row">
+		
+			<div class="col-md-4 col-sm-12">
+			<h4>Coordonnées de la personne responsable</h4>
+			<dl>
+				<dt>Responsable</dt>
+					<dd>{$eleve.nomResp}</dd>
+				<dt>e-mail</dt>
+					<dd><a href="mailto:{$eleve.courriel}">{$eleve.courriel}</a></dd>
+				<dt>Téléphone</dt>
+					<dd>{$eleve.telephone1}</dd>
+				<dt>GSM</dt>
+					<dd>{$eleve.telephone2}</dd>
+				<dt>Téléphone bis</dt>
+					<dd>{$eleve.telephone3}</dd>
+				<dt>Adresse</dt>
+					<dd>{$eleve.adresseResp}</dd>
+				<dt>Code Postal</dt>
+					<dd>{$eleve.cpostResp}
+				<dt>Commune</dt>
+					<dd>{$eleve.localiteResp}</dd>
+			</dl>
+			</div>
+		
+			<div class="col-md-4 col-sm-12">
+			<h4>Coordonnées du père de l'élève</h4>
+				<dl style="list-unstyled">
+					<dt>Nom</dt>
+						<dd>{$eleve.nomPere}</dd>
+					<dt>e-mail</dt>
+						<dd><a href="mailto:{$eleve.mailPere}">{$eleve.mailPere}</a></dd>
+					<dt>Téléphone</dt>
+						<dd>{$eleve.telPere|default:''}</dd>
+					<dt>GSM</dt>
+						<dd>{$eleve.gsmPere}</dd>
+				</dl>
+			</div>
+		
+			<div class="col-md-4 col-sm-12">
+			<h4>Coordonnées de la mère de l'élève</h4>
+				<dl>
+					<dt>Nom</dt>
+						<dd>{$eleve.nomMere}</dd>
+					<dt>e-mail</dt>
+						<dd><a href="mailto:{$eleve.mailMere}">{$eleve.mailMere}</a></dd>
+					<dt>Téléphone</dt>
+						<dd>{$eleve.telMere|default:''}</dd>
+					<dt>GSM</dt>
+						<dd>{$eleve.gsmMere}</dd>
+				</dl>
+			</div>
+		
+		</div>  <!-- row -->
+		
+	</div>  <!-- col-md- .... -->
+	
+	<div class="col-md-2 col-sm-2">
+		
+		<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="draggable photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
+		
+	</div>  <!-- col-md... -->
+		
+</div>  <!-- row -->

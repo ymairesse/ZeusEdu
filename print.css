@@ -184,3 +184,15 @@ border: 1px solid #aaa;
 .infoSup {
 	display: none;
 }
+
+.navbar {
+  display: none;
+  }
+  
+.table td {
+  border:1px solid black;
+  }
+  
+.hidden-print {
+  display:none;
+  }

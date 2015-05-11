@@ -1,22 +1,37 @@
-<table style="font-size:0.8em" border="1" class="tableauTitu">
-	<tr>
-		<th>&nbsp;</th>
-		{foreach from=$listeCoursGrp key=coursGrp item=data}
-		<th title="{$data.libelle} | {$listeProfsCoursGrp.$coursGrp}">{$data.shortCours}</th>
-		{/foreach}
-		<th>Mentions</th>
-	</tr>
-	
+<div class="table-responsive">
+
+<table class="tableauTitu table table-condensed table-hover">
+	<thead>
+		<tr>
+			<th>&nbsp;</th>
+			{foreach from=$listeCoursGrp key=coursGrp item=data}
+			<th
+				data-container="body"
+				data-html="true"
+				title="{$data.libelle}<br>{$listeProfsCoursGrp.$coursGrp}">
+			{$data.shortCours}
+			</th>
+			{/foreach}
+			<th>Mentions</th>
+		</tr>
+	</thead>
 	{foreach from=$listePeriodes key=periode item=bulletin}
 	<tr>
 		<th>{$bulletin}</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=data}
 		
-		<td title="{$listeProfsCoursGrp.$coursGrp}: {$listeCoursGrp.$coursGrp.libelle}|{$commentairesProfs.$matricule.$coursGrp.$bulletin|default:'no comment'}">
-				<strong>{$syntheseCotes.$bulletin.$coursGrp|default:'&nbsp;'}</strong>
+		<td	class="pop"
+			data-container="body"
+			data-original-title="{$listeProfsCoursGrp.$coursGrp}"
+			data-content = "{$listeCoursGrp.$coursGrp.libelle}<br>{$commentairesProfs.$matricule.$coursGrp.$bulletin|default:'no comment'}"
+			data-placement="bottom"
+			data-html="true">
+				{$syntheseCotes.$bulletin.$coursGrp|default:'&nbsp;'}
 		 </td>
 		{/foreach}
 		<td class="cote"><strong>{$mentions.$matricule.$bulletin|default:'&nbsp;'}</strong></td> 
 	</tr>
 	{/foreach}
 </table>
+
+</div>  <!-- table-responsive -->

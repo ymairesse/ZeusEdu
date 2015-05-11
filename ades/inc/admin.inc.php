@@ -10,7 +10,8 @@ switch ($mode) {
 					$nb = $Application->changeStatut($acronyme, 'ades',$statut);
 					$smarty->assign("message", array(
 						'title'=> MODIF,
-						'texte'=>sprintf(NBSAVE,$nb)
+						'texte'=>sprintf(NBSAVE,$nb),
+						'urgence'=> 'info'
 						));
 					}
 				break;
@@ -20,7 +21,8 @@ switch ($mode) {
 					$nb = $Application->changeStatut($acronyme, 'ades','none');
 					$smarty->assign("message", array(
 						'title'=> MODIF,
-						'texte'=>sprintf(NBSAVE,$nb)
+						'texte'=>sprintf(NBDEL,$nb),
+						'urgence'=>'warning'
 						));
 					}
 				break;
@@ -31,7 +33,8 @@ switch ($mode) {
 				$nb = $Application->changeStatut($acronyme, 'ades',$statut);
 				$smarty->assign("message", array(
 					'title'=> MODIF,
-					'texte'=>sprintf(NBSAVE,$nb)
+					'texte'=>sprintf(NBSAVE,$nb),
+					'urgence'=>'success'
 					));
 					}
 				break;

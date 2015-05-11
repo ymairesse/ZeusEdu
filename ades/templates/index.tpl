@@ -1,81 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<meta charset="UTF-8">
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META HTTP-EQUIV="Expires" CONTENT="-1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{$titre}</title>
 
 {include file='../../javascript.js'}
 {include file='../../styles.sty'}
 
 </head>
-<body id="top">
+<body>
 
 {include file="menu.tpl"}
-{include file="../../templates/menuHaut.tpl"}
-{if isset($selecteur)}
-	{include file="$selecteur.tpl"}
-{/if}
 
-<div class="attention">
-{if isset($message)}
-<span class="title">{$message.title|default:''}</span>
-<span class="texte">{$message.texte|default:''}</span>
-<span class="icon">{$message.icon|default:''}</span>
-{/if}
-</div>
+<div class="container">
+	
+	{if isset($selecteur)}
+		{include file="$selecteur.tpl"}
+	{/if}
+
+	{if (isset($message))}
+	<div class="alert alert-dismissable alert-{$message.urgence|default:'info'}
+		{if (!(in_array($message.urgence,array('danger','warning'))))} auto-fadeOut{/if}">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<h4><span class="glyphicon
+			{if in_array($message.urgence,array('success','info'))}glyphicon-ok{/if}
+			{if in_array($message.urgence,array('danger','warning'))}glyphicon-exclamation-sign{/if}
+			"></span> {$message.title}</h4>
+		<p>{$message.texte}</p>
+	</div>
+	{/if}
+
+</div>  <!-- container -->
 
 <img src="../images/bigwait.gif" id="wait" style="display:none" alt="wait">
-<div id="corpsPage" style="clear:both">
+
+{* La valeur de $corpsPage est définie dans index.php ou les sous-modules php *}
+<div id="corpsPage">
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
+{else}
+	{include file="../../templates/corpsPageVide.tpl"}
 {/if}
 </div>
+
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
-	{literal}
-	$(document).ready(function(){
+	
+window.setTimeout(function() {
+    $(".auto-fadeOut").fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove(); 
+	    });
+	}, 3000);
 
-		$("*[title], .tooltip").tooltip();
+$(document).ready (function() {
 
-		// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page
-		if ($("#corpsPage form").length != 0)
-			$("#corpsPage form :input:visible:enabled").first().focus();
-			else
-			$("form :input:visible:enabled:first").focus();
+	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page; sauf les datepickers
+	if ($("#corpsPage form:visible").length != 0) 
+		$("#corpsPage form input:visible:enabled").not('.datepicker,.timepicker').first().focus();
+		else 
+		$("form input:visible:enabled").not('.datepicker,.timepicker').first().focus();
+		
+	$("*[title]").tooltip();
+	
+	$(".pop").popover({
+		trigger:'hover'
+		});
 
-		$(".attention").hide();
-		if ($(".attention .texte").html() != null) {
-			$.growlUI(
-				$(".attention .title").html(),
-				$(".attention .texte").html(),
-				3000
-			)
-		}
+	$("input").not(".autocomplete").attr("autocomplete","off");
 
-		$("#messageErreur").dialog({
-			modal: true,
-			width: 400,
-			buttons: {
-				Ok: function() {
-					$( this ).dialog("close" );
-					}
-				}
-			});
+})
 
-
-		$("input").tabEnter();
-
-		$("*[title], .tooltip").tooltip();
-
-		$(".draggable" ).draggable();
-
-		$("input").not(".autocomplete").attr("autocomplete","off");
-
-	});
-	{/literal}
 </script>
 
 </body>

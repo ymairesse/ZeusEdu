@@ -1,24 +1,125 @@
-<h3>Création d'un nouveau cours</h3>
-<form name="creationCours" id="creationCours" action="index.php" method="POST">
-	<p>Matière: <strong>{$cours}</strong>
-	{assign var=dataCours value=$listeMatieres.$cours} Libellé: <strong>{$dataCours.libelle}</strong> Cadre: <strong>{$dataCours.cadre} </strong> Statut<strong> {$dataCours.statut}</strong>
-		Nombre d'heures <strong> {$dataCours.nbheures}h</strong></p>
-	<p>Nouveau cours: <strong><span id="nouveauCours">{$cours}</span></strong></p>
-	<label for="groupe">Groupe [(0)n(x)]</label><input type="text" name="groupe" id="groupe" size="3" maxlength="3"><br>
+<div class="container">
 	
-	<label for="profs">Professeur(s)</label>
-		<select name="profs[]" id="profs" multiple="multiple">
-			<option value="">Sélectionner un ou plusieurs noms</option>
-			{foreach from=$listeProfs key=acronyme item=data}
-			<option value="{$acronyme}">{$data.nom} {$data.prenom}</option>
-			{/foreach}
-		</select>
-	<input type="submit" name="submit" id="submit" value="Enregistrer">
-	<input type="hidden" name="cours" id="matiere" value="{$cours}">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
-	<input type="hidden" name="niveau" value="{$niveau}">
-	<input type="hidden" name="etape" value="enregistrer">
+<h3>Création d'un nouveau cours</h3>
+
+<form name="creationCours" id="creationCours" action="index.php" method="POST" role="form" class="form-vertical">
+
+	<div class="row panel panel-default">
+		
+		<div class="panel-heading">
+			<h4>Matière</h4>
+		</div>
+		
+		<div class="panel-body">
+		
+		<div class="col-md-2 col-sm-6">
+
+			<div class="input-group">
+				<label>Matière</label>
+				<p class="form-control-static">{$cours}</p>
+			</div>
+			
+		</div>
+		
+		<div class="col-md-2 col-sm-6">
+
+			{assign var=dataCours value=$listeMatieres.$cours}
+			<div class="input-group">
+				<label>Libellé</label>
+				<p class="form-control-static">{$dataCours.libelle}</p>
+			</div>
+			
+		</div>
+		
+		<div class="col-md-2 col-sm-6">
+		
+			<div class="input-group">
+				<label>Cadre</label>
+				<p class="form-control-static">{$dataCours.cadre}</p>
+			</div>
+			
+		</div>
+		
+		<div class="col-md-2 col-sm-6">			
+				
+			<div class="input-group">
+				<label>Statut</label>
+				<p class="form-control-static">{$dataCours.statut}</p>
+			</div>
+		
+		</div>
+		
+		<div class="col-md-2 col-sm-6">	
+				
+			<div class="input-group">
+				<label>Nombre d'heures</label>
+				<p class="form-control-static">{$dataCours.nbheures}h</p>
+			</div>
+			
+		</div>  <!-- col-md-... -->
+		
+		</div>  <!-- panel-body -->
+		
+	</div>  <!-- row -->
+	
+	<div class="row">
+
+		<div class="panel panel-default">
+			
+			<div class="panel-heading">
+				<h4>Nouvelle occurrence</h4>
+			</div>
+			
+			<div class="panel-body">
+				
+				<div class="col-md-3 col-sm-6">
+				
+					<div class="input-group">
+						<label>Nouveau cours:</label>
+						<p class="form-control-static" id="nouveauCours">{$cours}</p>
+					</div>
+					
+				</div>  <!-- col-md-... -->
+
+				<div class="col-md-4 col-sm-6">
+					
+					<div class="input-group">
+						<label for="groupe">Groupe [(0)n(x)]</label>
+						<input type="text" name="groupe" id="groupe" maxlength="3" class="form-control">
+						<div class="help-block">1 ou 2 chiffres puis 0 ou 1 lettre (a, b ou c)</div>
+					</div>
+				
+				</div>  <!-- col-md-... -->
+				
+				<div class="col-md-5 col-sm-6">
+					
+					<div class="input-group">
+						<label for="profs">Professeur(s)</label>
+						<select name="profs[]" id="profs" multiple="multiple" class="form-control">
+							<option value="">Sélectionner un ou plusieurs noms</option>
+							{foreach from=$listeProfs key=acronyme item=data}
+							<option value="{$acronyme}">{$data.nom} {$data.prenom}</option>
+							{/foreach}
+						</select>
+						<div class="help-block">Touche CTRL enfoncée pour une sélection multiple</div>
+					</div>
+					
+				</div>  <!-- col-md-... -->
+				
+			</div>  <!-- panel-body -->
+			
+		</div>	<!-- panel -->
+			
+			<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
+			<button type="reset" class="btn btn-default pull-right">Annuler</button>
+			<input type="hidden" name="cours" id="matiere" value="{$cours}">
+			<input type="hidden" name="action" value="{$action}">
+			<input type="hidden" name="mode" value="{$mode}">
+			<input type="hidden" name="niveau" value="{$niveau}">
+			<input type="hidden" name="etape" value="enregistrer">
+				
+				
+	</div>  <!-- row -->
 </form>
 
 {if !(empty($listeCoursGrp))}
@@ -79,8 +180,11 @@
 </form>
 {/if}
 
+</div>
+
+
 <script type="text/javascript">
-{literal}
+
 	$(document).ready(function(){
 		$("#groupe").keyup(function(){
 			var groupe = $(this).val();
@@ -122,6 +226,6 @@
         },
         "format incorrect"
         );
-{/literal}
+
 </script>
 

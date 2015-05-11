@@ -16,8 +16,8 @@ switch ($mode) {
 			$smarty->assign("message",
 				array(
 					'title'=>SAVE,
-					'texte'=>sprintf(NBSAVE,$nb_cours[0])
-					)
+					'texte'=>sprintf(NBSAVE,$nb_cours[0]),
+					'urgence'=>'info')
 				);
 			$cours = $nb_cours[1];
 		}
@@ -35,17 +35,20 @@ switch ($mode) {
 		$smarty->assign('selecteur', 'selectNiveauMatiere');
 		$smarty->assign('corpsPage','editMatiere');
 		break;
+	
 	case 'deleteCours':
 		echo "delete";
 		$nb = $Bulletin->deleteOrphanCours($cours);
 		$smarty->assign('message',
 				array(
 					'title'=>'Suppression',
-					'texte'=>"$nb cours supprimé")
+					'texte'=>"$nb cours supprimé(s)",
+					'urgence'=>'info')
 					);
 		$cours = Null;
 		$smarty->assign('mode','editCours');
 		// break;  pas de break, on continue sur l'édition
+		
 	case 'editCours':
 		if ($etape == 'enregistrer') {
 			$groupe = isset($_POST['groupe'])?$_POST['groupe']:Null;
@@ -57,7 +60,8 @@ switch ($mode) {
 				$smarty->assign("message",
 								array(
 									'title'=>SAVE,
-									'texte'=>sprintf(NBSAVE,$nbInsert)
+									'texte'=>sprintf(NBSAVE,$nbInsert),
+									'urgence'=>'success'
 									)
 								);
 					}
@@ -81,10 +85,7 @@ switch ($mode) {
 
 		break;	
 
-
-}
-
-
+	}
 
 ?>
 

@@ -1,3 +1,4 @@
+<div class="container">
 <h2>Page d'informations</h2>
 
 <h3 id="licence">Licence du logiciel</h3>
@@ -30,3 +31,4 @@
 <p>Si vous constatez une tentative d'accès frauduleux avec votre nom d'utilisateur (vous serez prévenu par mail), n'hésitez pas à contacter les administrateurs pour savoir les suites qui sont données.</p>
 <p>Pour plus d'informations sur la notion d'adresse IP, voyez <a href="http://fr.wikipedia.org/wiki/Adresse_IP" target="_blank">http://fr.wikipedia.org/wiki/Adresse_IP</a></p>
 
+</div>

@@ -1,5 +1,5 @@
-<div id="selecteur" class="noprint" style="clear:both">
-	<form name="choixGroupe" action="index.php" method="POST" id="choixGroupeDate">
+<div id="selecteur" class="selecteur noprint" style="clear:both">
+	<form name="choixGroupe" action="index.php" method="POST" id="formSelecteur">
 	Classe: 
 	<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
@@ -8,12 +8,12 @@
 		{/foreach}
 	</select>
 		Avec signature <input type="checkbox" value=true {if $signature==true}checked=checked{/if} name="signature">
-	Date: <input type="text" name="date" value="{$date}" id="date" size="15">
+	Date: <input type="text" name="date" value="{$date}" id="datepicker" size="15">
 	<select name="typeDoc">
 		<option value="competences"{if $typeDoc == 'competences'} selected="selected"{/if}>Rapport de compétences</option>
 		<option value="pia"{if $typeDoc == 'pia'} selected="selected"{/if}>Plan individuel d'apprentissage</option>
 	</select>
-	<input type="Submit" name="OK" value="OK" id="submit">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="{$etape}">
@@ -21,33 +21,23 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
-	$("#date").datepicker({ 
-		closeText: 'Fermer',
-		prevText: '&#x3c;Préc',
-		nextText: 'Suiv&#x3e;',
-		currentText: 'Courant',
-		monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin',
-		'Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
-		monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun',
-		'Jul','Aoû','Sep','Oct','Nov','Déc'],
-		dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
-		dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
-		dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],
-		weekHeader: 'Sm',
-		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
-		isRTL: false,
-		showMonthAfterYear: false,
-		yearSuffix: ''
+
+	$("#datepicker").datepicker({
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
 		});
 
-	$("#choixGroupeDate").submit(function(){
+	$("#formSelecteur").submit(function(){
 		$("#wait").show();
 		$.blockUI();
 		$("#corpsPage").hide();
 	})
 })
-{/literal}
+
 </script>

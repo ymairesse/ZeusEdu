@@ -1,96 +1,96 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-<div  style="clear:both">
-	<form enctype="multipart/form-data" name="mailing" id="mailing" method="POST" action="index.php">
+<div class="container">
 
-	<div class="selectMail gauche">
-	<h3>Destinataires</h3>
+	<form enctype="multipart/form-data" name="mailing" id="mailing" method="POST" action="index.php" role="form" class="form-vertical">
 
-	<!--	tous les utilisateurs -->
-	<h4 class="teteListe" title="Cliquer pour ouvrir"><input type="checkbox" class="checkListe">{$listeProfs.nomListe}</h4>
-	<ul class="listeMails" style="display:none">
-	{assign var=membresProfs value=$listeProfs.membres}
-	{foreach from=$membresProfs key=acro item=prof}
-		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
-			<span class="label">{$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
-		</li>
-	{/foreach}
-	</ul>
+	<div class="row">
+		
+		<div class="col-md-3 col-xs-12 selectMail ">
+			
+				{include file="destinataires.tpl"}
+			
+		</div>  <!-- col-md-... -->
+		
+		<div class="col-md-9 col-xs-12">
+			
+			<div class="panel panel-default">
+			
+				<div class="panel-header">
+					<h3>Votre mail</h3>
+				</div>
+				
+				<div class="panel-body">
+					<div class="form-group">
+						<label for="expediteur">Expéditeur</label>
+						{if $userStatus == 'direction' || $userStatus == 'admin'}
+							<select name="mailExpediteur" id="expediteur" class="form-control">
+								<option value="{$NOREPLY}">{$NOMNOREPLY}</option>
+								{foreach from=$listeDirection key=acro item=someone}
+									<option value="{$someone.mail}"{if $acronyme == $acro} selected="selected"{/if}>{$someone.nom}</option>
+								{/foreach}
+							</select>
+						{else}
+							<input type="hidden" name="mailExpediteur" value="{$identite.mail}">
+							<p class="form-control-static" style="font-weight:bold">{$identite.prenom} {$identite.nom}</p>
+						{/if}
+					</div>  <!-- form-group -->
+						
+					<div class="form-group">
+						<span id="grouper" title="créer un groupe" style="display:none"><img src="images/groupe.png" alt="grouper"></span>
+						<label>Destinataire(s):</label>
+						<span class="form-control-static" id="destinataires"></span>
+					</div>
 
-	<!--	tous les titulaires (profs principaux) -->
-	<h4 class="teteListe" title="Cliquer pour ouvrir"><input type="checkbox" class="checkListe">{$listeTitus.nomListe}</h4>
-	<ul class="listeMails" style="display:none">
-	{assign var=membresProfs value=$listeTitus.membres}
-	{foreach from=$membresProfs key=acro item=prof}
-		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
-			<span class="label">{$prof.classe} {$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
-		</li>
-	{/foreach}
-	</ul>
+					<div class="form-group" id="nomGroupe" style="display:none">
+						<label for="groupe">Nom du groupe</label>
+						<input type="text" id="groupe" name="groupe" placeholder="Nom du groupe" class="form-control">
+						<div class="help-block">Choisissez un nom pour ce nouveau groupe de mailing</div>
+					</div>
+				
+					<div class="form-group">
+						<label for="objet">Objet</label>
+						<input type="text" name="objet" id="objet" placeholder="Objet de votre mail" class="form-control">
+					</div>
+					
+					<button class="btn btn-lg btn-primary pull-right" type="Submit" name="submit">Envoyer</button>
+					
+					<textarea id="texte" name="texte" rows="15" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true"></textarea>
+					
+						<span class="pull-right">Ajout de disclaimer
+						<input type="checkbox" name="disclaimer" id='disclaimer' value="1" checked="checked">
+						</span>
+					<div class="clearfix"></div>
+					{foreach from=$nbPJ key=n item=wtf}
+						<p class="labelpj" id="pj{$n}"><span style="float:left">Pièce jointe</span> <input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}"></p>
+					{/foreach}
 
-	<!-- 	toutes les autres listes personnelles ou publiées -->
-	{foreach from=$listesAutres key=idListe item=listePerso}
-	{assign var=membresProfs value=$listePerso.membres}
-	<h4 class="teteListe" title="{if $membresProfs == Null}Liste vide{else}Cliquer pour ouvrir{/if} :
-		{if $listePerso.statut == 'publie'}Publié{elseif $listePerso.statut == 'abonne'}Abonné{else}Personnel{/if}">
-		<input type="checkbox" class="checkListe">{$listePerso.nomListe}
-		<img src="../images/{if $listePerso.statut == 'publie'}shared{elseif $listePerso.statut == 'abonne'}abonne{else}personal{/if}.png" alt="{$listePerso.statut}"></h4>
-	{if $membresProfs != Null}
-	<ul class="listeMails" style="display:none">
-			{foreach from=$membresProfs key=acro item=prof}
-			<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
-			<span class="label">{$prof.nom|truncate:15:'...'} {$prof.prenom} {$prof.classe|default:''}</span>
-		</li>
-		{/foreach}
-	</ul>
-	{/if}
-	{/foreach}
-	</div>
-
-	<div class="droit">
-		<h3>Votre mail</h3>
-		<p><strong>Expéditeur:</strong>
-		{if $userStatus == 'direction' || $userStatus == 'admin'}
-			<select name="mailExpediteur">
-				<option value="{$NOREPLY}">{$NOMNOREPLY}</option>
-			{foreach from=$listeDirection key=acro item=someone}
-				<option value="{$someone.mail}"{if $acronyme == $acro} selected="selected"{/if}>{$someone.nom}</option>
-			{/foreach}
-			</select>
-		{else}
-			<input type="hidden" name="mailExpediteur" value="{$identite.mail}">
-			<span style="font-weight:bold">{$identite.prenom} {$identite.nom}</span>
-		{/if}
-		</p>
-		<p><span id="grouper" title="créer un groupe" style="display:none"><img src="images/groupe.png" alt="grouper"></span>
-			<strong>Destinataire(s):</strong> <span style="font-weight:bold" id="destinataires"></span></p>
-		<p id="nomGroupe" style="display: none"> <strong>Nom du groupe: </strong> <input type="text" id="groupe" name="groupe" maxlength="30" size="30" placeholder="Nom du groupe"></p>
-		<p><strong>Objet:</strong> <input type="text" name="objet" id="objet" maxlength="80" size="75" placeholder="Objet de votre mail"></p>
-		<textarea id="texte" name="texte" cols="80" rows="15" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true"></textarea>
-		<input type="hidden" name="MAX_FILE_SIZE" value="4000000">
-		{foreach from=$nbPJ key=n item=wtf}
-			<div class="labelpj" id="pj{$n}" style="text-align:right;">Pièce jointe <input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}"></div>
-		{/foreach}
-		Ajout de disclaimer: <input type="checkbox" name="disclaimer" value="1" checked="checked">
-		<input type="hidden" id="nomExpediteur" name="nomExpediteur" value="{$identite.prenom} {$identite.nom}">
-		<input type="hidden" name="mode" value="{$mode}">
-		<input type="hidden" name="action" value="{$action}">
-		<input type="Submit" name="submit" value="Envoyer" class="fauxBouton">
-	</div>
-
+					<input type="hidden" name="MAX_FILE_SIZE" value="10000000">					
+					<input type="hidden" id="nomExpediteur" name="nomExpediteur" value="{$identite.prenom} {$identite.nom}">
+					<input type="hidden" name="mode" value="{$mode}">
+					<input type="hidden" name="action" value="{$action}">
+		
+				</div>  <!-- panel-body -->
+			
+			</div>  <!-- panel -->
+		
+		</div>  <!-- col-md-... -->
+	
+		</div>  <!-- row -->
+	
 	</form>
-</div>
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
+	
 $(document).ready(function(){
-	$("h4.teteListe").click(function(){
-		$(this).next(".listeMails").fadeToggle('slow');
+	
+	$(".teteListe").click(function(){
+		$(this).parent().next().toggle()
 		})
 
 	$(".checkListe").click(function(event){
-		event.stopPropagation();
-		})
-
-	$(".checkListe").click(function(){
+		event.stopPropagation();  // ne pas ouvrir ou fermer la liste en plus de cocher les éléments
 		$(this).parent().next().find('.selecteur').trigger('click');
 		})
 
@@ -116,7 +116,7 @@ $(document).ready(function(){
 		var message = '';
 		if ($("#objet").val() == '') {
 			okObjet = false;
-			message = 'Votre message n\'a pas d\'objet\n';
+			message = 'Votre message n\'a pas d\'objet.\n';
 			}
 		if ($("#destinataires").text() == '') {
 			okMail = false;
@@ -125,7 +125,7 @@ $(document).ready(function(){
 		value = CKEDITOR.instances['texte'].getData();
 		if (value.trim() == '') {
 			okTexte = false;
-			message += 'Votre mail est vide';
+			message += 'Votre mail est vide.';
 			}
 
 		if (okObjet && okMail && okTexte) {
@@ -152,7 +152,7 @@ $(document).ready(function(){
 			else $("#destinataires").text(nb+" destinataires");
 		})
 
-	$(".label").click(function(){
+	$(".labelProf").click(function(){
 		$(this).prev().trigger('click');
 		})
 
@@ -164,4 +164,5 @@ $(document).ready(function(){
 		})
 
 	})
+
 </script>

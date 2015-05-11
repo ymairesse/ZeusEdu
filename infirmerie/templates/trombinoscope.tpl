@@ -13,7 +13,7 @@
 		{else}
 			<li class="unePhoto" id="{$matricule}">
 		{/if}
-		<a href="index.php?action=parEleve&amp;matricule={$matricule}&amp;selectClasse={$classe}">
+		<a href="index.php?action=ficheEleve&amp;matricule={$matricule}&amp;selectClasse={$classe}">
 		<img src="../photos/{$unEleve.photo}.jpg" style="width:128px; height:190px" alt="{$matricule}"
 		 title="Détails de {$unEleve.prenom} {$unEleve.nom}"><br /></a>
 		{$unEleve.classe} {$unEleve.prenom} {$unEleve.nom}

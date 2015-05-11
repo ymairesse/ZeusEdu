@@ -13,7 +13,7 @@ $smarty->assign('tri', $tri);
 // la liste de tous les cours du prof
 $listeCoursProf = $user->listeCoursProf("'G','S','TT'");;
 // on ne retient que les cours qui se trouvent aussi dans la table des épreuves externes
-$listeCours = $Bulletin->listeCoursEprExterne($listeCoursProf);
+$listeCours = $Bulletin->listeCoursEprExterne($listeCoursProf,ANNEESCOLAIRE);
 $smarty->assign('listeCours', $listeCours);
 
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
@@ -25,16 +25,16 @@ $smarty->assign('COTEABS', COTEABS);
 
 if ($coursGrp) {
 	if ($etape == 'enregistrer') {
-		$resultat = $Bulletin->enregistrerEprExternes($_POST);
+		$resultat = $Bulletin->enregistrerEprExternes($_POST,ANNEESCOLAIRE);
 		$tableErreurs = $resultat['erreurs'];
 		$smarty->assign('tableErreurs',$tableErreurs);
-		$smarty->assign("message", array(
-				'title'=>"Enregistrement",
+		$smarty->assign('message', array(
+				'title'=>SAVE,
 				'texte'=>$resultat['nb']." enregistrements modifiées")
 				);
 		}
 	$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
-	$listeCotes = $Bulletin->listeCotesEprExterne($coursGrp);
+	$listeCotes = $Bulletin->listeCotesEprExterne($coursGrp,ANNEESCOLAIRE);
 	$listeSituationsBulletin = $Bulletin->listeSituationsCours($listeEleves,$coursGrp,NBPERIODES);
 	$smarty->assign('listeSituations', $listeSituationsBulletin);
 	$smarty->assign('NBPERIODES',NBPERIODES);

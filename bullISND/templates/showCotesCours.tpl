@@ -1,8 +1,11 @@
-<div id="resultat">
-<h1 style="clear:both" title="{$cours.coursGrp}">{$cours.libelle} {$cours.nbheures}h [{$cours.annee}] | Bulletin n° {$bulletin}</h1>
+<div class="container">
 
-<table class="tableauAdmin" style="width:100%">
+<div id="resultat">
+<h3 style="clear:both" title="{$cours.coursGrp}">{$cours.libelle} {$cours.nbheures}h [{$cours.annee}] | Bulletin n° {$bulletin}</h3>
+
+<table class="table table-striped table-hover table-bordered">
 	<!-- titre du tableau -->
+	<thead>
 	<tr>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
@@ -13,6 +16,7 @@
 		<th colspan="{$nbCompetences*2}" style="text-align:center">Certificatif</th>
 		<th class="ponderation">{$ponderations.$coursGrp.$bulletin.all.cert|default:'&nbsp;'}</th>
 	</tr>
+	</thead>
 	<!-- sous-titre du tableau -->
 	<tr>
 		<th>Classe</th>
@@ -20,7 +24,8 @@
 		<!-- titres compétences Formatif -->
 		{foreach from=$listeCompetences key=cours item=lesCompetences}
 			{foreach from=$lesCompetences key=idComp item=uneCompetence}
-				<th colspan="2" title="{$uneCompetence.libelle}"><span class="nano">{$uneCompetence.id}</span>
+				<th colspan="2" title="{$uneCompetence.libelle}" data-container="body">
+					<span class="nano">{$uneCompetence.id}</span>
 					{$uneCompetence.libelle|truncate:5:"..."}</th>
 			{/foreach}
 		{/foreach}
@@ -28,7 +33,8 @@
 		<!-- titres compétences Certificatif -->
 		{foreach from=$listeCompetences key=cours item=lesCompetences}
 			{foreach from=$lesCompetences key=idComp item=uneCompetence}
-				<th colspan="2" title="{$uneCompetence.libelle}"><span class="nano">{$uneCompetence.id}</span> 
+				<th colspan="2" title="{$uneCompetence.libelle}" data-container="body">
+					<span class="nano">{$uneCompetence.id}</span> 
 					{$uneCompetence.libelle|truncate:5:"..."}</th>
 			{/foreach}
 		{/foreach}
@@ -40,7 +46,15 @@
 		<tr>
 		<td>{$unEleve.classe}</td>
 		{assign var=nomPrenom value=$unEleve.nom|cat:' '|cat:$unEleve.prenom}
-		<td title="{$matricule}">{$nomPrenom|truncate:20:"..."}</td>
+		<td style="cursor:pointer"
+			class="popover-eleve"
+			data-toggle="popover"
+			data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$matricule}' style='width:100px'>"
+			data-html="true"
+			data-container="body"
+			data-original-title="{$nomPrenom|truncate:17:'...'}">
+			{$nomPrenom|truncate:20:"..."}
+		</td>
 
 		<!-- Cotes Formatives -->
 		{foreach from=$listeCompetences key=cours item=lesCompetences}
@@ -98,3 +112,23 @@
 	{/foreach}
 {/foreach}
 </ul>
+
+</div>  <!-- container -->
+
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		
+	$(".popover-eleve").mouseenter(function(event){
+		$(this).popover('show');
+		})
+	
+	$(".popover-eleve").mouseout(function(event){
+		$(this).popover('hide');
+		})
+		
+	})
+	
+	
+</script>

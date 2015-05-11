@@ -23,8 +23,9 @@ switch ($etape) {
 			$smarty->assign('bulletin', $bulletin);
 			$smarty->assign('message', array(
 					'title'=>'Enregistrement',
-					'texte'=>"$nb modification(s) enregistrée(s)")
-					);			
+					'texte'=>"$nb modification(s) enregistrée(s)",
+					'urgence'=>'success'
+					));			
 			}
 		// pas de break	
 	case 'showNiveau':

@@ -1,6 +1,6 @@
 <?php
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$id = isset($_REQUEST['id'])?$_REQUEST['id']:Null;
+$id = isset($_POST['id'])?$_POST['id']:Null;
 $mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
 
 require_once (INSTALL_DIR."/inc/classes/classFlashInfo.inc.php");

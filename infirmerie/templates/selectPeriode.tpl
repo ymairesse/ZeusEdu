@@ -1,54 +1,77 @@
-<form name="choixPeriode" id="choixPeriode" method="POST" action="index.php" style="clear:both" class="noprint">
-	<label for="dateDebut">Début de période</label>
-		<input class="datepicker" size="10" maxlength="10" type="text" name="dateDebut" id="dateDebut"
-			value="{$dateDebut|default:''}">
-	<label for="dateFin">Fin de période</label>
-		<input class="datepicker" size="10" maxlength="10" type="text" name="dateFin" id="dateFin"
-			value="{$dateFin|default:''}">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
-	<input type="hidden" name="etape" value="{$etape}">
-	<input type="submit" name="submit" value="OK">
-</form>
+<div id="selecteur">
+	
+	<form name="choixPeriode" id="formSelecteur" method="POST" action="index.php" class="noprint form-inline">
+		
+		<div class="form-group">
+			<label for="date">Début de période</label>
+			<input id="dateDebut" maxlength="10" type="text" name="dateDebut" value="{$dateDebut|default:''}" class="form-control-inline datepicker">
+		</div>
+		
+		<div class="form-group">
+			<label for="date">Fin de période</label>
+			<input id="dateFin" maxlength="10" type="text" name="dateFin" value="{$dateFin|default:''}" class="form-control-inline">
+		</div>
+		
+		<input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="mode" value="{$mode}">
+		<input type="hidden" name="etape" value="{$etape}">
+		<button type="submit" class="btn btn-primary">OK</button>
+	</form>
+</div>
+
 
 <script type="text/javascript">
-{literal}
 
-	$("document").ready(function(){
+$("document").ready(function(){
 		
-		$( ".datepicker" ).datepicker({ 
-			dateFormat: "dd/mm/yy",
-			prevText: "Avant",
-			nextText: "Après",
-			monthNames: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
-			dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
-			firstDay: 1	
-			});
+	$( "#dateDebut").datepicker({ 
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
+		})
+		.off('focus')
+		.click(function () {
+			  $(this).datepicker('show');
+		  });
+
+	$( "#dateFin").datepicker({
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
 		});
 		
-		$("#choixPeriode").submit(function(){
-			var erreur = false;
-			var dateDebut = $("#dateDebut").val();
+	
+	$("#formSelecteur").submit(function(){
+	
+		var dateDebut = $("#dateDebut").val();
+		var dateFin = $("#dateFin").val();
+		
+		if ((dateDebut != '') && (dateFin != '')) {
 			var jourDebut = parseInt(dateDebut.substring(0,2));
 			var moisDebut = parseInt(dateDebut.substring(3,5));
 			var anDebut = parseInt(dateDebut.substring(6,10));
-			var dateDebut = new Date(anDebut, moisDebut, jourDebut);
+			var beginDate = new Date(anDebut, moisDebut, jourDebut);
 			
-			
-			var dateFin = $("#dateFin").val();
 			var jourFin = parseInt(dateFin.substring(0,2));
 			var moisFin = parseInt(dateFin.substring(3,5));
 			var anFin = parseInt(dateFin.substring(6,10));
-			var dateFin = new Date(anFin, moisFin, jourFin);
-			
-			if (dateDebut > dateFin) {
-					alert("Date finale avant la date initiale... Veuillez corriger.");
-					return false
+			var endDate = new Date(anFin, moisFin, jourFin);
+			if (beginDate > endDate) {
+				$("#dateFin").val(dateDebut);
+				$("#dateDebut").val(dateFin);
 				}
-				else {
-					$("#wait").show();
-					$.blockUI();
-					}
+			$("#wait").show();
+			$.blockUI();
+			}
+			else return false;
 			})
-{/literal}
+
+})
+
 </script>

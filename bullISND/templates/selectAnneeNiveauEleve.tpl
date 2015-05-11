@@ -22,10 +22,10 @@
 
 		</span>
 	<input type="hidden" value="" name="nomEleve" id="nomEleve">
-	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showEleve">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi" style="display:none">OK</button>		
 	</form>
 
 </div>

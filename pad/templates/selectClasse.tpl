@@ -1,34 +1,40 @@
-<script type="text/javascript">
-{literal}
-	$(document).ready (function() {
+<div id="selecteur" class="noprint" style="clear:both">
 	
-		$("#selectClasse").change(function(){
-			if ($(this).val() != '') {
-				$("#wait").css("z-index","999").show();
-				$("#formSelecteur").submit();
-			}
-		})
-		
-		$("#formSelecteur").submit(function(){
-			if ($("#selectClasse").val() == "")
-				return false;
-				else {
-					$.blockUI();
-					$("#wait").css("z-index","999").show();
-					}
-		})
-	})
-{/literal}
-</script>
-<div id="selecteurClasse" class="noprint" style="float:left; clear:both; width:12em;">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		<select name="selectClasse" id="selectClasse">
-		<option value="">Classe</option>
-			{foreach from=$lesGroupes item=unGroupe}
-				<option value="{$unGroupe}" {if $unGroupe == $classe}selected{/if}>{$unGroupe}</option>
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
+		<div class="input-group">
+			<label for="selectClasse">Classe</label>
+			<select name="classe" id="selectClasse" class="form-control-inline">
+			<option value="">Classe</option>
+			{foreach from=$listeClasses item=uneClasse}
+				<option value="{$uneClasse}"{if (isset($classe)) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
 			{/foreach}
-		</select>
-		<input type="submit" value="OK" name="OK" id="envoi">
-		<input type="hidden" name="action" value="parClasses">
+			</select>
+		</div>
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
+	<input type="hidden" name="action" value="{$action}">
+	<input type="hidden" name="mode" value="{$mode}">
+	<input type="hidden" name="etape" value="showClasse">
+	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
 </div>
+
+<script type="text/javascript">
+
+$(document).ready (function() {
+
+	$("#formSelecteur").submit(function(){
+		if ($("#selectClasse").val() != '') {
+			$("#wait").show();
+			$.blockUI();
+			}
+			else return false;
+	})
+	
+	$("#selectClasse").change(function(){
+		if ($(this).val() != '')
+			$("#formSelecteur").submit();
+		})
+
+})
+
+</script>

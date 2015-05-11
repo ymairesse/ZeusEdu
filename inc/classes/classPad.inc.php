@@ -33,10 +33,11 @@ class padEleve {
         $sql .= "SET matricule='$this->matricule', proprio='$this->proprio' ";
         $resultat = $connexion->exec($sql);
         
-		// sélection du pad propriétaires (y compris celui qui vient éventuellement d'être créé)
+		// sélection du pad propriétaire (y compris celui qui vient éventuellement d'être créé)
 		$sql = "SELECT id, proprio, texte ";
 		$sql .= "FROM ".PFX."pad ";
 		$sql .= "WHERE proprio = '$this->proprio' AND matricule = '$this->matricule' ";
+
 		$resultat = $connexion->query($sql);
 		$resultat->setFetchMode(PDO::FETCH_ASSOC);
 
@@ -79,10 +80,13 @@ class padEleve {
     /** 
      * enregistrement des données élèves
      * $POST provient du $_POST de la fiche et peut contenir diverses données
-     * @param $POST
+     * on en extrait:
+     *  - le matricule de l'élève concerné
+     *  - le champ texte_ID dont le nom comtien l'ID du texte éventuellement existant
+     * @param $post
      * @return integer
      */
-    function savePadEleve ($post) {
+    public function savePadEleve ($post) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$matricule = $post['matricule'];
 		$nb=0;

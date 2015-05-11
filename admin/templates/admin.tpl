@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -13,8 +13,8 @@
 <link rel="stylesheet" href="../js/jquery.autocomplete.css" type="text/css" media="screen">
 <title>{$titre}</title>
 <script type="text/javascript">
-{literal}
-    $(document).ready (function() {
+
+$(document).ready (function() {
 		
  	$("input:visible:enabled:first").select();
 	
@@ -25,9 +25,10 @@
 		});
 		classesGroupees = lesClasses.join(":");
 		var groupe = $("#groupe").val();
-		$.get("inc/grouper.inc.php",
-			{'lesClasses': classesGroupees,
-			 'groupe': groupe},
+		$.get("inc/grouper.inc.php", {
+			'lesClasses': classesGroupees,
+			 'groupe': groupe
+			 },
 			 function (resultat){
 			 	$("#groupement").html(resultat);
 			});
@@ -48,8 +49,8 @@
         $("#btnAlias").attr("disabled", false);
         })
 
-    })
-{/literal}
+})
+
 </script>
 </head>
 <body>

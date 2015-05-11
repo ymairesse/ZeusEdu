@@ -1,32 +1,38 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
-		{section name=boucleBulletin start=1 loop=$nbBulletins+1}
+	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
+		<div class="input-group">
+			<label for="bulletin">Bulletin n°</label>
+			<select name="bulletin" id="bulletin" class="form-control-inline>
+			{section name=boucleBulletin start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.boucleBulletin.index}"
 					{if isset($bulletin) && $smarty.section.boucleBulletin.index == $bulletin}selected{/if}>
 				{$smarty.section.boucleBulletin.index}</option>
-		{/section}
-	</select>
+			{/section}
+			</select>
+		</div>
+		
+		<div class="input-group">
 	
-	<select name="coursGrp" id="coursGrp">
-		<option value="">Cours</option>
-		{if isset($listeCours)}
-		{foreach from=$listeCours key=unCoursGrp item=unCours}
-			<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected{/if}>
-				{$unCours.statut} {$unCours.nbheures}h - {$unCours.libelle} {$unCours.annee} ({$unCours.coursGrp})</option>
-		{/foreach}
-		{/if}
-	</select>
+		<select name="coursGrp" id="coursGrp" class="form-control-inline">
+			<option value="">Cours</option>
+			{if isset($listeCours)}
+			{foreach from=$listeCours key=unCoursGrp item=unCours}
+				<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected{/if}>
+					{$unCours.statut} {$unCours.nbheures}h - {$unCours.libelle} {$unCours.annee} ({$unCours.coursGrp})</option>
+			{/foreach}
+			{/if}
+		</select>
+		</div>
+		
 	{* si un cours est sélectionné, on présente le bouton OK *}
-	{if isset($coursGrp)}<input type="submit" value="OK" name="OK" id="envoi">{/if}
+	{if isset($coursGrp)}<button type="submit" class="btn btn-primary" id="envoi">OK</button>{/if}
 	<input type="hidden" name="action" value="{$action}">
-	<!-- <input type="hidden" name="mode" value="{$mode}"> -->
-	<!-- <input type="hidden" name="etape" value="showCotes"> -->
+	
 	</form>
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 	$("#formSelecteur").submit(function(){
 		if ($("#coursGrp").val() == '')
@@ -50,5 +56,5 @@ $(document).ready (function() {
 				else $("#envoi").hide();
 	})
 })
-{/literal}
+
 </script>

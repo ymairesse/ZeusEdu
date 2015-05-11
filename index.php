@@ -14,20 +14,19 @@ require_once (INSTALL_DIR."/inc/classes/classChrono.inc.php");
 $chrono = new chrono();
 
 $user = isset($_SESSION[APPLICATION])?$_SESSION[APPLICATION]:Null;
-
 if (!(isset($user)))
     header ("Location: accueil.php");
-
+	
 if (!($user->accesApplication(APPLICATION))) {
     header ("Location: accueil.php");
 	}
     else {
         require_once(INSTALL_DIR."/smarty/Smarty.class.php");
         $smarty = new Smarty();
-        $smarty->assign("titre", TITREGENERAL);
-        $smarty->assign("titreApplication", TITREGENERAL);
-        $smarty->assign("identification", $user->identification());
-        $smarty->assign("applisDisponibles", $user->getApplications());
+        $smarty->assign('titre', TITREGENERAL);
+        $smarty->assign('titreApplication', TITREGENERAL);
+        $smarty->assign('identification', $user->identification());
+        $smarty->assign('applisDisponibles', $user->getApplications());
         $ip = $user->getIP();
         $acronyme = $user->getAcronyme();
 
@@ -40,7 +39,15 @@ if (!($user->accesApplication(APPLICATION))) {
 			setcookie("ZEUSconn1","mailOK",time()+24*3600);
 			$Application->mailAlerte($user,'newIP');
 			}
-		$smarty->assign("executionTime", round($chrono->stop(),6));
-        $smarty->display("index.tpl");
+			
+		// configuration d'un alias éventuel
+		$alias = $user->getAlias();
+		if ($alias != '')
+			$alias = $alias->identite();
+			else $alias = Null;
+		$smarty->assign('alias',$alias['acronyme']);
+			
+		$smarty->assign('executionTime', round($chrono->stop(),6));
+        $smarty->display('index.tpl');
         }
 ?>

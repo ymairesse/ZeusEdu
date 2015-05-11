@@ -1,3 +1,4 @@
+<div class="container">
 <fieldset class="infos" style="clear:both">
 <legend><span id="classe">{$classe}</span>
 	{if isset($titulaires)}
@@ -21,3 +22,4 @@
 	{/foreach}
 </ul>
 </fieldset>
+</div>

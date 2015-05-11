@@ -34,6 +34,18 @@ switch ($mode) {
 		$smarty->assign('recordingType','new');
 		$smarty->assign('corpsPage', 'inputEleve');
 		break;
+	case 'save':
+		$nbModifications = $Eleve->enregistrer($_POST);
+		$smarty->assign('laClasse', $laClasse);
+		$smarty->assign('message', array(
+				'title'=>'Information',
+				'texte'=>"$nbModifications modification(s)",
+				'urgence'=>'success'));
+		$smarty->assign('matricule',$matricule);
+		$smarty->assign('etape','showEleve');
+		$smarty->assign('selecteur','selectClasseEleve');
+		// break;  // PAS DE BREAK
+		
 	case 'modifEleve':
 		switch ($etape) {
 			case 'showEleve':
@@ -43,8 +55,8 @@ switch ($mode) {
 				$smarty->assign('selecteur','selectClasseEleve');
 				$smarty->assign('mode', 'save');
 				// on ouvre le formulaire en modification
-				$smarty->assign("recordingType","modif");
-				$smarty->assign("corpsPage", "inputEleve");
+				$smarty->assign('recordingType','modif');
+				$smarty->assign('corpsPage', 'inputEleve');
 				break;
 			default:
 				// choix de l'élève
@@ -52,16 +64,7 @@ switch ($mode) {
 				break;
 		}
 		break;
-	case 'save':
-		$nbModifications = $Eleve->enregistrer($_POST);
-		$smarty->assign('laClasse', $laClasse);
-		$smarty->assign('message', array(
-				'title'=>'Information',
-				'texte'=>"$nbModifications modifications"));
-		$smarty->assign('matricule',$matricule);
-		$smarty->assign('etape','showEleve');
-		$smarty->assign('selecteur','selectClasseEleve');
-		break;
+
 	case 'supprEleve':
 		switch ($etape) {
 			case 'confirmer':
@@ -69,7 +72,8 @@ switch ($mode) {
 				$nb = $Ecole->supprEleves($listeEleves);
 				$smarty->assign("message", array(
 					'title'=>'Information',
-					'texte'=>"$nb élève(s) supprimé(s) de la base de données"
+					'texte'=>"$nb élève(s) supprimé(s) de la base de données",
+					'urgence'=>'warning'
 					));
 				// break; pas de break
 			default:
@@ -82,15 +86,27 @@ switch ($mode) {
 		$listUngroup = array();
 		foreach ($_POST as $field=>$value) {
 			$field = explode("_", $field);
-			if ($field[0] == 'checkbox')
+			if ($field[0] == 'checkbox') {
 				$Ecole->ungroup($value);
-		}
+				$listUngroup[]=$value;
+				}
+			}
+		$listeGroupes = implode($listUngroup,', ');
+		$smarty->assign('message',array(
+			'title'=>'Dégroupage',
+			'texte'=>"Les groupe $listeGroupes ont été défaits",
+			'urgence'=>'success'
+			));
 		// pas de break: on continue sur la gestion des groupes
 	case 'groupEleve':
 		if (isset($groupe)) {
 			if (isset($classes))
-				$nb = $Ecole->saveGroupesClasses ($groupe, $classes);
-			$smarty->assign("groupe", $groupe);
+				$nb = $Ecole->saveGroupesClasses($groupe, $classes);
+				$smarty->assign('message',array(
+						'title'=>'Formation de groupes',
+						'texte'=>"Le groupe $groupe a été formé",
+						'urgence'=>'success'
+						));
 			}
 		$listeClasses = $Ecole->listeClasses();
 		$smarty->assign('listeClasses',$listeClasses);
@@ -100,7 +116,7 @@ switch ($mode) {
 		$smarty->assign ('corpsPage','groupeClasses');
 		break;
 	case 'envoiPhotos':
-		require ("envoiPhotosZip.inc.php");
+		require ('envoiPhotosZip.inc.php');
 		break;
 	case 'attribMdp':
 		switch ($etape) {
@@ -111,9 +127,10 @@ switch ($mode) {
 				$nbResultats = $Ecole->attribPasswdEleves($longueur);
 				$smarty->assign("message", array(
 					'title'=>"Mots de passe",
-					'texte'=>"$nbResultats mot(s) de passe attribué(s)")
-				);
-			break;
+					'texte'=>"$nbResultats mot(s) de passe attribué(s)",
+					'urgence'=>'success'
+					));
+			// break;  pas de break
 			default:
 				$smarty->assign('corpsPage','complexitePasswd');
 			break;

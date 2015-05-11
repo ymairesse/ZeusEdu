@@ -330,7 +330,7 @@ class Application {
 	 * @param post
 	 * @result $nb
 	 */
-	function saveParametres ($post) {
+	public function saveParametres ($post) {
 		$connexion = self::connectPDO (SERVEUR, BASE, NOM, MDP);
 		// vérification du nom des paramètres existants dans la BD afin d'éviter
 		// d'enregistrer un paramètre qui n'existerait pas
@@ -340,30 +340,32 @@ class Application {
 		while ($ligne = $resultat->fetch()) {
 			$listeParametres[] = addslashes($ligne['parametre']);
 			}
-		$resultat = 0;
+		$n = 0;
 		foreach ($post as $parametre => $value) {
 			if (in_array($parametre, $listeParametres)) {
 				$value = addslashes($value);
 				$sql = "INSERT INTO ".PFX."config ";
 				$sql .= "SET parametre='$parametre', valeur='$value' ";
 				$sql .= "ON DUPLICATE KEY UPDATE valeur='$value'";
-				$resultat += $connexion->exec($sql);
+				$resultat = $connexion->exec($sql);
+				if ($resultat > 0)
+					$n++;
 				}
 			}
 		self::DeconnexionPDO($connexion);
-		return $resultat;
+		return $n;
 		}
 
-	/*
-	 * function renvoiMdp
+	/**
+	 * régénération d'un mot de passe et envoi à l'utilisateur
 	 * @param $acronyme
-	 * renvoi du mot de passe à l'utilisateur dont l'acronyme est fourni
+	 * @return CONSTANTE USERNAME
 	 */
 	public function renvoiMdp ($acronyme) {
 		if (isset($acronyme)) {
 			$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 			$sql = "SELECT nom, prenom, mail FROM ".PFX."profs ";
-			$sql .= "WHERE acronyme='$acronyme'";
+			$sql .= "WHERE acronyme='$acronyme' ";
 			$resultat = $connexion->query($sql);
 			if ($resultat) {
 				// cet acronyme existe. On a peut-etre une adresse e-mail
@@ -623,7 +625,7 @@ class Application {
 
 
 	/**
-	 * Suppression de l'utilisateur désigné par son "acronym"
+	 * Suppression de l'utilisateur désigné par son "acronyme"
 	 * @param string $acronyme
 	 * @return boolean statut d'erreur: OK ou PAS OK
 	 */
@@ -660,20 +662,37 @@ class Application {
 	   }
 
 	/**
+	 * vidage de la table dont on fournit le nom
+	 * @param string : $table
+	 * @return boolean
+	 */
+	public function clearTable ($table) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "TRUNCATE ".PFX."$table";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO ($connexion);
+		return true;
+		}
+		
+	   
+	   
+	/**
 	* On fournit une liste de tables; la procédure fabrique un fichier .sql permettant la restauration des tables désignées
 	* @param $post : formulaire dans lequel on a coché les noms des tables à sauvegarder
 	* @return string : nom du fichier .sql.gz créé
 	*/
-	function backupTables($post) {
+	public function backupTables($post) {
+
 		$listeTables = array();
 		// seuls les inputs dont le nom commence par "check" sont à considérer
 		foreach ($post as $unItem=>$value) {
 			if (strstr($unItem, "check")) {
-			$data = explode("_",$unItem);
-			$listeTables[] = PFX.$data[2];
+				$data = explode("_",$unItem);
+				$listeTables[] = PFX.$data[2];
+				}
 			}
-		}
 		$nb = count($listeTables);
+
 		$nbTotal = $this->DBnumTables();
 		$listeTables = implode(" ",$listeTables);
 		if ($nb < $nbTotal)
@@ -708,9 +727,9 @@ class Application {
 	}
 
 	/**
-	 * function lireFlashInfos
-	 * @param $$module
 	 * retourne tous les Flash Infos d'un module
+	 * @param $$module
+	 * @return array
 	 */
 	public function lireFlashInfos ($module) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -736,6 +755,7 @@ class Application {
 	public function changeUserAdmin ($acronyme) {
 		// conserver la session de l'admin courant
 		$admin = $_SESSION[APPLICATION];
+
 		// prépartion d'un nouvel utilisateur
 		$alias = new user($acronyme);
 		// mise en mémoire de l'administrateur
@@ -750,7 +770,6 @@ class Application {
 	/**
 	 * renvoie la liste des utilisateurs qui disposent du statut global $status dans l'application
 	 * permet de retrouver tous les "admins", par exemple.
-	 *
 	 * @param $status : string
 	 * @return array
 	 */
@@ -836,23 +855,24 @@ class Application {
 	 * @param $niveau : niveau d'étude concerné
 	 * @return void()
 	 */
-	function zipFilesNiveau ($dir, $listeClasses) {
+	function zipFilesNiveau ($dir, $bulletin, $listeClasses) {
 		$niveau = substr($listeClasses[0],0,1);
 		$zip = new ZipArchive();
-		if ($zip->open("$dir/niveau_$niveau.zip", ZIPARCHIVE::CREATE)!==TRUE) {
-			exit("Impossible d'ouvrir <niveau_$niveau.zip>\n");
+		if ($zip->open("$dir/niveau_$niveau-Bulletin_$bulletin.zip", ZIPARCHIVE::CREATE)!==TRUE) {
+			exit("Impossible d'ouvrir <niveau_$niveau-Bulletin--_$bulletin.zip>\n");
 			}
 		$listeFichiers = $this->dirFiles($dir);
 		foreach ($listeClasses as $uneClasse) {
-			$zip->addFile("$dir/$uneClasse.pdf");
+			$zip->addFile("$dir/$uneClasse-$bulletin.pdf");
 			}
 		$zip->close();
 		}
 
-	/*
+	/**
 	 * renvoie "true" si l'adresse IP est déjà connue dans la table des logins pour cet utilisateur
 	 * @param $ip	: adresse IP
 	 * @param $user	: nom de l'utilisateur
+	 * @return integer
 	 */
 	 public function checkIP ($ip, $user){
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -975,7 +995,6 @@ class Application {
 	 * recherche les éventuels hiatus entre la table importée et la structure de la base de données
 	 * @param $entete
 	 * @param array $champs : liste des champs à trouver
-	 *
 	 * @return array: éléments de l'entete du fichier CSV qui ne figurent pas dans la table de la BD et inversement
 	 */
 	public function hiatus ($entete, $champs) {
@@ -988,23 +1007,32 @@ class Application {
 			foreach ($hiatus2 as $unProbleme)
 				$lesProblemes[1][] = $unProbleme;
 			}
-	return $lesProblemes;
+		return $lesProblemes;
 		}
+		
+	/**
+	 * retourne la liste des champs d'une liste réellement trouvés dans une deuxième liste
+	 * @param $champsCherches
+	 * @param $listeChamps
+	 * @return array
+	 */
+	public function champsCherches($champsCherches,$listeChamps) {
+		return array_intersect($champsCherches,$listeChamps);
+	}
 
 	/**
 	 * transforme un fichier .csv uploadé en un array()
-	 *
 	 * @param string $fileName : nom du fichier
-	 * @return $aarray
+	 * @return $array
 	 */
 	public function csv2array ($fileName) {
-	$handle = fopen("$fileName.csv","r");
-	$tableau = array();
-	while (($data = fgetcsv($handle,0)) !== FALSE) {
-		$tableau[] = $data;
-		}
-	fclose($handle);
-	return $tableau;
+		$handle = fopen("$fileName.csv","r");
+		$tableau = array();
+		while (($data = fgetcsv($handle,0)) !== FALSE) {
+			$tableau[] = $data;
+			}
+		fclose($handle);
+		return $tableau;
 	}
 
 	/**
@@ -1322,9 +1350,9 @@ class Application {
 	}
 
 	/**
-	 * function SQLtable2array
+	 * renvoie le résultat de la requête SQL sous forme d'array
 	 * @param string $table : nom de la table à convertir en array
-	 * @return $tableau
+	 * @return $tableau : array
 	 */
 	function SQLtable2array ($table) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1341,13 +1369,12 @@ class Application {
 
 	/**
 	 * produit un tableau de la liste des élèves provenant d'un fichier CSV transformé en array
-	 *
 	 * @param array $tableau
 	 * @return $array : liste des matricules des élèves
 	 */
-	function tableau2listeEleves($tableau) {
+	public function tableau2listeEleves($tableau) {
 		$entete = array_shift($tableau);
-		if ($entete[0] != 'matricule') die('tableau mal formé');
+		if ($entete[0] != 'matricule') die('tableau mal form&eacute;');
 		$listeMatricules = array();
 		foreach ($tableau as $uneLigne) {
 			$listeMatricules[] = $uneLigne[0];
@@ -1398,5 +1425,46 @@ class Application {
 		return $listeDates;
 		}
 
+	/**
+	 * réordonner et attribuer les années scolaires aux mentions
+	 * @param void()
+	 * @return void()
+	 */
+	public function attribAnScol() {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT * FROM ".PFX."bullMentions ";
+		$sql .= "ORDER BY matricule, annee  DESC ";
+		$resultat = $connexion->query($sql);
+		$tableauMentions = array();
+		while ($ligne = $resultat->fetch()) {
+			$matricule = $ligne['matricule'];
+			$periode = $ligne['periode'];
+			$annee = $ligne['annee'];
+			$mention = $ligne['mention'];
+			$tableauMentions[$matricule][$annee][$periode] = array('mention'=>$mention,'anScol'=>'');
+		}
+		
+		$anneesScolaires = array(1=>'2014-2015', 2=>'2013-2014',3=>'2012-2013',4=>'2011-2012');
+		
+		foreach ($tableauMentions as $matricule => $data) {
+			$scol = 1;
+			foreach ($data as $annee => $trimestres) {
+				$anscol = $anneesScolaires[$scol];
+				foreach ($trimestres as $periode=>$donnees) {
+					$tableauMentions[$matricule][$annee][$periode]['anScol'] = $anneesScolaires[$scol];
+					$sql = "UPDATE ".PFX."bullMentions ";
+					$sql .= "SET anscol = '$anscol' ";
+					$sql .= "WHERE matricule = '$matricule' AND annee='$annee' AND periode='$periode' ";
+					$resultat = $connexion->query($sql);
+					}
+				$scol++;
+				}
+			}
+
+			afficher($tableauMentions);
+
+		Application::DeconnexionPDO ($connexion);
+		
+	}
 }
 ?>

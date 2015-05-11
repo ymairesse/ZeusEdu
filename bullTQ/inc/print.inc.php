@@ -47,7 +47,6 @@ switch ($mode) {
 				
 				$remarqueTitu = $BullTQ->remarqueTitu($matricule, $bulletin);
 				$smarty->assign('remarqueTitu', $remarqueTitu);	
-				
 				$smarty->assign('corpsPage','bulletinEcran');
 			}
 		}

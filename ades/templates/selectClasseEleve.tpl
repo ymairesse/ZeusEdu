@@ -1,18 +1,22 @@
-<div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		<input type="hidden" name="matricule2" id="matricule2">
+<div id="selecteur" class="noprint">
+	
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
+		
 		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
+		<input type="hidden" name="matricule" id="matricule">
 			
 		<select name="classe" id="selectClasse">
-		<option value="">Classe</option>
-		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
-		{/foreach}
+			<option value="">Classe</option>
+			{foreach from=$listeClasses item=uneClasse}
+				<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
+			{/foreach}
 		</select>
 		
 		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
-			<img src="../images/left.png" alt="<" style="width:18px" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</button>
 		{/if}
 
 		<span id="choixEleve">
@@ -21,84 +25,121 @@
 		
 		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
-		 <img src="../images/right.png" alt=">" style="width:18px" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+			 </button> 
 		{/if}
-	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode}">
-	{if isset($prevNext)}
-		<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
-		<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
-	{/if}
-	<input type="hidden" name="etape" value="showEleve">
-	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
+		
+		{if isset($prevNext)}
+			<input type="hidden" name="prev" value="{$prevNext.prev}" id="matrPrev">
+			<input type="hidden" name="next" value="{$prevNext.next}" id="matrNext">
+		{/if}
+		
+		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
+		<input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="mode" value="{$mode|default:Null}">
+
+		<input type="hidden" name="etape" value="showEleve">
+		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
-	$("#formSelecteur").submit(function(){
-		if (($("#selectEleve").val() != '') || ($("#matricule2").val() != '')) {
-			$("#wait").show();
+	$('#formSelecteur').submit(function(){
+		if ($("#matricule").val() > 0) {
+			$('#wait').show();
 			$.blockUI();
 			}
 			else return false;
-	})
+		})
 	
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
 		if (classe != '') {
-			$("#envoi").show();
-			$("#next, #prev").hide();
+			$('#next, #prev').hide();
 			}
 		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
-		$.post("inc/listeEleves.inc.php",
-			{'classe': classe},
+		$.post('inc/listeEleves.inc.php',{
+			'classe': classe},
 				function (resultat){
 					$("#choixEleve").html(resultat)
 				}
 			)
 	});
 
-	$("#choixEleve").on("change", "#selectEleve", function(){
-		if ($(this).val() > 0) {
-			// si la liste de sélection des élèves renvoie une valeur significative
-			// le formulaire est soumis
-			$("#formSelecteur").submit();
-			$("#envoi").show();
-		}
-			else $("#envoi").hide();
+	$('#choixEleve').on('change','#selectEleve', function(){
+		var matricule = $(this).val();
+		if (matricule > 0) {
+			$("#matricule").val(matricule);
+			$('#formSelecteur').submit();
+			}
+			else {
+				$("#matricule").val('');
+				$("#prev, #next").fadeOut();
+				}
 		})
 		
-	$("#prev").click(function(){
+	$('#prev').click(function(){
 		var matrPrev = $("#matrPrev").val();
+		$('#matricule').val(matrPrev);
 		$("#selectEleve").val(matrPrev);
-		$("#formSelecteur").submit();
+		$('#formSelecteur').submit();
 	})
 	
-	$("#next").click(function(){
+	$('#next').click(function(){
 		var matrNext = $("#matrNext").val();
+		$('#matricule').val(matrNext);
 		$("#selectEleve").val(matrNext);
-		$("#formSelecteur").submit();
+		$('#formSelecteur').submit();
 	})
 	
-	$("#nom").on("focus", function(){
-		$("#selectEleve").val('');
+	$('#nom').keydown(function(){
+		$('#matricule').val('');
+		$('#selectEleve').fadeOut().val('');
+		$('#choixEleve').html('');
+		$('#selectClasse').val('');
+		$('#prev, #next').fadeOut();
+		$('#matrPrev, #matrNext').val('');
 		})
 	
-	$("#nom").autocomplete({
-		source: "inc/searchNom.php?critere=nom",
+	$("#nom").typeahead({
 		minLength: 2,
-		select: function(event,ui) {
-			var matricule = ui.item.matricule;
-			$("#matricule2").val(matricule);
-			$("#formSelecteur").submit();
+		afterSelect: function(item){
+			$.ajax({
+				url: 'inc/searchMatricule.php',
+				type: 'POST',
+				data: 'query=' + item,
+				dataType: 'text',
+				async: true,
+				success: function(data){
+					console.log(data);
+					if (data != '') {
+						$("#matricule").val(data);
+						$("#formSelecteur").submit();
+						}
+					}
+				})
+			},
+		source: function(query, process){
+			$.ajax({
+				url: 'inc/searchNom.php',
+				type: 'POST',
+				data: 'query=' + query,
+				dataType: 'JSON',
+				async: true,
+				success: function (data) {
+					$("#matricule").val('');
+					process(data);
+					}
+				}
+				)
 			}
-		});
+		})
 
 })
-{/literal}
+
 </script>

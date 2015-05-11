@@ -1,38 +1,66 @@
 {if $classe != Null && $date != Null}
-
+<div class="container">
+	
 <h3>Feuille de présences pour la classe de <strong>{$classe}</strong> le <strong>{$date}</strong></h3>
-<table class="tableauAdmin">
-	<tr>
-		<th style="width:6em">Matricule</th>
-		<th style="width:30em">Nom/prénom</th>
-		{foreach from=$listePeriodes key=noPeriode item=limitesPeriode}
-		<th><strong>{$noPeriode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
-		{/foreach}
-	</tr>
-
-	{foreach from=$listeEleves key=matricule item=dataEleve}
-	<tr>
-		<td>{$matricule}</td>
-		<td class="tooltip">
-			<div class="tip" style="display:none"><img src="../photos/{$dataEleve.photo}.jpg" alt="{$matricule}" style="width:100px"><br>{$matricule}</div>
-			{$dataEleve.nom} {$dataEleve.prenom}
-		</td>
-		{foreach from=$listePeriodes key=noPeriode item=data}
-			{assign var=x value=$listePresences.$matricule.$noPeriode}
-			{if $x.statut != 'indetermine'}
-				{assign var=titre value='<h3>'|cat:$x.educ|cat:' ['|cat:$x.quand|cat:' à '|cat:$x.heure|cat:']'|cat:'</h3>'|cat:$x.parent|cat:'-'|cat:$x.media}
-				{else}
-				{assign var=titre value=$x.statut}
-			{/if}
-			<td class="{$x.statut}" title="{$titre}">
-				<img src="images/{$x.statut}.png" alt="{$x.statut}">
+<div class="table-responsive">
+	
+	<table class="table table-condensed">
+		<tr>
+			<th style="width:6em">Matricule</th>
+			<th style="width:30em">Nom/prénom</th>
+			{foreach from=$listePeriodes key=noPeriode item=limitesPeriode}
+			<th><strong>{$noPeriode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
+			{/foreach}
+		</tr>
+	
+		{foreach from=$listeEleves key=matricule item=dataEleve}
+		<tr>
+			<td>{$matricule}</td>
+			<td>
+				<span style="cursor:pointer" class="popover-eleve" data-toggle="popover" data-content="<img src='../photos/{$dataEleve.photo}.jpg' alt='{$matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$dataEleve.nom} {$dataEleve.prenom}">
+				{$dataEleve.nom} {$dataEleve.prenom}
+				</span>
 			</td>
+			{foreach from=$listePeriodes key=noPeriode item=data}
+				{assign var=p value=$listePresences.$matricule.$noPeriode}
+				{if $p.statut != 'indetermine'}
+					{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
+					{else}
+					{assign var=titre value='Présences non prises'}
+				{/if}
+				<td class="pop"
+					data-content="{$p.parent|cat:'-'|cat:$p.media}"
+					data-html="true"
+					data-container="body"
+					data-original-title="{$titre}"
+					data-placement="top">
+					<span style="display:block; width:100%"	class="{$p.statut}">
+						<img src="images/{$p.statut}.png" alt="{$p.statut}">
+					</span>
+				</td>
+			{/foreach}
+		</tr>
 		{/foreach}
-	</tr>
-	{/foreach}
+	</table>
 
-</table>
+</div>
 
 {include file='legendeAbsences.html'}
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+	$(".popover-eleve").mouseenter(function(event){
+		$(this).popover('show');
+		})
+	
+	$(".popover-eleve").mouseout(function(event){
+			$(this).popover('hide');
+		})
+		
+	})
+
+</script>
 
 {/if}

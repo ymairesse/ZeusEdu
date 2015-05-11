@@ -1,29 +1,32 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="formSelecteur" id="formSelecteur" action="index.php" method="POST">
-		{if isset($cours)}
-			<label for="selectEleve" title="{$cours}">
-			{if $listeCours.$cours.nomCours != ''}
-				{$listeCours.$cours.nomCours}
-				{else}
-				{$listeCours.$cours.statut} {$listeCours.$cours.libelle} {$listeCours.$cours.nbheures}h {$cours}
+	
+	<form name="formSelecteur" id="formSelecteur" action="index.php" method="POST" role="form" class="form-inline">
+		{if isset($coursGrp)}
+			<div class="input-group">
+				<label for="selectEleve">
+				{if $listeCours.$coursGrp.nomCours != ''}
+					{$listeCours.$coursGrp.nomCours} || {$coursGrp} {$listeCours.$coursGrp.nbheures}h 
+					{else}
+					{$listeCours.$coursGrp.statut} {$listeCours.$coursGrp.libelle} {$listeCours.$coursGrp.nbheures}h {$coursGrp}
+				{/if}
+				</label>
 			{/if}
-			</label>
-		{/if}
-		
-		{if isset($listeEleves)}
-			{include file="listeEleves.tpl"}
-		{/if}
+			
+			{if isset($listeEleves)}
+				{include file="listeEleves.tpl"}
+			{/if}
+		</div>
 
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="cours" value="{$cours}">
+	<input type="hidden" name="coursGrp" value="{$coursGrp}">
 
 	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	if ($("#selectEleve").val() > 0)
@@ -53,5 +56,5 @@ $(document).ready (function() {
 	})
 
 })
-{/literal}
+
 </script>

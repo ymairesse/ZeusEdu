@@ -1,21 +1,23 @@
+<div class="container">
 <h3>Liste des sauvegardes disponibles</h3>
+
 {if isset($confirmDeleteBU)}
-<div class="attention">
-    <span class="icon">info</span>
-    <span class="title">Confirmation</span>
-    <span class="texte">Le fichier {$fileName} a été effacé</span>
+<div class="alert alert-dismissable alert-info">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<p><strong>Confirmation</strong></p>
+    <p>Le fichier {$fileName} a été effacé</p>
 </div>
 {/if}
 
 {if isset($fileName)}
-<div class="attention">
-	<span class="title">Confirmation</span>
-	<span class="texte">Le fichier {$fileName} contient votre dernier backup</span>
-	<span class="icon">info</span>
+<div class="alert alert-dismissable alert-info">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<p><strong>Confirmation</strong></p>
+    <p>Le fichier {$fileName} contient votre dernier backup</p>
 </div>
 {/if}
 
-{if isset($listeFichiers)}
+{if isset($listeFichiers) && ($listeFichiers != Null)}
 <div class="widget w50">
 <table class="tableauAdmin" style="">
 	<tr>
@@ -45,14 +47,17 @@
 </table>
 </div>
 {else}
-<div class="attention">
-	<sapn class="title">Remarque</sapn>
-	<span class="texte">Pas de sauvegarde disponible</span>
-</div>
+	<div class="alert alert-dismissable alert-warning">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<p><strong>Remarque</strong></p>
+		<p>Pas de sauvegarde disponible</p>
+	</div>
 {/if}
 
+</div>
+
 <script type="text/javascript">
-	{literal}
+
 	$(document).ready(function(){
 		$(".checkAll").click(function(){
 			var checked = $(this).attr("checked");
@@ -66,5 +71,6 @@
 			})
 		
 	})
-	{/literal}
+
 </script>
+

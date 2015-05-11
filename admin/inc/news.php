@@ -20,17 +20,29 @@ switch ($mode) {
 				break;
 			default:		// mode édition
 				$flashInfo = $flashInfo->getData($id);
-				$smarty->assign("flashInfo",$flashInfo);
-				$smarty->assign("action","news");
-				$smarty->assign("mode","edit");
-				$smarty->assign("etape","enregistrer");
-				$smarty->assign("corpsPage", "editFlashInfo");
+				$smarty->assign('flashInfo',$flashInfo);
+				$smarty->assign('action','news');
+				$smarty->assign('mode','edit');
+				$smarty->assign('etape','enregistrer');
+				$smarty->assign('corpsPage', 'editFlashInfo');
 				break;
 			}
 		break;
+	case 'del':
+		if (in_array($userStatus, array('admin','educ'))) {
+			$id = isset($_POST['id'])?$_POST['id']:Null;;
+			$module = $Application->repertoireActuel();
+			$nb = $flashInfo->delFlashInfo($id,$module);
+			$smarty->assign('message',array(
+				'title'=>DELETE,
+				'texte'=>"$nb nouvelle(s) supprimée(s)",
+				'urgence'=>'success'
+				));
+		}	
+		// break;  pas de break
 	default:
-		$smarty->assign("flashInfos", $flashInfo->listeFlashInfos ($module));
-		$smarty->assign("corpsPage", "news");
+		$smarty->assign('flashInfos', $flashInfo->listeFlashInfos ($module));
+		$smarty->assign('corpsPage', 'news');
 		break;
 	}
 ?>

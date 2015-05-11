@@ -64,7 +64,7 @@ class EleveAdes {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT idretenue ";
 		$sql .= "FROM ".PFX."adesFaits ";
-		$sql .= "WHERE matricule = '$matricule' AND idretenue != '' AND ladate > '".BEGINDATE."' ";
+		$sql .= "WHERE matricule = '$matricule' AND idretenue != '' "; //  AND ladate > '".BEGINDATE."' ";
 		$sql .= "ORDER BY ladate ";
 		$resultat = $connexion->query($sql);
 		$listeRetenues = array();

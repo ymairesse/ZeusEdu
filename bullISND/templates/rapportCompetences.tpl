@@ -1,3 +1,5 @@
+<div class="container">
+	
 {if $typeDoc == 'pia'}
 	<h1>Plans individuels d'apprentissages: {$classe}</h1>
 {/if}
@@ -13,7 +15,9 @@
 	{if $typeDoc == 'competences'}
 		{include file="enteteCompetences.tpl"}
 	{/if}
-	<table style="width:100%" border="1px" class="tableauAdmin">
+	
+	<div class="table-responsive">
+	<table style="width:100%" border="1px" class="table tableauAdmin">
 		<tr>
 			<th width="75%">COMPETENCES</td>
 			<th width="25%">Acquisition</td>
@@ -37,9 +41,12 @@
 		{/foreach}
 		{/if}
 	</table>
+	</div>
 	<p>Dans le cas où l'élève est orienté vers une année complémentaire au pemier degré, le présent rapport sera complété par un plan individuel d'apprentissage élaboré par le Conseil de Guidance.</p>
 	<p>Donné à ANDERLECHT, le {$date}</p>
-	<table width="100%" class="signature" style="padding-top: 2em">
+	
+	<div class="table-responsive">
+	<table width="100%" class="table signature" style="padding-top: 2em">
 		<tr>
 			<td  width="75%">Sceau de l'établissement</td>
 			<td width="25%">{$DIRECTION}</td>
@@ -51,6 +58,9 @@
 		</tr>
 		{/if}
 	</table>
+	</div>
 {/foreach}
 {/if}
 </div>
+
+</div>  <!-- container -->

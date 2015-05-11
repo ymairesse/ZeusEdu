@@ -1,8 +1,5 @@
 .selectMail {
-    float: left;
-    height: 350px;
     overflow: scroll;
-    width: 250px;
 	}
 
 h4.teteListe {

@@ -11,15 +11,13 @@ $Ecole = new Ecole();
 
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 if ($classe == Null) die();
-$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
-$partis = isset($_POST['partis'])?$_POST['partis']:false;
 
-$listeEleves = $Ecole->listeEleves($classe,'groupe',$partis);
+$listeEleves = $Ecole->listeEleves($classe,'groupe');
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
-$smarty->template_dir = "../templates";
-$smarty->compile_dir = "../templates_c";
-$smarty->assign("listeEleves", $listeEleves);
-$smarty->display("listeEleves.tpl"); 
+$smarty->template_dir = '../templates';
+$smarty->compile_dir = '../templates_c';
+$smarty->assign('listeEleves', $listeEleves);
+$smarty->display('listeEleves.tpl'); 
 ?>

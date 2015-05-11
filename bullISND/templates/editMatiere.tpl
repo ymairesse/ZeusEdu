@@ -1,70 +1,145 @@
-<div class="ombre">
-	<h3{if !($fullEditable)} title="Ce cours est affecté à des élèves ou à des professeurs: seul le libellé est modifiable"{/if} id="titre">Modfication d'une matière existante{if !($fullEditable)}**{/if}</h3>
+
+<div class="container">
+	
 	{if isset($niveau) && isset($detailsCours)}
-	<form name="matiereEdit" action="index.php" method="POST" id="matiereEdit">
-		<div style="float:right" class="fauxBouton" id="nouvelleMatiere" title="Créer une nouvelle matière">Nouvelle matière</div>
-		<label for="niveau">Niveau</label>
-		<select name="niveau" id="leNiveau" class="mod">
-			{foreach from=$listeNiveaux item=unNiveau}
-			<option value="{$unNiveau}"{if isset($detailsCours.annee) && ($unNiveau == $detailsCours.annee)} selected="selected"
-				{else}
-				{if !($fullEditable)} disabled="disabled"{/if}
-				{/if}>{$unNiveau}</option>
-			{/foreach}
-		</select><br>
+
+	<h2>Modfication d'une matière existante</h2>
+	
+		{if (isset($fullEditable) && ($fullEditable == false))}
+			<div class="alert alert-warning alert-dismissable">
+				<h4>Avertissement</h4>
+				<p>Ce cours est affecté à des élèves ou à des professeurs: seul le libellé est modifiable</p>
+			</div>
+		{/if}
+	
+	<form name="matiereEdit" action="index.php" method="POST" id="matiereEdit" role="form" class="form-vertical">
 		
-		<label for="forme" title="Liste basée sur les 'formes' figurant déjà dans les autres cours ({$listeFormes|implode:','})">Forme</label>
-		<select name="forme" id="forme" class="mod">
-			{foreach from=$listeFormes item=uneForme}
-			<option value="{$uneForme}"{if (isset($detailsCours.forme) && ($uneForme == $detailsCours.forme))} selected="selected"
-				{else}
-				{if !($fullEditable)} disabled="disabled"{/if}
-				{/if}>{$uneForme}</option>
-			{/foreach}
-		</select> 
-
-		<label for="section" title="Liste des sections déclarées dans la base de données ({$listeSections|implode:','})">Section</label>
-		<select name="section" id="section" class="mod">
-			{foreach from=$listeSections item=uneSection}
-			<option value="{$uneSection}"{if (isset($detailsCours.section) && ($uneSection == $detailsCours.section))} selected="selected"
-			{else }{if !($fullEditable)} disabled="disabled"{/if}
-			{/if}>{$uneSection}</option>
-			{/foreach}
-		</select><br>
-
-		<label for="code">Code</label>
-		<input type="text" size="8" maxlength="8" name="code" id="code" class="mod maj" value="{$detailsCours.code}"{if !($fullEditable)} readonly="readonly"{/if}><br>
-
-		<label for="nbheures">Nb Heures</label>
-		<input type="text" size="3" maxlength="2" name="nbheures" id="nbheures" class="mod" value="{$detailsCours.nbheures}"{if !($fullEditable)} readonly="readonly"{/if}><br>
+		<btn class="btn btn-primary" id="nouvelleMatiere" title="Créer une nouvelle matière">Nouvelle matière</btn>
 		
-		<label for="cadre" title="Pour la signification des 'cadres', voir la documentation de ProEco">Cadre/statut</label>
-		<select name="cadre" id="cadre" class="mod">
-			{foreach from=$listeCadresStatuts key=unCadre item=unStatut}
-			<option value="{$unCadre}"{if (isset($detailsCours.cadre) && ($detailsCours.cadre == $unCadre))} selected="selected"
-			{else}{if !($fullEditable)} disabled="disabled"{/if}
-			{/if}> Cadre {$unCadre} => {$unStatut}</option>
-			{/foreach}
-		</select><br>
+		<div class="clearfix"></div>
+		
+		<div class="row">
+
+			<div class="col-md-4 col-sm-6">
+		
+				<div class="input-group">
+					<label for="niveau">Niveau</label>
+					<select name="niveau" id="leNiveau" class="mod form-control">
+						{foreach from=$listeNiveaux item=unNiveau}
+						<option value="{$unNiveau}"{if isset($detailsCours.annee) && ($unNiveau == $detailsCours.annee)} selected="selected"
+							{else}
+							{if !($fullEditable)} disabled="disabled"{/if}
+							{/if}>{$unNiveau}</option>
+						{/foreach}
+					</select>
+				</div>
 				
-		<label for="libelle">Libellé</label>
-		<input type="text" size="40" maxlength="50" name="libelle" id="libelle" class="mod maj" value="{$detailsCours.libelle}">
-			<strong id="laMatiere">{$detailsCours.cours}</strong>
-			<input type="hidden" name="cours" value="{$cours}">
-			<br>
-		<p><input type="hidden" name="action" value="{$action}">
+			</div>  <!-- col-md-... -->
+			
+			<div class="col-md-4 col-sm-6">
+				
+				<div class="input-group">
+					<label for="forme" title="Liste basée sur les 'formes' figurant déjà dans les autres cours ({$listeFormes|implode:','})">Forme</label>
+					<select name="forme" id="forme" class="mod form-control">
+						{foreach from=$listeFormes item=uneForme}
+						<option value="{$uneForme}"{if (isset($detailsCours.forme) && ($uneForme == $detailsCours.forme))} selected="selected"
+							{else}
+							{if !($fullEditable)} disabled="disabled"{/if}
+							{/if}>{$uneForme}</option>
+						{/foreach}
+					</select>
+				</div>
+				
+			</div>  <!-- col-md-... -->
+			
+			<div class="col-md-4 col-sm-6">
+		
+				<div class="input-group">
+					<label for="section" title="Liste des sections déclarées dans la base de données ({$listeSections|implode:','})">Section</label>
+					<select name="section" id="section" class="mod form-control">
+						{foreach from=$listeSections item=uneSection}
+						<option value="{$uneSection}"{if (isset($detailsCours.section) && ($uneSection == $detailsCours.section))} selected="selected"
+						{else }{if !($fullEditable)} disabled="disabled"{/if}
+						{/if}>{$uneSection}</option>
+						{/foreach}
+					</select>
+				</div>
+				
+			</div>  <!-- col-md-... -->
+		
+		</div>  <!-- row -->
+		
+		<div class="row">
+
+			<div class="col-md-4 col-sm-6">
+		
+				<div class="input-group">
+					<label for="code">Code</label>
+					<input type="text" name="code" id="code" class="mod maj form-control" value="{$detailsCours.code}"{if !($fullEditable)} readonly="readonly"{/if}>
+				</div>
+
+			</div>  <!-- col-md-... -->
+			
+			<div class="col-md-4 col-sm-6">
+				
+				<div class="input-group">
+					<label for="nbheures">Nb Heures</label>
+					<input type="text" name="nbheures" id="nbheures" class="mod form-control" value="{$detailsCours.nbheures}"{if !($fullEditable)} readonly="readonly"{/if}>
+				</div>
+				
+			</div>  <!-- col-md-... -->
+			
+			<div class="col-md-4 col-sm-6">
+				
+				<div class="input-group">
+					<label for="cadre" title="Pour la signification des 'cadres', voir la documentation de ProEco">Cadre/statut</label>
+					<select name="cadre" id="cadre" class="mod form-control">
+						{foreach from=$listeCadresStatuts key=unCadre item=unStatut}
+						<option value="{$unCadre}"{if (isset($detailsCours.cadre) && ($detailsCours.cadre == $unCadre))} selected="selected"
+						{else}{if !($fullEditable)} disabled="disabled"{/if}
+						{/if}> Cadre {$unCadre} => {$unStatut}</option>
+						{/foreach}
+					</select>
+				</div>
+				
+			</div>  <!-- col-md-... -->
+			
+			<div class="col-md-4 col-sm-6">				
+						
+				<div class="input-group">
+					<label for="libelle">Libellé</label>
+					<input type="text" maxlength="50" name="libelle" id="libelle" class="mod maj form-control" value="{$detailsCours.libelle}">
+				</div>
+				
+			</div>
+			
+			<div class="col-md-4 col-sm-6">				
+				
+				<div class="input-group">
+					<label>Cours</label>
+					<p class="form-control-static" id="laMatiere">{$detailsCours.cours}</p>
+				</div>
+				
+			</div>  <!-- col-md-... -->
+				
+		</div>  <!-- row -->
+			
+		<input type="hidden" name="cours" value="{$cours}">
+		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="fullEdition" value="{if $fullEditable}1{else}0{/if}" id="fullEdition">
 		<input type="hidden" name="mode" value="{$mode}">
-		<input type="submit" name="submit" value="Enregistrer">
-		<input type="reset" name="reset" value="Annuler">
 		<input type="hidden" name="etape" value="enregistrer"></p>
+		
+		<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
+		<button type="reset" class="btn btn-default pull-right">Annuler</button>
+		
 	</form>
 	{/if}
 </div>
 
 
 <script type="text/javascript">
-{literal}
+
 	$(document).ready(function(){
 	
 	$("#matiereEdit").validate({
@@ -74,7 +149,7 @@
 			code: { required: true },
 			cadreStatut: { required: true },
 			nbheures: { required: true, number: true },
-			libelle: {required: true }
+			libelle: { required: true }
 			},
 		errorElement: "span"
 		});
@@ -100,7 +175,7 @@
 		})
 	
 	})
-{/literal}
+
 </script>
 
 

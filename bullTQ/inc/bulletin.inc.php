@@ -36,12 +36,11 @@ if (isset($coursGrp)) {
 $listeCours = $user->listeCoursProf("'TQ'");
 
 $smarty->assign('listeCours',$listeCours);
-$smarty->assign("coursGrp",$coursGrp);
-$smarty->assign("nbBulletins", NBPERIODES);
-$smarty->assign("bulletin", $bulletin);
+$smarty->assign('coursGrp',$coursGrp);
+$smarty->assign('nbBulletins', NBPERIODES);
+$smarty->assign('bulletin', $bulletin);
 
 $smarty->assign('action',$action);
-// $smarty->assign('mode',$mode);
 $smarty->assign('selecteur', 'selectBulletinCours');
 
 ?>

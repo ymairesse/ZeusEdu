@@ -5,9 +5,10 @@ if ($etape == 'enregistrer') {
 		$listeEleves = $Ecole->listeEleves($classe,'groupe');
 		$nb = $Presences->savePresences($_POST, $listeEleves, array($periode=>$periode));
 		$smarty->assign('message', array(
-					'title'=> SAVE,
-					'texte'=>sprintf(NBSAVE,$nb)
-					));
+				'title'=> SAVE,
+				'texte'=>sprintf(NBSAVE,$nb),
+				'urgence'=>'info'
+				));
 		}
 	}
 

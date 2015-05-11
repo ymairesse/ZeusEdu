@@ -1,6 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
+
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
+		
+		<label for="bulletin">Bulletin n°</label>
+		<select name="bulletin" id="bulletin" class="form-control-inline">
 		{section name=bulletins start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.bulletins.index}"
 					{if $smarty.section.bulletins.index == $bulletin}selected{/if}>
@@ -9,30 +12,32 @@
 		{/section}
 		</select>
 
-		<select name="classe" id="selectClasse">
-		<option value="">Classe</option>
-		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if $uneClasse == $classe} selected="selected"{/if}>{$uneClasse}</option>
-		{/foreach}
+		<select name="classe" id="selectClasse" class="form-control-inline">
+			<option value="">Classe</option>
+			{foreach from=$listeClasses item=uneClasse}
+				<option value="{$uneClasse}"{if $uneClasse == $classe} selected="selected"{/if}>{$uneClasse}</option>
+			{/foreach}
 		</select>
 		
-		{if isset($prevNext) && isset($prevNext.prev)}
+		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
-			<img src="images/left.png" style="position: relative; width:18px; top:4px" alt="<" id="prev" title="Préc: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</button>
 		{/if}
-		
-		<span id="choixEleve">
 
-		{include file="listeEleves.tpl"}
-		
+		<span id="choixEleve">
+			{include file="listeEleves.tpl"}
 		</span>
 		
-		{if isset($prevNext) && isset($prevNext.next)}
+		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
-		 <img src="images/right.png" style="position: relative; width:18px; top:4px" alt=">" id="next" title="Suiv: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+			 </button> 
 		{/if}
 		
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}
@@ -45,7 +50,6 @@
 </div>
 
 <script type="text/javascript">
-{literal}
 
 $(document).ready (function() {
 	
@@ -70,10 +74,10 @@ $(document).ready (function() {
 			else $("#envoi").hide();
 		// la fonction listeEleves.inc.php renvoie la liste déroulante
 		// des élèves de la classe sélectionnée
-		$.post("inc/listeEleves.inc.php",
-			{'classe': classe},
-				function (resultat){
-					$("#choixEleve").html(resultat)
+		$.post("inc/listeEleves.inc.php", {
+			'classe': classe},
+			function (resultat){
+				$("#choixEleve").html(resultat)
 				}
 			)
 	});
@@ -98,5 +102,5 @@ $(document).ready (function() {
 		$("#formSelecteur").submit();
 	})
 })
-{/literal}
+
 </script>

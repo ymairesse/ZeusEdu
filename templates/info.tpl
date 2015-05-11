@@ -1,29 +1,21 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<meta charset="utf-8">
 <title>{$titre}</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="menu.css" type="text/css" media="screen">
+<link type="text/css" media="all" rel="stylesheet" href="bootstrap/css/bootstrap.css">
+  
+<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/jquery.validate.js"></script>
+
 <link rel="stylesheet" href="screen.css" type="text/css" media="screen">
 <link rel="stylesheet" href="print.css" type="text/css" media="print">
-<link rel="stylesheet" href="js/jquery-ui-themes-1.10.3/themes/sunny/jquery-ui.css" media="screen, print">
-<link rel="stylesheet" href="js/ymtooltip.css" type="text/css" media="screen,print">
 
-<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.form.js"></script>
-<script type="text/javascript" src="js/jquery.validate.js"></script>
-<script type="text/javascript" src="js/jquery.blockUI.js"></script>
-<script type="text/javascript" src="js/jquery.enter2tab.js"></script>
-<script type="text/javascript" src="js/toTop/jquery.ui.totop.js"></script>
-<script type="text/javascript" src="js/menuBas.js"></script>
-<script type="text/javascript" src="js/toTop/jquery.easing.1.3.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/jquery.align.js"></script>
-<script type="text/javascript" src="js/jquery.ymtooltip.js"></script>
 </head>
 <body>
-<div id="texte">
+<div class="container">
 <h1>Page d'informations</h1>
 
 <h3>Licence du logiciel</h3>
@@ -35,8 +27,9 @@
 <ul>
 	<li>Smarty: <a href="http://www.smarty.net/">http://www.smarty.net/</a> (licence LGPL)</li>
 	<li>jQuery: <a href="http://jquery.com/">http://jquery.com/</a> et <a href="http://jqueryui.com/">jQuery UI</a> (licence MIT)</li>
+	<li>Bootstrap: <a href="http://getbootstrap.com/">La librairie Twitter Bootstrap</a> (licence MIT)</li>
 	<li>fPdf: <a href="http://www.fpdf.org/">http://www.fpdf.org/</a> </li>
-	<li>ckEditor: <a href="http://ckeditor.com/">http://ckeditor.com/</a> (licences GPL, LGPL and MPL)</li>
+	<li>ckEditor: <a href="http://ckeditor.com/">http://ckeditor.com/</a> (licences GPL, LGPL et MPL)</li>
 	<li>des images de la librairie Nuvola: <a href="http://www.icon-king.com/projects/nuvola/">http://www.icon-king.com/projects/nuvola/</a> (licence LGPL)</li>
 </ul>
 <p>Il a été développé sur une plate-forme entièrement libre Linux avec les outils libres tels que Geany, Komodo Edit, Gimp, Firefox, Apache2, PHP, MySQL,...</p>
@@ -56,13 +49,9 @@
 <p>Si vous constatez une tentative d'accès frauduleux avec votre nom d'utilisateur (vous serez prévenu par mail), n'hésitez pas à contacter les administrateurs pour savoir les suites qui sont données.</p>
 <p>Pour plus d'informations sur la notion d'adresse IP, voyez <a href="http://fr.wikipedia.org/wiki/Adresse_IP" target="_blank">http://fr.wikipedia.org/wiki/Adresse_IP</a></p>
 
-</div>
+</div>  <!-- container -->
 {include file="footer.tpl"}
 
-<script type="text/javascript">
-{literal}
-	$("*[title], .tooltip").tooltip();
-{/literal}
-</script>
+
 </body>
 </html>

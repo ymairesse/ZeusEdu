@@ -1,40 +1,56 @@
+<div class="container">
 <h2>Administration des compétences {$cours}</h2>
 
-<form name="adminCompetences" id="adminCompetences" method="POST" action="index.php">
-    <h3>Compétences actuelles</h3>
+<form name="adminCompetences" id="adminCompetences" method="POST" action="index.php" role="form" class="form-inline">
+	<div class="row">
+		
+		<div class="col-md-6 col-sm-12">
+		<h3>Compétences actuelles</h3>
 		{if $listeCompetences|@count > 0}
         {assign var=competences value=$listeCompetences.$cours}
 
         {foreach from=$competences key=idComp item=data}
-        <input type="checkBox" name="suppr_{$idComp}" class="supprComp" id="chck_{$idComp}">
-        <input type="text" name="libelle_{$idComp}" value="{$data.libelle}" size="50" class="lblComp" id="lbl_{$idComp}">
-        <input type="text" name="ordre_{$idComp}" value="{$data.ordre}" size="3">
+        <input type="checkBox" name="suppr_{$idComp}" class="supprComp form-control" id="chck_{$idComp}">
+        <input type="text" name="libelle_{$idComp}" value="{$data.libelle}" class="lblComp form-control" id="lbl_{$idComp}" size="40">
+        <input type="text" name="ordre_{$idComp}" value="{$data.ordre}" size="3" class="form-control">
             <br>
         {/foreach}
 		{/if}
         <input type="checkBox" name="toutCocher" id="toutCocher">
             <label for="toutCocher">Tout Cocher</label>
             <button type="button" id="effacer">Effacer</button> <br>
-
+		</div>
+		
+		<div class="col-md-4 col-sm-12">
     <h3>Nouvelle(s) compétence(s)</h3>
         <button type="button" id="ajouter">Ajouter</button>
-        <div id="newComp">
+        <div id="newComp"></div>
+		
+		</div>  <!-- col-md... -->
+		
+		<div class="col-md-2 col-sm-12">
+			<div class="btn-group-vertical pull-right">
+				<button type="submit" class="btn btn-primary pull-right">Enregistrer</button><br>
+				<button type="reset" class="btn btn-default pull-right">Annuler</button>
+			</div>
+			<input type="hidden" name="cours" value="{$cours}">
+			<input type="hidden" name="niveau" value="{$niveau}">
+			<input type="hidden" name="action" value="{$action}">
+			<input type="hidden" name="mode" value="{$mode}">
+			<input type="hidden" name="etape" value="enregistrer">
+<div class="clearfix"></div>
+			<p class="notice">Pour supprimer une compétence, effacer son intitulé et enregistrer</p>
+			
+		</div>
+		
+	</div>  <!-- row -->
 
-        </div>
-        <hr>
-        <div style="float:right">
-        <input type="submit" name="submit" value="Enregistrer" id="enregistrer">
-        <input type="reset" name="Annuler" value="Annuler" id="annuler">
-        <input type="hidden" name="cours" value="{$cours}">
-        <input type="hidden" name="niveau" value="{$niveau}">
-        <input type="hidden" name="action" value="admin">
-        <input type="hidden" name="mode" value="competences">
-        <input type="hidden" name="etape" value="enregistrer">
-        </div>
-</form>
+</form>  
+
+</div>  <!-- container -->
 
 <script type="text/javascript">
-{literal}
+
     $(document).ready(function(){
         var nbNewComp = 1;
 
@@ -53,7 +69,7 @@
         $("#annuler").click(function(){
             if (confirm("Êtes-vous sûr(e) de vouloir annuler?")) {
                 $(".lblComp").each(function(no){
-                    $(this).css({'opacity':1});
+                    $(this).css({ 'opacity':1 } );
                     $(".blockNewComp").remove();
                     nbNewComp = 1;
                     })
@@ -61,7 +77,7 @@
             })
 
         $("#ajouter").click(function(){
-                $('<div class="blockNewComp">'+nbNewComp+'. <input type="text" class="newComp" name="newComp[]" value="" size="50"></div>').fadeIn('slow').appendTo('#newComp');
+                $('<div class="blockNewComp">'+nbNewComp+'. <input type="text" class="newComp" name="newComp[]" value="" size="35" class="form-control"></div>').fadeIn('slow').appendTo('#newComp');
                 $(".newComp").last().focus();
                 nbNewComp++;
 
@@ -72,5 +88,5 @@
             $("#wait").show();
             })
         })
-{/literal}
+
 </script>

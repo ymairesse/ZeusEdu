@@ -58,7 +58,6 @@ switch ($mode) {
 						// [leNomDuType] pour les autres (soit 'OG' ou 'STAGE', ici)
 						$cotesParTypes = $BullTQ->cotesParTypes($cotesParPeriode, array('OG', 'STAGE'));
 
-
 						// $listeCours = $Ecole->listeCoursListeEleves($matricule);
 						// $smarty->assign('listeCours',$listeCours[$matricule]);
 						$smarty->assign('listeCotes', $cotesParTypes);

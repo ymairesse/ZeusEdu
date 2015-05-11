@@ -13,7 +13,7 @@ $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 if (($coursGrp == Null) || ($niveau == Null)) die();
 
 // suppresssion effective de la table des épreuves externes
-$nb = $Bulletin->delEprExterne($coursGrp);
+$nb = $Bulletin->delEprExterne($coursGrp,ANNEESCOLAIRE);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
@@ -22,7 +22,7 @@ $smarty->compile_dir = "../templates_c";
 
 // reconstitution du tableau des épreuves externes existantes
 // liste des cours à épreuve externe défjà définis, pour affichage sur la page
-$smarty->assign('listeCours', $Bulletin->listeCoursEpreuveExterne($niveau));
+$smarty->assign('listeCours', $Bulletin->listeCoursEpreuveExterne($niveau,ANNEESCOLAIRE));
 			
 // nombre de cotes déjà attribuées par coursGrp (nécessaire pour savoir si la suppression est possible)
 $smarty->assign('nbCotesExtCoursGrp', $Bulletin->nbCotesExtCoursGrp($niveau));

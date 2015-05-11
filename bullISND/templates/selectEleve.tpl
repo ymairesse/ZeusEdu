@@ -3,7 +3,7 @@
 	{if isset($listeEleves)}
 		{include file="listeEleves.tpl"}
 	{/if}
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showEleve">
@@ -12,7 +12,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	if ($("#selectEleve").val() > 0)
@@ -30,5 +30,5 @@ $(document).ready (function() {
 		})
 
 })
-{/literal}
+
 </script>

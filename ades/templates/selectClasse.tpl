@@ -1,12 +1,12 @@
-<div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+<div id="selecteur" class="noprint">
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
 			{foreach from=$lesGroupes item=unGroupe}
 				<option value="{$unGroupe}" {if isset($classe) && ($unGroupe == $classe)}selected{/if}>{$unGroupe}</option>
 			{/foreach}
 		</select>
-		<input type="submit" value="OK" name="OK" id="envoi">
+		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="showEleve">

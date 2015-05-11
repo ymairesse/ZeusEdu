@@ -72,11 +72,12 @@ switch ($mode) {
 			$smarty->assign('tableErreurs',$tableErreurs);
 			$smarty->assign('message', array(
 					'title'=>'Enregistrement',
-					'texte'=>$resultat['nb'].' enregistrements modifiées')
+					'texte'=>$resultat['nb'].' enregistrements modifiées',
+					'urgence'=>'success')
 					);
 			}
 		if (isset($coursGrp)) {
-			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
+			$listeEleves = $Ecole->listeElevesCours($coursGrp);
 			$listeCotes = $Bulletin->listeCotesEprExterne($coursGrp);
 			$listeSituationsBulletin = $Bulletin->listeSituationsCours($listeEleves,$coursGrp,NBPERIODES);
 			$smarty->assign('listeSituations', $listeSituationsBulletin);
@@ -103,7 +104,9 @@ switch ($mode) {
 			$smarty->assign('listeEleves',$listeEleves);
 			}
 
-		if (isset($matricule) && ($matricule != '') && ($matricule != 'all')) {  // le cookie pourrait contenir la valeur 'all' qui n'aurait pas de sens ici
+		if (isset($matricule) && ($matricule != '')
+			&& (in_array($matricule, array_keys($listeEleves)))  // le matricule fait partie de la classe sélectionnée
+			&& ($matricule != 'all')) {  // le cookie pourrait contenir la valeur 'all' qui n'aurait pas de sens ici
 			// si un matricule est donné, on aura sans doute besoin des données de l'élève
 			$eleve = new Eleve($matricule);
 			
@@ -114,10 +117,11 @@ switch ($mode) {
 				$texte = ($nb>0)?"$nb enregistrement(s) réussi(s)":"Pas de modification";
 				$smarty->assign('message', array(
 					'title'=>"Enregistrement",
-					'texte'=>$texte)
+					'texte'=>$texte,
+					'urgence'=>'success')
 					);
 				}
-			$padEleve = new padEleve($matricule, $acronyme);
+
 			$smarty->assign('padsEleve', $padEleve->getPads());
 
 			// recherche des infos personnelles de l'élève
@@ -133,13 +137,16 @@ switch ($mode) {
 			$smarty->assign('listeCoursGrp',$listeCoursActuelle);
 			$syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
 			$smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
+			$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
 			
 			// tableau de synthèse de toutes les cotes de situation pour toutes les années scolaires
 			$syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
 			$smarty->assign('listeCoursActuelle', $listeCoursActuelle);
+			
+			$smarty->assign('epreuvesExternes', $Bulletin->cotesExternesPrecedentes($matricule));
 			$smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
 			$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
-			$smarty->assign('mentions', $Bulletin->listeMentions($matricule, Null, Null));
+			$smarty->assign('mentions', $Bulletin->listeMentions($matricule, Null, Null,Null));
 			$prevNext = $Bulletin->prevNext($matricule,$listeEleves);
 			$titulaires = $eleve->titulaires($matricule);
 			$smarty->assign('matricule',$matricule);
@@ -193,7 +200,7 @@ switch ($mode) {
 					// les résultats rien que pour l'année précédente
 					$resultatsPrec = array_shift($resultatsPre);
 					// les mentions obtenues
-					$mentions = $Bulletin->listeMentions($matricule, Null, Null);
+					$mentions = $Bulletin->listeMentions($matricule, Null, Null,ANNEESCOLAIRE);
 					}
 					else {
 						$anScolaire = Null;

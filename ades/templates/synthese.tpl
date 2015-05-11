@@ -1,3 +1,5 @@
+<div class="container">
+
 {foreach from=$listeFaits key=classe item=Eleves}
 	{if $Eleves|count > 1}
 		<h2 class="classeEntete">{$classe}</h2>
@@ -11,13 +13,14 @@
 	<p style="font-weight: bolder">Du {$debut} au {$fin}</p>
 		{foreach from=$ficheEleve key=typeFait item=listeFaits}
 			<h4 style="clear:both">{$listeTypesFaits.$typeFait.titreFait}</h4>
-				<table class="tableauSynthese">
-					<tr>
-						{foreach from=$listeChamps.$typeFait item=champ}
-						<th>{$listeTitres.$champ}</th>
-						{/foreach}
-					</tr>
-
+				<table class="table table-condensed table-hover table-striped tableauSynthese">
+					<thead>
+						<tr>
+							{foreach from=$listeChamps.$typeFait item=champ}
+							<th>{$listeTitres.$champ}</th>
+							{/foreach}
+						</tr>
+					</thead>
 					{foreach from=$listeFaits key=wtf item=faits}
 					<tr>
 						{foreach from=$listeChamps.$typeFait key=wtf item=unChamp}
@@ -28,12 +31,17 @@
 
 				</table>
 		{/foreach}
+
 	<div class="noScreen">
 		<p style="margin-top:3em">Document à remettre signé à l'éducateur de niveau</p>
-		<table width="100%">
+		<table class="table" width="100%">
 			<tr>
-				<td width="50%">Signature des parents</td>
-				<td width="50%">Signature de l'élève</td>
+				<td style="width:50%; text-align:center;">Signature des parents</td>
+				<td style="width:50%; text-align:center;">Signature de l'élève</td>
+			</tr>
+			<tr>
+				<td style="height:5em">&nbsp;</td>
+				<td style="height:5em">&nbsp;</td>
 			</tr>
 		</table>
 	</div>
@@ -42,3 +50,4 @@
 	{/if}
 	{/foreach}
 {/foreach}
+</div>

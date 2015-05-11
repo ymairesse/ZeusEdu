@@ -716,7 +716,48 @@ class hermes {
 		return $resultat;
 		}
 
+	/** 
+	 * fonction de suppression des utilisateurs; appelée par l'admin général lors du départ d'un collègue
+	 * @param string: $acronyme
+	 * @return integer: nombre de suppressions dans les tables de l'application
+	 */
+	public static function hermesDelUser($acronyme){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."hermesProprio ";
+		$sql .= "WHERE proprio='$acronyme' ";
+		$resultat = $connexion->exec($sql);
+		
+		$sql = "DELETE FROM ".PFX."hermesListes ";
+		$sql .= "WHERE membre='$acronyme' ";
+		$resultat += $connexion->exec($sql);
+		
+		$sql .= "DELETE FROM ".PFX."hermesArchives ";
+		$sql .= "WHERE acronyme='$acronyme' ";
+		$resultat += $connexion->exec($sql);
+		
+		Application::DeconnexionPDO ($connexion);
+		return $resultat;
+		}
+
+	/**
+	 * fonction de nettoyage de la base de données: suppression de tous les membres des listes qui ne figurent plus parmi les utilisateurs
+	 * @param void()
+	 * @return integer : nombre de suppression dans la BD
+	 */
+	public static function cleanTables(){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "DELETE FROM ".PFX."hermesListes ";
+		$sql .= "WHERE membre NOT IN (SELECT acronyme FROM ".PFX."profs) ";
+		$nb = $connexion->exec($sql);
+		
+		$sql = "DELETE FROM ".PFX."hermesProprio ";
+		$sql .= "WHERE proprio NOT IN (SELECT acronyme FROM ".PFX."profs) ";
+		$nb += $connexion->exec($sql);
+		
+		Application::DeconnexionPDO ($connexion);
+		return $nb;
+		
+	}
 
 }
-
 ?>

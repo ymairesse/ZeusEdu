@@ -8,8 +8,11 @@ $Application = new Application();
 
 require_once (INSTALL_DIR."/inc/classes/classEleve.inc.php");
 
-$fragment = isset($_GET['term'])?$_GET['term']:Null;
+$fragment = isset($_REQUEST['query'])?$_REQUEST['query']:Null;
+
+$fragment = trim($fragment);
 
 $listeEleves = Eleve::searchEleve2($fragment);
+
 echo json_encode($listeEleves);
 ?>

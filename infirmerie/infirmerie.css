@@ -65,3 +65,7 @@ fieldset p {
 .noborder {
 	border: none;
 }
+
+.ui-tabs .infoMedic {
+    background: red;
+}

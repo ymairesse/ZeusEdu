@@ -1,75 +1,113 @@
-<div id="accordion">
-<h2 style="clear:both; font-size:1.5em; font-weight:bold">Informations Personnelles</h2>
-<div>
-	<div class="blocGauche">
-	<div id="photo">
-	{if isset($photo)}
-	<img src="../photosProfs/{$photo}.jpg" class="photo" width="150px" />
-	{else}
-		{if $prof.sexe == 'M'}
-		<img src="../images/profMasculin.png" title="{$prof.prenom} n'a pas (encore) souhaité envoyer sa photo" alt"photo">
-			{else}
-			<img src="../images/profFeminin.png" title="{$prof.prenom} n'a pas (encore) souhaité envoyer sa photo" alt"photo">
-		{/if}
-	{/if}
+<div class="container">
+	
+	<div class="row">
 
-	</div>
-		<p><span class="etiquette">Abréviation: </span><strong>{$prof.acronyme}</strong></p>
-		<p><span class="etiquette">Nom: </span><strong>{$prof.nom}</strong></p>
-		<p><span class="etiquette">Prénom: </span><strong>{$prof.prenom}</strong></p>
-		<div class="notice">La photo aussi est modifiable dans votre "profil"</div>
-	</div>
-	<div class="blocDroit">
-		<p><span class="etiquette">Mail: </span><strong><a href="mailto:{$prof.mail}">{$prof.mail|default:'--'}</a></strong></p>
-		<p><span class="etiquette">Téléphone: </span> <strong>{$prof.telephone|default:'--'}</strong></p>
-		<p><span class="etiquette">GSM: </span><strong>{$prof.GSM|default:'--'}</strong></p>
-	</div>
-</div>
+		<div class="col-md-10 col-sm-10">
+	
+	    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+			<li class="active"><a href="#tabs-1" data-toggle="tab">Informations personnelles</a></li>
+			<li><a href="#tabs-2" data-toggle="tab">Informations professionnelles</a></li>
+	    </ul>
+	
+		<div id="my-tab-content" class="tab-content">
 
-<h2 style="clear:both; font-size:1.5em; font-weight:bold">Informations Professionnelles</h2>
-	<div>
-	<p><label for="titulaire">Titulaire de: </label><strong>{", "|implode:$titulaire|default:'-'}</strong></p>
-	<h3>Liste des cours</h3>
-		<table class="tableauAdmin">
-			<tr>
-				<th>Année</th>
-				<th>Nom du cours</th>
-				<th>Statut</th>
-				<th>Nombre d'heures</th>
-				<th>Abréviation</th>
-			</tr>
-		{foreach from=$cours item=unCours}
-			<tr>
-				<td>{$unCours.annee}e</td>
-				<td>{$unCours.libelle}</td>
-				<td>{$unCours.statut}</td>
-				<td>{$unCours.nbheures}h</td>
-				<td>{$unCours.coursGrp}</td>
-			</tr>
-		{/foreach}
-		</table>
-	</div>
-
-<h2 style="clear:both; font-size:1.5em; font-weight:bold">Domicile</h2>
-	<div>
-	{if isset($prof->identite.adresse) || isset($prof->identite.commune)}
-		<div style="float:right; width:500px; height:200px" id="map"></div>
-	{/if}
-
-	<p><span class="etiquette">Adresse:</span><strong>{$prof.adresse|default:'--'}</strong></p>
-	<p><span class="etiquette">Code postal:</span><strong>{$prof.codePostal|default:'--'}</strong></p>
-	<p><span class="etiquette">Commune:</span><strong>{$prof.commune|default:'--'}</strong></p>
-	<p><span class="etiquette">Pays:</span><strong>{$prof.pays|default:'--'}</strong></p>
-</div>	
-
-</div> <!-- accordion -->
-
-<script type="text/javascript">
-	{literal}
-	$(document).ready(function(){
-
-	$("#accordion").accordion();
-	})
+		    <div class="tab-pane active" id="tabs-1">
 		
-	{/literal}
-</script>
+				<h3>Informations Personnelles</h3>
+
+				<div class="row">
+
+					<div class="col-md-4 col-sm-12">
+						<dl>
+						<dt>Abréviation: </dt>
+							<dd>{$prof.acronyme}</dd>
+						<dt>Nom: </dt>
+							<dd>{$prof.nom}</dd>
+						<dt>Prénom: </dt>
+							<dd>{$prof.prenom}</dd>
+						</dl>
+					</div>
+
+					<div class="col-md-4 col-sm-12">
+						<dl>
+						<dt>Mail: </dt>
+							<dd><a href="mailto:{$prof.mail}">{$prof.mail|default:'--'}</a></dd>
+						<dt>Téléphone: </dt>
+							<dd>{$prof.telephone|default:'--'}</dd>
+						<dt>GSM: </dt>
+							<dd>{$prof.GSM|default:'--'}</dd>
+						</dl>
+					</div>
+					
+					
+					<div class="col-md-4 col-sm-12">
+						<dl>
+							<dt>Adresse:</dt>
+								<dd>{$prof.adresse|default:'--'}</dd>
+							<dt>Code postal:</dt>
+								<dd>{$prof.codePostal|default:'--'}</dd>
+							<dt>Commune:</dt>
+								<dd>{$prof.commune|default:'--'}</dd>
+							<dt>Pays:</dt>
+								<dd>{$prof.pays|default:'--'}</dd>
+						</dl>
+					</div>
+
+				</div>  <!-- row -->
+				
+			</div>  <!-- tabs-1 -->
+			
+			<div class="tab-pane" id="tabs-2">
+
+				<h3>Informations Professionnelles</h3>
+					<div>
+					<p><label for="titulaire">Titulaire de: </label><strong>{", "|implode:$titulaire|default:'-'}</strong></p>
+					<h3>Liste des cours</h3>
+						
+						<div class="table-responsive">
+							<table class="table table-striped tableauAdmin">
+								<tr>
+									<th>Année</th>
+									<th>Nom du cours</th>
+									<th>Statut</th>
+									<th>Nombre d'heures</th>
+									<th>Abréviation</th>
+								</tr>
+							{foreach from=$cours item=unCours}
+								<tr>
+									<td>{$unCours.annee}e</td>
+									<td>{$unCours.libelle}</td>
+									<td>{$unCours.statut}</td>
+									<td>{$unCours.nbheures}h</td>
+									<td>{$unCours.coursGrp}</td>
+								</tr>
+							{/foreach}
+							</table>
+						</div>						
+					</div>
+			</div>  <!-- tabs-2 -->
+
+				
+		</div>  <!-- my-tab-... -->
+
+		</div>  <!-- col-md... -->
+		
+		<div class="col-md-2 col-sm-2">
+
+			{if isset($photo)}
+				<img src="../photosProfs/{$photo}.jpg" class="photo img-responsive" title="{$prof.prenom} {$prof.nom}">
+				{else}
+					{if $prof.sexe == 'M'}
+					<img src="../images/profMasculin.png" class="photo img-responsive" title="{$prof.prenom} n'a pas (encore) souhaité envoyer sa photo" alt"photo">
+						{else}
+						<img src="../images/profFeminin.png"  class="photo img-responsive" title="{$prof.prenom} n'a pas (encore) souhaité envoyer sa photo" alt"photo">
+					{/if}
+			{/if}
+
+		</div>  <!-- col-md... -->
+		
+	
+	</div> <!-- row -->
+
+</div>  <!-- container -->
+

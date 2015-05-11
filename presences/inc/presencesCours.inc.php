@@ -2,12 +2,12 @@
 // prise de présence par cours
 if ($etape == 'enregistrer') {
 	if (isset($coursGrp)) {
-	$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
-	$nb = $Presences->savePresences($_POST, $listeEleves, array($periode=>$periode));
-	$smarty->assign('message', array(
+		$listeEleves = $Ecole->listeElevesCours($coursGrp,'alpha');
+		$nb = $Presences->savePresences($_POST, $listeEleves, array($periode=>$periode));
+		$smarty->assign('message', array(
 				'title'=> SAVE,
 				'texte'=>sprintf(NBSAVE,$nb),
-				'icon'=>'../images/info.png'
+				'urgence'=>'success'
 				));
 		}
 	}
@@ -29,12 +29,13 @@ if ($selectProf) {
 	
 $smarty->assign('listeProfs', $Ecole->listeProfs(true));
 $smarty->assign('date',$date);
-$smarty->assign('listeCoursGrp', $listeCoursGrp);
+$smarty->assign('listeCoursGrp',$listeCoursGrp);
 
 if (isset($coursGrp)) {
 	$listePresences = $Presences->listePresencesElevesDate($date,$listeEleves);
-	$smarty->assign('coursGrp', $coursGrp);
+	$smarty->assign('coursGrp',$coursGrp);
 	}
+	
 $listePresences = isset($listePresences)?$listePresences:Null;
 $smarty->assign('listePresences', $listePresences);
 $smarty->assign('action',$action);

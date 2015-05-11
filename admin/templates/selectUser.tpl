@@ -1,5 +1,5 @@
 <script type="text/javascript">
-{literal}
+
 $(document).ready(function(){
 
 	$("#formSelecteur").submit(function(){
@@ -10,11 +10,11 @@ $(document).ready(function(){
 		$("#formSelecteur").submit();
 		})
 })
-{/literal}
+
 </script>
 
 <div id="selecteur" class="noprint" style="clear:both">
-<fieldset style="clear:both"><legend>Modification d'un utilisateur</legend>
+<fieldset style="clear:both"><legend>Modification d'un utilisateur/trice</legend>
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 	<select name="acronyme" id="selectUser"  size="13">
 		<option value="">Sélectionner un utilisateur</option>

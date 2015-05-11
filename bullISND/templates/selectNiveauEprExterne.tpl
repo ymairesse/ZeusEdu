@@ -1,4 +1,4 @@
-<div id="selecteur" class="noprint" style="clear:both">
+<div id="selecteur" class="selecteur noprint" style="clear:both">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 	<label for="niveauCours">Niveau des cours</label>
 	<select name="niveau" id="niveauCours">
@@ -19,7 +19,7 @@
 	{/if}
 	</span>
 	
-	<input type="submit" value="OK" name="OK" id="envoi">
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="show"><br>
@@ -28,7 +28,7 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 $(document).ready (function() {
 
 	$("#formSelecteur").submit(function(){
@@ -59,5 +59,5 @@ $(document).ready (function() {
 		})
 	
 })
-{/literal}
+
 </script>
