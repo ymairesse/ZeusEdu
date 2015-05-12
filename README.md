@@ -1,10 +1,11 @@
-ATTENTION: le mise à jour du 11/05/2015 invalide le fichier de configuration de la base de données
+ATTENTION: le mise à jour du 11/05/2015 invalide le fichier de configuration de la base de données  ZeusEdu.sql
+Ce fichier sera mis à jour tout prochainement
 
 
 ZeusEdu
 =======
-Application de gestion de la vie scolaire
-Plus d'informations: http://sio2.be
+Application de gestion de la vie scolaire. Version avec "responsive design"
+Plus d'informations: http://sio2.be/?s=ZEUS
 
 Installation
 ============
