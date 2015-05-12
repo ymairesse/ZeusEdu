@@ -1,3 +1,6 @@
+ATTENTION: le mise à jour du 11/05/2015 invalide le fichier de configuration de la base de données
+
+
 ZeusEdu
 =======
 Application de gestion de la vie scolaire
