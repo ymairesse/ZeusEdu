@@ -81,14 +81,14 @@ switch ($mode) {
 				$nb = hermes::nettoyerListes();
 				$smarty->assign('message', array(
 									'title'=>'Confirmation',
-									'texte'=>'Utilisateur $acronyme supprimé',
+									'texte'=>"Utilisateur $acronyme supprimé",
 									'urgence'=>'danger'));
 				// break; pas de  break
 			default:
 				$smarty->assign('listeProfs', $Application->listOrphanUsers());
-				$smarty->assign('action', $action);
-				$smarty->assign('mode', $mode);
-				$smarty->assign('etape', 'confirmation');
+				$smarty->assign('action',$action);
+				$smarty->assign('mode',$mode);
+				$smarty->assign('etape','confirmation');
 				$smarty->assign('selecteur','selectNomProf');
 				break;
 			}
@@ -112,8 +112,8 @@ switch ($mode) {
 			'title'=>"Modifications",
 			'texte'=>"$nb droit(s) affecté(s)",
 			'urgence'=>'info'));
-		$smarty->assign("bilan", $bilan);
-		$smarty->assign("corpsPage", "bilanDroits");
+		$smarty->assign('bilan', $bilan);
+		$smarty->assign('corpsPage', 'bilanDroits');
 		break;
 	default:
 		die();
