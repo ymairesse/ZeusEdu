@@ -11,7 +11,7 @@
 			<input type="hidden" name="matricule" value="{$matricule}">
 			<input type="hidden" name="action" value="{$action}">
 			<input type="hidden" name="mode" value="savePad">
-			<button class="btn btn-primary pull-right" type="Submit" name="submit"><span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer</button>
+			<button class="btn btn-primary pull-right hidden-print" type="Submit" name="submit"><span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer</button>
 			{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
 			<input type="hidden" class="onglet" name="onglet" value="{$onglet|default:0}">
 			<hr>
@@ -19,7 +19,7 @@
 		</form>
 	</div>  <!-- col-md-... -->
 	
-	<div class="col-md-2 col-sm-12">
+	<div class="col-md-2 col-sm-12 hidden-print">
 		
 		<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
 		

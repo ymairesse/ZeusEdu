@@ -58,7 +58,7 @@
 		
 	</div>  <!-- col-md- .... -->
 	
-	<div class="col-md-2 col-sm-2">
+	<div class="col-md-2 col-sm-2 hidden-print">
 		
 		<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="draggable photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
 		

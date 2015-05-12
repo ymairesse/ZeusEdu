@@ -1,7 +1,7 @@
 {if ($userStatus == 'educ') || ($userStatus == 'admin')}
 
 	{* boutons pour ajouter un fait disciplinaire *}
-	<div class="btn-group">
+	<div class="btn-group hidden-print">
 		{foreach from=$listeTypesFaits item=unTypeFait}
 			<a class="btn" type="button" style="color:#{$unTypeFait.couleurTexte};background-color:#{$unTypeFait.couleurFond}" href="index.php?action=fait&amp;mode=new&amp;matricule={$eleve.matricule}&amp;type={$unTypeFait.type}">{$unTypeFait.titreFait}</a>
 		{/foreach}
@@ -15,7 +15,7 @@
 <div class="container">
 	
 	<!-- Tabs différentes années scolaires -->
-    <ul class="nav nav-tabs navbar-right" id="tabsDisc">
+    <ul class="nav nav-tabs navbar-right hidden-print" id="tabsDisc">
 		{foreach from=$listeFaitsAnnees key=anneeScolaire item=wtf}
 			<li><a href="#tab{$anneeScolaire}" data-toggle="tab">{$anneeScolaire}</a></li>
 		{/foreach}
@@ -31,7 +31,7 @@
 			{assign var=tour value=0}
 			{foreach from=$listeFaitsAnnees key=anneeScolaire item=listeFaits}
 		
-			<div class="tab-pane{if $tour == 0} active{assign var=tour value=$tour+1}{/if}" id="tab{$anneeScolaire}">
+			<div class="tab-pane{if $tour == 0} active{assign var=tour value=$tour+1}{else} hidden-print{/if}" id="tab{$anneeScolaire}">
 				<h3>{$anneeScolaire}</h3>
 					{foreach from=$listeTypesFaits key=typeFait item=descriptionTypeFait}
 						{* si un fait de ce type figure dans la fiche disciplinaire *}
@@ -130,7 +130,7 @@
 			</div>  <!-- tab-content (fiches disciplinaires -->
 		</div>  <!-- col-md... -->
 		
-		<div class="col-md-2 col-sm-2">
+		<div class="col-md-2 col-sm-2 hidden-print">
 			<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="draggable photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
 			
 		</div>

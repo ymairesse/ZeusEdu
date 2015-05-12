@@ -6,7 +6,7 @@
 
 <h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
-<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
 	<li class="active"><a href="#tabs-1" data-toggle="tab">Fiche Disciplinaire</a></li>
 	<li><a href="#tabs-2" data-toggle="tab">Parents et responsables</a></li>
 	<li><a href="#tabs-3" data-toggle="tab">Données personnelles</a></li>
@@ -18,13 +18,13 @@
 	<div class="tab-pane active" id="tabs-1">
 		{include file="infoDisciplinaires.tpl"}
 	</div>
-	<div class="tab-pane" id="tabs-2">
+	<div class="tab-pane hidden-print" id="tabs-2">
 		{include file="donneesParents.tpl"}
 	</div>
-	<div class="tab-pane" id="tabs-3">
+	<div class="tab-pane hidden-print" id="tabs-3">
 		{include file="donneesPerso.tpl"}
 	</div>
-	<div class="tab-pane" id="tabs-4">
+	<div class="tab-pane hidden-print" id="tabs-4">
 		{include file="memoEleve.tpl"}
 	</div>
 		
