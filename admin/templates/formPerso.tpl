@@ -50,7 +50,7 @@
 					<label for="mdp">Mot de passe: </label>
 					{* Le mot de passe est obligatoire pour les nouveaux utilisateurs seulement *}
 					<input type="passwd" maxlenght="20" name="mdp" id="mdp" value="" 
-						{if $dejaConnu == false} class="required form-control" {else} class="form-control">{/if}
+						{if $dejaConnu == false} class="required form-control" {else} class="form-control"{/if}>
 					<div class="help-block">Laisser vide pour ne pas modifier le mot de passe</div>
 				</div>
 				
