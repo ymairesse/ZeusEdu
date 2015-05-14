@@ -157,7 +157,6 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
 ('infirmerie', 'ASCLEPIOS: Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
 ('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
-('agenda', 'Agenda ISND', 'agenda', 'agenda.png', 1, 9),
 ('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
 ('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8);
 
