@@ -23,6 +23,35 @@ CREATE TABLE IF NOT EXISTS didac_adesChamps (
   PRIMARY KEY (champ)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Description des champs dans la base de données';
 
+
+--
+-- Contenu de la table `didac_adesChamps`
+--
+
+INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `typeDateRetenue`, `typeChamp`, `size`, `maxlength`, `colonnes`, `lignes`, `classCSS`, `autocomplete`) VALUES
+('ladate', 'Date du jour', 'formulaire,tableau,minimum', 1, 0, 'text', 12, 10, 0, 0, 'obligatoire', 'N'),
+('professeur', 'Professeur', 'formulaire,tableau,minimum', 0, 0, 'text', 5, 10, 0, 0, 'obligatoire', 'O'),
+('motif', 'Motif', 'formulaire,tableau,minimum', 0, 0, 'textarea', 0, 0, 60, 4, 'obligatoire', 'N'),
+('idretenue', 'Date de retenue', 'formulaire', 0, 1, 'select', 0, 0, 0, 0, 'obligatoire', 'N'),
+('travail', 'Travail à effectuer', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N'),
+('sanction', 'Sanction', 'formulaire,tableau', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N'),
+('nopv', 'Numéro de PV', 'formulaire,tableau', 0, 0, 'text', 20, 20, 0, 0, 'obligatoire', 'N'),
+('idorigine', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('qui', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('matricule', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('idfait', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('type', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('typeDeRetenue', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('dermodif', '', 'formulaire', 1, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
+('materiel', 'Matériel à prévoir', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N'),
+('dateRetenue', 'Date de retenue', 'tableau,billetRetenue', 1, 0, '', 0, 0, 0, 0, '', 'N'),
+('heure', 'Heure', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N'),
+('duree', 'Durée', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N'),
+('local', 'Local', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N'),
+('anneeScolaire', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N');
+
+
+
 CREATE TABLE IF NOT EXISTS didac_adesFaits (
   idfait int(11) NOT NULL AUTO_INCREMENT,
   anneeScolaire varchar(9) COLLATE utf8_unicode_ci NOT NULL,
@@ -86,6 +115,23 @@ CREATE TABLE IF NOT EXISTS didac_adesTypesFaits (
   PRIMARY KEY (`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+
+--
+-- Contenu de la table `didac_adesTypesFaits`
+--
+
+INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleurTexte`, `typeRetenue`, `imprimable`, `ordre`, `listeChamps`, `focus`) VALUES
+(0, 'Retard après-midi', 'ccbb68', '000000', 0, '0', 1, 'ladate,matricule,idfait,type,qui,anneeScolaire', ''),
+(1, 'Retard au cours', '187718', 'ffffff', 0, '0', 2, 'ladate,matricule, idfait, qui, type, professeur,anneeScolaire', 'professeur'),
+(3, 'Exclusion du cours', 'aaaaaa', 'ffffff', 0, '0', 3, 'ladate, matricule, idfait, qui, type, professeur, motif,anneeScolaire', 'professeur'),
+(4, 'Retenue de travail', '6cec05', '000000', 1, '1', 5, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
+(5, 'Retenue Disciplinaire', 'ffffff', '000000', 2, '1', 6, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
+(6, 'Retenue Bleue', '8888ff', '000000', 3, '1', 7, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
+(7, 'Renvoi', 'ff0000', 'ffffff', 0, '0', 8, 'ladate, matricule, idfait, type, qui, motif, sanction, nopv,anneeScolaire', 'motif'),
+(2, 'Fait disciplinaire', 'F19D9D', '000000', 0, '0', 4, 'ladate,matricule,idfait,qui,type,professeur,motif,anneeScolaire', '');
+
+
+
 CREATE TABLE IF NOT EXISTS didac_applications (
   nom varchar(12) COLLATE utf8_unicode_ci NOT NULL,
   nomLong varchar(48) COLLATE utf8_unicode_ci NOT NULL,
@@ -96,11 +142,51 @@ CREATE TABLE IF NOT EXISTS didac_applications (
   PRIMARY KEY (nom)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Contenu de la table `didac_applications`
+--
+
+INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `ordre`) VALUES
+('profil', 'Narcisse: Profil Personnel', 'profil', 'profil.png', 1, 3),
+('ades', 'ADES: Éducateurs', 'ades', 'ades.png', 1, 5),
+('trombiEleves', 'Trombinoscope des élèves', 'trombiEleves', 'eleves.png', 1, 6),
+('trombiProfs', 'Trombinoscope des profs', 'trombiProfs', 'profs.png', 1, 7),
+('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
+('pad', 'THOT: Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
+('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
+('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
+('infirmerie', 'ASCLEPIOS: Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
+('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
+('agenda', 'Agenda ISND', 'agenda', 'agenda.png', 1, 9),
+('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
+('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8);
+
+
 CREATE TABLE IF NOT EXISTS didac_appliTables (
   application varchar(20) CHARACTER SET latin1 NOT NULL,
   nomTable varchar(30) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (application,nomTable)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des tables par application (pour backup)';
+
+--
+-- Contenu de la table `didac_applications`
+--
+
+INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `ordre`) VALUES
+('profil', 'Narcisse: Profil Personnel', 'profil', 'profil.png', 1, 3),
+('ades', 'ADES: Éducateurs', 'ades', 'ades.png', 1, 5),
+('trombiEleves', 'Trombinoscope des élèves', 'trombiEleves', 'eleves.png', 1, 6),
+('trombiProfs', 'Trombinoscope des profs', 'trombiProfs', 'profs.png', 1, 7),
+('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
+('pad', 'THOT: Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
+('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
+('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
+('infirmerie', 'ASCLEPIOS: Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
+('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
+('agenda', 'Agenda ISND', 'agenda', 'agenda.png', 1, 9),
+('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
+('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8);
+
 
 CREATE TABLE IF NOT EXISTS didac_bullArchives (
   lematricule int(6) NOT NULL COMMENT 'champ matricule (nom modifié pour éviter la purge lors du passage d''année)',
@@ -215,15 +301,6 @@ CREATE TABLE IF NOT EXISTS didac_bullEprExterne (
   PRIMARY KEY (matricule,anscol,coursGrp)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
 
-CREATE TABLE IF NOT EXISTS didac_bullEprExternebak (
-  matricule int(6) NOT NULL,
-  anscol varchar(9) COLLATE utf8_unicode_ci NOT NULL,
-  coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  coteExterne varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  choixCote enum('coteExterne','reussite','sitDelibe') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'coteExterne' COMMENT 'Choix de la cote pour la feuille de délibé',
-  PRIMARY KEY (matricule,anscol,coursGrp)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
-
 CREATE TABLE IF NOT EXISTS didac_bullExterneArchives (
   matricule int(6) NOT NULL,
   anscol varchar(9) COLLATE utf8_unicode_ci NOT NULL,
@@ -246,6 +323,17 @@ CREATE TABLE IF NOT EXISTS didac_bullListeAttitudes (
   attitude varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (idAttitude)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des attitudes figurant au bulletin';
+
+--
+-- Contenu de la table `didac_bullListeAttitudes`
+--
+
+INSERT INTO `didac_bullListeAttitudes` (`idAttitude`, `attitude`) VALUES
+(1, 'Respect des autres'),
+(2, 'Respect des consignes'),
+(3, 'Volonté de progresser'),
+(4, 'Ordre et soin');
+
 
 CREATE TABLE IF NOT EXISTS didac_bullLockElevesCours (
   matricule int(6) NOT NULL,
@@ -402,6 +490,34 @@ CREATE TABLE IF NOT EXISTS didac_config (
   signification varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (parametre)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-
+-- Contenu de la table `didac_config`
+--
+
+INSERT INTO `didac_config` (`ordre`, `parametre`, `label`, `size`, `valeur`, `signification`) VALUES
+(4, 'ADRESSE', 'Adresse', 45, 'Adresse: rue', 'Adresse de l''école'),
+(17, 'ANNEESCOLAIRE', 'Année scolaire', 9, '2014-2015', 'Année scolaire en cours (deux millésimes séparés par un tiret -pas d''espace)'),
+(3, 'COMMUNE', 'Commune', 45, 'Commune', 'Commune de l''école'),
+(7, 'COTEABS', 'Mentions d''absence', 40, 'ne,NE,abs,cm,ABS,CM,EXC,exc', 'Cote valant pour absence justifiée au carnet de cotes'),
+(8, 'COTENULLE', 'Mentions nulles', 40, 'nr,NR', 'Cote valant pour 0 au carnet de cotes'),
+(6, 'DIRECTION', 'Direction', 30, 'Nom du directeur/directrice', 'Nom et titre de la direction (rapport de compétences)'),
+(1, 'ECOLE', 'Nom de l''école', 30, 'École', 'Nom de l''école'),
+(5, 'LISTENIVEAUX', 'Niveaux d''étude', 12, '1,2,3,4,5,6', 'Liste des niveaux d''études existants'),
+(9, 'MAXIMAGESIZE', 'Images', 9, '200000', 'Taille maximale (en Ko) des image en upload (trombinoscopes)'),
+(10, 'NBPERIODES', 'Nombre de périodes', 2, '5', 'Nombre de périodes de l''année scolaire (bulletin)'),
+(11, 'NOMSPERIODES', 'Noms des périodes', 30, 'Toussaint,Noël,Carnaval,Pâques,Juin', 'Noms des différentes périodes de cours'),
+(12, 'PERIODEENCOURS', 'Période en cours', 2, '5', 'Numéro de la période en cours'),
+(13, 'PERIODESDELIBES', 'Périodes de délibés', 20, '2,5', 'Numéro des périodes de délibérations'),
+(14, 'SECTIONS', 'Sections', 12, 'G,TT,TQ', 'Liste des sections proposées dans l''école'),
+(15, 'SITEWEB', 'Adresse web', 45, 'http://www.ecole.org', 'Adresse URL du site web de l''école'),
+(16, 'TELEPHONE', 'Téléphone', 20, '+32 xx xx xx', 'Téléphone général de l''école'),
+(2, 'VILLE', 'Ville', 45, 'xxxxx - VILLE', 'Code postal et Localité de l''école'),
+(18, 'NOREPLY', 'Adresse No Reply', 40, 'ne_pas_repondre@ecole.org', 'Adresse pour la diffusion de mails "no reply"'),
+(18, 'NOMNOREPLY', 'Nom adresse No Reply', 30, 'Merci de ne pas ''répondre''', 'Nom de l''adresse pour la diffusion de mails "no reply"'),
+(20, 'DISCLAIMER', 'Disclaimer', 80, 'http://www.ecole.org/disclaimer.html', 'Clause de non responsabilité pour les mails sortants'),
+(21, 'ANNEEDEGRE', 'Années de fin de degré', 20, '2', 'Années d''études avec évaluation par degré (séparées par des virgules)');
+
 
 CREATE TABLE IF NOT EXISTS didac_cours (
   cours varchar(17) COLLATE utf8_unicode_ci NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5',
@@ -638,12 +754,42 @@ CREATE TABLE IF NOT EXISTS didac_profs (
   PRIMARY KEY (acronyme)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+
+--
+-- Contenu de la table `didac_profs`
+--
+
+INSERT INTO `didac_profs` (`acronyme`, `nom`, `prenom`, `sexe`, `mdp`, `statut`, `mail`, `telephone`, `GSM`, `adresse`, `commune`, `codePostal`, `pays`) VALUES
+('ADM', 'administrateur', 'administrateur', 'M', 'e10adc3949ba59abbe56e057f20f883e', 'admin', 'adminZeus@ecole.org', '', '', '', '', '', '');
+
 CREATE TABLE IF NOT EXISTS didac_profsApplications (
   application varchar(12) CHARACTER SET latin1 NOT NULL,
   acronyme varchar(3) CHARACTER SET latin1 NOT NULL,
   userStatus varchar(15) CHARACTER SET latin1 NOT NULL DEFAULT '0' COMMENT 'Voir la table "_statuts"',
   UNIQUE KEY acronyme (acronyme,application)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Contenu de la table `didac_profsApplications`
+--
+
+INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) VALUES
+('ades', 'ADM', 'admin'),
+('adm', 'ADM', 'admin'),
+('admin', 'ADM', 'admin'),
+('agenda', 'ADM', 'admin'),
+('bullISND', 'ADM', 'admin'),
+('bullTQ', 'ADM', 'admin'),
+('e-valves', 'ADM', 'admin'),
+('edt', 'ADM', 'admin'),
+('hermes', 'ADM', 'admin'),
+('infirmerie', 'ADM', 'admin'),
+('logout', 'ADM', 'admin'),
+('pad', 'ADM', 'admin'),
+('presences', 'ADM', 'admin'),
+('profil', 'ADM', 'admin'),
+('trombiEleves', 'ADM', 'admin'),
+('trombiProfs', 'ADM', 'admin');
 
 CREATE TABLE IF NOT EXISTS didac_profsCours (
   acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 3 lettres',
@@ -682,6 +828,19 @@ CREATE TABLE IF NOT EXISTS didac_userStatus (
   PRIMARY KEY (ordre),
   UNIQUE KEY userStatus (userStatus)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Contenu de la table `didac_userStatus`
+--
+
+INSERT INTO `didac_userStatus` (`ordre`, `userStatus`, `color`, `nomStatut`) VALUES
+(0, 'none', '#FFFFFF', 'Non inscrit'),
+(1, 'accueil', '#FFFD7C', 'Accueil'),
+(2, 'prof', '#CFD3FF', 'Enseignant'),
+(3, 'educ', '#D076FF', 'Éducateur'),
+(4, 'direction', '#4AFF49', 'Direction'),
+(6, 'admin', '#FF0000', 'Administrateur'),
+(5, 'coordinateur', '#FFFFFF', 'Coordinateur');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
