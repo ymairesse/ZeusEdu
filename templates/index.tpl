@@ -17,6 +17,10 @@
 
 <body>
 
+{if isset($avertissementIP)	}
+	{include file="avertissementIP.tpl"}
+{/if}
+
 <div class="vertical-align">
 
 	<div class="container">
@@ -42,9 +46,6 @@
 </div>
 
 {include file="footer.tpl"}
-{if isset($avertissementIP)	}
-	{include file="avertissementIP.tpl"}
-{/if}
 
 <script type="text/javascript">
 
