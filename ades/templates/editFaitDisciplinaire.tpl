@@ -1,4 +1,3 @@
-{debug}
 <div class="container">
 
 <h2>{$eleve.nom} {$eleve.prenom} | {$eleve.groupe}</h2>
