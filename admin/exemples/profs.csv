@@ -1,109 +1,108 @@
-"acronyme","nom","prenom","sexe","mdp","statut","mail","telephone","GSM","adresse","commune","codePostal","pays"
-"ADO","Alary"," Therese","M",,,,,,,,,"BE"
-"ALT","Allard"," Isabelle","F",,,,,,,,,"BE"
-"AMA","Allard"," Jean","F",,,,,,,,,"BE"
-"BAE","Arpin"," Michel","F",,,,,,,,,"BE"
-"BAK","Arsenault"," Monique","F",,,,,,,,,"BE"
-"BAU","Aubin"," Jacques","F",,,,,,,,,"BE"
-"BEE","Audet"," Berthe","F",,,,,,,,,"BE"
-"PBE","Baillargeon","Charlotte","F",,,,,,,,,"BE"
-"BEL","Basin"," Alfred","F",,,,,,,,,"BE"
-"BER","Beaucaire"," Armand","F",,,,,,,,,"BE"
-"BEU","Beaule"," Yvette B.","M",,,,,,,,,"BE"
-"BLO","Bedard"," Pauline","M",,,,,,,,,"BE"
-"BON","Begin"," Mireille","M",,,,,,,,,"BE"
-"BNT","Begin Dorion"," Esther","M",,,,,,,,,"BE"
-"BUI","Belanger"," Gisele L.","M",,,,,,,,,"BE"
-"BRI","Belanger"," Helene","M",,,,,,,,,"BE"
-"BOU","Belanger"," Marie-Claire","F",,,,,,,,,"BE"
-"BBU","Bellemare"," Rita","M",,,,,,,,,"BE"
-"CAS","Benoit","Benoit","F",,,,,,,,,"BE"
-"CHA","Bergeron"," Suzanne","M",,,,,,,,,"BE"
-"CLA","Bisson"," Anita","M",,,,,,,,,"BE"
-"COC","Blais-Tetreault"," Ursule","F",,,,,,,,,"BE"
-"COM","Boily"," Sr Marguerite","M",,,,,,,,,"BE"
-"COR","Bordan"," Gregory","M",,,,,,,,,"BE"
-"COT","Bouchard"," Fleurette","F",,,,,,,,,"BE"
-"COU","Bourret"," Francoise","F",,,,,,,,,"BE"
-"CRO","Bouthiette-Quesnel"," Rachel","M",,,,,,,,,"BE"
-"DAN","Brodeur"," Jean-Pierre","M",,,,,,,,,"BE"
-"DBA","Brule"," Eveline","M",,,,,,,,,"BE"
-"DBE","Caisse"," Maurice","M",,,,,,,,,"BE"
-"DEC","Carrier"," Robert","M",,,,,,,,,"BE"
-"DCL","Carrier"," Valerie","F",,,,,,,,,"BE"
-"DEL","Chabot"," Isabelle","M",,,,,,,,,"BE"
-"DEP","Chabot"," Rene","F",,,,,,,,,"BE"
-"ODR","Charrette"," Jules","F",,,,,,,,,"BE"
-"DRO","Chartrand"," Mignonne","M",,,,,,,,,"BE"
-"DER","Clarke"," Lannah","F",,,,,,,,,"BE"
-"DWI","Clement"," Pierre","F",,,,,,,,,"BE"
-"DOP","Clermont"," Benoit","F",,,,,,,,,"BE"
-"DOU","Cliche"," Real","M",,,,,,,,,"BE"
-"DUF","Cloutier"," Marie-Jeanne","M",,,,,,,,,"BE"
-"DFO","Comeau"," Ernest","F",,,,,,,,,"BE"
-"EVR","Cote"," Marie-France","F",,,,,,,,,"BE"
-"FBI","Cote-Handfield"," Madeleine","F",,,,,,,,,"BE"
-"LFI","Crevier"," Bernard","F",,,,,,,,,"BE"
-"FET","Crevier","Bernard","F",,,,,,,,,"BE"
-"FRT","Dallaire"," Louis","M",,,,,,,,,"BE"
-"FRA","Desbiens"," Ginette","F",,,,,,,,,"BE"
-"GIA","Deslauriers"," Joseph","M",,,,,,,,,"BE"
-"GLA","Despres"," Jean-Claude","M",,,,,,,,,"BE"
-"GOB","Desrosiers"," Gilles","F",,,,,,,,,"BE"
-"GOR","Dessureault"," Francois","M",,,,,,,,,"BE"
-"HEB","Dhaiti"," Gladisse","F",,,,,,,,,"BE"
-"HEN","Dorvius"," Gerry","F",,,,,,,,,"BE"
-"HNS","Dostaler-Valin"," Therese","F",,,,,,,,,"BE"
-"HRT","Dostie Bugeaud"," Anne-Marie","F",,,,,,,,,"BE"
-"HIN","Drouin"," Benoit","M",,,,,,,,,"BE"
-"HNA","Dubois"," Bernard","F",,,,,,,,,"BE"
-"HBR","Ducharme"," Ginette","F",,,,,,,,,"BE"
-"HUB","Ducharme"," Marguerite","F",,,,,,,,,"BE"
-"INC","Dufault"," Paul","F",,,,,,,,,"BE"
-"KAI","Dufault-Bertrand"," Gabrielle","M",,,,,,,,,"BE"
-"KRO","Dufresne"," Charles","M",,,,,,,,,"BE"
-"KSI","Dufresne"," Guy","F",,,,,,,,,"BE"
-"LAC","Dufresne"," Marie","F",,,,,,,,,"BE"
-"LAM","Dufresne"," Thomas","M",,,,,,,,,"BE"
-"LEF","Dunberry"," Eric","F",,,,,,,,,"BE"
-"LEP","Dupont"," Gerard","M",,,,,,,,,"BE"
-"LIB","Dupuis"," Colette","M",,,,,,,,,"BE"
-"SLI","Ethier Morand"," Mariette","F",,,,,,,,,"BE"
-"LOH","Falardeau"," Dr Maurice","M",,,,,,,,,"BE"
-"LOU","Forcillo"," Marguerite","M",,,,,,,,,"BE"
-"LUF","Forcillo"," Sammy","F",,,,,,,,,"BE"
-"MAI","Mairesse","Yves","M","1224b6196e600af6d118b8d7a12fec76","admin","ymairesse@sio2.be",,,,,,"BE"
-"MTO","Fortier"," Marcelle","F",,,,,,,,,"BE"
-"VRM","Fortier"," Marcelle","F",,,,,,,,,"BE"
-"MAT","Fortin"," Francine","F",,,,,,,,,"BE"
-"MEL","Fortin"," Jeanne-D'Arc","F",,,,,,,,,"BE"
-"MON","Fougere"," Daniel","M",,,,,,,,,"BE"
-"MOR","Frigon"," Claude","M",,,,,,,,,"BE"
-"MUL","Gagnon"," Edouard","F",,,,,,,,,"BE"
-"NOL","Gagnon"," Jacques","F",,,,,,,,,"BE"
-"PAL","Gariepy"," Claude","F",,,,,,,,,"BE"
-"PHI","Gaudreau"," Paul","F",,,,,,,,,"BE"
-"PIR","Gaudreault"," Maurice","M",,,,,,,,,"BE"
-"RAV","Gaulin"," Jeannette","F",,,,,,,,,"BE"
-"REN","Gauthier"," Guy","M",,,,,,,,,"BE"
-"ROG","Gazaille"," Francine","M",,,,,,,,,"BE"
-"ROS","Gelinas-Diamond"," Cecile","F",,,,,,,,,"BE"
-"SAM","Gendreau"," Marius","M",,,,,,,,,"BE"
-"SCN","Gendron"," Pierre","M",,,,,,,,,"BE"
-"SCO","Gingras"," Raynald","F",,,,,,,,,"BE"
-"AMS","Girard"," Marie-Ange","F",,,,,,,,,"BE"
-"STE","Giroux"," Andre","F",,,,,,,,,"BE"
-"TAH","Godbout"," Ghislaine","M",,,,,,,,,"BE"
-"TIB","Goulet"," Guy","M",,,,,,,,,"BE"
-"TIG","Grenier"," Gertrude","M",,,,,,,,,"BE"
-"VAR","Hadaya"," Joelle","M",,,,,,,,,"BE"
-"VCA","Hammond"," Edith","M",,,,,,,,,"BE"
-"VDB","Houle"," Daniel","M",,,,,,,,,"BE"
-"VDG","Joyal"," Jean","F",,,,,,,,,"BE"
-"VHA","Kott"," Olivier","F",,,,,,,,,"BE"
-"VHR","Laberge"," Jean-Francois","F",,,,,,,,,"BE"
-"VHO","Lacasse"," Jean-Francois","M",,,,,,,,,"BE"
-"VLO","Lachapelle"," Berthe","F",,,,,,,,,"BE"
-"AVW","Lachapelle"," Therese","F",,,,,,,,,"BE"
-"VWE","Lacombe"," Regent","F",,,,,,,,,"BE"
-"ADM","ADMINISTRATEUR","Administrateur","M","e10adc3949ba59abbe56e057f20f883e","user","admin@zeusEdu.org",,,,,,
+acronyme,nom,prenom,sexe,mdp,statut,mail,telephone,GSM,adresse,commune,codePostal,pays
+ADO,Alary, Therese,M,,,,,,,,,BE
+ALT,Allard, Isabelle,F,,,,,,,,,BE
+AMA,Allard, Jean,F,,,,,,,,,BE
+BAE,Arpin, Michel,F,,,,,,,,,BE
+BAK,Arsenault, Monique,F,,,,,,,,,BE
+BAU,Aubin, Jacques,F,,,,,,,,,BE
+BEE,Audet, Berthe,F,,,,,,,,,BE
+PBE,Baillargeon,Charlotte,F,,,,,,,,,BE
+BEL,Basin, Alfred,F,,,,,,,,,BE
+BER,Beaucaire, Armand,F,,,,,,,,,BE
+BEU,Beaule, Yvette B.,M,,,,,,,,,BE
+BLO,Bedard, Pauline,M,,,,,,,,,BE
+BON,Begin, Mireille,M,,,,,,,,,BE
+BNT,Begin Dorion, Esther,M,,,,,,,,,BE
+BUI,Belanger, Gisele L.,M,,,,,,,,,BE
+BRI,Belanger, Helene,M,,,,,,,,,BE
+BOU,Belanger, Marie-Claire,F,,,,,,,,,BE
+BBU,Bellemare, Rita,M,,,,,,,,,BE
+CAS,Benoit,Benoit,F,,,,,,,,,BE
+CHA,Bergeron, Suzanne,M,,,,,,,,,BE
+CLA,Bisson, Anita,M,,,,,,,,,BE
+COC,Blais-Tetreault, Ursule,F,,,,,,,,,BE
+COM,Boily, Sr Marguerite,M,,,,,,,,,BE
+COR,Bordan, Gregory,M,,,,,,,,,BE
+COT,Bouchard, Fleurette,F,,,,,,,,,BE
+COU,Bourret, Francoise,F,,,,,,,,,BE
+CRO,Bouthiette-Quesnel, Rachel,M,,,,,,,,,BE
+DAN,Brodeur, Jean-Pierre,M,,,,,,,,,BE
+DBA,Brule, Eveline,M,,,,,,,,,BE
+DBE,Caisse, Maurice,M,,,,,,,,,BE
+DEC,Carrier, Robert,M,,,,,,,,,BE
+DCL,Carrier, Valerie,F,,,,,,,,,BE
+DEL,Chabot, Isabelle,M,,,,,,,,,BE
+DEP,Chabot, Rene,F,,,,,,,,,BE
+ODR,Charrette, Jules,F,,,,,,,,,BE
+DRO,Chartrand, Mignonne,M,,,,,,,,,BE
+DER,Clarke, Lannah,F,,,,,,,,,BE
+DWI,Clement, Pierre,F,,,,,,,,,BE
+DOP,Clermont, Benoit,F,,,,,,,,,BE
+DOU,Cliche, Real,M,,,,,,,,,BE
+DUF,Cloutier, Marie-Jeanne,M,,,,,,,,,BE
+DFO,Comeau, Ernest,F,,,,,,,,,BE
+EVR,Cote, Marie-France,F,,,,,,,,,BE
+FBI,Cote-Handfield, Madeleine,F,,,,,,,,,BE
+LFI,Crevier, Bernard,F,,,,,,,,,BE
+FET,Crevier,Bernard,F,,,,,,,,,BE
+FRT,Dallaire, Louis,M,,,,,,,,,BE
+FRA,Desbiens, Ginette,F,,,,,,,,,BE
+GIA,Deslauriers, Joseph,M,,,,,,,,,BE
+GLA,Despres, Jean-Claude,M,,,,,,,,,BE
+GOB,Desrosiers, Gilles,F,,,,,,,,,BE
+GOR,Dessureault, Francois,M,,,,,,,,,BE
+HEB,Dhaiti, Gladisse,F,,,,,,,,,BE
+HEN,Dorvius, Gerry,F,,,,,,,,,BE
+HNS,Dostaler-Valin, Therese,F,,,,,,,,,BE
+HRT,Dostie Bugeaud, Anne-Marie,F,,,,,,,,,BE
+HIN,Drouin, Benoit,M,,,,,,,,,BE
+HNA,Dubois, Bernard,F,,,,,,,,,BE
+HBR,Ducharme, Ginette,F,,,,,,,,,BE
+HUB,Ducharme, Marguerite,F,,,,,,,,,BE
+INC,Dufault, Paul,F,,,,,,,,,BE
+KAI,Dufault-Bertrand, Gabrielle,M,,,,,,,,,BE
+KRO,Dufresne, Charles,M,,,,,,,,,BE
+KSI,Dufresne, Guy,F,,,,,,,,,BE
+LAC,Dufresne, Marie,F,,,,,,,,,BE
+LAM,Dufresne, Thomas,M,,,,,,,,,BE
+LEF,Dunberry, Eric,F,,,,,,,,,BE
+LEP,Dupont, Gerard,M,,,,,,,,,BE
+LIB,Dupuis, Colette,M,,,,,,,,,BE
+SLI,Ethier Morand, Mariette,F,,,,,,,,,BE
+LOH,Falardeau, Dr Maurice,M,,,,,,,,,BE
+LOU,Forcillo, Marguerite,M,,,,,,,,,BE
+LUF,Forcillo, Sammy,F,,,,,,,,,BE
+MTO,Fortier, Marcelle,F,,,,,,,,,BE
+VRM,Fortier, Marcelle,F,,,,,,,,,BE
+MAT,Fortin, Francine,F,,,,,,,,,BE
+MEL,Fortin, Jeanne-D'Arc,F,,,,,,,,,BE
+MON,Fougere, Daniel,M,,,,,,,,,BE
+MOR,Frigon, Claude,M,,,,,,,,,BE
+MUL,Gagnon, Edouard,F,,,,,,,,,BE
+NOL,Gagnon, Jacques,F,,,,,,,,,BE
+PAL,Gariepy, Claude,F,,,,,,,,,BE
+PHI,Gaudreau, Paul,F,,,,,,,,,BE
+PIR,Gaudreault, Maurice,M,,,,,,,,,BE
+RAV,Gaulin, Jeannette,F,,,,,,,,,BE
+REN,Gauthier, Guy,M,,,,,,,,,BE
+ROG,Gazaille, Francine,M,,,,,,,,,BE
+ROS,Gelinas-Diamond, Cecile,F,,,,,,,,,BE
+SAM,Gendreau, Marius,M,,,,,,,,,BE
+SCN,Gendron, Pierre,M,,,,,,,,,BE
+SCO,Gingras, Raynald,F,,,,,,,,,BE
+AMS,Girard, Marie-Ange,F,,,,,,,,,BE
+STE,Giroux, Andre,F,,,,,,,,,BE
+TAH,Godbout, Ghislaine,M,,,,,,,,,BE
+TIB,Goulet, Guy,M,,,,,,,,,BE
+TIG,Grenier, Gertrude,M,,,,,,,,,BE
+VAR,Hadaya, Joelle,M,,,,,,,,,BE
+VCA,Hammond, Edith,M,,,,,,,,,BE
+VDB,Houle, Daniel,M,,,,,,,,,BE
+VDG,Joyal, Jean,F,,,,,,,,,BE
+VHA,Kott, Olivier,F,,,,,,,,,BE
+VHR,Laberge, Jean-Francois,F,,,,,,,,,BE
+VHO,Lacasse, Jean-Francois,M,,,,,,,,,BE
+VLO,Lachapelle, Berthe,F,,,,,,,,,BE
+AVW,Lachapelle, Therese,F,,,,,,,,,BE
+VWE,Lacombe, Regent,F,,,,,,,,,BE
+ADM,ADMINISTRATEUR,Administrateur,M,e10adc3949ba59abbe56e057f20f883e,user,admin@zeusEdu.org,,,,,,
