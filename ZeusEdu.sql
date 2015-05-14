@@ -169,23 +169,72 @@ CREATE TABLE IF NOT EXISTS didac_appliTables (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des tables par application (pour backup)';
 
 --
--- Contenu de la table `didac_applications`
+-- Contenu de la table `didac_appliTables`
 --
 
-INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `ordre`) VALUES
-('profil', 'Narcisse: Profil Personnel', 'profil', 'profil.png', 1, 3),
-('ades', 'ADES: Éducateurs', 'ades', 'ades.png', 1, 5),
-('trombiEleves', 'Trombinoscope des élèves', 'trombiEleves', 'eleves.png', 1, 6),
-('trombiProfs', 'Trombinoscope des profs', 'trombiProfs', 'profs.png', 1, 7),
-('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
-('pad', 'THOT: Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
-('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
-('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
-('infirmerie', 'ASCLEPIOS: Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
-('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
-('agenda', 'Agenda ISND', 'agenda', 'agenda.png', 1, 9),
-('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
-('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8);
+INSERT INTO `didac_appliTables` (`application`, `nomTable`) VALUES
+('ades', 'adesChamps'),
+('ades', 'adesFaits'),
+('ades', 'adesMemo'),
+('ades', 'adesRetenues'),
+('ades', 'adesTextes'),
+('ades', 'adesTypesFaits'),
+('all', 'applications'),
+('all', 'appliTables'),
+('all', 'config'),
+('all', 'cours'),
+('all', 'ecoles'),
+('all', 'eleves'),
+('all', 'elevesCours'),
+('all', 'elevesEcoles'),
+('all', 'flashInfos'),
+('all', 'logins'),
+('all', 'passwd'),
+('all', 'profs'),
+('all', 'profsApplications'),
+('all', 'profsCours'),
+('all', 'sessions'),
+('all', 'statutCours'),
+('all', 'titus'),
+('all', 'userStatus'),
+('bullISND', 'bullArchives'),
+('bullISND', 'bullAttitudes'),
+('bullISND', 'bullCarnetCotes'),
+('bullISND', 'bullCarnetEleves'),
+('bullISND', 'bullCarnetPoidsCompetences'),
+('bullISND', 'bullCE1B'),
+('bullISND', 'bullCommentProfs'),
+('bullISND', 'bullCompetences'),
+('bullISND', 'bullDetailsCotes'),
+('bullISND', 'bullEducs'),
+('bullISND', 'bullEprExterne'),
+('bullISND', 'bullHistoCours'),
+('bullISND', 'bullLockElevesCours'),
+('bullISND', 'bullMentions'),
+('bullISND', 'bullNotesDirection'),
+('bullISND', 'bullPonderations'),
+('bullISND', 'bullSitArchives'),
+('bullISND', 'bullSituations'),
+('bullISND', 'bullTitus'),
+('bullTQ', 'bullTQCommentProfs'),
+('bullTQ', 'bullTQCompetences'),
+('bullTQ', 'bullTQCotesCompetences'),
+('bullTQ', 'bullTQCotesGlobales'),
+('bullTQ', 'bullTQMentions'),
+('bullTQ', 'bullTQQualif'),
+('bullTQ', 'bullTQTitus'),
+('bullTQ', 'bullTQtypologie'),
+('hermes', 'hermesArchives'),
+('hermes', 'hermesListes'),
+('hermes', 'hermesProprio'),
+('infirmerie', 'infirmConsult'),
+('infirmerie', 'infirmerie'),
+('infirmerie', 'infirmInfos'),
+('pad', 'pad'),
+('pad', 'padGuest'),
+('presences', 'presencesEleves'),
+('presences', 'presencesHeures'),
+('presences', 'presencesLogs');
 
 
 CREATE TABLE IF NOT EXISTS didac_bullArchives (
@@ -491,7 +540,7 @@ CREATE TABLE IF NOT EXISTS didac_config (
   PRIMARY KEY (parametre)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--
+--
 -- Contenu de la table `didac_config`
 --
 
