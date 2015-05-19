@@ -21,6 +21,7 @@ if (!($user->accesApplication(APPLICATION))) {
     header ("Location: accueil.php");
 	}
     else {
+		
         require_once(INSTALL_DIR."/smarty/Smarty.class.php");
         $smarty = new Smarty();
         $smarty->assign('titre', TITREGENERAL);
@@ -28,6 +29,7 @@ if (!($user->accesApplication(APPLICATION))) {
         $smarty->assign('identification', $user->identification());
         $smarty->assign('applisDisponibles', $user->getApplications());
         $ip = $user->getIP();
+		
         $acronyme = $user->getAcronyme();
 
         if (($Application->checkIP($ip, $acronyme) == 1) && !(isset($_COOKIE["ZEUSconn1"])))  {  // première connexion

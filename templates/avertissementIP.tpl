@@ -15,7 +15,7 @@
 				<p>Pour plus d'explications, voyez <a href="manuel/index.php?page=info&amp;cible=ip" target="_blank">la page d'informations</a>.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>

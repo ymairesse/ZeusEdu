@@ -879,7 +879,7 @@ class Application {
 		$sql = "SELECT COUNT(*) AS nb ";
 		$sql .= "FROM ".PFX."logins ";
 		$sql .= "WHERE ip='$ip' AND UPPER(user)='$user' ";
-		$sql .= "ORDER BY date DESC, heure DESC";
+		// $sql .= "ORDER BY date DESC, heure DESC ";
 		$resultat = $connexion->query($sql);
 		$nb = 0;
 		if ($resultat) {

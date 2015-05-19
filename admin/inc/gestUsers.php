@@ -93,12 +93,14 @@ switch ($mode) {
 				break;
 			}
 		break;
+	
 	case 'affectation': // affectation en masse des utilisateurs aux applications
 		$smarty->assign('usersList', $Ecole->listeProfs());
 		$smarty->assign('listeApplications', $Application->listeApplis(true));
 		$smarty->assign('listeDroits', $Application->listeDroits());
 		$smarty->assign('corpsPage', 'affectDroits');
 		break;
+	
 	case 'saveDroits': // enregistrement des droits précisés dans l'option ci-dessus
 		if (isset($_POST['usersList']))
 			$usersList = $_POST['usersList']; else die("no user list");
