@@ -331,12 +331,12 @@ class presences {
 	 * @return $nb : nombre de modifications dans la BD 
 	 */
 	public function savePresences($post, $listeEleves,$listePeriodes) {
-
 		$educ = isset($post['educ'])?$post['educ']:Null;
 		$matricule = isset($post['matricule'])?$post['matricule']:Null;
 		$parent = isset($post['parent'])?$post['parent']:Null;
 		$media = isset($post['media'])?$post['media']:Null;
 		$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
+		$oups = isset($post['oups'])?$post['oups']:Null;
 		$heure = date("H:i");
 		$quand = date("Y-m-d");
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -352,15 +352,16 @@ class presences {
 			foreach ($listeEleves as $matricule=>$wtf) {
 				// si pas de statut dans le formulaire, l'élève est marqué présent. Permet la prise de présence absent/présent en classe
 				$statut = (isset($post['matr-'.$matricule.'_periode-'.$noPeriode]))?$post['matr-'.$matricule.'_periode-'.$noPeriode]:Null;
-				// on n'enregistre que s'il s'agit d'une absence ou d'une présence (pas les autres statuts d'absences)
-				// les statuts "indéterminé" sont des présences
-
-				if ($statut == 'indetermine')
+				// on n'enregistre que s'il s'agit d'une absence ou d'une présence ou d'un indéterminé (s'il s'agit d'une réinitialisation après erreur d'encodage)
+				// les statuts "indéterminé" sont des présences (sauf si $oups.....)
+				if (($statut == 'indetermine') && ($oups != true))
 					$statut = 'present';
-				if (in_array($statut,array('absent','present'))) {
+
+				if (in_array($statut,array('absent','present','indetermine'))) {
 					$sql = "INSERT INTO ".PFX."presencesEleves ";
 					$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
 					$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
+
 					$resultat += $connexion->exec($sql);
 					$nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table					
 					}

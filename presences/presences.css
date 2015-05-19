@@ -120,9 +120,6 @@ input[type=submit], input[type=reset], input[type=button] {
 	width: 100%;
 	}
 
-
-
-
 .tableauPresences td {
 	cursor: pointer;	
 	border: 1px solid #dddddd;
@@ -143,4 +140,33 @@ td.now {
 	
 td.notNow {
 	color:#aaa;
+	}
+
+.text-red {
+	color: #f00;
+	}
+
+.text-green {
+	color: #080;
+	}
+
+.text-grey {
+	color: #999;
+	}
+	
+.horloge {
+	cursor:pointer;
+	text-align: center;
+	font-size: 1.3em !important;
+	}
+	
+.trash {
+	cursor:pointer;
+	text-align: center;
+	font-size: 1.3em !important;
+	}
+	
+i.disabled, p.disabled, li.disabled, td.disabled, th.disabled {
+	cursor:not-allowed;
+	color:#999;
 }

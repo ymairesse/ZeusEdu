@@ -2,15 +2,6 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 		
-		<label for="freePeriode">Période <span class="micro" title="{if !$freePeriode}Période actuelle{else}période {$periode}{/if}">[{$periode}]</span></label>
-		<input type="checkbox" value="1" id="freePeriode" name="freePeriode"{if $freePeriode} checked="checked"{/if}>
-		<select name="periode" id="selectPeriode"{if !($freePeriode)} style="display:none"{/if}>
-			<option value=''>Période</option>
-			{foreach from=$listePeriodes key=laPeriode item=data}
-			<option value="{$laPeriode}"{if $laPeriode==$periode} selected="selected"{/if}>[{$laPeriode}] : {$data.debut}-{$data.fin}</option>
-		{/foreach}
-		</select>
-
 		{if $userStatus == 'admin'}
 			<label for="freeDate" title="{if $freeDate}{$date} {else}Aujourd'hui{/if}">Date</label>
 			<input type="checkbox" value="1" id="freeDate" name="freeDate"{if $freeDate} checked="checked"{/if}>
@@ -34,7 +25,6 @@
 
 <script type="text/javascript">
 
-var freePeriode = false;
 var freeDate = false;
 
 $(document).ready (function() {
@@ -62,20 +52,12 @@ $(document).ready (function() {
 		todayHighlight: true
 		});
 	
-	$("#freePeriode").click(function(){
-		freePeriode = !(freePeriode);
-		if (freePeriode)
-		$("#selectPeriode").show()
-		else $("#selectPeriode").hide();
-		}) 
-	
 	$("#freeDate").click(function(){
 		freeDate = !(freeDate);
 		if (freeDate) 
 			$("#datepicker").show()
 			else $("#datepicker").hide();
 		})
-	
 	
 	// si la période choisie change
 	$("#selectPeriode").change(function(){

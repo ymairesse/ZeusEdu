@@ -1,18 +1,6 @@
 <div class="noprint" style="clear:both">
 	
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
-			<div class="input-group">
-				<label for="freePeriode">Période <span class="micro" title="{if !$freePeriode}Période actuelle{else}période {$periode}{/if}">[{$periode}]</span></label>
-				<input type="checkbox" value="1" id="freePeriode" name="freePeriode"{if $freePeriode} checked="checked"{/if} class="form-controle-inline">
-			</div>
-			
-			<select name="periode" id="selectPeriode"{if !($freePeriode)} style="display:none"{/if} class="form-control-inline">
-				<option value=''>Période</option>
-				{foreach from=$listePeriodes key=laPeriode item=data}
-				<option value="{$laPeriode}"{if $laPeriode==$periode} selected="selected"{/if}>[{$laPeriode}] : {$data.debut}-{$data.fin}</option>
-			{/foreach}
-			</select>
-		
 		{if $userStatus == 'admin'}
 			<div class="input-group">
 				<label for="freeDate" title="{if $freeDate}{$date} {else}Aujourd'hui{/if}">Date</label>
@@ -32,7 +20,7 @@
 		
 		<span id="selectCoursGrp">		
 		{if $listeCoursGrp}
-		<select name="coursGrp" id="coursGrp" class="form-control-inline>
+		<select name="coursGrp" id="coursGrp" class="form-control-inline">
 			<option value="">Sélectionnez un cours</option>
 		{foreach from=$listeCoursGrp key=cours item=data}
 			<option value="{$cours}"{if $cours == $coursGrp} selected="selected"{/if}>{$data.libelle|truncate:25} ({$data.classes})</option>
@@ -61,7 +49,6 @@
 
 <script type="text/javascript">
 
-	var freePeriode = false;
 	var freeDate = false;
 
 	$(document).ready (function() {
@@ -87,13 +74,6 @@
 			autoclose: true,
 			todayHighlight: true
 			});
-		
-		$("#freePeriode").click(function(){
-			freePeriode = !(freePeriode);
-			if (freePeriode)
-			$("#selectPeriode").show()
-			else $("#selectPeriode").hide();
-			}) 
 		
 		$("#freeDate").click(function(){
 			freeDate = !(freeDate);

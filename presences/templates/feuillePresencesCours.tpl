@@ -9,16 +9,16 @@
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="enregistrer">
 	<input type="hidden" name="freeDate" value="{$freeDate}">
-	<input type="hidden" name="freePeriode" value="{$freePeriode}">
 	<input type="hidden" name="parent" value="prof/educ">
 	<input type="hidden" name="media" value="en classe">
 	<input type="hidden" name="periode" id="periode" value="{$periode}">
 	<input type="hidden" name="coursGrp" value="{$coursGrp}">
 	<input type="hidden" name="selectProf" value="{$acronyme|default:''}">
+	<input type="hidden" name="oups" id="oups" value="">
 	
 	<div class="btn-group pull-right">
-		<a class="btn btn-default" type="button" href="index.php?action=presences&amp;mode=tituCours&amp;coursGrp={$coursGrp}">Annuler</a>
-		<button type="submit" class="btn btn-primary">Enregistrer</button>
+		<button type="button" class="btn btn-default" id="annuler">Annuler</button>
+		<button type="submit" class="btn btn-primary"><span id="save"></span> Enregistrer</button>
 	</div>
 	
 	<h3><span class="hidden-xs">{$listeProfs.$acronyme.prenom} {$listeProfs.$acronyme.nom|truncate:20} | </span>

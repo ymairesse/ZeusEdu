@@ -37,7 +37,6 @@ if (isset($coursGrp)) {
 	$smarty->assign('listePresences', $listePresences);
 	$smarty->assign('action',$action);
 	$smarty->assign('mode',$mode);
-	$smarty->assign('selecteur', 'selectPeriodeCours');		
 	$smarty->assign('corpsPage','feuillePresencesCours');	
 	}
 	else {

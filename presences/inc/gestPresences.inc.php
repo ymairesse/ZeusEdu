@@ -13,13 +13,7 @@ $smarty->assign('lesPeriodes', $lesPeriodes);
 $smarty->assign('listeProfs', $Ecole->listeProfs(true));
 
 if (!empty($listePeriodes)) {
-
-	// l'utilisateur peut-il changer de période de prise de présence?
-	$freePeriode = isset($_POST['freePeriode'])?$_POST['freePeriode']:Null;
-	// retrouver la période actuelle à partir de l'heure ou accepter l'heure si heure libre souhaitée
-	if ($freePeriode == Null)
-		$periode = $Presences->periodeActuelle($listePeriodes);
-		else $periode = isset($_POST['periode'])?$_POST['periode']:Null;
+	$periode = isset($_POST['periode'])?$_POST['periode']:$Presences->periodeActuelle($listePeriodes);
 	$smarty->assign('periode',$periode);
 
 	// l'utilisateur peut-il changer la date de prise de présence?	
@@ -28,7 +22,7 @@ if (!empty($listePeriodes)) {
 	if ($freeDate == Null) 
 		$date = strftime("%d/%m/%Y");
 	$smarty->assign('freeDate', $freeDate);
-	$smarty->assign('freePeriode',$freePeriode);
+	// $smarty->assign('freePeriode',$freePeriode);
 	$jourSemaine = strftime('%A',$Application->dateFR2Time($date));
 	$smarty->assign('jourSemaine',$jourSemaine);	
 	
