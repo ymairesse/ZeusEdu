@@ -365,10 +365,13 @@ width: 100%;
 	font-size:0.8em;
 }
 
-th.cert, td.cert, .cert {
-	border: 2px solid black; !important
+th.echec, td.echec, .echec {
+	border: 2px ridge #f00 !important;
 	}
 
+th.cert, td.cert, .cert {
+	border: 2px ridge black !important;
+	}
 
 .couleur0 {
 	background-color: #FFE6E6;
@@ -600,4 +603,10 @@ th.cert, td.cert, .cert {
 
 #carnet .detailsCote {
 	background-color: #ffd
+	}
+	
+.balayette {
+	color: #f00;
+	cursor:pointer;
+	font-size:1.5em; 	
 	}

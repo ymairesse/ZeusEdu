@@ -52,7 +52,7 @@
 					{if $formExiste}
 						{* Il y a, au moins, une pondération pour le "Formatif" durant cette période *}
 						<td style="text-align:center; width:6em"
-						{if $cotes.$idComp.form.echec}class="echecEncodage"{/if}>
+						{if $cotes.$idComp.form.echec}class="echec"{/if}>
 						<div class="input-group input-group-sm">
 								<input
 								tabIndex="{$tabIndexForm}"
@@ -93,7 +93,7 @@
 					{if $certExiste}
 						{* Il y a, au moins, une pondération générale pour le "Certificatif" durant cette période *}
 						<td style="text-align:center; width:6em"
-						{if $cotes.$idComp.cert.echec}class="echecEncodage"{/if}>
+						{if $cotes.$idComp.cert.echec}class="echec"{/if}>
 							<div class="input-group input-group-sm">
 								<input
 									tabIndex="{$tabIndexCert}"

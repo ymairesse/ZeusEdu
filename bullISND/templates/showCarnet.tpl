@@ -59,7 +59,7 @@
 				{assign var=idComp value=$travail.idComp}
 			<th id="idCarnet{$idCarnet}" 
 				style="width:4em cursor:pointer" 
-				class="pop enteteCote" 
+				class="pop enteteCote {$travail.formCert}" 
 				data-content="Cliquer pour modifier"
 				data-container="body"
 				data-placement="left">
@@ -88,7 +88,7 @@
 				{assign var=idComp value=$travail.idComp}
 			<th id="idCarnet{$idCarnet}" 
 				style="width:4em" 
-				class="pop detailsCote" 
+				class="pop detailsCote {$travail.formCert}" 
 				data-content="Libellé: {$travail.libelle}<br>
 							Remarque: {$travail.remarque}<br>
 							Neutralisé: {if $travail.neutralise == 1}O{else}N{/if}<br>

@@ -46,9 +46,8 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			$listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 			// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 			$listeSituationsAvant = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);
-			// calcule les nouvelles situations pour ce bulletin, à partir des situations existantes et du globalPeriode
+			// calcule les nouvelles situations pour tous les bulletins, à partir des situations existantes et du globalPeriode
 			$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
-
 			$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 			// break;  pas de break, on continue
 		default:
@@ -64,37 +63,47 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 			break;
 		}
 
-	$situationsPrecedentes = $Bulletin->situationsPrecedentes($listeSituations, $bulletin);
-	// $listeLockElevesCours = $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin);
-	$annee = substr($coursGrp,0,1);
 	// pour le premier degré seulement, classes de 1e et 2e
+	$annee = substr($coursGrp,0,1);	
 	if ($annee < 3)
 		$listeAttitudes = $Bulletin->listeAttitudes($listeEleves, $coursGrp, $bulletin);
 		else $listeAttitudes = Null;
+		
+	$situationsPrecedentes = $Bulletin->situationsPrecedentes($listeSituations, $bulletin);
+	// $listeLockElevesCours = $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin);
+	
+	// cote étoilée: le certificatif est supérieur à l'ensemble formatif+certificatif
+	$listeSommesFormCert = $Bulletin->listeSommesFormCert($listeCotes);
+	$listeCotesEtoilees = $Bulletin->listeCotesEtoilees($listeSommesFormCert, $listeSituations, $coursGrp, $bulletin);
+	$smarty->assign('listeCotesEtoilees', $listeCotesEtoilees);
 	
 	// calcul de la situation sans tenir compte de la première année du degré (uniquement pour les années d'études concernées)
-	// en 2015, seulement la 2ème à l'ISND
 	if (in_array($annee,explode(',',ANNEEDEGRE)) && ($bulletin == NBPERIODES)) {
-		$sitDeuxiemes = $Bulletin->situationsDeuxieme ($listeEleves, $coursGrp, $bulletin);
+		$sitDeuxiemesAnnee = $Bulletin->situationsDeuxieme($listeEleves, $coursGrp, $bulletin);
 		}
-		else $sitDeuxiemes = Null;
+		else $sitDeuxiemesAnnee = Null;
+	$smarty->assign('sitDeuxiemes', $sitDeuxiemesAnnee);
+	
+	// liste des cotes de l'épreuve externe pour ce cours
+	$listeCotesExternes = $Bulletin->listeCotesEprExterne($coursGrp, ANNEESCOLAIRE);
+	$smarty->assign('listeCotesExternes',$listeCotesExternes);
 
 	$smarty->assign('situationsPrecedentes', $situationsPrecedentes);
 	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('listeCotes',$listeCotes);
 	
-	$smarty->assign('listeVerrous',$Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin));
+	$smarty->assign('listeVerrous', $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, $bulletin));
 	$smarty->assign('listeCommentaires', $Bulletin->listeCommentaires($listeEleves, $coursGrp));
 	$smarty->assign('action','gestEncodageBulletins');
-	$smarty->assign('intituleCours',$Bulletin->intituleCours($coursGrp));
+	$smarty->assign('intituleCours', $Bulletin->intituleCours($coursGrp));
 	$smarty->assign('listeClasses', $Bulletin->classesDansCours($coursGrp));
 	$smarty->assign('listeCompetences', $listeCompetences);
-	$smarty->assign('listeSommesFormCert', $Bulletin->listeSommesFormCert($listeCotes));
+	$smarty->assign('listeSommesFormCert', $listeSommesFormCert);
 	$smarty->assign('listeAttitudes', $listeAttitudes);
 	$smarty->assign('listeGlobalPeriodePondere', $listeGlobalPeriodePondere);
 	$smarty->assign('ponderations', $ponderations);
 	$smarty->assign('listeSituations', $listeSituations);
-	$smarty->assign('sitDeuxiemes', $sitDeuxiemes);
+
 	
 	$smarty->assign('PERIODESDELIBES', explode(',',PERIODESDELIBES));
 	$smarty->assign('listeElevesSuivPrec', $Bulletin->listeElevesSuivPrec($listeEleves));
