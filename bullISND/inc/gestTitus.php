@@ -15,10 +15,11 @@ $smarty->assign('matricule', $matricule);
 $listeTitus = $user->listeTitulariats();
 $classe = Null;
 // s'il n'y a qu'une classe dans la liste
-if (count($listeTitus) == 1) 
+if (count($listeTitus) == 1) {
 	// alors, on prend le premier élément de la liste des classes
-	$classe = array_shift(array_values($listeTitus));
-
+	$lesClasses = array_values($listeTitus);
+	$classe = array_shift($lesClasses);
+	}
 
 $annee = ($classe != Null)?SUBSTR($classe,0,1):Null;
 $onglet = isset($_POST['onglet'])?$_POST['onglet']:0;	

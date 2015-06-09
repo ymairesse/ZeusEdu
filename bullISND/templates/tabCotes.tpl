@@ -19,8 +19,9 @@
 		{foreach from=$listePeriodes key=periode item=bulletin}
 		<tr>
 			<th>{$periode+1}</th>
-			{foreach from=$listeCoursGrp key=coursGrp item=data}		
-				<td class="cote mention{$syntheseCotes.$bulletin.$coursGrp.mention|trim:'+'|default:''} pop"
+			{foreach from=$listeCoursGrp key=coursGrp item=data}
+				{assign var=situation value=$syntheseCotes.$bulletin.$coursGrp|default:Null}
+				<td class="cote mention{$situation.mention|trim:'+'|default:''} pop"
 					{if isset($commentairesProfs.$matricule.$coursGrp.$bulletin)}
 						data-container="body" 
 						data-original-title="{$listeProfsCoursGrp.$coursGrp}: {$listeCoursGrp.$coursGrp.libelle}"
@@ -28,14 +29,28 @@
 						data-html="true"
 						data-placement="top"
 					{/if}>
-				{if isset($syntheseCotes.$bulletin.$coursGrp.sitDelibe) && ($syntheseCotes.$bulletin.$coursGrp.sitDelibe != '')}
+				{if isset($situation.sitDelibe) && ($situation.sitDelibe != '')}
 					<span class="micro">Délibé </span>
-					<strong>{$syntheseCotes.$bulletin.$coursGrp.sitDelibe|default:''}</strong><br>
+					<strong>{$situation.sitDelibe|default:''}
+						{if isset($situation.attributDelibe)}
+							{if $situation.attributDelibe == 'degre'}
+							²
+							{elseif $situation.attributDelibe == 'externe'}
+							<i class="fa fa-graduation-cap"></i>
+							{elseif $situation.attributDelibe == 'magique'}
+							<i class="fa fa-magic"></i>
+							{elseif $situation.attributDelibe == 'star'}
+							*
+							{else}
+							 
+							{/if}
+						{/if}
+					</strong><br>
 				{/if}
 				
-				{if isset($syntheseCotes.$bulletin.$coursGrp.pourcent) && ($syntheseCotes.$bulletin.$coursGrp.pourcent != '')}
-				{$syntheseCotes.$bulletin.$coursGrp.situation|default:''}/{$syntheseCotes.$bulletin.$coursGrp.maxSituation|default:''}<br>
-				<span class="micro">={$syntheseCotes.$bulletin.$coursGrp.pourcent|default:''}</span>
+				{if isset($situation.pourcent) && ($situation.pourcent != '')}
+				{$situation.situation|default:''}/{$situation.maxSituation|default:''}<br>
+				<span class="micro">={$situation.pourcent|default:''}</span>
 				{/if}
 				 </td>
 			{/foreach}

@@ -2651,7 +2651,7 @@ class Bulletin {
 	public function syntheseAnneeEnCours ($listeCoursActuelle, $matricule) {
 		$stringListeCoursActuelle = "'".implode("','", array_keys($listeCoursActuelle))."'";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT coursGrp, bulletin, situation, maxSituation, sitDelibe, attribut, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) as cours, ";
+		$sql = "SELECT coursGrp, bulletin, situation, maxSituation, sitDelibe, attributDelibe, SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1) as cours, ";
 		$sql .= "SUBSTR(cours,1,1) as annee, statut, situation, maxSituation, sitDelibe, nbheures, libelle ";
 		$sql .= "FROM ".PFX."bullSituations ";
 		$sql .= "JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp,1,LOCATE('-', coursGrp)-1)) ";
@@ -2659,6 +2659,7 @@ class Bulletin {
 		$sql .= "WHERE matricule = '$matricule' ";
 		$sql .= "AND coursGrp IN ($stringListeCoursActuelle) ";
 		$sql .= "ORDER BY bulletin";
+		
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
@@ -2667,7 +2668,7 @@ class Bulletin {
 				$bulletin = $ligne['bulletin'];
 				$annee = $ligne['annee'];
 				$sitDelibe = $ligne['sitDelibe'];
-				$attribut = $ligne['attribut'];
+				$attribut = $ligne['attributDelibe'];
 				$situation = $this->sansVirg($ligne['situation']);
 				$maxSituation = $this->sansVirg($ligne['maxSituation']);
 				$pourcent = ($maxSituation != 0)?round(100*$situation/$maxSituation,0):Null;
