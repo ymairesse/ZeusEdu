@@ -1,12 +1,17 @@
 <div id="tabsAttitudes">
-<ul>
+
+<ul class="nav nav-tabs{if $periode == $bulletin} active{/if}">
 	{foreach from=$attitudes key=periode item=data}
-	<li style="font-size:0.7em;"><a href="#tabs-{$periode}">{$periode}</a></li>	
+	<li{if $periode == $bulletin} class="active"{/if}><a data-toggle="tab" href="#tabsAttitude-{$periode}">{$periode}</a></li>	
 	{/foreach}
 </ul>
+
+<div class="tab-content">
+
 {foreach from=$attitudes key=periode item=data}
 	{assign var=data value=$data.$matricule}
-	<div id="tabs-{$periode}">
+	<div id="tabsAttitude-{$periode}" class="tab-pane fade in{if $periode == $bulletin} active{/if}">
+		
 		<div class="table-responsive">
 			<table class="table table-condensed table-striped">
 				<tr style="text-align:center">
@@ -51,4 +56,5 @@
 	</div>
 	</div>
 {/foreach}
+</div>  <!-- tab-content -->
 </div>
