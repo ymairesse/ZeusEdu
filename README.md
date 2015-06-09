@@ -16,4 +16,10 @@ Installation
  Des fichiers .csv d'exemples se trouvent dans le répertoire /admin/exemples
  
  Informations plus détaillées sur le wiki http://sio2.be/wiki/doku.php
+ 
+ Modifications
+ =============
+ 
+09-06-2015 : modification du fichier de configuration de la base de données ZeusEdu.sql pour ternir compte des modifications de l'application du bulletin bullISND
+Modifications dans le traitement des épreuves externes au bulletin et en délibération
 
