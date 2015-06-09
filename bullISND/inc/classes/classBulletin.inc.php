@@ -937,7 +937,7 @@ class Bulletin {
 		$sql .= "FROM " . PFX . "bullDetailsCotes ";
 		$sql .= "WHERE (matricule IN ($listeElevesString)) AND (coursGrp IN ($listeCoursGrpString)) ";
 		$sql .= "AND (bulletin = '$bulletin') ";
-		$sql .= "ORDER BY matricule, idComp";
+		$sql .= "ORDER BY matricule, idComp ";
 
 		$cotesVides = array(
                             'form' => array('cote' => '', 'maxForm' => '', 'echec' => false),
@@ -1056,9 +1056,10 @@ class Bulletin {
 
 	/**
 	 * retourne les cotesGlobales pondérées, formatives et certificatives
-	 * à partir des cotes brutes et des pondérations
+	 * à partir des cotes brutes et des pondérations pour la période donnée
 	 * @param $listeCotes
 	 * @param $ponderations
+	 * @param $periode
 	 *
 	 */
 	public function listeGlobalPeriodePondere($listeCotes, $ponderations, $periode) {
@@ -1131,14 +1132,14 @@ class Bulletin {
 	 *
 	 * @param $listeEleves
 	 * @param $bulletin
-	 *
+	 * @return array
 	 */
 	public function listeSituationsClassePourDelibe($listeEleves, $bulletin) {
 		if (is_array($listeEleves))
 			$listeElevesString = implode(',', array_keys($listeEleves));
 		else $listeElevesString = $listeEleves;
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT matricule, coursGrp, situation, maxSituation, sitDelibe, attribut, cours, statut ";
+		$sql = "SELECT matricule, coursGrp, situation, maxSituation, choixProf, attributProf, sitDelibe, attributDelibe, cours, statut ";
 		$sql .= "FROM ".PFX."bullSituations ";
 		$sql .= "JOIN ".PFX."cours ON (SUBSTR(".PFX."bullSituations.coursGrp,1, LOCATE('-',".PFX."bullSituations.coursGrp)-1) = ".PFX."cours.cours) ";
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX."cours.cadre) ";
@@ -1152,9 +1153,9 @@ class Bulletin {
 				$matricule = $ligne['matricule'];
 				$coursGrp = $ligne['coursGrp'];
 				$cours = $ligne['cours'];
-				$attribut = $ligne['attribut'];
+				$attributDelibe = $ligne['attributDelibe'];
 				$ligne['sitDelibe'] = sansVirg($ligne['sitDelibe']);
-				if ($attribut == 'hook')
+				if ($attributDelibe == 'hook')
 					$ligne['sitDelibe'] = '['.$ligne['sitDelibe'].']';
 				$ligne['echec'] = (($ligne['sitDelibe'] < 50) && ($ligne['sitDelibe'] != '')  && ($attribut != 'hook'))?'echec':'';
 				$ligne['symbole'] = self::attribut2Symbole($attribut);
@@ -1171,7 +1172,7 @@ class Bulletin {
 	 * @return char
 	 */
 	static function attribut2Symbole ($attribut){
-		$symbolesAttributs = array('²' => 'degre', '*' => 'star', '↗' => 'magique', '~' => 'reussite50', '$' => 'externe');
+		$symbolesAttributs = array('²' => 'degre', '*' => 'star', '↗' => 'magique', '$' => 'externe');
 		$symbole = array_search($attribut, $symbolesAttributs);
 		return $symbole;
 	}
@@ -1199,7 +1200,7 @@ class Bulletin {
 
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT coursGrp, matricule, bulletin, situation, maxSituation, nbheures, libelle, ";
-		$sql .= "sitDelibe, cours, statut, attribut ";
+		$sql .= "choixProf, sitDelibe, cours, statut, attributProf, attributDelibe ";
 		$sql .= "FROM ".PFX."bullSituations ";
 		$sql .= "JOIN ".PFX."cours ON (cours = SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1)) ";
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."cours.cadre = ".PFX."statutCours.cadre) ";
@@ -1219,9 +1220,10 @@ class Bulletin {
 				$cours = $ligne['cours'];
 				$nbheures = $ligne['nbheures'];
 				$libelle = $ligne['libelle'];
-				$attribut = $ligne['attribut'];
-				$symbole = self::attribut2Symbole($attribut);
-				$echec = false;
+				$choixProf = $ligne['choixProf'];
+				$attributProf = $ligne['attributProf'];
+				$sitDelibe = $ligne['sitDelibe'];
+				$attributDelibe = $ligne['attributDelibe'];
 				$maxSituation = $ligne['maxSituation'] == Null ? Null : $ligne['maxSituation'];
 				// s'il n'y a pas de max, alors il n'y a pas de situation
 				$situation = $this->sansVirg(($maxSituation == Null) ? Null : $ligne['situation']);
@@ -1233,19 +1235,24 @@ class Bulletin {
 				// sommes-nous dans une période avec délibé?
 				if ($isDelibe) {
 					$sitDelibe = $ligne['sitDelibe'];
-					$echec = (($sitDelibe < 50) && ($sitDelibe != '') && ($attribut != 'hook'))?'echec':'';
+					$echec = (($sitDelibe < 50) && ($sitDelibe != '') && ($attributDelibe != 'hook'))?'echec':'';
+					$choixProf = $ligne['choixProf'];
 					}
-					else $sitDelibe = Null;
-
+					else {
+						$sitDelibe = Null;
+						$choixProf = Null;
+						$echec = Null;
+						}
 
 				$listeSituationsCours[$matricule][$coursGrp][$bulletin] = array(
 					'sit' => $situation,
 					'max' => $maxSituation,
 					'pourcent' => $situationPourCent,
 					'echec' => $echec,
+					'choixProf' => $choixProf,
+					'attributProf' => $attributProf,
 					'sitDelibe' => $sitDelibe,
-					'attribut' => $attribut,
-					'symbole' => $symbole,
+					'attributDelibe' => $attributDelibe,
 					'statut' => $statut,
 					'cours' => $cours,
 					'nbheures' => $nbheures,
@@ -1271,13 +1278,13 @@ class Bulletin {
 		else $listeCoursGrpString = "'" . $listeCoursGrp . "'";
 
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT coursGrp, matricule, nbheures, libelle, sitDelibe, situation, maxSituation, cours, statut, attribut ";
-		$sql .= "FROM ".PFX."bullSituations ";
+		$sql = "SELECT bs.coursGrp, bs.matricule, nbheures, libelle, sitDelibe, choixProf, situation, maxSituation, cours, statut, attributProf, attributDelibe ";
+		$sql .= "FROM ".PFX."bullSituations AS bs ";
 		$sql .= "JOIN ".PFX."cours ON (cours = SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1)) ";
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."cours.cadre = ".PFX."statutCours.cadre) ";
-		$sql .= "WHERE matricule in ($listeElevesString) AND (coursGrp IN ($listeCoursGrpString)) ";
+		$sql .= "WHERE bs.matricule in ($listeElevesString) AND (bs.coursGrp IN ($listeCoursGrpString)) ";
 		$sql .= "AND bulletin='$bulletin' ";
-		$sql .= "ORDER BY bulletin, matricule";
+		$sql .= "ORDER BY bulletin, bs.matricule ";
 
 		$resultat = $connexion->query($sql);
 		$liste = array();
@@ -1287,11 +1294,10 @@ class Bulletin {
 				$matricule = $ligne['matricule'];
 				$cours = $ligne['cours'];
 				$sitDelibe = trim($ligne['sitDelibe']);
-				$attribut = $ligne['attribut'];
-				$echec = (($sitDelibe < 50) && ($sitDelibe != '') && ($attribut != 'hook'))?'echec':'';
+				$attributDelibe = $ligne['attributDelibe'];
+				$echec = (($sitDelibe < 50) && ($sitDelibe != '') && ($attributDelibe != 'hook'))?'echec':'';
 
 				$ligne['echec'] = $echec;
-				$ligne['symbole'] = self::attribut2Symbole($ligne['attribut']);
 				$liste[$matricule][$cours] = $ligne;
 				}
 			}
@@ -1609,13 +1615,13 @@ class Bulletin {
 	}
 
 	/**
-	 * totaux bruts sans pondération pour le Formatif et le Certificatif
+	 * totaux bruts pour le Formatif et le Certificatif
 	 * pour la liste des cotes d'une période donnée
 	 * concerne tous les élèves d'un cours
 	 * @param $listeCotes
 	 * @return array
 	 */
-	function listeSommesFormCert($listeCotes) {
+	public function listeSommesFormCert($listeCotes) {
 		$sommesFormCert = array();
 		foreach ($listeCotes as $matricule => $lesCours) {
 			foreach ($lesCours as $coursGrp => $competences) {
@@ -1662,6 +1668,23 @@ class Bulletin {
 		return $sommesFormCert;
 	}
 
+	/**
+	 * retourne la liste des cotes étoilées (cote certificative > cote globale)
+	 * @param $listeSommesFormCert
+	 * @return array : liste des cotes à étoiler; vide si pas étoilé
+	 */
+	public function listeCotesEtoilees($listeSommesFormCert, $listeSituations, $coursGrp, $bulletin) {
+		$liste = array();
+		foreach ($listeSommesFormCert as $matricule =>$cotes) {
+			$liste[$matricule]='';
+			if (($cotes['pourcentCert'] != Null) && (isset($listeSituations[$matricule][$coursGrp][$bulletin]['pourcent']))) {
+				if ($cotes['pourcentCert'] > $listeSituations[$matricule][$coursGrp][$bulletin]['pourcent'])
+					$liste[$matricule]=$cotes['pourcentCert'];
+			}
+		}
+		return $liste;
+		}
+	
 	/** 
 	 * retourne les cotes de CEB d'un élève dont on fournit le matricule
 	 * @param $matricule
@@ -1693,9 +1716,11 @@ class Bulletin {
 		$listeCotesPeriode = array();
 		$listeAttitudes = array();
 		$listeCommentaires = array();
+		$listeChoixProf = array();
 		$listeSituations = array();
 		$listeAttributs = array();
 		$genresPermis = array('form', 'maxForm', 'cert', 'maxCert');
+
 		foreach ($post as $uneInfo => $value) {
 			$value = htmlspecialchars($value);
 			$data = explode("-", $uneInfo);
@@ -1711,6 +1736,7 @@ class Bulletin {
 					// et supprime les espaces
 					break;
 				case 'periode' :
+					die();
 					$matricule = substr($data[1], strpos($data[1], '_') + 1);
 					$type = substr($data[2], strpos($data[2], '_') + 1);
 					if (!(isset($listeCotesPeriode[$matricule])))
@@ -1728,20 +1754,26 @@ class Bulletin {
 					$matricule = substr($data[1], strpos($data[1], '_') + 1);
 					$listeCommentaires[$matricule] = $value;
 					break;
-				case 'situation' :
+				case 'sitDelibe' :
 					$matricule = substr($data[1], strpos($data[1], '_') + 1);
-					$attribut = $post['attribut-eleve_'.$matricule];
-					$listeSituations[$matricule] = array('sitDelibe'=>$value, 'attribut'=>$attribut);
+					$attributDelibe = $post['attributDelibe-matricule_'.$matricule];
+					$listeSituations[$matricule] = array('sitDelibe'=>$value, 'attributDelibe'=>$attributDelibe);
+					break;
+				case 'choixProf' :
+					$matricule = substr($data[1], strpos($data[1], '_') + 1);
+					$attributProf = $post['attributProf-matricule_'.$matricule];
+					$listeChoixProf[$matricule] = array('choixProf'=>$value, 'attributProf'=>$attributProf);
+					break;
 				default :
 					// on passe, ce champ n'est pas significatif
 					break;
 			}
 		}
 		return array('cotes' => $listeCotesParCompetences,
-					 'periode' => $listeCotesPeriode,
 					 'attitudes' => $listeAttitudes,
-					 'bulletin' => $listeCommentaires,
-					 'situations' => $listeSituations
+					 'commentaires' => $listeCommentaires,
+					 'choixProf' => $listeChoixProf,
+					 'sitDelibe' => $listeSituations
 				);
 	}
 
@@ -1754,6 +1786,7 @@ class Bulletin {
 	 * @return array : une table des erreurs dans les encodages des cotes
 	 */
 	public function enregistrerBulletin($dataBulletin, $coursGrp, $bulletin) {
+		// afficher($dataBulletin, true);
 		$tableErreurs = array();
 		$texteLicite = explode(',',COTEABS);
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1827,7 +1860,7 @@ class Bulletin {
 						}
 					}
 					break;
-				case 'bulletin' :
+				case 'commentaires' :
 					// rubrique "commentaire" du prof pour le cours
 					foreach ($data as $matricule => $commentaire) {
 						$commentaire = addslashes($commentaire);
@@ -1838,34 +1871,36 @@ class Bulletin {
 						$resultat = $connexion -> exec($sql);
 					}
 					break;
-				case 'situations' :
-					// cotes de situation décidées par le prof, avec attribut éventuel
+				case 'choixProf' :
+					// cotes de périodes pondérées choisie par le titulaire du cours
 					foreach ($data as $matricule => $situation) {
-						// seulement des chiffres, des points ou des virgules
-						$sitDelibe = preg_replace("/[^0-9]/","",$situation['sitDelibe']);
-						$attribut = $situation['attribut'];
-						$boutSql = "sitDelibe='$sitDelibe', attribut='$attribut' ";
+						$sitProf = $this->sansVirg($situation['choixProf']);
+						$attributProf =  $situation['attributProf'];
+						
+						$boutSql = "choixProf='$sitProf', attributProf='$attributProf' ";
 						$sql = "INSERT INTO " . PFX . "bullSituations ";
 						$sql .= "SET matricule='$matricule', coursGrp='$coursGrp', ";
 						$sql .= "bulletin='$bulletin', $boutSql ";
 						$sql .= "ON DUPLICATE KEY UPDATE $boutSql ";
-						$resultat = $connexion -> exec($sql);
-
-						if (($sitDelibe <0) || ($sitDelibe >100))
-							$tableErreurs[$matricule]['sitDelibe'] = true;
+						$resultat = $connexion -> exec($sql);						
 						}
 					break;
-				case 'periode' :
-					// cotes de périodes pondérées
-					foreach ($data as $matricule => $periode) {
-						$sit = $this->sansVirg($periode['sit']);
-						$max = $periode['max'];
-						$sql = "INSERT INTO " . PFX . "bullSituations ";
+				case 'sitDelibe':
+					// cote de délibération pour la période
+					foreach ($data as $matricule => $situation) {
+						$sitDelibe = $this->sansVirg($situation['sitDelibe']);
+						$attributDelibe = $situation['attributDelibe'];
+						
+						$boutSql = "sitDelibe='$sitDelibe', attributDelibe='$attributDelibe' ";
+						$sql = "INSERT INTO ".PFX."bullSituations ";
 						$sql .= "SET matricule='$matricule', coursGrp='$coursGrp', ";
-						$sql .= "bulletin='$bulletin', situation='$sit', maxSituation='$max' ";
-						$sql .= "ON DUPLICATE KEY UPDATE situation='$sit', maxSituation='$max'";
-						$resultat = $connexion -> exec($sql);
-					}
+						$sql .= "bulletin='$bulletin', $boutSql ";
+						$sql .= "ON DUPLICATE KEY UPDATE $boutSql ";
+						$resultat = $connexion->exec($sql);
+						
+						if (($sitDelibe <0) || ($sitDelibe >100))
+							$tableErreurs[$matricule]['sitDelibe'] = true;						
+						}
 					break;
 				default :
 					die("data error");
@@ -2102,10 +2137,10 @@ class Bulletin {
 					$pourcent = $cotesPeriode['pourcent'];
 					$sitDelibe = isset($cotesPeriode['sitDelibe'])?$cotesPeriode['sitDelibe']:Null;
 					$sitDelibe = $this->sansVirg(trim($sitDelibe,'*[]²'));
-					$attribut = $cotesPeriode['attribut'];
-					if ($attribut == 'hook')
+					$attributDelibe = $cotesPeriode['attributDelibe'];
+					if ($attributDelibe == 'hook')
 						$sitDelibe = '['.$sitDelibe.']';
-					$symbole = self::attribut2Symbole($attribut);
+					$symbole = self::attribut2Symbole($attributDelibe);
 					$situations[$matricule][$coursGrp] = array(
 						'sit' => $sit,
 						'maxSit' => $max,
@@ -3752,9 +3787,9 @@ class Bulletin {
 			$moyenne = ''; $mention = '';
 			foreach ($dataCours as $cours=>$infos) {
 				$sitDelibe = trim($infos['sitDelibe']);
-				$attribut = $infos['attribut'];
+				$attributDelibe = $infos['attributDelibe'];
 				$echec = $infos['echec'];
-				if (($attribut != 'hook') && ($sitDelibe != '')) {
+				if (($attributDelibe != 'hook') && ($sitDelibe != '')) {
 					$total += $sitDelibe;
 					$nbCours ++;
 					if (($echec == 'echec') && ($infos['statut'] != 'AC')) {
@@ -3801,7 +3836,7 @@ class Bulletin {
 						// si l'information est numérique, on en tient compte
 						if (is_numeric($sit)) {
 							// les cotes entre crochets sont négligées
-							if ($lesSituations[$periode]['attribut'] != 'hook') {
+							if ($lesSituations[$periode]['attributDelibe'] != 'hook') {
 								$data[$periode]['somme'] += $sit;
 								$data[$periode]['nbCours']++;
 								// les AC ne comptent pas comme échec
@@ -4143,7 +4178,7 @@ class Bulletin {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT bulletin, matricule, coursGrp, situation, maxSituation ";
 		$sql .= "FROM ".PFX."bullSituations ";
-		$sql .= "WHERE bulletin IN (0,$bulletin) AND coursGrp IN ($listeCoursGrpString) AND matricule IN ($listeElevesString) ";
+		$sql .= "WHERE bulletin BETWEEN 0 AND $bulletin AND coursGrp IN ($listeCoursGrpString) AND matricule IN ($listeElevesString) ";
 		$resultat = $connexion->query($sql);
 		$listeSituations = array();
 		if ($resultat) {
@@ -4164,17 +4199,17 @@ class Bulletin {
 				// cote initiale
 				$sit0 = $cotes[0]['sit'];
 				$max0 = $cotes[0]['max'];
-				// cote de l'année
+				// cote jusqu'à la période actuelle $bulletin
 				$sitPeriode = $cotes[$bulletin]['sit'];
 				$maxPeriode = $cotes[$bulletin]['max'];
-
+				// on soustrait la période 0 (report de l'année précédente) de la situation totale du degré
 				$sit2 = $sitPeriode - $sit0;
 				$max2 = $maxPeriode - $max0;
 				$listeSituations[$coursGrp][$matricule]['sit2'] = array('sit'=>$sit2, 'max'=>$max2);
-				if ($max2 > 0)
-					$listeSituations[$coursGrp][$matricule]['sit2'] = round(100*$sit2/$max2);
+				if ($max2 > 0) // pas de division par zéro
+					$listeSituations[$coursGrp][$matricule]['sit2']['pourcent'] = round(100*$sit2/$max2);
 				}
-				else $listeSituations[$coursGrp][$matricule]['sit2'] = Null;
+				else $listeSituations[$coursGrp][$matricule]['sit2']['pourcent'] = Null;
 			}
 		Application::DeconnexionPDO($connexion);
 		return $listeSituations;
@@ -5128,7 +5163,7 @@ class Bulletin {
 	public function enregistrerEprExternes($post,$anscol) {
 		$coursGrp = $post['coursGrp'];
 		$sql = "UPDATE ".PFX."bullEprExterne ";
-		$sql .= "SET coteExterne=:cote, choixCote=:choixCote, anscol='$anscol' ";
+		$sql .= "SET coteExterne=:cote, anscol='$anscol' ";
 		$sql .= "WHERE matricule=:matricule AND coursGrp=:coursGrp ";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$requete = $connexion->prepare($sql);
@@ -5141,26 +5176,24 @@ class Bulletin {
 			// le nom du champ contenant la cote de l'épreuve externe commence par "cote" suivi de "_xxxxx" où xxxxx est le matricule
 			if ($fieldCote[0]=='cote') {
 				$matricule = $fieldCote[1];
-				$cote = strtoupper(sansVirg($value));
-				$type = 'choix_'.$matricule;
-				$choix = isset($post[$type])?$post[$type]:Null;
+				$pattern = '!\d+(?:\.\d+)?!';
+				preg_match($pattern,$value,$matches);
+				$cote = ltrim(strtoupper(sansVirg($matches[0])),'0');
+				
 				$erreur = false;
 
 				// la cote externe doit être numérique et comprise entre 0 et 100
-				if (is_numeric($cote) && (($cote > 100 ) || ($cote < 0))) $erreur = true;
-				// si cote d'absence, le choix ne peut être sur la cote externe
-				if ((in_array($cote, $coteabs)) && ($choix == 'coteExterne')) $erreur = true;
+				if (is_numeric($cote) && (($cote > 100 ) || ($cote < 0)))
+					$erreur = true;
+				// une éventuelle mention textuelle illicite (pas dans les cotes d'absence)
+				if ((!(is_numeric($cote))) && (!(in_array($cote,$coteabs))) && (trim($cote) != ''))
+					$erreur = true;
+
 				if ($erreur == true) {
 					$tableErreurs[$matricule]=$cote;
 					}
 					else {
-						if ($choix == 'coteExterne') $cote = $cote;  // ;o)
-						// if ($choix == 'reussite') $cote = 50;  // on laisse la cote de l'épreuve externe; le 50% sera rétabli dans la feuille de délibé car choix='reussite50'
-						if ($choix == 'sitDelibe')
-							// si la cote n'est pas une mention d'absence régulière, on l'efface
-							if (!in_array($cote, $coteabs))
-								$cote = '';
-						$data = array(':cote'=>$cote,':choixCote'=>$choix,':matricule'=>$matricule,':coursGrp'=>$coursGrp);
+						$data = array(':cote'=>$cote,':matricule'=>$matricule,':coursGrp'=>$coursGrp);
 						$nb += $requete->execute($data);
 						}
 				}
@@ -5179,61 +5212,61 @@ class Bulletin {
 	 * @param array $listeCoursGrp : liste des coursGrp dans la classe
 	 * @return array
 	 */
-	public function listeSitDelibeExternes($situationsActuelles, $listeEleves, $listeCoursGrp) {
-		if (is_array($listeEleves))
-			$listeElevesString = implode(',', array_keys($listeEleves));
-		else $listeElevesString = $listeEleves;
-		if (is_array($listeCoursGrp))
-			$listeCoursGrpString = "'" . implode("','", array_keys($listeCoursGrp)) . "'";
-			else $listeCoursGrpString = "'" . $listeCoursGrp . "'";
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT matricule, coursGrp, coteExterne, choixCote ";
-		$sql .= "FROM ".PFX."bullEprExterne ";
-		$sql .= "WHERE matricule IN ($listeElevesString) AND coursGrp IN ($listeCoursGrpString) ";
-
-		$resultat = $connexion->query($sql);
-		if ($resultat) {
-			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			while ($ligne = $resultat->fetch()) {
-				$matricule = $ligne['matricule'];
-				$coursGrp = $ligne['coursGrp'];
-				$cours = self::coursSansGrp($coursGrp);
-				// si une cote de délibé a été choisie pour cet élève et ce cours, on évalue l'épreuve externe
-				if (isset($situationsActuelles[$matricule][$cours]) && trim($situationsActuelles[$matricule][$cours]['sitDelibe']) != '') {
-					$coteExterne = trim($ligne['coteExterne']);
-					$choixCote = $ligne['choixCote'];
-					switch ($choixCote) {
-						case 'coteExterne':
-							// on retient la situation interne
-							$situationsActuelles[$matricule][$cours]['sitInterne'] = $situationsActuelles[$matricule][$cours]['sitDelibe'];
-							// la cote externe remplace la situation de délibé (interne)
-							$situationsActuelles[$matricule][$cours]['sitDelibe']=$coteExterne;
-							$situationsActuelles[$matricule][$cours]['echec']=(($coteExterne < 50)&& (trim($coteExterne) != ''))?'echec':Null;
-							$situationsActuelles[$matricule][$cours]['attribut']='externe';
-							if ($coteExterne != '')
-								$situationsActuelles[$matricule][$cours]['symbole'] = self::attribut2Symbole('externe');
-								else $situationsActuelles[$matricule][$cours]['symbole'] = '';
-						break;
-						case 'reussite':
-							// on retient la situation interne
-							$situationsActuelles[$matricule][$cours]['sitInterne'] = $situationsActuelles[$matricule][$cours]['sitDelibe'];
-							// la cote externe remplace la situation de délibé (interne)
-							$situationsActuelles[$matricule][$cours]['sitDelibe']=50;
-							$situationsActuelles[$matricule][$cours]['echec']=Null;
-							$situationsActuelles[$matricule][$cours]['attribut']='reussite50';
-							$situationsActuelles[$matricule][$cours]['symbole']= self::attribut2Symbole('reussite50');
-						break;
-						case 'sitDelibe':
-							// do nothing : la cote est le situation choisie par le titulaire du cours dans le bulletin
-						break;
-						}
-					}
-				}
-			}
-		Application::DeconnexionPDO($connexion);
-		return $situationsActuelles;
-		}
-
+	//public function listeSitDelibeExternes($situationsActuelles, $listeEleves, $listeCoursGrp) {
+	//	if (is_array($listeEleves))
+	//		$listeElevesString = implode(',', array_keys($listeEleves));
+	//	else $listeElevesString = $listeEleves;
+	//	if (is_array($listeCoursGrp))
+	//		$listeCoursGrpString = "'" . implode("','", array_keys($listeCoursGrp)) . "'";
+	//		else $listeCoursGrpString = "'" . $listeCoursGrp . "'";
+	//	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+	//	$sql = "SELECT matricule, coursGrp, coteExterne, choixCote ";
+	//	$sql .= "FROM ".PFX."bullEprExterne ";
+	//	$sql .= "WHERE matricule IN ($listeElevesString) AND coursGrp IN ($listeCoursGrpString) ";
+	//
+	//	$resultat = $connexion->query($sql);
+	//	if ($resultat) {
+	//		$resultat->setFetchMode(PDO::FETCH_ASSOC);
+	//		while ($ligne = $resultat->fetch()) {
+	//			$matricule = $ligne['matricule'];
+	//			$coursGrp = $ligne['coursGrp'];
+	//			$cours = self::coursSansGrp($coursGrp);
+	//			// si une cote de délibé a été choisie pour cet élève et ce cours, on évalue l'épreuve externe
+	//			if (isset($situationsActuelles[$matricule][$cours]) && trim($situationsActuelles[$matricule][$cours]['sitDelibe']) != '') {
+	//				$coteExterne = trim($ligne['coteExterne']);
+	//				$choixCote = $ligne['choixCote'];
+	//				switch ($choixCote) {
+	//					case 'coteExterne':
+	//						// on retient la situation interne
+	//						$situationsActuelles[$matricule][$cours]['sitInterne'] = $situationsActuelles[$matricule][$cours]['sitDelibe'];
+	//						// la cote externe remplace la situation de délibé (interne)
+	//						$situationsActuelles[$matricule][$cours]['sitDelibe']=$coteExterne;
+	//						$situationsActuelles[$matricule][$cours]['echec']=(($coteExterne < 50)&& (trim($coteExterne) != ''))?'echec':Null;
+	//						$situationsActuelles[$matricule][$cours]['attribut']='externe';
+	//						if ($coteExterne != '')
+	//							$situationsActuelles[$matricule][$cours]['symbole'] = self::attribut2Symbole('externe');
+	//							else $situationsActuelles[$matricule][$cours]['symbole'] = '';
+	//					break;
+	//					case 'reussite':
+	//						// on retient la situation interne
+	//						$situationsActuelles[$matricule][$cours]['sitInterne'] = $situationsActuelles[$matricule][$cours]['sitDelibe'];
+	//						// la cote externe remplace la situation de délibé (interne)
+	//						$situationsActuelles[$matricule][$cours]['sitDelibe']=50;
+	//						$situationsActuelles[$matricule][$cours]['echec']=Null;
+	//						$situationsActuelles[$matricule][$cours]['attribut']='reussite50';
+	//						$situationsActuelles[$matricule][$cours]['symbole']= self::attribut2Symbole('reussite50');
+	//					break;
+	//					case 'sitDelibe':
+	//						// do nothing : la cote est le situation choisie par le titulaire du cours dans le bulletin
+	//					break;
+	//					}
+	//				}
+	//			}
+	//		}
+	//	Application::DeconnexionPDO($connexion);
+	//	return $situationsActuelles;
+	//	}
+	//
 	/**
 	 * retourne les cotes de situation en tenant compte des épreuves externes pour un élève donné
 	 * soit la cote de l'épreuve externe, soit 50% (cas de la réussite interne), soit la cote de situation
@@ -5244,7 +5277,7 @@ class Bulletin {
 	 */
 	public function eleveSitDelibeExternes($matricule, $listeSituations) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT coursGrp, coteExterne, choixCote ";
+		$sql = "SELECT coursGrp, coteExterne ";
 		$sql .= "FROM ".PFX."bullEprExterne ";
 		$sql .= "WHERE matricule = '$matricule' ";
 		$resultat = $connexion->query($sql);

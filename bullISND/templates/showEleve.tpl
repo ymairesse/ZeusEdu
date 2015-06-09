@@ -42,10 +42,11 @@
 				{/if}
 		
 				{if isset($sitActuelle.sitDelibe) && $sitActuelle.sitDelibe != ''}
-					<strong>Délibé:
-					{if isset($sitActuelle.attribu) && ($sitActuelle.attribut == 'hook')}[{$sitActuelle.sitDelibe}] %
+					<strong class="pull-right">Délibé:
+					{if isset($sitActuelle.attribut) && ($sitActuelle.attribut == 'hook')}[{$sitActuelle.sitDelibe}] %
 					{else}
-					{$sitActuelle.sitDelibe}<sup>{$sitActuelle.symbole}</sup> %
+					{$sitActuelle.sitDelibe}
+						<sup>{$sitActuelle.symbole}</sup> %
 					{/if}
 					</strong>
 				{/if}
@@ -174,7 +175,7 @@
 				{/if}>
 				<strong><i class="fa fa-graduation-cap fa-lg"></i> Mention: {$laMention|default:''}</strong>
 			</div>
-
+			{if isset($remTitu) && ($remTitu != Null)}
 			<table class="table table-condensed">
 				<tr>
 					<thead>
@@ -182,9 +183,10 @@
 					</thead>
 				</tr>
 				<tr>
-					<td>{$remTitu|default:'&nbsp;'}</td>
+					<td>{$remTitu}</td>
 				</tr>
 			</table>
+			{/if}
 		
 			{if isset($noticeDirection)}
 			<table class="table">

@@ -152,7 +152,7 @@ select[disabled] {color: #ccc}
 	
 .erreurEncodage {
 	background-color: red;
-	color:white;
+	// color:white;
 	}
 
 .echecEncodage {
@@ -606,7 +606,25 @@ th.cert, td.cert, .cert {
 	}
 	
 .balayette {
-	color: #f00;
+	color: #080;
 	cursor:pointer;
-	font-size:1.5em; 	
+	}
+	
+.form-control.sitDelibe[disabled], .form-control.sitDelibe[readonly] {
+    background-color: #eee;
+    color: #000;
+}
+
+.visible {
+	display: block;
+	}
+.invisible {
+	display: none;
+	}
+	
+.editable {
+	background: #fff;
+	width: 6em;
+	height: 2.7em;
+	padding: 0.5em;
 	}

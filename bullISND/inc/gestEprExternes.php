@@ -27,12 +27,22 @@ if ($coursGrp) {
 	if ($etape == 'enregistrer') {
 		$resultat = $Bulletin->enregistrerEprExternes($_POST,ANNEESCOLAIRE);
 		$tableErreurs = $resultat['erreurs'];
-		$smarty->assign('tableErreurs',$tableErreurs);
-		$smarty->assign('message', array(
-				'title'=>SAVE,
-				'texte'=>$resultat['nb']." enregistrements modifiées")
-				);
-		}
+		if ($tableErreurs == Null) {
+			$smarty->assign('message', array(
+					'title'=>SAVE,
+					'texte'=>$resultat['nb']." enregistrements modifiées",
+					'urgence'=>'success')
+					);
+			}
+			else {
+				$smarty->assign('tableErreurs',$resultat['erreurs']);
+				$smarty->assign('message',array(
+					'title'=>'Erreur',
+					'texte'=>'Les cotes contiennent une ou plusieurs erreurs. Veuillez corriger.',
+					'urgence'=>'danger')
+					);
+				}
+			}
 	$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 	$listeCotes = $Bulletin->listeCotesEprExterne($coursGrp,ANNEESCOLAIRE);
 	$listeSituationsBulletin = $Bulletin->listeSituationsCours($listeEleves,$coursGrp,NBPERIODES);
@@ -45,11 +55,6 @@ if ($coursGrp) {
 	$smarty->assign('intituleCours',$Bulletin->intituleCours($coursGrp));
 	$smarty->assign('listeClasses',$Bulletin->classesDansCours($coursGrp));
 
-	//$readonly = ($bulletin < PERIODEENCOURS)?'readonly':'';
-	//// PERMETTRE AUX ADMIN DE PASSER OUTRE LE READONLY
-	//if ($user->userStatus($module) == 'admin')
-	//	$readonly = '';
-	//$smarty->assign('readonly', $readonly);
 	$smarty->assign('corpsPage', 'gestEprExternes');
 	}
 

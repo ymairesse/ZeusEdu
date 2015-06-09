@@ -234,7 +234,6 @@ $(document).ready(function(){
 		$(this).closest('table').find('.totalMaxCert').text(somme);
 		})
 
-
 	$(".radioAcquis").click(function(){
 		if ($(this).val()=="N")
 			$(this).parent().siblings('.att').andSelf().addClass('NA');
@@ -274,83 +273,190 @@ $(document).ready(function(){
 		$("#matricule").val(ancre);
 		window.onbeforeunload = function(){};
 	})
+	
+	// *************************************************************************************************************
+	// calcul de la cote de délibé sur base de la cote de l'épreuve externe (majeure) et de la cote interne (mineure)
+	function choixDelibe(matricule, EprExterne,coteInterne) {
+		if (EprExterne == '') {
+			resultat = coteInterne;
+			}
+			else {
+				$("#attributDelibe_"+matricule).val('externe');
+				if (EprExterne >= 50) {
+					if (coteInterne >= 50) {
+						resultat = EprExterne;
+						}
+						else {
+							resultat = 50;
+							}
+					}
+					else {
+						if (coteInterne >=50 ) {
+							resultat = 50;
+							}
+						else {
+							resultat = EprExterne;
+							}
+						}
+					}
+		return resultat;
+		}
+	// *************************************************************************************************************	
 
 	$(".hook, .nohook").click(function(){
 		modification();
-		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
+		// quelle est la cote portée par le bouton avec crochets ou non?
+		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');		
 		// Retrouver le matricule dans Ex: "btnHook-eleve_5042"
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
+		
+		coteExterne = $("#coteExterne_"+matricule).text().replace(/[\[\]²%\* ]+/g,'');
+		coteDelibe = choixDelibe(matricule, coteExterne, cote);
+		
+		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
+		$("#choixProf-matricule_"+matricule).val(cote);
+		// la cote finale de délibé calculée plus haut dans le champ hidden
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);		
 
-		// cacher le champ Input (éventuellement utilisé par la baguette magique)
-		$("#situation-eleve_"+matricule).hide();
-		// attribution d'une valeur affichée
-		if ($(this).hasClass('hook'))
-			$("#situationFinale_"+matricule).html('['+cote+']%').show();
-			else $("#situationFinale_"+matricule).html(cote+'%').show();
-		// attribution d'une valeur au champ input situation-eleve pour$_POST
-		$("#situation-eleve_"+matricule).val(cote);
-		// indicateur d'attribut de la situation de délibé
-		if ($(this).hasClass('hook'))
-			$("#attribut-eleve_"+matricule).val('hook');
-			else $("#attribut-eleve_"+matricule).val('');
+		if ($(this).hasClass('hook')) {
+			// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
+			$("#attributProf-matricule_"+matricule).val('hook');
+			// la cote sélectionnée par le prof lisible et entourée de crochets
+			$("#textChoixProf_"+matricule).text("["+cote+"]");			
+			
+			// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'hook'
+			if (coteDelibe != cote) 
+				$("#attributDelibe-matricule_"+matricule).val('externe');
+				else $("#attributDelibe-matricule_"+matricule).val('hook');
+			// le champ contenteditable de la cote de délibé pour permettre la baguette magique
+			if (coteDelibe != cote) 
+				$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
+				else $("#editable_"+matricule).text('['+coteDelibe+']');
+			}
+			else {
+				// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
+				$("#attributProf-matricule_"+matricule).val('');
+				// la cote sélectionnée par le prof lisible et sans crochets
+				$("#textChoixProf_"+matricule).text(cote);
+				
+				// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon rien
+				if (coteDelibe != cote) 
+					$("#attributDelibe-matricule_"+matricule).val('externe');
+					else $("#attributDelibe-matricule_"+matricule).val('');
+				// le champ contenteditable de la cote de délibé pour permettre la baguette magique
+				if (coteDelibe != cote) 
+					$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
+					else $("#editable_"+matricule).text(coteDelibe);
+				}
+		$("#led_"+matricule).removeClass().addClass('invisible');
 		})
 
 	$(".star").click(function(){
 		modification();
+		// quelle est la cote portée par le bouton étoilé?
 		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
+		// Retrouver le matricule dans Ex: "btnHook-eleve_5042"
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
 
-		// cacher le champ Input (pas de baguette magique)
-		$("#situation-eleve_"+matricule).hide();
-		// attribution d'une valeur affichée et affichage du texte
-		$("#situationFinale_"+matricule).html(cote+'*%').show();
+		coteExterne = $("#coteExterne_"+matricule).text().replace(/[\[\]²%\* ]+/g,'');
+		coteDelibe = choixDelibe(matricule, coteExterne, cote);
+		
+		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
+		$("#choixProf-matricule_"+matricule).val(cote);
+		// la cote finale de délibé calculée plus haut dans le champ hidden
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);		
+		
+		// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
+		$("#attributProf-matricule_"+matricule).val('star');
+		// la cote sélectionnée par le prof lisible et entourée de crochets
+		$("#textChoixProf_"+matricule).text(cote+"*");
 
-		// attribution d'une valeur au champ input situation-eleve
-		$("#situation-eleve_"+matricule).val(cote);
-		// indicateur d'attribut de la situation de délibé
-		$("#attribut-eleve_"+matricule).val('star');
-	})
+		// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'hook'
+		if (coteDelibe != cote) 
+			$("#attributDelibe-matricule_"+matricule).val('externe');
+			else $("#attributDelibe-matricule_"+matricule).val('star');
+		// le champ contenteditable de la cote de délibé pour permettre la baguette magique
+		if (coteDelibe != cote) 
+			$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
+			else $("#editable_"+matricule).html(coteDelibe+'*');
+		$("#led_"+matricule).removeClass().addClass('invisible');
+		})
 
 	$(".degre").click(function(){
 		modification();
+		// quelle est la cote portée par le bouton 'degré'?
 		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
+		// Retrouver le matricule dans Ex: "btnHook-eleve_5042"
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
 
-		// cacher le champ Input (pas de baguette magique)
-		$("#situation-eleve_"+matricule).hide();
-		// attribution d'une valeur affichée
-		$("#situationFinale_"+matricule).html(cote+'²%').show();
+		coteExterne = $("#coteExterne_"+matricule).text().replace(/[\[\]²%\* ]+/g,'');
+		coteDelibe = choixDelibe(matricule, coteExterne, cote);
+		
+		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
+		$("#choixProf-matricule_"+matricule).val(cote);
+		// la cote finale de délibé calculée plus haut dans le champ hidden
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);		
+		
+		// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
+		$("#attributProf-matricule_"+matricule).val('degre');
+		// la cote sélectionnée par le prof lisible et entourée de crochets
+		$("#textChoixProf_"+matricule).text(cote+"²");
 
-		// attribution d'une valeur au champ input situation-eleve
-		$("#situation-eleve_"+matricule).val(cote);
-		$("#attribut-eleve_"+matricule).val('degre');
+		// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'hook'
+		if (coteDelibe != cote) 
+			$("#attributDelibe-matricule_"+matricule).val('externe');
+			else $("#attributDelibe-matricule_"+matricule.val('degre'));
+		// le champ contenteditable de la cote de délibé pour permettre la baguette magique
+		if (coteDelibe != cote) 
+			$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
+			else $("#editable_"+matricule).text(coteDelibe+'²');
+		$("#led_"+matricule).removeClass().addClass('invisible');
 	})
 
 
 	$(".magic").click(function(){
 		if (confirm(coteArbitraire)) {
 			modification();
-			// var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 			var matricule = $(this).attr("name").split('-')[1].split("_")[1];
+			if ($('#editable_'+matricule).text().trim() != '') 
+				var cote = $("#editable_"+matricule).text().match(/[0-9]+/g)[0];
+				else var cote = '';
 
-			// montrer le champ input
-			$("#situation-eleve_"+matricule).css('display','block');
+			$("#editable_"+matricule).text(cote);
+			// activer le champ contenteditable
+			$("#editable_"+matricule).attr('contenteditable',true).focus().css('background','#afa');
 			// attribution d'une valeur affichée et affichage du texte
-			$("#situationFinale_"+matricule).hide();
-
-			$("#attribut-eleve_"+matricule).val('magique');
+			$("#attributDelibe-matricule_"+matricule).val('magique');
 		}
 	})
 
 	$(".balayette").click(function(){
 		modification();
 		var matricule = parseInt($(this).attr("id").substr(4,10));
-		$("#situationFinale_"+matricule).text('').hide();
-		$("#attribut-eleve_"+matricule).val('');
-		$("#situation-eleve_"+matricule).val('');
-		$(this).fadeOut();
+		$("#attributDelibe_"+matricule).val('');
+		$("#sitDelibe_"+matricule).val('');
+		$("#editable_"+matricule).text('');
+		$("#textChoixProf_"+matricule).text('');
+		$("#led_"+matricule).removeClass().addClass('visible');
+		$("#choixProf-matricule_"+matricule).val('');
+		$("#attributProf-matricule_"+matricule).val('');
+		$("#attributDelibe-matricule_"+matricule).val('');
+		$("#sitDelibe-matricule_"+matricule).val('');
+		
+		})
+	
+	$(".editable").blur(function(){
+		var matricule = parseInt($(this).attr("id").substr(9,20));
+		var sit = parseFloat($(this).text());
+		$("#sitDelibe-matricule_"+matricule).val(sit);
 		})
 
+	$(".editable").keypress(function(e){
+		var key = e.keyCode || e.charCode;
+		if ((key != 8) && (key != 46)) {
+			return $(this).text().length <= 2
+			}
+		})
 
 	function goToByScroll(matricule){
      	$('html,body').animate({

@@ -121,9 +121,9 @@ switch ($mode) {
 
 			$listeSituations = $Bulletin->listeSituationsDelibe($listeEleves, array_keys($listeCoursGrp), $bulletin);
 
-			// À LA DERNIÈRE PÉRIODE DE L'ANNÉE, ON TIENT COMPTE DES ÉPREUVES EXTERNES ÉVENTUELLES
-			if ($bulletin == NBPERIODES)
-				$listeSituations = $Bulletin->listeSitDelibeExternes($listeSituations, $listeEleves, $listeCoursGrp);
+			//// À LA DERNIÈRE PÉRIODE DE L'ANNÉE, ON TIENT COMPTE DES ÉPREUVES EXTERNES ÉVENTUELLES
+			//if ($bulletin == NBPERIODES)
+			//	$listeSituations = $Bulletin->listeSitDelibeExternes($listeSituations, $listeEleves, $listeCoursGrp);
 			$delibe = $Bulletin->echecMoyennesDecisions($listeSituations);
 			$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
 			$smarty->assign('delibe',$delibe);

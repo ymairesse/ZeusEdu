@@ -435,18 +435,17 @@ CREATE TABLE IF NOT EXISTS didac_bullSitArchives (
   KEY matricule (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS didac_bullSituations (
-  matricule int(6) NOT NULL,
-  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  bulletin tinyint(2) NOT NULL,
-  situation varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  maxSituation varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  sitDelibe varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation en pourcents',
-  star tinyint(1) NOT NULL DEFAULT '0' COMMENT 'cote étoilée (remplace d''autorité toute autre cote)',
-  hook tinyint(1) NOT NULL DEFAULT '0' COMMENT 'cotes entre crochets (à négliger)',
-  degre tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Réussite du degré',
-  attribut enum('star','hook','degre','reussite50','magique') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'attribut de la situation de délibé',
-  PRIMARY KEY (matricule,coursGrp,bulletin)
+CREATE TABLE IF NOT EXISTS `didac_bullSituations` (
+  `matricule` int(6) NOT NULL,
+  `coursGrp` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `bulletin` tinyint(2) NOT NULL COMMENT 'Numéro du bulletin correspondant au données',
+  `situation` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation de l''élève au terme de la période',
+  `maxSituation` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
+  `choixProf` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Choix de cote de délibé par le prof (sans épr. externe)',
+  `attributProf` enum('','star','hook','degre','reussite50','magique') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sitDelibe` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation en pourcents',
+  `attributDelibe` enum('','star','hook','degre','reussite50','magique','externe') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'attribut de la situation de délibé',
+  PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS didac_bullTitus (

@@ -1,4 +1,4 @@
-	<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -39,8 +39,6 @@
 <div id="corpsPage">
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
-{else}
-	{include file="../../templates/corpsPageVide.tpl"}
 {/if}
 </div>
 

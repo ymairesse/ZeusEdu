@@ -44,13 +44,13 @@
 							<td class="cote 
 								{if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
 									&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
-									&& ($listeSituations.$coursGrp.$periode.attribut != 'hook')}echec{/if}"
+									&& ($listeSituations.$coursGrp.$periode.attributDelibe != 'hook')}echec{/if}"
 								{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
 								{if isset($listeSituations.$coursGrp.$periode.sitInterne)}
 									title="Cote interne {$listeSituations.$coursGrp.$periode.sitInterne}%"
 									data-container="body"
 								{/if}>
-								{if $listeSituations.$coursGrp.$periode.attribut == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}]
+								{if $listeSituations.$coursGrp.$periode.attributDelibe == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}]
 									{else}
 									{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}<sup>{$listeSituations.$coursGrp.$periode.symbole|default:''}</sup>
 								{/if}
@@ -190,9 +190,9 @@
 				<ul class="symbolique">
 				<li>² => réussite degré</li>
 				<li>* => cote étoilée</li>
-				<li>↗ => baguette magique</li>
+				<li><i class="fa fa-magic"></i> => baguette magique</li>
 				<li>← => reussite 50%</li>
-				<li>$ => épreuve externe</li>
+				<li><i class="fa fa-graduation-cap"></i> => épreuve externe</li>
 				<li>[xx] => non significatif</li>
 				</ul>
 

@@ -49,19 +49,33 @@
 				{else}
 					{assign var=coursGrp value=$listeSituations.$matricule.$cours.coursGrp|default:Null}
 					{if $coursGrp != Null}
+					{assign var=attributDelibe value=$listeSituations.$matricule.$cours.attributDelibe}
 					<td class="pop {$listeSituations.$matricule.$cours.statut} {$listeSituations.$matricule.$cours.echec}"
 						data-container="body"
 						data-original-title="{$coursGrp}"
-						data-content="{if $listeSituations.$matricule.$cours.symbole == '$'}Épreuve externe<br>{/if}{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}
-							{if isset($listeSituations.$matricule.$cours.sitInterne)}
-							<br>Sit. interne {$listeSituations.$matricule.$cours.sitInterne}%
-						{/if}"
+						data-content="
+							{if $attributDelibe == 'externe'}Épreuve externe<br>{/if}
+							{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}
+							{if isset($listeSituations.$matricule.$cours.choixProf)}
+								<br>Sit. interne {$listeSituations.$matricule.$cours.choixProf}%
+							{/if}}"
 						data-placement="top"
 						data-html="true">
-						{if $listeSituations.$matricule.$cours.attribut == 'hook'}
+						{if $attributDelibe == 'hook'}
 							[{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}]
 						{else}
-							{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}<sup>{$listeSituations.$matricule.$cours.symbole|default:''}</sup>
+							{$listeSituations.$matricule.$cours.sitDelibe|default:'&nbsp;'}
+							<sup>
+							{if $attributDelibe == 'star'}
+								*
+								{elseif $attributDelibe == 'externe'}
+								<i class="fa fa-graduation-cap"></i>
+								{elseif $attributDelibe == 'degre'}
+								²
+								{else}
+								
+							{/if}
+							</sup>
 						{/if}
 					</td>
 					{else}

@@ -3,19 +3,23 @@
 {* ---------------------------------------------------------------------- *}
 {assign var="cotes" value=$listeGlobalPeriodePondere.$matricule.$coursGrp|default:Null}
 {assign var="bullPrec" value=$bulletin-1}
+<div class="table-responsive">
 <table class="table tableauBull situationActuelle">
 	<tr>
-		<th width="20%">Situation Précédente</th>
-		<th width="20%">Période</th>
-		<th width="20%">Situation au bulllletin <strong>{$bulletin}</strong></th>
-		<th width="20%">Choix de situation</th>
-		<th width="20%">Délibé</th>
+		<th width="10%">Situation Précédente</th>
+		<th width="15%">Période</th>
+		<th width="10%">Situation au bulllletin <strong>{$bulletin}</strong></th>
+		<th width="10%"{if $sitDeuxiemes == Null} class="disabled"{/if}>2e année du degré</th>
+		<th width="10%"{if $listeCotesExternes == Null} class="disabled"{/if}>Épr. externe</th>
+		<th width="20%">Choix de situation<br>(en %)</th>
+		<th width="10%">Votre choix<br>(en %)</th>
+		<th width="15%">Délibé<br>(en %)</th>
 	</tr>
 	<tr>
 		{* ------------------------------------------------------ *}
 		{* situation au bulletin précédent ---------------------- *}
 		{* ------------------------------------------------------ *}
-		<td width="15%">
+		<td>
 		{if isset($situationsPrecedentes.$matricule.$coursGrp.maxSit) &&  ($situationsPrecedentes.$matricule.$coursGrp.maxSit!= Null)}
 			{assign var=sit value=$situationsPrecedentes.$matricule.$coursGrp.sit}
 			{assign var=max value=$situationsPrecedentes.$matricule.$coursGrp.maxSit}
@@ -31,7 +35,7 @@
 		{* ------------------------------------------------------ *}
 		{* cotes de période, Formatif et/ou Certificatif ---------*}
 		{* ------------------------------------------------------ *}
-		<td width="30%">
+		<td>
 			{if is_numeric($cotes.form.cote)}
 			<div class="lblFraction">TJ</div>
 			<div class="fraction">
@@ -48,22 +52,54 @@
 			{/if}
 		</td>
 
+
+		{* si des cotes de situation existent pour ce bulletin pour cet élève et pour ce cours   *}
+		{assign var=sitEleve value=$listeSituations.$matricule.$coursGrp.$bulletin|default:Null}
+		
 		{* -------------------------------------------------------*}
 		{* nouvelle cote de situation y compris en % -------------*}
 		{* ------------------------------------------------------ *}
-		<td width="15%">
-			{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
-				{if isset($listeSituations.$matricule.$coursGrp.$bulletin.sit) && is_numeric($listeSituations.$matricule.$coursGrp.$bulletin.sit)}
-					{if $listeSituations.$matricule.$coursGrp.$bulletin.max neq 0}
-					<div class="fraction">
-						<div class="num">{$listeSituations.$matricule.$coursGrp.$bulletin.sit}</div>
-						<div class="den">{$listeSituations.$matricule.$coursGrp.$bulletin.max}</div>
-					</div>
-					<span class="micro">= {$listeSituations.$matricule.$coursGrp.$bulletin.pourcent}%</span>
-					{/if}
+		<td>
+			{if isset($sitEleve.sit) && is_numeric($sitEleve.sit)}
+				{if $sitEleve.max neq 0}
+				<div class="fraction">
+					<div class="num">{$sitEleve.sit}</div>
+					<div class="den">{$sitEleve.max}</div>
+				</div>
+				<span class="micro">= {$sitEleve.pourcent}%</span>
 				{/if}
+			{/if}
+		</td>
+		
+		{* -------------------------------------------------------*}
+		{* -rien que la deuxième année du degré ------------------*}
+		{* -------------------------------------------------------*}
+		
+		<td class="cote{if $sitDeuxiemes == Null} disabled{/if}">
+			{if ($sitDeuxiemes != Null) && isset($sitDeuxiemes.$coursGrp.$matricule.sit2.sit)}
+			<div class="fraction">
+				<div class="num">{$sitDeuxiemes.$coursGrp.$matricule.sit2.sit}</div>
+				<div class="den">{$sitDeuxiemes.$coursGrp.$matricule.sit2.max}</div>
+			</div>
+			= {$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent|default:'&nbsp;'}%
 			{else}
-			&nbsp;
+			-
+			{/if}
+		</td>
+		
+		{* ------------------------------------------------------ *}
+		{* -cote de l'épreuve externe --------------------------- *}
+		{* ------------------------------------------------------ *}
+		{if isset($listeCotesExternes.$matricule)}
+			{assign var=coteExterne value=$listeCotesExternes.$matricule.coteExterne}
+			{else}
+			{assign var=coteExterne value=Null}
+		{/if}
+		<td class="cote{if isset($coteExterne) && ($coteExterne != '') && ($coteExterne < 50)} echec{/if}">
+			{if $coteExterne != Null}
+			<strong id="coteExterne_{$matricule}">{$coteExterne|cat:'%'}</strong>
+			{else}
+			-
 			{/if}
 		</td>
 
@@ -73,41 +109,41 @@
 		{* ------------------------------------------------------ *}
 		{*  Choix de la cote de délibé     ---------------------- *}
 		{* ------------------------------------------------------ *}
-		<td style="width:20%; text-align:center">
+		<td style="text-align:center">
 			{if $blocage == 0}
-			{* champs destinés à retenir si les cotes sont entre [], magiques, étoilées ou ² (réussite deuxième année du degré) *}
-			{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
-				{assign var=attribut value=$listeSituations.$matricule.$coursGrp.$bulletin.attribut}
-			{else}
-				{assign var=attribut value=Null}
-			{/if}
-			{* ----->>>> attribut de la cote de délibé: * ² [] ... --------*}
-			<input type="hidden" name="attribut-eleve_{$matricule}"
-				id="attribut-eleve_{$matricule}" value="{$attribut}"
-				{if $blocage > 0}disabled="disabled"{/if}>
-
+			
 			{* ------------------------------------------------------ *}
 			{* cote entre crochets? ----------------------------------*}
 			{* Deux boutons: avec ou sans crochets -------------------*}
 			{* ------------------------------------------------------ *}
 
-			{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
-				<input style="font-size:8pt" type="button" name="btnHook-eleve_{$matricule}"
-					tabIndex="{$tabIndexAutres+1}"
-					class="hook"
-					value="[{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent|default:''} %]"
-					{if $blocage > 0}disabled="disabled"{/if}>
-				<input style="font-size:8pt" type="button" name="btnNohook-eleve_{$matricule}"
-					tabIndex="{$tabIndexAutres+2}"
-					class="nohook"
-					value="{$listeSituations.$matricule.$coursGrp.$bulletin.pourcent|default:''} %"
-					{if $blocage > 0}disabled="disabled"{/if}>
+			{if $sitEleve.pourcent != Null}
 
-					{if ($listeSituations.$matricule.$coursGrp.$bulletin.sitDelibe == Null)}
-						<img src="images/led.gif" alt="!!"
-							 data-container="body"
-							 title="Sélectionnez une cote de délibération">
-					{/if}
+				<button class="btn btn-default btn-sm pop hook"
+					type="button"
+					name="btnHook-eleve_{$matricule}"
+					tabIndex="{$tabIndexAutres+1}"
+					value="[{$sitEleve.pourcent|default:''}]"
+					data-original-title="Cote entre crochets"
+					data-content="Peut être attribuée s'il est impossible de décider d'une cote pour l'élève (absences aux évaluations,...).<br>Cette cote empêche la délibération en fin d'année scolaire."
+					data-html="true"
+					data-placement="top"
+					{if $blocage > 0}disabled="disabled"{/if}>
+				[{$sitEleve.pourcent|default:''}]
+				</button>
+			
+				<button class="btn btn-default btn-sm btn-success pop nohook"
+					type="button"
+					name="btnNohook-eleve_{$matricule}"
+					tabIndex="{$tabIndexAutres+2}"
+					data-original-title="Cote 'sèche'"
+					data-content="Totalisation de l'année.<br>C'est la cote qui est généralement attribuée."
+					data-placement="top"
+					data-html="true"
+					value="{$sitEleve.pourcent|default:''}"
+					{if $blocage > 0}disabled="disabled"{/if}>
+					{$sitEleve.pourcent|default:''}
+				</button>
 				{else}
 					-
 				{/if}
@@ -123,60 +159,89 @@
 
 				{* cote étoilée? -----------------------------------------*}
 				{* Un bouton à cliquer si la situation le permet----------*}
-				{if isset($listeSituations.$matricule.$coursGrp.$bulletin) && ($listeSommesFormCert.$matricule.pourcentCert > $listeSituations.$matricule.$coursGrp.$bulletin.pourcent)}
-				<input
-					type="button"
-					class="btn btn-primary btn-sm star"
-					name="btnStar-eleve_{$matricule}"
-					tabIndex="{$tabIndexAutres+3}"
-					value="{$listeSommesFormCert.$matricule.pourcentCert} % *"
-					title="Attribuer la cote étoilée"
-					data-container="body"
-					data-placement="top"
-					{if $blocage > 0} disabled="disabled"{/if}
-					>
-				{/if}
-
-				{* baguette magique? -----------------------------------------*}
+				{if isset($listeCotesEtoilees[$matricule]) && $listeCotesEtoilees[$matricule] != Null}
 				<button
 					type="button"
-					class="btn btn-primary btn-sm magic"
-					name="magic-eleve_{$matricule}"
-					title="Attribuer une cote arbitraire"
+					class="btn btn-info btn-sm star pop"
+					name="btnStar-eleve_{$matricule}"
+					tabIndex="{$tabIndexAutres+3}"
+					value="{$listeSommesFormCert.$matricule.pourcentCert}*"
+					data-original-title="Attribuer la cote étoilée"
+					data-content="La cote étoilée est attribuable si <ol><li>le 'certificatif' est meilleur que l'ensemble 'formatif'+'certificatif' et</li><li>tous les travaux ont été remis</li></ol>"
 					data-container="body"
-					data-placement="top" 
+					data-placement="top"
+					data-html="true"
 					{if $blocage > 0} disabled="disabled"{/if}
-					><i class="fa fa-magic"></i></button>
-
+					>
+					{$listeSommesFormCert.$matricule.pourcentCert} 
+					</button>
+				{/if}
 
 				{* cote réussite du degré? ------------------------------------*}
-				{* Un bouton à cliquer si l'élève est en échec pour le degré---*}
-				{* et s'il y a une cote de première année du degré             *}
-				{if isset($listeSituations.$matricule.$coursGrp.$bulletin) && ($listeSituations.$matricule.$coursGrp.$bulletin.pourcent < 50)
-						&& ($sitDeuxiemes.$coursGrp.$matricule.sit2)}
-				<div class="cote1erDegre">
-				{* attribution de la cote 50% en cas de réussite en deuxième; la cote de deuxième se trouve dans sit2 *}
-				{* la cote de deuxième exclusivement est affichée pour information *}
+				{* Un bouton à cliquer si                                      *}
+				{* il y a une cote de situation pour le bulletin               *}
+				{* l'élève est en échec pour le degré ---                      *}
+				{* il y a une cote de deuxième année du degré                  *}
 
-					{$sitDeuxiemes.$coursGrp.$matricule.sit2}% en 2<sup>e</sup>
-					{if $sitDeuxiemes.$coursGrp.$matricule.sit2 >= 50}
-					=>
-					{assign var=reussite50 value=50}
-						<input
+				{if ($sitEleve.pourcent < 50)
+					&& ($sitDeuxiemes.$coursGrp.$matricule.sit2)}
+
+					{* attribution de la cote 50% en cas de réussite en deuxième; la cote de deuxième se trouve dans sit2 *}
+					{if $sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent >= 50}
+						<button
 							type="button"
-							class="btn btn-success btn-sm degre"
+							class="btn btn-danger btn-sm degre pop"
 							name="btnDegre-eleve_{$matricule}"
 							tabIndex="{$tabIndexAutres+4}"
-							title="Cote de réussite du degré, soit 50%"
+							data-original-title="Cote de réussite du degré"
+							data-content="L'élève est en échec à cause de la première année du degré mais il a atteint {$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent}% en 2ème année; on lui attribue donc la réussite à {$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent}% pour le degré"
 							data-container="body"
 							data-placement="top"
-							value="{$reussite50} %"
+							data-html="true"
+							value="{$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent}"
 							{if $blocage > 0}disable="disabled"{/if}
 							>
+							{$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent}²
+						</button>
 					{/if}
-				</div>
 				{/if}
 			{/if}
+		</td>
+		
+		{* --------------------------------------------------------*}
+		{* cote de situation choisie par le titulaire du cours     *}
+		{* une fois dans un texte à l'écran ---------------------- *}
+		{* une fois dans un champ caché pour POST ---------------- *}
+		{* --------------------------------------------------------*}
+		<td class="cote">
+
+			<i class="fa fa-warning faa-flash animated pop {if (isset($sitEleve.choixProf)) && ($sitEleve.choixProf != '')}invisible{else}visible{/if}"
+				style="font-size:2em; color:#f00"
+				id="led_{$matricule}"
+				data-original-title="Choix de la cote"
+				data-content="Veuillez sélectionner une cote finale parmi les options présentées à gauche"
+				data-html="true"
+				data-placement="top"></i>
+
+			<span class="choixProf" id="textChoixProf_{$matricule}">
+				{if isset($sitEleve.choixProf)}
+					<strong>
+						{if $sitEleve.attributProf == 'hook'}
+							[{$sitEleve.choixProf}]
+						{elseif $sitEleve.attributProf == 'star'}
+							{$sitEleve.choixProf}*
+						{elseif {$sitEleve.attributProf == 'degre'}}
+							{$sitEleve.choixProf}²
+						{else}
+							{$sitEleve.choixProf}
+						{/if}
+					</strong>
+				{/if}
+			</span>
+			{* input caché pour contenir la valeur de la cote choisie par le prof et à enregistrer *}
+			<input type="hidden" name="choixProf-matricule_{$matricule}" id='choixProf-matricule_{$matricule}' value="{$sitEleve.choixProf|default:''}">
+			{* input caché pour contenir l'attribut de la cote choisie par le prof et à enregistrer *}
+			<input type="hidden" name="attributProf-matricule_{$matricule}" id='attributProf-matricule_{$matricule}' value="{$sitEleve.attributProf|default:''}">
 		</td>
 
 		{* ------------------------------------------------------- *}
@@ -184,34 +249,59 @@
 		{* Une fois dans un texte à l'écran -----------------------*}
 		{* Une fois dans un champ text caché (pour POST)-----------*}
 		{* ------------------------------------------------------- *}
-		<td style="width:20%; text-align:center"{if isset($tableErreurs.$matricule['sitDelibe'])} class="erreurEncodage"{/if}>
-		{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
-			{assign var="sitDelibe" value=$listeSituations.$matricule.$coursGrp.$bulletin.sitDelibe|default:Null}
-			{else}
-			{assign var="sitDelibe" value=Null}
-		{/if}
-		{if isset($listeSituations.$matricule.$coursGrp.$bulletin)}
-		{assign var="symbole" value=$listeSituations.$matricule.$coursGrp.$bulletin.symbole}
-		<strong id="situationFinale_{$matricule}">
-			{if $listeSituations.$matricule.$coursGrp.$bulletin.attribut == 'hook'}
-			[{$sitDelibe}]%
-			{else}
-			{$sitDelibe}<sup>{$symbole}</sup>%{/if}
-		{else}
-		&nbsp;
-		{/if}
-		</strong>
-		<input type="text" maxlength="4" name="situation-eleve_{$matricule}"
-			id="situation-eleve_{$matricule}" value="{$sitDelibe}" class="sitDelibe form-control" style="display:none">
+		<td style="text-align:center"{if isset($tableErreurs.$matricule['sitDelibe'])} class="erreurEncodage"{/if}>
+			{* input caché pour contenir la valeur de la cote de délibé à enregistrer *}
+			<input type="hidden" name="sitDelibe-matricule_{$matricule}" id="sitDelibe-matricule_{$matricule}" value="{$sitEleve.sitDelibe|default:''}">
+			{* input caché pour contenir l'attribut de la cote de délibé à enregistrer *}
+			<input type="hidden" name="attributDelibe-matricule_{$matricule}" id="attributDelibe-matricule_{$matricule}" value="{$sitEleve.attributDelibe|default:''}">
 
-			{* balayette pour effacer la cote de délibé *}
-			
-			{if ($sitDelibe != '') && ($blocage == 0)}
-				<span class="glyphicon glyphicon-fire balayette"
-					  style="font-size:1.5em; color:red; cursor:pointer"
-					  title="Effacer la cote de délibération"
-					  id="bal_{$matricule}" ></span>
-			{/if}
+			<div class="input-group">
+				{* baguette magique? -----------------------------------------*}
+				<div class="input-group-btn">
+				<button
+					type="button"
+					class="btn btn-primary magic pop"
+					name="magic-eleve_{$matricule}"
+					data-original-title="Baguette magique"
+					data-content="Permet d'attribuer une cote arbitraire.<br>À n'utiliser que dans des cas extraordinaires avec l'aval du Conseil de Classe"
+					data-container="body"
+					data-placement="top"
+					data-html="true"
+					{if $blocage > 0} disabled="disabled"{/if}>
+					<i class="fa fa-magic"></i>
+				</button>
+				</div>
+				
+				<div class="sitDelibe editable"
+					 id="editable_{$matricule}"
+					 data-html="true"
+					 data-original-title=''
+					 data-content=''>
+					{if $sitEleve.attributDelibe == 'hook'}[{/if}
+					{$sitEleve.sitDelibe}
+					{if $sitEleve.attributDelibe == 'hook'}]{/if}
+					{if $sitEleve.attributDelibe == 'magique'} <i class="fa fa-magic"></i>{/if}
+					{if $sitEleve.attributDelibe == 'degre'}²{/if}
+					{if $sitEleve.attributDelibe == 'star'}*{/if}
+					{if $sitEleve.attributDelibe == 'externe'} <i class="fa fa-graduation-cap"></i>{/if}
+				</div>
+
+				{* balayette pour effacer la cote de délibé --------------------------*}	
+				<div class="input-group-btn">				
+				<button
+					type="button"
+					class="btn btn-default balayette"
+					id="bal_{$matricule}"
+					title="Effacer la cote de délibération"
+					data-container="body"
+					data-placement="top"
+					{if $blocage > 0} disable="disabled"{/if}>
+					<i class="fa fa-recycle"></i>
+				</button>
+				</div>
+
+			</div>  <!-- input-group-btn -->
+
 		</td>
 	{else}
 		<td>&nbsp;</td>
@@ -219,4 +309,5 @@
 	{/if}
 	</tr>
 </table>
+</div>  <!-- table-responsive -->
 {assign var="tabIndexAutres" value=$tabIndexAutres+5}
