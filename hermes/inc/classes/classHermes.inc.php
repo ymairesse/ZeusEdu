@@ -10,6 +10,7 @@ class hermes {
 	public function listeNomsFromDestinataires($listeDestinataires){
 		$liste = array();
 		foreach ($listeDestinataires as $unDestinataire) {
+			// chaque destinataire est de la forme  "Prenom Nom#pnom@ecole.org"
 			$dest = explode('#',$unDestinataire);
 			$liste[] = $dest[0];
 			}
@@ -24,6 +25,7 @@ class hermes {
 	public function send_mail($post,$files) {
 		$mailExpediteur = $post['mailExpediteur'];
 		$nomExpediteur = ($mailExpediteur == NOREPLY)?NOMNOREPLY:$post['nomExpediteur'];
+
 		$objet = $post['objet'];
 		$texte = $post['texte'];
 
@@ -241,6 +243,27 @@ class hermes {
 		return $liste;
 		}
 
+	/**
+	 * retrouver le nom et le prenom d'une personne dont on donne l'adresse mail
+	 * @param $mail
+	 * @return string
+	 */
+	public function nameFromMail($mail) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT nom, prenom ";
+		$sql .= "FROM ".PFX."profs ";
+		$sql .= "WHERE mail='$mail' ";
+		
+		$resultat = $connexion->query($sql);
+		$nom = '';
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$ligne = $resultat->fetch();
+			$nom = $ligne['prenom'].' '.$ligne['nom'];
+			}
+		Application::DeconnexionPDO($connexion);
+		return $nom;
+		}
 
 	/**
 	 * création d'un groupe de mailing privé pour l'utilisateur indiqué avec les adresses indiquées

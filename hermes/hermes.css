@@ -33,11 +33,11 @@ h4.teteListe {
 }
 
 .champ {
-	border: 1px solid grey;
-	width:100%;
+	// width:100%;
 	padding: 0.2em 0.5em;
-	background-color: #ffd;
-  box-shadow: 2px 2px 5px #aaa;
+	background-color: #ffe;
+	box-shadow: 2px 2px 5px #aaa;
+	border-radius: 3px;
 }
 
 .label {
@@ -100,3 +100,9 @@ h4.teteListe {
 }
 
 .blocMails h5 {margin-top: 0;}
+
+.enteteMail {
+	float: left;
+	display:  block;
+	width:10em;
+}

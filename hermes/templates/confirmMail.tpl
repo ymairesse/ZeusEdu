@@ -3,10 +3,10 @@
 	<h2>Votre envoi</h2>
 
 	<div id="cadre">
-	<p><strong>Expéditeur:</strong> <span class="champ" title="{$detailsMail.post['mailExpediteur']}">{$detailsMail.post.nomExpediteur} ({$detailsMail.post['mailExpediteur']})</span> </p>
-	<p><strong>Objet:</strong> <span class="champ">{$detailsMail.post['objet']}</span></p>
+	<p><strong class="enteteMail">Expéditeur:</strong> <span class="champ" title="{$detailsMail.post['mailExpediteur']}">{$detailsMail.post.nomExpediteur} ({$detailsMail.post['mailExpediteur']})</span> </p>
+	<p><strong class="enteteMail">Objet:</strong> <span class="champ">{$detailsMail.post['objet']}</span></p>
 	{assign var=nbMails value=count($detailsMail.post['mails'])}
-	<p><strong>Destinataire(s):</strong>
+	<p><strong class="enteteMail">Destinataire(s):</strong>
 		{if $nbMails > 4}
 		<span class="champ">{$nbMails} destinataires</span>
 		{else}

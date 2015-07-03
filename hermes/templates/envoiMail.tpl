@@ -104,11 +104,9 @@ $(document).ready(function(){
 			}
 		})
 
-	$(".expediteur").click(function(){
-		$(".expediteur").next().css('fontWeight','normal');
-		$(this).next().css('fontWeight','bold');
-		var nom = $(this).next().text();
-		$("#nomExpediteur").val(nom);
+	$("#expediteur").change(function(){
+		var expediteur = $("#expediteur option:selected").text();
+		$("#nomExpediteur").val(expediteur);;
 		})
 
 	$("#mailing").submit(function(){
