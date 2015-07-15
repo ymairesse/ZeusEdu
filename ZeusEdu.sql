@@ -345,7 +345,6 @@ CREATE TABLE IF NOT EXISTS didac_bullEprExterne (
   anscol varchar(9) COLLATE utf8_unicode_ci NOT NULL,
   coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   coteExterne varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  choixCote enum('coteExterne','reussite','sitDelibe') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'coteExterne' COMMENT 'Choix de la cote pour la feuille de délibé',
   PRIMARY KEY (matricule,anscol,coursGrp)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
 
