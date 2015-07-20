@@ -1,4 +1,4 @@
-{if ()$userStatus == admin) || ()$userStatus == 'direction')}
+{if ($userStatus == admin) || ($userStatus == 'direction')}
 	<!-- Notifications à un niveau d'études -->
 	<div class="tab-pane hidden-print" id="tabs-3">
     {assign var=liste value=$listeNotifications.niveau}

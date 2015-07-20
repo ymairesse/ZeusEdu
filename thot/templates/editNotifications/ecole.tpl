@@ -1,4 +1,4 @@
-{if ()$userStatus == admin) || ()$userStatus == 'direction')}
+{if ($userStatus == admin) || ($userStatus == 'direction')}
     <div class="tab-pane table-responsive" id="tabs-4">
     {assign var=liste value=$listeNotifications.ecole}
     <table class="table table-condensed">
