@@ -132,14 +132,15 @@ INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleur
 
 
 
-CREATE TABLE IF NOT EXISTS didac_applications (
-  nom varchar(12) COLLATE utf8_unicode_ci NOT NULL,
-  nomLong varchar(48) COLLATE utf8_unicode_ci NOT NULL,
-  URL varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  icone varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  active tinyint(1) NOT NULL DEFAULT '0',
-  ordre tinyint(4) NOT NULL,
-  PRIMARY KEY (nom)
+
+CREATE TABLE IF NOT EXISTS `didac_applications` (
+  `nom` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
+  `nomLong` varchar(48) COLLATE utf8_unicode_ci NOT NULL,
+  `URL` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `icone` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `ordre` tinyint(4) NOT NULL,
+  PRIMARY KEY (`nom`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -147,18 +148,23 @@ CREATE TABLE IF NOT EXISTS didac_applications (
 --
 
 INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `ordre`) VALUES
-('profil', 'Narcisse: Profil Personnel', 'profil', 'profil.png', 1, 3),
+('profil', 'NARCISSE: Profil Personnel', 'profil', 'profil.png', 1, 3),
 ('ades', 'ADES: Éducateurs', 'ades', 'ades.png', 1, 5),
 ('trombiEleves', 'Trombinoscope des élèves', 'trombiEleves', 'eleves.png', 1, 6),
 ('trombiProfs', 'Trombinoscope des profs', 'trombiProfs', 'profs.png', 1, 7),
 ('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
-('pad', 'THOT: Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
+('pad', 'Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
+('adm', 'Informations administratives', '../adm', 'adm.png', 1, 10),
+('edt', 'CHRONOS: EDT', 'edt/index.php', 'edt.png', 1, 11),
 ('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
 ('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
 ('infirmerie', 'ASCLEPIOS: Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
 ('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
+('e-valves', 'e-Valves ''n half', 'e-valves', 'evalves.png', 1, 5),
+('agenda', 'Agenda ISND', 'agenda', 'agenda.png', 1, 9),
 ('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
-('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8);
+('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8),
+('thot', 'THOT: élèves & parents', 'thot', 'thot.png', 1, 5);
 
 
 CREATE TABLE IF NOT EXISTS didac_appliTables (
@@ -319,6 +325,17 @@ CREATE TABLE IF NOT EXISTS didac_bullCompetences (
   KEY id (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
+  `matricule` int(6) NOT NULL,
+  `decision` enum('Réussite','Échec','Ajournement','Restriction','TEST') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `restriction` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
+  `mail` smallint(1) NOT NULL DEFAULT '1',
+  `notification` tinyint(1) NOT NULL DEFAULT '1',
+  `adresseMail` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `quand` datetime DEFAULT NULL,
+  PRIMARY KEY (`matricule`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS didac_bullDetailsCotes (
   matricule int(6) NOT NULL,
   coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
@@ -340,12 +357,12 @@ CREATE TABLE IF NOT EXISTS didac_bullEducs (
   fiche tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Existence éventuelle de fiches disciplinaires';
 
-CREATE TABLE IF NOT EXISTS didac_bullEprExterne (
-  matricule int(6) NOT NULL,
-  anscol varchar(9) COLLATE utf8_unicode_ci NOT NULL,
-  coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  coteExterne varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (matricule,anscol,coursGrp)
+CREATE TABLE IF NOT EXISTS `didac_bullEprExterne` (
+  `matricule` int(6) NOT NULL,
+  `anscol` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+  `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `coteExterne` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`matricule`,`coursGrp`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
 
 CREATE TABLE IF NOT EXISTS didac_bullExterneArchives (
@@ -744,6 +761,17 @@ CREATE TABLE IF NOT EXISTS didac_padGuest (
   PRIMARY KEY (id,guest)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des notes relatives aux élève';
 
+CREATE TABLE IF NOT EXISTS `didac_parentLogins` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `date` date NOT NULL,
+  `heure` time NOT NULL,
+  `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `host` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 CREATE TABLE IF NOT EXISTS didac_passwd (
   matricule int(6) NOT NULL,
   `user` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur de l''élève',
@@ -850,7 +878,9 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 ('presences', 'ADM', 'admin'),
 ('profil', 'ADM', 'admin'),
 ('trombiEleves', 'ADM', 'admin'),
-('trombiProfs', 'ADM', 'admin');
+('trombiProfs', 'ADM', 'admin'),
+('thot', 'ADM', 'admin');
+
 
 CREATE TABLE IF NOT EXISTS didac_profsCours (
   acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 3 lettres',
@@ -861,11 +891,13 @@ CREATE TABLE IF NOT EXISTS didac_profsCours (
   KEY acronyme (acronyme)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Association Profs / cours donnés';
 
+
 CREATE TABLE IF NOT EXISTS didac_sessions (
   `user` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   ip varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
+
 
 CREATE TABLE IF NOT EXISTS didac_statutCours (
   cadre tinyint(4) NOT NULL,
@@ -893,6 +925,53 @@ INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`) VALUES
 (81, 'Rem', 10),
 (24, 'OG', 5),
 (40, 'STAGE', 20);
+
+
+CREATE TABLE IF NOT EXISTS `didac_thotBulletin` (
+  `bulletin` tinyint(4) NOT NULL COMMENT 'numéro du dernier bulletin ouvert',
+  `matricule` int(6) NOT NULL DEFAULT '0' COMMENT 'matricule de l''élève qui n''aura pas accès au bulletin',
+  PRIMARY KEY (`matricule`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sélection des accès aux bulletins en ligne sur Thot';
+
+
+CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `date` date NOT NULL,
+  `heure` time NOT NULL,
+  `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `host` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'fournisseur d''accès pour cette connexion',
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+
+
+CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` enum('ecole','niveau','classes','eleves') COLLATE utf8_unicode_ci NOT NULL,
+  `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `objet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Objet de la notification',
+  `texte` blob NOT NULL COMMENT 'Texte de la notification',
+  `dateDebut` date NOT NULL,
+  `dateFin` date NOT NULL,
+  `destinataire` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
+  `urgence` tinyint(4) NOT NULL,
+  `mail` tinyint(1) NOT NULL,
+  `lu` tinyint(1) NOT NULL,
+  `accuseReception` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `proprietaire` (`proprietaire`),
+  KEY `dateDebut` (`dateDebut`),
+  KEY `destinataire` (`destinataire`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
+
+
+CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
+  `user` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
+  `ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
+
 
 CREATE TABLE IF NOT EXISTS didac_titus (
   acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL,
