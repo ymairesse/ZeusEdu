@@ -65,6 +65,7 @@ $(document).ready(function(){
 	$(".pop").popover({
 		trigger:'hover'
 		});
+	
 	$(".pop").click(function(){
 		$(".pop").not(this).popover("hide");
 		})
