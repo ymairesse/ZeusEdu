@@ -67,8 +67,10 @@
 
 	{if (!(isset($listeDates)))}
 		{assign var=dateDebut value=$dateNow}
+		{assign var=dateFin value=$dateUnAn}
 		{else}
 		{assign var=dateDebut value=$listeDates.0}
+		{assign var=dateFin value=$listeDates.1}
 	{/if}
 	
 	<div class="control-group">
