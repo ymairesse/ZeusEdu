@@ -14,7 +14,7 @@
 </ul>
 
 <div id="FicheEleve" class="tab-content">
-	
+
 	<div class="tab-pane active" id="tabs-1">
 		{include file="infoDisciplinaires.tpl"}
 	</div>
@@ -27,7 +27,7 @@
 	<div class="tab-pane hidden-print" id="tabs-4">
 		{include file="memoEleve.tpl"}
 	</div>
-		
+
 </div> <!-- tab-content -->
 
 </div>  <!-- container -->
@@ -42,7 +42,7 @@ $(".nav-tabs li a[href='#tabs-"+onglet+"']").tab('show');
 
 
 $(document).ready(function(){
-	
+
 	window.location.hash = '#top';
 
 
@@ -50,13 +50,14 @@ $(document).ready(function(){
 		if (!(confirm("Veuillez confirmer l'effacement définitif de cet item")))
 			return false;
 		})
-	
-	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet' -->
+
+	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est "onglet" -->
+
 	$("#tabs li a").click(function(){
 		var ref=$(this).attr("href").split("-")[1];
 		$(".onglet").val(ref);
-		});		
-	
+		});
+
 })
 
 </script>

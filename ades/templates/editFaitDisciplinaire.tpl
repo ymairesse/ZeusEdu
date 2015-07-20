@@ -118,14 +118,13 @@ $(document).ready(function(){
 	$("#editFaitDisc").validate({
 			rules: {
 				idretenue: {
-					required:true
+
 					},
 				uneDate: {
-					required:true,
 					uneDate: true
 					},
 				motif: {
-					required: true
+
 					}
 				},
 			errorElement: "span"
