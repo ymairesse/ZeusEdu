@@ -6,6 +6,7 @@
 *.pdf
 *.bak
 *.zip
+*.odp
 *~
 photos/[0-9]+.jpg
 photosProfs/[a-zA-Z]+.jpg
