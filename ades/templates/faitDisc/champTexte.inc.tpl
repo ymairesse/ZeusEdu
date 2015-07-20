@@ -4,6 +4,7 @@
 		<input type="{$data.typeChamp}" name="{$unChamp}" id="{$unChamp}" class="form-control {$data.classCSS}
 				{if ($data.typeDate == 1)} uneDate{/if}
 				{if ($data.autocomplete == 'O')} autocomplete{/if}
+				{if ($data.classCSS == 'obligatoire')} required{/if}
 				" value="{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}"
 			{if $data.maxlength > 0} maxlength="{$data.maxlength}" {/if} 
 			{if $data.colonnes > 0} cols="{$data.colonnes}" {/if} 

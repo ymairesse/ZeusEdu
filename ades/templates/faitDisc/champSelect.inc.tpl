@@ -3,7 +3,11 @@
 <input type="hidden" name="oldIdretenue" value="{$fait.idretenue|default:''}">
 <div class="form-group">
 	<label for="{$unChamp}">{$data.label}</label>						
-	<select name="{$unChamp}" id="{$unChamp}" tabindex="{$tabIndex}" class="form-control">
+	<select name="{$unChamp}"
+			id="{$unChamp}"
+			tabindex="{$tabIndex}"
+			class="form-control"
+			{if ($data.classCSS == 'obligatoire')} required{/if}>
 		<option value=''>Choisir une date</option>
 		{foreach from=$listeRetenues key=unidretenue item=uneRetenue}
 			{if $uneRetenue.affiche == 'O'}

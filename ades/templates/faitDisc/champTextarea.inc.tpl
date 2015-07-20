@@ -8,7 +8,11 @@
 			<textarea 
 				{if $data.colonnes > 0} cols="{$data.colonnes}" {/if}
 				{if $data.lignes > 0} rows="{$data.lignes}" {/if}
-				name="{$unChamp}" tabIndex="{$tabIndex}" id="{$unChamp}" class="form-control">
+				{if ($data.classCSS == 'obligatoire')} required {/if}
+				name="{$unChamp}"
+				tabIndex="{$tabIndex}"
+				id="{$unChamp}"
+				class="form-control">
 				{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}</textarea>
 			{/strip}
 				{assign var="tabIndex" value=$tabIndex+1}
