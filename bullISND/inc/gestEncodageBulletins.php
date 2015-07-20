@@ -69,7 +69,6 @@ if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
 	// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération	-----------------------------
 	if (!(isset($listeGlobalPeriodePondere))) // si on a enregistré, on a déjà la liste des cotes; alors, on saute cette étape
 		$listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
-
 	
 	// ---------------------------------------------------------------------------------------------------------------------------
 	// cote étoilée: le certificatif est supérieur à l'ensemble formatif+certificatif --------------------------------------------

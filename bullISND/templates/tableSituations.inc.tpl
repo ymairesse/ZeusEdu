@@ -55,7 +55,7 @@
 
 		{* si des cotes de situation existent pour ce bulletin pour cet élève et pour ce cours   *}
 		{assign var=sitEleve value=$listeSituations.$matricule.$coursGrp.$bulletin|default:Null}
-		
+
 		{* -------------------------------------------------------*}
 		{* nouvelle cote de situation y compris en % -------------*}
 		{* ------------------------------------------------------ *}
@@ -117,7 +117,7 @@
 			{* Deux boutons: avec ou sans crochets -------------------*}
 			{* ------------------------------------------------------ *}
 
-			{if $sitEleve.pourcent != Null}
+			{if isset($sitEleve.pourcent)}
 
 				<button class="btn btn-default btn-sm pop hook"
 					type="button"

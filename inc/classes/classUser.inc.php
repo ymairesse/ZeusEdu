@@ -70,8 +70,8 @@ class user {
 	}
 
 	/**
-	 * @return array : liste des titulariats de classe exercés par l'utilisateur en cours
-	 * @param
+	 *r echerche de la liste des classes dont le professeur est titulaire (prof principal)
+	 * @param $sections: les sections éventuelles dans lesquelles chercher
 	 * @return array : tableau des classes dont l'utilisateur est titulaire
 	 */
 	public function listeTitulariats ($sections=Null) {

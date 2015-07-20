@@ -8,34 +8,38 @@
 	<input type="hidden" name="classe" value="{$classe}">
 
 	<div class="table-responsive">
-		<table class="tableauBull">
+		<table class="table table-condensed">
 		<tr>
-			<th colspan="3">
+			<th colspan="3" style="text-align:center">
 				<h2>Classe: {$classe}</h2>
-				<input type="submit" name="submit" value="Enregistrer" id="submit" style="display:none; color:red;"><br>
-				Bloquer toutes les cotes et commentaires <img id="lockAll" src="images/lock.png" alt="0" title="Bloquer/débloquer TOUTES LES COTES ET COMMENTAIRES"><br>
-				Bloquer toutes les cotes <img id="lockCotes" src="images/lockCotes.png" alt="1" title="Bloquer/débloquer les COTES SEULEMENT">
+				<button class="btn btn-primary" type="submit" id="submit" style="display:none">Enregistrer</button> <br>
+				<i class="fa fa-lock fa-2x text-danger" id="lockAll" title="Bloquer/débloquer TOUTES LES COTES ET COMMENTAIRES"></i>
+				<i class="fa fa-lock fa-2x text-success" id="lockCotes" title="Bloquer/débloquer LES COTES SEULEMENT"></i><br>
 			</th>
 			{foreach from=$listeCoursGrpClasse key=coursGrp item=unCours}
 				{* remplacement de l'espace possible dans le nom du cours par un caractère ~ *}
 				{assign var=coursGrpPROT value=$coursGrp|replace:' ':'~'}
 				<th>
-				<img src="imagesCours/{$unCours.cours}.png" title="{$unCours.libelle} ({$coursGrp}) {$unCours.nbheures}h" alt="{$unCours.libelle}"><br>
-				<img class="lockCoursComment" id="coursComment_{$coursGrpPROT}" src="images/lock.png" alt="0" title="Verrouiller/déverrouiller le cours et les commentaires de {$unCours.acronyme}">
-				<img class="lockCours" id="cours_{$coursGrpPROT}" src="images/lockCotes.png" alt="1" title="Verrouiller/déverrouiller le cours de {$unCours.acronyme}">
+					<img src="imagesCours/{$unCours.cours}.png" title="{$unCours.libelle} ({$coursGrp}) {$unCours.nbheures}h" alt="{$unCours.libelle}"><br>
+					<i class="fa fa-lock fa-2x text-success lockCoursComment" id="coursComment_{$coursGrpPROT}" title="Verrouiller/déverrouiller le cours et les commentaires de {$unCours.acronyme}"></i>
+					<i class="fa fa-lock fa-2x text-danger lockCours" id="cours_{$coursGrpPROT}" title="Verrouiller/déverrouiller le cours de {$unCours.acronyme}"></i>
 				</th>
 			{/foreach}
 		</tr>
 		{foreach from=$listeEleves key=matricule item=unEleve}
 		<tr>
 			<td data-container="body" title="matr. {$matricule}">{$unEleve.nom} {$unEleve.prenom}</td>
-			<td>
-				<img class="lockEleve" id="eleve_{$matricule}" src="images/lock.png" 
-				alt="1" data-container="body" title="Verrouiller/déverrouiller les cotes et les commentaires pour {$unEleve.nom} {$unEleve.prenom}">
+			<td class="tdLock">
+				<i class="fa fa-lock fa-2x text-danger lockEleve"
+				   id="eleve_{$matricule}"
+				   title="Verrouiller/déverrouiller les cotes et les commentaires de {$unEleve.nom} {$unEleve.prenom}"
+				   data-container="body"></i>
 			</td>
-			<td>
-				<img class="lockEleveCotes" id="eleve_Cotes{$matricule}" src="images/lockCotes.png" 
-				alt="1" title="Verrouiller/déverrouiller les cotes seulement pour {$unEleve.nom} {$unEleve.prenom}">
+			<td class="tdLock">
+				<i class="fa fa-lock fa-2x text-success lockEleveCotes"
+				   id="eleve_Cotes{$matricule}"
+				   title="Verrouiller/déverrouiller les cotes seulement de {$unEleve.nom} {$unEleve.prenom}"
+				   data-container="body"></i>
 			</td>
 			{* on prend un à un la liste de tous les cours de cette classe *}
 			{foreach from=$listeCoursGrpClasse key=coursGrp item=unCours}
@@ -45,16 +49,9 @@
 					{* L'élève a-t-il ce cours? *}
 					{if isset($listeCoursGrpEleves.$matricule.$coursGrp) && $listeCoursGrpEleves.$matricule.$coursGrp != Null}
 						<select name="lock#{$coursGrpPROT}#{$matricule}" class="eleve_{$matricule} cours_{$coursGrpPROT} selVerrou" style="display:none">
-							<option value="0" 
-							{if ($listeVerrous.$matricule.$coursGrp == Null) || $listeVerrous.$matricule.$coursGrp == 0}
-							selected="selected"
-							{/if}
-							>0</option>
-							<option value="1"
-							{if $listeVerrous.$matricule.$coursGrp == 1}
-							selected="selected"
-							{/if}
-							>1</option>
+							<option value="0" {if ($listeVerrous.$matricule.$coursGrp == Null) || $listeVerrous.$matricule.$coursGrp == 0} selected="selected"{/if}>0</option>
+							<option value="1"{if $listeVerrous.$matricule.$coursGrp == 1} selected="selected"{/if}>1</option>
+							<option value="2"{if $listeVerrous.$matricule.$coursGrp == 2} selected="selected"{/if}>2</option>
 						</select>
 					{else}
 						&nbsp;
@@ -79,14 +76,9 @@ $(document).ready(function(){
 	$(".selVerrou").hide().each(function(index){
 		var verrou = $(this);
 		var myClass = $(this).attr("class");
-		if ($(this).val() == 1) {
-			$(this).parent().append("<img src='images/lock.png' alt='1'>").addClass(myClass)
-				.addClass("unlock").removeClass("selVerrou");
-			}
-			else {
-				$(this).parent().append("<img src='images/unlock.png' alt='0'>").addClass(myClass)
-				.addClass("lock").removeClass("selVerrou");
-				}
+		if ($(this).val() == 1) 
+			$(this).parent().append("<img src='images/lock.png' alt='1'>").addClass(myClass).addClass("unlock").removeClass("selVerrou");
+			else $(this).parent().append("<img src='images/unlock.png' alt='0'>").addClass(myClass).addClass("lock").removeClass("selVerrou");
 	});
 	
 	$(".cellVerrou").click(function(){

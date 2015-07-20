@@ -543,7 +543,7 @@ class Application {
 		return $liste;
 	}
 
-	/** 
+	/**
 	 * date d'aujourd'hui
 	 * @param void()
 	 * @return string
@@ -552,8 +552,25 @@ class Application {
 		return date('d/m/Y');
 		}
 
+	/**
+	 * date dans un an à partir d'aujourd'hui
+	 * @param void()
+	 * @return string
+	 */
+	public static function dateUnAn(){
+		return date('d/m/Y',strtotime('+365 days'));
+	}
 
 	/**
+	* date dans un mois à partir d'aujourd'hui
+	* @param void()
+	* @return string
+	*/
+	public static function dateUnMois(){
+		return date('d/m/Y',strtotime('+1 month'));
+	}
+
+	 /**
 	 * Recursive function to scan a directory with * scandir() *
 	 *
 	 * @param String $rootDir
@@ -600,7 +617,6 @@ class Application {
 		return $allData;
 	}
 
-
 	/**
 	 * Établir la liste des utilisateurs (profs) sans cours
 	 * @param
@@ -622,7 +638,6 @@ class Application {
 		self::DeconnexionPDO($connexion);
 		return $users;
 		}
-
 
 	/**
 	 * Suppression de l'utilisateur désigné par son "acronyme"
@@ -673,9 +688,7 @@ class Application {
 		Application::DeconnexionPDO ($connexion);
 		return true;
 		}
-		
-	   
-	   
+
 	/**
 	* On fournit une liste de tables; la procédure fabrique un fichier .sql permettant la restauration des tables désignées
 	* @param $post : formulaire dans lequel on a coché les noms des tables à sauvegarder
@@ -735,7 +748,7 @@ class Application {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."flashInfos ";
 		$sql .= "WHERE application ='$module' ";
-		$sql .= "ORDER BY date DESC, heure DESC";
+		$sql .= "ORDER BY date DESC, heure DESC ";
 		$resultat = $connexion->query($sql);
 		$flashInfos=array();
 		if ($resultat) {
@@ -1009,7 +1022,7 @@ class Application {
 			}
 		return $lesProblemes;
 		}
-		
+
 	/**
 	 * retourne la liste des champs d'une liste réellement trouvés dans une deuxième liste
 	 * @param $champsCherches
@@ -1401,7 +1414,7 @@ class Application {
 		}
 	}
 
-	/** 
+	/**
 	 * retourne la liste des $nbJours dates ouvrables suivantes d'une date donnée
 	 * @param string $date
 	 * @param integer $nbJours : nombre de jours ouvrables souhaités
@@ -1411,7 +1424,7 @@ class Application {
 		$fetes = array('25/12/2014','01/01/2015');
 		$listeDates = array();
 		$dateLendemain = $date;
-		if ($debutInclus) 
+		if ($debutInclus)
 			$listeDates = array($date);
 			else $listeDates = array();
 		while ($nbJours >= 1) {
@@ -1424,47 +1437,5 @@ class Application {
 		}
 		return $listeDates;
 		}
-
-	/**
-	 * réordonner et attribuer les années scolaires aux mentions
-	 * @param void()
-	 * @return void()
-	 */
-	public function attribAnScol() {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT * FROM ".PFX."bullMentions ";
-		$sql .= "ORDER BY matricule, annee  DESC ";
-		$resultat = $connexion->query($sql);
-		$tableauMentions = array();
-		while ($ligne = $resultat->fetch()) {
-			$matricule = $ligne['matricule'];
-			$periode = $ligne['periode'];
-			$annee = $ligne['annee'];
-			$mention = $ligne['mention'];
-			$tableauMentions[$matricule][$annee][$periode] = array('mention'=>$mention,'anScol'=>'');
-		}
-		
-		$anneesScolaires = array(1=>'2014-2015', 2=>'2013-2014',3=>'2012-2013',4=>'2011-2012');
-		
-		foreach ($tableauMentions as $matricule => $data) {
-			$scol = 1;
-			foreach ($data as $annee => $trimestres) {
-				$anscol = $anneesScolaires[$scol];
-				foreach ($trimestres as $periode=>$donnees) {
-					$tableauMentions[$matricule][$annee][$periode]['anScol'] = $anneesScolaires[$scol];
-					$sql = "UPDATE ".PFX."bullMentions ";
-					$sql .= "SET anscol = '$anscol' ";
-					$sql .= "WHERE matricule = '$matricule' AND annee='$annee' AND periode='$periode' ";
-					$resultat = $connexion->query($sql);
-					}
-				$scol++;
-				}
-			}
-
-			afficher($tableauMentions);
-
-		Application::DeconnexionPDO ($connexion);
-		
-	}
 }
 ?>

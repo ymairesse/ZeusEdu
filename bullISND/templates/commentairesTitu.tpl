@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div class="container">
 	
 	<h3 style="clear:both" title="{$infoPerso.matricule}">

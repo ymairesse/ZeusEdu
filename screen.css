@@ -448,7 +448,7 @@ input:disabled {
   border:  none;
   color: #000;
   background-color: #eee;
-  text-align: center;
+  // text-align: center;
 }
 
 input:focus {
@@ -463,6 +463,7 @@ td.periode {
 .clickable {
   cursor: pointer;
 }
+
 .tri {
   background-image: url(images/sortable.png);
   background-position: right center;
@@ -1001,5 +1002,8 @@ ul.dropdown-menu li.active a {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbdf93', endColorstr='#fceabb',GradientType=0 );
   background: linear-gradient(top, #fbdf93 0%,#f8b500 49%,#fccd4d 50%,#fceabb 100%);
   color:  black;
-	
+}
+
+.microform {
+  border: none;
 }

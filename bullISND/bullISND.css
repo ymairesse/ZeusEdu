@@ -51,7 +51,11 @@
 	}
 .conclusionDelibe {
     background-color: #eee
-}
+	}
+
+.decisionDelibe {
+	 background-color:#FCD97D;
+	}
 
 .remarqueDelibe {
 	font-size: 0.8em;
@@ -628,3 +632,12 @@ th.cert, td.cert, .cert {
 	height: 2.7em;
 	padding: 0.5em;
 	}
+	
+.cote .fa {
+	font-size:0.8em;
+	color:#f3f;
+	}
+	
+.tdLock {
+	cursor:pointer;
+}

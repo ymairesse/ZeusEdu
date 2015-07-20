@@ -78,7 +78,7 @@ class ecole {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT ".PFX."titus.acronyme,classe, nom, prenom, mail ";
 		$sql .= "FROM ".PFX."titus ";
-		$sql .= "JOIN ".PFX."profs ON (".PFX."profs.acronyme = ".PFX."titus.acronyme ) ";
+	    $sql .= "JOIN ".PFX."profs ON (".PFX."profs.acronyme = ".PFX."titus.acronyme ) ";
 		$sql .= "ORDER BY classe,nom ";
 		$resultat = $connexion->query($sql);
 		$listeTitus = array();
@@ -200,8 +200,9 @@ class ecole {
      * @param $sections = array des différentes sections existantes
      * @return array
      */
-    public function listeClasses($sections=Null) {
-		if ($sections) $sections = "'".implode("','",$sections)."'";
+    public function listeClasses($sections=Null, $grouper=false) {
+		if ($sections)
+            $sections = "'".implode("','",$sections)."'";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT DISTINCT classe FROM ".PFX."eleves ";
 		if ($sections) $sql .= "WHERE section IN ($sections) ";
@@ -212,8 +213,13 @@ class ecole {
 		if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
-				$classe = $ligne['classe'];
-				$listeClasses[] = $classe;
+        $classe = $ligne['classe'];
+        if ($grouper == true) {
+          $niveau = $classe[0];
+          $listeClasses[$niveau] = $classe;
+          }
+          else
+          $listeClasses[] = $classe;
 				}
 			}
 		Application::DeconnexionPDO ($connexion);
@@ -222,10 +228,11 @@ class ecole {
 
 	/**
      * retourne la liste de tous les groupes/classes existants dans l'école pour les sections demandées
-     * @param array $sections liste des sections dont on souhaite connaître les groupes constitutifs
+     * @param $sections array: liste des sections dont on souhaite connaître les groupes constitutifs
+     * @param $grouper : boolean faut-il grouper les classes par niveau d'étude?
      * @return array
      */
-	function listeGroupes($sections=Null) {
+	function listeGroupes($sections=Null, $grouper=false) {
 		if ($sections) $sections = "'".implode("','",$sections)."'";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT DISTINCT groupe ";
@@ -238,8 +245,13 @@ class ecole {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$groupe = $ligne['groupe'];
-				$listeGroupes[] = $groupe;
-				}
+
+            if ($grouper == true) {
+              $niveau = $groupe[0];
+              $listeGroupes[$niveau][] = $groupe;
+              }
+              else $listeGroupes[] = $groupe;
+			}
 			}
 		Application::DeconnexionPDO ($connexion);
 		return $listeGroupes;
@@ -279,11 +291,12 @@ class ecole {
 	return $listeGroupes;
     }
 
-    /*
-     * function listeNiveaux
-     * @param
+    /**
+     * retourne la liste des niveaux d'étude organisés dans l'école (voir configuration)
      * liste de tous les niveaux d'études existants
      * habituellement, liste de 1 à 6
+     * @param void()
+     * @return array
      */
     public static function listeNiveaux () {
 		// si la liste des niveaux est définies dans les constantes
@@ -301,6 +314,30 @@ class ecole {
 			return $matricule;
 			else return 'nophoto';
 	}
+
+	/**
+	 * retourne la liste des matricules et des noms des élèves d'un groupe classe
+	 * @param $groupe
+	 * @return array
+	 */
+	public function listeElevesClasse($groupe) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, nom, prenom ";
+		$sql .= "FROM ".PFX."eleves ";
+		$sql .= "WHERE groupe = '$groupe' ";
+		$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$liste[$matricule] = $ligne;
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+		}
 
     /**
      * retourne la liste des élèves d'une classe ou d'un groupe
@@ -328,8 +365,8 @@ class ecole {
         $sql .= "LEFT JOIN ".PFX."passwd AS dp ON (de.matricule = dp.matricule) ";
 		if ($supSQL != '')
 			$sql .= "WHERE ".$supSQL;
-        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom";
-	
+        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+
         $resultat = $connexion->query($sql);
         $listeEleves = array();
         if ($resultat) {
@@ -372,7 +409,7 @@ class ecole {
 				$dateNaiss = $ligne['DateNaiss'];
 				$ligne['mail'] = $ligne['user'].'@'.$ligne['mailDomain'];
 				$liste[$matricule]=$ligne;
-				$liste[$matricule]['DateNaiss'] = Application::datePHP($dateNaiss);				
+				$liste[$matricule]['DateNaiss'] = Application::datePHP($dateNaiss);
 				$liste[$matricule]['photo']=self::photo($matricule);
 				}
 			}
@@ -524,24 +561,24 @@ class ecole {
 		return $listesEleves;
 		}
 
-        /**
-         * renvoie le degré dans lequel se trouve une classe donnée
-         * @param $classe
-         * @return integer
-         */
-        function degreDeClasse($classe) {
-            $annee = substr($classe,0,1);
-            $degre = 0;
-            switch ($annee) {
-                case 6: $degre = 3; break;
-                case 5: $degre = 3; break;
-                case 4: $degre = 2; break;
-                case 3: $degre = 2; break;
-                case 2: $degre = 1; break;
-                case 1: $degre = 1; break;
-                }
-        return $degre;
-        }
+    /**
+     * renvoie le degré dans lequel se trouve une classe donnée
+     * @param $classe
+     * @return integer
+     */
+    function degreDeClasse($classe) {
+        $annee = substr($classe,0,1);
+        $degre = 0;
+        switch ($annee) {
+            case 6: $degre = 3; break;
+            case 5: $degre = 3; break;
+            case 4: $degre = 2; break;
+            case 3: $degre = 2; break;
+            case 2: $degre = 1; break;
+            case 1: $degre = 1; break;
+            }
+    return $degre;
+    }
 
     /**
      * liste structurée des profs liés à une liste de coursGrp (liste indexée par coursGrp)
@@ -963,7 +1000,7 @@ class ecole {
 			'photo'=> self::photo($matricule));
     }
 
-	/** 
+	/**
 	 * renvoie la liste des adresses mail et des passwd des élèves dont on fournit le matricule
 	 * @param string|array $listeEleves
 	 * @return array()
@@ -1367,12 +1404,6 @@ class ecole {
 					else $cours = $coursGrp; */
 
 				$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-				//$sql = "SELECT cours, nbheures, libelle, statut, c.cadre, SUBSTR(cours,1,1) as annee, SUBSTR(cours, 2, LOCATE(':', cours)-2) as section, ";
-				//$sql .= "SUBSTR(cours, LOCATE(':',cours)+1, 99) AS code ";
-				//$sql .= "FROM ".PFX."cours AS c ";
-				//$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = c.cadre) ";
-				//$sql .= "WHERE cours = '$cours' ";
-
 				$sql = "SELECT cours, nbheures, libelle, statut, c.cadre, section ";
 				$sql .= "FROM ".PFX."cours AS c ";
 				$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = c.cadre) ";

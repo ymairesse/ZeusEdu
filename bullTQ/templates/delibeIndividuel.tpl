@@ -2,14 +2,6 @@
 	
 {assign var=inputOK value=(in_array($classe,$tituTQ) || ($userStatus == 'admin'))}
 
-{if ($inputOK)}
-<div id="boiteOutils" class="noprint">
-	<img class="lock" src="images/lock.png" alt="lock" title="Dé-verrouiller"><img class="lock" src="images/unlock.png" alt="unlock" style="display:none" title="Verrouiller">
-	<img id="save" src="images/disk.png" alt="save" title="Enregistrer">
-	<img id="cancel" src="images/cancel.png" alt="cancel" title="Annuler">
-</div>
-{/if}
-
 <div class="row">
 
 {if $inputOK}
@@ -19,6 +11,7 @@
 	<input type="hidden" name="etape" value="{$etape}">
 	<input type="hidden" value="{$matricule}" name="matricule" id="matricule">
 	<input type="hidden" name="classe" value="{$classe}">
+	<input type="hidden" name="mailEleve" value="{$decision.user}@{$decision.mailDomain}">
 {/if}
 	{* ------------------------------------------------------------------ *}
 	{* moitié gauche de l'écran ------------------------------------------*}
@@ -98,7 +91,7 @@
 			<td class="cote evStage">
 				{if $inputOK}
 				<input type="text" name="qualif-epreuve_E1" 
-					value="{$qualification.E1|default:''}" maxlength="5" class="form-control input-sm">
+					value="{$qualification.E1|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E1|default:'&nbsp;'}
 				{/if}
@@ -106,7 +99,7 @@
 			<td class="cote rapStage">
 				{if $inputOK}
 				<input type="text" name="qualif-epreuve_E2" 
-					value="{$qualification.E2|default:''}" maxlength="5" class="form-control input-sm">
+					value="{$qualification.E2|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E2|default:'&nbsp;'}
 				{/if}
@@ -114,7 +107,7 @@
 			<td class="cote evStage">
 				{if $inputOK}
 				<input type="text" name="qualif-epreuve_E3" 
-					value="{$qualification.E3|default:''}" maxlength="5" class="form-control input-sm">
+					value="{$qualification.E3|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E3|default:'&nbsp;'}
 				{/if}
@@ -122,7 +115,7 @@
 			<td class="cote rapStage">
 				{if $inputOK}
 				<input type="text" name="qualif-epreuve_E4" 
-					value="{$qualification.E4|default:''}" maxlength="5" class="form-control input-sm">
+					value="{$qualification.E4|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E4|default:'&nbsp;'}
 				{/if}
@@ -130,7 +123,7 @@
 			<td class="cote jury">
 				{if $inputOK}
 				<input type="text" name="qualif-epreuve_JURY" 
-					value="{$qualification.JURY|default:''}" maxlength="5" class="form-control input-sm">
+					value="{$qualification.JURY|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.JURY|default:'&nbsp;'}
 				 {/if}
@@ -138,7 +131,7 @@
 			<td class="cote FinalStage">
 				{if $inputOK}
 				<input type="text" name="qualif-epreuve_TOTAL" 
-					value="{$qualification.TOTAL|default:''}" maxlength="5" class="form-control input-sm">
+					value="{$qualification.TOTAL|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.TOTAL|default:'&nbsp;'}
 				{/if}
@@ -194,7 +187,7 @@
 			<td>Mention départ</td>
 			<td class="cote">
 				{if $inputOK}
-				<input type="text" class="form-control input-sm" maxlength="4" style="text-align:center"
+				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
 				name="synthese-stage_depart-periode_{$periode}" id="stage_depart_{$periode}" 
 				value="{$mentionsManuelles.$periode.stage_depart|default:''}">
 				{else}
@@ -203,7 +196,7 @@
 			</td>
 			<td class="cote" colspan="2">
 				{if $inputOK}
-				<input  type="text" class="form-control input-sm" maxlength="4" style="text-align:center" 
+				<input  type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center" 
 				name="synthese-option_depart-periode_{$periode}" id="option_depart_{$periode}" 
 				value="{$mentionsManuelles.$periode.option_depart|default:''}">
 				{else}
@@ -212,7 +205,7 @@
 			</td>
 			<td class="cote" colspan="2">
 				{if $inputOK}
-				<input type="text" class="form-control input-sm" maxlength="4" style="text-align:center"
+				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
 				name="synthese-global_depart-periode_{$periode}" id="global_depart_{$periode}" 
 				value="{$mentionsManuelles.$periode.global_depart|default:''}">
 				{else}
@@ -242,7 +235,7 @@
 			<td>Mention finale</td>
 			<td class="cote">
 				{if $inputOK}
-				<input type="text" class="form-control input-sm" maxlength="4" style="text-align:center"
+				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
 				name="synthese-stage_final-periode_{$periode}" id="stage_final_{$periode}" 
 				value="{$mentionsManuelles.$periode.stage_final|default:''}">
 				{else}
@@ -251,7 +244,7 @@
 			</td>
 			<td class="cote" colspan="2">
 				{if $inputOK}
-				<input type="text" class="form-control input-sm" maxlength="4" style="text-align:center"
+				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
 				name="synthese-option_final-periode_{$periode}" id="option_final_{$periode}" 
 				value="{$mentionsManuelles.$periode.option_final|default:''}">
 				{else}
@@ -260,7 +253,7 @@
 			</td>
 			<td class="cote" colspan="2">
 				{if $inputOK}
-				<input type="text" class="form-control input-sm" maxlength="4" style="text-align:center"
+				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
 				name="synthese-global_final-periode_{$periode}" id="global_final_{$periode}" 
 				value="{$mentionsManuelles.$periode.global_final|default:''}">
 				{else}
@@ -271,6 +264,106 @@
 		</table>
 
 	{/foreach}
+	
+	<table class="table table-condensed" style="margin-top:1em; border: 2px solid red">
+		<thead>
+			<tr>
+				<td colspan="2"><h2 style="float:left">Décision du conseil de classe</h2>
+					{if $inputOK && $estTitulaire}
+					<div class="pop pull-right"
+						data-container="body"
+						data-content="Dé/verrouiller"
+						data-placement="top"
+						style="font-size:2em; float:left;">
+					   <i class="fa fa-lock" id="lock"></i>
+					</div>{/if}
+				</td>
+			</tr>
+		</thead>
+
+		<tr class="decisionDelibe">
+			<td>
+				<div class="form-group pull-right">
+					<label for="decision" class="sr-only">Décision</label>
+					<select name="decision" id="decision" class="form-control" disabled>
+						<option value="">Choix de décision</option>
+						<option value="Réussite"{if $decision.decision == 'Réussite'} selected{/if}>Réussite</option>
+						<option value="Échec"{if $decision.decision == 'Échec'} selected{/if}>Échec</option>
+						<option value="Ajournement" {if $decision.decision == 'Ajournement'} selected{/if}>Ajournement</option>
+						<option value="Restriction"{if $decision.decision == 'Restriction'} selected{/if}>Restriction avec accès en</option>
+					</select>
+				</div>				
+			</td>
+			<td>
+				<div class="form-group">
+					<label for="restriction" class="sr-only">Accès en</label>
+					<input type="text"
+						   name="restriction"
+						   maxlength="40"
+						   disabled
+						   id="restriction"
+						   value="{$decision.restriction|default:''}"
+						   class="form-control"
+						   placeholder="Accès à">
+				</div>
+	
+			</td>
+		</tr>
+		{if $estTitulaire}
+		<tr class="decisionDelibe">
+			<td>
+				<div class="form-group">
+					<label for="envoiMail">Envoi du mail</label>
+					<input type="checkbox"
+						   value="true"
+						   name="mail"
+						   id="envoiMail"
+						   {if (!(isset($decision.mail)) || (isset($decision.mail) && ($decision.mail==1)))}checked{/if}
+						   disabled
+						   class="form-control">
+				</div>
+				<div class="form-group">
+					<label class="sr-only" for="adresseMail">Email</label>
+					<input type="text"
+						   
+						   {if isset($decision.adresseMail) && ($decision.adresseMail != '')}
+							value="{$decision.adresseMail}"
+							{else}
+							value="{$decision.user}@{$decision.mailDomain}"
+							{/if}
+						   name="adresseMail"
+						   id="adresseMail"
+						   maxlength="30"
+						   disabled
+						   placeholder="Adresse mail"
+						   class="form-control">
+				</div>
+			</td>
+			<td>
+				<div class="form-group">
+					<label> Notification isnd.be/eleve</label>
+					<input type="checkbox"
+						   value="true"
+						   name="notification"
+						   id="notification"
+						   disabled
+						   {if !(isset($decision.notification)) || (isset($decision.notification) && ($decision.notification==1))}checked{/if}
+						   class="form-control">
+				</div>
+					{if ($inputOK)}
+					<div class="btn-group pull-right">
+						<button id="cancel" type="reset" class="btn btn-default" disabled>Annuler</button>
+						<button id="save" type="submit" class="btn btn-primary" disabled>Enregistrer</button>						
+					</div>
+				{/if}
+			</td>
+		</tr>
+		
+
+		{/if}
+	
+	</table>
+	
 	</div>
 {if $inputOK}
 <div class="clearfix"></div>
@@ -292,8 +385,8 @@
 	function modification () {
 	if (!(modifie)) {
 		modifie = true;
-		$("#selectClasse").attr("disabled","disabled").attr("title",desactive);
-		$("#selectEleve").attr("disabled","disabled").attr("title",desactive);
+		$("#selectClasse").attr("disabled",true).attr("title",desactive);
+		$("#selectEleve").attr("disabled",true).attr("title",desactive);
 		window.onbeforeunload = function(){
 			return confirm (confirmationBeforeUnload);
 		};
@@ -301,48 +394,66 @@
 	}
 	
 	$(document).ready(function(){
+		
 		$("input:text").each(
 		function(index) {
-			$(this).attr("readonly", true).attr("tabIndex",index+1);
+			$(this).attr("disabled", true).attr("tabIndex",index+1);
 			}
 		)
 		$("input").tabEnter();
 	
-		$(".lock").click(function(){
-			if (locked) {
-				$("input:text").removeAttr("readonly");
-				$(this).attr("src","images/unlock.png");
-				$(this).attr("title","Verrouiller");
-				}
-				else {
-				$("input:text").attr("readonly", true);
-				$(this).attr("src","images/lock.png");
-				$(this).attr("title","Déverrouiller");
-				}
-			locked = !(locked);
+	$("#lock").click(function(){
+		if (locked) {
+			$("input, select, button").removeAttr("disabled");
+			$(this).attr("src","images/unlock.png");
+			$(this).attr("title","Verrouiller");
+			$(".decisionDelibe input, .decisionDelibe select").attr("disabled",false);
+			}
+			else {
+			$("input, select, button").attr("disabled", true);
+			$(this).attr("src","images/lock.png");
+			$(this).attr("title","Déverrouiller");
+			$(".decisionDelibe input, .decisionDelibe select").attr("disabled",true);
+			}
+		locked = !(locked);
+	})
+		
+	
+	$("#decision").change(function(){
+		if ($(this).val() != 'Restriction') {
+			$("#restriction").val('');
+			}
+			else $("#restriction").focus();
+		});
+	
+	$("#restriction").focus(function(){
+		if ($("#decision").val() != 'Restriction')
+			$("#decision").val('Restriction');
 		})
 		
-		$("input").keyup(function(e){
-			if (!(locked)) {
-				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-				if ((key > 31) || (key == 8)) {
-					modification();
-					$(this).val($(this).val().toUpperCase());
+	$("input").keyup(function(e){
+		if (!(locked)) {
+			var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+			if ((key > 31) || (key == 8)) {
+				modification();
+				if ($(this).hasClass('majuscules')) {
+					$(this).val($(this).val().toUpperCase());						
 					}
+				}
 			}
 		})
-		
-		$("#cancel").click(function(){
-			if (confirm(confirmationReset))
-				$("#cotesCours")[0].reset();
-			modifie = false;
-		})
-		
-		$("#save").click(function(){
-			$("#wait").show();
-			window.onbeforeunload = function(){};
-			$("#cotesCours").submit();
-		})
+	
+	$("#cancel").click(function(){
+		if (confirm(confirmationReset))
+			$("#cotesCours")[0].reset();
+		modifie = false;
+	})
+
+	
+	$("#coteCours").submit(function(){
+		$.blockUI();
+		$("#wait").show();
+	})
 		
 	})
 

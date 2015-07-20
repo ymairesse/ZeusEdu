@@ -371,14 +371,17 @@ $(document).ready(function(){
 		// la cote sélectionnée par le prof lisible et entourée de crochets
 		$("#textChoixProf_"+matricule).text(cote+"*");
 
-		// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'hook'
-		if (coteDelibe != cote) 
+		if (coteDelibe != cote) {
+			// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'star'
 			$("#attributDelibe-matricule_"+matricule).val('externe');
-			else $("#attributDelibe-matricule_"+matricule).val('star');
-		// le champ contenteditable de la cote de délibé pour permettre la baguette magique
-		if (coteDelibe != cote) 
+			// le champ contenteditable de la cote de délibé pour permettre la baguette magique
 			$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
-			else $("#editable_"+matricule).html(coteDelibe+'*');
+			}
+			else {
+				$("#attributDelibe-matricule_"+matricule).val('star');
+				$("#editable_"+matricule).html(coteDelibe+'*');
+				}
+		
 		$("#led_"+matricule).removeClass().addClass('invisible');
 		})
 
@@ -402,14 +405,16 @@ $(document).ready(function(){
 		// la cote sélectionnée par le prof lisible et entourée de crochets
 		$("#textChoixProf_"+matricule).text(cote+"²");
 
-		// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'hook'
-		if (coteDelibe != cote) 
+		if (coteDelibe != cote) {
+			// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'star'
 			$("#attributDelibe-matricule_"+matricule).val('externe');
-			else $("#attributDelibe-matricule_"+matricule.val('degre'));
-		// le champ contenteditable de la cote de délibé pour permettre la baguette magique
-		if (coteDelibe != cote) 
+			// le champ contenteditable de la cote de délibé pour permettre la baguette magique
 			$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
-			else $("#editable_"+matricule).text(coteDelibe+'²');
+			}
+			else {
+				$("#attributDelibe-matricule_"+matricule).val('degre');
+				$("#editable_"+matricule).html(coteDelibe+'²');
+				}
 		$("#led_"+matricule).removeClass().addClass('invisible');
 	})
 
@@ -447,12 +452,15 @@ $(document).ready(function(){
 	
 	$(".editable").blur(function(){
 		var matricule = parseInt($(this).attr("id").substr(9,20));
-		var sit = parseFloat($(this).text());
+		// var sit = parseFloat($(this).text());
+		var sit=$(this).text();
 		$("#sitDelibe-matricule_"+matricule).val(sit);
 		})
 
 	$(".editable").keypress(function(e){
 		var key = e.keyCode || e.charCode;
+		if (key == 13) 
+			return false;
 		if ((key != 8) && (key != 46)) {
 			return $(this).text().length <= 2
 			}

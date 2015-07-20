@@ -29,7 +29,7 @@
 				{$syntheseCotes.$bulletin.$coursGrp|default:'&nbsp;'}
 		 </td>
 		{/foreach}
-		<td class="cote"><strong>{$mentions.$matricule.$bulletin|default:'&nbsp;'}</strong></td> 
+		<td class="cote"><strong>{$listeMentions.$bulletin|default:'&nbsp;'}</strong></td> 
 	</tr>
 	{/foreach}
 </table>

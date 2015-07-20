@@ -505,7 +505,6 @@ class bullTQ {
 		$sql .= "FROM ".PFX."titus ";
 		$sql .= "WHERE acronyme = '$acronyme' AND section = 'TQ' ";
 		$sql .= "ORDER BY classe ";
-
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {
@@ -1548,6 +1547,151 @@ class bullTQ {
 			}
         Application::DeconnexionPDO($connexion);
         return $nbResultats;		
+		}
+
+	/**
+	 * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle
+	 * @param $post
+	 * @return integer : normalement, 1
+	 */
+	public function enregistrerDecision($post) {
+		$matricule = $post['matricule'];
+		$decision = $post['decision'];
+		if ($decision == 'Restriction')
+			$restriction = $post['restriction'];
+			else $restriction = '';
+		$mail = isset($post['mail']) && ($post['mail'] == true)?1:0;
+		$notification = isset($post['notification']) && ($post['notification'] == true)?1:0;
+		$mailEleve = $post['mailEleve'];
+		$adresseMail = ($post['adresseMail']!= $mailEleve)?$post['adresseMail']:'';
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."bullDecisions ";
+		$sql .= "SET matricule='$matricule', decision='$decision', restriction='$restriction', mail='$mail', notification='$notification', ";
+		$sql .= "adresseMail='$adresseMail' ";
+		$sql .= "ON DUPLICATE KEY UPDATE ";
+		$sql .= "decision='$decision', restriction='$restriction', mail='$mail', notification='$notification', ";
+		$sql .= "adresseMail='$adresseMail' ";
+
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO($connexion);
+		return $resultat;
+		}
+		
+	/**
+	 * renvoie les décisions de délibération pour la liste d'élèves indiqués
+	 * @param $matricule / liste de matricules
+	 * @return array
+	 */
+	public function listeDecisions ($listeEleves){
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",", array_keys($listeEleves));
+		else
+			$listeElevesString = $listeEleves;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT dp.matricule, user, mailDomain, decision, restriction, notification, mail, adresseMail, DATE_FORMAT(quand, '%d/%m %H:%i') AS quand, ";
+		$sql .= "CONCAT(nom,' ',prenom) AS nom, groupe ";
+		$sql .= "FROM ".PFX."passwd AS dp ";
+		$sql .= "LEFT JOIN ".PFX."bullDecisions AS dbd ON dbd.matricule = dp.matricule ";
+		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = dp.matricule ";
+		$sql .= "WHERE dp.matricule IN ($listeElevesString) ";
+		$resultat = $connexion->query($sql);
+		$listeDecisions = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				if (($ligne['decision'] == '') || ($ligne['quand'] != ''))
+					$ligne['okEnvoi'] = false;
+					else $ligne['okEnvoi'] = true;
+				if ($ligne['adresseMail'] == '') {
+					$ligne['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
+				}
+				$listeDecisions[$matricule] = $ligne;
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $listeDecisions;
+	}		
+
+	/**
+	 * établir la liste de synthèse des décisions prises pour les élèves dont la liste est fournie
+	 * @param $listeEleves
+	 * @result array
+	 */
+	public function listeSynthDecisions($listeEleves) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",", array_keys($listeEleves));
+		else
+			$listeElevesString = $listeEleves;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT bd.matricule, decision, restriction, mail, notification, adresseMail, quand, ";
+		$sql .= "nom, prenom, user, mailDomain ";
+		$sql .= "FROM ".PFX."bullDecisions AS bd ";
+		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = bd.matricule ";
+		$sql .= "JOIN ".PFX."passwd AS dpw ON dpw.matricule = bd.matricule ";
+		$sql .= "WHERE bd.matricule IN ($listeElevesString) ";
+		$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
+
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$photo = Ecole::photo($matricule);
+				$ligne['photo']=$photo;
+				$liste[$matricule] = $ligne;
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+	}
+	
+	/**
+	 * dater (et donc clôturer) les décisions de C.Cl pour les élèves dont la liste est fournie en paramètre
+	 * @param array $listeEleves 
+	 * @return $nb : integer
+	 */
+	public function daterDecisions($listeEleves) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$nb = 0;
+		foreach ($listeEleves as $matricule) {
+			$sql = "UPDATE ".PFX."bullDecisions ";
+			$sql .= "SET quand=NOW() ";
+			$sql .= "WHERE matricule = '$matricule' ";
+			$resultat = $connexion->exec($sql);
+			$nb++;
+			}
+		Application::DeconnexionPDO($connexion);
+		return $nb;
+		}
+		
+
+	/**
+	 * recherche des mentions globales finales obtenues par la liste des élèves passée en argument
+	 * @param $listeEleves
+	 * @return array: liste des mentions par élève et par période de délibé
+	 */
+	public function mentionsGlobalesFinales($listeEleves) {
+		if (is_array($listeEleves))
+			$listeElevesString = implode(",", array_keys($listeEleves));
+		else
+			$listeElevesString = $listeEleves;
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT matricule, periode, mention ";
+		$sql .= "FROM ".PFX."bullTQMentions ";
+		$sql .= "WHERE matricule IN ($listeElevesString) AND type='global_final' ";
+		$resultat = $connexion->query($sql);
+		$liste = array();
+		if (resultat) {
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$periode = $ligne['periode'];
+				$liste[$matricule][$periode] = $ligne['mention'];
+			}
+		}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
 		}
 
 }      

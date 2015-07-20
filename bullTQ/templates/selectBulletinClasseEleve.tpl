@@ -1,9 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+		
 		Bulletin n° <select name="bulletin" id="bulletin">
 		{section name=bulletins start=1 loop=$nbBulletins+1}
-			<option value="{$smarty.section.bulletins.index}"
-					{if $smarty.section.bulletins.index == $bulletin}selected{/if}>
+			<option value="{$smarty.section.bulletins.index}"{if $smarty.section.bulletins.index == $bulletin} selected{/if}>
 				{$smarty.section.bulletins.index}
 			</option>
 		{/section}
@@ -12,7 +12,7 @@
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}"{if $uneClasse eq $classe} selected{/if}>{$uneClasse}</option>
+			<option value="{$uneClasse}"{if $uneClasse eq $classe} selected="selected"{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
 		<span id="choixEleve">
@@ -20,7 +20,7 @@
 			{include file="listeEleves.tpl"}
 			
 		</span>
-	<input type="submit" value="OK" name="OK" id="envoi" style="display:none">
+	<button type="submit" class="btn btn-primary btn-xs" id="envoi" {if !(isset($matricule))}style="display: none"{/if}>OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showEleve">
@@ -47,6 +47,7 @@ $(document).ready (function() {
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
 		if (classe != '') $("#envoi").show();
+			else $("#envoi").hide();
 		// la fonction listeEleves.inc.php renvoie la liste déroulante
 		// des élèves de la classe sélectionnée
 		$.post("inc/listeEleves.inc.php", {

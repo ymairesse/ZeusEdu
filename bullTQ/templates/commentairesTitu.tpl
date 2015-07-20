@@ -38,15 +38,15 @@
 		<div class="row">
 			
 			<div class="col-md-10 col-sm-12">
-				<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin}</h4>
+				<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin} {$matricule}</h4>
 				{if isset($mentions.$matricule.$bulletin)}
 				<p>Mention accordée <strong>{$mentions.$matricule.$bulletin}</strong>.</p>
 				{/if}
 				<textarea name="commentaire" id="commentaire" rows="7" class="form-control">{$listeRemarquesTitu.$bulletin.$matricule|default:'&nbsp;'}</textarea>
 				<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
 				<button type="reset" class="btn btn-default pull-right">Annuler</button>
-				<input type="hidden" name="action" value="titu">
-				<input type="hidden" name="mode" value="remarques">
+				<input type="hidden" name="action" value="{$action}">
+				<input type="hidden" name="mode" value="{$mode}">
 				<input type="hidden" name="etape" value="enregistrer">
 				<input type="hidden" name="bulletin" value="{$bulletin}">
 				<input type="hidden" name="matricule" value="{$matricule}">

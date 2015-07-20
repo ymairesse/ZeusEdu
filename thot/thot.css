@@ -1,0 +1,31 @@
+.geant {
+    background-color: #fff;
+    border: 2px solid #f44;
+    color: #f44;
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0.2em;
+    padding: 0.2em 0.2em 0.5em;
+    box-shadow: 5px 5px 5px 2px #ccc;
+}
+
+.urgence0 {
+	background-color: #9f9;
+	}
+.urgence1 {
+	background-color: #99f;
+	}
+.urgence2 {
+	background-color: #f99;
+	}
+
+.champ {
+	border: 1px solid black;
+    padding: 0.5em 1em;
+    box-shadow: 5px 5px 5px 2px #ccc;
+    border-radius: 10px;
+    }
+
+.table-bulletin > tbody > tr > td {
+    padding: 2px;
+    }

@@ -1,21 +1,22 @@
 <div class="container">
-	
+
 <h2>{$eleve.nom} {$eleve.prenom}</h2>
 
 	<div class="row">
 		
 		<div class="col-md-10 col-sm-12">
 
-				<form name="form" method="POST" action="index.php" id="formulaire" role="form" class="form-vertical">
+				<form name="form" method="POST" action="index.php" id="formulaire" role="form" class="form-inline">
 				<input type="hidden" name="action" value="delibes">
 				<input type="hidden" name="mode" value="individuel">
 				<input type="hidden" name="etape" value="enregistrer">
 				<input type="hidden" name="classe" value="{$classe}">
 				<input type="hidden" name="matricule" value="{$matricule}">
+				<input type="hidden" name="mailEleve" value="{$decision.user}@{$decision.mailDomain}">
 					
 				<div class="table-responsive">
 					
-				<table class="tableauAdmin table table-hover table-condensed">
+				<table class="table table-hover table-condensed">
 					<tr>
 						<thead>
 							<th>Cours</th>
@@ -41,8 +42,7 @@
 						<td>{$unCours.nbheures}h</td>
 						{foreach from=$listePeriodes item=periode}
 							{if isset($listeSituations.$coursGrp.$periode)}
-							<td class="cote 
-								{if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
+							<td class="cote {if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
 									&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
 									&& ($listeSituations.$coursGrp.$periode.attributDelibe != 'hook')}echec{/if}"
 								{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
@@ -52,7 +52,7 @@
 								{/if}>
 								{if $listeSituations.$coursGrp.$periode.attributDelibe == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}]
 									{else}
-									{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}<sup>{$listeSituations.$coursGrp.$periode.symbole|default:''}</sup>
+									{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}{$listeSituations.$coursGrp.$periode.symbole}
 								{/if}
 							</td>
 							{else}
@@ -75,7 +75,6 @@
 							data-html="true"
 							data-placement="top">
 							{$listeRemarques.$matricule.$coursGrp.5|default:'&nbsp;'|truncate:80}
-							</span>
 							</td>
 						</tr>
 					{/foreach}
@@ -145,41 +144,121 @@
 					<tr class="conclusionDelibe">
 						<td>Mention Initiale</td>
 						<td>&nbsp;</td>
-						<td class="cote"><strong>{$mentions[2]|default:'&nbsp;'}</strong></td>
-						<td class="cote"><strong>{$mentions[5]|default:'&nbsp;'}</strong></td>
+						<td class="cote"><strong>{$mentions.2|default:'&nbsp;'}</strong></td>
+						<td class="cote"><strong>{$mentions.5|default:'&nbsp;'}</strong></td>
 						<td colspan="2">&nbsp;</td>
 					</tr>
-					<tr class="conclusionDelibe" style="background-color:#FCD97D">
+					<tr class="decisionDelibe">
 						<td>Mention Finale</td>
-						<td>
-						{if $estTitulaire}
-							<span class="glyphicon glyphicon-lock pull-right" id="lock" style="cursor:pointer"></span>
-						{else}
-							&nbsp;
-						{/if} 
-						</td>
+						<td>&nbsp;</td>
+						
 						{foreach from=$listePeriodes item=periode}
-							<td class="cote {if isset($mentionsAttribuees.$periode) && $mentionsAttribuees.$periode == 'I'} echec{/if}">
+							<td class="cote {if isset($mentionsAttribuees.$matricule.$ANNEESCOLAIRE.$annee.$periode) &&
+												$mentionsAttribuees.$matricule.$ANNEESCOLAIRE.$annee.$periode == 'I'} echec{/if}">
 								{if $estTitulaire}
-								<input type="text" name="mentions_{$periode}" value="{$mentionsAttribuees.$periode|default:''}" 
-										class="inputMention" maxlength="6" size="3">
+								<input type="text"
+										name="mentions_{$periode}"
+										value="{$mentionsAttribuees.$matricule.$ANNEESCOLAIRE.$annee.$periode|default:''}" 
+										class="inputMention" maxlength="6" size="3"
+										{if !($estTitulaire)} disabled{/if}>
 								{else}
-									<strong>{$mentionsAttribuees.$periode|default:'&nbsp;'}</strong>
+									<strong>{$mentionsAttribuees.$matricule.$ANNEESCOLAIRE.$annee.$periode|default:'&nbsp;'}</strong>
 								{/if}
 							</td>
 						{/foreach}
 				
 						<td colspan="2">
-						{if $estTitulaire}
-							<div class="btn-group" id="submitGroup">
-								<button type="submit" class="btn btn-primary" id="submit">Enregistrer</button>
-								<button type="reset" class="btn btn-default" id="annuler">Annuler</button>
-							</div>
-						{else}
-							&nbsp; 
-						{/if}
+							{if $estTitulaire}
+								<div class="pull-right pop"
+									 data-container="body"
+									 data-content="Dé/verrouiller"
+									 data-placement="top"
+									 style="font-size:2em">
+									<i class="fa fa-lock" id="lock"></i>
+								</div>
+							{else}
+							&nbsp;
+							{/if}
 						</td>
 					</tr>
+			{*-------------------- décision de délibé  --------------------*}
+					<tr class="decisionDelibe">
+						<td colspan="2">
+							<div class="form-group pull-right">
+								<label for="decision" class="sr-only">Décision</label>
+								<select name="decision" id="decision" class="form-control"{if !($estTitulaire)} disabled{/if}>
+									<option value="">Choisir une décision</option>
+									<option value="Réussite"{if $decision.decision == 'Réussite'} selected{/if}>Réussite</option>
+									<option value="Échec"{if $decision.decision == 'Échec'} selected{/if}>Échec</option>
+									<option value="Ajournement"{if $decision.decision == 'Ajournement'} selected{/if}>Ajournement</option>
+									<option value="Restriction"{if $decision.decision == 'Restriction'} selected{/if}>Restriction avec accès en</option>
+									<!-- <option value="TEST"{if $decision.decision == 'TEST'} selected{/if}>TEST</option> -->									
+								</select>
+							</div>				
+						</td>
+						<td colspan="4">
+							<div class="form-group">
+								<label for="restriction" class="sr-only">Accès en</label>
+								<input type="text"
+									   name="restriction"
+									   maxlength="40"
+									   {if !($estTitulaire)} disabled{/if}
+									   id="restriction"
+									   value="{$decision.restriction|default:''}"
+									   class="form-control"
+									   placeholder="Accès en">
+							</div>
+
+						</td>
+					</tr>
+					{if $estTitulaire}
+					<tr class="decisionDelibe">
+						<td colspan="3">
+							<div class="form-group">
+								<label for="envoiMail">Envoi du mail</label>
+								<input type="checkbox"
+									   value="true"
+									   name="mail"
+									   id="envoiMail"
+									   {if (!(isset($decision.mail)) || (isset($decision.mail) && ($decision.mail==1)))}checked{/if}
+									   {if !($estTitulaire)} disabled{/if}
+									   class="form-control">
+							</div>
+							<div class="form-group">
+								<label class="sr-only" for="adresseMail">Email</label>
+								<input type="text"
+									{if isset($decision.adresseMail) && ($decision.adresseMail != '')}
+										value="{$decision.adresseMail}"
+									{else}
+										value="{$decision.user}@{$decision.mailDomain}"
+									{/if}"
+									name="adresseMail"
+									id="adresseMail"
+									maxlength="30"
+									{if !($estTitulaire)} disabled{/if}
+									placeholder="Adresse mail"
+									class="form-control">
+							</div>
+						</td>
+						<td colspan="3">
+							<div class="form-group">
+								<label> Notification isnd.be/eleve</label>
+								<input type="checkbox"
+									   value="true"
+									   name="notification"
+									   id="notification"
+									   {if !($estTitulaire)} disabled{/if}
+									   {if !(isset($decision.notification)) || (isset($decision.notification) && ($decision.notification==1))}checked{/if}
+									   class="form-control">
+							</div>
+				
+							<div class="btn-group pull-right" id="submitGroup">
+								<button type="reset" class="btn btn-default" id="annuler">Annuler</button>
+								<button type="submit" class="btn btn-primary" id="submit">Enregistrer</button>								
+							</div>
+						</td>
+					</tr>
+					{/if}
 				</table>
 				
 				</div>  <!-- table-responsive -->
@@ -187,11 +266,10 @@
 				</form>
 				
 				<p>Symbolique:</p>
-				<ul class="symbolique">
+				<ul class="symbolique fdelibe">
 				<li>² => réussite degré</li>
-				<li>* => cote étoilée</li>
+				<li><i class="fa fa-star"></i> => cote étoilée</li>
 				<li><i class="fa fa-magic"></i> => baguette magique</li>
-				<li>← => reussite 50%</li>
 				<li><i class="fa fa-graduation-cap"></i> => épreuve externe</li>
 				<li>[xx] => non significatif</li>
 				</ul>
@@ -226,10 +304,10 @@ var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les info
 	
 $(document).ready(function(){
 	
-	$(".inputMention").each(function(index){
-			$(this).attr("readonly",true);
-		});
-	$("#submitGroup").hide();
+	$(".decisionDelibe input, .decisionDelibe select").attr("disabled","disabled");
+	$("#submitGroup button").attr('didabled','disabled').hide();
+	var locked=true;
+	
 		
 	$(".inputMention").keyup(function(e){
 	var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
@@ -241,18 +319,39 @@ $(document).ready(function(){
 	
 	$("#lock").click(function(){
 		if (locked) {
-			$(".inputMention").attr("readonly",false);
-			$(this).attr("src", "images/unlock.png");
-			$("#submitGroup").show();
+			$("#submitGroup button").attr('disabled',false).fadeIn();
+			$(".decisionDelibe input, .decisionDelibe select").attr("disabled",false);
 			}
 			else {
-			$(".inputMention").attr("readonly",true);
-			$(this).attr("src", "images/lock.png");
-			$("#submitGroup").show();
+			$("#submitGroup button").attr('disabled',false).fadeOut();
+			$(".decisionDelibe input, .decisionDelibe select").attr("disabled",true);
 			};
 		locked = !(locked);
 		})
+	
+	$("#decision").change(function(){
+		if ($(this).val() != 'Restriction') {
+			$("#restriction").val('');
+			}
+			else $("#restriction").focus();
+		});
+	
+	$("#restriction").focus(function(){
+		if ($("#decision").val() != 'Restriction')
+			$("#decision").val('Restriction');
+		})
 
+	$("#formulaire").submit(function(){
+		if (($("#decision").val() == 'restriction') && $("#restriction").val().trim() == '' ) {
+			alert('Vous n\'avez pas indiqué les restrictions');
+			$("#restriction").focus();
+			return false;
+			}
+		else {
+			$.blockUI();
+			$("#wait").show();
+			}
+		});
 	
 	$("#annuler").click(function(){
 	if (confirm(confirmationReset)) {

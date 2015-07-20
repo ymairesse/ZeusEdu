@@ -89,6 +89,9 @@
 		<ul class="dropdown-menu">
 			<li><a href="index.php?action=delibes&amp;mode=parClasse">Feuille de délibé par classe</a></li>
 			<li><a href="index.php?action=delibes&amp;mode=individuel">Feuille de délibé individuelle</a></li>
+			{if $titulaire}
+			<li><a href="index.php?action=delibes&amp;mode=notifications">Envoi des notifications</a></li>
+			{/if}
 			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses par classe (toutes périodes)</a></li>
 		</ul>
 		</li>

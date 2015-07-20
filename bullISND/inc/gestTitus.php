@@ -98,7 +98,9 @@ switch ($mode) {
 
 				// pas d'indication de numéro de période, afin de les avoir toutes
 				$commentairesProfs = $Bulletin->listeCommentairesTousCours($matricule, Null);
+				// liste des mentions (grades) attribués durant cette année d'étude à l'élève dont on fournit le matricule
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
+				// fiche de discipline pour l'élève concerné
 				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
 				
 				// recherche des cotes de situation et délibé éventuelles pour toutes les périodes de l'année en cours

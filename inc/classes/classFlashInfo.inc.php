@@ -93,7 +93,7 @@ class flashInfo {
 	 * @param $module
 	 * @return array()
 	 */
-	public function listeFlashInfos ($module) {
+	public static function listeFlashInfos ($module) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT * FROM ".PFX."flashInfos ";
 		$sql .= "WHERE application = '$module' ";

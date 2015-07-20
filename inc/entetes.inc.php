@@ -21,6 +21,7 @@ $user = $_SESSION[APPLICATION];
 
 // si pas d'utilisateur authentifié en SESSION et répertorié dans la BD, on renvoie à l'accueil
 // ce peut-être un utilisateur régulier ou un alias qui a priorité
+
 if (isset($user) && $user->getAlias() != Null)
 	$utilisateur = $user->getAlias();
 	else $utilisateur = $user;

@@ -45,6 +45,12 @@
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
+	
+		window.setTimeout(function() {
+		$(".auto-fadeOut").fadeTo(500, 0).slideUp(500, function(){
+			$(this).remove(); 
+			});
+		}, 3000);
     
 $(document).ready(function(){
   

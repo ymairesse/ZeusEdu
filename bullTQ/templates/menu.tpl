@@ -32,8 +32,6 @@
 				</ul>
 			</li>
 
-
-
 			{if ($tituTQ)}
 			<li classs="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Titulaire {','|implode:$tituTQ} <b class="caret"></b></a>
 				<ul class="dropdown-menu">
@@ -46,6 +44,7 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=delibe&amp;mode=parClasse">Feuille de synthèse par classe</a></li>
 					<li><a href="index.php?action=delibe&amp;mode=individuel">Feuille de délibé individuelle</a></li>
+					<li><a href="index.php?action=delibe&amp;mode=notifications">Envoi des notifications</a></li>
 				</ul>
 			</li>
 			{if $userStatus == 'admin'}
