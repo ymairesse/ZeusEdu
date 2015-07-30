@@ -14,6 +14,8 @@
                 Aucune notification à l'ensemble des élèves
                 {/if}
             </th>
+            <th style="width:1em" title="mail envoyé" data-container="body"><i class="fa fa-envelope fa-lg text-success"></i></th>
+            <th style="width:1em" title="Accusé de lecture" data-container="body"><i class="fa fa-check fa-lg text-success"></i></th>
         </tr>
       </thead>
     <!-- Notifications à l'ensemble de l'école -->
@@ -39,9 +41,11 @@
         <td style="width:20%;text-align:right;">
             Tous
         </td>
+        <td title="mail envoyé" data-container="body">{if $uneNote.mail == 1}<i class="fa fa-envelope fa-lg text-success"></i>{else}&nbsp;{/if}</td>
+        <td title="Accusé de lecture" data-container="body">{if $uneNote.accuse == 1}<i class="fa fa-check fa-lg text-success"></i>{else}&nbsp;{/if}</td>
       </tr>
       <tr>
-        <td colspan="5">
+        <td colspan="7">
             <span class="texte">{$uneNote.texte|truncate:150:'...'}</span>
         </td>
       </tr>

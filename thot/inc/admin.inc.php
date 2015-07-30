@@ -1,14 +1,19 @@
 <?php
+
 $showEdition = false;
 
 switch($mode) {
   case 'bulletin':
-    require('inc/gestBulletins.inc.php');
+    require_once('inc/gestBulletins.inc.php');
     break;
 
     case 'delNotification':
         $id = isset($_POST['id'])?$_POST['id']:Null;
+        // suppression des demandes d'accusé de lecture
+        $ok = $Thot->delAccuse($id,$acronyme);
+        // suppression des notifications correspondantes
         $nb = $Thot->delNotification($id,$acronyme);
+
         $smarty->assign('message', array(
                 'title'=>DELETE,
                 'texte'=>"$nb notification supprimée",
@@ -19,6 +24,9 @@ switch($mode) {
 
     case 'edition':
         $showEdition = true;
+        break;
+    case 'gestAccuses':
+        require_once('inc/gestAccuses.inc.php');
         break;
 
     case 'delBulk':

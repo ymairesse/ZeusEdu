@@ -53,8 +53,8 @@
 			<p><strong>Date de début:</strong> {$notification.dateDebut}</p>
 			<p><strong>Date de fin:</strong> {$notification.dateFin}</p>
 
-			<p><strong>Envoi d'un mail:</strong> {if isset($notification.mail)}Oui{else}Non{/if}</p>
-			<p><strong>Demande d'accusé de lecture:</strong> {if isset($notification.accuse)}Oui{else}Non{/if}
+			<p><strong>Mail(s) envoyé(s):</strong> <span class="badge">{$nbMails}</span></p>
+			<p><strong>Accusé(s) de lecture:</strong> <span class="badge">{$nbAccuses}</span></p>
 			</div>  <!-- champ -->
 		</div>  <!--col-md-... -->
 

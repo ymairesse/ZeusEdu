@@ -1,5 +1,4 @@
 <?php
-
 if ($matricule != '') {
     $Eleve = new eleve($matricule);
     $detailsEleve = $Eleve->getDetailsEleve();
@@ -14,11 +13,12 @@ switch ($etape) {
         $smarty->assign('notification',$notification);
         $smarty->assign('action',$action);
         $smarty->assign('mode',$mode);
+        $smarty->assign('edition',true);
         $smarty->assign('corpsPage','formNotification');
         break;
     case 'enregistrer':
-        $resultat = $Thot->enregistrerNotification($_POST);
-        if ($resultat != Null) {
+        $id = $Thot->enregistrerNotification($_POST);
+        if ($id != Null) {
             if ($matricule != '')
                 $txt = $detailsEleve['prenom'].' '.$detailsEleve['nom'];
                 else if ($classe != '')

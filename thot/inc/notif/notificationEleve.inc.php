@@ -15,16 +15,40 @@ if ($etape == 'showEleve') {
 		}
 	}
 if ($etape == 'enregistrer') {
-	$resultat = $Thot->enregistrerNotification($_POST);
-	if ($resultat != Null) {
-		// une seule adresse dans la liste des mails
-		$listeMails = array($detailsEleve['user'].'@'.$detailsEleve['mailDomain']);
+	// l'$id est celui de la nouvelle notification créée dans la BD
+	$id = $Thot->enregistrerNotification($_POST);
+	if ($id != Null) {
+		$nbMails = 0;
+		$nbAccuses = 0;
+		$texte = sprintf("Notification à %s enregistrée ", $detailsEleve['prenom'].' '.$detailsEleve['nom']);
+		$listeEleves = $matricule;
+		// ok pour la notification en BD, passons éventuellement à l'envoi de mail
+		if (isset($_POST['mail']) && $_POST['mail'] == 1) {
+			// une seule adresse dans la liste des mails
+			$listeMailing = $Ecole->detailsDeListeEleves($listeEleves);
+			$objetMail = file_get_contents('templates/notification/objetMail.tpl');
+			$texteMail = file_get_contents('templates/notification/texteMail.tpl');
+			$signatureMail = file_get_contents('templates/notification/signatureMail.tpl');
+			$listeMatricules = $Thot->mailer($listeMailing, $objetMail, $texteMail, $signatureMail);
+			$nbMails = $count($listeMatricules);
+			$texte .= sprintf("<br>%d mail envoyé ",$nbMails);
+			}
+		// voyons si un accusé de lecture est souhaité
+		if (isset($_POST['accuse']) && $_POST['accuse'] == 1) {
+			$listeEleves = array($matricule=>$matricule);
+			$nbAccuses = $Thot->setAccuse($id, $listeEleves);
+			$texte .= sprintf("<br>%d demande d'accusé de lecture envoyée ",$nbAccuses);
+			}
+
+		$nom = $detailsEleve['prenom'].' '.$detailsEleve['nom'];
 		$smarty->assign('message', array(
 				'title'=>SAVE,
-				'texte'=>"Notification à ".$resultat['destinataire']." enregistrée",
+				'texte'=> $texte,
 				'urgence'=>'success')
 				);
-		$smarty->assign('notification',$resultat);
+		$smarty->assign('nbMails',$nbMails);
+		$smarty->assign('nbAccuses',$nbAccuses);
+		$smarty->assign('notification',$_POST);
 		$smarty->assign('corpsPage','syntheseNotification');
 		}
 	}

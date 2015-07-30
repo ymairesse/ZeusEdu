@@ -44,11 +44,6 @@
 
 				<div class="panel-body">
 
-					<div class="btn-group pull-right">
-						<a href="index.php?action=admin&amp;mode=edition" type="button" class="btn btn-default">Annuler</a>
-						<button class="btn btn-primary" type="Submit" name="submit">Envoyer</button>
-					</div>
-
 					<textarea id="texte" name="texte" rows="25" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true">{$notification.texte|default:''}</textarea>
 
 				</div> <!-- panel-body -->
@@ -70,7 +65,6 @@
 			{if $notification.type == 'ecole'}
 				<span class="geant pull-right">Tous</span>
 			{/if}
-
 
 			<div class="row panel panel-default">
 
@@ -103,13 +97,24 @@
 					</div>
 
 					<div class="form-group">
-						<label for="mail">Envoi d'un mail</label>
-						<input type="checkbox" name="mail" id="mail" class="form-control-inline" value="1"{if isset($notification.mail) && $notification.mail == 1} checked{/if}>
+						<label for="mail" {if isset($edition)}title="Non disponible en modification"{/if}>Envoi d'un mail</label>
+						<input type="checkbox" name="mail" id="mail" class="form-control-inline" value="1"{if isset($notification.mail) && $notification.mail == 1} checked{/if}
+						{if $notification.type == 'ecole' || isset($edition)} disabled{/if}>
+						{* disabled pour l'envoi de mail à toute l'école afin d'éviter les over quota d'envois *}
+						{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 					</div>
 
 					<div class="form-group">
-						<label for="accuse">Accusé de lecture</label>
-						<input type="checkbox" name="accuse" id="accuse" class="form-control-inline" value="1"{if isset($notification.accuse) && $notification.accuse == 1} checked{/if}>
+						<label for="accuse" {if isset($edition)}title="Non disponible en modification"{/if}>Accusé de lecture</label>
+						<input type="checkbox" name="accuse" id="accuse" class="form-control-inline" value="1"{if isset($notification.accuse) && $notification.accuse == 1} checked{/if}
+						{if $notification.type == 'ecole' || isset($edition)} disabled{/if}>
+						{* disabled pour toute l'école car ingérable *}
+						{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
+					</div>
+
+					<div class="btn-group pull-right">
+						<a href="index.php?action=admin&amp;mode=edition" type="button" class="btn btn-default">Annuler</a>
+						<button class="btn btn-primary" type="Submit" name="submit">Envoyer</button>
 					</div>
 
 				</div>  <!-- panel-body -->

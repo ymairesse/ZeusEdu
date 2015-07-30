@@ -315,6 +315,31 @@ class ecole {
 			else return 'nophoto';
 	}
 
+    /**
+    * liste des matricules, nom et prénom de tous les élèves de l'école
+    * @param $partis : inclus les élèves partis si true
+    * @return array : tableau indexé sur les matricules
+    */
+    public function listeElevesEcole($partis=false){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT matricule, nom, prenom ";
+        $sql .= "FROM ".PFX."eleves ";
+        if ($partis == false)
+            $sql .= "WHERE section != 'PARTI' ";
+		$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+        $resultat = $connexion->query($sql);
+		$liste = array();
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+				$matricule = $ligne['matricule'];
+				$liste[$matricule] = $ligne;
+				}
+			}
+		Application::DeconnexionPDO($connexion);
+		return $liste;
+    }
+
 	/**
 	 * retourne la liste des matricules et des noms des élèves d'un groupe classe
 	 * @param $groupe
