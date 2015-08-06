@@ -277,7 +277,7 @@ class thot {
 		$sql = "SELECT id, type, objet, dateDebut, dateFin, destinataire, nom, prenom, classe ";
 		$sql .= "FROM ".PFX."thotNotifications AS dtn ";
 		$sql .= "LEFT JOIN ".PFX."eleves AS de ON de.matricule = dtn.destinataire ";
-		$sql .= "WHERE proprietaire = '$acronyme' ";
+		$sql .= "WHERE proprietaire = '$acronyme' AND accuse = '1' ";
 		$sql .= "ORDER BY dateDebut ";
 		$resultat = $connexion->query($sql);
 		$liste = array();
