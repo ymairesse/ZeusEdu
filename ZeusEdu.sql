@@ -981,6 +981,20 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
 
+CREATE TABLE IF NOT EXISTS `didac_thotParents` (
+  `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
+  `formule` enum('M.','Mme') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Formule pour l''envoi de mails',
+  `nom` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `prenom` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `userName` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `mail` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Adresse mail du parent',
+  `lien` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Lien de parenté',
+  `md5pwd` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`matricule`,`userName`),
+  KEY `matricule` (`matricule`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des parents';
+
+
 CREATE TABLE IF NOT EXISTS didac_titus (
   acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   classe varchar(6) COLLATE utf8_unicode_ci NOT NULL,
