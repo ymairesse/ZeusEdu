@@ -32,7 +32,7 @@ switch ($etape) {
         $smarty->assign('message', array(
                 'title'=>SAVE,
                 'texte'=>$texte,
-                'urgence'=>'success')
+                'urgence'=>SUCCES)
                 );
         $smarty->assign('notification',$_POST);
         $smarty->assign('corpsPage','syntheseNotification');

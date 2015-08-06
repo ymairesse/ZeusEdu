@@ -42,8 +42,6 @@
 			{if ($userStatus == 'admin')}
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Big Brother <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=connexions&amp;mode=eleve">Connexions par élèves</a></li>
-					<li><a href="index.php?action=connexions&amp;mode=classe">Connexions par classes</a></li>
 					<li><a href="index.php?action=connexions&amp;mode=date">Connexions par date</a></li>
 					<li><a href="index.php?action=connexions&amp;mode=logins">Logins en temps réel</a></li>
 				</ul>

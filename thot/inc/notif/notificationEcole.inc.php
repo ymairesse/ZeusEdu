@@ -34,7 +34,7 @@ if ($etape == 'enregistrer') {
 		$smarty->assign('message', array(
 				'title'=>SAVE,
 				'texte'=> $texte,
-				'urgence'=>'success')
+				'urgence'=>SUCCES)
 				);
 		$smarty->assign('nbMails',$nbMails);
 		$smarty->assign('nbAccuses',$nbAccuses);

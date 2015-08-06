@@ -39,7 +39,7 @@ if ($etape == 'enregistrer') {
 		$smarty->assign('message', array(
 				'title'=>SAVE,
 				'texte'=>$texte,
-				'urgence'=>'success')
+				'urgence'=>SUCCES)
 				);
 		// on prie pour que tout se soit bien passé et on avertit l'utilisateur que tout ce qui a été passé en POST a été pris en compte
 		$smarty->assign('nbMails',$nbMails);

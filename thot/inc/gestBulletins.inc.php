@@ -4,7 +4,7 @@ if ($etape == 'enregistrer') {
 	$smarty->assign('message', array(
 				'title'=>SAVE,
 				'texte'=>"$nb enregistrement(s) effectué(s)",
-				'urgence'=>'success')
+				'urgence'=>SUCCES)
 				);
 	}
 

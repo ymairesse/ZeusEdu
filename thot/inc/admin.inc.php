@@ -17,7 +17,7 @@ switch($mode) {
         $smarty->assign('message', array(
                 'title'=>DELETE,
                 'texte'=>"$nb notification supprimée",
-                'urgence'=>'success')
+                'urgence'=>SUCCES)
                 );
         $showEdition = true;
         break;
@@ -34,7 +34,7 @@ switch($mode) {
         $smarty->assign('message', array(
                 'title'=>DELETE,
                 'texte'=>"$nb notification supprimée",
-                'urgence'=>'success')
+                'urgence'=>SUCCES)
                 );
         $showEdition = true;
         break;
