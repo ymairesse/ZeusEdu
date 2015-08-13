@@ -37,8 +37,7 @@ class user {
 				else $acronyme = $this->acronyme;
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 			$sql = "SELECT * FROM ".PFX."profs ";
-			$sql .= "WHERE acronyme = '$acronyme' LIMIT 1";
-
+			$sql .= "WHERE acronyme = '$acronyme' LIMIT 1 ";
 			$resultat = $connexion->query($sql);
 			if ($resultat) {
 				$resultat->setFetchMode(PDO::FETCH_ASSOC);
@@ -114,16 +113,16 @@ class user {
 		return ($ligne['acronyme']);
 		}
 
-	/** 
+	/**
 	 * fixe la valeur de l'alias éventuel en mémorisant la $_SESSION de l'admin
 	 * @param $session : la session de l'amdin
-	 * @return 
+	 * @return
 	 */
 	public function setAlias($session){
 		$this->alias = $session;
 		}
 
-	/** 
+	/**
 	 * retourne l'acronyme éventuel de l'admin qui utilise un alias
 	 * @param void()
 	 * @return string
@@ -281,7 +280,7 @@ class user {
 		$sql = "INSERT INTO ".PFX."logins ";
 		$sql .= "SET user='$user', date='$date', heure='$heure', ip='$ip', host='$hostname'";
 		$n = $connexion->exec($sql);
-		
+
 		$sql = "INSERT INTO ".PFX."sessions ";
 		$sql .= "SET user='$user', ip='$ip' ";
 		$sql .= "ON DUPLICATE KEY UPDATE ip='$ip' ";
@@ -290,8 +289,8 @@ class user {
 		Application::DeconnexionPDO ($connexion);
 		return $n;
 	}
-	
-	/** 
+
+	/**
 	 * délogger l'utilisateur indiqué de la base de données (table des sessions actives)
 	 * @param $acronyme : acronyme de l'utilisateur
 	 * @return integer : nombre d'effacement dans la BD
@@ -305,14 +304,14 @@ class user {
 		Application::DeconnexionPDO ($connexion);
 		return $resultat;
 		}
-		
-	/** 
+
+	/**
 	 * vérifier que l'utilisateur dont on fournit l'acronyme est signalé comme loggé depuis l'adresse ip dans la BD
 	 * @param $acronyme : string
 	 * @param $ip : string
 	 */
 	public function islogged($acronyme,$ip) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);		
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT user, ip ";
 		$sql .= "FROM ".PFX."sessions ";
 		$sql .= "WHERE user='$acronyme' AND ip='$ip' ";
@@ -583,15 +582,18 @@ class user {
 	}
 
 	/**
-	 * retourne toutes les informations d'identité d'un utilisateur "prof"
+	 * retourne toutes les informations d'identité d'un utilisateur "prof" dont on fournit l'acronyme
 	 * @param $acronyme
 	 * @return array
 	 */
-	function identiteProf ($acronyme) {
+	public static function identiteProf ($acronyme) {
 	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-	$sql = "SELECT * FROM ".PFX."profs WHERE acronyme = '$acronyme'";
+	$sql = "SELECT * FROM ".PFX."profs WHERE acronyme = '$acronyme' ";
+	$ligne = array();
 	$resultat = $connexion->query($sql);
-	$ligne = $resultat->fetch();
+	if ($resultat) {
+		$ligne = $resultat->fetch();
+		}
 	Application::DeconnexionPDO($connexion);
 	return $ligne;
 }
@@ -600,43 +602,34 @@ class user {
 	 * @param $acronyme
 	 * @param $Application : objet Application
 	 */
-	public function oldUser ($acronyme, $Application) {
-	$user = $this->identiteProf($acronyme);
-	// liste de toutes les applications actives dans l'application (Zeus)
-	$applis = $Application->listeApplis(true);
-	$applisUser = $this->applisUser($acronyme);
-	$appliDroits = array();
-	foreach ($applis as $nom=>$nomLong) {
-		if (isset($applisUser[$nom]))
-			$appliDroits[$nom]=array('nomLong'=>$nomLong, 'droits'=>$applisUser[$nom]['userStatus']);
-			else $appliDroits[$nom]=array('nomLong'=>$nomLong, 'droits'=>'none');
-		}
-	$user['droits'] = $appliDroits;
-	return $user;
-	}
+	// public static function oldUser ($acronyme) {
+		// $user = self::identiteProf($acronyme);
+		// return $user;
+		// }
 
-	/**
-	 * retourne toutes les applis accessibles à un utilisateur et le statut de l'utilisateur dans chacune d'elles
-	 * @param $acronyme
-	 * @return array
-	 */
-	function applisUser ($acronyme) {
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT application as nom, nomLong, userStatus ";
-		$sql .= "FROM ".PFX."profsApplications AS pa ";
-		$sql .= "JOIN ".PFX."applications AS a ON (a.nom = pa.application) ";
-		$sql .= "WHERE acronyme='$acronyme' AND active ";
-		$resultat = $connexion->query($sql);
-		$tableauApplisUser = array();
-		while ($ligne = $resultat->fetch()) {
-			$nom = $ligne['nom'];
-			$nomLong = $ligne['nomLong'];
-			$userStatus = $ligne['userStatus'];
-			$tableauApplisUser[$nom]= array('userStatus'=>$userStatus, 'nomLong'=>$nomLong);
-			}
-		Application::DeconnexionPDO ($connexion);
-		return $tableauApplisUser;
-	}
+	// /**
+	//  * retourne toutes les applis accessibles à un utilisateur et le statut de l'utilisateur dans chacune d'elles
+	//  * @param void()
+	//  * @return array
+	//  */
+	// public function applisUser () {
+	// 	$acronyme = $this->getAcronyme();
+	// 	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+	// 	$sql = "SELECT application as nom, nomLong, userStatus ";
+	// 	$sql .= "FROM ".PFX."profsApplications AS pa ";
+	// 	$sql .= "JOIN ".PFX."applications AS a ON (a.nom = pa.application) ";
+	// 	$sql .= "WHERE acronyme='$acronyme' AND active ";
+	// 	$resultat = $connexion->query($sql);
+	// 	$tableauApplisUser = array();
+	// 	while ($ligne = $resultat->fetch()) {
+	// 		$nom = $ligne['nom'];
+	// 		$nomLong = $ligne['nomLong'];
+	// 		$userStatus = $ligne['userStatus'];
+	// 		$tableauApplisUser[$nom]= array('userStatus'=>$userStatus, 'nomLong'=>$nomLong);
+	// 		}
+	// 	Application::DeconnexionPDO ($connexion);
+	// 	return $tableauApplisUser;
+	// 	}
 
 	/**
 	 * renvoie le statut de l'utilisateur actuel pour le module $module

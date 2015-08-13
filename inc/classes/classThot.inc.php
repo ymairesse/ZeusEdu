@@ -350,13 +350,11 @@ class thot {
 	 */
 	public function lookLogins($min, $max) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT classe, nom, prenom, user, date, heure, decision, restriction ";
+		$sql = "SELECT classe, nom, prenom, user, date, heure ";
 		$sql .= "FROM ".PFX."thotLogins AS dtl ";
 		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = SUBSTR(user,-4) ";
-		$sql .= "LEFT JOIN ".PFX."bullDecisions AS dbd ON dbd.matricule = de.matricule ";
 		$sql .= "ORDER BY date DESC, heure DESC ";
 		$sql .= "LIMIT $min, $max ";
-
 		$resultat = $connexion->query($sql);
 		$liste = array();
 		if ($resultat) {

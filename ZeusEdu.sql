@@ -1024,6 +1024,19 @@ INSERT INTO `didac_userStatus` (`ordre`, `userStatus`, `color`, `nomStatut`) VAL
 (6, 'admin', '#FF0000', 'Administrateur'),
 (5, 'coordinateur', '#FFFFFF', 'Coordinateur');
 
+
+--
+-- Structure de la table `didac_lostPasswd`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
+  `user` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant de l''utilisateur',
+  `token` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'jeton unique pour récupération de mdp',
+  `date` datetime NOT NULL COMMENT 'Date de validité du jeton',
+  PRIMARY KEY (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des demandes de reset de passwd';
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

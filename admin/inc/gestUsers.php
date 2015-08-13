@@ -59,13 +59,13 @@ switch ($mode) {
 				$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
 				if (!($acronyme))
 					die('missing user');
-				$user = $user->oldUser($acronyme,$Application);
+				$user = user::identiteProf($acronyme);
 				$nomPrenom = $user['nom'].' '.$user['prenom'];
-				$smarty->assign('acronyme', $acronyme);
-				$smarty->assign('nomPrenom', $nomPrenom);
-				$smarty->assign('mode', 'delUser');
+				$smarty->assign('acronyme',$acronyme);
+				$smarty->assign('nomPrenom',$nomPrenom);
+				$smarty->assign('mode',$mode);
 				$smarty->assign('etape','effacement');
-				$smarty->assign('corpsPage', 'confirmUserDel');
+				$smarty->assign('corpsPage','confirmUserDel');
 				break;
 			case 'effacement':
 				// suppression définitive de l'utilisateur
@@ -85,6 +85,10 @@ switch ($mode) {
 									'urgence'=>'danger'));
 				// break; pas de  break
 			default:
+				// ********************************************************************************************
+				// listOprhanUsers() sans doute pas nécessaire: on peut effacer un prof de la table pfofsCours
+				// sans problème d'intégrité référentielles À VÉRIFIER !!!!
+				// ********************************************************************************************
 				$smarty->assign('listeProfs', $Application->listOrphanUsers());
 				$smarty->assign('action',$action);
 				$smarty->assign('mode',$mode);
@@ -93,14 +97,14 @@ switch ($mode) {
 				break;
 			}
 		break;
-	
+
 	case 'affectation': // affectation en masse des utilisateurs aux applications
 		$smarty->assign('usersList', $Ecole->listeProfs());
 		$smarty->assign('listeApplications', $Application->listeApplis(true));
 		$smarty->assign('listeDroits', $Application->listeDroits());
 		$smarty->assign('corpsPage', 'affectDroits');
 		break;
-	
+
 	case 'saveDroits': // enregistrement des droits précisés dans l'option ci-dessus
 		if (isset($_POST['usersList']))
 			$usersList = $_POST['usersList']; else die("no user list");

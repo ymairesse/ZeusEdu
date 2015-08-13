@@ -12,11 +12,9 @@
 
 </head>
 <body>
-	
-{include file="menu.tpl"}
 
 <div class="container">
-	
+
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
@@ -45,35 +43,35 @@
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
-	
+
 window.setTimeout(function() {
     $(".auto-fadeOut").fadeTo(500, 0).slideUp(500, function(){
-        $(this).remove(); 
+        $(this).remove();
 	    });
 	}, 3000);
 
 $(document).ready(function(){
-		
+
 	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page; sauf les datepickers
 	if ($("#corpsPage form:visible").length != 0)
 		$("#corpsPage form input:visible:enabled").not('.datepicker,.timepicker').first().focus();
 		else
 		$("form input:visible:enabled").not('.datepicker,.timepicker').first().focus();
-		
+
 	$("*[title]").tooltip();
-	
+
 	$(".pop").popover({
 		trigger:'hover'
 		});
-	
+
 	$(".pop").click(function(){
 		$(".pop").not(this).popover("hide");
 		})
-	
+
 	$("input").tabEnter();
-	
+
 	$("input").attr("autocomplete","off");
-		
+
 });
 
 </script>

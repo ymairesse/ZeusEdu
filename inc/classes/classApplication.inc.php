@@ -357,39 +357,91 @@ class Application {
 		}
 
 	/**
-	 * régénération d'un mot de passe et envoi à l'utilisateur
+	 * génération d'un lien pour réinitialiser le mot de passe
 	 * @param $acronyme
 	 * @return CONSTANTE USERNAME
 	 */
-	public function renvoiMdp ($acronyme) {
-		if (isset($acronyme)) {
-			$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-			$sql = "SELECT nom, prenom, mail FROM ".PFX."profs ";
-			$sql .= "WHERE acronyme='$acronyme' ";
-			$resultat = $connexion->query($sql);
-			if ($resultat) {
-				// cet acronyme existe. On a peut-etre une adresse e-mail
-				$ligne = $resultat->fetch();
-				$mail = $ligne['mail'];
-				if ($mail != '') {
-					// génération d'un nouveau mot de passe
-					$nouveauMotDePasse = self::generatePassword(8, 3);
-					// encodage md5
-					$md5Mdp = md5($nouveauMotDePasse);
-					$sql = "UPDATE ".PFX."profs SET mdp = '$md5Mdp' ";
-					$sql .= "WHERE acronyme='$acronyme'";
-					$resultat = $connexion->exec($sql);
-					mail($mail, PWD." ".TITREGENERAL, sprintf(NEWPWD, $nouveauMotDePasse),
-						 "From: ".ROBOT."@".DOMAIN);
-					mail(MAILADMIN, PWD, "$acronyme : $mail");
-					echo sprintf (NEWPWDSEND, $mail);
-					self::DeconnexionPDO($connexion);
-					}
-					else echo NOMAIL.ADMINISTRATOR;
-			}
+	public function renvoiMdp ($identite, $identiteReseau) {
+		$acronyme = $identite['acronyme'];
+		$mail = $identite['mail'];
+		if ($mail != '') {
+			// on peut générer un enregistrement dans la table des lostPasswd
+			$token = md5(microtime());
+
+			$connexion = self::connectPDO (SERVEUR, BASE, NOM, MDP);
+			$sql = "INSERT INTO ".PFX."lostPasswd ";
+			$sql .= "SET user='$acronyme', token='$token', date = NOW + INTERVAL 2 DAY ";
+			$sql .= "ON DUPLICATE KEY UPDATE token='$token', date = NOW + INTERVAL 2 DAY ";
+			$resultat = $connexion->exec($sql);
+			self::DeconnexionPDO($connexion);
+
+			$jSemaine = strftime('%A');
+			$date = date("d/m/Y");
+			$heure = date("H:i");
+
+			require_once('../smarty/Smarty.class.php');
+			$smarty = new Smarty;
+			$smarty->assign('date',$date);
+			$smarty->assign('heure',$heure);
+			$smarty->assign('jour',$jSemaine);
+			$smarty->assign('TITRECOURT',TITRECOURT);
+			$smarty->assign('expediteur',MAILADMIN);
+			$smarty->assign('ECOLE',ECOLE);
+			$smarty->assign('BASEDIR',BASEDIR);
+			// $smarty->assign('NEWPWD',NEWPWD);
+			$smarty->assign('identiteReseau',$identiteReseau);
+			$smarty->assign('identite',$identite);
+			$smarty->assign('token',$token);
+
+			$texteFinal =  $smarty->fetch('../templates/texteMailmdp.tpl');
+
+			require_once('../phpMailer/class.phpmailer.php');
+			$mail = new PHPmailer();
+			$mail->IsHTML(true);
+			$mail->CharSet = 'UTF-8';
+			$mail->From=MAILADMIN;
+			$mail->FromName=ADMINNAME;
+			$mail->AddAddress($identite['mail']);
+			$mail->Subject=NEWPWD;
+			$mail->Body = $texteFinal;
+			return (!$mail->Send());
 		}
-		else echo USERNAME;
 	}
+
+	// /**
+	//  * régénération d'un mot de passe et envoi à l'utilisateur
+	//  * @param $acronyme
+	//  * @return CONSTANTE USERNAME
+	//  */
+	// public function renvoiMdp ($acronyme) {
+	// 	if (isset($acronyme)) {
+	// 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+	// 		$sql = "SELECT nom, prenom, mail FROM ".PFX."profs ";
+	// 		$sql .= "WHERE acronyme='$acronyme' ";
+	// 		$resultat = $connexion->query($sql);
+	// 		if ($resultat) {
+	// 			// cet acronyme existe. On a peut-etre une adresse e-mail
+	// 			$ligne = $resultat->fetch();
+	// 			$mail = $ligne['mail'];
+	// 			if ($mail != '') {
+	// 				// génération d'un nouveau mot de passe
+	// 				$nouveauMotDePasse = self::generatePassword(8, 3);
+	// 				// encodage md5
+	// 				$md5Mdp = md5($nouveauMotDePasse);
+	// 				$sql = "UPDATE ".PFX."profs SET mdp = '$md5Mdp' ";
+	// 				$sql .= "WHERE acronyme='$acronyme'";
+	// 				$resultat = $connexion->exec($sql);
+	// 				mail($mail, PWD." ".TITREGENERAL, sprintf(NEWPWD, $nouveauMotDePasse),
+	// 					 "From: ".ROBOT."@".DOMAIN);
+	// 				mail(MAILADMIN, PWD, "$acronyme : $mail");
+	// 				echo sprintf (NEWPWDSEND, $mail);
+	// 				self::DeconnexionPDO($connexion);
+	// 				}
+	// 				else echo NOMAIL.ADMINISTRATOR;
+	// 		}
+	// 	}
+	// 	else echo USERNAME;
+	// }
 
 
 	public function listeFlashInfos ($module) {
@@ -1436,6 +1488,113 @@ class Application {
 			}
 		}
 		return $listeDates;
+		}
+
+	/**
+	* Création d'un lien enregistré dans la base de données pour la récupération du mdp
+	* @param void()
+	* @return string
+	*/
+	public function createPasswdLink($userName){
+		$link = md5(microtime());
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "INSERT INTO ".PFX."lostPasswd ";
+		$sql .= "SET user='$userName', token='$link', date=NOW() + INTERVAL 2 DAY ";
+		$sql .= "ON DUPLICATE KEY UPDATE token='$link', date=NOW() + INTERVAL 2 DAY ";
+		$resultat = $connexion->exec($sql);
+		Application::DeconnexionPDO($connexion);
+		return $link;
+		}
+
+	/**
+	 * Envoie un mail de rappel de mot de passe à l'utlisateur dont on a l'adresse
+	 * @param $link : le lien de l'adresse où changer le mdp
+	 * @param $identite	: toutes les informations d'identité de l'utilisateur
+	 * @param $identiteReseau : informations relatives à la connexion (IP,...)
+	 * @return boolean
+	 */
+	public function mailPasswd($link, $identite, $identiteReseau){
+		$jSemaine = strftime('%A');
+		$date = date("d/m/Y");
+		$heure = date("H:i");
+
+		$smarty = new Smarty;
+		$smarty->assign('date',$date);
+		$smarty->assign('heure',$heure);
+		$smarty->assign('jour',$jSemaine);
+		$smarty->assign('expediteur',MAILADMIN);
+		$smarty->assign('identiteReseau',$identiteReseau);
+		$smarty->assign('identite',$identite);
+		$smarty->assign('ECOLE',ECOLE);
+		$smarty->assign('BASEDIR',BASEDIR);
+		$smarty->assign('TITRECOURT',TITRECOURT);
+		$smarty->assign('token',$link);
+		$texteFinal =  $smarty->fetch('../templates/texteMailmdp.tpl');
+		require_once('../phpMailer/class.phpmailer.php');
+		$mail = new PHPmailer();
+		$mail->IsHTML(true);
+		$mail->CharSet = 'UTF-8';
+		$mail->From=MAILADMIN;
+		$mail->FromName=ADMINNAME;
+		$mail->AddAddress($identite['mail']);
+		$mail->Subject=NEWPWD;
+		$mail->Body = $texteFinal;
+		return (!$mail->Send());
+		}
+
+	/**
+	* recherche la présence d'un token donné dans la BD pour un utilisateur donné
+	* @param $token : le token cherché
+	* @param $user : le nom d'utilisateur correspondant au token
+	* @return boolean
+	*/
+	public function chercheToken($token, $user){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT user, token, date ";
+		$sql .= "FROM ".PFX."lostPasswd ";
+		$sql .= "WHERE token='$token' AND user='$user' AND date >= NOW() ";
+		$sql .= "LIMIT 1 ";
+
+		$resultat = $connexion->query($sql);
+		$userName = '';
+		if ($resultat) {
+			$resultat->setFetchMode(PDO::FETCH_ASSOC);
+			$ligne = $resultat->fetch();
+			$userName = $ligne['user'];
+			}
+		Application::DeconnexionPDO($connexion);
+		return $userName;
+		}
+
+	/**
+	* Enregistre le mot de passe provenant du formulaire et correspondant à l'utilisateur indiqué
+	* @param array $post : contenu du formulaire
+	* @param string $userName : nom d'utilisateur
+	* @return nombre d'enregistrements réussis (normalement 1)
+	*/
+	public function savePasswd($post){
+		$passwd = isset($post['passwd'])?$post['passwd']:Null;
+		$passwd2 = isset($post['passwd2'])?$post['passwd2']:Null;
+		$token = $post['token'];
+		// confirmation du userName dans la BD (sécurité)
+		$userName = strtoupper($this->chercheToken($post['token'],$post['userName']));
+		$nb = 0;
+		if (($passwd == $passwd2) && ($userName != '') && (strlen($passwd) >= 8)){
+			$passwd = md5($passwd);
+			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+			$sql = "UPDATE ".PFX."profs ";
+			$sql .= "SET mdp = '$passwd' ";
+			$sql .= "WHERE UPPER(acronyme) = '$userName' ";
+			$resultat = $connexion->exec($sql);
+			if ($resultat)
+				$nb=1;
+			// suppression de tous les tokens de cet utilisateur dans la table des mots de passe à récupérer
+			$sql = "DELETE FROM ".PFX."lostPasswd ";
+			$sql .= "WHERE user = '$userName' ";
+			$resultat = $connexion->exec($sql);
+			Application::DeconnexionPDO($connexion);
+			}
+		return $nb;
 		}
 }
 ?>

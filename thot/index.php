@@ -31,7 +31,8 @@ switch ($action) {
 		include_once('inc/editNotifications.inc.php');
 		break;
 	case 'connexions':
-		include_once('inc/connexions.inc.php');
+		if ($userStatus == 'admin')
+			include_once('inc/connexions.inc.php');
 		break;
 
 	case 'admin':
