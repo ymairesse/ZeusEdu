@@ -59,21 +59,25 @@ switch ($mode) {
 			}
 		$smarty->assign('selecteur','selectBulletinCours');
 		if (isset($coursGrp) && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
+			$identite = $user->identite();
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 			$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
-			
+			$module = Application::repertoireActuel();
 			$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
 			$listeCotes = ($listeTravaux != Null)?$Bulletin->listeCotesCarnet($listeTravaux):Null;
 			$listeMoyennes = $Bulletin->listeMoyennesCarnet($listeCotes);
+			$smarty->assign('identite',$identite);
+			$smarty->assign('acronyme',$acronyme);
 			$smarty->assign('listeEleves', $listeEleves);
 			$smarty->assign('listeTravaux', $listeTravaux);
 			$smarty->assign('listeCotes', $listeCotes);
 			$smarty->assign('listeMoyennes', $listeMoyennes);
 			$smarty->assign('listeCompetences', $listeCompetences);
-			$smarty->assign ('corpsPage', 'showCarnet');			
+			$smarty->assign('module',$module);
+			$smarty->assign ('corpsPage', 'showCarnet');
 			}
 		break;
-	
+
 	case 'oneClick':
 		$effaceDetails = isset($_POST['effaceDetails'])?true:Null;
 		$smarty->assign('effaceDetails',$effaceDetails);
@@ -81,7 +85,7 @@ switch ($mode) {
 		switch ($etape) {
 			case 'transfert':
 				$listeCompetences = $Bulletin->listeCompetences($coursGrp);
-				// vérifier que des poids ont été attribués aux compétences			
+				// vérifier que des poids ont été attribués aux compétences
 				$listePoidsOK = $Bulletin->poidsCompetencesOK($coursGrp,$bulletin,$listeCompetences);
 				if ($listePoidsOK['tutti'] == false) {
 					$smarty->assign('erreursPoids',$listePoidsOK['details']);
@@ -94,14 +98,14 @@ switch ($mode) {
 							$Bulletin->effaceDetailsBulletin($bulletin,current($listeCompetences),$coursGrp, $listeLocks,$listeEleves);
 							}
 						$Res = $Bulletin->transfertCarnetCotes($_POST, $listeLocks);
-						
+
 						// -------------------------------------------------------------------------------------
 						// recalculs APRES ENREGISTREMENT ------------------------------------------------------
-						// recherche de la liste des nouvelles cotes par élève, par compétence et par type (form ou cert) 
+						// recherche de la liste des nouvelles cotes par élève, par compétence et par type (form ou cert)
 						// dans le bulletion indiqué
 						$ponderations = $Bulletin->getPonderations($coursGrp, $bulletin);
 						$listeCotes = $Bulletin->listeCotes($listeEleves, $coursGrp, $listeCompetences, $bulletin);
-						// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération		
+						// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération
 						$listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 						// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 						$listeSituationsAvant = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
@@ -109,7 +113,7 @@ switch ($mode) {
 						$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
 						$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 						$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
-						
+
 						$texte = sprintf('%d cotes enregistré(s)<br>%d cotes refusées', $Res['ok'],$Res['ko']);
 						if ($Res['ko']>0) {
 							$texte .= ' (bulletin verrouillé?)';
@@ -132,7 +136,7 @@ switch ($mode) {
 						$smarty->assign('corpsPage', 'noTransfert');
 						}
 					else {
-					$smarty->assign('erreurTransfert',false);						
+					$smarty->assign('erreurTransfert',false);
 					$listeCompetences = $Bulletin->listeCompetencesBulletin ($coursGrp, $bulletin);
 					$listeCotesEleves = $Bulletin->listeCotesCompFormCert ($listeColonnes);
 					$sommesBrutesCotes = $Bulletin->sommesBruteCotes($listeColonnes, $listeCotesEleves);
@@ -161,7 +165,7 @@ switch ($mode) {
 						);
 				// pas de break;
 				// break;
-				default: 
+				default:
 					$sommesPonderations = $Bulletin->sommesPonderations($coursGrp);
 					$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
 					$listeCompetences = current($Bulletin->listeCompetences($coursGrp));

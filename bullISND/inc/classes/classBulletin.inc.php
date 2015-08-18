@@ -3,7 +3,7 @@
 require(INSTALL_DIR."/fpdf17/fpdf.php");
 require(INSTALL_DIR."/inc/classes/class.pdfrotate.php");
 require(INSTALL_DIR."/inc/classes/class.pdf.php");
-require(INSTALL_DIR."/inc/classes/html2pdf.php");
+// require(INSTALL_DIR."/inc/classes/html2pdf.php");
 
 class Bulletin {
 
