@@ -1,5 +1,3 @@
-<h2>Changement de votre mot de passe ÉTAPE 3</h2>
-
 <form name="formPasswd" id="formPasswd" method="POST" action="index.php" role="form" class="form-vertical" autocomplete="off">
 
     <div class="row">

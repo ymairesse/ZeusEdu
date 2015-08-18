@@ -21,21 +21,21 @@ switch ($mode) {
 		$fileType = $Application->checkFileType($nomTemporaire);
 		// au minimum, 'text/plain'
 		$textPlainOK = (strpos($fileType,'text/plain')===0);
-		
+
 		// lecture de la liste des champs de la table dans la BD
 		$champs = $Application->SQLtableFields2array($table);
 		$nomsChamps = $Application->nomsChampsBD($champs);
-		
+
 		$rubriquesErreurs = array();
 		if ($textPlainOK) {	// c'est bien un fichier "text"
 			if (!(move_uploaded_file($nomTemporaire, $table.".csv"))) die("upload failed");
-			
+
 			$tableau = $Application->csv2array($table);
 			// on ne retient que l'entête
 			$entete = array_shift($tableau);
 			$smarty->assign('tableau',$tableau);
 			$smarty->assign('table',$table);
-			
+
 			// Il y a peut-être des différences entre les deux modèles
 			$differences = $Application->hiatus($entete, $nomsChamps);
 			if ($differences == Null) {

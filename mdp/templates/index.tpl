@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-	<title>{$titre}</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="-1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{$titre}</title>
 
-	<link rel="stylesheet" href="../screen.css" type="text/css" media="screen">
-	<link rel="stylesheet" href="../print.css" type="text/css" media="print">
-	<link rel="stylesheet" href="../bootstrap/fa/css/font-awesome.min.css" type="text/css" media="screen, print">
-	<link rel="stylesheet" href="../font-awesome-animation.css" type="text/css" media="screen">
+{include file='../../javascript.js'}
+{include file='../../styles.sty'}
 
-	<script type="text/javascript" src="../js/jquery-2.1.3.min.js"></script>
-	<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../js/jquery.validate.js"></script>
 </head>
 <body>
 	<div class="container">

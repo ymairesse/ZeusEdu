@@ -1,7 +1,5 @@
 <script type="text/javascript" src="../js/jquery-2.1.3.min.js"></script>
 
-<!-- <script type="text/javascript" src="../js/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script> -->
-
 <script type="text/javascript" src="../js/jquery.validate.js"></script>
 <script type="text/javascript" src="../js/jquery.blockUI.js"></script>
 <script type="text/javascript" src="../js/jquery.enter2tab.js"></script>

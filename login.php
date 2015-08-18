@@ -7,7 +7,7 @@ require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
 $Application->Normalisation();
 
-// définition de la class USER 
+// définition de la class USER
 require_once (INSTALL_DIR."/inc/classes/classUser.inc.php");
 
 // extraire l'identifiant et le mot de passe
@@ -30,7 +30,7 @@ if (!empty($acronyme) && !empty($mdp)) {
 		}
 		else {
 			$data['mdp']= $mdp;
-			if ($Application->mailAlerte($user,'mdp', $data))
+			if ($Application->mailAlerte($acronyme, $user,'mdp', $data))
 				header("Location: accueil.php?message=erreurMDP");
 				else header("Location: accueil.php?message=erreurMDP");
 			}
@@ -38,4 +38,4 @@ if (!empty($acronyme) && !empty($mdp)) {
 	else
 	// le nom d'utilisateur ou le mot de passe n'ont pas été donnés
 	header("Location: accueil.php?erreur=manque");
-?>    
+?>
