@@ -43,9 +43,13 @@
 			<h4>{$titre}</h4>
 
 			<form class="form-vertical" role="form" id="login" action="login.php" method="POST">
-				<fieldset>
-					<legend>Veuillez vous identifier</legend>
+				<div class="panel panel-default">
+					
+					<div class="panel-heading">
+						<h4 class="panel-title">Veuillez vous identifier</h4>
+					</div>
 
+					<div class="panel-body">
 					<div class="form-group">
 						<label for="name" class="control-label sr-only">Nom d'utilisateur</label>
 						<input type="text" id="acronyme" name="acronyme" class="form-control input-lg" placeholder="Nom d'utlisateur" autocomplete="off">
@@ -63,11 +67,13 @@
 							<button class="btn btn-default btn-lg" type="reset">Annuler</button>
 							<button class="btn btn-primary btn-lg" type="submit">Connexion</button>
 						</div>
-					<br class="clearfix">
-					<a href="mdp/index.php">Ciel! J'ai perdu mon mot de passe</a>
-					</button>
+					</div>  <!-- panel-body -->
 
-				</fieldset>
+					<div class="panel-footer">
+						<a href="mdp/index.php">Ciel! J'ai perdu mon mot de passe</a>
+					</div>
+
+				</div>  <!-- panel -->
 			</form>
 
 		</div>  <!-- col-md- -->
@@ -79,67 +85,6 @@
 		</div>  <!-- col-md -->
 
 	</div>  <!-- row -->
-
-
-	<div class="modal fade" id="dialogueRenvoiMdp" tabindex="-1" role="dialog" aria-labelledby="dialogueRenvoiMdp" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Changer mon mot de passe</h4>
-				</div>
-				<div class="modal-body">
-					<p>Souhaitez-vous choisir un nouveau mot de passe? Un lien vous sera envoyé sur votre adresse mail professionnelle.</p>
-
-					<form name="renvoiMDP" id="renvoiMDP" action="index.php" methode="POST" role="form" class="form-vertical">
-						<div class="form-group">
-							<label for="user">Nom d'utilisateur</label>
-							<input type="text" name="acronyme" id="acro" maxlength="3" placeholder="nom d'utilisateur" class="form-control">
-							<div class="help-block">Veuillez indiquer votre nom d'utilisateur</div>
-						</div>
-
-						<div class="form-group">
-							<label>Votre adresse IP</label>
-							<p class="form-control-static">Adresse IP: {$identification.ip} ({$identification.hostname})</p>
-							<div class="help-block">Cette adresse vous identifie sur l'Internet. Elle est enregistrée.</div>
-						</div>
-					</form>
-
-				</div>  <!-- modal-body -->
-				<div class="modal-footer">
-					<button type="reset" class="btn btn-default" data-dismiss="modal">Annuler</button>
-					<button type="submit" class="btn btn-primary" id="okRenvoi">Envoyer</button>
-				</div>  <!-- modal-footer -->
-			</div>  <!-- modal-content -->
-		</div>  <!-- modal-dialog -->
-	</div>  <!-- dialogueRenvoiMdp -->
-
-
-
-	<div class="modal fade" id="confirmMail" tabindex="-1" role="dialog" aria-labelledby="confirmMail" aria-hidden="true">
-
-		<div class="mode-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4>Changement de mot de passe</h4>
-				</div>
-
-				<div class="modal-body">
-					<p>Un lien vers une adresse qui vous permettra de changer de mot de passe vient d'être envoyé à {$identite.mail}.</p>
-					<p>Si vous ne recevez pas ce mail dans les minutes qui viennent, vérifier votre dossier des "Indésirables".</p>
-					<p>Attention, le lien qui figure dans ce mail ne fonctionnera que pendant 48h à partir du moment de la demande de changement de mot de passe.<br>
-						Passé ce délai, vous devrez faire une nouvelle demande.</p>
-				</div>
-
-				<div class="modal-footer">
-					<button type="reset" class="btn btn-default" data-dismiss="modal">Fermer cette fenêtre</button>
-				</div>
-			</div>
-
-		</div>
-
-	</div>
-
 
 	<div class="modal fade" id="rappelLoi" tabindex="-1" role="dialog" aria-labelledby="rappelLoi" aria-hidden="true">
 		<div class="modal-dialog">
