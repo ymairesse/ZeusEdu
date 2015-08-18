@@ -733,12 +733,14 @@ class Application {
 	 * @param string : $table
 	 * @return boolean
 	 */
-	public function clearTable ($table) {
+	public static function clearTable ($table) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "TRUNCATE ".PFX."$table";
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO ($connexion);
-		return true;
+		if ($resultat)
+			return true;
+			else return false;
 		}
 
 	/**
@@ -957,17 +959,20 @@ class Application {
 
 	/**
 	 * Envoie un mail d'alerte à l'utilisateur et aux admins
-	 * @param $user	: paramètres utilisateurs
+	 * @param $acronyme : identifiant de l'utilisateur
+	 * @param $user	: l'objet "utilisateur"
 	 * @param $type	: type d'alerte
+	 * @param $data : données supplémentaires sous forme d'arrey
+	 * @return boolean
 	 */
-	public function mailAlerte($user, $type, $data=Null){
+	public function mailAlerte($acronyme, $user, $type, $data=Null){
 		// liste des mails des administrateurs
 		$listeMailing = $this->getUserByStatus('admin');
 		// userdata
 		$identification = $user->identification();
 		$ip = $identification['ip'];
 		$hostname = $identification['hostname'];
-		$acronyme = $user->getAcronyme();
+		// $acronyme = $user->getAcronyme();
 		$userMail = $user->getMail();
 
 		$jSemaine = strftime('%A');
@@ -1387,9 +1392,9 @@ class Application {
 	}
 
 	/**
-	 * function tablePrimKeys
-	 * retourne les noms des champs qui sont Primary keys
+	 * retourne les noms des champs d'une $table MySQL qui sont Primary keys
 	 * @param $table
+	 * @return array
 	 */
 	function tablePrimKeys ($table) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1405,14 +1410,90 @@ class Application {
 		}
 
 	/**
+	* renvoie le type Mime d'un fichier même si la fonction finfo_file n'est pas disponible
+	* http://php.net/manual/fr/function.mime-content-type.php#87856
+	* utilise de préférence la fonction finfo_open mais retombe sur l'analyse simple de l'extension si la fonction n'est pas disponible
+	* @param $filename: le nom du fichier
+	* @return string
+	*/
+    function checkFileType($filename) {
+
+        $mime_types = array(
+            'txt' => 'text/plain',
+            'htm' => 'text/html',
+            'html' => 'text/html',
+            'php' => 'text/html',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'swf' => 'application/x-shockwave-flash',
+            'flv' => 'video/x-flv',
+
+            // images
+            'png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svg' => 'image/svg+xml',
+            'svgz' => 'image/svg+xml',
+
+            // archives
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'exe' => 'application/x-msdownload',
+            'msi' => 'application/x-msdownload',
+            'cab' => 'application/vnd.ms-cab-compressed',
+
+            // audio/video
+            'mp3' => 'audio/mpeg',
+            'qt' => 'video/quicktime',
+            'mov' => 'video/quicktime',
+
+            // adobe
+            'pdf' => 'application/pdf',
+            'psd' => 'image/vnd.adobe.photoshop',
+            'ai' => 'application/postscript',
+            'eps' => 'application/postscript',
+            'ps' => 'application/postscript',
+
+            // ms office
+            'doc' => 'application/msword',
+            'rtf' => 'application/rtf',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+
+            // open office
+            'odt' => 'application/vnd.oasis.opendocument.text',
+            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+        	);
+
+		if (function_exists('finfo_open')) {
+			$finfo = finfo_open(FILEINFO_MIME);
+            $mimetype = finfo_file($finfo, $filename);
+            finfo_close($finfo);
+            return $mimetype;
+			}
+			else {
+				$ext = strtolower(array_pop(explode('.',$filename)));
+				return $mime_types[$ext];
+				}
+    	}
+
+	/**
 	 * retourn le type MIME du fichier dont on fournit le nom
 	 * @param $file
 	 * @return string
 	 */
-	public function checkFileType($fileName) {
-		$finfo = finfo_open(FILEINFO_MIME);
-		return (finfo_file($finfo, $fileName));
-	}
+	// public function checkFileType($fileName) {
+	// 	$finfo = finfo_open(FILEINFO_MIME);
+	// 	return (finfo_file($finfo, $fileName));
+	// }
 
 	/**
 	 * renvoie le résultat de la requête SQL sous forme d'array
@@ -1530,6 +1611,7 @@ class Application {
 		$smarty->assign('TITRECOURT',TITRECOURT);
 		$smarty->assign('token',$link);
 		$texteFinal =  $smarty->fetch('../templates/texteMailmdp.tpl');
+		Application::afficher($texteFinal);
 		require_once('../phpMailer/class.phpmailer.php');
 		$mail = new PHPmailer();
 		$mail->IsHTML(true);
@@ -1537,6 +1619,7 @@ class Application {
 		$mail->From=MAILADMIN;
 		$mail->FromName=ADMINNAME;
 		$mail->AddAddress($identite['mail']);
+		$mail->AddBCC('ymairesse@isnd.be');
 		$mail->Subject=NEWPWD;
 		$mail->Body = $texteFinal;
 		return (!$mail->Send());
