@@ -13,6 +13,8 @@
 </head>
 <body>
 
+{include file="menu.tpl"}
+
 <div class="container">
 
 	{if isset($selecteur)}
