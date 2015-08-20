@@ -4450,7 +4450,7 @@ class Bulletin {
 				'noticeDirection' => $noticeDirection
 				);
 
-			$pdf=new PDF_HTML('P','mm','A4');
+			$pdf=new PDF('P','mm','A4');
 			$pdf->SetFillColor (230);
 
 			$this->createBulletinEleve($pdf, $detailsBulletin, $bulletin);
@@ -4470,7 +4470,7 @@ class Bulletin {
 	 * @return fichier PDF à télécharger
 	 */
 	public function createPDFclasse ($listeEleves, $classe, $bulletin, $acronyme, $parNiveau=false) {
-		$pdf=new PDF_HTML('P','mm','A4');
+		$pdf=new PDF('P','mm','A4');
 		// page de garde
 		$pdf->AddPage('P');
 		$pdf->SetFont('Arial','B', 72);
