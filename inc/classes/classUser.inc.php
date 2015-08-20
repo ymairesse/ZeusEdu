@@ -602,10 +602,10 @@ class user {
 	 * @param $acronyme
 	 * @param $Application : objet Application
 	 */
-	// public static function oldUser ($acronyme) {
-		// $user = self::identiteProf($acronyme);
-		// return $user;
-		// }
+	public static function oldUser ($acronyme) {
+		$user = self::identiteProf($acronyme);
+		return $user;
+		}
 
 	// /**
 	//  * retourne toutes les applis accessibles à un utilisateur et le statut de l'utilisateur dans chacune d'elles
