@@ -1115,27 +1115,29 @@ class ecole {
 	 * @return integer : nmbre de passwd attribués
 	 */
     public function attribPasswdEleves ($longueur=8) {
-		// tous les élèves
+		// tous les élèves de l'école
 		$listeTousEleves = $this->listeEleves();
-		// liste des élèves qui ont déjà reçu un passwd
+		// liste des élèves qui figurent dans la table des Passwd
 		$listeElevesPasswd = $this->listeElevesPasswd();
 
         // construire la liste des élèves sans MDP
 		$listeElevesSansPasswd = array();
 		foreach ($listeTousEleves as $matricule=>&$eleve) {
 			$passwd = isset($listeElevesPasswd[$matricule]['passwd'])?$listeElevesPasswd[$matricule]['passwd']:Null;
+            // s'il n'y a pas encore de mdp, on retient l'élève pour attribution de mdp
 			if ($passwd == Null)
 				$listeElevesSansPasswd[$matricule]=array('nom'=>$eleve['nom'], 'prenom'=>$eleve['prenom']);
 			}
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."passwd ";
-		$sql .= "SET passwd=:passwd, matricule=:matricule, user=:user ";
+		$sql .= "SET passwd=:passwd, md5pwd=:md5pwd, matricule=:matricule, user=:user ";
 		$requete = $connexion->prepare($sql);
 		$resultat = 0;
 		foreach ($listeElevesSansPasswd as $matricule=>$unEleve) {
 			$user = $this->userNameEleve($unEleve['nom'], $unEleve['prenom'],$matricule);
 			$passwd = $this->randomPasswdEleve($longueur);
-			$data = array(':passwd'=>$passwd,':matricule'=>$matricule, ':user'=>$user);
+            $md5pwd = md5($passwd);
+			$data = array(':passwd'=>$passwd, ':md5pwd'=>$md5pwd, ':matricule'=>$matricule, ':user'=>$user);
 			$resultat += $requete->execute($data);
 			}
 		Application::DeconnexionPDO($connexion);
