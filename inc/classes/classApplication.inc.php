@@ -1613,7 +1613,6 @@ class Application {
 		$smarty->assign('TITRECOURT',TITRECOURT);
 		$smarty->assign('token',$link);
 		$texteFinal =  $smarty->fetch('../templates/texteMailmdp.tpl');
-		Application::afficher($texteFinal);
 		require_once('../phpMailer/class.phpmailer.php');
 		$mail = new PHPmailer();
 		$mail->IsHTML(true);
@@ -1621,7 +1620,7 @@ class Application {
 		$mail->From=MAILADMIN;
 		$mail->FromName=ADMINNAME;
 		$mail->AddAddress($identite['mail']);
-		$mail->AddBCC('ymairesse@isnd.be');
+		$mail->AddBCC(MAILADMIN);
 		$mail->Subject=NEWPWD;
 		$mail->Body = $texteFinal;
 		return (!$mail->Send());
