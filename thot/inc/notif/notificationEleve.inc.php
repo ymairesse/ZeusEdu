@@ -30,7 +30,7 @@ if ($etape == 'enregistrer') {
 			$texteMail = file_get_contents('templates/notification/texteMail.tpl');
 			$signatureMail = file_get_contents('templates/notification/signatureMail.tpl');
 			$listeMatricules = $Thot->mailer($listeMailing, $objetMail, $texteMail, $signatureMail);
-			$nbMails = $count($listeMatricules);
+			$nbMails = count($listeMatricules);
 			$texte .= sprintf("<br>%d mail envoyé ",$nbMails);
 			}
 		// voyons si un accusé de lecture est souhaité
