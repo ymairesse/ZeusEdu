@@ -772,7 +772,7 @@ CREATE TABLE IF NOT EXISTS `didac_parentLogins` (
 CREATE TABLE IF NOT EXISTS didac_passwd (
   matricule int(6) NOT NULL,
   `user` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur de l''élève',
-  passwd varchar(8) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe',
+  passwd varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe',
   mailDomain varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'domaine pour l''adresse mail',
   PRIMARY KEY (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
