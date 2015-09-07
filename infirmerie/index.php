@@ -26,25 +26,30 @@ if ($matricule != '') {
     $eleve = new Eleve($matricule);
 	$dataEleve = $eleve->getDetailsEleve();
 	$smarty->assign('eleve', $dataEleve);
-	
+
 	$classe = $dataEleve['groupe'];
 	$smarty->assign('classe',$classe);
 
 	$listeEleves = $Ecole->listeEleves($classe,'groupe');
 	$smarty->assign('listeEleves',$listeEleves);
-	
+
 	$prevNext = $Ecole->prevNext($matricule, $listeEleves);
 	$smarty->assign('prevNext',$prevNext);
-    
+
 	$titulaires = $eleve->titulaires($matricule);
 	$smarty->assign('titulaires', $titulaires);
-	
+
     require_once("inc/classes/classInfirmerie.inc.php");
     $infirmerie = new eleveInfirmerie($matricule);
     }
 
 switch ($action) {
 	case 'ficheEleve':
+        if ($etape == 'enregistrer') {
+            $infoMedicale = isset($_POST['infoMedicale'])?$_POST['infoMedicale']:Null;
+            if ($matricule != Null)
+                $nb = $infirmerie->saveInfoMedic($matricule, $infoMedicale);
+        }
 		if (isset($matricule)) {
             $smarty->assign('medicEleve',$infirmerie->getMedicEleve($matricule));
             $smarty->assign('consultEleve',$infirmerie->getVisitesEleve($matricule));
@@ -52,15 +57,15 @@ switch ($action) {
 		$smarty->assign('mode',$mode);
 		$smarty->assign('corpsPage','ficheEleve');
 		break;
-	
+
     case 'modifier':
        	require('inc/modifier.inc.php');
         break;
-	
+
     case 'supprimer':
 		require('inc/supprimer.inc.php');
         break;
-	
+
     case 'enregistrer':
 		require('inc/enregistrer.inc.php');
         break;
@@ -89,7 +94,7 @@ if ($smarty->getTemplateVars('corpsPage') == Null) {
 	$flashInfo = new flashInfo();
 	$appli = $Application->repertoireActuel();
 	$smarty->assign('flashInfos', $flashInfo->listeFlashInfos ($appli));
-	$smarty->assign('corpsPage', 'news');	
+	$smarty->assign('corpsPage', 'news');
 	}
 
 //
