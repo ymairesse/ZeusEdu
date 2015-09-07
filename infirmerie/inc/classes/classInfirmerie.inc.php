@@ -29,7 +29,7 @@ class eleveInfirmerie {
         Application::DeconnexionPDO($connexion);
 		return $ligne;
         }
-        
+
 
 	/**
 	 * retourne la liste des visites de l'élève à l'infirmerie et issue de la BD
@@ -58,7 +58,7 @@ class eleveInfirmerie {
 		return $listeVisites;
         }
 
-	/** 
+	/**
 	 * retourne les informations médicales importantes pour un élève donné
 	 * @param $matricule
 	 * @return string
@@ -103,7 +103,7 @@ class eleveInfirmerie {
         Application::DeconnexionPDO($connexion);
         return $resultat; // nombre de lignes modifiées dans la BD
         }
-		
+
 	/**
 	 * Enregistrement de l'information médicale primordiale d'un élève (en exergue sur sa fiche)
 	 * @param $matricule
@@ -121,14 +121,14 @@ class eleveInfirmerie {
 		Application::DeconnexionPDO($connexion);
         return $resultat; // nombre de lignes modifiées dans la BD
 	}
-    
+
     /**
      * Enregistrement des informations concernant une visite à l'infirmerie
      * @param $post données $_POST provenant d'un formulaire
      * @return integer : nombre de lignes modifiées dans la BD
      */
     public function enregistrerVisite($post) {
-		
+
         $consultID=$post['consultID'];
         $acronyme = addslashes($post['acronyme']);
         $matricule=addslashes($post['matricule']);
@@ -138,7 +138,7 @@ class eleveInfirmerie {
         $motif=addslashes($post['motif']);
         $traitement=addslashes($post['traitement']);
         $aSuivre=addslashes($post['aSuivre']);
-		
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($consultID) {
             // c'est une mise à jour d'une visite précédente
@@ -171,6 +171,6 @@ class eleveInfirmerie {
         Application::DeconnexionPDO($connexion);
         return $nbResultats;
         }
-}      
+}
 
 ?>

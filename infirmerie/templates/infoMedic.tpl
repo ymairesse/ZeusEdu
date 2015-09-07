@@ -35,11 +35,11 @@
 		<input type="hidden" name="matricule" value="{$matricule}">
 		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
-	
+
 	<div class="clearfix"></div>
-	
+
 	<div class="row">
-	
+
 		<div class="col-md-4 col-sm-6">
 			<div class="panel panel-default">
 				<div class="panel-header">
@@ -49,14 +49,14 @@
 					<dl>
 						<dt>Nom</dt>
 							<dd>{$medicEleve.medecin|default:'-'}</dd>
-					
+
 						<dt>Téléphone</dt>
 							<dd>{$medicEleve.telMedecin|default:'-'}</dd>
 					</dl>
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="col-md-4 col-sm-6">
 			<div class="panel panel-default">
 				<div class="panel-header">
@@ -72,8 +72,8 @@
 				</div>
 			</div>
 		</div>
-	
-	
+
+
 		<div class="col-md-4 col-sm-6">
 			<div class="panel panel-default">
 				<div class="panel-header">
@@ -91,5 +91,5 @@
 				</div>
 			</div>
 		</div>
-			
+
 	</div>  <!-- row -->
