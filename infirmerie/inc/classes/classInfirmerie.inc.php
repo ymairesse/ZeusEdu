@@ -101,7 +101,9 @@ class eleveInfirmerie {
         $sql .= "anamnese='$anamnese', medical='$medical', psy='$psy', traitement='$traitement'";
         $resultat = $connexion->exec($sql);
         Application::DeconnexionPDO($connexion);
-        return $resultat; // nombre de lignes modifiées dans la BD
+        if ($resultat)
+            return 1; // nombre de lignes modifiées dans la BD
+            else return 0;
         }
 
 	/**
