@@ -4,7 +4,7 @@
 		case 'medical':
 			$smarty->assign('medicEleve',$infirmerie->getMedicEleve($matricule));
 			$smarty->assign('action',$action);
-			$smarty->assign('mode',$mode);				
+			$smarty->assign('mode',$mode);
 			$smarty->assign('corpsPage','modifMedical');
 			break;
 		case 'visite':
@@ -18,7 +18,7 @@
 					$smarty->assign('visites',Null);
 					}
 			$smarty->assign('action',$action);
-			$smarty->assign('mode',$mode);						
+			$smarty->assign('mode',$mode);
 			$smarty->assign('corpsPage','modifVisite');
 			break;
 		case 'infoMedicale':
@@ -31,7 +31,7 @@
 					'urgence'=>'success'
 					));
 				$smarty->assign('medicEleve',$infirmerie->getMedicEleve($matricule));
-				$smarty->assign('consultEleve',$infirmerie->getVisitesEleve($matricule));					
+				$smarty->assign('consultEleve',$infirmerie->getVisitesEleve($matricule));
 				$smarty->assign('selecteur','selectClasseEleve');
 				$smarty->assign('corpsPage','ficheEleve');
 				}

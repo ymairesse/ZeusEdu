@@ -5,14 +5,14 @@ if (isset($matricule)) {
 			$nb = $infirmerie->enregistrerMedical($_POST);
 			$smarty->assign("message", array(
 				'title'=>SAVE,
-				'texte'=>"Enregistrement de: $nb fiche"),
+				'texte'=>sprintf('Enregistrement de: %d fiche',$nb),
 				3000);
 			break;
 		case 'visite':
 			$nb = $infirmerie->enregistrerVisite($_POST);
 			$smarty->assign("message", array(
 				'title'=>SAVE,
-				'texte'=>"Enregistrement de: $nb visite"),
+				'texte'=>sprintf('Enregistrement de: %d visite',$nb),
 				3000);
 			break;
 		}
