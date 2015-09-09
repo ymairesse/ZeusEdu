@@ -3,17 +3,21 @@ if (isset($matricule)) {
 	switch ($mode) {
 		case 'medical':
 			$nb = $infirmerie->enregistrerMedical($_POST);
-			$smarty->assign("message", array(
+			$message = array(
 				'title'=>SAVE,
 				'texte'=>sprintf('Enregistrement de: %d fiche',$nb),
-				3000);
+				'urgence'=>'success'
+				);
+			$smarty->assign('message',$message);
 			break;
 		case 'visite':
 			$nb = $infirmerie->enregistrerVisite($_POST);
-			$smarty->assign("message", array(
+			$message = array(
 				'title'=>SAVE,
 				'texte'=>sprintf('Enregistrement de: %d visite',$nb),
-				3000);
+				'urgence'=>'success'
+				);
+			$smarty->assign("message", $message);
 			break;
 		}
 	$smarty->assign('medicEleve',$infirmerie->getMedicEleve($matricule));
