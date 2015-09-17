@@ -276,19 +276,18 @@ class hermes {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		// création du groupe
 		if ($groupe != '') {
+			// requête preparée pour permettre les liste dont le nom contient des guillemets
 			$sql = "INSERT INTO ".PFX."hermesProprio ";
-			$sql .= "SET proprio='$acronyme', nomListe='$groupe', statut='prive' ";
-			$connexion->exec($sql);
+			$sql .= "SET proprio=:acronyme, nomListe=:groupe, statut='prive' ";
+			$requete = $connexion->prepare($sql);
+			$data = array(':acronyme'=>$acronyme, ':groupe'=>$groupe);
+			$resultat = $requete->execute($data);
 			$id = $connexion->lastInsertId();
 			}
 			else die('no mailing list name');
 
 		if ($listeMails != Null) {
 			$listeMails = self::acronymeFromMails($listeMails);
-			// insertion des membres
-			$sql = "INSERT INTO ".PFX."hermesListes ";
-			$sql .= "SET id='$id', membre=:member ";
-			$requete = $connexion->prepare($sql);
 			$nb = 0;
 			foreach ($listeMails as $mail) {
 				$sql = "INSERT INTO ".PFX."hermesListes ";
@@ -640,8 +639,10 @@ class hermes {
 				case 'abonner':
 					foreach ($listValues as $id) {
 						$nomListe = $post['liste_'.$id];
+						$nomListe = $connexion::quote($nomListe);
 						$sql = "INSERT IGNORE INTO ".PFX."hermesProprio ";
 						$sql .= "SET id='$id', proprio='$acronyme', nomListe='$nomListe', statut='abonne' ";
+						die($sql);
 						$resultat += $connexion->exec($sql);
 						}
 					break;
