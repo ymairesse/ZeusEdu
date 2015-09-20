@@ -8,6 +8,8 @@
 
 <script type="text/javascript" src="../bootstrap/js/bootstrap.min.js"></script>
 
+<script type="text/javascript" src="../js/moment.min.js"></script>
+
 <script type="text/javascript" src="../js/bootstrapDatepicker/js/bootstrap-datepicker.js"></script>
 <script type="text/javascript" src="../js/bootstrapDatepicker/js/locales/bootstrap-datepicker.fr.js"></script>
 <script type="text/javascript" src="../js/boostrapTimepicker/js/bootstrap-timepicker.js"></script>
