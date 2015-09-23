@@ -271,10 +271,9 @@ class Application {
 		return $ok;
 	}
 
-	/*
-	 * function affecteDroitsApplications
-	 * @param $usersList, $applications, $droits
+	/**
 	 * affectation des droits pour les applications aux utilisateurs
+	 * @param $usersList, $applications, $droits
 	 */
 	function affecteDroitsApplications ($usersList, $applications, $droits) {
 		if ((count($usersList)>0) && (count($applications)>0) && (count($droits)>0)) {
@@ -407,42 +406,6 @@ class Application {
 			return (!$mail->Send());
 		}
 	}
-
-	// /**
-	//  * régénération d'un mot de passe et envoi à l'utilisateur
-	//  * @param $acronyme
-	//  * @return CONSTANTE USERNAME
-	//  */
-	// public function renvoiMdp ($acronyme) {
-	// 	if (isset($acronyme)) {
-	// 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-	// 		$sql = "SELECT nom, prenom, mail FROM ".PFX."profs ";
-	// 		$sql .= "WHERE acronyme='$acronyme' ";
-	// 		$resultat = $connexion->query($sql);
-	// 		if ($resultat) {
-	// 			// cet acronyme existe. On a peut-etre une adresse e-mail
-	// 			$ligne = $resultat->fetch();
-	// 			$mail = $ligne['mail'];
-	// 			if ($mail != '') {
-	// 				// génération d'un nouveau mot de passe
-	// 				$nouveauMotDePasse = self::generatePassword(8, 3);
-	// 				// encodage md5
-	// 				$md5Mdp = md5($nouveauMotDePasse);
-	// 				$sql = "UPDATE ".PFX."profs SET mdp = '$md5Mdp' ";
-	// 				$sql .= "WHERE acronyme='$acronyme'";
-	// 				$resultat = $connexion->exec($sql);
-	// 				mail($mail, PWD." ".TITREGENERAL, sprintf(NEWPWD, $nouveauMotDePasse),
-	// 					 "From: ".ROBOT."@".DOMAIN);
-	// 				mail(MAILADMIN, PWD, "$acronyme : $mail");
-	// 				echo sprintf (NEWPWDSEND, $mail);
-	// 				self::DeconnexionPDO($connexion);
-	// 				}
-	// 				else echo NOMAIL.ADMINISTRATOR;
-	// 		}
-	// 	}
-	// 	else echo USERNAME;
-	// }
-
 
 	public function listeFlashInfos ($module) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -602,6 +565,15 @@ class Application {
 	 */
 	public static function dateNow(){
 		return date('d/m/Y');
+		}
+
+	/**
+	* heure à l'instant
+	* @param void()
+	* @return string
+	*/
+	public static function timeNow(){
+		return date('H:m:i');
 		}
 
 	/**
@@ -1261,9 +1233,9 @@ class Application {
 		return $listeTables;
 	}
 	/**
-	* function SQLtableFields2array
-	* @param $table
 	* renvoie un tableau indiquant les noms des champs de la table MySQL indiquée
+	* @param $table
+	* @result array
 	*/
 	public static function SQLtableFields2array ($table) {
 	   $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1329,29 +1301,29 @@ class Application {
 	 * @return array : liste des erreurs et des réussites
 	 */
 	public function newPasswdAssign ($table) {
-	$tableauCSV = self::csv2array($table);
-	$entete = array_shift($tableauCSV);
-	$erreurs = 0; $ajouts = 0;
-	$tousEleves = self::listeTousEleves();
-	$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-	foreach ($tableauCSV as $unEleve) {
-		$matricule = $unEleve[0];
-		$passwd = $unEleve[2];
-		$eleve = $tousEleves[$matricule];
-		$nom = $tousEleves[$matricule]['nom'];
-		$prenom = $tousEleves[$matricule]['prenom'];
-		$username = self::username($matricule, $nom, $prenom);
-		$sql = "INSERT INTO ".PFX."passwd ";
-		$sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
-		// en cas de doublon, seul le "mot de passe" est modifié
-		$sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
-		$resultat = $connexion->exec($sql);
-		if ($resultat === false)
-			$erreurs++;
-			else $ajouts++;
-		}
-	self::DeconnexionPDO($connexion);
-	return array("erreurs"=>$erreurs, "ajouts"=>$ajouts);
+		$tableauCSV = self::csv2array($table);
+		$entete = array_shift($tableauCSV);
+		$erreurs = 0; $ajouts = 0;
+		$tousEleves = self::listeTousEleves();
+		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+		foreach ($tableauCSV as $unEleve) {
+			$matricule = $unEleve[0];
+			$passwd = $unEleve[2];
+			$eleve = $tousEleves[$matricule];
+			$nom = $tousEleves[$matricule]['nom'];
+			$prenom = $tousEleves[$matricule]['prenom'];
+			$username = self::username($matricule, $nom, $prenom);
+			$sql = "INSERT INTO ".PFX."passwd ";
+			$sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
+			// en cas de doublon, seul le "mot de passe" est modifié
+			$sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
+			$resultat = $connexion->exec($sql);
+			if ($resultat === false)
+				$erreurs++;
+				else $ajouts++;
+			}
+		self::DeconnexionPDO($connexion);
+		return array("erreurs"=>$erreurs, "ajouts"=>$ajouts);
 	}
 
 	public static function stripAccents($string){
@@ -1408,84 +1380,6 @@ class Application {
 		Application::DeconnexionPDO($connexion);
 		return $keys;
 		}
-
-	/**
-	* renvoie le type Mime d'un fichier même si la fonction finfo_file n'est pas disponible
-	* http://php.net/manual/fr/function.mime-content-type.php#87856
-	* utilise de préférence la fonction finfo_open mais retombe sur l'analyse simple de l'extension si la fonction n'est pas disponible
-	* @param $filename: le nom du fichier
-	* @return string
-	*/
-    // function checkFileType($filename) {
-	//
-    //     $mime_types = array(
-    //         'txt' => 'text/plain',
-    //         'htm' => 'text/html',
-    //         'html' => 'text/html',
-    //         'php' => 'text/html',
-    //         'css' => 'text/css',
-    //         'js' => 'application/javascript',
-    //         'json' => 'application/json',
-    //         'xml' => 'application/xml',
-    //         'swf' => 'application/x-shockwave-flash',
-    //         'flv' => 'video/x-flv',
-	// 		'csv' => 'text/plain',
-	//
-    //         // images
-    //         'png' => 'image/png',
-    //         'jpe' => 'image/jpeg',
-    //         'jpeg' => 'image/jpeg',
-    //         'jpg' => 'image/jpeg',
-    //         'gif' => 'image/gif',
-    //         'bmp' => 'image/bmp',
-    //         'ico' => 'image/vnd.microsoft.icon',
-    //         'tiff' => 'image/tiff',
-    //         'tif' => 'image/tiff',
-    //         'svg' => 'image/svg+xml',
-    //         'svgz' => 'image/svg+xml',
-	//
-    //         // archives
-    //         'zip' => 'application/zip',
-    //         'rar' => 'application/x-rar-compressed',
-    //         'exe' => 'application/x-msdownload',
-    //         'msi' => 'application/x-msdownload',
-    //         'cab' => 'application/vnd.ms-cab-compressed',
-	//
-    //         // audio/video
-    //         'mp3' => 'audio/mpeg',
-    //         'qt' => 'video/quicktime',
-    //         'mov' => 'video/quicktime',
-	//
-    //         // adobe
-    //         'pdf' => 'application/pdf',
-    //         'psd' => 'image/vnd.adobe.photoshop',
-    //         'ai' => 'application/postscript',
-    //         'eps' => 'application/postscript',
-    //         'ps' => 'application/postscript',
-	//
-    //         // ms office
-    //         'doc' => 'application/msword',
-    //         'rtf' => 'application/rtf',
-    //         'xls' => 'application/vnd.ms-excel',
-    //         'ppt' => 'application/vnd.ms-powerpoint',
-	//
-    //         // open office
-    //         'odt' => 'application/vnd.oasis.opendocument.text',
-    //         'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-    //     	);
-	//
-	// 	if (function_exists('finfo_opens')) {
-	// 		$finfo = finfo_open(FILEINFO_MIME);
-    //         $mimetype = finfo_file($finfo, $filename);
-    //         finfo_close($finfo);
-    //         return $mimetype;
-	// 		}
-	// 		else {
-	// 			afficher($filename, true);
-	// 			$ext = strtolower(array_pop(explode('.',$filename)));
-	// 			return $mime_types[$ext];
-	// 			}
-    // 	}
 
 	/**
 	 * retourn le type MIME du fichier dont on fournit le nom
