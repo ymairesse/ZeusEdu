@@ -4,21 +4,21 @@
 	<form enctype="multipart/form-data" name="mailing" id="mailing" method="POST" action="index.php" role="form" class="form-vertical">
 
 	<div class="row">
-		
+
 		<div class="col-md-3 col-xs-12 selectMail ">
-			
+
 				{include file="destinataires.tpl"}
-			
+
 		</div>  <!-- col-md-... -->
-		
+
 		<div class="col-md-9 col-xs-12">
-			
+
 			<div class="panel panel-default">
-			
+
 				<div class="panel-header">
 					<h3>Votre mail</h3>
 				</div>
-				
+
 				<div class="panel-body">
 					<div class="form-group">
 						<label for="expediteur">Expéditeur</label>
@@ -34,7 +34,7 @@
 							<p class="form-control-static" style="font-weight:bold">{$identite.prenom} {$identite.nom}</p>
 						{/if}
 					</div>  <!-- form-group -->
-						
+
 					<div class="form-group">
 						<span id="grouper" title="créer un groupe" style="display:none"><img src="images/groupe.png" alt="grouper"></span>
 						<label>Destinataire(s):</label>
@@ -46,16 +46,16 @@
 						<input type="text" id="groupe" name="groupe" placeholder="Nom du groupe" class="form-control">
 						<div class="help-block">Choisissez un nom pour ce nouveau groupe de mailing</div>
 					</div>
-				
+
 					<div class="form-group">
 						<label for="objet">Objet</label>
 						<input type="text" name="objet" id="objet" placeholder="Objet de votre mail" class="form-control">
 					</div>
-					
+
 					<button class="btn btn-lg btn-primary pull-right" type="Submit" name="submit">Envoyer</button>
-					
+
 					<textarea id="texte" name="texte" rows="15" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true"></textarea>
-					
+
 						<span class="pull-right">Ajout de disclaimer
 						<input type="checkbox" name="disclaimer" id='disclaimer' value="1" checked="checked">
 						</span>
@@ -64,29 +64,31 @@
 						<p class="labelpj" id="pj{$n}"><span style="float:left">Pièce jointe</span> <input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}"></p>
 					{/foreach}
 
-					<input type="hidden" name="MAX_FILE_SIZE" value="10000000">					
+					<input type="hidden" name="MAX_FILE_SIZE" value="10000000">
 					<input type="hidden" id="nomExpediteur" name="nomExpediteur" value="{$identite.prenom} {$identite.nom}">
 					<input type="hidden" name="mode" value="{$mode}">
 					<input type="hidden" name="action" value="{$action}">
-		
+
 				</div>  <!-- panel-body -->
-			
+
 			</div>  <!-- panel -->
-		
+
 		</div>  <!-- col-md-... -->
-	
+
 		</div>  <!-- row -->
-	
+
 	</form>
 
 </div>  <!-- container -->
 
 <script type="text/javascript">
-	
+
 $(document).ready(function(){
-	
+
 	$(".teteListe").click(function(){
-		$(this).parent().next().toggle()
+		if ($(this).parent().next().hasClass('listeMails'))
+			$(this).parent().next().toggle();
+			else alert("Cette liste est vide");
 		})
 
 	$(".checkListe").click(function(event){

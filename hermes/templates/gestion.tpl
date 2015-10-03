@@ -12,11 +12,11 @@
 		<div class="tab-pane active" id="tabs-1">
 			{include file="inc/supprMailing.inc.tpl"}
 		</div>
-	
+
 		<div class="tab-pane" id="tabs-2">
 			{include file="inc/addMailing.inc.tpl"}
 		</div>
-	
+
 		<div class="tab-pane" id="tabs-3">
 			{include file="inc/abonnements.inc.tpl"}
 		</div>
@@ -27,21 +27,7 @@
 
 <script type="text/javascript">
 
-<!-- quel est l'onglet actif? -->
-var onglet = "{$onglet|default:''}";
-
 $(document).ready(function(){
-
-	<!-- si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet' -->
-	$("#tabs li a").click(function(){
-		var ref=$(this).attr("href").split("-")[1];
-		$(".onglet").val(ref);
-		});
-
-	$("#tabs").tabs();
-
-	<!-- activer l'onglet dont le numéro a été passé -->
-	$("#tabs li a[href='#tabs-'+onglet+']").tab('show');
 
 	$(".checkListe").click(function(event){
 		event.stopPropagation();
