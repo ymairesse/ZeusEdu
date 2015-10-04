@@ -6,26 +6,28 @@
 {/if}
 
 <form name="signalement" method="POST" action="index.php" id="signalement" role="form" class="form-vertical">
-	
+
 <input type="hidden" name="heure" id="heure" value="{$heure}">
 <input type="hidden" name="matricule" id="matricule" value="{$matricule}">
 <input type="hidden" name="educ" value="{$identite.acronyme}">
-	
+
 <div class="row">
-	
+
 	<div class="col-md-5 col-sm-12">
-		
+
 		<div class="input-group">
 			<label>Notification par <label>
 			<p class="form-control-static">{$identite.prenom} {$identite.nom}</p>
 		</div>
-		
+
 		<div class="input-group">
 
 			{if $mode == 'sortie'}
-			<input type="text" name="parent" id="parent" maxlength="40" value="Parents" placeholder="Correspondant" class="form-control">
-				{else}
-			<input type="text" name="parent" id="parent" maxlength="40" value="{$post.parent|default:''}" placeholder="Correspondant" class="form-control">
+			{* il s'agit de traiter une autorisation de sortie rapide *}
+				<input type="text" name="parent" id="parent" maxlength="40" value="Parents" placeholder="Correspondant" class="form-control">
+			{else}
+				{* c'est une justification d'absence "classique" *}
+				<input type="text" name="parent" id="parent" maxlength="40" value="{$post.parent|default:''}" placeholder="Correspondant" class="form-control">
 			{/if}
 			<div class="input-group-btn">
 				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -40,7 +42,7 @@
 				</ul>
 			</div>
 		</div>  <!-- input-group -->
-				
+
 		<div class="input-group">
 			{if $mode == 'sortie'}
 			<input type="text" name="media" id="media" maxlength="30" value="Journal de classe" placeholder="Média" class="form-control">
@@ -60,19 +62,17 @@
 				</ul>
 			</div>  <!-- input-group-btn -->
 		</div>  <!-- input-group -->
-		
+
 	</div>  <!-- col-md-... -->
-	
+
 	<div class="col-md-5 col-sm-12">
 
 	{if (!(isset($listeDates)))}
 		{assign var=dateDebut value=$dateNow}
-		{assign var=dateFin value=$dateUnAn}
 		{else}
 		{assign var=dateDebut value=$listeDates.0}
-		{assign var=dateFin value=$listeDates.1}
 	{/if}
-	
+
 	<div class="control-group">
 		<label for="datepicker" class="control-label">Date de début</label>
 		<div class="controls">
@@ -84,7 +84,7 @@
 			</div>  <!-- input-group -->
 		</div>  <!-- controls -->
 	</div>  <!-- control-group -->
-	
+
 	</div>  <!-- col-md-... -->
 
 	<div class="col-md-2 col-sm-12">
@@ -98,24 +98,25 @@
 		{if $mode == 'absence'}
 			{include file="presencesJourDate.tpl"}
 		{else}
+			{* raccourci et simplification pour les autorisations de sorties rapides *}
 			{include file="presencesJourDateSortie.tpl"}
 		{/if}
 	</div>
 </div>  <!-- table-responsive -->
 
 <div class="row">
-	
+
 	<input type="hidden" name="educ" value="{$identite.acronyme}">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="enregistrer">
 	<button type="button" id="plusUn" class="btn btn-primary">+1 jour</button>
 	<button class="btn btn-primary pull-right" type="submit">Enregistrer</button>
-	
+
 </div>
-	
+
 </form>
-	
+
 	{include file='legendeAbsences.html'}
 
 	</div>
@@ -128,15 +129,15 @@
 	var mode = "{$mode}";
 
 $(document).ready(function(){
-	
+
 	$("#choixCorrespondant li a").click(function(){
 		$("#parent").val($(this).attr("data-value"))
 		})
-	
+
 	$("#choixMedia li a").click(function(){
 		$("#media").val($(this).attr("data-value"));
 		})
-	
+
 	$("#selectParent").change(function(){
 		var parent = $(this).val();
 		$("#parent").val(parent);
@@ -146,7 +147,7 @@ $(document).ready(function(){
 		var media = $(this).val();
 		$("#media").val(media);
 		})
-	
+
 	$("#plusUn").click(function(){
 		var date = $(".date").last().val();
 		var matricule = $("#matricule").val();
@@ -178,10 +179,10 @@ $(document).ready(function(){
 					$("#presencesJour").html(resultat)
 					}
 				)
-				}		
+				}
 		});
-		
-		
+
+
 	$("#presencesJour").on("change",".statut_all",function(event){
 		var statut = $(this).val();
 		$(this).parent().nextAll().find('select').val(statut);
@@ -190,17 +191,17 @@ $(document).ready(function(){
 		$(this).parent().nextAll('td').has('select').removeClass().addClass(statut);
 		event.stopPropagation();
 		})
-	
+
 	$("#presencesJour").on("change",".statut",function(){
 		var statut = $(this).val();
 		$(this).parent().removeClass();
 		$(this).parent().addClass(statut);
 		$(this).next('input').val('oui');
-		$(this).next().next('img').show();		
+		$(this).next().next('img').show();
 		}
 		)
-	
-	$( "#datepicker").datepicker({ 
+
+	$( "#datepicker").datepicker({
 		format: "dd/mm/yyyy",
 		clearBtn: true,
 		language: "fr",
@@ -232,7 +233,7 @@ $(document).ready(function(){
 		var testDateOK = (condMois && condJour && condAnnee);
 		return this.optional(element) || testDateOK;
 		}, "Date incorrecte");
-	
+
 	$("#signalement").validate({
 	errorElement: 'em',
 	errorClass: 'erreurEncodage',
