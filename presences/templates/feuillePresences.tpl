@@ -11,13 +11,13 @@
 	{assign var=listeDouble value=array($listeEleves|array_slice:0:$nbCol1:true, $listeEleves|array_slice:$nbCol1:Null:true)}
 
 	<div class="row" style="clear:both">
-		
+
 		{foreach from=$listeDouble key=i item=liste}
-		
+
 		<div class="col-md-6 col-sm-12">
-			
+
 		<table class="table-condensed table-hover tableauPresences" id="tableauPresences{$i}">
-			
+
 			<thead {if $i == 1}class="hidden-sm hidden-xs"{/if}>
 				<tr>
 					<th style="width:30px" class="hidden-sm hidden-xs">&nbsp;</th>
@@ -41,35 +41,35 @@
 								id="nomEleve-{$matricule}"
 								data-statut="{$statut}"
 								type="button">
-							<span class="visible-xs">{$unEleve.nom|truncate:12:'..'} {$unEleve.prenom|truncate:3:'.'}</span>
+							<span class="visible-xs">{$unEleve.nom|truncate:10:'..'} {$unEleve.prenom|truncate:10:'.'}</span>
 							<span class="visible-sm visible-md visible-lg">{$unEleve.nom|truncate:20:'...'|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'}</span>
 						</button>
 					</td>
-			
+
 					{* on passe les différentes périodes existantes en revue *}
 					{foreach from=$lesPeriodes item=noPeriode}
 						{assign var=statut value=$listePr.$noPeriode.statut|default:''}
 						<td class="{$statut}
 							{if $noPeriode==$periode} now{else} notNow{/if}
-							{if (in_array($statut, array('sortie','signale','justifie','renvoi')))} lock{/if}"
+							{if (in_array($statut, array('sortie','signale','justifie','ecarte','renvoi','suivi')))} lock{/if}"
 							id="lock-{$matricule}_periode-{$noPeriode}"
 							data-statut="{$statut}"
 							data-periode="{$noPeriode}"
 							data-matricule="{$matricule}">
 
-							{if (in_array($statut, array('sortie','signale','justifie','renvoi')))}
+							{if (in_array($statut, array('sortie','signale','justifie','ecarte','renvoi','suivi')))}
 								<span class="glyphicon glyphicon-lock" title="absence déjà signalée"></span>
 								{else}
 								<strong>{$noPeriode}</strong>
 							{/if}
-							
+
 							{if ($noPeriode == $periode)}
 								<input type="hidden"
 									value="{$statut}"
 									name="matr-{$matricule}_periode-{$noPeriode}"
 									class="cb"
 									id="matr-{$matricule}_periode-{$noPeriode}"
-									{if (in_array($statut, array('sortie','signale','justifie','renvoi')))}
+									{if (in_array($statut, array('sortie','signale','justifie','ecarte','renvoi','suivi')))}
 										disabled
 									{/if}>
 							{/if}
@@ -77,7 +77,7 @@
 					{/foreach}  {* $lesPeriodes *}
 				</tr>
 			{/foreach}  {* $liste *}
-			
+
 			<!-- ouuuupsss... pour réinitialiser la prise de présences de cette période -->
 			<tfoot {if $i == 0}class="hidden-sm hidden-xs"{/if}>
 				<tr>
@@ -92,21 +92,21 @@
 				</tr>
 			</tfoot>
 		</table>
-		
+
 		</div>  <!-- col-md... -->
 		{/foreach}  {* $listeDouble *}
-	
+
 		</div> <!-- col-md...  -->
 
 	</div>  <!-- row -->
-	
+
 	</form>
 </div>  <!-- container -->
 
 <div class="container visible-md visible-lg">
-	
+
 	<div class="table-responsive">
-	
+
 	<table class="table tableauPresences" style="padding-top:2em">
 		<tr>
 		<th>Périodes</th>
@@ -121,7 +121,7 @@
 		{/foreach}
 		</tr>
 	</table>
-	
+
 	</div>
 
 </div>  <!-- container -->
@@ -130,15 +130,15 @@
 <!-- boîte modale pour confirmation de déverrouillage -->
 
 <div class="modal fade" id="confirmeVerrou" tabindex="-1" role="dialog" aria-labelled-by="labelModal" aria-hidden="true">
-	
+
 	<div class="modal-dialog">
-		
+
 		<div class="modal-content">
-			
+
 			<div class="modal-header">
 				<h4 class="modal-title" id="labelModal">ATTENTION!!!</h4>
 			</div>  <!-- modal-header -->
-	
+
 			<div class="modal-body">
 				<p>Souhaitez-vous vraiment déverrouiller cette période? <span id="verrou" style="display:none"></span></p>
 				<p>Notez que l'absence de cet-te élève est déjà connue. Il n'est pas souhaitable de la re-signaler.</p>
@@ -149,11 +149,11 @@
 				 <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
                 <button type="button" id="unlock" class="btn btn-primary">Déverrouiler malgré tout</button>
 			</div>  <!-- modal-footer -->
-			
+
 		</div>  <!-- modal-content -->
-		
+
 	</div>  <!-- modal-dialog -->
-	
+
 </div>  <!-- modal -->
 
 <script type="text/javascript">
@@ -167,10 +167,10 @@ $(document).ready(function(){
 	var nbAbs = $(".now.absent").length+$(".now.signale").length+$(".now.sortie").length+$(".now.justifie").length+$(".now.renvoi").length;
 	var nbPres = $("input.cb").length - nbAbs;
 	var modifie = false;
-	
+
 	$("#nbAbs").text(nbAbs);
 	$("#nbPres").text(nbPres);
-	
+
 	function modification () {
 		$("#save").html("<i class='fa fa-floppy-o'></i>");
 		if (!(modifie)) {
@@ -182,19 +182,19 @@ $(document).ready(function(){
 				};
 			}
 		}
-		
+
 	function notificationNombres(){
-		var nbAbs = $(".now.absent").length+$(".now.signale").length+$(".now.sortie").length+$(".now.justifie").length+$(".now.renvoi").length;
+		var nbAbs = $(".now.absent").length+$(".now.signale").length+$(".now.sortie").length+$(".now.justifie").length+$(".now.renvoi").length+$(".now.ecarte").length+$(".now.suivi").length;
 		var nbPres = $("input.cb").length - nbAbs;
 		$("#nbAbs").text(nbAbs);
 		$("#nbPres").text(nbPres);
 		}
-		
+
 	$("#presencesEleves").submit(function(){
 		$.blockUI();
 		$("#wait").show();
 		})
-		
+
 	$("#presencesEleves").submit(function(){
 		window.onbeforeunload = function(){};
 		})
@@ -207,20 +207,20 @@ $(document).ready(function(){
 		// input 'disabled' si l'absence est connue
 		if (cb.attr('disabled') != 'disabled') {
 			var statut = cb.val();
-			if (statut == 'absent') 
+			if (statut == 'absent')
 				cb.val('present');
 				else cb.val('absent');
-		
+
 			var newStatut = cb.val();
 			ligne.find('button').removeClass().addClass('btn btn-large btn-block nomEleve').addClass(newStatut);
 			var periode = $("#periode").val()
 			ligne.find('td').eq(periode).removeClass().addClass(newStatut+' now');
-			
+
 			// notification du nombre d'absents et de présents
 			notificationNombres();
 			}
 		})
-	
+
 	$(".lock").click(function(event){
 		var periodeActuelle = $("#periode").val();
 		var periode = $(this).data('periode');
@@ -230,7 +230,7 @@ $(document).ready(function(){
 			}
 		event.stopPropagation();
 		})
-	
+
 	$("#unlock").click(function() {
 		var elt = $("#verrou").text();
 		periode = elt.split('-');
@@ -241,13 +241,13 @@ $(document).ready(function(){
 		$("#"+elt).removeClass('lock').unbind('click');
 		$("#confirmeVerrou").modal('hide');
 		})
-	
+
 	$(".trash").click(function(){
 		var periodeActuelle = $("#periode").val();
 		var periodeTrash = $(this).data('periode');
-		// on ne travaille que si la période à réinitialiser est la période actuelle		
+		// on ne travaille que si la période à réinitialiser est la période actuelle
 		if (periodeActuelle == periodeTrash) {
-			modification();			
+			modification();
 			var colonneActuelle = $("td[data-periode='"+periodeActuelle+"']");
 			$("#oups").val(true);
 			// reset de la colonne actuelle à 'indéterminé'
@@ -269,7 +269,7 @@ $(document).ready(function(){
 	$(".horloge").click(function(){
 		// annulation de toutes les modifications non enregistrées
 		$("#annuler").trigger('click');
-		
+
 		var periodeActuelle = $("#periode").val();
 		var nouvellePeriode = $(this).data('periode');
 		// on ne travaille que si les deux périodes sont différentes
@@ -277,21 +277,21 @@ $(document).ready(function(){
 			// mise à jour des icônes de têtes de colonnes
 			$(".horloge[data-periode='"+periodeActuelle+"']").html("<i class='fa fa-circle-thin'></i>");
 			$(".horloge[data-periode='"+nouvellePeriode+"']").html("<i class='fa fa-clock-o'></i>");
-			
+
 			// mise à jour du champ "input" de la période en cours
 			$("#periode").val(nouvellePeriode);
-			
+
 			var colonneActuelle = $("td[data-periode='"+periodeActuelle+"']");
 			// vider la colonne actuelle
 			$.each(colonneActuelle,function(){
 				$(this).removeClass('now').addClass('notNow');
 				// s'il s'agit d'une absence déjà signalée, on remet le verrou; sinon, on indique seulement le numéro de la période
-				if ($(this).hasClass('lock')) 
+				if ($(this).hasClass('lock'))
 					var html = "<span class='glyphicon glyphicon-lock' title='absence déjà signalée'></span>";
 				else var html = "<strong>"+periodeActuelle+"</strong>";
 				$(this).html(html);
 				})
-			
+
 			var nouvelleColonne = $("td[data-periode='"+nouvellePeriode+"']");
 			// peupler la nouvelle colonne
 			$.each(nouvelleColonne,function(){
@@ -301,13 +301,13 @@ $(document).ready(function(){
 				// changer le statut du bouton "nomEleve"
 				$("#nomEleve-"+matricule).removeClass().addClass("btn btn-large btn-block nomEleve").addClass(statut);
 				var html = '';
-				if ($(this).hasClass('lock')) 
+				if ($(this).hasClass('lock'))
 					html = "<span class='glyphicon glyphicon-lock' title='absence déjà signalée'></span>";
 				html += "<input type='hidden' value='"+statut+"' name='matr-"+matricule+"_periode-"+nouvellePeriode+"' class='cb' id='matr-"+matricule+"_periode-"+nouvellePeriode+"'";
 				if ($(this).hasClass('lock'))
 					html += " disabled";
 				html += ">";
-				if (!$(this).hasClass('lock')) 
+				if (!$(this).hasClass('lock'))
 					html += "<strong>"+nouvellePeriode+"</strong>";
 				$(this).html(html);
 				})
@@ -316,7 +316,7 @@ $(document).ready(function(){
 			$(".trash[data-periode='"+nouvellePeriode+"']").removeClass('disabled');
 			}
 		})
-	
+
 	$("#annuler").click(function(){
 		$("#save").html('');
 		var champs = $(".tableauPresences").find('td input');
