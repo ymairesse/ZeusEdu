@@ -3,16 +3,16 @@
 		<div class="input-group">
 			<label for="bulletin">Bulletin n°</label>
 			<select name="bulletin" id="bulletin" class="form-control-inline>
-			{section name=boucleBulletin start=1 loop=$nbBulletins+1}
+			{section name=boucleBulletin loop=$nbBulletins+1}
 			<option value="{$smarty.section.boucleBulletin.index}"
 					{if isset($bulletin) && $smarty.section.boucleBulletin.index == $bulletin}selected{/if}>
 				{$smarty.section.boucleBulletin.index}</option>
 			{/section}
 			</select>
 		</div>
-		
+
 		<div class="input-group">
-	
+
 		<select name="coursGrp" id="coursGrp" class="form-control-inline">
 			<option value="">Cours</option>
 			{if isset($listeCours)}
@@ -23,11 +23,11 @@
 			{/if}
 		</select>
 		</div>
-		
+
 	{* si un cours est sélectionné, on présente le bouton OK *}
 	{if isset($coursGrp)}<button type="submit" class="btn btn-primary" id="envoi">OK</button>{/if}
 	<input type="hidden" name="action" value="{$action}">
-	
+
 	</form>
 </div>
 
