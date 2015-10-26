@@ -30,7 +30,7 @@ class eleve {
             $sql = "SELECT de.*, user, mailDomain FROM ".PFX."eleves AS de ";
             $sql .= "LEFT JOIN ".PFX."passwd AS dp ON (de.matricule = dp.matricule) ";
             $sql .= "WHERE de.matricule = '$matricule'";
-			
+
             $resultat = $connexion->query($sql);
             if ($resultat) {
                 $resultat->setFetchMode(PDO::FETCH_ASSOC);
@@ -43,7 +43,7 @@ class eleve {
             }
 //        if ($this->detailsEleve['DateNaiss'] != '0000-00-00')
 //			$this->detailsEleve['age'] = $this->age();
-		
+
         }
 
     /**
@@ -107,7 +107,7 @@ class eleve {
     public function age() {
         list($ajd['Y'], $ajd['m'], $ajd['d']) = explode("-",date("Y-m-d"));
         list($nais['Y'], $nais['m'], $nais['d']) = explode ('-', $this->detailsEleve['DateNaiss']);
-		
+
         // calcul du nombre d'années d'âge
         $age['Y'] = $ajd['Y']-$nais['Y'];
 
@@ -138,7 +138,7 @@ class eleve {
                 }
         return $age;
     }
-	
+
 
     /*
      * fonction utilisée par jquery pour rechercher les élèves qui correspondent à un critère donné
@@ -146,12 +146,14 @@ class eleve {
      * @param $fragment
      * @return array : liste des élèves qui correspondent au critère
      */
-    public static function searchEleve2($fragment) {
+    public static function searchEleve2($fragment,$partis=false) {
         if (!($fragment)) die();
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = "SELECT matricule, nom, prenom, classe, CONCAT(nom,' ',prenom, ' : ',classe) AS nomPrenom ";
 		$sql .= "FROM ".PFX."eleves ";
-		$sql .= "WHERE (CONCAT(nom,' ',prenom) LIKE '%$fragment%') AND section != 'PARTI' ";
+		$sql .= "WHERE (CONCAT(nom,' ',prenom) LIKE '%$fragment%') ";
+        if ($partis == false)
+            $sql .= "AND section != 'PARTI' ";
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
 		$sql .= "LIMIT 0,10 ";
 
@@ -164,7 +166,6 @@ class eleve {
 				}
             }
         Application::DeconnexionPDO($connexion);
-
 		return $listeEleves;
 	}
 
@@ -176,11 +177,12 @@ class eleve {
 	 */
 	public static function searchMatricule($nomPrenomClasse) {
 		if (!($nomPrenomClasse)) die();
+        $nomPrenomClasse = addslashes($nomPrenomClasse);
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT matricule ";
 		$sql .= "FROM ".PFX."eleves ";
 		$sql .= "WHERE CONCAT(nom,' ',prenom, ' : ',classe) = '$nomPrenomClasse' ";
-		$resultat = $connexion->query($sql);
+        $resultat = $connexion->query($sql);
 		$matricule = Null;
 		if ($resultat) {
 			$ligne = $resultat->fetch();
@@ -189,7 +191,7 @@ class eleve {
 		Application::DeconnexionPDO($connexion);
 		return $matricule;
 		}
-	
+
     /**
      *retourne la liste des titulaires de la classe d'un élève
      * @param
@@ -238,7 +240,7 @@ class eleve {
 					$post[$unChamp] = Application::dateMysql($post[$unChamp]);
                 $sqlInsert[$unChamp] = "$unChamp='".addslashes($post[$unChamp])."'";
 				}
-				
+
             $sqlUpdate = $sqlInsert;
             // suppression du champ "clef primaire"
             unset($sqlUpdate['matricule']);
@@ -277,7 +279,7 @@ class eleve {
 		Application::DeconnexionPDO($connexion);
 		return $ecoles;
 		}
-		
+
 	/**
 	 * renvoie un mot de passe aléatoire de longueur et de robustesse choisies
 	 * @param integer $length : longueur de mot de passe
