@@ -378,7 +378,7 @@ class thot {
 		$sql = "SELECT de.matricule, bulletin, nom, prenom ";
 		$sql .= "FROM ".PFX."eleves AS de ";
 		$sql .= "LEFT JOIN ".PFX."thotBulletin AS dtb ON de.matricule = dtb.matricule ";
-		$sql .= "WHERE de.classe = '$classe' ";
+		$sql .= "WHERE de.groupe = '$classe' ";
 
 		$resultat = $connexion->query($sql);
 		$liste = array();
@@ -421,6 +421,34 @@ class thot {
 		Application::deconnexionPDO($connexion);
 		return $nb;
 		}
+
+	/**
+	* renvoie la liste des parents correspondants aux listes des élèves fournies
+	* @param $listeEleves : array liste d'élèves par classe
+	* @return array
+	*/
+	public function listeParents($listeClasses){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$liste = array();
+		foreach ($listeClasses as $uneClasse) {
+			$sql = "SELECT dtp.matricule, de.nom AS nomEleve, de.prenom AS prenomEleve, lien, dtp.nom, dtp.prenom, dtp.mail ";
+			$sql .= "FROM ".PFX."thotParents AS dtp ";
+			$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = dtp.matricule ";
+			$sql .= "WHERE dtp.matricule IN (SELECT matricule FROM didac_eleves WHERE groupe LIKE '$uneClasse') ";
+			$sql .= "ORDER BY de.nom, de.prenom ";
+
+			$resultat = $connexion->query($sql);
+			if ($resultat) {
+				$resultat->setFetchMode(PDO::FETCH_ASSOC);
+				while ($ligne = $resultat->fetch()) {
+					$matricule = $ligne['matricule'];
+					$liste[$uneClasse][$matricule][] = $ligne;
+					}
+				}
+			}
+		Application::deconnexionPDO($connexion);
+		return $liste;
+	}
 
 }
 ?>
