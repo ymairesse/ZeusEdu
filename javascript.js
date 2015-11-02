@@ -14,6 +14,8 @@
 <script type="text/javascript" src="../js/bootstrapDatepicker/js/locales/bootstrap-datepicker.fr.js"></script>
 <script type="text/javascript" src="../js/boostrapTimepicker/js/bootstrap-timepicker.js"></script>
 
+<script	type="text/javascript" src="../fc/fullcalendar.js"></script>
+
 <script type="text/javascript" src="../bootstrap/typeahead/bootstrap3-typeahead.js"></script>
 
 
