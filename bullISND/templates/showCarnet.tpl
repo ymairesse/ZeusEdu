@@ -312,7 +312,7 @@
 
 					<div class="input-group">
 						<label for="max">Cote maximale</label>
-						<input type="text" name="max" value="" class="inputMax form-control" maxlength="3">
+						<input type="text" name="max" value="" class="inputMax form-control" maxlength="4">
 						<div class="help-block">Cote maximale pour ce travail</div>
 					</div>
 
