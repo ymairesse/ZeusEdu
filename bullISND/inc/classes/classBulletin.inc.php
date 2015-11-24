@@ -7,6 +7,13 @@ require(INSTALL_DIR."/inc/classes/class.pdf.php");
 
 class Bulletin {
 
+	protected $sections;
+
+	function __construct (){
+		// quelles sont les sections concernées par cette formule de bulletin
+		$this->sections=array('G','TT','S');
+	}
+
 	/**
 	 * retourne un array contenant une liste des périodes de l'année scolaire
 	 * @param $nbBulletins
@@ -1328,11 +1335,36 @@ class Bulletin {
 		$sitPrecedentes = array();
 		foreach ($listeSituations as $matricule=>$cotesCoursGrp) {
 			foreach ($cotesCoursGrp as $coursGrp=>$periodes) {
-				$sitPrecedentes[$matricule][$coursGrp] = $this->situationPrecedente($periodes, $bulletin);
+				$sitPrecedentes[$matricule][$coursGrp] = $this->situationPrecedente($periodes, $matricule, $coursGrp, $bulletin);
 				}
 			}
 		return $sitPrecedentes;
 		}
+
+	// /**
+	//  * renvoie la dernière situation précédente connue avant le bulletin $bulletin pour le cours $coursGrp
+	//  * la fonction retourne dans les périodes précédentes juqu'à trouver une sitPrec
+	//  * fonction appelée par self:situationsPrecedentes
+	//  *
+	//  * @param $coursGrp
+	//  * @param $bulletin
+	//  * @return array
+	//  */
+	// private function situationPrecedente ($situations, $bulletin) {
+	// 	$sitPrec = array('sit'=>Null, 'maxSit'=>Null);
+	// 	$noBull = $bulletin-1;
+	// 	$found = false;
+	// 	// on va, éventuellement, jusqu'au bulletin 0 (correspondant au report de l'année précédente)
+	// 	while (($noBull >= 0) && !($found)) {
+	// 		if (isset($situations[$noBull]) && isset($situations[$noBull]['max']) && (trim($situations[$noBull]['sit']) != '')) {
+	// 			$sitPrec['sit'] = $situations[$noBull]['sit'];
+	// 			$sitPrec['maxSit'] = $situations[$noBull]['max'];
+	// 			$found = true;
+	// 			}
+	// 		$noBull--;
+	// 		}
+	// 	return $sitPrec;
+	// 	}
 
 	/**
 	 * renvoie la dernière situation précédente connue avant le bulletin $bulletin pour le cours $coursGrp
@@ -1343,13 +1375,16 @@ class Bulletin {
 	 * @param $bulletin
 	 * @return array
 	 */
-	private function situationPrecedente ($situations, $bulletin) {
+	private function situationPrecedente ($situations, $matricule, $coursGrp, $bulletin) {
 		$sitPrec = array('sit'=>Null, 'maxSit'=>Null);
 		$noBull = $bulletin-1;
 		$found = false;
-		// on va, éventuellement, jusqu'au bulletin 0 (correspondant au report de l'année précédente)
+		// afficher($situations);
+		// on va à reculon, éventuellement, jusqu'au bulletin 0 (correspondant au report de l'année précédente)
 		while (($noBull >= 0) && !($found)) {
-			if (isset($situations[$noBull]) && isset($situations[$noBull]['max']) && (trim($situations[$noBull]['sit']) != '')) {
+			if (isset($situations[$noBull]) &&
+					isset($situations[$noBull]['max']) &&
+					(trim($situations[$noBull]['sit']) != '')) {
 				$sitPrec['sit'] = $situations[$noBull]['sit'];
 				$sitPrec['maxSit'] = $situations[$noBull]['max'];
 				$found = true;
@@ -1366,12 +1401,13 @@ class Bulletin {
 	 * @param $listeSituations
 	 * @param $listeGlobalPeriodePondere
 	 * @param $bulletin
+	 * @return array liste des situations pour la liste d'élèves et le cours
 	 */
 	function calculeNouvellesSituations($listeSituations, $listeGlobalPeriodePondere, $bulletin) {
 		foreach ($listeGlobalPeriodePondere as $matricule => $unCours) {
 			foreach ($unCours as $coursGrp => $lesCotes) {
 				// on recherche la situation précédente dans tous les bulletins précédents
-				$sitPrec = $this->situationPrecedente($listeSituations[$matricule][$coursGrp], $bulletin);
+				$sitPrec = $this->situationPrecedente($listeSituations, $matricule, $coursGrp, $bulletin);
 				// au cas où, la situation précédente est recopiée dans la liste (cas d'un bulletin très ancien)
 				$listeSituations[$matricule][$coursGrp][$bulletin-1] = $sitPrec;
 				$listeSituations[$matricule][$coursGrp][$bulletin]['sit'] =
@@ -2535,12 +2571,14 @@ class Bulletin {
 	 	if (is_array($listeNiveaux))
 			$listeNiveauxString = implode(',',$listeNiveaux);
 			else $listeNiveauxString = $listeNiveaux;
+		$sections = "'".implode("','",$this->sections)."'";
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT cours, libelle, nbheures, section, statut ";
 		$sql .= "FROM ".PFX."cours ";
 		$sql .= "JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX."cours.cadre) ";
-		$sql .= "WHERE SUBSTR(cours, 1,1) IN ($listeNiveauxString)";
-        $sql .= "ORDER BY libelle";
+		$sql .= "WHERE SUBSTR(cours, 1,1) IN ($listeNiveauxString) ";
+		$sql .= "AND section IN ($sections) ";
+        $sql .= "ORDER BY libelle ";
 
 		$listeCours = array();
 		$resultat = $connexion->query($sql);
@@ -3167,6 +3205,7 @@ class Bulletin {
 		$libelle = addslashes(htmlspecialchars($post['libelle']));
 		$remarque = addslashes(htmlspecialchars($post['remarque']));
 		$max = isset($post['max'])?$post['max']:Null;
+		$max = $this->sansVirg($max);
 
 		if (($coursGrp == Null) || ($bulletin == Null) || ($max == Null) || ($idComp == Null) || !(is_numeric($max)))
 			die("Erreur d'encodage");
@@ -3451,9 +3490,8 @@ class Bulletin {
 		$nb = 0;
 		foreach ($listeEleves as $matricule =>$data) {
 			$nomPrenom = $data['nom'].' '.$data['prenom'];
-			$classe = $data['classe'];
+			$classe = $data['groupe'];
 			$eleve = array(':matricule'=>$matricule, ':nomPrenom'=>$nomPrenom, ':classe'=>$classe);
-
 			$resultat = $requete->execute($eleve);
 			if ($resultat) {
 				$nb++;
@@ -3839,6 +3877,7 @@ class Bulletin {
 				}
 				// s'il n'y a pas de résultat, c'est qu'il n'y a pas de poids
 				else $poidsOK = false;
+
 			$poidsOKEnsemble = $poidsOKEnsemble && $poidsOK;
 			$listePoidsOK[$formCert][$idComp] = array('competence'=>$listeCompetences[$cours][$idComp]['libelle'], 'poidsOK'=>$poidsOK);
 			}
@@ -4141,7 +4180,6 @@ class Bulletin {
 			$ligne = $resultat->fetch();
 			$classe = $ligne['classe'];
 		}
-
 		Application::DeconnexionPDO($connexion);
 		return $classe;
 	}

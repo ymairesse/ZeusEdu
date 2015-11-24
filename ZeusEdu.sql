@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS didac_bullCarnetCotes (
   coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   libelle varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
-  max int(4) NOT NULL,
+  max float NOT NULL COMMENT 'Cote maximale pour cette évaluation',
   idComp int(6) NOT NULL,
   formCert enum('form','cert') COLLATE utf8_unicode_ci NOT NULL,
   bulletin tinyint(2) NOT NULL,

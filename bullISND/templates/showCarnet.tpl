@@ -464,7 +464,7 @@
 				</h4>
 			</div>  <!-- modal-header -->
 			<div class="modal-body">
-				<p>Vous pouvez récupérer le document au format PDF en cliquant <a id="celien" href="../{$module}/carnet/{$acronyme}/{$coursGrp}_{$bulletin}.pdf">sur ce lien</a></p>
+				<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="../{$module}/carnet/{$acronyme}/{$coursGrp}_{$bulletin}.pdf">sur ce lien</a></p>
 			</div>
 		</div>
 	</div>
@@ -529,6 +529,14 @@ $.validator.addMethod(
 		return this.optional(element) || testDateOK;
 		}, "Date incorrecte");
 
+{literal}
+	jQuery.extend(jQuery.validator.methods, {
+	         number: function(value, element) {
+	            return this.optional(element)
+	             || /^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:[,.]\d+)?$/.test(value);
+	          }
+		});
+{/literal}
 
 $(document).ready(function(){
 
@@ -611,7 +619,7 @@ $(document).ready(function(){
 				},
 			max: {
 				required: true,
-				range: [0,1000]
+				number: true
 				}
 			}
 		});
