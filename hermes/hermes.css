@@ -1,5 +1,6 @@
 .selectMail {
-    overflow: scroll;
+    overflow: auto;
+    height: 45em;
 	}
 
 h4.teteListe {
