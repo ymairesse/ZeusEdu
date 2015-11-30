@@ -25,12 +25,12 @@ switch ($mode) {
 		$smarty->assign('date',$date);
 		$statutsAbs = array(
 				// 'liste1'=> array('signale','justifie','sortie'),
-				'liste1'=> array('signale','sortie','renvoi'),
+				'liste1'=> array('signale','sortie','renvoi','suivi','ecarte'),
 				'liste2'=>array('absent')
 				);
 		$smarty->assign('statutsAbs',$statutsAbs);
 		$listesParDate = $Presences->listePresencesDate($date, $statutsAbs);
-		
+
 		$smarty->assign('liste1',$listesParDate['liste1']);
 		$smarty->assign('liste2',$listesParDate['liste2']);
 		$smarty->assign('action',$action);
@@ -49,7 +49,7 @@ switch ($mode) {
 		// on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
 		$matricule = ($matricule!='')?$matricule:$matricule2;
 		$smarty->assign('matricule',$matricule);
-		
+
 		if ($etape == 'showEleve') {
 			$prevNext = $Ecole->prevNext($matricule, $listeEleves);
 			$smarty->assign('prevNext', $prevNext);
@@ -76,14 +76,14 @@ switch ($mode) {
 			$smarty->assign('listeEleves',$listeEleves);
 			$listePresences = $Presences->listePresencesElevesDate($date,$listeEleves);
 			$smarty->assign('listePresences',$listePresences);
-			$smarty->assign('corpsPage','presencesClasse');	
+			$smarty->assign('corpsPage','presencesClasse');
 			}
-		
+
 		$smarty->assign('action', $action);
 		$smarty->assign('mode', $mode);
-				
+
 		$smarty->assign('selecteur','selectClasseDate');
 		break;
-	}	
+	}
 
 ?>

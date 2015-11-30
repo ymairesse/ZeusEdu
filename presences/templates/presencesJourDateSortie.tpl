@@ -1,7 +1,7 @@
 {if (!(isset($ajout)))}
 
 <table class="table table-condensed" id="presencesJour">
-	
+
 	<thead>
 	<tr style="cursor:pointer">
 		<th class="signale">Jour entier</th>
@@ -11,7 +11,7 @@
 	{/foreach}
 	</tr>
 	</thead>
-	
+
 {/if}
 
 {if isset($listeDates)}
@@ -23,7 +23,7 @@
 			<option value="sortie">SORT (Sortie autorisée)</option>
 		</select>
 		</td>
-		
+
 		<td><input type="hidden" name="dates[]" value="{$uneDate}" class="date">{$uneDate|truncate:5:''}</td>
 
 		{foreach from=$listePeriodes key=noPeriode item=bornes}
@@ -44,11 +44,20 @@
 				<option value="signale" selected="selected">SIGN (Absence signalée)</option>
 				{/if}
 				{if $statut == 'justifie'}
-				<option value="justifie"selected="selected">JUST (Absence justifiée)</option> -->
+				<option value="justifie" selected="selected">JUST (Absence justifiée)</option>
+				{/if}
+				{if $statut == 'ecarte'}
+				<option value="ecarte" selected="selected">ÉCART (Écarté du cours)</option>
+				{/if}
+				{if $statut == 'stage'}
+				<option value="stage" selected="selected">STAGE</option>
+				{/if}
+				{if $statut == 'suivi'}
+				<option value="suivi" selected="selected">SUIVI (PMS/CAS)</option>
 				{/if}
 				<option value="sortie"{if $statut == 'sortie'} selected="selected"{/if}>SORT (Sortie autorisée)</option>
 				{if $statut == 'renvoi'}
-				<option value="renvoi"selected="selected">RENV (Renvoyé)</option>
+				<option value="renvoi" selected="selected">RENV (Renvoyé)</option>
 				{/if}
 			</select>
 			<input type="hidden" name="modif-{$noPeriode}_date-{$uneDate}" id="modif-{$noPeriode}_date-{$uneDate}" value="non" class="modif">
@@ -57,9 +66,9 @@
 		{/foreach}
 	</tr>
 	{/foreach}
-	
+
 	{else}
-	
+
 	<tr>
 		<td class="signale" style="width:6em">
 		<select style="width: 5em" name="statut_global" class="statut_all">
@@ -91,9 +100,13 @@
 				<option value="signale" selected="selected">SIGN (Absence signalée)</option>
 				{/if}
 				{if $statut == 'justifie'}
-				<option value="justifie"selected="selected">JUST (Absence justifiée)</option> -->
+				<option value="justifie" selected="selected">JUST (Absence justifiée)</option>
+				{/if}
+				{if $statut == 'suivi'}
+				<option value="suivi" selected="selected">SUIVI (PMS/CAS)</option> -->
 				{/if}
 				<option value="sortie"{if $statut == 'sortie'} selected="selected"{/if}>SORT (Sortie autorisée)</option>
+				
 				{if $statut == 'renvoi'}
 				<option value="renvoi"selected="selected">RENV (Renvoyé)</option>
 				{/if}
@@ -103,7 +116,7 @@
 			</td>
 		{/foreach}
 	</tr>
-	
+
 {/if}
 
 {if (!(isset($ajout)))}
@@ -111,14 +124,14 @@
 {/if}
 
 <script type="text/javascript">
-	
+
 $(document).ready(function(){
-	
+
 	$('#presencesJour').on('click','.listePeriodes',function(){
 		var rang = parseInt($(this).index());
 		$("#presencesJour").find('tr').not($(this)).find('select').eq(rang-1).val('sortie').trigger('change');
 		})
-	
+
 	})
-	
+
 </script>

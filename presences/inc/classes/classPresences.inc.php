@@ -7,15 +7,15 @@ class presences {
 
     /*
      * __construct
-     * @param 
+     * @param
      */
     function __construct() {
         }
-		
+
 	/**
 	* renvoie la liste des heures de cours données dans l'école
 	* @param void()
-	* @return array $listeHeures  
+	* @return array $listeHeures
 	*/
 	public function lirePeriodesCours () {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -27,7 +27,7 @@ class presences {
 		$resultat = $connexion->query($sql);
 		$listePeriodes = array();
 		$periode = 1;
-		if ($resultat) 
+		if ($resultat)
 			while ($ligne = $resultat->fetch()) {
 			$debut = $ligne['debut'];
 			$fin = $ligne['fin'];
@@ -36,15 +36,15 @@ class presences {
 		Application::deconnexionPDO($connexion);
 		return $listePeriodes;
 	}
-	
-	/** 
+
+	/**
 	 * Enregistrement des définitions des périodes de cours
 	 * renvoie le nombre d'enregistrements effectivement réalisés et la liste des erreurs
 	 * @param $post : ensemble des informations provenant du formulaire de définition des heures de cours
 	 * @return array : résultat de l'enregistrement
 	 */
 	 public function enregistrerHeures ($post) {
-		$listeData = array();		
+		$listeData = array();
 		foreach ($post as $champ=>$value) {
 			$split = explode('_', $champ);
 			$champ = isset($split[0])?$split[0]:Null;;
@@ -81,7 +81,7 @@ class presences {
 				$fin = $data['fin'];
 				$dataPrep = array(':debut'=>$debut, ':fin'=>$fin);
 				$resultat = $requete->execute($dataPrep);
-				if ($resultat == 1) 
+				if ($resultat == 1)
 					$ok++;
 					else $ko[] = $data;
 			}
@@ -124,7 +124,7 @@ class presences {
 // ******************************************************************************************************
 
 
-	/** 
+	/**
 	 * retourne la liste des présences et absences pour un élève et pour une série de dates données
 	 * @param integer : $matricule
 	 * @param array|string: $listeDates (au format PHP)
@@ -176,10 +176,10 @@ class presences {
 				$listePresences[$uneDate][$noPeriode]['media'] = $data['media'];
 				}
 			}
-		return $listePresences;		
+		return $listePresences;
 		}
 
-	/** 
+	/**
 	 * retourne la liste des présences et absences pour une liste d'élèves donnée et pour une date donnée
 	 * @param string : $datePHP (au format PHP)
 	 * @param array | string: $listeEleves
@@ -243,7 +243,7 @@ class presences {
 		return $listePresences;
 		}
 
-	/** 
+	/**
 	 * retourne la liste des absences et des présences pour une date donnée pour l'ensemble de l'école
 	 * @param $date
 	 * @param array('liste1'=>...,'liste2'=>...)  $statutsAbs : les statuts des types d'absences qui doivent être recensées
@@ -272,7 +272,7 @@ class presences {
 				$liste[$matricule]['identite']['nom']=$ligne['nom'].' '.$ligne['prenom'];
 				$liste[$matricule]['identite']['classe']=$ligne['classe'];
 				$liste[$matricule]['identite']['photo']=Ecole::photo($matricule);
-				
+
 				// il y a une mention de statut de présence dans la journée: il faudra que l'élève soit mentionné dans la liste des absents
 				// est-ce autre chose qu'une mention de présence ou pas de prise de présence?
 				if (in_array($ligne['statut'], $statutsAbsMerge)) {
@@ -294,7 +294,7 @@ class presences {
 		$liste1 = array_intersect_key($liste, $absentsListe1);
 		$liste2 = array_intersect_key($liste, $absentsListe2);
 
-		// on retire de la liste 1 tous ceux qui se trouvent aussi dans la liste 2		
+		// on retire de la liste 1 tous ceux qui se trouvent aussi dans la liste 2
 		$listeMatricules = array_keys($liste1);
 		foreach ($listeMatricules as $matricule)	{
 			if (isset($liste2[$matricule]))
@@ -304,7 +304,7 @@ class presences {
 		return array('liste1'=>$liste1,'liste2'=>$liste2);
 		}
 
-	
+
 	/**
 	 * enregistrement du local, de la période, du jour de la semaine (numérique commençant par 1 pour lundi), du prof et du cours
 	 * @param $local
@@ -325,10 +325,10 @@ class presences {
 		return $nb;
 	}
 
-	/** 
+	/**
 	 * fonction générale d'enregistrement des présences et des absences, quel que soit le statut
 	 * @param array $post : données sortant d'un formulaire écran
-	 * @return $nb : nombre de modifications dans la BD 
+	 * @return $nb : nombre de modifications dans la BD
 	 */
 	public function savePresences($post, $listeEleves,$listePeriodes) {
 		$educ = isset($post['educ'])?$post['educ']:Null;
@@ -336,10 +336,12 @@ class presences {
 		$parent = isset($post['parent'])?$post['parent']:Null;
 		$media = isset($post['media'])?$post['media']:Null;
 		$date = isset($post['date'])?Application::dateMysql($post['date']):Null;
-		$oups = isset($post['oups'])?$post['oups']:Null;
+		$oups = ($post['oups']=='')?false:true;
+        $presAuto = isset($post['presAuto'])?$post['presAuto']:Null;
 		$heure = date("H:i");
 		$quand = date("Y-m-d");
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
 		// introduction dans la table des logs et récupération de l'id autoIncrementé
 		$sql = "INSERT INTO ".PFX."presencesLogs ";
 		$sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
@@ -353,25 +355,28 @@ class presences {
 				// si pas de statut dans le formulaire, l'élève est marqué présent. Permet la prise de présence absent/présent en classe
 				$statut = (isset($post['matr-'.$matricule.'_periode-'.$noPeriode]))?$post['matr-'.$matricule.'_periode-'.$noPeriode]:Null;
 				// on n'enregistre que s'il s'agit d'une absence ou d'une présence ou d'un indéterminé (s'il s'agit d'une réinitialisation après erreur d'encodage)
-				// les statuts "indéterminé" sont des présences (sauf si $oups.....)
-				if (($statut == 'indetermine') && ($oups != true))
-					$statut = 'present';
+				// les statuts "indéterminé" sont des présences (sauf si $oups.....) ou si la prise de "présences" automatique est désactivée
+                if ($oups == false) {
+                    if ($presAuto === 'true') {
+                        if ($statut == 'indetermine')
+                                $statut = 'present';
+                            }
+                        }
 
 				if (in_array($statut,array('absent','present','indetermine'))) {
 					$sql = "INSERT INTO ".PFX."presencesEleves ";
 					$sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
 					$sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
-
 					$resultat += $connexion->exec($sql);
-					$nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table					
+					$nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
 					}
 				}
 			}
 		Application::deconnexionPDO($connexion);
 		return $nb;
 	}
-	
-	/** 
+
+	/**
 	 * enregistrement des signalements d'absences (éventuellement sur plusieurs jours
 	 * @param array $post : les informations provenant du formulaire de saisie
 	 * @param int $matricule : le matricule de l'élève concerné
@@ -383,19 +388,20 @@ class presences {
 		$media = isset($post['media'])?$post['media']:Null;
 		$heure = date("H:i");
 		$quand = date("Y-m-d");
-		
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		// introduction dans la table des logs et récupération de l'id autoIncrementé
 		$sql = "INSERT INTO ".PFX."presencesLogs ";
 		$sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
+
 		$resultat = $connexion->exec($sql);
 		$id=$connexion->lastInsertId();
-		
+
 		$nb = 0;
 		foreach ($post as $champ=>$statut) {
 			if (substr($champ, 0, 8) == 'periode-') {
 				$pieces = explode('_',$champ,2);
-				
+
 				$noPeriode = explode('-',$pieces[0]); $noPeriode = $noPeriode[1];
 				$date = explode('-',$pieces[1]); $date = $date[1];
 				// on n'enregistre que ce qui a été modifié
@@ -413,9 +419,9 @@ class presences {
 		Application::deconnexionPDO($connexion);
 		return $nb;
 		 }
-	
 
-	/** 
+
+	/**
 	 * retourne la liste des jours d'absences d'un élève dont on fournit le matricule
 	 * @param $matricule
 	 * @return array
@@ -459,6 +465,6 @@ class presences {
 		 }
 
 
-}      
+}
 
 ?>

@@ -338,6 +338,22 @@ $(document).ready(function(){
 		notificationNombres();
 		})
 
+	// bouton pour annuler la mise des présences automatique si pas d'absence signalée
+	$("#btnPresAuto").click(function(){
+		$(this).toggleClass('btn-warning btn-danger');
+		if ($(this).hasClass('btn-danger')){
+			$("#presAuto").val(false);
+			$(this).text('Présence Auto [Désactivé]');
+			}
+			else {
+				$(this).text('Présence Auto [Activé]');
+				$("#presAuto").val(true);
+				}
+		})
+
+
 })
+
+
 
 </script>

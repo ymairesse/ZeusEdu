@@ -53,17 +53,15 @@ if ($matricule != Null) {
 			$smarty->assign('date',$dateNow);
 			$listePresences = $Presences->listePresencesElevesDate($dateNow,$matricule);
 			}
-			
+
 	$prevNext = $Ecole->prevNext($matricule, $listeEleves);
 	$smarty->assign('prevNext',$prevNext);
-	
+
 	$smarty->assign('listePresences', $listePresences);
-	$smarty->assign('corpsPage','signalement');	
+		$smarty->assign('corpsPage','signalement');
 	}
-	
+
 $listeClasses = $Ecole->listeGroupes();
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('classe',$classe);
 $smarty->assign('selecteur','selectClasseEleve');
-
-?>

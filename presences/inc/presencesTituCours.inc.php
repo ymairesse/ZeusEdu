@@ -32,15 +32,15 @@ if (isset($coursGrp)) {
 	$listePresences = $Presences->listePresencesElevesDate($date,$listeEleves);
 	$smarty->assign('listeEleves',$listeEleves);
 	$smarty->assign('nbEleves',count($listeEleves));
-	
+
 	$listePresences = isset($listePresences)?$listePresences:Null;
 	$smarty->assign('listePresences', $listePresences);
 	$smarty->assign('action',$action);
 	$smarty->assign('mode',$mode);
-	$smarty->assign('corpsPage','feuillePresencesCours');	
+	$smarty->assign('corpsPage','feuillePresencesCours');
 	}
 	else {
-		// on présente la liste de choix des coursGrp 
+		// on présente la liste de choix des coursGrp
 		$smarty->assign('corpsPage','choixCoursProf');
 	}
 

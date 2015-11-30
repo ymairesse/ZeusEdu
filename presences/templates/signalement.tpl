@@ -1,7 +1,9 @@
 <div class="container">
 {if $mode == 'sortie'}
+	{* on traite une simple autorisation de sortie rapide *}
 	<h2>Autorisation de sortie pour <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
 	{else}
+	{* c'est une justification d'absence "classique" *}
 	<h2>Signalement des absences de <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
 {/if}
 
@@ -16,7 +18,7 @@
 	<div class="col-md-5 col-sm-12">
 
 		<div class="input-group">
-			<label>Notification par <label>
+			<label>Notification par </label>
 			<p class="form-control-static">{$identite.prenom} {$identite.nom}</p>
 		</div>
 
