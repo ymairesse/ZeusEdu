@@ -19,6 +19,8 @@ switch ($mode) {
 
 	case 'saveUser':
 		$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
+		// par convention, l'acronyme est toujours en majuscules
+		$acronyme = strtoupper($acronyme);
 		$user = new User($acronyme);
 		$erreur = $user->verifFormulairePerso($_POST);
 		if ($erreur != "") die($erreur);
