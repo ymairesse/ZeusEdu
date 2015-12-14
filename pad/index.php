@@ -14,6 +14,7 @@ $smarty->assign('classe',$classe);
 $smarty->assign('matricule',$matricule);
 $smarty->assign('coursGrp', $coursGrp);
 
+$acronyme = $user->getAcronyme();
 
 require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
 
@@ -22,9 +23,6 @@ $smarty->assign('listeClasses', $listeClasses);
 
 $listeCours = $user->listeCoursProf();
 $smarty->assign('listeCours',$listeCours);
-
-// on enregistre le pad
-$acronyme = $user->getAcronyme();
 
 // pour l'instant, aucune liste d'élèves
 $listeEleves = Null;
@@ -56,4 +54,3 @@ switch ($action) {
 $smarty->assign('executionTime', round($chrono->stop(),6));
 $smarty->display ('index.tpl');
 ?>
-
