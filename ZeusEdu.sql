@@ -409,7 +409,7 @@ CREATE TABLE IF NOT EXISTS didac_bullMentions (
   anscol varchar(12) COLLATE utf8_unicode_ci NOT NULL,
   periode tinyint(2) NOT NULL,
   mention varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (matricule,periode,annee),
+  PRIMARY KEY (matricule,periode,annee,anscol),
   KEY annee (annee)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
