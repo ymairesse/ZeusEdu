@@ -22,7 +22,7 @@ if (count($listeTitus) == 1) {
 	}
 
 $annee = ($classe != Null)?SUBSTR($classe,0,1):Null;
-$onglet = isset($_POST['onglet'])?$_POST['onglet']:0;	
+$onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
 
 $smarty->assign('listeClasses', $listeTitus);
 $smarty->assign('annee',$annee);
@@ -101,17 +101,17 @@ switch ($mode) {
 				// liste des mentions (grades) attribués durant cette année d'étude à l'élève dont on fournit le matricule
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
 				// fiche de discipline pour l'élève concerné
-				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);			
-				
+				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);
+
 				// recherche des cotes de situation et délibé éventuelles pour toutes les périodes de l'année en cours
 				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
 				$listeCoursActuelle = $listeCoursActuelle[$matricule];
-				
+
 				// cotes de gobal période pour le bulletin $bulletin
 				$sommesTjCert = $Bulletin->sommesTJCertEleves($matricule, $bulletin);
 				$ponderations = $Bulletin->getPonderationsBulletin($listeCoursGrp, $bulletin);
 				$cotesPeriode = $Bulletin->cotesPeriodePonderees($sommesTjCert, $ponderations);
-				
+
 				$syntheseCotes4Titu = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
 
 				// pas d'indication de numéro de période, afin de les avoir toutes
@@ -128,7 +128,7 @@ switch ($mode) {
 				$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);
 				$smarty->assign('commentairesProfs', $commentairesProfs);
 				$smarty->assign('cotesPeriode',$cotesPeriode);
-				
+
 				$smarty->assign('syntheseCotes', $syntheseCotes4Titu);
 				$smarty->assign('attitudes', $tableauAttitudes);
 				$smarty->assign('ficheEduc', $ficheEduc);
@@ -143,65 +143,70 @@ switch ($mode) {
 			}
 			break;
 		case 'padEleve':
-			if (isset($classe) && ($classe != Null)) {
-				$listeEleves = $Ecole->listeEleves($classe,'groupe');
-				$smarty->assign('listeEleves',$listeEleves);
+			if ($etape == 'enregistrer') {
+				$nb = $padEleve->savePadEleve($_POST);
+				$texte = ($nb>0)?"$nb enregistrement(s) réussi(s)":"Pas de modification";
+				$smarty->assign('message', array(
+					'title'=>SAVE,
+					'texte'=>$texte,
+					'urgence'=>'success')
+					);
 				}
 
-			if (isset($matricule) && ($matricule != '') && ($matricule != 'all')) {
-				// le cookie pourrait contenir la valeur 'all' qui n'aurait pas de sens ici
-				// si un matricule est donné, on aura sans doute besoin des données de l'élève
-				$eleve = new Eleve($matricule);
-			
-				require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
-				$padEleve = new padEleve($matricule, $acronyme);
-				if (isset($etape) && ($etape == 'enregistrer')) {
-					$nb = $padEleve->savePadEleve($_POST);
-					$texte = ($nb>0)?"$nb enregistrement(s) réussi(s)":"Pas de modification";
-					$smarty->assign('message', array(
-						'title'=>SAVE,
-						'texte'=>$texte,
-						'urgence'=>'success')
-						);
-					}
-				$padEleve = new padEleve($matricule, $acronyme);
-				$smarty->assign('padsEleve', $padEleve->getPads());
-				
-				// recherche des infos personnelles de l'élève
-				$smarty->assign('eleve', $eleve->getDetailsEleve());
-				// recherche des infos concernant le passé scolaire
-				$smarty->assign('ecoles', $eleve->ecoleOrigine());
-		
-				// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
-				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
-				$listeCoursActuelle = $listeCoursActuelle[$matricule];
-				$smarty->assign('listeCoursGrp',$listeCoursActuelle);
-				$syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
-				$smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
-				// résulats des épreuves externes dans le passé
-				$smarty->assign('epreuvesExternes', $Bulletin->cotesExternesPrecedentes($matricule));				
-				// tableau de synthèse de toutes les cotes de situation pour toutes les années scolaires
-				$syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
-				$smarty->assign('listeCoursActuelle', $listeCoursActuelle);
-				$smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
-				$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
-				$smarty->assign('mentions', $Bulletin->listeMentions($matricule, Null, Null,Null));
-				$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
-				$prevNext = $Bulletin->prevNext($matricule,$listeEleves);
-				$titulaires = $eleve->titulaires($matricule);
-				$smarty->assign('matricule',$matricule);
-				$smarty->assign('titulaires', $titulaires);
-			
-				$smarty->assign('prevNext', $prevNext);
-				$smarty->assign('etape','enregistrer');
-				$smarty->assign('selecteur', 'selectClasseEleve');
-				$smarty->assign('corpsPage', 'ficheEleve');
+			// la liste des classes dont le prof est titulaire est dans $listeTitus
+			if (isset($listeTitus)) {
+				// la classe a été choisie? Sinon, on prend la première de la liste
+				$classe = isset($_POST['classe'])?$_POST['classe']:current($listeTitus);
+				$listeEleves = $Ecole->listeEleves($classe,'groupe');
+				$smarty->assign('classe',$classe);
+				$smarty->assign('listeClasses',$listeTitus);
+				$smarty->assign('listeEleves',$listeEleves);
+
+				if (isset($matricule) && ($matricule != '') && ($matricule != 'all')) {
+					// le cookie pourrait contenir la valeur 'all' qui n'aurait pas de sens ici
+					// si un matricule est donné, on aura sans doute besoin des données de l'élève
+					$eleve = new Eleve($matricule);
+
+					require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
+					$padEleve = new padEleve($matricule, $acronyme);
+
+					$smarty->assign('padsEleve', $padEleve->getPads());
+
+					// recherche des infos personnelles de l'élève
+					$smarty->assign('eleve', $eleve->getDetailsEleve());
+					// recherche des infos concernant le passé scolaire
+					$smarty->assign('ecoles', $eleve->ecoleOrigine());
+
+					// recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
+					$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
+					$listeCoursActuelle = $listeCoursActuelle[$matricule];
+					$smarty->assign('listeCoursGrp',$listeCoursActuelle);
+					$syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
+					$smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
+					// résulats des épreuves externes dans le passé
+					$smarty->assign('epreuvesExternes', $Bulletin->cotesExternesPrecedentes($matricule));
+					// tableau de synthèse de toutes les cotes de situation pour toutes les années scolaires
+					$syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
+					$smarty->assign('listeCoursActuelle', $listeCoursActuelle);
+					$smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
+					$smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
+					$smarty->assign('mentions', $Bulletin->listeMentions($matricule, Null, Null,Null));
+					$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
+					$prevNext = $Bulletin->prevNext($matricule,$listeEleves);
+					$titulaires = $eleve->titulaires($matricule);
+					$smarty->assign('matricule',$matricule);
+					$smarty->assign('titulaires', $titulaires);
+
+					$smarty->assign('prevNext', $prevNext);
+					$smarty->assign('etape','enregistrer');
+					$smarty->assign('corpsPage', 'ficheEleve');
+				}
 			}
-		$smarty->assign('selecteur','selectEleve');
+		$smarty->assign('selecteur','selectClasseEleve');
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
 		break;
-	default: 
+	default:
 		echo "bad mode $mode";
 		break;
 	}
