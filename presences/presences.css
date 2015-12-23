@@ -7,11 +7,11 @@
 	padding: 0 1em;
 	font-weight: bold;
 	}
-	
+
 .up:hover, .down:hover {
 	background-color: orange;
 	color: white;
-	
+
 }
 
 .abs {
@@ -21,13 +21,13 @@
 .abs0 {
     background-color:#FDF2C1;
 	}
-	
+
 input[type=submit], input[type=reset], input[type=button] {
-	padding: 0.3em; 
-	font-size: 120%; 
-	border: 1px solid black; 
-	color: black; 
-	text-decoration: none; 
+	padding: 0.3em;
+	font-size: 120%;
+	border: 1px solid black;
+	color: black;
+	text-decoration: none;
 	border-radius:5px;
 	background: #fbdf93;
 	background: -moz-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
@@ -53,7 +53,7 @@ input[type=submit], input[type=reset], input[type=button] {
 	background-color: #f77;
 	color: #fff;
 	text-align:center;
-	// border:2px solid black;	
+	// border:2px solid black;
 	}
 .present {
 	color: #000;
@@ -61,16 +61,16 @@ input[type=submit], input[type=reset], input[type=button] {
 	text-align:center;
 	// border:2px solid black;
 	}
-	
+
 .signale {
 	background-color: #FEDB68	;
 	color: black;
 	text-align:center;
 	}
-	
+
 .justifie {
-	background-color: #77f;
-	color: #fff;
+	background-color: #aaf;
+	color: #333;
 	text-align:center;
 }
 
@@ -79,15 +79,27 @@ input[type=submit], input[type=reset], input[type=button] {
 	color: #000;
 	text-align:center;
 }
-	
+
 .indetermine {
 	background: #ddd;
 	color:#000;
 	text-align:center;
 	}
-	
+
 .renvoi {
 	background: #333;
+	color: #fff;
+	text-align:center;
+}
+
+.ecarte {
+	background-color: #55f;
+	color: #ff0;
+	text-align: center;
+}
+
+.suivi {
+	background-color: #f22;
 	color: #fff;
 	text-align:center;
 }
@@ -101,7 +113,7 @@ input[type=submit], input[type=reset], input[type=button] {
 }
 
 .listeAbsences li {
-    float: left; 
+    float: left;
     border: 1px solid;
     width: 7em;
     text-align: center;
@@ -121,7 +133,7 @@ input[type=submit], input[type=reset], input[type=button] {
 	}
 
 .tableauPresences td {
-	cursor: pointer;	
+	cursor: pointer;
 	border: 1px solid #dddddd;
 }
 
@@ -137,7 +149,7 @@ td.now {
 	border: 2px solid orange;
 	font-size:1.3em;
 	}
-	
+
 td.notNow {
 	color:#aaa;
 	}
@@ -153,20 +165,25 @@ td.notNow {
 .text-grey {
 	color: #999;
 	}
-	
+
 .horloge {
 	cursor:pointer;
 	text-align: center;
 	font-size: 1.3em !important;
 	}
-	
+
 .trash {
 	cursor:pointer;
 	text-align: center;
 	font-size: 1.3em !important;
 	}
-	
+
 i.disabled, p.disabled, li.disabled, td.disabled, th.disabled {
 	cursor:not-allowed;
 	color:#999;
+}
+
+.clip {
+	overflow:hidden;
+  text-overflow: clip;
 }

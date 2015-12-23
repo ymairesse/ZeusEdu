@@ -37,7 +37,7 @@
 					<th style="width:30px" class="hidden-sm hidden-xs">{$unEleve.classe|default:'&nbsp;'}</th>
 					<td style="width:230px">
 						{assign var=statut value=$listePr.$periode.statut|default:'indetermine'}
-						<button class="btn btn-large btn-block nomEleve {$statut}"
+						<button class="btn btn-large btn-block nomEleve {$statut} clip"
 								id="nomEleve-{$matricule}"
 								data-statut="{$statut}"
 								type="button">
@@ -212,7 +212,7 @@ $(document).ready(function(){
 				else cb.val('absent');
 
 			var newStatut = cb.val();
-			ligne.find('button').removeClass().addClass('btn btn-large btn-block nomEleve').addClass(newStatut);
+			ligne.find('button').removeClass().addClass('btn btn-large btn-block nomEleve clip').addClass(newStatut);
 			var periode = $("#periode").val()
 			ligne.find('td').eq(periode).removeClass().addClass(newStatut+' now');
 
