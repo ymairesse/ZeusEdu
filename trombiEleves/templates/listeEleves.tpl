@@ -1,6 +1,8 @@
-<select id="selectEleve">
-	<option value="">Élève</option>
-	{foreach from=$listeEleves item=unEleve }
-	<option value="{$unEleve.codeInfo}">{$unEleve.nomPrenom}</option> 
+{if isset($listeEleves)}
+<select name="matricule" id="selectEleve" class="form-control-inline">
+	<option value="">Tous les élèves</option>
+	{foreach from=$listeEleves key=leMatricule item=unEleve}
+		<option value="{$leMatricule}"{if isset($matricule) && ($leMatricule==$matricule)} selected="selected"{/if}>{$unEleve.nom} {$unEleve.prenom}</option>
 	{/foreach}
 </select>
+{/if}

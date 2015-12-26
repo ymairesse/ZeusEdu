@@ -12,5 +12,4 @@ $nomPrenomClasse = isset($_REQUEST['query'])?$_REQUEST['query']:Null;
 
 $matricule = Eleve::searchMatricule($nomPrenomClasse);
 
-echo $matricule;
-?>
+echo($matricule);
