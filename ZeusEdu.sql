@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS didac_adesRetenues (
 
 CREATE TABLE IF NOT EXISTS didac_adesTextes (
   idTexte int(11) NOT NULL AUTO_INCREMENT,
-  `user` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `user` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   champ varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   free tinyint(4) NOT NULL DEFAULT '0',
   texte varchar(150) COLLATE utf8_unicode_ci NOT NULL,
@@ -104,14 +104,14 @@ CREATE TABLE IF NOT EXISTS didac_adesTextes (
 
 CREATE TABLE IF NOT EXISTS didac_adesTypesFaits (
   `type` tinyint(4) NOT NULL,
-  titreFait varchar(25) CHARACTER SET latin1 NOT NULL,
-  couleurFond varchar(7) CHARACTER SET latin1 NOT NULL,
-  couleurTexte varchar(7) CHARACTER SET latin1 NOT NULL,
+  titreFait varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  couleurFond varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+  couleurTexte varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   typeRetenue tinyint(4) NOT NULL,
   imprimable enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '0' COMMENT 'Le fait donne-il lieu à une impression séparée',
   ordre tinyint(4) NOT NULL,
-  listeChamps varchar(300) CHARACTER SET latin1 NOT NULL,
-  focus varchar(15) CHARACTER SET latin1 NOT NULL,
+  listeChamps varchar(300) COLLATE utf8_unicode_ci NOT NULL,
+  focus varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -165,8 +165,8 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 
 
 CREATE TABLE IF NOT EXISTS didac_appliTables (
-  application varchar(20) CHARACTER SET latin1 NOT NULL,
-  nomTable varchar(30) CHARACTER SET latin1 NOT NULL,
+  application varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  nomTable varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (application,nomTable)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des tables par application (pour backup)';
 
@@ -278,16 +278,16 @@ CREATE TABLE IF NOT EXISTS didac_bullCarnetCotes (
 CREATE TABLE IF NOT EXISTS didac_bullCarnetEleves (
   idCarnet int(6) NOT NULL,
   matricule int(6) NOT NULL,
-  cote varchar(6) CHARACTER SET latin1 NOT NULL,
-  remarque varchar(20) CHARACTER SET latin1 NOT NULL,
+  cote varchar(6) COLLATE utf8_unicode_ci NOT NULL,
+  remarque varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (idCarnet,matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS didac_bullCarnetPoidsCompetences (
-  coursGrp varchar(20) CHARACTER SET latin1 NOT NULL,
+  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   idComp int(6) NOT NULL,
   bulletin tinyint(2) NOT NULL,
-  certForm enum('cert','form') CHARACTER SET latin1 NOT NULL,
+  certForm enum('cert','form') COLLATE utf8_unicode_ci NOT NULL,
   poids varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (coursGrp,idComp,bulletin,certForm),
   KEY coursGrp (coursGrp),
@@ -307,15 +307,15 @@ CREATE TABLE IF NOT EXISTS didac_bullCE1B (
 
 CREATE TABLE IF NOT EXISTS didac_bullCommentProfs (
   matricule int(6) NOT NULL,
-  coursGrp varchar(20) CHARACTER SET latin1 NOT NULL,
+  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   bulletin tinyint(3) NOT NULL,
-  commentaire mediumtext CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (matricule,coursGrp,bulletin)
+  commentaire mediumtext COLLATE utf8_unicode_ci NOT NULL COMMENT 'Remarque du professeur',
+  PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS didac_bullCompetences (
   id int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide',
-  cours varchar(17) CHARACTER SET latin1 NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5 (le groupe n''est donc pas indiqué',
+  cours varchar(17) COLLATE utf8_unicode_ci NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5 (le groupe n''est donc pas indiqué',
   ordre tinyint(3) NOT NULL COMMENT 'ordre d''apparition de la compétences dans la liste pour ce cours',
   libelle varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'libelle (tinyText)',
   PRIMARY KEY (cours,libelle),
@@ -477,7 +477,7 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCommentProfs (
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCompetences (
   id int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide',
-  cours varchar(17) CHARACTER SET latin1 NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5 (le groupe n''est donc pas indiqué',
+  cours varchar(17) COLLATE utf8_unicode_ci NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5 (le groupe n''est donc pas indiqué',
   ordre tinyint(3) NOT NULL COMMENT 'ordre d''apparition de la compétences dans la liste pour ce cours',
   libelle varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'libelle (tinyText)',
   PRIMARY KEY (cours,libelle),
@@ -486,7 +486,7 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCompetences (
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCotesCompetences (
   matricule int(6) NOT NULL,
-  coursGrp varchar(20) CHARACTER SET latin1 NOT NULL,
+  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   bulletin tinyint(2) unsigned NOT NULL,
   idComp int(6) NOT NULL,
   Tj varchar(5) COLLATE utf8_unicode_ci NOT NULL,
@@ -499,7 +499,7 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCotesCompetences (
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCotesGlobales (
   matricule int(6) NOT NULL,
-  coursGrp varchar(20) CHARACTER SET latin1 NOT NULL,
+  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   bulletin tinyint(2) unsigned NOT NULL,
   Tj varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   Ex varchar(5) COLLATE utf8_unicode_ci NOT NULL,
@@ -513,8 +513,8 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCotesGlobales (
 
 CREATE TABLE IF NOT EXISTS didac_bullTQMentions (
   matricule int(11) NOT NULL,
-  `type` enum('jury','stage_depart','option_depart','global_depart','stage_final','option_final','global_final') CHARACTER SET latin1 NOT NULL,
-  mention varchar(4) CHARACTER SET latin1 NOT NULL,
+  `type` enum('jury','stage_depart','option_depart','global_depart','stage_final','option_final','global_final') COLLATE utf8_unicode_ci NOT NULL,
+  mention varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   periode tinyint(4) NOT NULL,
   PRIMARY KEY (matricule,`type`,periode),
   KEY codeInfo (matricule)
@@ -522,8 +522,8 @@ CREATE TABLE IF NOT EXISTS didac_bullTQMentions (
 
 CREATE TABLE IF NOT EXISTS didac_bullTQQualif (
   matricule int(5) NOT NULL,
-  epreuve enum('E1','E2','E3','E4','JURY','TOTAL') CHARACTER SET latin1 NOT NULL,
-  mention varchar(6) CHARACTER SET latin1 NOT NULL,
+  epreuve enum('E1','E2','E3','E4','JURY','TOTAL') COLLATE utf8_unicode_ci NOT NULL,
+  mention varchar(6) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (matricule,epreuve)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -638,7 +638,7 @@ CREATE TABLE IF NOT EXISTS didac_eleves (
 
 CREATE TABLE IF NOT EXISTS didac_elevesCours (
   matricule int(6) NOT NULL,
-  coursGrp varchar(15) CHARACTER SET latin1 NOT NULL,
+  coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (matricule,coursGrp)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Association Eleves / cours suivis';
 
@@ -655,16 +655,16 @@ CREATE TABLE IF NOT EXISTS didac_flashInfos (
   `date` date NOT NULL,
   heure time NOT NULL,
   urgence tinyint(4) NOT NULL DEFAULT '0',
-  application tinytext CHARACTER SET latin1 NOT NULL,
-  titre varchar(60) CHARACTER SET latin1 NOT NULL,
-  sujet text CHARACTER SET latin1 NOT NULL,
-  texte text CHARACTER SET latin1 NOT NULL,
+  application tinytext COLLATE utf8_unicode_ci NOT NULL,
+  titre varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  sujet text COLLATE utf8_unicode_ci NOT NULL,
+  texte text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS didac_hermesArchives (
   id int(11) NOT NULL AUTO_INCREMENT,
-  acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   mailExp varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
   heure time NOT NULL,
@@ -678,13 +678,13 @@ CREATE TABLE IF NOT EXISTS didac_hermesArchives (
 
 CREATE TABLE IF NOT EXISTS didac_hermesListes (
   id int(3) NOT NULL,
-  membre varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  membre varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (id,membre)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS didac_hermesProprio (
   id int(6) NOT NULL AUTO_INCREMENT,
-  proprio varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  proprio varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   nomListe varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   statut enum('prive','publie','abonne') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'prive',
   PRIMARY KEY (id,proprio)
@@ -693,12 +693,12 @@ CREATE TABLE IF NOT EXISTS didac_hermesProprio (
 CREATE TABLE IF NOT EXISTS didac_infirmConsult (
   consultID int(11) NOT NULL AUTO_INCREMENT,
   matricule int(11) NOT NULL,
-  acronyme varchar(3) CHARACTER SET latin1 NOT NULL,
+  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
   heure time NOT NULL,
-  motif varchar(250) CHARACTER SET latin1 NOT NULL,
-  traitement varchar(250) CHARACTER SET latin1 NOT NULL,
-  aSuivre varchar(50) CHARACTER SET latin1 NOT NULL,
+  motif varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  traitement varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  aSuivre varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (consultID),
   KEY codeInfo (matricule),
   KEY `date` (`date`)
@@ -732,7 +732,7 @@ CREATE TABLE IF NOT EXISTS didac_locauxCours (
 
 CREATE TABLE IF NOT EXISTS didac_logins (
   id int(11) NOT NULL AUTO_INCREMENT,
-  `user` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `user` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
   heure time NOT NULL,
   ip varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -753,21 +753,21 @@ CREATE TABLE IF NOT EXISTS didac_pad (
 
 CREATE TABLE IF NOT EXISTS didac_padGuest (
   id int(11) NOT NULL AUTO_INCREMENT,
-  guest varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'propriétaire de la fiche',
+  guest varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'propriétaire de la fiche',
   `mode` enum('r','rw') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'rw' COMMENT 'mode d''accès au texte du pad',
   PRIMARY KEY (id,guest)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des notes relatives aux élève';
 
-CREATE TABLE IF NOT EXISTS `didac_parentLogins` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `date` date NOT NULL,
-  `heure` time NOT NULL,
-  `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `host` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user` (`user`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+-- CREATE TABLE IF NOT EXISTS `didac_parentLogins` (
+--   `id` int(11) NOT NULL AUTO_INCREMENT,
+--   `user` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+--   `date` date NOT NULL,
+--   `heure` time NOT NULL,
+--   `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+--   `host` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+--   PRIMARY KEY (`id`),
+--   KEY `user` (`user`)
+-- ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS didac_passwd (
   matricule int(6) NOT NULL,
@@ -814,7 +814,7 @@ INSERT INTO `didac_presencesHeures` (`debut`, `fin`) VALUES
 
 CREATE TABLE IF NOT EXISTS didac_presencesLogs (
   id int(6) NOT NULL AUTO_INCREMENT,
-  educ varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  educ varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   parent varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   media varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   quand date NOT NULL,
@@ -824,7 +824,7 @@ CREATE TABLE IF NOT EXISTS didac_presencesLogs (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Logs des prises de présences';
 
 CREATE TABLE IF NOT EXISTS didac_profs (
-  acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 3 lettres',
+  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 7 lettres',
   nom varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
   prenom varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
   sexe enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
@@ -849,9 +849,9 @@ INSERT INTO `didac_profs` (`acronyme`, `nom`, `prenom`, `sexe`, `mdp`, `statut`,
 ('ADM', 'administrateur', 'administrateur', 'M', 'e10adc3949ba59abbe56e057f20f883e', 'admin', 'adminZeus@ecole.org', '', '', '', '', '', '');
 
 CREATE TABLE IF NOT EXISTS didac_profsApplications (
-  application varchar(12) CHARACTER SET latin1 NOT NULL,
-  acronyme varchar(3) CHARACTER SET latin1 NOT NULL,
-  userStatus varchar(15) CHARACTER SET latin1 NOT NULL DEFAULT '0' COMMENT 'Voir la table "_statuts"',
+  application varchar(12) COLLATE utf8_unicode_ci NOT NULL,
+  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+  userStatus varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0' COMMENT 'Voir la table "_statuts"',
   UNIQUE KEY acronyme (acronyme,application)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -880,7 +880,7 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 
 
 CREATE TABLE IF NOT EXISTS didac_profsCours (
-  acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 3 lettres',
+  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 7 lettres',
   coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'anff:nom du cours en 5 caractères-groupe Ex: 3:FR5-2',
   nomCours varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'rempli par le prof: laisser vide',
   PRIMARY KEY (acronyme,coursGrp),
@@ -890,7 +890,7 @@ CREATE TABLE IF NOT EXISTS didac_profsCours (
 
 
 CREATE TABLE IF NOT EXISTS didac_sessions (
-  `user` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `user` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   ip varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
@@ -898,7 +898,7 @@ CREATE TABLE IF NOT EXISTS didac_sessions (
 
 CREATE TABLE IF NOT EXISTS didac_statutCours (
   cadre tinyint(4) NOT NULL,
-  statut varchar(6) CHARACTER SET latin1 NOT NULL COMMENT 'statut du cours',
+  statut varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'statut du cours',
   rang tinyint(4) NOT NULL DEFAULT '0' COMMENT 'rang d''affichage du cours pour le classement dans la feuille de délibé (0 > 9)',
   PRIMARY KEY (cadre)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -946,7 +946,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
 CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` enum('ecole','niveau','classes','eleves') COLLATE utf8_unicode_ci NOT NULL,
-  `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   `objet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Objet de la notification',
   `texte` blob NOT NULL COMMENT 'Texte de la notification',
   `dateDebut` date NOT NULL,
@@ -993,7 +993,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotParents` (
 
 
 CREATE TABLE IF NOT EXISTS didac_titus (
-  acronyme varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   classe varchar(6) COLLATE utf8_unicode_ci NOT NULL,
   section enum('TQ','G','TT','S') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'G' COMMENT 'Section pour la classe: ''TQ'', ''G'', ''TT'' ou ''S''',
   PRIMARY KEY (acronyme,classe)
