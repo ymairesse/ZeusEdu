@@ -5,6 +5,8 @@ $etape = isset($_POST['etape'])?$_POST['etape']:Null;
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 
+$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
+
 switch ($mode) {
 
 	case 'images':
@@ -148,7 +150,7 @@ switch ($mode) {
 				break;
 		}
 		break;
-	
+
 
 	case 'initCarnet':
 		switch ($etape) {

@@ -26,7 +26,7 @@
 {assign var=annee value=$classe|substr:0:1}
 <h3>Résultats de {$annee}e année (année scolaire en cours)</h3>
 <div class="table-responsive">
-	
+
 <table class="table table-condensed">
 	<tr>
 		<th>&nbsp;</th>
@@ -74,7 +74,7 @@
 <h3>Année(s) scolaire(s) précédentes</h3>
 
 {foreach from=$syntheseToutesAnnees key=anScolaire item=syntheseAnnee}
-	
+
 	<!-- les éprevues externes de cette année scolaire -->
 	{if isset($epreuvesExternes.$anScolaire)}
 		<h4>Épreuves externes en {$anScolaire}</h4>
@@ -113,7 +113,7 @@
 				{/foreach}
 				<th>Mentions</th>
 			</tr>
-			
+
 			{foreach from=$resultats key=periode item=bulletin}
 			<tr>
 				<th>{$periode}</th>
@@ -126,7 +126,7 @@
 								<span class="micro">Délibé </span>
 								<strong>{$resultats.$periode.$coursGrp.sitDelibe}</strong><br>
 							{/if}
-							
+
 							{if isset($resultats.$periode.$coursGrp.pourcent) && ($resultats.$periode.$coursGrp.pourcent != '') }
 							{$resultats.$periode.$coursGrp.situation}/{$resultats.$periode.$coursGrp.maxSituation}<br>
 							<span class="micro">={$resultats.$periode.$coursGrp.pourcent}</span>
@@ -136,19 +136,19 @@
 						<td>&nbsp;</td>
 					{/if}
 				{/foreach}
-				<td class="cote"><strong>{$mentions.$matricule.$anScolaire.$annee.$periode|default:'&nbsp;'}</strong></td> 
+				<td class="cote"><strong>{$mentions.$matricule.$anScolaire.$annee.$periode|default:'&nbsp;'}</strong></td>
 			</tr>
 
 			{/foreach}
 
 		</table>
-		
-	</div>  <!-- table-responsive --> 
+
+	</div>  <!-- table-responsive -->
 	{/foreach}
 {/foreach}
 {include file="tableauMentions.tpl"}
 
-		
+
 {if $ecoles}
 <table class="table table-condensed table-hover">
 	<tr>

@@ -1,18 +1,18 @@
 <div class="container">
-	
+
 	<h3>Choix d'initialisation</h3>
-	
+
 	<p>Attention, les commandes <strong class="danger"><span>en rouge</span></strong> ne devraient plus être utilisées après le début de l'année scolaire. Danger de casser le système!!</p>
-	
+
 	<form name="choixInit" id="choixInit" action="index.php" method="POST" role="form" class="form-vertical">
 		<ul class="list-unstyled">
 			<li class="danger">
 				<input type="radio" name="mode" value="resetSituations"{if (isset($mode)) && ($mode == 'resetSituations')} chacked="checked"{/if}>
-				<span>Archivage et initialisation des situations et des épreuves externes</span>
+				<span>Archivage et initialisation des situations de {$ANNEESCOLAIRE} et des épreuves externes</span>
 			</li>
 			<li class="danger">
 				<input type="radio" name="mode" value="resetDetailsCotes"{if (isset($mode)) && ($mode == 'resetDetailsCotes')} checked="checked"{/if}>
-				<span>Effacement du détail des cotes par compétences dans les bulletins</span>
+				<span>Effacement du détail des cotes de {$ANNEESCOLAIRE} par compétences dans les bulletins</span>
 			</li>
 			<li class="danger">
 				<input type="radio" name="mode" value="resetHistorique"{if (isset($mode)) && ($mode == 'resetHistorique')} checked="checked"{/if}>

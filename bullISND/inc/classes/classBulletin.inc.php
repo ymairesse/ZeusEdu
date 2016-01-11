@@ -137,6 +137,62 @@ class Bulletin {
 	}
 
 
+	    /**
+	     * liste structurée des profs liés à une liste de coursGrp (liste indexée par coursGrp).
+	     * @param $listeCoursGrp : array
+	     * @param string | array : $listeCoursGrp
+	     *
+	     * @return array
+	     */
+	    public function listeProfsListeCoursGrp($listeCoursGrp, $type = 'string')
+	    {
+	        if (is_array($listeCoursGrp)) {
+	            $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
+	        } else {
+	            $listeCoursGrpString = "'".$listeCoursGrp."'";
+	        }
+	        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+	        $sql = 'SELECT coursGrp, nom, prenom, sexe, '.PFX.'profsCours.acronyme ';
+	        $sql .= 'FROM '.PFX.'profsCours ';
+	        $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profsCours.acronyme = '.PFX.'profs.acronyme) ';
+	        $sql .= "WHERE coursGrp IN ($listeCoursGrpString) ";
+	        $sql .= 'ORDER BY nom';
+
+	        $resultat = $connexion->query($sql);
+	        $liste = array();
+	        if ($resultat) {
+	            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+	            while ($ligne = $resultat->fetch()) {
+	                $coursGrp = $ligne['coursGrp'];
+	                $acronyme = $ligne['acronyme'];
+	                $sexe = $ligne['sexe'];
+	                $formule = ($sexe == 'M') ? 'M. ' : 'Mme';
+	                if ($type == 'string') {
+	                    if (isset($liste[$coursGrp])) {
+	                        $liste[$coursGrp] .= ', '.$formule.' '.$ligne['prenom'].' '.$ligne['nom'];
+	                    } else {
+	                        $liste[$coursGrp] = $formule.' '.$ligne['prenom'].' '.$ligne['nom'];
+	                    }
+	                } else {
+	                    $liste[$coursGrp][$acronyme] = $ligne;
+	                }
+	                // on supprime le cours dont le prof a été trouvé
+	                unset($listeCoursGrp[$coursGrp]);
+	            }
+	        }
+	        Application::DeconnexionPDO($connexion);
+	            // on rajoute tous les cours dont les affectations de profs sont inconnues
+	            if ($listeCoursGrp != null) {
+	                foreach ($listeCoursGrp as $coursGrp => $wtf) {
+	                    $liste[$coursGrp] = PROFNONDESIGNE;
+	                }
+	            }
+
+	        return $liste;
+	    }
+
+
+
 	/**
 	 * retourne une liste des élèves d'un groupe classe, ordonnée sur les matricules ,
 	 * reprenant tous les cours de chacun de ces élèves
@@ -1221,11 +1277,12 @@ class Bulletin {
 		$sql .= "WHERE matricule in ($listeElevesString) AND (coursGrp IN ($listeCoursGrpString)) ";
 		if ($bulletin)
 			$sql .= "AND bulletin='$bulletin' ";
-		$sql .= "ORDER BY bulletin, matricule";
+		$sql .= "ORDER BY bulletin, matricule ";
 
 		$resultat = $connexion -> query($sql);
 		$listeSituationsCours = array();
 		if ($resultat)
+			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat -> fetch()) {
 				$matricule = $ligne['matricule'];
 				$bulletin = $ligne['bulletin'];
@@ -1238,13 +1295,13 @@ class Bulletin {
 				$attributProf = $ligne['attributProf'];
 				$sitDelibe = $ligne['sitDelibe'];
 				$attributDelibe = $ligne['attributDelibe'];
-				$maxSituation = $ligne['maxSituation'] == Null ? Null : $ligne['maxSituation'];
-				// s'il n'y a pas de max, alors il n'y a pas de situation
-				$situation = $this->sansVirg(($maxSituation == Null) ? Null : $ligne['situation']);
+				$maxSituation = $this->sansVirg($ligne['maxSituation']);
+				$situation = $this->sansVirg($ligne['situation']);
+
 				// à partir du pivot 50/100, on arrondit à l'unité s'il y a une cote de situation
-				if ($situation != Null)
+				if ($situation != '')
 					$situation = ($situation > 50) ? round($situation, 0) : round($situation, 1);
-				$situationPourCent = ($situation == Null) ? Null : round(100*$situation / $maxSituation,0);
+				$situationPourCent = (($situation === '')||($maxSituation === '')) ? Null : round(100*$situation / $maxSituation,0);
 
 				// sommes-nous dans une période avec délibé?
 				if ($isDelibe) {
@@ -1335,36 +1392,11 @@ class Bulletin {
 		$sitPrecedentes = array();
 		foreach ($listeSituations as $matricule=>$cotesCoursGrp) {
 			foreach ($cotesCoursGrp as $coursGrp=>$periodes) {
-				$sitPrecedentes[$matricule][$coursGrp] = $this->situationPrecedente($periodes, $matricule, $coursGrp, $bulletin);
+				$sitPrecedentes[$matricule][$coursGrp] = $this->situationPrecedente($periodes, $bulletin);
 				}
 			}
 		return $sitPrecedentes;
 		}
-
-	// /**
-	//  * renvoie la dernière situation précédente connue avant le bulletin $bulletin pour le cours $coursGrp
-	//  * la fonction retourne dans les périodes précédentes juqu'à trouver une sitPrec
-	//  * fonction appelée par self:situationsPrecedentes
-	//  *
-	//  * @param $coursGrp
-	//  * @param $bulletin
-	//  * @return array
-	//  */
-	// private function situationPrecedente ($situations, $bulletin) {
-	// 	$sitPrec = array('sit'=>Null, 'maxSit'=>Null);
-	// 	$noBull = $bulletin-1;
-	// 	$found = false;
-	// 	// on va, éventuellement, jusqu'au bulletin 0 (correspondant au report de l'année précédente)
-	// 	while (($noBull >= 0) && !($found)) {
-	// 		if (isset($situations[$noBull]) && isset($situations[$noBull]['max']) && (trim($situations[$noBull]['sit']) != '')) {
-	// 			$sitPrec['sit'] = $situations[$noBull]['sit'];
-	// 			$sitPrec['maxSit'] = $situations[$noBull]['max'];
-	// 			$found = true;
-	// 			}
-	// 		$noBull--;
-	// 		}
-	// 	return $sitPrec;
-	// 	}
 
 	/**
 	 * renvoie la dernière situation précédente connue avant le bulletin $bulletin pour le cours $coursGrp
@@ -1375,16 +1407,13 @@ class Bulletin {
 	 * @param $bulletin
 	 * @return array
 	 */
-	private function situationPrecedente ($situations, $matricule, $coursGrp, $bulletin) {
+	private function situationPrecedente ($situations, $bulletin) {
 		$sitPrec = array('sit'=>Null, 'maxSit'=>Null);
 		$noBull = $bulletin-1;
 		$found = false;
-		// afficher($situations);
-		// on va à reculon, éventuellement, jusqu'au bulletin 0 (correspondant au report de l'année précédente)
+		// on va, éventuellement, jusqu'au bulletin 0 (correspondant au report de l'année précédente)
 		while (($noBull >= 0) && !($found)) {
-			if (isset($situations[$noBull]) &&
-					isset($situations[$noBull]['max']) &&
-					(trim($situations[$noBull]['sit']) != '')) {
+			if (isset($situations[$noBull]) && isset($situations[$noBull]['max']) && (trim($situations[$noBull]['sit']) != '')) {
 				$sitPrec['sit'] = $situations[$noBull]['sit'];
 				$sitPrec['maxSit'] = $situations[$noBull]['max'];
 				$found = true;
@@ -1401,13 +1430,12 @@ class Bulletin {
 	 * @param $listeSituations
 	 * @param $listeGlobalPeriodePondere
 	 * @param $bulletin
-	 * @return array liste des situations pour la liste d'élèves et le cours
 	 */
 	function calculeNouvellesSituations($listeSituations, $listeGlobalPeriodePondere, $bulletin) {
 		foreach ($listeGlobalPeriodePondere as $matricule => $unCours) {
 			foreach ($unCours as $coursGrp => $lesCotes) {
 				// on recherche la situation précédente dans tous les bulletins précédents
-				$sitPrec = $this->situationPrecedente($listeSituations, $matricule, $coursGrp, $bulletin);
+				$sitPrec = $this->situationPrecedente($listeSituations[$matricule][$coursGrp], $bulletin);
 				// au cas où, la situation précédente est recopiée dans la liste (cas d'un bulletin très ancien)
 				$listeSituations[$matricule][$coursGrp][$bulletin-1] = $sitPrec;
 				$listeSituations[$matricule][$coursGrp][$bulletin]['sit'] =
@@ -2257,7 +2285,8 @@ class Bulletin {
 		else
 			$listeElevesString = $listeEleves;
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT dp.matricule, user, mailDomain, decision, restriction, notification, mail, adresseMail, DATE_FORMAT(quand, '%d/%m %H:%i') AS quand, ";
+
+		$sql = "SELECT dp.matricule, periode, user, mailDomain, decision, restriction, notification, mail, adresseMail, DATE_FORMAT(quand, '%d/%m %H:%i') AS quand, ";
 		$sql .= "CONCAT(nom,' ',prenom) AS nom ";
 		$sql .= "FROM ".PFX."passwd AS dp ";
 		$sql .= "LEFT JOIN ".PFX."bullDecisions AS dbd ON dbd.matricule = dp.matricule ";
@@ -2269,18 +2298,18 @@ class Bulletin {
 			$resultat->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$matricule = $ligne['matricule'];
+				$periode = $ligne['periode'];
 				// vérifier si l'on peut encore envoyer la décision ou si c'est déjà fait
-				if (($ligne['decision'] == '') || ($ligne['quand'] != ''))
-					$ligne['okEnvoi'] = false;
-					else $ligne['okEnvoi'] = true;
-				if ($ligne['adresseMail'] == '') {
-					$ligne['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
-				$photo = Ecole::photo($matricule);
-				$ligne['photo']=$photo;
+				$ligne['okEnvoi'] = ($ligne['quand']=='')?true:false;
+
+				if (!(isset($listeDecisions[$matricule]['adresseMail'])))
+					$listeDecisions[$matricule]['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
+				// if (!(isset($listeDecisions[$matricule]['photo'])))
+				// 	$listeDecisions[$matricule]['photo'] = Ecole::photo($matricule);
+				if ($periode != '')
+					$listeDecisions[$matricule][$periode] = $ligne;
 				}
-				$listeDecisions[$matricule] = $ligne;
 			}
-		}
 		Application::DeconnexionPDO($connexion);
 		return $listeDecisions;
 	}
@@ -2333,7 +2362,7 @@ class Bulletin {
 	/**
 	 * établir la liste de synthèse des décisions prises pour les élèves dont la liste est fournie
 	 * @param $listeEleves
-	 * @result array
+	 * @return array
 	 */
 	public function listeSynthDecisions($listeEleves) {
 		if (is_array($listeEleves))
@@ -2341,7 +2370,7 @@ class Bulletin {
 		else
 			$listeElevesString = $listeEleves;
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT bd.matricule, decision, restriction, mail, notification, adresseMail, quand, ";
+		$sql = "SELECT bd.matricule, periode, decision, restriction, mail, notification, adresseMail, quand, ";
 		$sql .= "nom, prenom, user, mailDomain ";
 		$sql .= "FROM ".PFX."bullDecisions AS bd ";
 		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = bd.matricule ";
@@ -2355,9 +2384,10 @@ class Bulletin {
 			$resultat -> setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $resultat->fetch()) {
 				$matricule = $ligne['matricule'];
+				$periode = $ligne['periode'];
 				$photo = Ecole::photo($matricule);
 				$ligne['photo']=$photo;
-				$liste[$matricule] = $ligne;
+				$liste[$matricule][$periode] = $ligne;
 			}
 		}
 		Application::DeconnexionPDO($connexion);
@@ -2776,7 +2806,7 @@ class Bulletin {
 	public function syntheseToutesAnnees ($matricule, $annee=Null) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "SELECT annee AS anScolaire, SUBSTR(cours,1,1) as annee, bulletin, statut, ".PFX."bullSitArchives.coursGrp, situation, maxSituation, ";
-		$sql .= "round(situation*100/maxSituation) as pourcent, sitDelibe, cours, nbheures, libelle, attribut ";
+		$sql .= "round(situation*100/maxSituation) as pourcent, sitDelibe, cours, nbheures, libelle, attributDelibe ";
 		$sql .= "FROM ".PFX."bullSitArchives ";
 		$sql .= "LEFT JOIN ".PFX."cours ON (".PFX."cours.cours = SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1)) ";
 		$sql .= "LEFT JOIN ".PFX."statutCours ON (".PFX."statutCours.cadre = ".PFX."cours.cadre) ";
@@ -2800,7 +2830,7 @@ class Bulletin {
 				$ligne['mention'] = $this->calculeMention($pourcent);
 				$pourcent = ($pourcent == Null)?'':$pourcent.'%';
 				$ligne['pourcent'] = $pourcent;
-				$attribut = $ligne['attribut'];
+				$attribut = $ligne['attributDelibe'];
 				$coursGrp = $ligne['coursGrp'];
 				$synthese[$anScolaire][$annee]['resultats'][$bulletin][$coursGrp] = $ligne;
 				}
@@ -3512,6 +3542,7 @@ class Bulletin {
 		$sql = "INSERT INTO ".PFX."bullSitArchives (annee, matricule, coursGrp, bulletin, situation, maxSituation, sitDelibe, attribut) ";
 		$sql .= "SELECT '$anneeScolaire', matricule, coursGrp, bulletin, situation, maxSituation, sitDelibe, attribut ";
 		$sql .= "FROM ".PFX."bullSituations ";
+		die($sql);
 		$resultat = $connexion->exec($sql);
 		Application::DeconnexionPDO($connexion);
 		if ($resultat) return true;
@@ -3877,7 +3908,6 @@ class Bulletin {
 				}
 				// s'il n'y a pas de résultat, c'est qu'il n'y a pas de poids
 				else $poidsOK = false;
-
 			$poidsOKEnsemble = $poidsOKEnsemble && $poidsOK;
 			$listePoidsOK[$formCert][$idComp] = array('competence'=>$listeCompetences[$cours][$idComp]['libelle'], 'poidsOK'=>$poidsOK);
 			}
@@ -4079,21 +4109,21 @@ class Bulletin {
 	 */
 	public function enregistrerMentions($post) {
 		$matricule = $post['matricule'];
-		$mention[2] = $post['mentions_2'];
-		$mention[5] = $post['mentions_5'];
 		$annee = SUBSTR($post['classe'], 0, 1);
 		$anScol = ANNEESCOLAIRE;
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "INSERT INTO ".PFX."bullMentions ";
-		$sql .= "SET periode='2', mention='$mention[2]', matricule='$matricule', annee='$annee', anscol='$anScol' ";
-		$sql .= "ON DUPLICATE KEY UPDATE mention='$mention[2]'";
-
-		$resultat = $connexion->exec($sql);
-		$sql = "INSERT INTO ".PFX."bullMentions ";
-		$sql .= "SET periode='5', mention='$mention[5]', matricule='$matricule', annee='$annee', anscol='$anScol' ";
-		$sql .= "ON DUPLICATE KEY UPDATE mention='$mention[5]'";
-
-		$resultat += $connexion->exec($sql);
+		$resultat = 0;
+		// toutes les mentions figurent dans un champ nommé 'mentions_x'
+		foreach ($post as $key=>$value) {
+			$explKey = explode('_',$key);
+			if ($explKey[0] == 'mentions') {
+				$periode = $explKey[1];
+				$sql = "INSERT INTO ".PFX."bullMentions ";
+				$sql .= "SET periode='$periode', mention='$value', matricule='$matricule', annee='$annee', anscol='$anScol' ";
+				$sql .= "ON DUPLICATE KEY UPDATE mention='$value' ";
+				$resultat += $connexion->exec($sql);
+				}
+			}
 		Application::DeconnexionPDO($connexion);
 		return $resultat;
 		}

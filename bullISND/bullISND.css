@@ -1,5 +1,5 @@
 .imagePopup {
-    background-color:white; 
+    background-color:white;
     font-weight:bold;
     box-shadow: 1px 1px 12px #555;
 }
@@ -26,7 +26,7 @@
 	background-repeat:no-repeat;
 	background-position: 10px 10px;
 	}
-	
+
 .noticeDroite {
     background-color: #ee8;
 	background-repeat:no-repeat;
@@ -44,7 +44,7 @@
 .delibe {background-color: #F7D6E9;}
 
 .legendePhoto {
-	background-color: #aaa; 
+	background-color: #aaa;
 	color:white;
 	padding: 5px 2px 5px 2px;
 	display: block;
@@ -79,8 +79,8 @@
 
 .blocRemarque {
 	float:left;
-	width:55%	
-	
+	width:55%
+
 }
 
 .blocAttitudes {
@@ -119,13 +119,13 @@ table.attitudes, table.attitudes td {
 }
 
 input[readonly], textarea[readonly], checkbox[readonly] {
-	background-color: #888; 
+	background-color: #888;
 	color:#eee;
 	}
-	
+
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] {
-	background-color: #888; 
+	background-color: #888;
 	color:#eee;
 }
 
@@ -147,13 +147,13 @@ input.nacquis[readonly], input.acquis[readonly]{
 	}
 
 select[disabled] {color: #ccc}
-	
+
 .compteur {
 	clear:both;
-	float:right; 
+	float:right;
 	color: grey;
 	}
-	
+
 .erreurEncodage {
 	background-color: red;
 	// color:white;
@@ -163,7 +163,7 @@ select[disabled] {color: #ccc}
 	background-color: #e55;
 	color:white;
 	}
-	
+
 .echecEncodage input {
 	color: #e55;
 	}
@@ -176,18 +176,18 @@ select[disabled] {color: #ccc}
 }
 
 .cote1erDegre {
-	background-color: yellow; 
-	clear:both; 
+	background-color: yellow;
+	clear:both;
 	border: 1px dotted red;
 	}
-	
+
 
 .patienter {
 	background-color: orange;
   }
 
 .situationActuelle {
-  background-color: #FCDB82; 
+  background-color: #FCDB82;
 
 }
 
@@ -198,7 +198,7 @@ select[disabled] {color: #ccc}
 }
 
 .star {
-	background-color: yellow; 
+	background-color: yellow;
 	color:red;
 	}
 
@@ -223,7 +223,7 @@ width: 3em;
 border-bottom: 1px solid;
 font-weight:bold;
 text-align: center;
-width: 3em;} 
+width: 3em;}
 
 
 .sit {
@@ -236,7 +236,7 @@ width: 3em;}
 	border: 1px solid black;
 	background-color: #feeeca
 	}
-	
+
 .synthese p {
 	padding: 0 1em;
 }
@@ -249,7 +249,7 @@ td.TJ, td.EX, th {
 	background-color:#E9ED80;
 	border: 1px solid black;
 	}
-	
+
 #commentaireProf h4 {
 	margin:0
 	}
@@ -384,11 +384,11 @@ th.cert, td.cert, .cert {
 .couleur1 {
 	background-color: #FBFFE6;
 	}
-  
+
 .couleur2 {
 	background-color: #E6FFEC;
 	}
-  
+
 .couleur3 {
 	background-color: #E6F7FF;
 	}
@@ -404,11 +404,11 @@ th.cert, td.cert, .cert {
 .couleur6 {
 	background-color: #E6E8FF;
 	}
-  
+
 .couleur7 {
 	background-color: #E6FFF9;
 	}
-  
+
 .couleur8 {
 	background-color: #ECFFE6;
 	}
@@ -416,8 +416,8 @@ th.cert, td.cert, .cert {
 .couleur9 {
 	background-color: #FFF4E6;
 	}
- 
- 
+
+
 .draggable {
 	cursor:pointer
 	}
@@ -436,7 +436,7 @@ th.cert, td.cert, .cert {
 	}
 
 .formFooter {
-	padding: 3px 0; 
+	padding: 3px 0;
 	margin: 15px 0 0 0;
 	background-color: #F7DF9D;
 	color: grey;
@@ -462,20 +462,20 @@ th.cert, td.cert, .cert {
 .danger span {
 	color:white;
 	background-color:#f00;
-	
+
 }
 
 .gauche {
 	float:left;
 	width: 47%;
 	padding: 0 2em;
-	
+
 }
 
 #listeElevesAdd, #listeElevesDel {
 	background-color: #aaa
 	}
-	
+
 .disabled {
 	color: grey;
 	font-weight: normal;
@@ -484,12 +484,12 @@ th.cert, td.cert, .cert {
 	color: black;
 	font-weight: bolder;
 	}
-	
+
 .pasCours {
     background-color: #ddd;
     text-align:center;
     }
-	
+
 .symbolique {
 	padding: 0 0 1em 0;
 	font-size: 8pt
@@ -508,7 +508,7 @@ th.cert, td.cert, .cert {
 }
 #pia p {
 	font-size: 12pt;
-	}	
+	}
 
 #pia #entetePIA {
 	padding: 5em 0;
@@ -516,29 +516,20 @@ th.cert, td.cert, .cert {
 #pia .coursProf {
 	padding: 2em 0 0 0;
 	}
-	
-#pia #blocNom {
-	display: block;
-  width: 55%;
-  height: 200px;
+
+#pia #blocNoms {
   border: 1px solid black;
-  margin-left: 50%;
   padding: 1em;
+  margin-bottom: 1em;
   font-size:150%;
+  width: 50%;
+  float:right;
 }
 
 #pia #nomPrenom {
 	text-align:right;
 	heigth: 200px;
 	}
-
-#pia .shadow {
-	display: none;
-  border: 5px solid #ff0;
-  -moz-box-shadow: 8px 8px 12px #aaa;
-  -webkit-box-shadow: 8px 8px 12px #aaa;
-  box-shadow: 8px 8px 12px #555;
-}
 
 #photo {
 	width: 100px;
@@ -556,8 +547,8 @@ th.cert, td.cert, .cert {
 	z-index:1999;
 }
 
-.pageBreak { 
-	page-break-before:always; 
+.pageBreak {
+	page-break-before:always;
 	}
 
 .clickNE:hover, .clickA:hover, .clickNA:hover {
@@ -568,14 +559,14 @@ th.cert, td.cert, .cert {
 	text-align:center;
 	border:2px solid red;
 	border-radius: 25px;
-	
+
 }
 
 .report, .reportAttitude {
 	font-weight:bold;
 	color: #FF4800
 	}
-	
+
 .enteteCote {
 	background: rgb(253,241,209);
 	background: -moz-linear-gradient(top,  rgba(253,241,209,1) 0%, rgba(253,222,135,1) 50%, rgba(255,208,77,1) 51%, rgba(252,234,182,1) 100%);
@@ -589,7 +580,7 @@ th.cert, td.cert, .cert {
 	border:1px solid grey;
 
 	text-align: center;
-	font-weight: normal	
+	font-weight: normal
 }
 
 .enteteCarnet {
@@ -600,7 +591,7 @@ th.cert, td.cert, .cert {
 	font-weight: normal !important;
 	text-align: center;
 	}
-	
+
 #carnet td, #carnet th {
 	border: 1px solid grey;
 	}
@@ -608,12 +599,12 @@ th.cert, td.cert, .cert {
 #carnet .detailsCote {
 	background-color: #ffd
 	}
-	
+
 .balayette {
 	color: #080;
 	cursor:pointer;
 	}
-	
+
 .form-control.sitDelibe[disabled], .form-control.sitDelibe[readonly] {
     background-color: #eee;
     color: #000;
@@ -625,19 +616,19 @@ th.cert, td.cert, .cert {
 .invisible {
 	display: none;
 	}
-	
+
 .editable {
 	background: #fff;
 	width: 6em;
 	height: 2.7em;
 	padding: 0.5em;
 	}
-	
+
 .cote .fa {
 	font-size:0.8em;
 	color:#f3f;
 	}
-	
+
 .tdLock {
 	cursor:pointer;
 }

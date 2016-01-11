@@ -10,7 +10,7 @@
 			</option>
 		{/foreach}
 	</select>
-	<button type="submit" class="btn btn-primary btn-sm">OK</button>
+	<button type="submit" class="btn btn-primary btn-xs">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode|default:'voir'}">
 
@@ -21,9 +21,10 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	
+
 	$("#coursGrp").change(function(){
 		$("#wait").show();
+		$.blockUI();
 		$("#formSelecteur").submit();
 		})
 })

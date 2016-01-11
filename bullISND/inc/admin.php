@@ -95,12 +95,13 @@ switch ($mode) {
 				break;
 			}
 
-		$smarty->assign('action',$action);
-		$smarty->assign('mode',$mode);
 		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
 		$smarty->assign('niveau',$niveau);
 		$listeProfsTitulaires = $Ecole->listeProfsCoursGrp($coursGrp);
 		$smarty->assign('listeProfsTitulaires', $listeProfsTitulaires);
+
+		$smarty->assign('action',$action);
+		$smarty->assign('mode',$mode);
 		$smarty->assign('selecteur', 'selectNiveauCoursGrp');
 		$smarty->assign('corpsPage', 'showProfsCours');
 		break;
@@ -124,8 +125,6 @@ switch ($mode) {
 				}
 			}
 
-		$smarty->assign('mode',$mode);
-		$smarty->assign('action',$action);
 		$smarty->assign('cours', $cours);
 		$smarty->assign('coursGrp', $coursGrp);
 		$smarty->assign('bulletin', $bulletin);
@@ -151,6 +150,8 @@ switch ($mode) {
 
 		$smarty->assign('listeElevesAdd', $listeElevesAdd);
 
+		$smarty->assign('mode',$mode);
+		$smarty->assign('action',$action);
 		$smarty->assign('selecteur', 'selectMatieres');
 		$smarty->assign('corpsPage', 'showAttributionsEleves');
 		break;
@@ -282,10 +283,11 @@ switch ($mode) {
 		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
 		$smarty->assign('niveau', $niveau);
 		$smarty->assign('bulletin', $bulletin);
+
+		$smarty->assign('selecteur','selectBulletinNiveauVerrou');
+		$smarty->assign('corpsPage','verrousOuverts');
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
-		$smarty->assign('selecteur','selectBulletinNiveauVerrou');
-		$smarty->assign('corpsPage','verrousOuverts');		
 		break;
 
 	case 'competences':
@@ -398,7 +400,7 @@ switch ($mode) {
 			$nb = $Bulletin->enregistrerNomsCours($_POST, $acronyme);
 			$smarty->assign('message', array(
 						'title'=>SAVE,
-						'texte'=>"$nb enregistrement(s) dans la base de données",
+						'texte'=>sprintf('%d enregistrement(s) dans la base de données',$nb),
 						'urgence'=>'success')
 						);
 			}
@@ -417,7 +419,7 @@ switch ($mode) {
 				$nb = $Ecole->supprTitulariat ($classe, $listeAcronymes);
 				$smarty->assign('message', array(
 							'title'=>'Suppression',
-							'texte'=>"$nb modification(s) enregistrée(s).",
+							'texte'=>sprintf('%d modification(s) enregistrée(s).',$nb),
 							'urgence'=>'info')
 							);
 				break;
@@ -426,11 +428,12 @@ switch ($mode) {
 				$nb = $Ecole->addTitulariat($classe,$listeAcronymes,'G');
 				$smarty->assign('message', array(
 							'title'=>'Ajouts',
-							'texte'=>"$nb modification(s) enregistrée(s).",
+							'texte'=>sprintf('%d modification(s) enregistrée(s).',$nb),
 							'urgence'=>'info')
 							);
 				break;
-			}
+			}  // switch ($etape)
+
 		// si une classe a été choisie, on montre la page de sélection/désélection
 		// des titulaires
 		if (isset($classe)) {
@@ -443,15 +446,16 @@ switch ($mode) {
 		// dans tous les cas, on montre le sélecteur de groupe/classe
 		$listeTitus = $Ecole->listeTitus();
 		$listeClasses = $Ecole->listeGroupes(array('G','TT'));
+		$smarty->assign('listeTitus', $listeTitus);
+		$smarty->assign('listeClasses', $listeClasses);
+
 		$smarty->assign('action',$action);
 		$smarty->assign('mode',$mode);
 		$smarty->assign('etape','choixTitulaires');
-		$smarty->assign('listeTitus', $listeTitus);
-		$smarty->assign('listeClasses', $listeClasses);
 		$smarty->assign('selecteur', 'selectClasse');
 		$smarty->assign('corpsPage', 'choixTitu');
-		break;	
-	
+		break;
+
 	default: 'missing mode';
 		break;
 	}

@@ -1,3 +1,4 @@
+
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 		<label for="bulletin">Bulletin n° </label>
@@ -8,7 +9,7 @@
 				{$smarty.section.boucleBulletin.index}</option>
 		{/section}
 	</select>
-	
+
 	<select name="coursGrp" id="coursGrp">
 		<option value="">Cours</option>
 		{if isset($listeCours)}
@@ -25,7 +26,7 @@
 		<option value="alpha"{if $tri == 'alpha'} selected="selected"{/if}>Alphabétique</option>
 		<option value="classes"{if $tri == 'classes'} selected="selected"{/if}>Par classes</option>
 	</select>
-	
+
 	{* si un cours est sélectionné, on présente le bouton OK *}
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
@@ -37,7 +38,7 @@
 <script type="text/javascript">
 
 $(document).ready (function() {
-	
+
 	$("#formSelecteur").submit(function(){
 		if ($("#coursGrp").val() == '')
 			return false;

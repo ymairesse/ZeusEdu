@@ -27,6 +27,9 @@ $smarty->assign('COTEABS',COTEABS);
 $smarty->assign('COTENULLE',COTENULLE);
 $smarty->assign('NOMSPERIODES',explode(',',NOMSPERIODES));
 
+$listeCours = $user->listeCoursProf();
+$smarty->assign('listeCours',$listeCours);
+
 switch ($mode) {
 	case 'gererCotes':
 		switch ($etape) {
@@ -87,6 +90,7 @@ switch ($mode) {
 				$listeCompetences = $Bulletin->listeCompetences($coursGrp);
 				// vérifier que des poids ont été attribués aux compétences
 				$listePoidsOK = $Bulletin->poidsCompetencesOK($coursGrp,$bulletin,$listeCompetences);
+
 				if ($listePoidsOK['tutti'] == false) {
 					$smarty->assign('erreursPoids',$listePoidsOK['details']);
 					}
@@ -111,6 +115,7 @@ switch ($mode) {
 						$listeSituationsAvant = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
 						// calcule les nouvelles situations pour ce bulletin, à partir des situations existantes et du globalPeriode
 						$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
+						afficher($listeSituations, true);
 						$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 						$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
 
@@ -154,31 +159,27 @@ switch ($mode) {
 			}
 		break;
 	case 'poidsCompetences':
-		if ($coursGrp && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
-			switch ($etape) {
-				case 'enregistrer':
-					$nbResultats = $Bulletin->recordPoidsCompetences($_POST);
-					$smarty->assign('message', array(
-						'title'=>'Enregistrement',
-						'texte'=> "$nbResultats poids enregistré(s)",
-						'urgence'=>'success')
-						);
-				// pas de break;
-				// break;
-				default:
-					$sommesPonderations = $Bulletin->sommesPonderations($coursGrp);
-					$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
-					$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
-					$tableauPoids = $Bulletin->listePoidsCompetences($coursGrp, $listeCompetences);
-					$listeCotes = ($listeTravaux != Null)?$Bulletin->listeCotesCarnet($listeTravaux):Null;
-					$smarty->assign('ponderations', $sommesPonderations);
-					$smarty->assign('listeCompetences', $listeCompetences);
-					$smarty->assign('tableauPoids', $tableauPoids);
-					$smarty->assign('selecteur', 'selectCours');
-					$smarty->assign('corpsPage', 'showPoidsCompetences');
-					break;
+		if ($etape == 'enregistrer') {
+			if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
+				$nbResultats = $Bulletin->recordPoidsCompetences($_POST);
+				$smarty->assign('message', array(
+					'title'=>'Enregistrement',
+					'texte'=> sprintf('%d poids enregistré(s)',$nbResultats),
+					'urgence'=>'success')
+					);
+				}
 			}
+		$sommesPonderations = $Bulletin->sommesPonderations($coursGrp);
+		$listeTravaux = $Bulletin->listeTravaux($coursGrp,$bulletin);
+		$listeCompetences = current($Bulletin->listeCompetences($coursGrp));
+		$tableauPoids = $Bulletin->listePoidsCompetences($coursGrp, $listeCompetences);
+		$listeCotes = ($listeTravaux != Null)?$Bulletin->listeCotesCarnet($listeTravaux):Null;
+		$smarty->assign('ponderations', $sommesPonderations);
+		$smarty->assign('listeCompetences', $listeCompetences);
+		$smarty->assign('tableauPoids', $tableauPoids);
+		$smarty->assign('selecteur', 'selectCours');
+		$smarty->assign('corpsPage', 'showPoidsCompetences');
 		break;
-		}
+
 	}
 ?>

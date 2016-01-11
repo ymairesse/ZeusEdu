@@ -70,11 +70,11 @@
 				{/if}
 			{/if}
 		</td>
-		
+
 		{* -------------------------------------------------------*}
 		{* -rien que la deuxième année du degré ------------------*}
 		{* -------------------------------------------------------*}
-		
+
 		<td class="cote{if $sitDeuxiemes == Null} disabled{/if}">
 			{if ($sitDeuxiemes != Null) && isset($sitDeuxiemes.$coursGrp.$matricule.sit2.sit)}
 			<div class="fraction">
@@ -86,7 +86,7 @@
 			-
 			{/if}
 		</td>
-		
+
 		{* ------------------------------------------------------ *}
 		{* -cote de l'épreuve externe --------------------------- *}
 		{* ------------------------------------------------------ *}
@@ -111,7 +111,7 @@
 		{* ------------------------------------------------------ *}
 		<td style="text-align:center">
 			{if $blocage == 0}
-			
+
 			{* ------------------------------------------------------ *}
 			{* cote entre crochets? ----------------------------------*}
 			{* Deux boutons: avec ou sans crochets -------------------*}
@@ -131,7 +131,7 @@
 					{if $blocage > 0}disabled="disabled"{/if}>
 				[{$sitEleve.pourcent|default:''}]
 				</button>
-			
+
 				<button class="btn btn-default btn-sm btn-success pop nohook"
 					type="button"
 					name="btnNohook-eleve_{$matricule}"
@@ -173,7 +173,7 @@
 					data-html="true"
 					{if $blocage > 0} disabled="disabled"{/if}
 					>
-					{$listeSommesFormCert.$matricule.pourcentCert} 
+					{$listeSommesFormCert.$matricule.pourcentCert}
 					</button>
 				{/if}
 
@@ -207,7 +207,7 @@
 				{/if}
 			{/if}
 		</td>
-		
+
 		{* --------------------------------------------------------*}
 		{* cote de situation choisie par le titulaire du cours     *}
 		{* une fois dans un texte à l'écran ---------------------- *}
@@ -271,7 +271,7 @@
 					<i class="fa fa-magic"></i>
 				</button>
 				</div>
-				
+
 				<div class="sitDelibe editable"
 					 id="editable_{$matricule}"
 					 data-html="true"
@@ -286,8 +286,8 @@
 					{if $sitEleve.attributDelibe == 'externe'} <i class="fa fa-graduation-cap"></i>{/if}
 				</div>
 
-				{* balayette pour effacer la cote de délibé --------------------------*}	
-				<div class="input-group-btn">				
+				{* balayette pour effacer la cote de délibé --------------------------*}
+				<div class="input-group-btn">
 				<button
 					type="button"
 					class="btn btn-default balayette"

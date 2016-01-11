@@ -1,12 +1,20 @@
 <div class="container">
-	
-<h2>Situations | classe: {$classe} | Période: {$bulletin}</h2>
-<form name="formSituations" id="formSituations" method="POST" action="index.php">
+
+<div class="row">
+	<div class="col-md-9 col-sm-9">
+		<h2>Situations | classe: {$classe} | Période: {$bulletin}</h2>
+	</div>
+	<div class="col-md-3 col-sm-3">
+		<button type="button" class="btn btn-primary btn-lg pull-right" id="readOnlyMax">Figer les maxima</button>
+	</div>
+</div>  <!-- row -->
+
+<form name="formSituations" id="formSituations" method="POST" action="index.php" role="form" class="form-vertical">
 <table class="tableauAdmin table-hover table">
-	
+
 	<tr>
 		<th>Nom de l'élève</th>
-		
+
 		<!-- titres des colonnes = noms des cours -->
 		{foreach from=$listeCoursClasse key=cours item=detailsCours}
 			{assign var=profs value=""}
@@ -25,7 +33,7 @@
 		</th>
 		{/foreach}
 	</tr>
-	
+
 	{assign var=tabIndex value=1}
 	{foreach from=$listeEleves key=matricule item=detailsEleve}
 	<tr class="eleve">
@@ -36,10 +44,10 @@
 			data-placement="right">
 			{$detailsEleve.nom} {$detailsEleve.prenom}
 		</td>
-		
+
 		<!-- pour chaque cours existant dans la classe, on recherche le coursGrp de l'élève et la cote de situation -->
 		{foreach from=$listeCoursClasse key=cours item=detailsCours}
-		
+
 		<td class="inputSituations">
 				{if isset($listeSituations.$matricule.$cours)}
 					{assign var=dataCote value=$listeSituations.$matricule.$cours}
@@ -61,7 +69,7 @@
 
 		</td>
 		{/foreach}
-	</tr> 
+	</tr>
 	{/foreach}
 </table>
 <input type="hidden" name="bulletin" value="{$bulletin}">
@@ -69,40 +77,35 @@
 <input type="hidden" name="action" value="{$action}">
 <input type="hidden" name="mode" value="{$mode}">
 <input type="hidden" name="etape" value="{$etape}">
-<input type="submit" name="submit" id="submit" value="Enregistrer">
-<input type="reset" name="reset" value="Annuler">
+<div class="btn-group">
+	<button type="reset" class="btn btn-default">Annuler</button>
+	<button type="submit" class="btn btn-primary">Enregistrer</button>
+</div>
+
 </form>
 
-</div> 
+</div>
 
 <script type="text/javascript">
 
 	$(document).ready(function(){
 
+		$("#readOnlyMax").click(function(){
+			$(".max").each(function(){
+				$(this).prop('disabled', true);
+			})
+		})
+
 		$("#formSituations").submit(function(){
+			// éventuellement, réactiver les maxima
+			$(".max").each(function(){
+				$(this).prop('disabled', false);
+			})
 			$.blockUI();
 			$("#wait").show();
 			})
 		})
-		
-		$(".inputSituations input").click(function(){
-			// $(this).closest('tr').addClass("eleveSelectionne");
-			})
-		$(".inputSituations input").blur(function(){
-			// $(this).closest('tr').removeClass("eleveSelectionne");
-			})
-			
-		$('tbody td, th').hover(function() {
-			//$(this).closest('tr').find('td,th').addClass('eleveActif');
-			//var col = $(this).index()+1;
-			//$(this).closest('table').find('tr :nth-child('+col+')').addClass('eleveActif');
-			//}, function() {
-			//$(this).closest('tr').find('td,th').removeClass('eleveActif');
-			//var col = $(this).index()+1;
-			//$(this).closest('table').find('tr :nth-child('+col+')').removeClass('eleveActif');
-			}
-			);
-		
+
 		$(".pop").popover('hover');
 		$(".pop").not(this).popover('hide');
 

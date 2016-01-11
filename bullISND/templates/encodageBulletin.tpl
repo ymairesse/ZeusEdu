@@ -2,7 +2,7 @@
 
 	{assign var="ancre" value=$matricule}
 	<h2 title="cours {$intituleCours.coursGrp}">Bulletin {$bulletin} - {$intituleCours.statut} {$intituleCours.annee}
-		{$intituleCours.libelle} {$intituleCours.nbheures}h -> {$listeClasses|@implode:', '} 
+		{$intituleCours.libelle} {$intituleCours.nbheures}h -> {$listeClasses|@implode:', '}
 		[{if $intituleCours.nomCours} {$intituleCours.nomCours} {/if}]
 	</h2>
 
@@ -10,11 +10,11 @@
 	{assign var=ancre value=''}
 	{include file="erreurEncodage.tpl"}
 {/if}
-	
+
 <form name="encodage" id="encodage" action="index.php" method="POST" autocomplete="off" role="form" class="form-vertical">
 	<button class="btn btn-primary pull-right noprint enregistrer" type="submit" id="enregistrer">Enregistrer tout</button>
 	<button class="btn btn-default pull-right noprint" type="reset" id="annuler">Annuler</button>
-	
+
 	<input type="hidden" name="action" value="gestEncodageBulletins">
 	<input type="hidden" name="mode" value="enregistrer">
 	<input type="hidden" name="bulletin" value="{$bulletin}">
@@ -22,35 +22,37 @@
 	<input type="hidden" name="matricule" id="matricule" value="{$matricule}">
 	<input type="hidden" name="tri" value="{$tri}">
 
-	<p class="btn btn-primary noprint" id="ouvrirTout">Déplier ou replier les remarques et situations</p>	
-	
+	<p class="btn btn-primary noprint" id="ouvrirTout">Déplier ou replier les remarques et situations</p>
+
 	{assign var="tabIndexForm" value="1" scope="global"}
 	{assign var="tabIndexCert" value="500" scope="global"}
 	{assign var="tabIndexAutres" value="1000" scope="global"}
-	
+
+	{* un sélecteur d'élèves placé en haut de la page *}
 	<select name="selectEleve" id="selectEleve">
 		<option value=''>Sélectionner un élève</option>
 		{foreach from=$listeEleves key=matricule item=unEleve}
 		<option value="{$matricule}" id="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
 		{/foreach}
 	</select>
-	
+
+	{* une ligne pour chaque élève qui suit le cours *}
 	{foreach from=$listeEleves key=matricule item=unEleve}
-		
+
 		{assign var=blocage value=$listeVerrous.$matricule.$coursGrp|default:2 scope="global"}
-		
+
 		<div class="row">
-			
+
 			<div class="col-md-2 col-xs-12 blocGaucheBulletin">
 				{include file="photoEleve.inc.tpl"}
 			</div>
-			
+
 			<div class="col-md-10 col-xs-12">
 				{include file="introCotes.inc.tpl"}
 			</div>
-			
+
 		</div>  <!-- row -->
-	
+
 		{*  --------------- commentaire du prof et attitudes (éventuellement) ------------------- *}
 		<div class="row">
 			{if $listeAttitudes}
@@ -66,18 +68,18 @@
 				</div>
 			{/if}
 		</div>  <!-- row -->
-		{*  --------------- commentaire du prof et attitudes (éventuellement) ------------------- *}	
-		
-			
+		{*  --------------- commentaire du prof et attitudes (éventuellement) ------------------- *}
+
 		{include file="tableSituations.inc.tpl"}
-	
+
 		{include file="archiveSitRem.inc.tpl"}
-	
+
 		<div class="clearfix" style="border-bottom:1px solid black; padding-bottom:2em;"></div>
-		
+
 		{assign var="elevePrecedent_ID" value=$matricule}
+
 	{/foreach}
-	
+
 </form>
 
 </div>  <!-- container -->
@@ -168,22 +170,21 @@ $(document).ready(function(){
 		if (!(readonly)) {
 		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 		modification();
-		
+
 		//if ((key > 31) || (key == 8)) {
 		//	modification();
 		//	}
 		}
 	})
 
-	
+
 	// calculs automatiques des totaux
-	
 	$(".coteTJ").blur(function(e){
 		var listeCotes = $(this).closest('table').find('.coteTJ');
 		var somme = 0;
 		$.each(listeCotes, function(index,note){
 			if (!(isNaN(note.value)) && (note.value != '')) {
-				laCote = note.value.replace(',','.');				
+				laCote = note.value.replace(',','.');
 				somme += parseFloat(laCote);
 				}
 			})
@@ -197,7 +198,7 @@ $(document).ready(function(){
 		var somme = 0;
 		$.each(listeCotes, function(index,note){
 			if (!(isNaN(note.value)) && (note.value != '')) {
-				laCote = note.value.replace(',','.');				
+				laCote = note.value.replace(',','.');
 				somme += parseFloat(laCote);
 				}
 			})
@@ -205,13 +206,13 @@ $(document).ready(function(){
 			somme = '';
 		$(this).closest('table').find('.totalMaxForm').text(somme);
 		})
-	
+
 	$(".coteCert").blur(function(e){
 		var listeCotes = $(this).closest('table').find('.coteCert');
 		var somme = 0;
 		$.each(listeCotes, function(index,note){
 			if (!(isNaN(note.value)) && (note.value != '')) {
-				laCote = note.value.replace(',','.');				
+				laCote = note.value.replace(',','.');
 				somme += parseFloat(laCote);
 				}
 			})
@@ -225,7 +226,7 @@ $(document).ready(function(){
 		var somme = 0;
 		$.each(listeCotes, function(index,note){
 			if (!(isNaN(note.value)) && (note.value != '')) {
-				laCote = note.value.replace(',','.');				
+				laCote = note.value.replace(',','.');
 				somme += parseFloat(laCote);
 				}
 			})
@@ -273,7 +274,7 @@ $(document).ready(function(){
 		$("#matricule").val(ancre);
 		window.onbeforeunload = function(){};
 	})
-	
+
 	// *************************************************************************************************************
 	// calcul de la cote de délibé sur base de la cote de l'épreuve externe (majeure) et de la cote interne (mineure)
 	function choixDelibe(matricule, EprExterne,coteInterne) {
@@ -301,35 +302,35 @@ $(document).ready(function(){
 					}
 		return resultat;
 		}
-	// *************************************************************************************************************	
+	// *************************************************************************************************************
 
 	$(".hook, .nohook").click(function(){
 		modification();
 		// quelle est la cote portée par le bouton avec crochets ou non?
-		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');		
+		var cote = $(this).val().replace(/[\[\]²%\* ]+/g,'');
 		// Retrouver le matricule dans Ex: "btnHook-eleve_5042"
 		var matricule = $(this).attr("name").split('-')[1].split("_")[1];
-		
+
 		coteExterne = $("#coteExterne_"+matricule).text().replace(/[\[\]²%\* ]+/g,'');
 		coteDelibe = choixDelibe(matricule, coteExterne, cote);
-		
+
 		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
 		$("#choixProf-matricule_"+matricule).val(cote);
 		// la cote finale de délibé calculée plus haut dans le champ hidden
-		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);		
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);
 
 		if ($(this).hasClass('hook')) {
 			// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
 			$("#attributProf-matricule_"+matricule).val('hook');
 			// la cote sélectionnée par le prof lisible et entourée de crochets
-			$("#textChoixProf_"+matricule).text("["+cote+"]");			
-			
+			$("#textChoixProf_"+matricule).text("["+cote+"]");
+
 			// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon 'hook'
-			if (coteDelibe != cote) 
+			if (coteDelibe != cote)
 				$("#attributDelibe-matricule_"+matricule).val('externe');
 				else $("#attributDelibe-matricule_"+matricule).val('hook');
 			// le champ contenteditable de la cote de délibé pour permettre la baguette magique
-			if (coteDelibe != cote) 
+			if (coteDelibe != cote)
 				$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
 				else $("#editable_"+matricule).text('['+coteDelibe+']');
 			}
@@ -338,13 +339,13 @@ $(document).ready(function(){
 				$("#attributProf-matricule_"+matricule).val('');
 				// la cote sélectionnée par le prof lisible et sans crochets
 				$("#textChoixProf_"+matricule).text(cote);
-				
+
 				// si la cote de délibé n'est pas la cote interne, on indique l'attribut 'externe', sinon rien
-				if (coteDelibe != cote) 
+				if (coteDelibe != cote)
 					$("#attributDelibe-matricule_"+matricule).val('externe');
 					else $("#attributDelibe-matricule_"+matricule).val('');
 				// le champ contenteditable de la cote de délibé pour permettre la baguette magique
-				if (coteDelibe != cote) 
+				if (coteDelibe != cote)
 					$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
 					else $("#editable_"+matricule).text(coteDelibe);
 				}
@@ -360,12 +361,12 @@ $(document).ready(function(){
 
 		coteExterne = $("#coteExterne_"+matricule).text().replace(/[\[\]²%\* ]+/g,'');
 		coteDelibe = choixDelibe(matricule, coteExterne, cote);
-		
+
 		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
 		$("#choixProf-matricule_"+matricule).val(cote);
 		// la cote finale de délibé calculée plus haut dans le champ hidden
-		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);		
-		
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);
+
 		// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
 		$("#attributProf-matricule_"+matricule).val('star');
 		// la cote sélectionnée par le prof lisible et entourée de crochets
@@ -381,7 +382,7 @@ $(document).ready(function(){
 				$("#attributDelibe-matricule_"+matricule).val('star');
 				$("#editable_"+matricule).html(coteDelibe+'*');
 				}
-		
+
 		$("#led_"+matricule).removeClass().addClass('invisible');
 		})
 
@@ -394,12 +395,12 @@ $(document).ready(function(){
 
 		coteExterne = $("#coteExterne_"+matricule).text().replace(/[\[\]²%\* ]+/g,'');
 		coteDelibe = choixDelibe(matricule, coteExterne, cote);
-		
+
 		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
 		$("#choixProf-matricule_"+matricule).val(cote);
 		// la cote finale de délibé calculée plus haut dans le champ hidden
-		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);		
-		
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);
+
 		// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
 		$("#attributProf-matricule_"+matricule).val('degre');
 		// la cote sélectionnée par le prof lisible et entourée de crochets
@@ -423,7 +424,7 @@ $(document).ready(function(){
 		if (confirm(coteArbitraire)) {
 			modification();
 			var matricule = $(this).attr("name").split('-')[1].split("_")[1];
-			if ($('#editable_'+matricule).text().trim() != '') 
+			if ($('#editable_'+matricule).text().trim() != '')
 				var cote = $("#editable_"+matricule).text().match(/[0-9]+/g)[0];
 				else var cote = '';
 
@@ -447,9 +448,9 @@ $(document).ready(function(){
 		$("#attributProf-matricule_"+matricule).val('');
 		$("#attributDelibe-matricule_"+matricule).val('');
 		$("#sitDelibe-matricule_"+matricule).val('');
-		
+
 		})
-	
+
 	$(".editable").blur(function(){
 		var matricule = parseInt($(this).attr("id").substr(9,20));
 		// var sit = parseFloat($(this).text());
@@ -459,7 +460,7 @@ $(document).ready(function(){
 
 	$(".editable").keypress(function(e){
 		var key = e.keyCode || e.charCode;
-		if (key == 13) 
+		if (key == 13)
 			return false;
 		if ((key != 8) && (key != 46)) {
 			return $(this).text().length <= 2
@@ -486,7 +487,7 @@ $(document).ready(function(){
 	$(".clickNA").click(function(){
 		var toto = $(this);
 		$(this).parent().parent().nextAll().find('.nonAcquis').next('input').trigger('click');
-		
+
 		})
 	$(".clickA").click(function(){
 		$(this).parent().parent().nextAll().find('.acquis').next('input').trigger('click')

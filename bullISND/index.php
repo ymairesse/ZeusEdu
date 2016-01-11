@@ -5,14 +5,15 @@ include (INSTALL_DIR."/inc/entetes.inc.php");
 
 // ----------------------------------------------------------------------------
 //
+
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 
 require_once("inc/classes/classBulletin.inc.php");
 $Bulletin = new Bulletin();
 
-$smarty->assign('listeCours',$user->listeCoursProf("'G','S','TT'"));
-$smarty->assign('sections',"'G','S','TT'");
+$smarty->assign('listeCours',$user->listeCoursProf(SECTIONS));
+$smarty->assign('sections',SECTIONS);
 $acronyme = $user->getAcronyme();
 
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;

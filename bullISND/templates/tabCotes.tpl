@@ -1,11 +1,11 @@
 <div class="table-responsive">
-	
+
 	<table class="table table-condensed">
 		<tr>
 			<th>&nbsp;</th>
 			{foreach from=$listeCoursGrp key=coursGrp item=data}
 				<th class="pop"
-					data-container="body" 
+					data-container="body"
 					data-original-title="{$data.libelle}"
 					data-html="true"
 					data-content="{$listeProfsCoursGrp.$coursGrp}"
@@ -15,7 +15,7 @@
 			{/foreach}
 			<th>Mentions</th>
 		</tr>
-		
+
 		{foreach from=$listePeriodes key=periode item=bulletin}
 		<tr>
 			<th>{$periode+1}</th>
@@ -23,7 +23,7 @@
 				{assign var=situation value=$syntheseCotes.$bulletin.$coursGrp|default:Null}
 				<td class="cote mention{$situation.mention|trim:'+'|default:''} pop"
 					{if isset($commentairesProfs.$matricule.$coursGrp.$bulletin)}
-						data-container="body" 
+						data-container="body"
 						data-original-title="{$listeProfsCoursGrp.$coursGrp}: {$listeCoursGrp.$coursGrp.libelle}"
 						data-content="{$commentairesProfs.$matricule.$coursGrp.$bulletin|default:'no comment'}"
 						data-html="true"
@@ -42,19 +42,19 @@
 							{elseif $situation.attributDelibe == 'star'}
 							*
 							{else}
-							 
+
 							{/if}
 						{/if}
 					</strong><br>
 				{/if}
-				
+
 				{if isset($situation.pourcent) && ($situation.pourcent != '')}
 				{$situation.situation|default:''}/{$situation.maxSituation|default:''}<br>
 				<span class="micro">={$situation.pourcent|default:''}</span>
 				{/if}
 				 </td>
 			{/foreach}
-			<td class="cote"><strong>{$mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</strong></td> 
+			<td class="cote"><strong>{$mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</strong></td>
 		</tr>
 		{/foreach}
 	</table>
