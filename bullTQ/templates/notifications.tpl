@@ -21,8 +21,8 @@
 	<tr>
 		<td class="pop"
 			data-html="true"
-			data-original-title="{$decision.nom}"
-			data-content="<img src='../photos/{$decision.photo}.jpg' alt='{$matricule}' style='width:100px'><br>{$matricule}"
+			data-original-title="{$unEleve.nom} {$unEleve.prenom}"
+			data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$matricule}' style='width:100px'><br>{$matricule}"
 			data-placement="top"
 			data-container="body">
 			{$decision.nom}
@@ -53,7 +53,7 @@
 			{if $decision.notification != Null}
 				{if $decision.notification == 1}
 				<i class="fa fa-bell text-success"
-					title="Notification web prévue"
+					title="Notification Thot prévue"
 					data-container="body"></i>
 				<input type="hidden" name="notif_{$matricule}" value="true">
 				{else}
@@ -78,7 +78,7 @@
 <input type="hidden" name="action" value="{$action}">
 <input type="hidden" name="mode" value="{$mode}">
 <input type="hidden" name="etape" value="envoyer">
-	
+
 <div class="btn-group pull-right">
 	<button class="btn btn-default" type="reset">Annuler</button>
 	<button class="btn btn-primary" type="submit">Envoyer</button>
@@ -89,13 +89,13 @@
 </div>
 
 <script type="text/javascript">
-	
+
 $(document).ready(function(){
-	
+
 	$("#conf").click(function(){
 		$(".conf").trigger('click');
 	})
 
 })
-	
+
 </script>

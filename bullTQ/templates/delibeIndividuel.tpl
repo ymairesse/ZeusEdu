@@ -1,5 +1,5 @@
 <div class="container">
-	
+
 {assign var=inputOK value=(in_array($classe,$tituTQ) || ($userStatus == 'admin'))}
 
 <div class="row">
@@ -17,7 +17,7 @@
 	{* moitié gauche de l'écran ------------------------------------------*}
 	{* ------------------------------------------------------------------ *}
 	<div class="col-md-6 col-sm-12">
-		
+
 		<img src="../photos/{$nomPrenomClasse.photo}.jpg" alt="{$matricule}" height="80px" style="float:right;">
 		<table style="width: 80%;" class="table table-condensed table-hover">
 			<thead>
@@ -35,9 +35,9 @@
 					data-container="body"
 					data-html="true"
 					data-placement="right">
-				
+
 				<strong>{$nomPrenomClasse.nom} {$nomPrenomClasse.prenom}</strong>
-				
+
 				</td>
 			</tr>
 			<tr>
@@ -46,7 +46,7 @@
 			</tr>
 			</tbody>
 		</table>
-	
+
 		<table class="table table-condensed tableauBull">
 		<tr>
 			<th>Cours</th>
@@ -74,7 +74,7 @@
 			</tr>
 		{/foreach}
 		</table>
-		
+
 		<table class="table table-condensed tableauBull">
 		<tr>
 			<th colspan="6">Qualification</th>
@@ -90,7 +90,7 @@
 		<tr style="background-color: #fdd; height:3em">
 			<td class="cote evStage">
 				{if $inputOK}
-				<input type="text" name="qualif-epreuve_E1" 
+				<input type="text" name="qualif-epreuve_E1"
 					value="{$qualification.E1|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E1|default:'&nbsp;'}
@@ -98,7 +98,7 @@
 				</td>
 			<td class="cote rapStage">
 				{if $inputOK}
-				<input type="text" name="qualif-epreuve_E2" 
+				<input type="text" name="qualif-epreuve_E2"
 					value="{$qualification.E2|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E2|default:'&nbsp;'}
@@ -106,7 +106,7 @@
 				</td>
 			<td class="cote evStage">
 				{if $inputOK}
-				<input type="text" name="qualif-epreuve_E3" 
+				<input type="text" name="qualif-epreuve_E3"
 					value="{$qualification.E3|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E3|default:'&nbsp;'}
@@ -114,7 +114,7 @@
 				</td>
 			<td class="cote rapStage">
 				{if $inputOK}
-				<input type="text" name="qualif-epreuve_E4" 
+				<input type="text" name="qualif-epreuve_E4"
 					value="{$qualification.E4|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.E4|default:'&nbsp;'}
@@ -122,7 +122,7 @@
 				</td>
 			<td class="cote jury">
 				{if $inputOK}
-				<input type="text" name="qualif-epreuve_JURY" 
+				<input type="text" name="qualif-epreuve_JURY"
 					value="{$qualification.JURY|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.JURY|default:'&nbsp;'}
@@ -130,27 +130,27 @@
 				</td>
 			<td class="cote FinalStage">
 				{if $inputOK}
-				<input type="text" name="qualif-epreuve_TOTAL" 
+				<input type="text" name="qualif-epreuve_TOTAL"
 					value="{$qualification.TOTAL|default:''}" maxlength="5" class="form-control input-sm majuscules">
 				{else}
 					{$qualification.TOTAL|default:'&nbsp;'}
 				{/if}
 				</td>
 		</tr>
-		
+
 		</table>
 	</div>  <!-- col-md-... -->
 
-	
+
 
 	{* ------------------------------------------------------------------ *}
 	{* moitié droite de l'écran ------------------------------------------*}
 	{* ------------------------------------------------------------------ *}
-	
+
 	<div class="col-md-6 col-sm-12">
 	{* on passe les périodes en revue *}
 	{foreach from=$listePeriodes key=periode item=nomPeriode}
-	
+
 		<table class="tableauBull" style="width:100%">
 		<tr>
 			<th colspan="6">{$nomPeriode}</th>
@@ -172,7 +172,7 @@
 			<td class="cote OG">{assign var='nbc' value=$statOG.$periode.$uneMention.nbCotes|default:''}
 				{if $nbc > 0}{$nbc}{else}-{/if}
 			</td>
-			<td class="cote OG">{assign var='nbh' value=$statOG.$periode.$uneMention.nbheures|default:''} 
+			<td class="cote OG">{assign var='nbh' value=$statOG.$periode.$uneMention.nbheures|default:''}
 				{if $nbh > 0}{$nbh} h{else}-{/if}
 			</td>
 			<td class="cote FC">{assign var='nbc' value=$statGlobales.$periode.$uneMention.nbCotes|default:''}
@@ -188,7 +188,7 @@
 			<td class="cote">
 				{if $inputOK}
 				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
-				name="synthese-stage_depart-periode_{$periode}" id="stage_depart_{$periode}" 
+				name="synthese-stage_depart-periode_{$periode}" id="stage_depart_{$periode}"
 				value="{$mentionsManuelles.$periode.stage_depart|default:''}">
 				{else}
 					{$mentionsManuelles.$periode.stage_depart|default:'&nbsp;'}
@@ -196,8 +196,8 @@
 			</td>
 			<td class="cote" colspan="2">
 				{if $inputOK}
-				<input  type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center" 
-				name="synthese-option_depart-periode_{$periode}" id="option_depart_{$periode}" 
+				<input  type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
+				name="synthese-option_depart-periode_{$periode}" id="option_depart_{$periode}"
 				value="{$mentionsManuelles.$periode.option_depart|default:''}">
 				{else}
 					{$mentionsManuelles.$periode.option_depart|default:'&nbsp;'}
@@ -206,7 +206,7 @@
 			<td class="cote" colspan="2">
 				{if $inputOK}
 				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
-				name="synthese-global_depart-periode_{$periode}" id="global_depart_{$periode}" 
+				name="synthese-global_depart-periode_{$periode}" id="global_depart_{$periode}"
 				value="{$mentionsManuelles.$periode.global_depart|default:''}">
 				{else}
 					{$mentionsManuelles.$periode.global_depart|default:'&nbsp;'}
@@ -236,7 +236,7 @@
 			<td class="cote">
 				{if $inputOK}
 				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
-				name="synthese-stage_final-periode_{$periode}" id="stage_final_{$periode}" 
+				name="synthese-stage_final-periode_{$periode}" id="stage_final_{$periode}"
 				value="{$mentionsManuelles.$periode.stage_final|default:''}">
 				{else}
 					{$mentionsManuelles.$periode.stage_final|default:'&nbsp;'}
@@ -245,7 +245,7 @@
 			<td class="cote" colspan="2">
 				{if $inputOK}
 				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
-				name="synthese-option_final-periode_{$periode}" id="option_final_{$periode}" 
+				name="synthese-option_final-periode_{$periode}" id="option_final_{$periode}"
 				value="{$mentionsManuelles.$periode.option_final|default:''}">
 				{else}
 					{$mentionsManuelles.$periode.option_final|default:'&nbsp;'}
@@ -254,7 +254,7 @@
 			<td class="cote" colspan="2">
 				{if $inputOK}
 				<input type="text" class="form-control input-sm majuscules" maxlength="4" style="text-align:center"
-				name="synthese-global_final-periode_{$periode}" id="global_final_{$periode}" 
+				name="synthese-global_final-periode_{$periode}" id="global_final_{$periode}"
 				value="{$mentionsManuelles.$periode.global_final|default:''}">
 				{else}
 					{$mentionsManuelles.$periode.global_final|default:'&nbsp;'}
@@ -264,18 +264,19 @@
 		</table>
 
 	{/foreach}
-	
+
+	{if $PERIODEENCOURS == $NBPERIODES}
+	<h2>Décision du conseil de classe</h2>
 	<table class="table table-condensed" style="margin-top:1em; border: 2px solid red">
 		<thead>
 			<tr>
-				<td colspan="2"><h2 style="float:left">Décision du conseil de classe</h2>
+				<td colspan="2">
 					{if $inputOK && $estTitulaire}
 					<div class="pop pull-right"
 						data-container="body"
 						data-content="Dé/verrouiller"
-						data-placement="top"
-						style="font-size:2em; float:left;">
-					   <i class="fa fa-lock" id="lock"></i>
+						data-placement="top">
+					   <i class="fa fa-lock fa-2x" id="lock"></i>
 					</div>{/if}
 				</td>
 			</tr>
@@ -292,7 +293,7 @@
 						<option value="Ajournement" {if $decision.decision == 'Ajournement'} selected{/if}>Ajournement</option>
 						<option value="Restriction"{if $decision.decision == 'Restriction'} selected{/if}>Restriction avec accès en</option>
 					</select>
-				</div>				
+				</div>
 			</td>
 			<td>
 				<div class="form-group">
@@ -306,7 +307,7 @@
 						   class="form-control"
 						   placeholder="Accès à">
 				</div>
-	
+
 			</td>
 		</tr>
 		{if $estTitulaire}
@@ -319,13 +320,11 @@
 						   name="mail"
 						   id="envoiMail"
 						   {if (!(isset($decision.mail)) || (isset($decision.mail) && ($decision.mail==1)))}checked{/if}
-						   disabled
-						   class="form-control">
+						   disabled>
 				</div>
 				<div class="form-group">
 					<label class="sr-only" for="adresseMail">Email</label>
 					<input type="text"
-						   
 						   {if isset($decision.adresseMail) && ($decision.adresseMail != '')}
 							value="{$decision.adresseMail}"
 							{else}
@@ -341,29 +340,28 @@
 			</td>
 			<td>
 				<div class="form-group">
-					<label> Notification isnd.be/eleve</label>
+					<label> Notification Thot</label>
 					<input type="checkbox"
 						   value="true"
 						   name="notification"
 						   id="notification"
 						   disabled
-						   {if !(isset($decision.notification)) || (isset($decision.notification) && ($decision.notification==1))}checked{/if}
-						   class="form-control">
+						   {if !(isset($decision.notification)) || (isset($decision.notification) && ($decision.notification==1))}checked{/if}>
 				</div>
 					{if ($inputOK)}
 					<div class="btn-group pull-right">
 						<button id="cancel" type="reset" class="btn btn-default" disabled>Annuler</button>
-						<button id="save" type="submit" class="btn btn-primary" disabled>Enregistrer</button>						
+						<button id="save" type="submit" class="btn btn-primary" disabled>Enregistrer</button>
 					</div>
 				{/if}
 			</td>
 		</tr>
-		
+
 
 		{/if}
-	
+
 	</table>
-	
+	{/if}
 	</div>
 {if $inputOK}
 <div class="clearfix"></div>
@@ -381,7 +379,7 @@
 	var desactive = "Désactivé: modification en cours. Enregistrez ou Annulez.";
 	var modifie = false;
 	var locked = true;
-	
+
 	function modification () {
 	if (!(modifie)) {
 		modifie = true;
@@ -392,16 +390,16 @@
 		};
 		}
 	}
-	
+
 	$(document).ready(function(){
-		
+
 		$("input:text").each(
 		function(index) {
 			$(this).attr("disabled", true).attr("tabIndex",index+1);
 			}
 		)
 		$("input").tabEnter();
-	
+
 	$("#lock").click(function(){
 		if (locked) {
 			$("input, select, button").removeAttr("disabled");
@@ -417,44 +415,44 @@
 			}
 		locked = !(locked);
 	})
-		
-	
+
+
 	$("#decision").change(function(){
 		if ($(this).val() != 'Restriction') {
 			$("#restriction").val('');
 			}
 			else $("#restriction").focus();
 		});
-	
+
 	$("#restriction").focus(function(){
 		if ($("#decision").val() != 'Restriction')
 			$("#decision").val('Restriction');
 		})
-		
+
 	$("input").keyup(function(e){
 		if (!(locked)) {
 			var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 			if ((key > 31) || (key == 8)) {
-				modification();
+				// modification();
 				if ($(this).hasClass('majuscules')) {
-					$(this).val($(this).val().toUpperCase());						
+					$(this).val($(this).val().toUpperCase());
 					}
 				}
 			}
 		})
-	
+
 	$("#cancel").click(function(){
 		if (confirm(confirmationReset))
 			$("#cotesCours")[0].reset();
 		modifie = false;
 	})
 
-	
+
 	$("#coteCours").submit(function(){
 		$.blockUI();
 		$("#wait").show();
 	})
-		
+
 	})
 
 </script>

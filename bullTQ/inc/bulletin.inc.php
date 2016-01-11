@@ -15,14 +15,14 @@ if (isset($coursGrp)) {
 	$smarty->assign('libelleCours', $libelleCours);
 	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('coursGeneral', $BullTQ->estGeneral($coursGrp));
-	
+
 	$listeCommentaires = $BullTQ->listeCommentaires($listeEleves, $coursGrp);
 	$smarty->assign('listeCommentaires', $listeCommentaires);
 
 	$cours = $BullTQ->coursDeCoursGrp($coursGrp);
 	$listeCompetences = $BullTQ->listeCompetencesListeCours($cours);
 	$smarty->assign('listeCompetences', $listeCompetences);
-	
+
 	$listeCotesGlobales = $BullTQ->listeCotesGlobales($coursGrp, $bulletin);
 	$listeCotesGlobales = isset($listeCotesGlobales[$bulletin][$coursGrp])?$listeCotesGlobales[$bulletin][$coursGrp]:Null;
 	$smarty->assign('cotesGlobales', $listeCotesGlobales);
@@ -41,6 +41,6 @@ $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('bulletin', $bulletin);
 
 $smarty->assign('action',$action);
-$smarty->assign('selecteur', 'selectBulletinCours');
+$smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
 
 ?>

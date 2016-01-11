@@ -51,7 +51,7 @@ switch ($mode) {
 		$listeCompetences = $BullTQ->listeCompetencesListeCours($cours);
 		$smarty->assign('listeCompetences', $listeCompetences);
 		$smarty->assign('corpsPage', 'adminCompetences');
-		$smarty->assign('selecteur', 'selectNiveauCours');
+		$smarty->assign('selecteur', 'selecteurs/selectNiveauCours');
 		break;
 	case 'typologie':
 		if ($niveau != Null) {
@@ -70,13 +70,13 @@ switch ($mode) {
 			}
 		$smarty->assign('listeNiveaux',array('5','6'));
 		$smarty->assign('niveau',$niveau);
-		$smarty->assign('selecteur','selectNiveau');
+		$smarty->assign('selecteur','selecteurs/selectNiveau');
 		$smarty->assign('action',$action);
-		$smarty->assign('mode',$mode);	
+		$smarty->assign('mode',$mode);
 		break;
 	case 'titulaires':
 		if (isset($niveau)) {
-			$smarty->assign('listeProfs',$Ecole->listeProfs());			
+			$smarty->assign('listeProfs',$Ecole->listeProfs());
 			$listeAcronymes = isset($_POST['listeAcronymes'])?$_POST['listeAcronymes']:Null;
 			switch ($etape) {
 				case 'supprimer':
@@ -99,11 +99,11 @@ switch ($mode) {
 			}
 
 		$smarty->assign('listeNiveaux',$Ecole->listeGroupes(array('TQ')));
-		$smarty->assign('selecteur','selectNiveau');
+		$smarty->assign('selecteur','selecteurs/selectNiveau');
 		$smarty->assign('corpsPage','choixTitu');
 		$smarty->assign('niveau',$niveau);
 		$smarty->assign('action',$action);
-		$smarty->assign('mode',$mode);		
+		$smarty->assign('mode',$mode);
 		break;
 	default:
 		break;
