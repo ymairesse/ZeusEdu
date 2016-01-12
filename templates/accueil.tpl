@@ -44,7 +44,7 @@
 
 			<form class="form-vertical" role="form" id="login" action="login.php" method="POST">
 				<div class="panel panel-default">
-					
+
 					<div class="panel-heading">
 						<h4 class="panel-title">Veuillez vous identifier</h4>
 					</div>
@@ -52,13 +52,13 @@
 					<div class="panel-body">
 					<div class="form-group">
 						<label for="name" class="control-label sr-only">Nom d'utilisateur</label>
-						<input type="text" id="acronyme" name="acronyme" class="form-control input-lg" placeholder="Nom d'utlisateur" autocomplete="off">
-						<span class="help-group">En 3 lettres</span>
+						<input type="text" id="acronyme" name="acronyme" class="form-control input-lg" placeholder="Nom d'utilisateur" value="{$acronyme}" autocomplete="off">
+						<span class="help-group">En 7 lettres (max)</span>
 					   </div>
 
 					<div class="form-group">
 						<label for="name" class="control-label sr-only">Mot de passe</label>
-							<input type="password" id="mdp" name="mdp" class="form-control input-lg" placeholder="Mot de passe" autocomplete="off">
+							<input type="password" id="mdp" name="mdp" class="form-control input-lg" placeholder="Mot de passe" value="{$mdp}" autocomplete="off">
 							<span class="help-group">Au moins 6 caractères</span>
 					   </div>
 
@@ -128,7 +128,7 @@ $(document).ready (function() {
 			acronyme: {
 				required:true,
 				minlength:3,
-				maxlength:3
+				maxlength:7
 				},
 			mdp: {
 				required:true,

@@ -1,61 +1,47 @@
 <?php
 
-$showEdition = false;
+$date = isset($_POST['date']) ? $_POST['date'] : null;
+$smarty->assign('date', $date);
 
-switch($mode) {
-  case 'bulletin':
-    require_once('inc/gestBulletins.inc.php');
-    break;
 
-    case 'delNotification':
-        $id = isset($_POST['id'])?$_POST['id']:Null;
-        // suppression des demandes d'accusé de lecture
-        $ok = $Thot->delAccuse($id,$acronyme);
-        // suppression des notifications correspondantes
-        $nb = $Thot->delNotification($id,$acronyme);
+require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
+$thot = new Thot();
 
-        $smarty->assign('message', array(
-                'title'=>DELETE,
-                'texte'=>"$nb notification supprimée",
-                'urgence'=>SUCCES)
+switch ($mode) {
+    case 'reunionParents':
+        if ($etape == 'enregistrer') {
+            $canevas = $thot->getCanevas($_POST);
+            $attribProfs = $thot->getAttribProfs($_POST);
+            $nb = $thot->saveCanevasProfs($date, $canevas, $attribProfs);
+            $message = array(
+                'title' => SAVE,
+                'texte' => sprintf('%d modification(s) enregistrée(s)', $nb),
+                'urgence' => 'warning',
                 );
-        $showEdition = true;
-        break;
+            $smarty->assign('message', $message);
+        }
+        if ($etape == 'delete') {
+            if (isset($date)) {
+                $nb = $thot->deleteRP($date);
+                $message = array(
+                    'title' => DELETE,
+                    'texte' => sprintf('%d suppressions(s) enregistrée(s)', $nb),
+                    'urgence' => 'warning',
+                    );
+                $smarty->assign('message', $message);
+            }
+            $date = null;  // cette date n'existe plus
+        }
 
-    case 'edition':
-        $showEdition = true;
-        break;
-    case 'gestAccuses':
-        require_once('inc/gestAccuses.inc.php');
-        break;
+        $listeReunions = $thot->listeDatesReunion();
+        $smarty->assign('listeDates', $listeReunions);
+        $listeProfs = $Ecole->listeProfs(true);
+        $smarty->assign('listeProfs',$listeProfs);
 
-    case 'delBulk':
-        $nb = $Thot->delMultiNotifications($_POST, $acronyme);
-        $smarty->assign('message', array(
-                'title'=>DELETE,
-                'texte'=>"$nb notification supprimée",
-                'urgence'=>SUCCES)
-                );
-        $showEdition = true;
+        $smarty->assign('corpsPage', 'reunionParents/prepaRP');
+        $smarty->assign('selecteur', 'selecteurs/selectDate');
         break;
-
     default:
         // wtf
         break;
-    }
-
-if ($showEdition) {
-    $listeNotifications = $Thot->listeUserNotification($acronyme);
-    $smarty->assign('listeNotifications',$listeNotifications);
-    $listeEleves = array();
-    $notificationsEleves = isset($listeNotifications['eleves'])?$listeNotifications['eleves']:Null;
-    foreach ($notificationsEleves as $id => $item) {
-        $matricule = $item['destinataire'];
-        $listeEleves[$matricule]=$matricule;
-    }
-    $smarty->assign('detailsEleves',$Ecole->detailsDeListeEleves($listeEleves));
-    $smarty->assign('corpsPage','listeEdition');
-    }
-
-
-?>
+}

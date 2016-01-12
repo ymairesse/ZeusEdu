@@ -11,7 +11,7 @@ $Application = new Application();
 
 // définition de la class Chrono
 require_once (INSTALL_DIR."/inc/classes/classChrono.inc.php");
-$chrono = new chrono();
+$chrono = new Chrono();
 
 $Application->Normalisation();
 $module = $Application->repertoireActuel();
@@ -21,7 +21,6 @@ $user = $_SESSION[APPLICATION];
 
 // si pas d'utilisateur authentifié en SESSION et répertorié dans la BD, on renvoie à l'accueil
 // ce peut-être un utilisateur régulier ou un alias qui a priorité
-
 if (isset($user) && $user->getAlias() != Null)
 	$utilisateur = $user->getAlias();
 	else $utilisateur = $user;
@@ -32,9 +31,10 @@ if (!($utilisateur) || !($utilisateur->islogged($utilisateur->acronyme(),$_SERVE
 if (!($user->accesApplication(APPLICATION) && $user->accesModule(BASEDIR)))
 	header("Location: ../index.php");
 
-// fonctions pour l'application "en cours"
-// déprécié, mais toujours veiller à avoir un fichier fonctionsBidule.inc.php
-require_once (INSTALL_DIR."/$module/inc/fonctions".ucfirst($module).".inc.php");
+// fonctions pour l'application "en cours"; déprécié, remplacé par des classes spécifiques
+$file = INSTALL_DIR."/$module/inc/fonctions".ucfirst($module).".inc.php";
+if (file_exists($file))
+	require_once ($file);
 
 require_once (INSTALL_DIR."/inc/classes/classEcole.inc.php");
 $Ecole = new Ecole();
@@ -67,5 +67,3 @@ $smarty->assign('alias',$alias['acronyme']);
 // d'autres paramètres peuvent être récupérés plus loin
 $action = isset($_REQUEST['action'])?$_REQUEST['action']:Null;
 $mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
-
-/* pas de balise ?> finale, c'est volontaire */

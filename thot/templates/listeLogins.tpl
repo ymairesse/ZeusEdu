@@ -41,11 +41,17 @@
 			<tr>
 				<td>{$unLogin.classe}</td>
 				<td>{$unLogin.nom} {$unLogin.prenom}</td>
-				<td>{$unLogin.user}</td>
+				{if $unLogin.userParent != Null}
+				<td>
+					<i class="fa fa-user-plus" data-container="body"
+						title="{$unLogin.formule} {$unLogin.nomParent} {$unLogin.prenomParent}"></i> {$unLogin.userEleve}</td>
+				{else}
+				<td>{$unLogin.userEleve}</td>
+				{/if}
 				<td>{$unLogin.date}</td>
 				<td>{$unLogin.heure}</td>
 			</tr>
-			
+
 		{/foreach}
 
 	</table>

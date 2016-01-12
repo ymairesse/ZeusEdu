@@ -1,4 +1,5 @@
 <?php
+
 if ($mode == 'Enregistrer') {
 	if (isset($matricule)) {
 		$padEleve = new padEleve($matricule, $acronyme);
@@ -9,7 +10,7 @@ if ($mode == 'Enregistrer') {
 			'texte'=>$texte)
 			);
 		}
-	}	
+	}
 // la liste d'élèves de la classe
 if (isset($classe))
 	$listeEleves = $Ecole->listeEleves($classe, 'groupe');
@@ -21,7 +22,7 @@ if (isset($matricule)) {
 	$smarty->assign('eleve', $eleve->getDetailsEleve());
 	$titulaires = $eleve->titulaires($matricule);
 	$smarty->assign('titulaires', $titulaires);
-	
+
 	$padEleve = new padEleve($matricule, $acronyme);
 
 	$smarty->assign('padsEleve', $padEleve->getPads());

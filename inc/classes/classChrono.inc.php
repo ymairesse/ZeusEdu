@@ -1,6 +1,6 @@
 <?php
 
-class chrono {
+class Chrono {
 
     var $ini;
 

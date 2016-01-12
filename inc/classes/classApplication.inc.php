@@ -152,6 +152,7 @@ class Application {
 	/**
 	 * retourne un array contenant une liste des périodes de l'année scolaire
 	 * @param $nbBulletins
+	 * @param $debut : normalement, la première période est 1 mais on a parfois besoin de déclarer une période 0
 	 * @return array
 	 */
 	public function listePeriodes ($nbBulletins, $debut=1) {
@@ -1208,7 +1209,9 @@ class Application {
 	 * si pas d'application précisée, donne la liste de toutes les tables
 	 * cette liste des tables doit, elle-même, figurer dans une table
 	 * de l'application 'admin'
-	 * @param $base, $application
+	 * @param $base
+	 * @param  $application
+	 * @return array
 	  */
 	function listeTables($base, $application=Null) {
 		$connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1232,10 +1235,11 @@ class Application {
 		self::DeconnexionPDO ($connexion);
 		return $listeTables;
 	}
+
 	/**
 	* renvoie un tableau indiquant les noms des champs de la table MySQL indiquée
 	* @param $table
-	* @result array
+	* @return array
 	*/
 	public static function SQLtableFields2array ($table) {
 	   $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1339,7 +1343,7 @@ class Application {
 
 	/**
 	 * attribue un nom d'utilisateur à un élèves première lettre du prénom, 7 lettres du nom + matricule
-	 * @param $matricules
+	 * @param $matricule
 	 * @param $nom
 	 * @param $prenom
 	 * @return string

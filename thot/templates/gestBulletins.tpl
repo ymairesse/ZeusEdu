@@ -119,7 +119,6 @@ $(document).ready(function(){
 		$("#periodePlus1").click(function(){
 			var nbPeriodes = $("#nbPeriodes").val();
 			$('.leBulletin:checked').each(function(){
-				console.log(nbPeriodes);
 				var periode = parseInt($(this).data('periode'));
 				var matricule = $(this).data('matricule');
 				if (periode < nbPeriodes)

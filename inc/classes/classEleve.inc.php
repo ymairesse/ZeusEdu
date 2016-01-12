@@ -1,5 +1,7 @@
 <?php
 
+require_once(INSTALL_DIR.'/inc/classes/classEcole.inc.php');
+
 /*
  * class eleve
  */
@@ -8,8 +10,8 @@ class eleve {
 
     private $detailsEleve;
 
-    /*
-     * __construct
+    /** 
+     * _constructeur de la classe
      * @param $matricule = matricule de l'élève
      */
     function __construct($matricule) {
@@ -315,6 +317,30 @@ class eleve {
 		}
 		return $password;
 	}
+
+    /** 
+    * renvoie la liste des coursGrp d'un élève
+    * @param void()
+    * #return array
+    */
+    public function listeCoursGrp(){
+        $matricule = $this->matricule();
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT coursGrp ";
+        $sql .= "FROM ".PFX."elevesCours ";
+        $sql .= "WHERE matricule = '$matricule' ";
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $liste[]=$ligne['coursGrp'];
+                }
+            }
+        Application::DeconnexionPDO($connexion);
+        return $liste;
+        }
+
 }
 
 ?>

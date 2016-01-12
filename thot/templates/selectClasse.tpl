@@ -6,7 +6,7 @@
 			<option value="{$uneClasse}"{if (isset($classe)) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
-		
+
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
@@ -26,7 +26,7 @@ $(document).ready (function() {
 			}
 			else return false;
 	})
-	
+
 	$("#selectClasse").change(function(){
 		if ($(this).val() != '')
 			$("#formSelecteur").submit();

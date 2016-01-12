@@ -1,9 +1,9 @@
 <div class="panel panel-default">
-	
+
 	<div class="panel-header">
 		<h3>Destinataires</h3>
 	</div>
-	
+
 	<div class="panel-body">
 
 	{assign var=noListe value=1}
@@ -12,7 +12,7 @@
 		<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
 		<h4 class="teteListe" title="Cliquer pour ouvrir">{$listeProfs.nomListe}</h4>
 	</div>
-	
+
 	<ul class="listeMails" style="display:none">
 	{assign var=membresProfs value=$listeProfs.membres}
 	{foreach from=$membresProfs key=acro item=prof}
@@ -39,9 +39,9 @@
 
 	<!-- 	toutes les autres listes personnelles ou publiées -->
 	{foreach from=$listesAutres key=idListe item=listePerso}
-	{assign var=noListe value=$noListe+1}	
+	{assign var=noListe value=$noListe+1}
 	{assign var=membresProfs value=$listePerso.membres}
-	
+
 	<div style="width:100%">
 		<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
 		<h4 class="teteListe" title="{if $membresProfs == Null}Liste vide{else}Cliquer pour ouvrir{/if} :
@@ -63,7 +63,7 @@
 	</ul>
 	{/if}
 	{/foreach}
-	
+
 </div>  <!-- panel-body -->
 
 </div>  <!-- panel -->

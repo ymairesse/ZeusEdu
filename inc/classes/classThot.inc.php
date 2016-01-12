@@ -245,7 +245,7 @@ class thot
             if (isset($post['conf_'.$matricule])) {
                 // la notification est-elle souhaitée? Sinon, pas de notification dans la BD
                 if (isset($post['notif_'.$matricule])) {
-                    $texte = $listeDecisions[$matricule]['texteDecision'];
+                    $texte = $listeDecisions[$matricule]['decision'];
                     $notification = array(':matricule' => $matricule, ':texte' => $texte);
                     $resultat = $requete->execute($notification);
                     $liste[$matricule] = $matricule;
@@ -419,7 +419,6 @@ class thot
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = SUBSTR(user,-4) ';
         $sql .= 'LEFT JOIN '.PFX.'thotParents AS dtp ON dtp.userName = dtl.user ';
         $sql .= "ORDER BY date DESC, heure DESC LIMIT $min, $max ";
-
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -430,7 +429,6 @@ class thot
             }
         }
         Application::deconnexionPDO($connexion);
-
         return $liste;
     }
 

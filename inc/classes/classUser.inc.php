@@ -487,6 +487,17 @@ class user {
 		}
 
 	/**
+	* renvoie le nom et le prénom de l'utilisateur
+	* @param void()
+	* @return array : 'nom'=>$nom, 'prenom'=>$prenom
+	*/
+	private function getNom(){
+		$nom = $this->identite['nom'];
+		$prenom = $this->identite['prenom'];
+		return array('nom'=>$nom, 'prenom'=>$prenom);
+	}
+
+	/**
 	 * renvoie les informations d'identification réseau de l'utilisateur courant
 	 * @param
 	 * @return array ip, hostname, date, heure
@@ -546,6 +557,15 @@ class user {
 			}
 		return $logins;
 		}
+
+	/**
+	* renvoie la liste des cours de l'utilisateur actif
+	* @param void()
+	* @return array
+	*/
+	public function getListeCours(){
+		return $this->listeCours;
+	}
 
 	/**
 	* vérification que les données passées dans le formulaire de modification des données personnelles sont admissibles
@@ -639,6 +659,26 @@ class user {
 	public function getUserStatus($module) {
 		return $this->applications[$module]['userStatus'];
 	}
+
+	/**
+	* rechercher ou deviner l'adresse mail de l'utilisateur (si nouvel utilisateur)
+	* @param $guessDomaine : domaine probable
+	* @return string : l'adresse mail @ecole.org
+	*/
+	public function guessUserMail($guessDomaine){
+		$mail = $this->getMail();
+		$user = explode('@',$mail)[0];
+		$domaine = explode('@',$mail)[1];
+		if ($domaine == $guessDomaine)
+			return($user);
+			else {
+				$fullName = $this->getNom();
+				$p = substr(strtolower(Application::stripAccents($fullName['prenom'])),0,1);
+				$indesirables = array(" ", "-", "'");
+				$n = str_replace($indesirables,'',strtolower(Application::stripAccents($fullName['nom'])));
+				return $p.$n;
+				}
+		}
 
 }
 ?>

@@ -195,7 +195,7 @@ class ecole {
 		return $lesClasses;
 		}
 
-    /***
+    /**
      * retourne la liste de toutes les classes existantes dans l'école pour les sections demandées
      * @param $sections = array des différentes sections existantes
      * @return array
@@ -225,6 +225,33 @@ class ecole {
 		Application::DeconnexionPDO ($connexion);
 		return $listeClasses;
     }
+
+    /**
+    * retourne la liste des classes fréquentées par un prof dont on fournit l'acronyme
+    * @param $acronyme
+    * @return array: liste des classes
+    */
+    public function listeClassesProf($acronyme) {
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = "SELECT groupe, acronyme,  dpc.coursGrp ";
+		$sql .= "FROM ".PFX."profsCours AS dpc ";
+		$sql .= "JOIN ".PFX."elevesCours AS `dec` ON `dec`.coursGrp = dpc.coursGrp ";
+		$sql .= "JOIN ".PFX."eleves AS de ON de.matricule = `dec`.matricule ";
+		$sql .= "WHERE acronyme = '$acronyme' ";
+		$sql .= "GROUP BY groupe ";
+		$sql .= "ORDER BY groupe ";
+		$resultat = $connexion->query($sql);
+		$listeClasses = array();
+		if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $resultat->fetch()) {
+        		$classe = $ligne['groupe'];
+        		$liste[$classe] = $classe;
+        		}
+        	}
+     	Application::DeconnexionPDO ($connexion);
+		return $liste;
+	    }
 
 	/**
      * retourne la liste de tous les groupes/classes existants dans l'école pour les sections demandées
@@ -313,7 +340,7 @@ class ecole {
 		if (file_exists(INSTALL_DIR."/photos/$matricule.jpg"))
 			return $matricule;
 			else return 'nophoto';
-	}
+	       }
 
     /**
     * liste des matricules, nom et prénom de tous les élèves de l'école
@@ -383,7 +410,7 @@ class ecole {
 		$supSQL = implode(' AND ',$supSQL);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-        $sql = "SELECT de.matricule, nom, prenom, classe, DateNaiss, commNaissance, user, mailDomain ";
+        $sql = "SELECT de.matricule, nom, prenom, groupe, classe, DateNaiss, commNaissance, user, mailDomain ";
 		if ($extended)
 			$sql .= ", sexe, nomResp, adresseResp, cpostResp, localiteResp ";
         $sql .= "FROM ".PFX."eleves AS de ";
@@ -1128,9 +1155,12 @@ class ecole {
 			if ($passwd == Null)
 				$listeElevesSansPasswd[$matricule]=array('nom'=>$eleve['nom'], 'prenom'=>$eleve['prenom']);
 			}
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = "INSERT INTO ".PFX."passwd ";
 		$sql .= "SET passwd=:passwd, md5pwd=:md5pwd, matricule=:matricule, user=:user ";
+        $sql .= "ON DUPLICATE KEY UPDATE ";
+        $sql .= "passwd=:passwd, md5pwd=:md5pwd ";
 		$requete = $connexion->prepare($sql);
 		$resultat = 0;
 		foreach ($listeElevesSansPasswd as $matricule=>$unEleve) {

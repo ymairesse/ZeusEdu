@@ -3,11 +3,12 @@
 
 <ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
 	<li class="active"><a href="#tabs-1" data-toggle="tab">À un élève</a></li>
-	<li><a href="#tabs-2" data-toggle="tab">À une classe</a></li>
+	<li><a href="#tabs-2" data-toggle="tab">À un cours</a></li>
+	<li><a href="#tabs-3" data-toggle="tab">À une classe</a></li>
 
 	{if ($userStatus == 'admin') || ($userStatus == 'direction')}
-	<li><a href="#tabs-3" data-toggle="tab">À un niveau</a></li>
-	<li><a href="#tabs-4" data-toggle="tab">À l'ensemble des élèves</a></li>
+	<li><a href="#tabs-4" data-toggle="tab">À un niveau</a></li>
+	<li><a href="#tabs-5" data-toggle="tab">À l'ensemble des élèves</a></li>
 	{/if}
 </ul>
 
@@ -15,11 +16,17 @@
 
 	{include file="editNotifications/eleve.tpl"}
 
+	{include file="editNotifications/cours.tpl"}
+
 	{include file="editNotifications/classe.tpl"}
 
-	{include file="editNotifications/niveau.tpl"}
+	{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 
-	{include file="editNotifications/ecole.tpl"}
+		{include file="editNotifications/niveau.tpl"}
+
+		{include file="editNotifications/ecole.tpl"}
+
+	{/if}
 
 </div> <!-- tab-content -->
 
@@ -40,7 +47,7 @@
 			</div>  <!-- modal-header -->
 			<div class="modal-body">
 				<form name="delete" method="POST" action="index.php" role="form" class="form-vertical">
-					<p>Vous allez supprimer <strong id="nbNotifications"></strong> notifications</p>
+					<p>Vous allez supprimer <strong id="nbNotifications"></strong> notification(s)</p>
 					<p>Veuillez Confirmer leur suppression définitive</p>
 					{foreach from=$listeNotifications key=type item=unType}
 						{foreach from=$unType key=id item=wtf}
@@ -51,6 +58,7 @@
 					<input type="hidden" name="onglet" value="{$onglet}" class="onglet">
 					<input type="hidden" name="action" value="admin">
 					<input type="hidden" name="mode" value="delBulk">
+					<div class="clearfix"></div>
 				</form>
 			</div>  <!-- modal-body -->
 		</div>  <!-- modal-content -->

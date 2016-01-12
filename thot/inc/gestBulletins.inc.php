@@ -3,7 +3,7 @@ if ($etape == 'enregistrer') {
 	$nb = $Thot->saveLimiteBulletins($_POST);
 	$smarty->assign('message', array(
 				'title'=>SAVE,
-				'texte'=>"$nb enregistrement(s) effectué(s)",
+				'texte'=>sprintf('%d enregistrement(s) effectué(s)',$nb),
 				'urgence'=>SUCCES)
 				);
 	}
@@ -17,7 +17,7 @@ $smarty->assign('selecteur','selectClasse');
 if ($classe != Null) {
 		$smarty->assign('listeBulletinsEleves',$Thot->listeBulletinsEleves($classe));
 		$smarty->assign('NBPERIODES',NBPERIODES);
-		$smarty->assign('listeBulletins',range(1,NBPERIODES));
+		$smarty->assign('listeBulletins',range(0,NBPERIODES));
 		$smarty->assign('PERIODEENCOURS',PERIODEENCOURS);
 		$smarty->assign('corpsPage','gestBulletins');
 	}

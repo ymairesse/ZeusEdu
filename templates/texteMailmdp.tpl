@@ -7,4 +7,4 @@
 <a href="{$BASEDIR}/mdp/index.php?action=etape3&amp;acronyme={$identite.acronyme}&amp;token={$token}">{$BASEDIR}/mdp/index.php?action=etape3&amp;acronyme={$identite.acronyme}&amp;token={$token}</a>
 <p>Attention: ce lien ne fonctionnera que pendant 48h à dater du moment précis de la demande, soit le moment d'envoi du présent mail. Si vous n'avez pas changé le mot de passe dans ce délai, il faudra faire une nouvelle demande.</p>
 
-{* include file="disclaimer.tpl" *}
+{include file="disclaimer.tpl"}

@@ -5,7 +5,7 @@
 
 	<div class="row">
 
-		<div class="col-md-3 col-xs-12 selectMail ">
+		<div class="col-md-3 col-xs-12 selectMail">
 
 				{include file="destinataires.tpl"}
 

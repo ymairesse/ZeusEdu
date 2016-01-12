@@ -11,5 +11,3 @@ $smarty->assign('max',$max);
 $smarty->assign('refreshOn',$refreshOn);
 
 $smarty->assign('corpsPage','listeLogins');
-
-?>
