@@ -115,7 +115,7 @@ switch ($mode) {
 						$listeSituationsAvant = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
 						// calcule les nouvelles situations pour ce bulletin, à partir des situations existantes et du globalPeriode
 						$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
-						afficher($listeSituations, true);
+
 						$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 						$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, true);
 

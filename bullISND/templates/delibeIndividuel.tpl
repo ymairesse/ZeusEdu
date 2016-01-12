@@ -13,6 +13,7 @@
 				<input type="hidden" name="classe" value="{$classe}">
 				<input type="hidden" name="matricule" value="{$matricule}">
 				<input type="hidden" name="mailEleve" value="{$decision.adresseMail}">
+				<input type="hidden" name="bulletin" value="{$NBPERIODES}">
 
 				<div class="table-responsive">
 
@@ -213,8 +214,8 @@
 							id='notification'
 							{if !($estTitulaire)} disabled{/if}
 							{if !(isset($decision.notification)) || (isset($decision.notification) && ($decision.notification==1))}checked{/if}
-							class='form-control >
-						</div>
+							class='form-control'>
+				</div>
 
 				{/if}  {* $bulletin == $NBPERIODES*}
 

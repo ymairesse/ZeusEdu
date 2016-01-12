@@ -22,19 +22,14 @@
 		<td class="pop"
 			data-html="true"
 			data-original-title="{$decision.nom}"
-			data-content="<img src='../photos/{$decision.photo}.jpg' alt='{$matricule}' style='width:100px'><br>{$matricule}"
+			data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$matricule}' style='width:100px'><br>{$matricule}"
 			data-placement="top"
 			data-container="body">
-			{$decision.nom}
+			{$unEleve.nom} {$unEleve.prenom}
 		</td>
-		<td>{$decision.decision}</td>
-		<td>{$decision.restriction}</td>
-		<td>{if !(isset($decision.adresseMail)) || ($decision.adresseMail == '')}
-				{$decision.user}@{$decision.mailDomain}
-				{else}
-				{$decision.adresseMail}
-			{/if}
-		</td>
+		<td>{$decision.decision|default:'&nbsp;'}</td>
+		<td>{$decision.restriction|default:'&nbsp;'}</td>
+		<td>{$decision.adresseMail|default:'&nbsp;'}</td>
 		<td>
 			{if $decision.mail != Null}
 				{if $decision.mail == 1}
@@ -53,7 +48,7 @@
 			{if $decision.notification != Null}
 				{if $decision.notification == 1}
 				<i class="fa fa-bell text-success"
-					title="Notification web prévue"
+					title="Notification Thot prévue"
 					data-container="body"></i>
 				<input type="hidden" name="notif_{$matricule}" value="true">
 				{else}
