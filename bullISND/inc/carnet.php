@@ -126,7 +126,7 @@ switch ($mode) {
 							$smarty->assign('erreurVerrou',$erreurVerrou);
 							}
 							else {
-								$texte .= '<br>Le bulletin complété est <a href="index.php?action=gestEncodageBulletins">à votre disposition</a>';
+								$texte .= '<br>Le bulletin complété est <a href="index.php?action=gestEncodageBulletins&amp;bulletin='.$bulletin.'">à votre disposition</a>';
 								$smarty->assign('noError',true);
 								}
 
