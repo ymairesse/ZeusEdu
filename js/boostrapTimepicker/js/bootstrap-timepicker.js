@@ -302,7 +302,6 @@
             '<div class="modal-content">' +
               '<div class="modal-header">'+
                 '<a href="#" class="close" data-dismiss="modal">×</a>'+
-                '<h3>Pick a Time</h3>'+
               '</div>'+
               '<div class="modal-body">'+
                 templateContent +
@@ -620,7 +619,7 @@
         return ;
       }
 
-      var widgetWidth = this.$widget.outerWidth(); 
+      var widgetWidth = this.$widget.outerWidth();
       var widgetHeight = this.$widget.outerHeight();
       var visualPadding = 10;
       var windowWidth = $(window).width();

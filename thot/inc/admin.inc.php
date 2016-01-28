@@ -9,6 +9,7 @@ $thot = new Thot();
 
 switch ($mode) {
     case 'reunionParents':
+    echo "coucou";
         if ($etape == 'enregistrer') {
             $canevas = $thot->getCanevas($_POST);
             $attribProfs = $thot->getAttribProfs($_POST);

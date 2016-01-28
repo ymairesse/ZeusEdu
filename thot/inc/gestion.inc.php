@@ -43,19 +43,7 @@ switch($mode) {
         break;
 
     case 'reunionParents':
-        require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
-        $thot = new Thot();
-        $listeReunions = $thot->listeDatesReunion();
-        $smarty->assign('listeDates', $listeReunions);
-
-        if (isset($date)) {
-            $smarty->assign('date',$date);
-            $listeRV = $thot->getRVprof($acronyme,$date);
-            $smarty->assign('listeRV',$listeRV);
-            $smarty->assign('corpsPage','reunionParents/gestionRVprof');
-        }
-
-        $smarty->assign('selecteur', 'selecteurs/selectDate');
+        require_once('inc/gestRP.inc.php');
         break;
 
     case 'parents':

@@ -1,5 +1,7 @@
 <?php
 
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+
 class thot
 {
     /**
@@ -429,6 +431,7 @@ class thot
             }
         }
         Application::deconnexionPDO($connexion);
+
         return $liste;
     }
 
@@ -553,148 +556,100 @@ class thot
     }
 
     /**
-     * récupération du canevas des date et heures de réunion en provenance du formulaire.
+     * enregistrement du canevas de réunion de parents initialisé par les admins.
      *
      * @param $post : les données provenant du formulaire
      *
-     * @return array : le canevas des heures
+     * @return int : le nombre d'enregistrements réalisés
      */
-    public function getCanevas($post)
-    {
-        $canevas = array();
-        foreach ($post as $key => $heure) {  // il est possible qu'il s'agisse d'un champ "heure"
-            if (substr($key, 0, 5) == 'heure') {
-                $champ = explode('_', $key);
-                $i = $champ[1];  // indice du champ dont le nom est du type heure_xx
-                if (isset($post['publie_'.$i])) {
-                    $canevas[$heure] = 1;
-                } else {
-                    $canevas[$heure] = 0;
-                }
-            }
-        }
-
-        return $canevas;
-    }
-
-    /**
-     * récupération des attributions du canevas de  base de RV aux profs.
-     *
-     * @param $post : les données du formulaire
-     *
-     * @return array : la liste des profs avec la mention d'attribution ou non du canevas
-     */
-    public function getAttribProfs($post)
-    {
-        $attribs = array();
-        foreach ($post as $key => $acronyme) {  // il est possible qu'il s'agisse d'un champ "acronyme"
-            if (substr($key, 0, 8) == 'acronyme') {
-                $champ = explode('_', $key);
-                $i = $champ[1]; // indice du champ dont le nom est du type acronyme_xx
-                if (isset($post['prof_'.$i])) {
-                    $attribs[$acronyme] = 1;
-                } else {
-                    $attribs[$acronyme] = 0;
-                }
-            }
-        }
-
-        return $attribs;
-    }
-
-    /**
-     * Enregistrement du canevas général des RV pour chaque prof.
-     *
-     * @param $date : string la date de la réunion de parents
-     * @param $canevas: array le canevas général des RV
-     * @param $listeProfs : array la liste des profs
-     *
-     * @return int : le nombre d'enregistrements
-     */
-    public function saveCanevasProfs($date, $canevas, $listeProfs)
+    public function saveRPinit($post)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'thotRpRv ';
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotRpRv ';
         $sql .= 'SET acronyme=:acronyme, date=:date, heure=:heure, dispo=:dispo ';
         $requete = $connexion->prepare($sql);
-        $date = Application::dateMysql($date);
-        $nb = 0;
-        foreach ($listeProfs as $acronyme => $attrib) {
-            foreach ($canevas as $heure => $dispo) {
-                // le canevas doît-il être attribué à ce membre du personnel?
-                if ($attrib == 1) {
+        $date = Application::dateMysql($post['date']);
+        $resultat = 0;
+        foreach ($post as $key => $heure) {
+            $clef = explode('_', $key);
+            if ($clef[0] == 'heure') {
+                $i = $clef[1];
+                $dispo = (isset($post['publie_'.$i])) ? 1 : 0;
+                foreach ($post['prof'] as $acronyme) {
                     $data = array(
-                        ':date' => $date,
-                        ':acronyme' => $acronyme,
-                        ':heure' => $heure,
-                        ':dispo' => $dispo,
-                    );
-                    $nb += $requete->execute($data);
+                            ':acronyme' => $acronyme,
+                            ':date' => $date,
+                            ':heure' => $heure,
+                            ':dispo' => $dispo,
+                        );
+                    $resultat += $requete->execute($data);
                 }
             }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * Inverse le caractère "disponible" d'un moment de RV dans une réunion de parents.
+     *
+     * @param $id : l'identifiant du moment de réunion
+     *
+     * @return integer: 1 si le RV est disponible, 0 si pas disponible
+     */
+    public function toggleDispo($id)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'thotRpRv ';
+        $sql .= 'SET dispo = IF(dispo=1, 0, 1) ';
+        $sql .= "WHERE id='$id' ";
+        $resultat = $connexion->exec($sql);
+        if ($resultat) {
+            $sql = 'SELECT dispo FROM '.PFX.'thotRpRv ';
+            $sql .= "WHERE id='$id' ";
+            $resultat = $connexion->query($sql);
+            $ligne = $resultat->fetch();
+            $resultat = $ligne['dispo'];
         }
         Application::deconnexionPDO($connexion);
 
-        return $nb;
+        return $resultat;
     }
 
     /**
-     * Retourne la liste de RV d'un prof dont on fournit l'acronyme pour une date donnée.
+     * renvoie la liste des RV pris pour un prof donné et pour une date donnée.
      *
-     * @param $acronyme
-     * @param $date : date de la réunion de parents
+     * @param $acronyme : l'acronyme du profs
+     * @param $date : la date de la réunion de parents
      *
      * @return array
      */
     public function getRVprof($acronyme, $date)
     {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $date = Application::dateMysql($date);
-        $sql = "SELECT id, TIME_FORMAT(heure,'%H:%i') as heure, rv.matricule, userParent, dispo, ";
-        $sql .= 'de.classe, de.nom AS nomEleve, de.prenom AS prenomEleve, tp.formule, tp.nom AS nomParent, tp.prenom AS prenomParent, tp.mail ';
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, rv.matricule, TIME_FORMAT(heure,"%H:%i") AS heure, dispo, de.nom, de.prenom, de.groupe, ';
+        $sql .= 'tp.formule, tp.nom AS nomParent, tp.prenom AS prenomParent, tp.mail, lien ';
         $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+        $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.username = rv.userParent ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = rv.matricule ';
-        $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.userName = rv.userParent ';
-        $sql .= "WHERE acronyme='$acronyme' AND date='$date' ";
+        $sql .= "WHERE acronyme = '$acronyme' AND date = '$date' ";
         $sql .= 'ORDER BY heure ';
-        $resultat = $connexion->query($sql);
         $liste = array();
+        $resultat = $connexion->query($sql);
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
-                $heure = $ligne['heure'];
+                $id = $ligne['id'];
                 $matricule = $ligne['matricule'];
                 $ligne['photo'] = Ecole::photo($matricule);
-
-                $liste[$heure] = $ligne;
+                $liste[$id] = $ligne;
             }
         }
         Application::deconnexionPDO($connexion);
 
         return $liste;
-    }
-
-    /**
-    * Inverse le caractère "disponible" d'un moment de RV dans une réunion de parents
-    *
-    * @param $id : l'identifiant du moment de réunion
-    *
-    * @return integer: 1 si le RV est disponible, 0 si pas disponible
-    */
-    public function toggleDispo($id){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "UPDATE ".PFX."thotRpRv ";
-        $sql .= "SET dispo = IF(dispo=1, 0, 1) ";
-        $sql .= "WHERE id='$id' ";
-        $resultat = $connexion->exec($sql);
-        if ($resultat) {
-            $sql = "SELECT dispo FROM ".PFX."thotRpRv ";
-            $sql .= "WHERE id='$id' ";
-            $resultat = $connexion->query($sql);
-            $ligne = $resultat->fetch();
-            $resultat = $ligne['dispo'];
-            }
-        Application::deconnexionPDO($connexion);
-        return $resultat;
     }
 }

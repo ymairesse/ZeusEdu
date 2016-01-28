@@ -66,7 +66,7 @@ class phpmailerTest extends PHPUnit_Framework_TestCase
 
         $this->Mail->Priority = 3;
         $this->Mail->Encoding = '8bit';
-        $this->Mail->CharSet = 'iso-8859-1';
+        $this->Mail->CharSet = 'utf-8';
         if (array_key_exists('mail_from', $_REQUEST)) {
             $this->Mail->From = $_REQUEST['mail_from'];
         } else {
@@ -213,7 +213,7 @@ class phpmailerTest extends PHPUnit_Framework_TestCase
         if ($this->Mail->Encoding != '8bit') {
             $this->AddChange('Encoding', $this->Mail->Encoding);
         }
-        if ($this->Mail->CharSet != 'iso-8859-1') {
+        if ($this->Mail->CharSet != 'utf-8') {
             $this->AddChange('CharSet', $this->Mail->CharSet);
         }
         if ($this->Mail->Sender != '') {
@@ -1112,7 +1112,7 @@ EOT;
      */
     function test_Encodings()
     {
-        $this->Mail->CharSet = 'iso-8859-1';
+        $this->Mail->CharSet = 'utf-8';
         $this->assertEquals(
             '=A1Hola!_Se=F1or!',
             $this->Mail->EncodeQ("\xa1Hola! Se\xf1or!", 'text'),

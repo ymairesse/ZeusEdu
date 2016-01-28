@@ -64,7 +64,7 @@ if (!defined('SMARTY_RESOURCE_CHAR_SET')) {
     /**
      * @deprecated in favor of Smarty::$_CHARSET
      */
-    define('SMARTY_RESOURCE_CHAR_SET', SMARTY_MBSTRING ? 'UTF-8' : 'ISO-8859-1');
+    define('SMARTY_RESOURCE_CHAR_SET', SMARTY_MBSTRING ? 'UTF-8' : 'utf-8');
 }
 if (!defined('SMARTY_RESOURCE_DATE_FORMAT')) {
     /**
@@ -1478,7 +1478,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
 // Check if we're running on windows
 Smarty::$_IS_WINDOWS = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 
-// let PCRE (preg_*) treat strings as ISO-8859-1 if we're not dealing with UTF-8
+// let PCRE (preg_*) treat strings as utf-8 if we're not dealing with UTF-8
 if (Smarty::$_CHARSET !== 'UTF-8') {
     Smarty::$_UTF8_MODIFIER = '';
 }
