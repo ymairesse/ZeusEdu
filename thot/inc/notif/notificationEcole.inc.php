@@ -39,7 +39,10 @@ switch ($etape) {
 			}
 		break;
 	default:
-		$notification = Null;
+		$notification = $Thot->newNotification('ecole',$user->acronyme(),'ecole');
+		$smarty->assign('notification',$notification);
+		$smarty->assign('corpsPage','notification/formNotification');
+
 		break;
 	}
 
