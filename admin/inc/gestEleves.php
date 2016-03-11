@@ -43,24 +43,24 @@ switch ($mode) {
 				'urgence'=>'success'));
 		$smarty->assign('matricule',$matricule);
 		$smarty->assign('etape','showEleve');
-		$smarty->assign('selecteur','selectClasseEleve');
+		$smarty->assign('selecteur','selecteurs/selectClasseEleve');
 		// break;  // PAS DE BREAK
-		
+
 	case 'modifEleve':
 		switch ($etape) {
 			case 'showEleve':
 				$smarty->assign('eleve',$Eleve->getDetailsEleve());
 				$smarty->assign('info', $Ecole->getUserPasswdEleve($matricule));
 				$smarty->assign('matricule', $matricule);
-				$smarty->assign('selecteur','selectClasseEleve');
+				$smarty->assign('selecteur','selecteurs/selectClasseEleve');
 				$smarty->assign('mode', 'save');
 				// on ouvre le formulaire en modification
 				$smarty->assign('recordingType','modif');
-				$smarty->assign('corpsPage', 'inputEleve');
+				$smarty->assign('corpsPage', 'eleves/inputEleve');
 				break;
 			default:
 				// choix de l'élève
-				$smarty->assign('selecteur','selectClasseEleve');
+				$smarty->assign('selecteur','selecteurs/selectClasseEleve');
 				break;
 		}
 		break;
@@ -138,4 +138,3 @@ switch ($mode) {
 		break;
 	default: die("missing mode");
 	}
-?>
