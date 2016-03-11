@@ -8,6 +8,7 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Modifier les données d'un élève</h3>
 				</div>
+				
 				<div class="panel-body">
 
 					<form method="post" action="index.php" name="formEleve" id="formEleve" class="form-vertical">
