@@ -1,4 +1,5 @@
 <?php
+
 require_once('config.inc.php');
 
 // définition de la class USER
