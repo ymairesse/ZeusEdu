@@ -1,11 +1,11 @@
 
 .inactif {
     background-color:#F6CDC2;
-    
+
 }
 
 .code {
-  font-weight: bolder; 
+  font-weight: bolder;
   font-size: 14pt;
   font-family:'Courier New', Courier, monospace
 }
@@ -36,3 +36,10 @@
   text-align: left;
 }
 
+.selected {
+	background-color: #F9C331;
+}
+
+.unProf {
+    cursor: pointer;
+}
