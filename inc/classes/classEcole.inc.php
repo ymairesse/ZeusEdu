@@ -1539,7 +1539,6 @@ class ecole
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'eleves.matricule = '.PFX.'elevesCours.matricule) ';
         $sql .= "WHERE acronyme = '$acronyme' ";
         $sql .= 'ORDER BY coursGrp, libelle ';
-        die($sql);
         $resultat = $connexion->query($sql);
         $listeCoursGrp = array();
         if ($resultat) {
@@ -1875,6 +1874,7 @@ class ecole
          $sql .= "WHERE acronyme = '$acronyme' ";
          $resultat = $connexion->exec($sql);
          Application::DeconnexionPDO($connexion);
+
          return $resultat;
      }
 
