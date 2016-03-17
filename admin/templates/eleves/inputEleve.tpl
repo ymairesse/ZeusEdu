@@ -4,14 +4,14 @@
 
 		<div class="col-md-10 col-sm-12">
 
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">Modifier les données d'un élève</h3>
-				</div>
-				
-				<div class="panel-body">
+			<form method="post" action="index.php" name="formEleve" id="formEleve" class="form-vertical">
 
-					<form method="post" action="index.php" name="formEleve" id="formEleve" class="form-vertical">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Modifier les données d'un élève</h3>
+					</div>
+
+					<div class="panel-body">
 
 						<div class="panel-group" id="accordion">
 
@@ -19,24 +19,25 @@
 
 						</div>
 
-					</form>
-
-				</div>
-				<div class="panel-footer">
-					<div class="btn-group btn-group-sm pull-right">
-						<button type="reset" class="btn btn-default" name="annuler">Annuler</button>
-						<button class="btn btn-primary" id="enregistrer" type="submit">Enregistrer</button>
 					</div>
-					<div class="clearfix"></div>
-					<input type="hidden" name="action" value="{$action}">
-					<input type="hidden" name="mode" value="{$mode}"> {if isset($etape)}
-					<input type="hidden" name="etape" value="{$etape}">{/if}
-					<input type="hidden" name="recordingType" value="{$recordingType}">
-					<input type="hidden" name="laClasse" value="{$laClasse}">
+					<div class="panel-footer">
+						<div class="btn-group btn-group-sm pull-right">
+							<button type="reset" class="btn btn-default" name="annuler">Annuler</button>
+							<button class="btn btn-primary" id="enregistrer" type="submit">Enregistrer</button>
+						</div>
+						<div class="clearfix"></div>
+						<input type="hidden" name="action" value="{$action}">
+						<input type="hidden" name="mode" value="{$mode}"> {if isset($etape)}
+						<input type="hidden" name="etape" value="{$etape}">{/if}
+						<input type="hidden" name="recordingType" value="{$recordingType}">
+						<input type="hidden" name="laClasse" value="{$laClasse}">
+					</div>
 				</div>
-			</div>
+
+			</form>
 
 		</div>
+
 		<!-- col-md-... -->
 
 		<div class="col-md-2 col-sm-12 ">
@@ -153,11 +154,11 @@
 			$(".passwd").toggle();
 		})
 
-		$('#eye').click(function(){
+		$('#eye').click(function() {
 			var type = $(this).parent().parent().find('input').attr('type');
 			if (type == 'password')
-				$(this).parent().parent().find('input').attr('type','text');
-				else $(this).parent().parent().find('input').attr('type','password');
+				$(this).parent().parent().find('input').attr('type', 'text');
+			else $(this).parent().parent().find('input').attr('type', 'password');
 		})
 
 		// forcer les majuscules à la sortie des champs de cette class
