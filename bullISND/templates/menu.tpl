@@ -1,8 +1,8 @@
 <div id="top"></div>
 <div class="container hidden-print">
-	
+
 	<nav class="navbar navbar-default" role="navigation">
-		
+
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#barreNavigation">
 			<span class="sr-only">Navigation portable</span>
@@ -10,15 +10,15 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		
+
 		<a class="navbar-brand" href="../index.php"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-home"></span></button></a>
 
-	</div> 
-	
-	<div class="collapse navbar-collapse" id="barreNavigation">	
-	
+	</div>
+
+	<div class="collapse navbar-collapse" id="barreNavigation">
+
 	<ul class="nav navbar-nav">
-		
+
 		<li><a href="index.php"><button class="btn btn-primary btn-sm">Bulletin <img src="images/bullISND.png" alt="bullISND" title="Page d'accueil du bulletin"></button></a></li>
 
 		<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Imprimer <b class="caret"></b></a>
@@ -102,6 +102,7 @@
 			{if $userStatus eq 'admin'}
 			<li><a href="index.php?action=init">Initialisations</a></li>
 			<li><a href="index.php?action=admin&amp;mode=remplacants">Profs remplacés</a></li>
+			<li><a href="index.php?action=admin&amp;mode=interim">Intérimaires</a></li>
 			<li><a href="index.php?action=gestCours&amp;mode=matieres">Gestion des matières</a></li>
 			<li><a href="index.php?action=gestCours&amp;mode=editCours">Gestion des cours</a></li>
 			<li><a href="index.php?action=admin&amp;mode=attributionsProfs">Attrib. cours aux profs</a></li>
@@ -113,7 +114,7 @@
 			<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
 			{/if}
 		</ul>
-		
+
 		<ul class="nav navbar-nav pull-right">
 			{if isset($alias)}
 			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>
@@ -125,9 +126,9 @@
 					<li><a href="../logout.php"><span class="glyphicon glyphicon-off"></span> Déconnexion</a></li>
 				</ul>
 			</li>
-			
+
 		</ul>
-		
+
 	</li>
 </ul>
 
