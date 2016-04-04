@@ -1,6 +1,4 @@
 
-
-
 {assign var=listeFaitsAnnees value=$ficheDisc->laListeFaits()}
 {assign var=listeRetenues value=$ficheDisc->laListeRetenues()}
 

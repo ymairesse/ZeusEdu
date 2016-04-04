@@ -1,91 +1,92 @@
 <div class="container">
 
-    <div class="col-md-7 col-sm-12">
+    <div class="row">
 
-        {if $listeRV != Null}
-        <h3>Réunion de parents du {$date}</h3>
+        <div class="col-md-9 col-sm-12">
 
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>Heure</td>
-                    <td>Parent</td>
-                    <td>Élève</td>
-                    <td>&nbsp;</td>
-                </tr>
-            </thead>
+            <div class="panel panel-default" style="height: 40em; overflow: auto;">
 
-            <tbody>
-                {foreach from=$listeRV key=heure item=data name=boucle}
-                <tr{if $data.dispo == 0} class="indisponible"{/if}
-                    {if ($data.matricule != Null)}
-                        class="pop"
-                        data-toggle="popover"
-                        data-content="<img src='../photos/{$data.photo}.jpg' alt='{$data.matricule}' style='width:100px'>"
-                        data-html="true"
-                        data-container="body"
-                        data-original-title="{$data.photo}"
-                    {/if}>
-                    <td class="discret">{$smarty.foreach.boucle.iteration}</td>
-                    <td>{$data.heure}</td>
-                    <td><a href="mailto:{$data.mail}">{$data.formule} {$data.nomParent}</a></td>
-                    <td>
-                    {$data.classe} {$data.nomEleve} {$data.prenomEleve}</td>
-                    <td>
-                        {if ($data.matricule == Null)}
-                        <button type="button" data-id="{$data.id}" class="btn btn-default btn-xs dis pull-right">
-                        <i class="fa {if $data.dispo == 0}fa-toggle-on{else}fa-toggle-off{/if}"></i>
-                        </button>
-                        {/if}
-                </td>
-                </tr>
-                {/foreach}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5" class="indisponible"><strong>Lignes grisées = indisponibles</strong></td>
-                </tr>
-            </tfoot>
+                <div class="panel-heading">
+                    <h3 class="panel-title">Les RV de <span id="nomProf">{$nomProf}</span>
+                    <button
+                        type="button"
+                        id="printProf"
+                        title="Imprimer"
+                        class="btn btn-primary pull-right btn-sm"
+                        data-date="{$date}"
+                        data-acronyme="{$acronyme}">
+                        <i class="fa fa-print fa-2x"></i></button>
+                </h3>
+                </div>
 
-        </table>
+                <div class="panel-body">
 
-        {/if}
+                    <div id="listeRV">
+                        {include file="reunionParents/tableRVprof.tpl"}
+                    </div>
+
+                    <h4>Liste d'attente</h4>
+                    <div id="listeAttenteProf">
+                        {include file="reunionParents/listeAttenteProf.tpl"}
+                    </div>
+
+                </div>
+
+                <div class="panel-footer">
+                    <strong class="indisponible pull-right">Lignes grisées = indisponibles</strong>
+                    <div class="clearfix"></div>
+                </div>
+
+            </div>
+            <!-- panel-default -->
+
+        </div>
+        <!-- col-md-... -->
+
+        <div class="col-md-3 col-sm-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">infomation</h3>
+                </div>
+                <div class="panel-body">
+                    <h4>Disponibilité</h4>
+                    <p>Les périodes de RV peuvent être <span class="indisponible">désactivées</span> en utilisant les commutateurs <i class="fa fa-toggle-on"></i>. Les périodes <span class="indisponible">désactivées</span> sont marquées "occupées" pour les parents, sans autre signe distinctif.</p>
+                    <p>Il vous appartient de réserver suffisamment de périodes disponibles pour recevoir les parents qui le souhaitent.</p>
+                    <p>La modification du statut "disponible / indisponible" est immédiate. Il ne faut pas enregistrer ou sauvegarder quoi que ce soit.</p>
+
+                </div>
+                <div class="panel-footer">
+
+                </div>
+            </div>
+
+        </div>
+
+        {include file="reunionParents/modal/modalDel.tpl"} {include file="reunionParents/modal/modalDoublonRV.tpl"} {include file="reunionParents/modal/heureNonSelect.tpl"} {include file="reunionParents/modal/modalPrintRV.tpl"}
+         {include file="reunionParents/modal/modalMaxRV.tpl"}
+
     </div>
 
 </div>
 
+
 <script type="text/javascript">
+    $(document).ready(function() {
 
-$(document).ready(function(){
-
-    $(".dis").attr('title','Disponible/indisponible')
-
-    $(".dis").click(function(){
-        var id=$(this).data('id');
-        var btnIcon = $(this).find('i');
-        if (btnIcon.hasClass('fa-toggle-on'))
-            $(this).find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-            else
-            $(this).find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-        $.post('inc/reunionParents/toggleDispo.inc.php', {
-            id:id
+        $("#printProf").click(function() {
+            var date = $(this).data('date');
+            var acronyme = $(this).data('acronyme');
+            $.post('inc/reunionParents/RV2pdf.inc.php',{
+                date: date,
+                acronyme: acronyme,
+                module: 'thot'
             },
-            function (resultat) {
-                var ligne = btnIcon.closest('tr');
-                if (resultat == 1) {
-                    ligne.removeClass('indisponible');
-                    ligne.attr('title',' ');
-                    }
-                    else {
-                        ligne.addClass('indisponible');
-                        ligne.attr('title','Période indisponible')
-                        }
-            }
-        )
+        function(resultat){
+            $("#modalPrintRV").modal('show');
+            })
+
+        })
 
     })
-
-})
-
 </script>

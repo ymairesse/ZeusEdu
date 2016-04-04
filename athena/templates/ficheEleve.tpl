@@ -12,8 +12,9 @@
 			<li><a data-toggle="tab" href="#tabs-3">Médical {if $medicEleve.info != ''}<i class="fa fa-heartbeat faa-pulse animated" style="font-size:1.2em; color: red"></i>{/if}</a></li>
 			<li><a data-toggle="tab" href="#tabs-4">Infirmerie <span class="badge" style="color:red; background: white">{$consultEleve|@count}</span></a></li>
 			<li><a data-toggle="tab" href="#tabs-5">Bulletin</a></li>
-			<li><a data-toggle="tab" href="#tabs-6">EDT</a></li>
-			<li><a data-toggle="tab" href="#tabs-7">ADES</a></li>
+			<li><a data-toggle="tab" href="#tabs-6">Scolaire</a></li>
+			<li><a data-toggle="tab" href="#tabs-7">EDT</a></li>
+			<li><a data-toggle="tab" href="#tabs-8">ADES <span class="badge" style="color:red; background: white;">{$nbFaits}</span></a></li>
 		</ul>
 	</div>
 
@@ -68,12 +69,18 @@
 
 		<div id="tabs-6" class="tab-pane fade in">
 
+			{include file="detailSuivi/scolaire.tpl"}
+
+		</div>
+
+		<div id="tabs-7" class="tab-pane fade in">
+
 			 <iframe src="http://isnd.be/peda/edt" style="width:100%; height:600px"></iframe>
 
 		</div>
 
 
-		<div id="tabs-7" class="tab-pane fade in">
+		<div id="tabs-8" class="tab-pane fade in">
 
 			{include file="detailSuivi/ades.tpl"}
 

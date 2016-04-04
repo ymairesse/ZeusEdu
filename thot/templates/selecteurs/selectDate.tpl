@@ -1,48 +1,41 @@
 <div id="selecteur" class="selecteur noprint" style="clear:both">
 
-<div class="col-md-10 col-sm-8">
-<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-	<select name="date" id="date">
-		<option value="">Date de réunion de parents</option>
-		{foreach from=$listeDates item=uneDate}
-			<option value="{$uneDate}"{if isset($date) && ($uneDate == $date)} selected="selected"{/if}>
-				{$uneDate}
+		<select name="date" id="date">
+			<option value="">{$firstLine}</option>
+			{foreach from=$listeDates item=uneDate}
+			<option value="{$uneDate}" {if isset($date) && ($uneDate==$date)} selected="selected" {/if}>
+				Réunion du {$uneDate}
 			</option>
-		{/foreach}
-	</select>
-	<button type="submit" class="btn btn-primary btn-sm">OK</button>
+			{/foreach}
+		</select>
 
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="{$mode|default:'voir'}">
-	<input type="hidden" name="etape" value="show">
+		<button type="submit" class="btn btn-primary btn-sm">OK</button>
 
-</form>
-</div>
-
-<div class="col-md-2 col-sm-4">
-
-	<form action="index.php" role="form" class="form-inline" method="POST">
-		<button type="submit" class="btn btn-primary pull-right">Nouvelle réunion</button>
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
-		<input type="hidden" name="etape" value="new">
+		<input type="hidden" name="etape" value="show">
+
 	</form>
 
 </div>
 
-</div>
-
 <script type="text/javascript">
+	$(document).ready(function() {
 
-$(document).ready(function(){
-
-	$("#date").change(function(){
-		$("#wait").show();
-		$.blockUI();
-		$("#formSelecteur").submit();
+		$("#formSelecteur").submit(function(){
+			if ($("#date").val() == '')
+				return false;
 		})
 
-})
+		$("#date").change(function() {
+			if ($(this).val() != '') {
+				$("#wait").show();
+				$.blockUI();
+				$("#formSelecteur").submit();
+			}
+		})
 
+	})
 </script>

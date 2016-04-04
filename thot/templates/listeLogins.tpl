@@ -39,14 +39,14 @@
 		{foreach from=$listeLogins item=unLogin}
 
 			<tr>
-				<td>{$unLogin.classe}</td>
-				<td>{$unLogin.nom} {$unLogin.prenom}</td>
-				{if $unLogin.userParent != Null}
+				<td>{$unLogin.eleve.groupe}</td>
+				<td>{$unLogin.eleve.nom} {$unLogin.eleve.prenom}</td>
+				{if $unLogin.parent != Null}
 				<td>
 					<i class="fa fa-user-plus" data-container="body"
-						title="{$unLogin.formule} {$unLogin.nomParent} {$unLogin.prenomParent}"></i> {$unLogin.userEleve}</td>
+						title="{$unLogin.parent.formule} {$unLogin.parent.nomParent} {$unLogin.parent.prenomParent}"></i> {$unLogin.parent.userName}</td>
 				{else}
-				<td>{$unLogin.userEleve}</td>
+				<td>{$unLogin.user}</td>
 				{/if}
 				<td>{$unLogin.date}</td>
 				<td>{$unLogin.heure}</td>

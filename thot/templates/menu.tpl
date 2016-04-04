@@ -17,6 +17,7 @@
 	<div class="collapse navbar-collapse" id="barreNavigation">
 
 		<ul class="nav navbar-nav">
+
 			<li><a href="index.php"><button class="btn btn-primary">THOT <img src="images/thotIco.png" alt="THOT" title="Page d'accueil de THOT"></button></a></li>
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Notifications <b class="caret"></b></a>
 				<ul class="dropdown-menu">
@@ -44,25 +45,39 @@
 
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>
 				<ul class="dropdown-menu">
+
 					<li><a href="index.php?action=gestion&amp;mode=edition">Edition des notifications</a></li>
 					<li><a href="index.php?action=gestion&amp;mode=gestAccuses">Gestion des accusés de lecture</a></li>
-					<li><a href="index.php?action=gestion&amp;mode=reunionParents">Gestion des réunions de parents</a></li>
 					{if $titulaire}
 					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
 					{/if}
-					{if ($userStatus == 'gestion')}
-					<li><a href="index.php?action=admin&amp;mode=bulletin">Accès aux bulletins</a></li>
+				</ul>
+			</li>
+
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Réunions de parents <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					{if $userStatus == 'admin'}
+					<li><a href="index.php?action=reunionParents&amp;mode=editNew">Nouvelle RP ou modification</a></li>
+					<li><a href="index.php?action=reunionParents&amp;mode=periodesAdmin">Gestion des périodes de rendez-vous</a></li>
+					{else}
+					<li><a href="index.php?action=reunionParents&amp;mode=periodesProfs">Gestion des périodes de rendez-vous</a></li>
+					{/if}
+
+					{if $userStatus == 'admin'}
+					<li><a href="index.php?action=reunionParents&amp;mode=printEleves">Imprimer les fiches "parents"</a></li>
 					{/if}
 				</ul>
 			</li>
 
 			{if ($userStatus == 'admin')}
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Admin <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					<li><a href="index.php?action=connexions&amp;mode=date">Connexions par date</a></li>
-					<li><a href="index.php?action=connexions&amp;mode=logins">Logins en temps réel</a></li>
-					<li><a href="index.php?action=admin&amp;mode=reunionParents">Préparation réunion de parents</a></li>
-				</ul>
+					<ul class="dropdown-menu">
+						<li><a href="index.php?action=connexions&amp;mode=date">Connexions par date</a></li>
+						<li><a href="index.php?action=connexions&amp;mode=logins">Logins en temps réel</a></li>
+						<li><a href="index.php?action=stats">Statistiques</a></li>
+						<li><a href="index.php?action=admin&amp;mode=bulletin">Accès aux bulletins</a></li>
+					</ul>
+				</li>
 			{/if}
 
 		</ul>  <!-- nav navbar-nav -->
