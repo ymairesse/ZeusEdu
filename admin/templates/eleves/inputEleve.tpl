@@ -29,6 +29,7 @@
 						<input type="hidden" name="action" value="{$action}">
 						<input type="hidden" name="mode" value="{$mode}"> {if isset($etape)}
 						<input type="hidden" name="etape" value="{$etape}">{/if}
+						<input type="hidden" name="matricule" value="{$matricule|default:''}">
 						<input type="hidden" name="recordingType" value="{$recordingType}">
 						<input type="hidden" name="laClasse" value="{$laClasse}">
 					</div>

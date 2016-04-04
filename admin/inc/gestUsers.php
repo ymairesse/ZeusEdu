@@ -64,8 +64,6 @@ switch ($mode) {
         $listeProfs = $Application->listeProfsBoolCours();
         $smarty->assign('listeProfs', $listeProfs);
         $smarty->assign('corpsPage', 'users/userDel');
-        // $smarty->assign('action',$action);
-        // $smarty->assign('mode',$mode);
         break;
 
     case 'affectation': // affectation en masse des utilisateurs aux applications

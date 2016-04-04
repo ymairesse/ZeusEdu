@@ -30,7 +30,7 @@ switch ($mode) {
 				$smarty->assign('action', 'autres');
 				$smarty->assign('mode', $mode);
 				$smarty->assign('etape', 'enregistrer');
-				$smarty->assign('selecteur', 'selectNomProf');
+				$smarty->assign('selecteur', 'selecteurs/selectNomProf');
 				break;
 			}
 		break;
@@ -78,6 +78,3 @@ switch ($mode) {
 			break;
 		}
 	}
-
-
-?>

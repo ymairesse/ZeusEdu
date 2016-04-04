@@ -65,11 +65,9 @@ class Application
     }
 
     /**
-     * passer en revue toutes les variables globales pour normalisation
+     * passer en revue toutes les variables globales pour normalisation.
      *
      * @param void()
-     *
-     * @return void()
      */
     public function Normalisation()
     {
@@ -521,10 +519,11 @@ class Application
     }
 
     /**
-     * vérifier que l'utilisateur est identifié pour l'application active
+     * vérifier que l'utilisateur est identifié pour l'application active.
+     *
      * @param $nomApplication : nom de l'application à vérifier
      *
-     * @return boolean : true si accès possible pour l'utilisateur actif
+     * @return bool : true si accès possible pour l'utilisateur actif
      */
     public function accesApplication($nomApplication)
     {
@@ -539,7 +538,7 @@ class Application
      *
      * @param $BASEDIR : le répertoire de base de l'applicaiton pour forcer un retour
      *
-     * @return boolean : true si l'utilisateur actif a accès au répertoire actuel
+     * @return bool : true si l'utilisateur actif a accès au répertoire actuel
      */
     public function accesModule($BASEDIR)
     {
@@ -1150,8 +1149,6 @@ class Application
      * @param $dir : répertoire où se trouvent les fichiers
      * @param $bulletin : numéro du bulletin concerné
      * @param $listeClasses : liste des classes à ce niveu d'études
-     *
-     * @return void() : le fichier à imprimer est constitué
      */
     public function zipFilesNiveau($dir, $bulletin, $listeClasses)
     {
@@ -1667,13 +1664,12 @@ class Application
     }
 
     /**
-     * supprimer les caractèes accentués d'une chaîne et les remplacer par le caractères non accentué
+     * supprimer les caractèes accentués d'une chaîne et les remplacer par le caractères non accentué.
      *
      * @param $string : la chaîne à corriger
      *
      * @return string
      */
-
     public static function stripAccents($string)
     {
         return strtr($string, 'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ',
@@ -1681,7 +1677,7 @@ class Application
     }
 
     /**
-     * suppression de quelques caractères ennuyeux (espace, tiret, apostrohpe): utile pour créer des noms d'utilisateurs
+     * suppression de quelques caractères ennuyeux (espace, tiret, apostrohpe): utile pour créer des noms d'utilisateurs.
      *
      * @param $string : la chaîne à nettoyerListes
      *
@@ -1987,5 +1983,19 @@ class Application
         }
 
         return $nb;
+    }
+
+    /**
+     *  renvoie le nom du module courant.
+     *
+     * @param $level : le niveau de sous-repertoire à explorer
+     *
+     * @return string
+     */
+    public function getModule($level)
+    {
+        $dir = explode('/', getcwd());
+
+        return $dir[count($dir) - $level];
     }
 }

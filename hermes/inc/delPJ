@@ -1,0 +1,7 @@
+// récupérer les référérences et effacer les fichiers joints
+// $mail = $this->getMailById($id, $acronyme);
+// $pj = explode(',',$mail['PJ']);
+//
+// foreach ($pj as $unFichier) {
+//     @unlink("../upload/$acronyme/$unFichier");
+// }
