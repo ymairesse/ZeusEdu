@@ -445,13 +445,16 @@ class ecole
      *
      * @return array
      */
-    public function listeElevesClasse($groupe)
+    public function listeElevesClasse($groupe, $partis=false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, nom, prenom ';
+        $sql = 'SELECT matricule, nom, prenom, section ';
         $sql .= 'FROM '.PFX.'eleves ';
         $sql .= "WHERE groupe = '$groupe' ";
+        if ($partis == false)
+            $sql .= "AND section != 'PARTI' ";
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -462,7 +465,6 @@ class ecole
             }
         }
         Application::DeconnexionPDO($connexion);
-
         return $liste;
     }
 
@@ -1783,6 +1785,28 @@ class ecole
         }
 
         return $listeRemplacements;
+    }
+
+    /**
+     * enregistrement des données concernant un interim.
+     *
+     * @param $interim : acronyme du prof intérimaire
+     * @param $cours : la liste des cours concernés par l'interim
+     */
+    public function saveInterim($acronyme, $listeCours)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'profsCours ';
+        $sql .= 'SET acronyme=:acronyme, coursGrp=:coursGrp ';
+        $requete = $connexion->prepare($sql);
+        $resultat = 0;
+        foreach ($listeCours as $coursGrp) {
+            $data = array(':acronyme' => $acronyme, ':coursGrp' => $coursGrp);
+            $resultat += $requete->execute($data);
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
     }
 
     /**
