@@ -8,8 +8,10 @@ require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
 
 switch ($mode) {
+    case 'bulletin':
+        require_once ('inc/gestBulletins.inc.php');
+        break;
     case 'reunionParents':
-    echo "coucou";
         if ($etape == 'enregistrer') {
             $canevas = $thot->getCanevas($_POST);
             $attribProfs = $thot->getAttribProfs($_POST);
@@ -40,7 +42,7 @@ switch ($mode) {
         $smarty->assign('listeProfs',$listeProfs);
 
         $smarty->assign('corpsPage', 'reunionParents/prepaRP');
-        $smarty->assign('selecteur', 'selecteurs/selectDate');
+        $smarty->assign('selecteur', 'selecteurs/selectDateType');
         break;
     default:
         // wtf

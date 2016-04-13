@@ -1,6 +1,6 @@
 <div id="selecteur" class="selecteur noprint" style="clear:both">
 
-<form name="selecteur" id="formSelecteur" method="GET" action="index.php" role="form" class="form-inline">
+<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
 	<select name="coursGrp" id="coursGrp">
 		<option value="">Cours</option>

@@ -21,20 +21,23 @@
 			<li><a href="index.php"><button class="btn btn-primary">THOT <img src="images/thotIco.png" alt="THOT" title="Page d'accueil de THOT"></button></a></li>
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Notifications <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=notification&amp;mode=eleves">À un élève</a></li>
-					<li><a href="index.php?action=notification&amp;mode=coursGrp">À un cours</a></li>
-					<li><a href="index.php?action=notification&amp;mode=classes">À une classe</a></li>
+					<li><a href="index.php?action=notification&amp;mode=classes">Sélection par classe</a></li>
+					<li><a href="index.php?action=notification&amp;mode=coursGrp">Sélection par cours</a></li>
+
 					{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 					<li><a href="index.php?action=notification&amp;mode=niveau">À un niveau d'étude</a></li>
 					<li><a href="index.php?action=notification&amp;mode=ecole">À tous les élèves</a></li>
 					{/if}
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=gestion&amp;mode=edition">Edition des notifications</a></li>
+					<li><a href="index.php?action=gestion&amp;mode=gestAccuses">Gestion des accusés de lecture</a></li>
 				</ul>
 			</li>
 
-			{if isset($titulaire) || $listeCours != Null}
+			{if !empty($titulaire) || $listeCours != Null}
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Journal de classe <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					{if isset($titulaire) && ($titulaire != Null)}
+					{if !empty($titulaire)}
 					<li><a href="index.php?action=jdc&amp;mode=classe&amp;destinataire={','|implode:$titulaire}">Titulaire de [{','|implode:$titulaire}]</a></li>
 					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
@@ -43,16 +46,13 @@
 			</li>
 			{/if}
 
+			{if !empty($titulaire)}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-
-					<li><a href="index.php?action=gestion&amp;mode=edition">Edition des notifications</a></li>
-					<li><a href="index.php?action=gestion&amp;mode=gestAccuses">Gestion des accusés de lecture</a></li>
-					{if $titulaire}
 					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
-					{/if}
 				</ul>
 			</li>
+			{/if}
 
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Réunions de parents <b class="caret"></b></a>
 				<ul class="dropdown-menu">

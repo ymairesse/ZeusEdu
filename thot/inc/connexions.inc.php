@@ -7,4 +7,3 @@ switch ($mode) {
     require('inc/connexionsDate.inc.php');
     break;
 }
-?>

@@ -18,6 +18,7 @@ $smarty->assign('onglet', $onglet);
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new thot();
+
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
@@ -46,8 +47,15 @@ switch ($action) {
     case 'gestion':
         include_once 'inc/gestion.inc.php';
         break;
+    case 'reunionParents':
+        include_once 'inc/gestRP.inc.php';
+        break;
 	case 'admin':
 		include_once ('inc/admin.inc.php');
+        break;
+    case 'stats':
+        include_once 'inc/stats.inc.php';
+        break;
     default:
         // wtf
         break;

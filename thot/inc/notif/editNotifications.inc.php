@@ -19,6 +19,7 @@ switch ($etape) {
         $smarty->assign('corpsPage','notification/formNotification');
         break;
 
+
     case 'enregistrer':
         $id = $Thot->enregistrerNotification($_POST);
         $notification = $Thot->getNotification($id,$acronyme);

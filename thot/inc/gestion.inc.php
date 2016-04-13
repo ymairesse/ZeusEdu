@@ -11,17 +11,18 @@ switch($mode) {
     break;
 
     case 'delNotification':
-        $id = isset($_POST['id'])?$_POST['id']:Null;
-        // suppression des demandes d'accusé de lecture
-        $ok = $Thot->delAccuse($id,$acronyme);
-        // suppression des notifications correspondantes
-        $nb = $Thot->delNotification($id,$acronyme);
-        $smarty->assign('message', array(
-                'title'=>DELETE,
-                'texte'=>"$nb notification supprimée",
-                'urgence'=>SUCCES)
-                );
-        $showEdition = true;
+        die("code supprimé");
+        // $id = isset($_POST['id'])?$_POST['id']:Null;
+        // // suppression des demandes d'accusé de lecture
+        // $ok = $Thot->delAccuse($id,$acronyme);
+        // // suppression des notifications correspondantes
+        // $nb = $Thot->delNotification($id,$acronyme);
+        // $smarty->assign('message', array(
+        //         'title'=>DELETE,
+        //         'texte'=>"$nb notification supprimée",
+        //         'urgence'=>SUCCES)
+        //         );
+        // $showEdition = true;
         break;
 
     case 'edition':
@@ -33,13 +34,14 @@ switch($mode) {
         break;
 
     case 'delBulk':
-        $nb = $Thot->delMultiNotifications($_POST, $acronyme);
-        $smarty->assign('message', array(
-                'title'=>DELETE,
-                'texte'=>"$nb notification supprimée",
-                'urgence'=>SUCCES)
-                );
-        $showEdition = true;
+        echo "code supprimé";
+        // $nb = $Thot->delMultiNotifications($_POST, $acronyme);
+        // $smarty->assign('message', array(
+        //         'title'=>DELETE,
+        //         'texte'=>"$nb notification supprimée",
+        //         'urgence'=>SUCCES)
+        //         );
+        // $showEdition = true;
         break;
 
     case 'reunionParents':

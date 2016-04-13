@@ -1,21 +1,9 @@
 <?php
 
-switch ($etape) {
-    case 'show':
-        $id = isset($_POST['id'])?$_POST['id']:Null;
-        // liste des accusés de lecture pour cet id
-        $listeAccuses = $Thot->getAccuses($id,$acronyme);
-        $smarty->assign('listeAccuses',$listeAccuses);
-        // la notificaiton, pour mémoire
-        $notification = $Thot->getNotification($id,$acronyme);
-        $smarty->assign('notification',$notification);
-        $smarty->assign('corpsPage','verifAccuses');
-        break;
+$listeAccuses = $Thot->listeAccuses($acronyme);
+$statsAccuses = $Thot->statsAccuses($Thot->listeIdNotif4User($acronyme));
 
-    default:
-        $smarty->assign('listeAccuses',$Thot->listeAccuses($acronyme));
-        $smarty->assign('corpsPage','listeAccuses');
-        break;
-}
+$smarty->assign('statsAccuses', $statsAccuses);
+$smarty->assign('listeAccuses', $listeAccuses);
 
- ?>
+$smarty->assign('corpsPage', 'notification/listeAccuses');

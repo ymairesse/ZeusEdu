@@ -1,1 +1,1 @@
-Notification de l'ISND
+Notification de {$ECOLE}

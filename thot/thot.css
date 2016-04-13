@@ -1,127 +1,201 @@
 .geant {
     background-color: #fff;
-    border: 2px solid #f44;
-    color: #f44;
-    font-size: 2em;
-    font-weight: bold;
-    margin: 0.2em;
-    padding: 0.2em 0.2em 0.5em;
-    box-shadow: 5px 5px 5px 2px #ccc;
+     border: 2px solid #f44;
+     box-shadow: 5px 5px 5px 2px #ccc;
+     color: #f44;
+     font-size: 2em;
+     font-weight: bold;
+     margin: 0.2em 0.2em 0.5em;
+     padding: 0.2em 0.2em 0.5em;
+     text-align: center;
 }
 
 .urgence0 {
-	background-color: #9f9;
-	}
+    background-color: #9f9;
+}
+
 .urgence1 {
-	background-color: #99f;
-	}
+    background-color: #99f;
+}
+
 .urgence2 {
-	background-color: #f99;
-	}
+    background-color: #f99;
+}
+
+.spanDisabled {
+    color: #999;
+}
 
 .champ {
-	border: 1px solid black;
+    border: 1px solid black;
     padding: 0.5em 1em;
     box-shadow: 5px 5px 5px 2px #ccc;
     border-radius: 10px;
-    }
+}
 
 .table-bulletin > tbody > tr > td {
     padding: 2px;
-    }
+}
 
 #calendar .fc-content {
     cursor: pointer;
-	}
+}
 
 p.event-special, a.event-special {
-     background: #ff0000 none repeat scroll 0px 0px;
-	}
+    background: #ff0000 none repeat scroll 0px 0px;
+}
 
 p.event-success, a.event-success {
-     background: #008000 none repeat scroll 0px 0px;
-	color: white;
-	}
+    background: #008000 none repeat scroll 0px 0px;
+    color: white;
+}
 
 p.event-warning, a.event-warning {
-	background: #ffa500 none repeat scroll 0px 0px;
-	}
+    background: #ffa500 none repeat scroll 0px 0px;
+}
 
 p.event-info, a.event-info {
-	 background: #ffff00 none repeat scroll 0px 0px;
-     color: red;
-	}
+    background: #ffff00 none repeat scroll 0px 0px;
+    color: red;
+}
 
 p.event-inverse, a.event-inverse {
-	background: #286090 !important;
-	color: #fff !important;
+    background: #286090 !important;
+    color: #fff !important;
 }
 
 .fc-prev-button, .fc-next-button, .fc-today-button {
-	background: orange !important;
-	color: #fff !important;
+    background: orange !important;
+    color: #fff !important;
 }
 
 #calendar {
-    cursor:pointer;
-    }
+    cursor: pointer;
+}
 
 #duree:disabled, #timepicker:disabled {
     background-color: #aaa;
     color: #ccc;
-    }
+}
 
 .titreTravail {
-	padding: 0.5em 1em;
+    padding: 0.5em 1em;
     border: 2px solid black;
-    }
+}
 
 .cat_1 {
     background: #f55 !important;
     color: #fff !important;
-    }
+}
+
 .cat_2 {
     background: #0f0 !important;
     color: #333 !important;
-    }
+}
+
 .cat_3 {
     background: #00f !important;
     color: #fff !important;
-    }
+}
+
 .cat_4 {
     background: #ff0 !important;
     color: #000 !important;
-    }
+}
+
 .cat_5 {
     background: #f00 !important;
     color: #ff0 !important;
-    }
+}
+
 .cat_6 {
     background: #555 !important;
     color: #ccc !important;
-    }
+}
+
 .cat_7 {
     background: #fff !important;
     color: #000 !important;
-    }
+}
 
 .discret {
     padding: 0;
     font-size: 9pt;
-    }
+}
 
 .accuseRecu {
     background-color: #9f9;
-    }
+}
+
 .accuseNonRecu {
     background-color: #f99
-    }
+}
 
 .freeze {
     background-color: #f55;
 }
 
 .indisponible {
-    background-color: #999;
+    background-color: #aaa !important;
     color: #333;
+}
+
+.wait * {
+    cursor: wait;
+}
+
+label.error {
+    background: #ff0000;
+    color: #ffffff;
+}
+
+.btnLimite {
+    text-overflow: ellipsis;
+    width: 10em;
+    overflow: hidden
+}
+
+.popover .close {
+    color: #fff;
+    opacity: 1;
+    line-height: 10px
+}
+
+form input:disabled {
+    color: #999;
+}
+
+.statutSpecial {
+    background-color: rgb(255, 246, 170)
+}
+
+.attente1 {
+    background-color: rgb(242, 193, 239)
+}
+
+.attente2 {
+    background-color: rgb(195, 230, 179)
+}
+
+.attente3 {
+    background-color: rgb(174, 218, 224)
+}
+
+.btn-eleve, .btn-prof {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.switchOn {
+    color: #0a0;
+}
+
+.switchOff {
+    color: #c33;
+}
+
+.selected {
+    background-color: #F9C331;
 }

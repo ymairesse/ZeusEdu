@@ -1,19 +1,16 @@
 <?php
+
 switch ($mode) {
-    case 'eleves':
-        require('inc/notif/notificationEleve.inc.php');
-        break;
     case 'classes':
-        require('inc/notif/notificationClasse.inc.php');
+        require 'inc/notif/notificationClasse.inc.php';
         break;
     case 'coursGrp':
-        require('inc/notif/notificationCours.inc.php');
+        require 'inc/notif/notificationCours.inc.php';
         break;
     case 'niveau':
-        require('inc/notif/notificationNiveau.inc.php');
+        require 'inc/notif/notificationNiveau.inc.php';
         break;
     case 'ecole':
-        require('inc/notif/notificationEcole.inc.php');
+        require 'inc/notif/notificationEcole.inc.php';
         break;
     }
-?>

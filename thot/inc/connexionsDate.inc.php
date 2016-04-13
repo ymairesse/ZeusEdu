@@ -1,4 +1,4 @@
-<?php				
+<?php
 if ($etape == 'showConnexions') {
 	$dateDebut = isset($_POST['dateDebut'])?$_POST['dateDebut']:Null;
 	$dateFin = isset($_POST['dateFin'])?$_POST['dateFin']:Null;
@@ -8,13 +8,12 @@ if ($etape == 'showConnexions') {
 	$smarty->assign("dateFin", $dateFin);
 	if ($dateDebut && $dateFin && ($dateDebutSQL <= $dateFinSQL)) {
 		$listeConnexions = $Thot->listeConnexionsParDate($dateDebutSQL, $dateFinSQL);
-		
+
 		$smarty->assign('listeConnexions', $listeConnexions);
 		$smarty->assign('corpsPage', 'listesParDates');
 		}
-	
+
 }
 
 $smarty->assign('etape','showConnexions');
-$smarty->assign('selecteur', 'selectPeriode');
-?>
+$smarty->assign('selecteur', 'selecteurs/selectPeriode');
