@@ -942,9 +942,11 @@ CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
   KEY `user` (`user`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
 
+-- Structure de la table `didac_thotNotifications`
+--
 
 CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `type` enum('ecole','niveau','classes','eleves') COLLATE utf8_unicode_ci NOT NULL,
   `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   `objet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Objet de la notification',
@@ -955,13 +957,9 @@ CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
   `urgence` tinyint(4) NOT NULL,
   `mail` tinyint(1) NOT NULL,
   `lu` tinyint(1) NOT NULL,
-  `accuseReception` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `proprietaire` (`proprietaire`),
-  KEY `dateDebut` (`dateDebut`),
-  KEY `destinataire` (`destinataire`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
-
+  `accuse` tinyint(1) NOT NULL,
+  `freeze` tinyint(1) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
 
 CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
   `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
