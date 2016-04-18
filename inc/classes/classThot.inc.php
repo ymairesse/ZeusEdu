@@ -1712,4 +1712,213 @@ class thot
 
         return $liste;
     }
+
+    /** fonctions pour la gestion des RV hors réunion de parents ********************* */
+
+    /**
+     * retourne la liste des dates de RV possibles pour l'utilisateur mentionné.
+     *
+     * @param $acronyme : le membre du personnel
+     *
+     * @return array
+     */
+    public function listeChoixRV($acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, date, heure, nom, prenom, email, dateHeure, confirme, md5conf ';
+        $sql .= 'FROM '.PFX.'thotRv ';
+        $sql .= "WHERE contact = '$acronyme' ";
+        $sql .= 'ORDER BY date, heure ';
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $id = $ligne['id'];
+                $jourSemaine = Application::jourSemaineMySQL($ligne['date']);
+                $ligne['jourSemaine'] = $jourSemaine;
+                $date = Application::datePHP($ligne['date']);
+                $ligne['date'] = $date;
+                $liste[$date]['jourSemaine'] = $jourSemaine;
+                // $liste[$date]['rv']['md5conf'] = $ligne['md5conf'];
+                $statut = '';
+                if (($ligne['nom'] != '') && ($ligne['md5conf'] == null) && ($ligne['confirme'] == 0)) {
+                    $statut = 'perime';
+                } elseif (($ligne['md5conf'] != null) && ($ligne['confirme'] == 0)) {
+                    $statut = 'enAttente';
+                } elseif ($ligne['confirme'] == 1) {
+                    $statut = 'ok';
+                }
+                $ligne['statut'] = $statut;
+                if (!isset($liste[$date]['nbOK'])) {
+                    $liste[$date]['nbOK'] = 0;
+                }
+                if ($statut == 'ok') {
+                    $liste[$date]['nbOK']++;
+                }
+
+                $liste[$date]['rv'][$id] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne les dates pour lesquelles un RV est encore possible avec le membre du personnel mentionné.
+     *
+     * @param $acronyme : le membre du personnel
+     *
+     * @return array : la liste des dates au double format PHP et MySQL
+     */
+    public function listeDatesRV($acronyme, $tous = false)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT date ';
+        $sql .= 'FROM '.PFX.'thotRv ';
+        $sql .= "WHERE contact = '$acronyme' ";
+        if (!$tous) {
+            $sql .= 'AND md5conf is Null ';
+        }
+
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $date = $ligne['date'];
+                $jourSemaine = Application::jourSemaineMySQL($date);
+                $datePHP = Application::datePHP($ligne['date']);
+                $ligne = array('date' => $date, 'datePHP' => $datePHP, 'jourSemaine' => $jourSemaine);
+                $liste[] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des RV disponibles pour une date donnée.
+     *
+     * @param $date : la date visée
+     * @param $confirme : boolean false (défaut) si l'on ne souhatie que les plages encore libres
+     *
+     * @return array
+     */
+    public function listeHeuresRV($date, $confirme = false)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, heure ';
+        $sql .= 'FROM '.PFX.'thotRv ';
+        $sql .= "WHERE date = '$date' ";
+        if ($confirme == false) {
+            $sql .= 'AND md5conf is Null ';
+        }
+        $sql .= 'ORDER BY heure ';
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $id = $ligne['id'];
+                $liste[$id] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les caractéristiques d'un moment de RV dont on fournit l'identifiant.
+     *
+     * @param $id : l'identifiant du RV dans la BD
+     *
+     * @return array
+     */
+    public function getRvById($id)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT id, contact, DATE_FORMAT(date,'%d/%m/%Y') AS date, DATE_FORMAT(heure,'%Hh%i') AS heure, ";
+        $sql .= 'nom, prenom, email, dateHeure, md5conf, confirme ';
+        $sql .= 'FROM '.PFX.'thotRv ';
+        $sql .= "WHERE id='$id' ";
+        $resultat = $connexion->query($sql);
+        $ligne = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $resultat->fetch();
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
+    /**
+     * enregistrer les paramètres d'un RV depuis le formulaire d'édition.
+     *
+     * @param $post : le contenu du formulaire
+     * @param $acronyme : l'identifiant de l'utilisateur (sécurité)
+     *
+     * @return int : le nombre d'enregistrements (0 si échec ou 1)
+     */
+    public function saveEditedRv($post, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'thotRv ';
+        $sql .= 'SET nom=:nom, prenom=:prenom, email=:email, confirme=:confirme ';
+        $sql .= 'WHERE contact=:acronyme AND id=:id ';
+        $requete = $connexion->prepare($sql);
+        $data = array(
+            ':nom' => $post['nom'],
+            ':prenom' => $post['prenom'],
+            ':email' => $post['email'],
+            ':acronyme' => $acronyme,
+            ':confirme' => isset($post['confirme']) ? 1 : 0,
+            ':id' => $post['id'],
+        );
+        $resultat = $requete->execute($data);
+
+        Application::deconnexionPDO($connexion);
+        if ($resultat) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * neutraliser une période de RV dont l'id est passé dans le formulaire correspondant.
+     *
+     * @param $post : le contenu du formulaire (essentiellement, l'id)
+     * @param $acronyme : l'identifiant du l'utilsateur (sécurité)
+     *
+     * @return int : le nombre d'effacements (0 si échec ou 1)
+     */
+    public function eraseRv($post, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'thotRv ';
+        $sql .= 'SET nom=Null, prenom=Null, email=Null, dateHeure=Null, md5conf=Null, confirme=0 ';
+        $sql .= 'WHERE contact=:contact AND id=:id ';
+        $requete = $connexion->prepare($sql);
+        $data = array(
+            ':contact' => $acronyme,
+            ':id' => $post['id'],
+        );
+        $resultat = $requete->execute($data);
+
+        Application::deconnexionPDO($connexion);
+        if ($resultat) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
 }
