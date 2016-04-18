@@ -946,20 +946,23 @@ CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
 --
 
 CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
-  `id` int(11) NOT NULL,
-  `type` enum('ecole','niveau','classes','eleves') COLLATE utf8_unicode_ci NOT NULL,
-  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` enum('ecole','niveau','classes','eleves','cours') COLLATE utf8_unicode_ci NOT NULL,
+  `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   `objet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Objet de la notification',
   `texte` blob NOT NULL COMMENT 'Texte de la notification',
   `dateDebut` date NOT NULL,
   `dateFin` date NOT NULL,
-  `destinataire` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
+  `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `urgence` tinyint(4) NOT NULL,
   `mail` tinyint(1) NOT NULL,
-  `lu` tinyint(1) NOT NULL,
   `accuse` tinyint(1) NOT NULL,
-  `freeze` tinyint(1) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
+  `freeze` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La notification est conservée pour le proprio après péremption',
+  PRIMARY KEY (`id`),
+  KEY `proprietaire` (`proprietaire`),
+  KEY `dateDebut` (`dateDebut`),
+  KEY `destinataire` (`destinataire`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
 
 CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
   `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
