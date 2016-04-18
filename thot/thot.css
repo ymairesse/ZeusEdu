@@ -1,13 +1,13 @@
 .geant {
     background-color: #fff;
-     border: 2px solid #f44;
-     box-shadow: 5px 5px 5px 2px #ccc;
-     color: #f44;
-     font-size: 2em;
-     font-weight: bold;
-     margin: 0.2em 0.2em 0.5em;
-     padding: 0.2em 0.2em 0.5em;
-     text-align: center;
+    border: 2px solid #f44;
+    box-shadow: 5px 5px 5px 2px #ccc;
+    color: #f44;
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0.2em 0.2em 0.5em;
+    padding: 0.2em 0.2em 0.5em;
+    text-align: center;
 }
 
 .urgence0 {
@@ -198,4 +198,8 @@ form input:disabled {
 
 .selected {
     background-color: #F9C331;
+}
+
+.grise {
+    color: #aaa;
 }

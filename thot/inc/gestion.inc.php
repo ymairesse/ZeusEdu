@@ -5,24 +5,14 @@ $smarty->assign('date', $date);
 
 $showEdition = false;
 
-switch($mode) {
-  case 'bulletin':
-    require_once('inc/gestBulletins.inc.php');
-    break;
+switch ($mode) {
 
-    case 'delNotification':
-        die("code supprimé");
-        // $id = isset($_POST['id'])?$_POST['id']:Null;
-        // // suppression des demandes d'accusé de lecture
-        // $ok = $Thot->delAccuse($id,$acronyme);
-        // // suppression des notifications correspondantes
-        // $nb = $Thot->delNotification($id,$acronyme);
-        // $smarty->assign('message', array(
-        //         'title'=>DELETE,
-        //         'texte'=>"$nb notification supprimée",
-        //         'urgence'=>SUCCES)
-        //         );
-        // $showEdition = true;
+    case 'bulletin':
+        require_once 'inc/gestBulletins.inc.php';
+        break;
+
+    case 'rv':
+        require_once 'inc/rdv/listeRv.inc.php';
         break;
 
     case 'edition':
@@ -30,30 +20,19 @@ switch($mode) {
         break;
 
     case 'gestAccuses':
-        require_once('inc/gestAccuses.inc.php');
-        break;
-
-    case 'delBulk':
-        echo "code supprimé";
-        // $nb = $Thot->delMultiNotifications($_POST, $acronyme);
-        // $smarty->assign('message', array(
-        //         'title'=>DELETE,
-        //         'texte'=>"$nb notification supprimée",
-        //         'urgence'=>SUCCES)
-        //         );
-        // $showEdition = true;
+        require_once 'inc/gestAccuses.inc.php';
         break;
 
     case 'reunionParents':
-        require_once('inc/gestRP.inc.php');
+        require_once 'inc/gestRP.inc.php';
         break;
 
     case 'parents':
         $titulariats = $user->listeTitulariats("'G','TT','S','C','D'");
-        $smarty->assign('listeClasses', implode(',',array_keys($titulariats)));
+        $smarty->assign('listeClasses', implode(',', array_keys($titulariats)));
         $listesParents = $Thot->listeParents($titulariats);
-        $smarty->assign('listesParents',$listesParents);
-        $smarty->assign('corpsPage','listesParents');
+        $smarty->assign('listesParents', $listesParents);
+        $smarty->assign('corpsPage', 'listesParents');
         break;
 
     default:
@@ -64,17 +43,14 @@ switch($mode) {
 if ($showEdition) {
     // lecture de toutes les notifications en vrac pour l'utilisateur courant
     $listeNotifications = $Thot->listeUserNotification($acronyme);
-    $smarty->assign('listeNotifications',$listeNotifications);
+    $smarty->assign('listeNotifications', $listeNotifications);
     // traitement particuler pour les élèves dont on ne connaît, sinon, que le matricule
     $listeEleves = array();
-    $notificationsEleves = isset($listeNotifications['eleves'])?$listeNotifications['eleves']:Null;
+    $notificationsEleves = isset($listeNotifications['eleves']) ? $listeNotifications['eleves'] : null;
     foreach ($notificationsEleves as $id => $item) {
         $matricule = $item['destinataire'];
-        $listeEleves[$matricule]=$matricule;
+        $listeEleves[$matricule] = $matricule;
     }
-    $smarty->assign('detailsEleves',$Ecole->detailsDeListeEleves($listeEleves));
-    $smarty->assign('corpsPage','listeEdition');
-    }
-
-
-?>
+    $smarty->assign('detailsEleves', $Ecole->detailsDeListeEleves($listeEleves));
+    $smarty->assign('corpsPage', 'listeEdition');
+}
