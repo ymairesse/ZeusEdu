@@ -823,23 +823,24 @@ CREATE TABLE IF NOT EXISTS didac_presencesLogs (
   KEY matricule (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Logs des prises de présences';
 
-CREATE TABLE IF NOT EXISTS didac_profs (
-  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 7 lettres',
-  nom varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
-  prenom varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
-  sexe enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
-  mdp varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'mdp encrypte en MD5',
-  statut enum('admin','user') COLLATE utf8_unicode_ci NOT NULL COMMENT '''admin'',''user''',
-  mail varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '@isnd.be' COMMENT 'adresse mail',
-  telephone varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'tel',
-  GSM varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'GSM',
-  adresse varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'adresse postale (max 40 car)',
-  commune varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'commune (max 30 car)',
-  codePostal varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'max 6 car',
-  pays varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'max 15 car',
-  PRIMARY KEY (acronyme)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `didac_profs` (
+  `acronyme` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 3 lettres',
+  `nom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
+  `prenom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
+  `sexe` enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
+  `titre` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Directeur, éducateur, coordinateur,...',
+  `mdp` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'mdp encrypte en MD5',
+  `statut` enum('admin','user') COLLATE utf8_unicode_ci NOT NULL COMMENT '''admin'',''user''',
+  `mail` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '@isnd.be' COMMENT 'adresse mail',
+  `telephone` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'tel',
+  `GSM` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'GSM',
+  `adresse` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'adresse postale (max 40 car)',
+  `commune` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'commune (max 30 car)',
+  `codePostal` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'max 6 car',
+  `pays` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'max 15 car',
+  PRIMARY KEY (`acronyme`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Contenu de la table `didac_profs`
@@ -963,6 +964,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
   KEY `dateDebut` (`dateDebut`),
   KEY `destinataire` (`destinataire`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
+
 
 CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
   `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
