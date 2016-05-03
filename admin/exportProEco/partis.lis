@@ -1,0 +1,80 @@
+[UNo]
+10102=
+8=;;;;;
+9=;;;;;
+10=;;;;;
+85=;;;;;
+
+[Width]
+LIGNE=-1;Arial;;9;No;-2147483640;1;N
+MATRIC__8=74;Arial;;9;matricule;-2147483640;1;O
+NOM__9=424;Arial;;9;nom;-2147483640;0;O
+PRENOM__10=193;Arial;;9;prenom;-2147483640;0;O
+CLASSE__85=79;Arial;;9;Classe;-2147483640;0;O
+ECOPROPRIO__3=-1;Arial;;9;Ecoles Propriétaires;-2147483640;0;N
+ECOLE__76=-1;Arial;;9;Ecole;-2147483640;0;N
+SEXE__17=-1;Arial;;9;Sexe;-2147483640;0;N
+ANFOFI__123=-1;Arial;;9;AnFF;-2147483640;0;N
+IMPLANTATION__97=-1;Arial;;9;Implantation;-2147483640;0;N
+MATRIC__8_1=-1;Arial;;9;Matric Info;-2147483640;1;N
+CLASSECLA__133=-1;Arial;;9;Classe Classements;-2147483640;0;N
+ORDNO=-1;Arial;;9;ORDNO;-2147483640;1;N
+Grid=;Arial;;9;1;
+
+[Cols]
+LIGNE=0
+MATRIC__8=1
+NOM__9=2
+PRENOM__10=3
+CLASSE__85=4
+ECOPROPRIO__3=5
+ECOLE__76=6
+SEXE__17=7
+ANFOFI__123=8
+IMPLANTATION__97=9
+MATRIC__8_1=10
+CLASSECLA__133=11
+ORDNO=12
+
+[Constantes]
+
+[Titres]
+No
+matricule
+nom
+prenom
+Classe
+
+[NumLignes]
+NLig=N
+[OptPrevis]
+cbAvecCadre.Checked=O
+edZoom.Text=100
+cbAdapterLargeur.Checked=O
+edExprGroupe.Text=ANFOFI__123 +' '+ CLASSECLA__133
+edTitreGroupe.Text=Classe
+TitreGroupe=Classe
+edLibelleGroupe.Text=Lib(CLASSE__85,8,'4',ANFOFI__123,IMPLANTATION__97)
+[OptPage]
+ReportTitle=
+Page.Orientation=0
+Page.PaperSize=9
+Page.Width= 2.10000000000000E+0002
+Page.Length= 2.97000000000000E+0002
+Page.TopMargin= 1.00000000000000E+0001
+Page.LeftMargin= 1.00000000000000E+0001
+Page.RightMargin= 1.00000000000000E+0001
+Page.BottomMargin= 1.00000000000000E+0001
+
+[RTFDessus]
+
+[RTFDessous]
+
+[RTFEntete]
+
+[RTFPied]
+
+[RTFRegroup]
+
+[RTFSousGroupe]
+

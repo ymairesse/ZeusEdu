@@ -1,0 +1,84 @@
+[UNo]
+10102=
+8=;;;;;
+80=;;;;;
+973=;':';T;;;
+975=;'-';;;;
+
+[Width]
+LIGNE=-1;Arial;;9;No;-2147483640;1;N
+MATRIC__8=74;Arial;;9;matricule;-2147483640;1;O
+AN__80=93;Arial;;9;coursGrp;-2147483640;0;O
+COURS__973=0;Arial;;9;Cours;-2147483640;0;O
+GROUPE__975=0;Arial;;9;Grp Crs;-2147483640;0;O
+ECOPROPRIO__3=-1;Arial;;9;Ecoles Propriétaires;-2147483640;0;N
+ECOLE__76=-1;Arial;;9;Ecole;-2147483640;0;N
+SEXE__17=-1;Arial;;9;Sexe;-2147483640;0;N
+ANFOFI__123=-1;Arial;;9;AnFF;-2147483640;0;N
+IMPLANTATION__97=-1;Arial;;9;Implantation;-2147483640;0;N
+MATRIC__8_1=-1;Arial;;9;Matric Info;-2147483640;1;N
+MATRICRS=-1;Arial;;9;MATRICRS;-2147483640;1;N
+NUMCOURS=-1;Arial;;9;NUMCOURS;-2147483640;1;N
+ORDNO=-1;Arial;;9;ORDNO;-2147483640;1;N
+NOMNET__11=-1;Arial;;9;Nom Nettoyé pour Tris;-2147483640;0;N
+Grid=;Arial;;9;1;
+
+[Cols]
+LIGNE=0
+MATRIC__8=1
+AN__80=2
+COURS__973=3
+GROUPE__975=4
+ECOPROPRIO__3=5
+ECOLE__76=6
+SEXE__17=7
+ANFOFI__123=8
+IMPLANTATION__97=9
+MATRIC__8_1=10
+MATRICRS=11
+NUMCOURS=12
+ORDNO=13
+NOMNET__11=14
+
+[Constantes]
+
+[Titres]
+No
+matricule
+coursGrp
+Cours
+Grp Crs
+
+[NumLignes]
+NLig=N
+[OptPrevis]
+cbAvecCadre.Checked=O
+edZoom.Text=100
+cbAdapterLargeur.Checked=O
+edExprGroupe.Text=copy(NOMNET__11,1,1)
+edTitreGroupe.Text=Lettre
+TitreGroupe=Lettre
+[OptPage]
+ReportTitle=
+Page.Orientation=0
+Page.PaperSize=9
+Page.Width= 2.10000000000000E+0002
+Page.Length= 2.97000000000000E+0002
+Page.TopMargin= 1.00000000000000E+0001
+Page.LeftMargin= 1.00000000000000E+0001
+Page.RightMargin= 1.00000000000000E+0001
+Page.BottomMargin= 1.00000000000000E+0001
+
+[RTFDessus]
+
+[RTFDessous]
+
+[RTFEntete]
+
+[RTFPied]
+
+[RTFRegroup]
+
+[RTFSousGroupe]
+
+

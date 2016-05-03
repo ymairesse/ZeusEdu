@@ -1,0 +1,81 @@
+[UNo]
+10102=
+5705=;;T;;;
+CSTdp=:;''
+5706=;'';;;;
+5707=;;;;;
+5716=;;;;;
+5708=;;;;;
+5705=11;;;;Forme Filière (code Réaf);Forme Filière
+
+[Width]
+LIGNE=-1;Arial;;9;No;-2147483640;1;N
+ANFF__5705=76;Arial;;9;cours;-2147483640;0;O
+CSTDP1=0;Arial;;9;dp;-2147483640;0;O
+ABR5__5706=0;Arial;;9;Abr5;-2147483640;0;O
+HRS__5707=74;Arial;;9;nbheures;-2147483640;0;O
+ABR60__5716=210;Arial;;9;libelle;-2147483640;0;O
+CF__5708=62;Arial;;9;cadre;-2147483640;0;O
+ANFF__5705_1=90;Arial;;9;section;-2147483640;0;O
+MATRIC__5701=-1;Arial;;9;Matricule;-2147483640;1;N
+ORDNO=-1;Arial;;9;ORDNO;-2147483640;1;N
+Grid=;Arial;;9;1;
+
+[Cols]
+LIGNE=0
+ANFF__5705=1
+CSTDP1=2
+ABR5__5706=3
+HRS__5707=4
+ABR60__5716=5
+CF__5708=6
+ANFF__5705_1=7
+MATRIC__5701=8
+ORDNO=9
+
+[Constantes]
+dp=:;
+
+[Titres]
+No
+cours
+dp
+Abr5
+nbheures
+libelle
+cadre
+section
+
+[NumLignes]
+NLig=N
+[OptPrevis]
+cbAvecCadre.Checked=O
+edZoom.Text=100
+cbAdapterLargeur.Checked=O
+edExprGroupe.Text=ANFF__5705
+edTitreGroupe.Text=AnFF
+TitreGroupe=AnFF
+edLibelleGroupe.Text=ANFF__5705
+[OptPage]
+ReportTitle=
+Page.Orientation=0
+Page.PaperSize=9
+Page.Width= 2.10000000000000E+0002
+Page.Length= 2.97000000000000E+0002
+Page.TopMargin= 1.00000000000000E+0001
+Page.LeftMargin= 1.00000000000000E+0001
+Page.RightMargin= 1.00000000000000E+0001
+Page.BottomMargin= 1.00000000000000E+0001
+
+[RTFDessus]
+
+[RTFDessous]
+
+[RTFEntete]
+
+[RTFPied]
+
+[RTFRegroup]
+
+[RTFSousGroupe]
+

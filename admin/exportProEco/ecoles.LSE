@@ -1,0 +1,72 @@
+[UNo]
+10102=
+7002=;;;;;
+7007=;;;;;
+7009=;;;;;
+7011=;;;;;
+7012=;;;;;
+
+[Width]
+LIGNE=-1;Arial;;9;No;-2147483640;1;N
+CODE__7002=68;Arial;;9;ecole;-2147483640;0;O
+NOMLONG__7007=844;Arial;;9;nomEcole;-2147483640;0;O
+ADRESSE__7009=424;Arial;;9;adresse;-2147483640;0;O
+CPOST__7011=88;Arial;;9;cPostal;-2147483640;0;O
+COMMUNE__7012=284;Arial;;9;commune;-2147483640;0;O
+MATRIC__7001=-1;Arial;;9;Matricule Informatique;-2147483640;1;N
+ORDNO=-1;Arial;;9;ORDNO;-2147483640;1;N
+Grid=;Arial;;9;1;
+
+[Cols]
+LIGNE=0
+CODE__7002=1
+NOMLONG__7007=2
+ADRESSE__7009=3
+CPOST__7011=4
+COMMUNE__7012=5
+MATRIC__7001=6
+ORDNO=7
+
+[Constantes]
+
+[Titres]
+No
+ecole
+nomEcole
+adresse
+cPostal
+commune
+
+[NumLignes]
+NLig=N
+[OptPrevis]
+cbAvecCadre.Checked=O
+edZoom.Text=100
+cbAdapterLargeur.Checked=O
+edExprGroupe.Text=CPOST__7011
+edTitreGroupe.Text=Code Postal
+TitreGroupe=Code Postal
+edLibelleGroupe.Text=CPOST__7011
+[OptPage]
+ReportTitle=
+Page.Orientation=0
+Page.PaperSize=9
+Page.Width= 2.10000000000000E+0002
+Page.Length= 2.97000000000000E+0002
+Page.TopMargin= 1.00000000000000E+0001
+Page.LeftMargin= 1.00000000000000E+0001
+Page.RightMargin= 1.00000000000000E+0001
+Page.BottomMargin= 1.00000000000000E+0001
+
+[RTFDessus]
+
+[RTFDessous]
+
+[RTFEntete]
+
+[RTFPied]
+
+[RTFRegroup]
+
+[RTFSousGroupe]
+
