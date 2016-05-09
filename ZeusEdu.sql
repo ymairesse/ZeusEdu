@@ -758,23 +758,13 @@ CREATE TABLE IF NOT EXISTS didac_padGuest (
   PRIMARY KEY (id,guest)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des notes relatives aux élève';
 
--- CREATE TABLE IF NOT EXISTS `didac_parentLogins` (
---   `id` int(11) NOT NULL AUTO_INCREMENT,
---   `user` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
---   `date` date NOT NULL,
---   `heure` time NOT NULL,
---   `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
---   `host` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
---   PRIMARY KEY (`id`),
---   KEY `user` (`user`)
--- ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-CREATE TABLE IF NOT EXISTS didac_passwd (
-  matricule int(6) NOT NULL,
+CREATE TABLE IF NOT EXISTS `didac_passwd` (
+  `matricule` int(6) NOT NULL,
   `user` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur de l''élève',
-  passwd varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe',
-  mailDomain varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'domaine pour l''adresse mail',
-  PRIMARY KEY (matricule)
+  `passwd` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe',
+  `md5Pwd` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe encrypté MD5',
+  `mailDomain` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'domaine pour l''adresse mail',
+  PRIMARY KEY (`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS didac_presencesEleves (
@@ -825,7 +815,7 @@ CREATE TABLE IF NOT EXISTS didac_presencesLogs (
 
 
 CREATE TABLE IF NOT EXISTS `didac_profs` (
-  `acronyme` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 3 lettres',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 7 lettres',
   `nom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
   `prenom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
   `sexe` enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
@@ -942,6 +932,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+
 
 -- Structure de la table `didac_thotNotifications`
 --
