@@ -1,43 +1,46 @@
 {strip}
 <div class="row">
 
-	<div class="col-md-11 col-sm-10">
+	<div class="col-sm-10">
+
 		<div class="form-group">
-			<label for="{$unChamp}">{$data.label}</label>
+			<label for="{$unChamp}" class="sr-only">{$data.label}</label>
 			{strip}
-			<textarea 
-				{if $data.colonnes > 0} cols="{$data.colonnes}" {/if}
-				{if $data.lignes > 0} rows="{$data.lignes}" {/if}
-				{if ($data.classCSS == 'obligatoire')} required {/if}
+			<textarea {if ($data.classCSS == 'obligatoire')} required {/if}
 				name="{$unChamp}"
 				tabIndex="{$tabIndex}"
 				id="{$unChamp}"
-				class="form-control">
+				class="form-control"
+				placeholder="{$data.label}">
 				{if isset($fait.$unChamp)}{$fait.$unChamp}{/if}</textarea>
 			{/strip}
 				{assign var="tabIndex" value=$tabIndex+1}
-		
+
 				{if isset($listeMemos.$unChamp)}
-				<label for="memos_{$unChamp}">^^^^^^^</label>
+
 				{assign var=liste value=$listeMemos.$unChamp}
-					<select name="memos" class="memos" id="memos_{$unChamp}" style="width:40em" tabIndex="{$tabIndex}">
-						<option value="">Sélectionner un texte</option>
+					<select name="memos"
+							class="memos hidden form-control"
+							id="memos_{$unChamp}"
+							tabIndex="{$tabIndex}">
+						<option value="">Sélectionner un {$data.label}</option>
 						{foreach from=$liste key=k item=unMemo}
 						<option value="{$unMemo@iteration}">{$unMemo.texte}</option>
 						{/foreach}
 					</select>
 					{assign var="tabIndex" value=$tabIndex+1}
-		
-				<span class="copier" title="copier le texte" tabIndex="{$tabIndex}">
-					<span class="glyphicon glyphicon-upload" style="font-size:150%; color:orange"></span>
-				</span>
+
 				{assign var="tabIndex" value=$tabIndex+1 scope="global"}
 				{/if}
 		</div>  <!-- form-group -->
 	</div>  <!-- col-md... -->
-	
-	<div class="col-md-1 col-sm-2">
-		<span class="glyphicon glyphicon-floppy-save saveMotif" id="save_{$unChamp}" title="Enregistrer" style="font-size:130%; padding-top:3em; color:blue"></span>
+
+	<div class="col-sm-2">
+		<div class="btn-group-vertical motif">
+			<button type="button" class="btn btn-warning btn-sm saveMotif" title="Enregistrer" id="save_{$unChamp}"><i class="fa fa-save" style="color:#000"></i></button>
+			<button type="button" class="btn btn-danger btn-sm showMotifs" title="Voir la liste"> <i class="fa fa-question-circle" style="color:#fff"></i> </button>
+		</div>
+
 		<span class="saveOK_{$unChamp}"></span>
 	</div>	  <!-- col-md ... -->
 

@@ -1,0 +1,14 @@
+{
+    "1":"##titreFait##",
+    "2":"##prenom##",
+    "3":"##nom##",
+    "4":"##classe##",
+    "5":"##duree##",
+    "6":"##dateRetenue##",
+    "7":"##heure##",
+    "8":"##local##",
+    "9":"##motif##",
+    "10":"##materiel##",
+    "11":"##travail##",
+    "12":"##professeur##"
+}

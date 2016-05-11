@@ -20,17 +20,19 @@
 			<th>Local</th>
 			<th>Places</th>
 			<th>Occupation</th>
-			<th>Visible</th>
+			<th>Masquer</th>
 			<th>Éditer</th>
 			<th>Cloner</th>
-			<th>id</th>
 			</tr>
 		</thead>
+		<tbody>
+
 		{foreach from=$listeRetenues key=idretenue item=uneRetenue}
 
 			{include file="retenues/retenueDeListe.tpl"}
 
 		{/foreach}
+		</tbody>
 	</table>
 
 </div>
@@ -45,7 +47,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="editTitle">Édition des retenues</h4>
+        <h4 class="modal-title" id="editTitle"></h4>
       </div>
       <div class="modal-body" id="formEdit">
 
@@ -70,9 +72,9 @@
 		$("#new").click(function(){
 			$("#editTitle").text('Nouvelle retenue');
 			var typeRetenue = $(this).data('typeretenue');
-			var idRetenue = Null;
-			$.post('inc/retenues/newRetenue.inc.php',{
-				typeRetenue: typeRetenue
+			$.post('inc/retenues/editRetenue.inc.php',{
+				typeRetenue: typeRetenue,
+				idretenue: ''
 			},
 			function(resultat){
 				$("#formEdit").html(resultat);
@@ -81,9 +83,10 @@
 		})
 
 		$('#tableRetenues').on('click', '.edit', function(){
+			$("#editTitle").text('Edition de la retenue');
 			var typeRetenue = $(this).data('typeretenue');
 			var idRetenue = $(this).data('idretenue');
-			$.post('inc/retenues/newRetenue.inc.php',{
+			$.post('inc/retenues/editRetenue.inc.php',{
 				typeRetenue: typeRetenue,
 				idRetenue: idRetenue
 			},
@@ -93,7 +96,7 @@
 			})
 		})
 
-		$('#tableRetenues').on('click', '.eye', function(){
+		$('#tableRetenues').on('click', '.visible', function(){
 			var bouton = $(this);
 			var idretenue=$(this).data('idretenue');
 			var visible = $(this).data('visible');
@@ -127,7 +130,6 @@
 				idretenue: idretenue
 			},
 				function (resultat){
-					var test = bouton.html();
 					bouton.closest('tr').after(resultat).fadeIn();
 				})
 			})

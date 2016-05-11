@@ -1,12 +1,14 @@
 {strip}
-<input type="hidden" name="{$unChamp}" id="{$unChamp}" value="
-	{if $unChamp == 'qui'} 
-		 {$identite.acronyme}"
-	 {elseif $unChamp == 'matricule'} 
-		 {$eleve.matricule}"
-	 {elseif $unChamp == 'type'} 
-		 {$prototype.structure.type}"
-	 {else}
-		 {if isset($fait.$unChamp)}{$fait.$unChamp}{/if}"
+<input type="hidden" name="{$unChamp}" id="{$unChamp}"
+	{if $unChamp == 'matricule'}
+		value="{$Eleve.matricule}"
+	{elseif $unChamp == 'type' }
+		value="{$prototype.structure.type}"
+	{elseif $unChamp == 'qui'}
+		value="{$qui}"
+	{elseif $unChamp == 'idfait'}
+		value="{$fait.idfait}"
+	{elseif $unChamp == 'anneeScolaire'}
+		value="{$anneeScolaire}"
 	{/if}>
 {/strip}
