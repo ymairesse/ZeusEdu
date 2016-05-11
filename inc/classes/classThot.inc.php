@@ -392,9 +392,8 @@ class thot
         $sql = 'INSERT INTO '.PFX.'thotAccuse ';
         $sql .= 'SET id=:id, matricule=:matricule ';
         $requete = $connexion->prepare($sql);
-
         if ($type == 'eleves') {
-            foreach ($listeMatricules as $matricule) {
+            foreach ($listeMatricules as $matricule => $wtf) {
                 $id = $listeId[$matricule];
                 $data = array(
                         ':id' => $id,
@@ -1754,7 +1753,7 @@ class thot
                     $liste[$date]['nbOK'] = 0;
                 }
                 if ($statut == 'ok') {
-                    $liste[$date]['nbOK']++;
+                    ++$liste[$date]['nbOK'];
                 }
 
                 $liste[$date]['rv'][$id] = $ligne;
@@ -1920,5 +1919,4 @@ class thot
             return 0;
         }
     }
-
 }
