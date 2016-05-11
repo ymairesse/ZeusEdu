@@ -1,80 +1,72 @@
 <div class="container">
 
-	{if $notification.type == 'eleves'}
-		<h2>Notification pour {$detailsEleve.prenom} {$detailsEleve.nom} [ {$detailsEleve.groupe} ]</h2>
-	{/if}
+	{if $notification.type == 'cours'}
+	<h2>Notification pour le cours {$notification.destinataire}</h2> {/if}
 	{if $notification.type == 'classes'}
-		<h2>Notification pour la classe {$notification.destinataire}</h2>
-	{/if}
+	<h2>Notification pour la classe {$notification.destinataire}</h2> {/if}
 	{if $notification.type == 'niveau'}
-		<h2>Notification pour tous les élèves de {$notification.destinataire}e</h2>
-	{/if}
+	<h2>Notification pour tous les élèves de {$notification.destinataire}e</h2> {/if}
 	{if $notification.type == 'ecole'}
-		<h2>Notification pour tous les élèves</h2>
-	{/if}
+	<h2>Notification pour tous les élèves</h2> {/if}
 
-	<div class="row">
+		<div class="row">
 
-		<div class="col-md-9 col-sm-12">
+			{if ($notification.type == 'niveau') || ($notification.type == 'ecole')}
+			<div class="col-md-10 col-sm-12">
+				{else}
+				<div class="col md-8 col-sm-8">
+					{/if}
+					<div class="panel panel-default">
 
-			<form name="retour" method="POST" action="index.php" role="form" class="form-horizontal pull-right">
-				<input type="hidden" name="onglet" value="{$onglet|default:0}">
-				<input type="hidden" name="action" value="admin">
-				<input type="hidden" name="mode" value="edition">
-				<button type="submit" class="btn btn-primary">Retour</button>
-			</form>
+						<div class="panel-heading">
 
-			<div class="panel panel-default">
+							<div class="form-group">
+								<label>Objet</label>
+								<div id="objet">{$notification.objet|default:''}</div>
+							</div>
 
-				<div class="panel-heading">
+						</div>
+						<!-- panel-heading -->
 
-					<h4>Objet: {$notification.objet}</h4>
+						<div class="panel-body">
+							<div>
+								<label>Votre texte</label>
+								{$notification.texte|default:''}
+							</div>
 
-				</div>  <!-- panel-heading -->
+							<div class="form-group">
+								<label for="urgence">Urgence</label>
+								{assign var=texteNiveau value=['faible', 'moyen','urgent']}
+								{assign var=urgence value=$notification.urgence}
+								<p class="urgence{$urgence}" style="width:30%">Niveau d'urgence: {$texteNiveau.$urgence}</p>
+							</div>
 
-				<div class="panel-body">
+						</div>
+						<!-- panel-body -->
 
-					<h4>Notification</h4>
-					<div class="champ" style="min-height:15em">{$notification.texte}</div>
+					</div>
+					<!-- panel -->
 
-				</div>  <!-- panel-body -->
+				</div>
+				<!-- col-md-...  -->
 
-			</div>  <!--panel -->
 
-		</div>  <!--col-md-... -->
+				{if ($notification.type != 'niveau') && ($notification.type != 'ecole')}
+				<!-- le choix d'élèves en particulier n'est possible que pour les classes et les cours -->
+				<div class="col-md-2 col-sm-4">
+					{include file="notification/syntheseListeEleves.tpl"}
+				</div>
+				{/if}
 
-		<div class="col-md-3 col-sm-12">
+				<div class="col-md-2 col-sm-12">
 
-			<h4>Attributs de la publication</h4>
+					{include file="notification/syntheseAttributs.tpl"}
 
-			{if $notification.type == 'eleves'}
-				<img src="../photos/{$detailsEleve.photo}.jpg" alt="{$detailsEleve.matricule}" class="img-responsive img-thumbnail photo pull-right" style="width:50px">
-			{/if}
-			{if $notification.type == 'classes'}
-				<span class="geant pull-right">{$notification.destinataire}</span>
-			{/if}
-			{if $notification.type == 'niveau'}
-				<span class="geant pull-right">{$notification.destinataire}<sup>e</sup></span>
-			{/if}
-			{if $notification.type == 'ecole'}
-				<span class="geant pull-right">Tous</span>
-			{/if}
+				</div>
+				<!--col-md-... -->
 
-			<div class="champ">
-			<p class="urgence{$notification.urgence}">Urgence: {$notification.urgence}</p>
-			<p><span class="urgence0">0 = faible</span> <span class="urgence1">1 = moyen</span> <span class="urgence2">2=urgent</span></p>
+			</div>
+			<!-- row -->
 
-			<p><strong>Date de début:</strong> {$notification.dateDebut}</p>
-			<p><strong>Date de fin:</strong> {$notification.dateFin}</p>
-
-			<p><strong>Envoi d'un mail:</strong> {if $notification.mail == 1} <i class="fa fa-envelope fa-lg text-success"></i>{else} <i class="fa fa-minus-circle fa-lg"></i> {/if} </p>
-
-			<p><strong>Accusé de lecture:</strong> {if $notification.accuse == 1}<i class="fa fa-check fa-lg text-success"></i>{else} <i class="fa fa-minus-circle fa-lg"></i> {/if}</p>
-
-			<p><strong>Permanent:</strong> {if $notification.freeze == 1} <i class="fa fa-thumb-tack text-success fa-lg"></i> {else} <i class="fa fa-minus-circle fa-lg"></i> {/if}</p>
-			</div>  <!-- champ -->
-		</div>  <!--col-md-... -->
-
-	</div>  <!-- row -->
-
-</div>  <!-- container -->
+	</div>
+	<!-- container -->

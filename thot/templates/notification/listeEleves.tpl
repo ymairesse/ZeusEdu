@@ -11,7 +11,7 @@
 
         <div class="btn-group btn-group-xs pull-right">
             <button type="button" class="btn btn-success" id="all" title="Selection du groupe" disabled>&nbsp;<i class="fa fa-users"></i>&nbsp;</button>
-            <button type="button" class="btn btn-info" id="select" title="Sélectionner certains">&nbsp;<i class="fa fa-check-square-o"></i>&nbsp;</button>
+            <button type="button" class="btn btn-info" id="select" title="Sélectionner certains élèves">&nbsp;<i class="fa fa-check-square-o"></i>&nbsp;</button>
         </div>
 
         <div id="listeEleves" class="hidden" style="height:35em; overflow:auto;">
@@ -25,12 +25,11 @@
         </div>
 
         <div id="tousLesEleves" style="padding-top: 1em; height:40em; overflow:auto;" class="micro">
-            <p><button type="button" class="btn btn-info btn-xs" style="float:left;margin-right:0.5em;">&nbsp;<i class="fa fa-check-square-o"></i>&nbsp;</button> sélectionner certains élèves</p>
-            <p><button type="button" class="btn btn-success btn-xs" style="float:left;margin-right:0.5em;">&nbsp;<i class="fa fa-users"></i>&nbsp;</button> sélection du groupe (défaut)</p>
-            <p><button type="button" class="btn btn-warning btn-xs" style="float:left;margin-right:0.5em;">&nbsp;<i class="fa fa-check-square"></i>&nbsp;</button> inverser la sélection</p>
-            <p><button type="button" class="btn btn-primary btn-xs" style="float:left; margin-right:0.5em;">&nbsp;<i class="fa fa-arrow-down"></i>&nbsp;</button> cocher toutes les cases</p>
+            <p><strong>Si vous souhaitez sélectionner certains élèves du groupe,</strong> (<u>et seulement dans ce cas-là</u>), cliquez sur le bouton <button type="button" class="btn btn-info btn-xs">&nbsp;<i class="fa fa-check-square-o"></i>&nbsp;</button> et choisissez les destinataires.</p>
+            <p>Pour envoyer à tout le groupe, ne sélectionnez aucun élève en particulier.</p>
+            <p>Pour revenir à la sélection de tout le groupe, cliquez sur <button type="button" class="btn btn-success btn-xs" style="float:left;margin-right:0.5em;">&nbsp;<i class="fa fa-users"></i>&nbsp;</button></p>
+            <p style="clear:both"><strong>Préférez toujours l'envoi groupé à l'envoi sélectif.</strong></p>
         </div>
-
 
     </div>
 </div>
