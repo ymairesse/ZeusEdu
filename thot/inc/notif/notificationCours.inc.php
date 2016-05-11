@@ -25,6 +25,7 @@ switch ($etape) {
             $matriculesTous = array_keys($listeEleves);
             // $matricules = liste de tous les élèves sélectionnés dans la classe
             $matriculesSelect = isset($_POST['matricules']) ? array_flip($_POST['matricules']) : null;
+            $smarty->assign('listeMatricules', $matriculesSelect);
             // si pas d'élèves sélectionnés séparément, l'enregistrement concerne l'ensemble du cours
             $type = (count($matriculesSelect) != 0) ? 'eleves' : 'cours';
 
@@ -80,7 +81,8 @@ switch ($etape) {
             $smarty->assign('type', 'cours');
 
             $smarty->assign('notification', $notification);
-            $smarty->assign('corpsPage', 'notification/formNotification');
+            $smarty->assign('corpsPage', 'notification/syntheseNotification');
+            // $smarty->assign('corpsPage', 'notification/formNotification');
         }
             break;
         default:

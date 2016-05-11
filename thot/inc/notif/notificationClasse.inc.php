@@ -26,6 +26,7 @@ switch ($etape) {
             $matriculesTous = array_keys($listeEleves);
             // $matriculesSelect = liste de tous les élèves *sélectionnés* dans la classe (array_flip pour prendre les matricules)
             $matriculesSelect = isset($_POST['matricules']) ? array_flip($_POST['matricules']) : null;
+            $smarty->assign('listeMatricules', $matriculesSelect);
 
             // si pas d'élèves sélectionnés séparément, la notification concerne l'ensemble de la classe.
             $type = (count($matriculesSelect) != 0) ? 'eleves' : 'classes';
@@ -81,7 +82,8 @@ switch ($etape) {
             $smarty->assign('type', 'classes');
 
             $smarty->assign('notification', $notification);
-            $smarty->assign('corpsPage', 'notification/formNotification');
+            $smarty->assign('corpsPage', 'notification/syntheseNotification');
+            // $smarty->assign('corpsPage', 'notification/formNotification');
         }
             break;
         default:

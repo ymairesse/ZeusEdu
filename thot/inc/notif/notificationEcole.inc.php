@@ -10,6 +10,7 @@ switch ($etape) {
 			// liste de tous les élèves du cours
 			$listeEleves = $Ecole->listeElevesEcole();
 			$texte = sprintf("Notification aux %d élèves de l'école enregistrée",count($listeEleves));
+			$smarty->assign('listeMatricules', Null);
 
 			// ok pour la notification en BD, passons éventuellement à l'envoi de mail
             // if (isset($_POST['mail']) && $_POST['mail'] == 1) {
@@ -49,14 +50,14 @@ switch ($etape) {
 
 			$notification = $_POST;
 			$smarty->assign('notification',$notification);
-			$smarty->assign('corpsPage','notification/formNotification');
+			// $smarty->assign('corpsPage','notification/formNotification');
+			$smarty->assign('corpsPage', 'notification/syntheseNotification');
 			}
 		break;
 	default:
 		$notification = $Thot->newNotification('ecole',$user->acronyme(),'ecole');
 		$smarty->assign('notification',$notification);
 		$smarty->assign('corpsPage','notification/formNotification');
-
 		break;
 	}
 

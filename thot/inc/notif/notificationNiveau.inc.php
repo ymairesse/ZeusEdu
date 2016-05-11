@@ -23,6 +23,7 @@ switch ($etape) {
 			$nbEleves = count($matriculesTous);
 
             $texte = sprintf('Notification aux %d élèves de %s e enregistrée ', $nbEleves, $niveau);
+            $smarty->assign('listeMatricules', Null);
 
 			// ok pour la notification en BD, passons éventuellement à l'envoi de mail
 			// if (isset($_POST['mail']) && $_POST['mail'] == 1) {
@@ -68,7 +69,8 @@ switch ($etape) {
 			// $smarty->assign('type', 'niveau');
 
             $smarty->assign('notification', $notification);
-            $smarty->assign('corpsPage', 'notification/formNotification');
+            // $smarty->assign('corpsPage', 'notification/formNotification');
+            $smarty->assign('corpsPage', 'notification/syntheseNotification');
         }
         break;
     default:
