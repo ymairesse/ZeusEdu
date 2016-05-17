@@ -13,14 +13,13 @@ switch ($mode) {
 		$nb = $flashInfo->delFlashInfo($id,$module);
 		$smarty->assign('message',array(
 			'title'=>DELETE,
-			'texte'=>"$nb nouvelle(s) supprimée(s)",
+			'texte'=>sprintf("%d nouvelle(s) supprimée(s)",$nb),
 			'urgence'=>'warning'
 			));
 		$smarty->assign('flashInfos', $flashInfo->listeFlashInfos($module));
 		$smarty->assign('corpsPage', 'news');
 		break;
 	case 'edit':
-		$smarty->assign('application',$application);
 		switch ($etape) {
 			case 'enregistrer':
 				$data = $_POST;
@@ -40,5 +39,5 @@ switch ($mode) {
 			}
 		break;
 	}
-	
+
 ?>

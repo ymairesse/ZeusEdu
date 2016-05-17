@@ -1,5 +1,9 @@
 <?php
+
 switch ($mode) {
+	case 'editBilletRetenue':
+		require_once('inc/retenues/editBilletRetenue.inc.php');
+		break;
 	case 'users':
 		if ($userStatus == 'admin') {
 		switch ($etape) {
@@ -57,5 +61,3 @@ switch ($mode) {
 		$smarty->assign('corpsPage','gestionMemos');
 		break;
 }
-
-?>

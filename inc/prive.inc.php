@@ -1,9 +1,9 @@
 <?php
-require_once ("fonctions.inc.php");
+// require_once ("fonctions.inc.php");
 require_once ("../config/constantes.inc.php");
 // vérifier que l'utilisateur est identifié
-if ((!isset($_SESSION['identite']['acronyme']) || 
-	(!isset($_SESSION['identite']['mdp'])) || 
+if ((!isset($_SESSION['identite']['acronyme']) ||
+	(!isset($_SESSION['identite']['mdp'])) ||
 	(!$_SESSION['applicationName'] == APPLICATION)
 	))
 	header("Location: accueil.php");

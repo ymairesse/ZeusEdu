@@ -35,7 +35,7 @@ if (isset($classe)) {
 switch ($mode) {
 	case 'showFiches':
 		// élève isolé
-		if (isset($matricule) && $matricule != '') 
+		if (isset($matricule) && $matricule != '')
 			$listeEleves = $matricule;
 			// une seule classe du niveau
 			else if (isset($classe) && $classe != '')
@@ -50,7 +50,7 @@ switch ($mode) {
 		break;
 	case 'statistiques':
 		// élève isolé
-		if (isset($matricule) && $matricule != '') 
+		if (isset($matricule) && $matricule != '')
 			$listeEleves = $matricule;
 			// une seule classe du niveau
 			else if (isset($classe) && $classe != '')
@@ -62,17 +62,17 @@ switch ($mode) {
 		$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
 		$smarty->assign('corpsPage','statistiques');
 		break;
-	}	
+	}
 
 $listeNiveaux = Ecole::listeNiveaux();
 $smarty->assign('listeNiveaux', $listeNiveaux);
-$smarty->assign('selecteur', 'selectSynthese');
+$smarty->assign('selecteur', 'selecteurs/selectSynthese');
 if (isset($listeFaits)) {
 	$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
 	$smarty->assign('listeChamps', $listeChamps);
 	$smarty->assign('listeTitres', $Ades->titreChamps());
 	}
-	
+
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 ?>

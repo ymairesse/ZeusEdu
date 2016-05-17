@@ -1,4 +1,5 @@
 <?php
+
 // fonctions globales pour l'ensemble de l'application
 require_once (INSTALL_DIR."/inc/fonctions.inc.php");
 

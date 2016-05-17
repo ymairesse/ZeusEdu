@@ -77,7 +77,8 @@
       </div>
       <div class="modal-body">
 		  <p style="text-align:center">
-		  	Votre document est prêt: <span id="lePdf"></span>
+		  	Votre document est prêt: <span id="lePdf"></span><br>
+			Veuillez cliquer sur la photo.
 		  </p>
       </div>
     </div>

@@ -1,3 +1,4 @@
+{debug}
 <!doctype html>
 <html lang="fr">
 <head>
@@ -29,14 +30,14 @@
 		{/if}
 
 		<div class="col-md-offset-2 col-md-9 col-sm-12 col-xs-12">
-			
+
 			{foreach from=$applisDisponibles key=k item=v}
 				<div class="sousPrg btn btn-primary" title="{$v.nomLong}">
 					<a href="{$v.URL}"><img src="images/{$v.icone}" alt="{$k}" style="float:left">
 					<span class="titreSousPrg">{$v.nomLong}</span></a>
 				</div>
 			{/foreach}
-	
+
 			<div id="titreAppli" style="clear:both">{$titre}</div>
 
 		</div>  <!-- col-md... -->
@@ -58,7 +59,7 @@ $(document).ready(function(){
 		$("#titreAppli").html(texte);
 		}).mouseleave(function(){
 			$("#titreAppli").html(titreGeneral);
-			})		
+			})
 
 	$(".sousPrg").click(function(){
 		var link = $(this).children('a').attr('href');

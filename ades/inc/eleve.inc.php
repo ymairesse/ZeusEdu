@@ -12,7 +12,7 @@ $smarty->assign('mode',$mode);
 switch ($mode) {
 	case 'trombinoscope':
 		$smarty->assign('lesGroupes', $Ecole->listeGroupes());
-		$smarty->assign('selecteur','selectClasse');
+		$smarty->assign('selecteur','selecteurs/selectClasse');
 		if (($etape == 'showEleve') && isset($classe)) {
 			$listeElevesClasse = $Ecole->listeEleves($classe,'groupe');
 			$smarty->assign('classe',$classe);
@@ -34,22 +34,14 @@ switch ($mode) {
 		if (isset($classe))
 			$smarty->assign('listeEleves', $Ecole->listeEleves($classe));
 		$mode = 'selection';
-		$smarty->assign('selecteur','selectClasseEleve');
+		$smarty->assign('selecteur','selecteurs/selectClasseEleve');
 		$afficherEleve = true;
 		break;
 
 	default:
 		$smarty->assign('listeClasses', $Ecole->listeGroupes());
-		if (isset($classe)) {
-			$smarty->assign('listeEleves', $Ecole->listeEleves($classe));
-			$smarty->assign('classe',$classe);
-			$prevNext = $Ecole->prevNext($matricule, $listeEleves);
-			$smarty->assign('prevNext', $prevNext);
-			}
-		$afficherEleve = ($etape == 'showEleve')?true:Null;
-		$smarty->assign('selecteur','selectClasseEleve');
-		
-		if (isset($matricule) && isset($classe)) {
+		$smarty->assign('selecteur','selecteurs/selectClasseEleve');
+		if (isset($matricule) && ($matricule != '') && isset($classe) && ($classe != '')) {
 			$afficherEleve = true;
 			}
 			else {
@@ -65,6 +57,3 @@ switch ($mode) {
 				}
 		break;
 	}
-
-
-?>
