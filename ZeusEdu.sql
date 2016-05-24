@@ -562,7 +562,7 @@ INSERT INTO `didac_config` (`ordre`, `parametre`, `label`, `size`, `valeur`, `si
 (8, 'COTENULLE', 'Mentions nulles', 40, 'nr,NR', 'Cote valant pour 0 au carnet de cotes'),
 (6, 'DIRECTION', 'Direction', 30, 'Nom du directeur/directrice', 'Nom et titre de la direction (rapport de compétences)'),
 (1, 'ECOLE', 'Nom de l''école', 30, 'École', 'Nom de l''école'),
-(5, 'LISTENIVEAUX', 'Niveaux d''étude', 12, '1,2,3,4,5,6', 'Liste des niveaux d''études existants'),
+(5, 'LISTENIVEAUX', 'Niveaux d''étude', 20, '1,2,3,4,5,6', 'Liste des niveaux d''études existants'),
 (9, 'MAXIMAGESIZE', 'Images', 9, '200000', 'Taille maximale (en Ko) des image en upload (trombinoscopes)'),
 (10, 'NBPERIODES', 'Nombre de périodes', 2, '5', 'Nombre de périodes de l''année scolaire (bulletin)'),
 (11, 'NOMSPERIODES', 'Noms des périodes', 30, 'Toussaint,Noël,Carnaval,Pâques,Juin', 'Noms des différentes périodes de cours'),
