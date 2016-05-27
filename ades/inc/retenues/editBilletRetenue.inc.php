@@ -4,7 +4,7 @@ if ($etape == 'enregistrer') {
     $retenue = $_POST['retenue'];
     $page = $_POST['page'];  // A4 ou A5
     $orientation = $_POST['orientation']; // portrait ou paysage
-    
+
     // mise en forme Json
     $format = array('page' => $page, 'orientation' => $orientation);
     // récupération des dictionnaires pour la compilation

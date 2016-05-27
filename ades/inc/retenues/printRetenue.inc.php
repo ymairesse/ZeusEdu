@@ -55,6 +55,7 @@ foreach ($Eleve as $key => $value) {
     $smarty->assign("$key", $value);
 }
 
+// chargement de la présentation du billet de retenue
 $format = json_decode(file_get_contents('../../templates/retenues/format.json'), true);
 
 require_once(INSTALL_DIR."/html2pdf/html2pdf.class.php");
@@ -66,9 +67,14 @@ $retenue4PDF = $smarty->fetch('../../templates/retenues/retenue.tpl');
 
 $html2pdf->WriteHTML($retenue4PDF);
 
+$ds = DIRECTORY_SEPARATOR;
 $dir = "pdf/$acronyme";
 
-$nomFichier = "$dir/retenue_$idfait.pdf";
-$html2pdf->Output(INSTALL_DIR."/$module/$nomFichier",'F');
+if (!(file_exists(INSTALL_DIR.$module.$ds.$dir)))
+    @mkdir(INSTALL_DIR.$ds.$module.$ds.$dir);
+
+$nomFichier = $dir.$ds."retenue_".$idfait.".pdf";
+// die(INSTALL_DIR.$ds.$module.$ds.$nomFichier);
+$html2pdf->Output(INSTALL_DIR.$ds.$module.$ds.$nomFichier,'F');
 $photo = $Eleve['photo'];
-echo sprintf("<a href='%s'><img src='../photos/%s.jpg' alt='%d' style='height:150px'></a>",$nomFichier, $photo, $matricule);
+echo sprintf("<a href='%s'><img src='../photos/%s.jpg' alt='%d' style='height:150px'></a>",BASEDIR.$module.$ds.$nomFichier, $photo, $matricule);

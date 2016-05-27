@@ -51,6 +51,8 @@ switch ($mode) {
         $typeRetenue = isset($_REQUEST['typeRetenue']) ? $_REQUEST['typeRetenue'] : null;
         $idretenue = isset($_REQUEST['idretenue']) ? $_REQUEST['idretenue'] : null;
         $retenue = current((array) new Retenue($idretenue));
+        $typesRetenues = $Ades->getTypesRetenues();
+        $smarty->assign('typesRetenues', $typesRetenues);
         $smarty->assign('idretenue', $idretenue);
         $smarty->assign('typeRetenue', $typeRetenue);
         $smarty->assign('retenue', $retenue);
@@ -59,6 +61,10 @@ switch ($mode) {
         break;
 
     case 'new':
+
+        $typesRetenues = $Ades->getTypesRetenues();
+        $smarty->assign('typesRetenues', $typesRetenues);
+        $smarty->assign('typeRetenueCourant',Null);
         $smarty->assign('idretenue','');
         $smarty->assign('typeRetenue','');
         $smarty->assign('retenue', Null);
