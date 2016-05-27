@@ -11,7 +11,7 @@ require_once 'inc/fonctions.inc.php';
 
 $connexion = connectPDO(SERVEUR, BASE, NOM, MDP);
 
-$query = file_get_contents('ZeusEdu.sql');
+$query = file_get_contents('../ZeusEdu.sql');
 $array = explode(";\n", $query);
 $nb = 0;
 
