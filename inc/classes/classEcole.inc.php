@@ -84,13 +84,15 @@ class ecole
      *
      * @return array
      */
-    public function listeProfsTitus()
+    public function listeProfsTitus($alpha = false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT '.PFX.'titus.acronyme,classe, nom, prenom, mail ';
         $sql .= 'FROM '.PFX.'titus ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'titus.acronyme ) ';
-        $sql .= 'ORDER BY classe,nom ';
+        if ($alpha == true)
+            $sql .= 'ORDER BY nom, prenom';
+            else $sql .= 'ORDER BY classe,nom ';
         $resultat = $connexion->query($sql);
         $listeTitus = array();
         if ($resultat) {
