@@ -32,7 +32,7 @@ COMMDOMI__2104=214;Arial;;9;commune;-2147483640;0;O
 CPOSTDOMI__2103=117;Arial;;9;codePostal;-2147483640;0;O
 PAYSDOMI__2102=106;Arial;;9;pays;-2147483640;0;O
 MATRIC__2001=-1;Arial;;9;Matric Info;-2147483640;1;N
-NOMNET__2012=-1;Arial;;9;Nom Nettoyé;-2147483640;0;N
+NOMNET__2012=-1;Arial;;9;Nom Nettoyï¿½;-2147483640;0;N
 ORDNO=-1;Arial;;9;ORDNO;-2147483640;1;N
 Grid=;Arial;;9;1;
 
@@ -108,4 +108,3 @@ Page.BottomMargin= 1.00000000000000E+0001
 [RTFRegroup]
 
 [RTFSousGroupe]
-
