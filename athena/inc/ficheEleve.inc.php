@@ -28,6 +28,7 @@ $smarty->assign('listeBulletins', range(0, PERIODEENCOURS));
 require_once(INSTALL_DIR."/ades/inc/classes/classEleveAdes.inc.php");
 $ficheDisc = new EleveAdes($matricule);
 $smarty->assign('ficheDisc',$ficheDisc);
+$smarty->assign('nbFaits', $ficheDisc->nbFaits($matricule, ANNEESCOLAIRE));
 
 require_once(INSTALL_DIR."/ades/inc/classes/classAdes.inc.php");
 $Ades = new Ades();

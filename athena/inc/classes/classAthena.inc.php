@@ -201,4 +201,38 @@ class athena
 
          return $liste;
      }
+
+     /**
+      * recherche la liste des élèves suivis par l'utlisateur $acronyme.
+      *
+      * @param $acronyme
+      *
+      * @return array
+      */
+     public static function getEleveUser($acronyme)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = "SELECT da.matricule, DATE_FORMAT(date,'%d/%m/%Y') AS laDate, DATE_FORMAT(heure,'%H:%i') AS heure, ";
+         $sql .= 'absent, nom, prenom, groupe ';
+         $sql .= 'FROM '.PFX.'athena AS da ';
+         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = da.matricule ';
+         $sql .= "WHERE proprietaire = '$acronyme' ";
+         $sql .= 'ORDER BY date DESC, heure ASC ';
+
+         $resultat = $connexion->query($sql);
+         $liste = array();
+         if ($resultat) {
+             $resultat->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $resultat->fetch()) {
+                 $date = $ligne['laDate'];
+                 $matricule = $ligne['matricule'];
+                 $ligne['photo'] = Ecole::photo($matricule);
+                 $liste[$matricule][$date] = $ligne;
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
 }

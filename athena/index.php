@@ -51,13 +51,16 @@ switch ($action) {
 
 	}
 
-
 // si rien n'a encore été assigné au sélecteur, on présente le sélecteur par défaut.
-if ($smarty->getTemplateVars('selecteur') == Null) {
+if ($smarty->getTemplateVars('corpsPage') == Null) {
 	$smarty->assign('classe',$classe);
 	$listeEleves=($classe!= Null)?$Ecole->listeEleves($classe,'groupe'):Null;
 	$smarty->assign('action','ficheEleve');
 	$smarty->assign('mode','wtf');
+	$elevesSuivis = Athena::getEleveUser($acronyme);
+	$smarty->assign('elevesSuivis',$elevesSuivis);
+
+	$smarty->assign('corpsPage','elevesSuivis');
 	$smarty->assign('listeEleves', $listeEleves);
 	$smarty->assign('selecteur', 'selectClasseEleve');
 }
