@@ -392,7 +392,7 @@ class Bulletin
                     $resultat = $connexion->exec($sql);
                     if ($resultat > 0) {
                         // comptage pour éviter le doublement par DUPLICATE
-                        $nbInsertions++;
+                        ++$nbInsertions;
                     }
                 }
             }
@@ -1530,11 +1530,120 @@ class Bulletin
     }
 
     /**
+     * retourne la liste de cotes de situation et délibé pour une liste de cours fournie et pour un bulletin donné.
+     *
+     * @param $listeCours : la liste des cours d'un prof, par exemple
+     * @param $noBulletin : le numéro du bulletin correspondant
+     *
+     * @return array
+     */
+    public function listeSitDelibeVides($listeCoursGrp, $noBulletin)
+    {
+        $listeCoursGrpString = "'".implode("','", $listeCoursGrp)."'";
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT sit.matricule, sit.coursGrp, situation, maxSituation, choixProf, attributProf, sitDelibe, attributDelibe, ';
+        $sql .= 'de.nom, de.prenom, ';
+        $sql .= 'cours, libelle, nbheures, nomCours ';
+        $sql .= 'FROM '.PFX.'bullSituations AS sit ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = sit.matricule ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) ";
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = sit.coursGrp ';
+        $sql .= "WHERE bulletin = $noBulletin ";
+        $sql .= "AND sit.coursGrp IN ($listeCoursGrpString) ";
+        $sql .= "AND (situation != '' AND sitDelibe = '') ";
+        $sql .= 'ORDER BY sit.coursGrp ';
+
+        $liste = array();
+        $resultat = $connexion->query($sql);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $matricule = $ligne['matricule'];
+                $libelle = $ligne['libelle'];
+                $liste[$coursGrp][$matricule] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste des coursGrp et des matricules des élèves pour lesquels la situation est connue à la périod indiquée.
+     *
+     * @param $listeCoursGrp
+     * @param $noBulltin
+     *
+     * @return array
+     */
+    public function listeSituationsOK($listeCoursGrp, $noBulletin)
+    {
+        $listeCoursGrpString = "'".implode("','", $listeCoursGrp)."'";
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, coursGrp ';
+        $sql .= 'FROM '.PFX.'bullSituations as sit ';
+        $sql .= "WHERE coursGrp IN ($listeCoursGrpString) AND bulletin = '$noBulletin' AND trim(situation) != '' ";
+        $liste = array();
+        $resultat = $connexion->query($sql);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $matricule = $ligne['matricule'];
+                $liste[$coursGrp][$matricule] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste des cours pour lesquels existent des cotes en échec sans commentaire.
+     *
+     * @param $listeCoursGrp : array la liste des cours du prof concerné
+     * @param $noBulletin: le numéro du bulletin correspondant
+     *
+     * @return array
+     */
+    public function listeEchecNonCommentes($listeCoursGrp, $noBulletin)
+    {
+        $listeCoursGrpString = "'".implode("','", $listeCoursGrp)."'";
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT sit.matricule, sit.coursGrp, sitDelibe, libelle, nom, prenom ';
+        $sql .= 'FROM '.PFX.'bullSituations AS sit ';
+        $sql .= 'JOIN '.PFX.'bullCommentProfs AS com ON com.matricule=sit.matricule AND com.coursGrp=sit.coursGrp AND com.bulletin=sit.bulletin ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = sit.matricule ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(sit.coursGrp,1,LOCATE('-',sit.coursGrp)-1) ";
+        $sql .= "WHERE sit.coursGrp IN ($listeCoursGrpString) ";
+        $sql .= "AND TRIM(sitDelibe) != '' AND sitDelibe < '50' AND sit.bulletin = '$noBulletin' AND trim(commentaire) = '' ";
+        $sql .= 'ORDER BY coursGrp, nom, prenom ';
+
+        $liste = array();
+        $resultat = $connexion->query($sql);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $matricule = $ligne['matricule'];
+                $libelle = $ligne['libelle'];
+                $liste[$coursGrp][$matricule] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
      * liste des situations de délibés par cours (et non par coursGrp).
      *
      * @param $listeEleves
      * @param $listeCoursGrp
      * @param $bulletin
+     *
+     * @return array
      */
     public function listeSituationsDelibe($listeEleves, $listeCoursGrp, $bulletin)
     {
@@ -2600,7 +2709,7 @@ class Bulletin
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-        $sql = "SELECT dp.matricule, periode, user, mailDomain, decision, restriction, notification, mail, adresseMail, ";
+        $sql = 'SELECT dp.matricule, periode, user, mailDomain, decision, restriction, notification, mail, adresseMail, ';
         $sql .= "DATE_FORMAT(quand, '%d/%m %H:%i') AS quand, CONCAT(nom,' ',prenom) AS nom ";
         $sql .= 'FROM '.PFX.'passwd AS dp ';
         $sql .= 'LEFT JOIN '.PFX.'bullDecisions AS dbd ON dbd.matricule = dp.matricule ';
@@ -2614,10 +2723,11 @@ class Bulletin
                 $matricule = $ligne['matricule'];
                 // vérifier si l'on peut encore envoyer la décision ou si c'est déjà fait
                 $ligne['okEnvoi'] = ($ligne['quand'] == '') ? true : false;
-				// l'adresse d'envoi est-elle définie (cas où les parents ont demandé le mail à la place de l'enfant)
-				// sinon, l'adresse d'envoi est celle de l'élève
-				if ($ligne['adresseMail'] == '')
-					$ligne['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
+                // l'adresse d'envoi est-elle définie (cas où les parents ont demandé le mail à la place de l'enfant)
+                // sinon, l'adresse d'envoi est celle de l'élève
+                if ($ligne['adresseMail'] == '') {
+                    $ligne['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
+                }
                 $listeDecisions[$matricule] = $ligne;
             }
         }
@@ -2938,7 +3048,7 @@ class Bulletin
                                 ':cert' => $cert, )
                                 );
                     if ($resultat) {
-                        $nbResultats++;
+                        ++$nbResultats;
                     }
                 }
             }
@@ -3437,18 +3547,18 @@ class Bulletin
                 case 8: if ($moyenne >= 85) {
      $mention = 'TB+';
  } else {
-                        $mention = 'TB';
-                    } break;
+     $mention = 'TB';
+ } break;
                 case 7: if ($moyenne >= 75) {
      $mention = 'B+';
  } else {
-                        $mention = 'B';
-                    } break;
+     $mention = 'B';
+ } break;
                 case 6: if ($moyenne >= 65) {
      $mention = 'AB';
  } else {
-                        $mention = 'S';
-                    } break;
+     $mention = 'S';
+ } break;
                 case 5: $mention = 'F'; break;
                 default: $mention = 'I';
                 }
@@ -4577,7 +4687,7 @@ class Bulletin
                         } // switch
                 } // if $listeLocks
                     else {
-                        $nbRefus++;
+                        ++$nbRefus;
                     }
             } // if
         } //foreach
@@ -4776,13 +4886,13 @@ class Bulletin
     }
 
     /**
-    * retourne la notice "coordinateurs" pour le bulletin donné au niveau donné
-	*
-	* @param $bulletin : période de l'année concernée
-	* @param $annee : année d'étude concernée
-	*
-	* @return string
-	*/
+     * retourne la notice "coordinateurs" pour le bulletin donné au niveau donné.
+     *
+     * @param $bulletin : période de l'année concernée
+     * @param $annee : année d'étude concernée
+     *
+     * @return string
+     */
     public function noticeCoordinateurs($bulletin, $annee)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -6144,7 +6254,7 @@ class Bulletin
     public function listeCotesEprExterne($coursGrp, $anscol)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, coteExterne, choixCote, coursGrp ';
+        $sql = 'SELECT matricule, coteExterne, coursGrp ';
         $sql .= 'FROM '.PFX.'bullEprExterne ';
         $sql .= "WHERE coursGrp = '$coursGrp' AND anscol='$anscol' ";
 
@@ -6235,6 +6345,7 @@ class Bulletin
         $sql = 'UPDATE '.PFX.'bullEprExterne ';
         $sql .= "SET coteExterne=:cote, anscol='$anscol' ";
         $sql .= 'WHERE matricule=:matricule AND coursGrp=:coursGrp ';
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $requete = $connexion->prepare($sql);
         $coteabs = explode(',', COTEABS);
@@ -6248,7 +6359,9 @@ class Bulletin
                 $matricule = $fieldCote[1];
                 $pattern = '!\d+(?:\.\d+)?!';
                 preg_match($pattern, $value, $matches);
-                $cote = ltrim(strtoupper(sansVirg($matches[0])), '0');
+                if (isset($matches[0]))
+                    $cote = ltrim(strtoupper(sansVirg($matches[0])), '0');
+                    else $cote = '';
 
                 $erreur = false;
 
@@ -6472,5 +6585,73 @@ class Bulletin
             }
         }
         Application::DeconnexionPDO($connexion);
+    }
+
+    /**
+     * Retourne l'ensemble des cadres de cours et des statuts correspondants dans l'école
+     * Chaque cours appartient à un cadre officiel (voir dans ProEco)
+     * Dans l'application, on attribue un statut correspondant: AC, OB, OG, FC,...
+     * Plusieurs "cadres" peuvent correspondre au même "statut".
+     * Dans l'application de bulletins, les cours de statut moindre (AC, OC) sont traités différemment des
+     * cours à "statut" fort.
+     *
+     * @param void()
+     *
+     * @return array
+     */
+    public function getStatutsCadres()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT cadre, statut, rang ';
+        $sql .= 'FROM '.PFX.'statutCours ';
+        $sql .= 'ORDER BY rang, cadre ';
+        $liste = array();
+        $resultat = $connexion->query($sql);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $cadre = $ligne['cadre'];
+                $liste[$cadre] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * Enregistrer les combinaisons "cadre" / "statut du cours" provenant du formulaire.
+     *
+     * @param $post : le contenu du formulaire d'édition
+     *
+     * @return int : le nombre d'insertion dans la BD
+     */
+    public function saveStatutsCadres($post)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'statutCours ';
+        $sql .= 'SET cadre=:cadre, statut=:statut, ordre=:ordre ';
+        $sql .= 'ON DUPLICATE KEY UPDATE ';
+        $sql .= 'statut=:statut, ordre=:ordre ';
+        $requete = $connexion->prepare($sql);
+        $resultat = 0;
+        foreach ($post as $fieldName => $value) {
+            $fieldName = explode('_', $fieldName);
+            if ($fieldName[0] == 'ordre') {
+                $cadre = $fieldName[1];
+                $statut = $post['statut_'.$cadre];
+                $data = array(
+                    ':cadre' => $cadre,
+                    ':ordre' => $value,
+                    ':statut' => $statut,
+                );
+                echo $requete->execute($data);
+                ++$resultat;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
     }
 }

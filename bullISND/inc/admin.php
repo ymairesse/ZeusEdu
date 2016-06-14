@@ -11,13 +11,6 @@ $acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
 $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
 
 switch ($mode) {
-    case 'ajoutTV':
-        if ($userStatus != 'admin') {
-            die('get out of here');
-        }
-        // $Bulletin->ajouteTV();
-
-        break;
     case 'eprExternes':
         if ($userStatus != 'admin') {
             die('get out of here');
@@ -503,6 +496,20 @@ switch ($mode) {
         $smarty->assign('etape', 'choixTitulaires');
         $smarty->assign('selecteur', 'selectClasse');
         $smarty->assign('corpsPage', 'choixTitu');
+        break;
+
+    case 'statutCadre':
+        if ($etape == 'enregistrer') {
+            $nb = $Bulletin->saveStatutsCadres($_POST);
+            $smarty->assign('message', array(
+                        'title' => SAVE,
+                        'texte' => sprintf('%d statut(s) enregistré(s).', $nb),
+                        'urgence' => 'success' )
+                        );
+            }
+        $statutsCadres = $Bulletin->getStatutsCadres();
+        $smarty->assign('statutsCadres', $statutsCadres);
+        $smarty->assign('corpsPage', 'statutsCadres');
         break;
 
     default: 'missing mode';
