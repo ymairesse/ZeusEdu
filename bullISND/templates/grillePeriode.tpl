@@ -1,11 +1,13 @@
 <div class="container">
-	
+
 	<h2>Situations | classe: {$classe} | Période: {$bulletin}</h2>
-	
-	<p class="noprint">Attention: ceci n'est pas la feuille de délibération. <strong>Les valeurs présentées sont les situations actuelles ramenées à 100 points. </strong>
-	
+
+	<div class="alert alert-warning">
+	<p><i class="fa fa-exclamation-triangle fa-2x"></i> Attention: ceci n'est pas la feuille de délibération. <strong>Les valeurs présentées sont les situations actuelles ramenées à 100 points. </strong></p>
+	</div>
+
 	<button class="btn btn-primary couleur">Désactiver la couleur</button>
-	
+
 	<div class="table-responsive">
 		<table class="tableauBull table table-striped table-condensed">
 			<tr>
@@ -38,14 +40,14 @@
 						{$detailsEleve.classe} {$nomPrenom}
 					</span>
 				</td>
-		
+
 				{foreach from=$listeCours key=cours item=detailsCours}
 					{if isset($listeSituations100.$matricule.$cours)	}
 					{assign var=coursGrp value=$listeSituations100.$matricule.$cours.coursGrp}
 					{else}
 					{assign var=coursGrp value=Null}
 					{/if}
-		
+
 					{if isset($coursGrp)}
 						<td class="mention{$listeSituations100.$matricule.$cours.mention}">
 							<span class="pop"
@@ -61,11 +63,11 @@
 						<td class="cote">-</td>
 					{/if}
 				{/foreach}
-		
+
 			</tr>
 			{/foreach}
 		</table>
-		
+
 		<table class="micro">
 		<tr>
 			<td colspan="6">Code de couleurs</td>
@@ -82,7 +84,7 @@
 			<td class="mentionE">>90</td>
 		</tr>
 		</table>
-		
+
 		</div>  <!-- table-responsive -->
 
 </div>  <!-- container -->

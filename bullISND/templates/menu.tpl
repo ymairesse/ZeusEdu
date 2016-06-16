@@ -37,7 +37,7 @@
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Coordinateurs <b class="caret"></b></a>
 		<ul class="dropdown-menu">
 			<li><a href="index.php?action=nota">Notices coordinateurs</a></li>
-			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences</a></li>
+			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences / PIA</a></li>
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
 			<!-- <li><a href="index.php?action=direction&amp;mode=eprExternes">Épreuves externes/délibés</a></li> -->
@@ -92,7 +92,7 @@
 			{if $titulaire}
 			<li><a href="index.php?action=delibes&amp;mode=notifications">Envoi des notifications</a></li>
 			{/if}
-			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses par classe (toutes périodes)</a></li>
+			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses des situations par période</a></li>
 		</ul>
 		</li>
 
@@ -111,7 +111,7 @@
 			<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
 			<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
 			<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats</a></li>
-			<li><a href="index.php?action=admin&amp;mode=ajoutTV">TV</a></li>
+			<li><a href="index.php?action=admin&amp;mode=statutCadre">Cadre et statut des cours</a></li>
 			{/if}
 		</ul>
 

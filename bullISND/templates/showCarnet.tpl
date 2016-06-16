@@ -677,10 +677,10 @@ $(document).ready(function(){
 		$('#date').datepicker('update');
 		$("#formEdit #idComp").val(idComp);
 		$("#formEdit .inputIdCarnet").val(idCarnet);
-		if (formCert == 'form')
-			$("#formEdit .inputForm").attr("checked", true);
-		if (formCert == 'cert')
-			$("#formEdit .inputCert").attr("checked", true);
+		if (formCert == 'Formatif')
+			$("#formEdit .inputForm").trigger('click');
+		if (formCert == 'Certificatif')
+			$("#formEdit .inputCert").trigger('click');
 		if (neutralise == 1)
 			$("#formEdit .inputNeutralise").attr("checked", true);
 			else $("#formEdit .inputNeutralise").attr("checked", false);

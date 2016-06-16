@@ -40,6 +40,25 @@ switch ($mode) {
 		}
 		break;
 
+	case 'resetNotifications':
+		switch ($etape) {
+			case 'confirmer':
+				$Bulletin->resetDecisions();
+				$smarty->assign('message', array(
+									'title'=>"Réinitialisation",
+									'texte'=>"Toutes les notifications de décisions sont effacées ",
+									'urgence'=>'danger')
+									);
+				break;
+			default:
+				$smarty->assign('etape','confirmer');
+				$smarty->assign('type','resetNotifications');
+				$smarty->assign('corpsPage','confirmReset');
+				$ok = 'ok';
+				break;
+		}
+		break;
+
 	case 'resetHistorique':
 		switch ($etape) {
 			case 'confirmer':

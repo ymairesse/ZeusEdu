@@ -767,6 +767,28 @@ class Bulletin
         Application::DeconnexionPDO($connexion);
         if ($resultat) {
             return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Vidage de la table des notifications de décisions par Thot.
+     *
+     * @param void
+     *
+     * @return bool : true si l'opération s'est bien passée
+     */
+    public function resetDecisions()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'TRUNCATE TABLE '.PFX.'bullDecisions ';
+        $resultat = $connexion->exec($sql);
+        Application::DeconnexionPDO($connexion);
+        if ($resultat) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -6359,9 +6381,11 @@ class Bulletin
                 $matricule = $fieldCote[1];
                 $pattern = '!\d+(?:\.\d+)?!';
                 preg_match($pattern, $value, $matches);
-                if (isset($matches[0]))
+                if (isset($matches[0])) {
                     $cote = ltrim(strtoupper(sansVirg($matches[0])), '0');
-                    else $cote = '';
+                } else {
+                    $cote = '';
+                }
 
                 $erreur = false;
 

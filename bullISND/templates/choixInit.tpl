@@ -46,6 +46,10 @@
 				<input type="radio" name="mode" value="resetAttitudes"{if (isset($mode)) && ($mode == 'resetAttitudes')} checked="checked"{/if}>
 				<span>Initialisation des "Attitudes"</span>
 			</li>
+			<li class="danger">
+				<input type="radio" name="mode" value="resetNotifications"{if (isset($mode)) && ($mode == 'resetNotifications')} checked="checked"{/if}>
+				<span>Effacement des notifications de décisions Thot</span>
+			</li>
 			<li>
 				<input type="radio" name="mode" value="verrous"{if (isset($mode)) && ($mode == 'verrous')} checked="checked"{/if}>
 				<span>Initialisation des verrous des cours</span>
