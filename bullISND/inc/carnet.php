@@ -177,7 +177,7 @@ switch ($mode) {
 		$smarty->assign('ponderations', $sommesPonderations);
 		$smarty->assign('listeCompetences', $listeCompetences);
 		$smarty->assign('tableauPoids', $tableauPoids);
-		$smarty->assign('selecteur', 'selectCours');
+		$smarty->assign('selecteur', 'selecteurs/selectCours');
 		$smarty->assign('corpsPage', 'showPoidsCompetences');
 		break;
 
