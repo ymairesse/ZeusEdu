@@ -10,7 +10,7 @@
 
 				<div id="photo"></div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="acronyme">Nom d'utilisateur:</label>
 					{if $dejaConnu}
 						<input name="acronyme" type="hidden" value="{$userIdentite.acronyme|default:''}">
@@ -21,7 +21,7 @@
 					{/if}
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label>Sexe:</label>
 					<div class="radio-inline">
 						<label for="M" class="radio-inline">
@@ -36,17 +36,17 @@
 					</div>
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="nom">Nom: </label>
 					<input type="text" maxlength="40" name="nom" id="nom" value="{$userIdentite.nom|default:''}" class="required form-control">
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="prenom">Prénom: </label>
 					<input type="text" maxlength="40" name="prenom" id="prenom" value="{$userIdentite.prenom|default:''}" class="required form-control">
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="mdp">Mot de passe: </label>
 					{* Le mot de passe est obligatoire pour les nouveaux utilisateurs seulement *}
 					<input type="passwd" maxlenght="20" name="mdp" id="mdp" value=""
@@ -57,22 +57,24 @@
 			</div>  <!-- col-md-... -->
 
 			<div class="col-md-6 col-sm-12">
-				<div class="input-group">
+				<div class="form-group">
 					<label for="mail">Mail: </label>
 					<input type="text" maxlength="40" name="mail" id="mail" value="{$userIdentite.mail|default:''}" class="required mail form-control">
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="telephone">Téléphone:</label>
 					<input type="text" maxlength="40" name="telephone" id="telephone" value="{$userIdentite.telephone|default:''}" class="form-control">
+					<div class="help-block">Téléphone fixe</div>
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="GSM">GSM: </label>
 					<input type="text" maxlength="40" name="GSM" id="GSM" value="{$userIdentite.GSM|default:''}" class="form-control">
+					<div class="help-block">Téléphone portable</div>
 				</div>
 
-				<div class="input-group">
+				<div class="form-group">
 					<label for="statut">Statut global</label>
 					{assign var=statut value=$userIdentite.statut|default:Null}
 					<select name="statut" id="statut" class="form-control">
@@ -81,6 +83,7 @@
 						</option>
 						<option value="admin"{if ($statut == 'admin')} selected="selected"{/if}>Administrateur</option>
 					</select>
+					<div class="help-block">L'administrateur global reçoit les notifications "admin"</div>
 				</div>
 				<input type="hidden" name="oldUser" value="{$dejaConnu}">
 				<input type="hidden" name="action" value="gestUsers">

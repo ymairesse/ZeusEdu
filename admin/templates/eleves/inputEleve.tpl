@@ -15,7 +15,10 @@
 
 						<div class="panel-group" id="accordion">
 
-							{include file='eleves/panneaux/eleve.tpl'} {include file='eleves/panneaux/responsable.tpl'} {include file='eleves/panneaux/pere.tpl'} {include file='eleves/panneaux/mere.tpl'} {include file='eleves/panneaux/informatique.tpl'}
+							{include file='eleves/panneaux/eleve.tpl'}
+							{include file='eleves/panneaux/responsable.tpl'}
+							{include file='eleves/panneaux/pere.tpl'}
+							{include file='eleves/panneaux/mere.tpl'} {include file='eleves/panneaux/informatique.tpl'}
 
 						</div>
 
@@ -41,9 +44,12 @@
 
 		<!-- col-md-... -->
 
-		<div class="col-md-2 col-sm-12 ">
-
-			<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" style="width:100px" class="photo">
+		<div class="col-md-2 col-sm-12">
+			{if isset($eleve.photo)}
+			<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="photo img-responsive">
+			{else}
+			<img src="../photos/nophoto.jpg" alt="Pas de photo" class="photo img-responsive">
+			{/if}
 
 		</div>
 		<!-- col-md-... -->

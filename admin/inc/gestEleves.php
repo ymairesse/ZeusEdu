@@ -31,7 +31,7 @@ switch ($mode) {
         $smarty->assign('eleve', null);
         $smarty->assign('mode', 'save');
         $smarty->assign('recordingType', 'new');
-        $smarty->assign('corpsPage', 'inputEleve');
+        $smarty->assign('corpsPage', 'eleves/inputEleve');
         break;
     case 'save':
         $nbModifications = Eleve::enregistrer($_POST);
