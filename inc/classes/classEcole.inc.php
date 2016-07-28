@@ -90,9 +90,11 @@ class ecole
         $sql = 'SELECT '.PFX.'titus.acronyme,classe, nom, prenom, mail ';
         $sql .= 'FROM '.PFX.'titus ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'titus.acronyme ) ';
-        if ($alpha == true)
+        if ($alpha == true) {
             $sql .= 'ORDER BY nom, prenom';
-            else $sql .= 'ORDER BY classe,nom ';
+        } else {
+            $sql .= 'ORDER BY classe,nom ';
+        }
         $resultat = $connexion->query($sql);
         $listeTitus = array();
         if ($resultat) {
@@ -113,6 +115,24 @@ class ecole
         Application::DeconnexionPDO($connexion);
 
         return $listeTitus;
+    }
+
+    /**
+     * retourne une liste des profs groupés sur base de l'initiale de leur nom de famille.
+     *
+     * @param $listeProfs array
+     *
+     * @return array
+     */
+    public function initalListe($listeProfs)
+    {
+        $liste = array();
+        foreach ($listeProfs as $acronyme => $data) {
+            $initiale = substr($data['nom'], 0, 1);
+            $liste[$initiale][] = $data;
+        }
+
+        return $liste;
     }
 
     /*
@@ -144,10 +164,12 @@ class ecole
         return $titulaires;
     }
 
-    /***
-     * supprime la fonction de titulaire d'une classe $groupe aux profs de la liste passée en paramètre
+    /**
+     * supprime la fonction de titulaire d'une classe $groupe aux profs de la liste passée en paramètre.
+     *
      * @param $groupe
      * @param $listeAcronymes
+     *
      * @return nombre de suppressions
      */
     public function supprTitulariat($groupe, $listeAcronymes)
@@ -167,12 +189,14 @@ class ecole
         return $resultat;
     }
 
-     /***
-      * Ajoute les titulaires de la $listeAcronymes à une classe $groupe
-      * @param $groupe
-      * @param $listeAcronymes
-      * @return integer : nombre d'écriture réussies dans la BD
-      */
+    /**
+     * Ajoute les titulaires de la $listeAcronymes à une classe $groupe.
+     *
+     * @param $groupe
+     * @param $listeAcronymes
+     *
+     * @return int : nombre d'écriture réussies dans la BD
+     */
     public function addTitulariat($groupe, $listeAcronymes, $section)
     {
         if (($groupe == null) || ($listeAcronymes == null)) {
@@ -190,11 +214,13 @@ class ecole
         Application::DeconnexionPDO($connexion);
     }
 
-    /***
-     * retourne la liste des classes d'un niveau donné
+    /**
+     * retourne la liste des classes d'un niveau donné.
+     *
      * @param $niveau
      * @param $entite : groupe (regroupement de plusieurs classes) ou classe
      * @param $sections : tableau des sections concernées
+     *
      * @return $listeClasses
      */
     public function listeClassesNiveau($niveau, $entite = 'groupe', $sections = null)
@@ -243,7 +269,8 @@ class ecole
         } else {
             $sql .= "WHERE section != 'PARTI' ";
         }
-        $sql .= 'ORDER BY classe, groupe';
+        $sql .= 'ORDER BY classe ';
+
         $resultat = $connexion->query($sql);
         $listeClasses = array();
         if ($resultat) {
@@ -447,14 +474,15 @@ class ecole
      *
      * @return array
      */
-    public function listeElevesClasse($groupe, $partis=false)
+    public function listeElevesClasse($groupe, $partis = false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT matricule, nom, prenom, section ';
         $sql .= 'FROM '.PFX.'eleves ';
         $sql .= "WHERE groupe = '$groupe' ";
-        if ($partis == false)
+        if ($partis == false) {
             $sql .= "AND section != 'PARTI' ";
+        }
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
 
         $resultat = $connexion->query($sql);
@@ -467,6 +495,7 @@ class ecole
             }
         }
         Application::DeconnexionPDO($connexion);
+
         return $liste;
     }
 
@@ -637,6 +666,64 @@ class ecole
          }
 
          return $listesElevesNiveaux;
+     }
+
+     /**
+      *r echerche de la liste des classes dont le professeur est titulaire (prof principal).
+      *
+      * @param $sections: les sections éventuelles dans lesquelles chercher
+      *
+      * @return array : tableau des classes dont l'utilisateur est titulaire
+      */
+     public function listeTitulariats($acronyme)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT classe ';
+         $sql .= 'FROM '.PFX.'titus ';
+         $sql .= "WHERE acronyme='$acronyme' ";
+         $sql .= 'ORDER BY classe ';
+         $resultat = $connexion->query($sql);
+         $titulariats = array();
+         if ($resultat) {
+             $resultat->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $resultat->fetch()) {
+                 $classe = $ligne['classe'];
+                 $titulariats[$classe] = $ligne['classe'];
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $titulariats;
+     }
+
+     /**
+      * retourne la listes des élèves d'une ou plusieurs classes.
+      *
+      * @param $listeClasses : array
+      *
+      * @return array : la liste des élèves triés sur la classe puis le nomProf
+      */
+     public function listeElevesMultiClasses($listeClasses)
+     {
+         $listeClassesString = "'".implode("','", array_keys($listeClasses))."'";
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT matricule, groupe, nom, prenom ';
+         $sql .= 'FROM '.PFX.'eleves ';
+         $sql .= "WHERE groupe IN ($listeClassesString) ";
+         $sql .= 'ORDER BY groupe, nom, prenom ';
+         $resultat = $connexion->query($sql);
+         $liste = array();
+         if ($resultat) {
+             $resultat->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $resultat->fetch()) {
+                 $groupe = $ligne['groupe'];
+                 $matricule = $ligne['matricule'];
+                 $liste[$groupe][$matricule] = $ligne;
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
      }
 
     /**
@@ -888,18 +975,19 @@ class ecole
 
         return $listeCours;
     }
-    /***
+    /**
      * retourne la liste de tous les cours qui se donnent dans une classe
      * chaque ligne contient
      *  - le cours comme clef
      *  - le nombre d'heures de cours et le libellé du cours
      * pour chaque cours, on distingue
      *  - les différents coursGrp
-     *  - les références complètes du prof pour chaque coursGrp
+     *  - les références complètes du prof pour chaque coursGrp.
      *
      * @param $classe
+     *
      * @return array
-    */
+     */
     public function listeCoursClassePourDelibe($classe)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1075,9 +1163,11 @@ class ecole
         return $liste;
     }
 
-        /***
-        * Recherche de tous les élèves qui n'ont pas de cours
-        * @param
+       /**
+        * Recherche de tous les élèves qui n'ont pas de cours.
+        *
+        * @param void()
+        *
         * @return array
         */
        public function listOrphanEleves()
@@ -1086,7 +1176,7 @@ class ecole
            $sql = 'SELECT matricule, nom, prenom, groupe ';
            $sql .= 'FROM '.PFX.'eleves ';
            $sql .= 'WHERE matricule NOT IN (SELECT matricule FROM '.PFX.'elevesCours)';
-           $sql .= 'ORDER BY groupe, nom, prenom;';
+           $sql .= 'ORDER BY groupe, nom, prenom ';
            $resultat = $connexion->query($sql);
            $eleves = array();
            if ($resultat) {
@@ -1146,10 +1236,11 @@ class ecole
     }
 
     /**
-     * function nbEleves.
-     *
-     * @param
      * renvoie le nombre total d'élèves de l'école
+     *
+     * @param void()
+     *
+     * @return int
      */
     public function nbEleves()
     {
@@ -1192,10 +1283,11 @@ class ecole
     }
 
     /**
-     * function anniversaires.
+     * renvoie un tableau de la liste des anniversaires dans 0, 1, 2 et 3 jours
      *
      * @param
-     * renvoie un tableau de la liste des anniversaires dans 0, 1, 2 et 3 jours
+     *
+     * @return array
      */
     public function anniversaires()
     {
@@ -1330,6 +1422,15 @@ class ecole
          return strtolower($passwd);
      }
 
+    /**
+     * création d'un nom d'utilisateur pour un élève dont on fournit les infos personnelles.
+     *
+     * @param $nom : nom de l'élève
+     * @param $prenom: prénom de l'élève
+     * @param $matricule: matricule de l'élève
+     *
+     * @return string
+     */
     public function userNameEleve($nom, $prenom, $matricule)
     {
         $p = substr(strtolower(Application::stripAccents($prenom)), 0, 1);
@@ -1411,10 +1512,12 @@ class ecole
         return $data;
     }
 
-    /***
+    /**
      * renvoie le nombre de modifications dans la base de données.
+     *
      * @param $groupe : le groupe dans lequel mettre les classes
      * @param $classes : plusieurs classes qui doivent former le même groupe
+     *
      * @return array nombre d'actions réussies sur la BD
      */
     public function saveGroupesClasses($groupe, $classes)
@@ -2224,10 +2327,12 @@ class ecole
         return $nomPrenom;
     }
 
-    /***
+    /**
      * retourne la liste des formes (GT, TT, TQ, C, S, D) existantes dans l'école
-     * sur la base des noms des cours suivis par les élèves
-     * @param
+     * sur la base des noms des cours suivis par les élèves.
+     *
+     * @param void()
+     *
      * @return array
      */
     public function listeFormes()
@@ -2255,7 +2360,7 @@ class ecole
      * le "cadre" d'un cours est un code conventionnel en Belgique qui correspond au statut d'un cours dans la formation
      * voir la table statutCours dans la base de données pour trouver les correspondances.
      *
-     * @param
+     * @param void()
      *
      * @return array
      */
@@ -2279,7 +2384,7 @@ class ecole
 
     /**
      * enregistrement d'une nouvelle matière (méta-cours) dans la base de données
-     * la fonction retourne le nombre d'enregistrements réalisés (normalement, un seul ou aucun) et le nom du cours enregistré
+     * la fonction retourne le nombre d'enregistrements réalisés (normalement, un seul ou aucun) et le nom du cours enregistrés
      * cette dernière information est utile si le cours a été édité.
      *
      * @param array $post
