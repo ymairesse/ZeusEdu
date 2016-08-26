@@ -86,13 +86,18 @@ class Application
      *
      * @param :    $data n'importe quel tableau ou variable
      * @param bool $die  : si l'on souhaite interrompre le programme avec le dump
-     * */
+     */
     public static function afficher($data, $die = false)
     {
         if (func_num_args() > 0) {
             $data = func_get_args();
         }
-        echo '<pre>'.print_r($data).'</pre>';
+
+        foreach ($data as $wtf => $unData) {
+            echo '<pre>';
+            print_r($unData);
+            echo '</pre>';
+        }
         if ($die == true) {
             die();
         }
@@ -1795,7 +1800,7 @@ class Application
     {
         $entete = array_shift($tableau);
         if ($entete[0] != 'matricule') {
-            die('tableau mal form&eacute;');
+            die('matricule attendu en premi&egrave;re colonne');
         }
         $listeMatricules = array();
         foreach ($tableau as $uneLigne) {

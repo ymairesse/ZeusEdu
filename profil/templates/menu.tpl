@@ -1,7 +1,7 @@
 <div class="container hidden-print">
-	
+
 	<nav class="navbar navbar-default" role="navigation">
-		
+
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#barreNavigation">
 			<span class="sr-only">Navigation portable</span>
@@ -9,17 +9,12 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		
+
 		<a class="navbar-brand" href="../index.php"><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-home"></span></button></a>
 
-	</div> 
-	
+	</div>
+
 	<div class="collapse navbar-collapse" id="barreNavigation">
-		<ul class="nav navbar-nav">
-			<li><a href="index.php"><button type="button" class="btn btn-primary">Profil <img src="images/profilico.png" alt="P"></button></a></li>
-			<li><a href="index.php">Mon profil</a></li>
-			<li><a href="index.php?action=mdp">Mon mot de passe</a></li>
-		</ul>
 		
 		<ul class="nav navbar-nav pull-right">
 			{if isset($alias)}
@@ -33,9 +28,9 @@
 				</ul>
 			</li>
 		</ul>
-		
+
 	</div>
-	
+
 	</nav>
 
 </div> <!-- container -->
