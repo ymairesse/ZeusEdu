@@ -1612,19 +1612,25 @@ class Application
             $sql .= 'ON DUPLICATE KEY UPDATE '.implode(',', $valuesUpdate);
         }
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $connexion->beginTransaction();
+        // $connexion->beginTransaction();
         $requete = $connexion->prepare($sql);
         $ajouts = 0;
         $erreurs = 0;
+        // combien de champs à insérer?
+        $nbChampsInsert = count($champsInsert);
+
         foreach ($tableauCSV as $uneLigne) {
-            $insert = array_combine($champsInsert, $uneLigne);
-            if ($requete->execute($insert)) {
-                ++$ajouts;
-            } else {
-                ++$erreurs;
+            $insert = @array_combine($champsInsert, $uneLigne);
+            // le compte du nombre de champs est-il bon dans la variable $insert
+            if ($nbChampsInsert == count($insert)) {
+                $requete->execute($insert);
+                $ajouts++;
+            }
+            else {
+                $erreurs ++;
             }
         }
-        $connexion->commit();
+        // $connexion->commit();
         self::DeconnexionPDO($connexion);
 
         return array('erreurs' => $erreurs, 'ajouts' => $ajouts);
