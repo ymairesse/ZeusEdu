@@ -15,6 +15,10 @@
 				<span>Effacement du détail des cotes de {$ANNEESCOLAIRE} par compétences dans les bulletins</span>
 			</li>
 			<li class="danger">
+				<input type="radio" name="mode" value="delProfsElevesCours"{if (isset($mode)) && ($mode == 'delProfsElevesCours')} checked="checked"{/if}>
+				<span>Effacement des liens profs/eleves avec les cours</span>
+			</li>
+			<li class="danger">
 				<input type="radio" name="mode" value="resetHistorique"{if (isset($mode)) && ($mode == 'resetHistorique')} checked="checked"{/if}>
 				<span>Effacement de l'historique des changements de cours</span>
 			</li>
