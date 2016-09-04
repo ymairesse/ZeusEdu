@@ -1028,6 +1028,43 @@ CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des demandes de reset de passwd';
 
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+--
+-- Structure de la table `didac_thotFiles`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotFiles` (
+  `fileId` int(11) NOT NULL COMMENT 'Id du ficier',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'acronyme du propriétaire',
+  `path` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'chemin vers le fichier',
+  `fileName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du fichier'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des fichiers partagés';
+
+
+--
+-- Index pour la table `didac_thotFiles`
+--
+ALTER TABLE `didac_thotFiles`
+  ADD PRIMARY KEY (`fileId`),
+  ADD KEY `acronyme` (`acronyme`);
+
+--
+-- Structure de la table `didac_thotShares`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotShares` (
+  `fileId` int(11) NOT NULL COMMENT 'id dans la table des Files',
+  `type` enum('ecole','niveau','classe','cours','eleve','prof') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
+  `groupe` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
+  `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `commentaire` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
+  `shareId` int(11) NOT NULL COMMENT 'Identifiant du partage de document'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des partages de fichiers';
+
+
+--
+-- Index pour la table `didac_thotShares`
+--
+ALTER TABLE `didac_thotShares`
+  ADD PRIMARY KEY (`fileId`,`type`,`destinataire`,`groupe`),
+  ADD KEY `destinataire` (`destinataire`),
+  ADD KEY `shareId` (`shareId`);
