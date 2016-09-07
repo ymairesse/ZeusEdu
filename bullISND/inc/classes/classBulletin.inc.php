@@ -4261,10 +4261,9 @@ class Bulletin
     public function archiveSituations($anneeScolaire)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'bullSitArchives (annee, matricule, coursGrp, bulletin, situation, maxSituation, sitDelibe, attribut) ';
-        $sql .= "SELECT '$anneeScolaire', matricule, coursGrp, bulletin, situation, maxSituation, sitDelibe, attribut ";
+        $sql = 'INSERT INTO '.PFX.'bullSitArchives (annee, matricule, coursGrp, bulletin, situation, maxSituation, sitDelibe, attributDelibe) ';
+        $sql .= "SELECT '$anneeScolaire', matricule, coursGrp, bulletin, situation, maxSituation, sitDelibe, attributDelibe ";
         $sql .= 'FROM '.PFX.'bullSituations ';
-        die($sql);
         $resultat = $connexion->exec($sql);
         Application::DeconnexionPDO($connexion);
         if ($resultat) {
