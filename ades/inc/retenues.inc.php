@@ -61,7 +61,6 @@ switch ($mode) {
         break;
 
     case 'new':
-
         $typesRetenues = $Ades->getTypesRetenues();
         $smarty->assign('typesRetenues', $typesRetenues);
         $smarty->assign('typeRetenueCourant',Null);

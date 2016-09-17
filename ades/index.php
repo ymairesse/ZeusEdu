@@ -15,6 +15,8 @@ $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
 
 $acronyme = $user->getAcronyme();
 $smarty->assign('acronyme', $acronyme);
+$identite = $user->identite();
+$smarty->assign('identite', $identite);
 
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
@@ -80,8 +82,11 @@ if (isset($afficherEleve) && ($afficherEleve == true)) {
         $smarty->assign('prevNext', $prevNext);
     }
 
+    $smarty->assign('user', $user);
     $smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
     $smarty->assign('descriptionChamps', $Ades->listeChamps());
+    $smarty->assign('sentByidFait', $Ades->sentByIdFait($matricule));
+    $smarty->assign('sentMails', $Ades->sentMails($matricule));
     $smarty->assign('matricule', $matricule);
     $smarty->assign('listeClasses', $Ecole->listeGroupes());
     $listeEleves = $Ecole->listeEleves($classe, 'groupe');

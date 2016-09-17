@@ -11,5 +11,3 @@ $idretenue = $_POST['idretenue'];
 require_once (INSTALL_DIR."/ades/inc/classes/classRetenue.inc.php");
 $Retenue = new Retenue($idretenue);
 echo ($Retenue->delRetenue());
-
-?>
