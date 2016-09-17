@@ -14,7 +14,6 @@
                 <th>Heure</th>
                 <th>Élève</th>
                 <th>Parent</th>
-                <th>Contact</th>
             </tr>
         </thead>
         <tbody>
@@ -27,7 +26,7 @@
                 <td>{$data.heure}</td>
                 <td>{$data.groupe} {$data.nom} {$data.prenom}</td>
                 <td>{$data.formule} {$data.nomParent} {$data.prenomParent}</td>
-                <td>{if $data.mail != ''}{$data.mail}{else}&nbsp;{/if}</td>
+                <td>&nbsp;</td>
                 </tr>
             {/foreach}
         </tbody>

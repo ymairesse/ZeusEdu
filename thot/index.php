@@ -44,17 +44,26 @@ switch ($action) {
             include_once 'inc/connexions.inc.php';
         }
         break;
+    case 'files':
+        include_once 'inc/gestFiles.inc.php';
+        break;
     case 'gestion':
         include_once 'inc/gestion.inc.php';
         break;
     case 'reunionParents':
         include_once 'inc/gestRP.inc.php';
         break;
+    case 'reunionTitulaires':
+        include_once 'inc/gestRtitu.inc.php';
+        break;
 	case 'admin':
 		include_once ('inc/admin.inc.php');
         break;
     case 'stats':
         include_once 'inc/stats.inc.php';
+        break;
+    case 'formulaires':
+        include_once 'inc/forms/gestForms.inc.php';
         break;
     default:
         // wtf

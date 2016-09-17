@@ -1,33 +1,33 @@
 <?php
-require_once("../../config.inc.php");
 
-require_once(INSTALL_DIR.'/inc/classes/classUser.inc.php');
-session_start();
+require_once '../../config.inc.php';
 
-require_once(INSTALL_DIR.'/inc/classes/classApplication.inc.php');
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-require_once(INSTALL_DIR.'/thot/inc/classes/classJdc.inc.php');
+require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+session_start();
+if (!(isset($_SESSION[APPLICATION]))) {
+    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+}
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
+$module = $Application->getModule(2);
+
+require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $jdc = new Jdc();
 
-$user = @$_SESSION[APPLICATION];
-if ($user == Null)
-    die();
+$event_id = isset($_POST['event_id']) ? $_POST['event_id'] : null;
 
-$acronyme = $user->getAcronyme();
-
-$event_id = isset($_POST['event_id'])?$_POST['event_id']:Null;
-
-if ($event_id != Null) {
+if ($event_id != null) {
     $travail = $jdc->getTravail($event_id);
-    require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+    require_once INSTALL_DIR.'/smarty/Smarty.class.php';
     $smarty = new Smarty();
-    $smarty->template_dir = "../templates";
-    $smarty->compile_dir = "../templates_c";
-    $smarty->assign('travail',$travail);
-    $smarty->assign('acronyme',$acronyme);
-    $smarty->display('jdc/unTravail.tpl');
-    }
-    else {
-        $date = $Application->now();
-    }
+    $smarty->template_dir = '../templates';
+    $smarty->compile_dir = '../templates_c';
+    $smarty->assign('travail', $travail);
+    $smarty->assign('acronyme', $acronyme);
+    echo $smarty->fetch('jdc/unTravail.tpl');
+
+}

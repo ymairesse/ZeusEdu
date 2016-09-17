@@ -19,7 +19,7 @@
 		<ul class="nav navbar-nav">
 
 			<li><a href="index.php"><button class="btn btn-primary">THOT <img src="images/thotIco.png" alt="THOT" title="Page d'accueil de THOT"></button></a></li>
-			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Notifications <b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Annonces <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=notification&amp;mode=classes">Sélection par classe</a></li>
 					<li><a href="index.php?action=notification&amp;mode=coursGrp">Sélection par cours</a></li>
@@ -29,13 +29,13 @@
 					<li><a href="index.php?action=notification&amp;mode=ecole">À tous les élèves</a></li>
 					{/if}
 					<li role="separator" class="divider"></li>
-					<li><a href="index.php?action=gestion&amp;mode=edition">Edition des notifications</a></li>
-					<li><a href="index.php?action=gestion&amp;mode=gestAccuses">Gestion des accusés de lecture</a></li>
+					<li><a href="index.php?action=notification&amp;mode=historique">Historique des annonces</a></li>
+					{* <li><a href="index.php?action=gestion&amp;mode=gestAccuses">Gestion des accusés de lecture</a></li> *}
 				</ul>
 			</li>
 
 			{if !empty($titulaire) || $listeCours != Null}
-			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Journal de classe <b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if !empty($titulaire)}
 					<li><a href="index.php?action=jdc&amp;mode=classe&amp;destinataire={','|implode:$titulaire}">Titulaire de [{','|implode:$titulaire}]</a></li>
@@ -59,7 +59,15 @@
 			</li>
 			{/if}
 
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Réunions de parents <b class="caret"></b></a>
+			<li class="dropdown"><a href="javascript.void(0)" class="dropdown-toggle" data-toggle="dropdown">
+				Documents <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="index.php?action=files&amp;mode=share"><i class="fa fa-arrow-right"></i> Je partage</a></li>
+					<li><a href="index.php?action=files&amp;mode=e-docs">Partagés avec moi <i class="fa fa-arrow-left"></i></a></li>
+				</ul>
+			</li>
+
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Contacts parents <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=reunionParents&amp;mode=editNew">Nouvelle RP ou modification</a></li>
@@ -71,6 +79,14 @@
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=reunionParents&amp;mode=printEleves">Imprimer les fiches "parents"</a></li>
 					{/if}
+
+				</ul>
+			</li>
+
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Formulaires <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="index.php?action=formulaires&amp;mode=edit">Création/modification d'un formulaire</a></li>
+					<li><a href="index.php?action=formulaires&amp;mode=voir">Consulter mes formulaires</a></li>
 				</ul>
 			</li>
 

@@ -1,14 +1,16 @@
 <?php
 require_once("../../config.inc.php");
 
-// définition de la class USER utilisée en variable de SESSION
-require_once (INSTALL_DIR."/inc/classes/classUser.inc.php");
-
 // définition de la class Application
 require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
 
+// définition de la class USER utilisée en variable de SESSION
+require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
+if (!(isset($_SESSION[APPLICATION]))) {
+    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+}
 $User = $_SESSION[APPLICATION];
 
 $identite = $User->identite();

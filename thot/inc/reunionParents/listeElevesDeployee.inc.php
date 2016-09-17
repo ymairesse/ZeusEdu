@@ -2,6 +2,8 @@
 require_once("../../../config.inc.php");
 
 session_start();
+if (!(isset($_SESSION[APPLICATION]))) {
+    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
 
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 $date = isset($_POST['date'])?$_POST['date']:Null;

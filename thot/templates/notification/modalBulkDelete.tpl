@@ -16,7 +16,7 @@
 
 				<div class="btn-group pull-right">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-					<button type="button" id="ModalDelBulkBtn" class="btn btn-danger pull-right">Supprimer ces notifications</button>
+					<button type="button" id="ModalDelBulkBtn" class="btn btn-danger pull-right" data-type="">Supprimer ces notifications</button>
 				</div>
 
 				<div class="clearfix"></div>

@@ -3,9 +3,12 @@
 <div class="container">
 
 	{if $notification.type == 'cours'}
-	<h2>Notification pour le cours {$notification.destinataire}</h2> {/if} {if $notification.type == 'classes'}
-	<h2>Notification pour la classe {$notification.destinataire}</h2> {/if} {if $notification.type == 'niveau'}
-	<h2>Notification pour tous les élèves de {$notification.destinataire}e</h2> {/if} {if $notification.type == 'ecole'}
+	<h2>Notification pour le cours {$notification.destinataire}</h2> {/if}
+	{if $notification.type == 'classes'}
+	<h2>Notification pour la classe {$notification.destinataire}</h2> {/if}
+	{if $notification.type == 'niveau'}
+	<h2>Notification pour tous les élèves de {$notification.destinataire}e</h2> {/if}
+	{if $notification.type == 'ecole'}
 	<h2>Notification pour tous les élèves</h2> {/if}
 
 	<form enctype="multipart/form-data" name="notification" id="notification" method="POST" action="index.php" role="form" class="form-vertical">
@@ -97,38 +100,38 @@
 	<!-- container -->
 
 
-	<script type="text/javascript">
+<script type="text/javascript">
 
-		$(document).ready(function() {
+	$(document).ready(function() {
 
-			$("#dateDebut").datepicker({
-					format: "dd/mm/yyyy",
-					clearBtn: true,
-					language: "fr",
-					calendarWeeks: true,
-					autoclose: true,
-					todayHighlight: true
-				})
-				.off('focus')
-				.click(function() {
-					$(this).datepicker('show');
-				});
-
-			$("#dateFin").datepicker({
+		$("#dateDebut").datepicker({
 				format: "dd/mm/yyyy",
 				clearBtn: true,
 				language: "fr",
 				calendarWeeks: true,
 				autoclose: true,
 				todayHighlight: true
+			})
+			.off('focus')
+			.click(function() {
+				$(this).datepicker('show');
 			});
 
-			$("#notification").validate({
-				rules: {
-					'objet': 'required'
-				}
-			});
+		$("#dateFin").datepicker({
+			format: "dd/mm/yyyy",
+			clearBtn: true,
+			language: "fr",
+			calendarWeeks: true,
+			autoclose: true,
+			todayHighlight: true
+		});
 
-		})
+		$("#notification").validate({
+			rules: {
+				'objet': 'required'
+			}
+		});
 
-	</script>
+	})
+
+</script>

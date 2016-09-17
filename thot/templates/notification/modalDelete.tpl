@@ -19,7 +19,7 @@
 
 				<div class="btn-group btn-group-sm pull-right">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-					<button type="button" id="modalDelIdBtn" data-id="" class="btn btn-danger">Supprimer cette notification</button>
+					<button type="button" id="modalDelIdBtn" data-id="" data-type="" class="btn btn-danger">Supprimer cette notification</button>
 				</div>
 				<div class="clearfix"></div>
 

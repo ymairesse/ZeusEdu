@@ -83,7 +83,6 @@ switch ($etape) {
 
             $smarty->assign('notification', $notification);
             $smarty->assign('corpsPage', 'notification/syntheseNotification');
-            // $smarty->assign('corpsPage', 'notification/formNotification');
         }
             break;
         default:
@@ -94,7 +93,7 @@ switch ($etape) {
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
-// informations our le sélecteur 'selectClasse'
+// informations pour le sélecteur 'selectClasse'
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
 $smarty->assign('classe', $classe);
 $smarty->assign('selecteur', 'selecteurs/selectClassePOST');

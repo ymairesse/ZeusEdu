@@ -24,9 +24,8 @@ $listeAccuses = $thot->getAccuses($id, $acronyme);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
-$smarty->template_dir = "../templates";
-$smarty->compile_dir = "../templates_c";
+$smarty->template_dir = "../../templates";
+$smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('listeAccuses', $listeAccuses);
-$accuses = $smarty->fetch('../../templates/notification/modalAccuses.tpl');
-echo $accuses;
+echo $smarty->fetch('modal/modalAccuses.tpl');

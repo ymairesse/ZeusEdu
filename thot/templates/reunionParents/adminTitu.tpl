@@ -1,49 +1,14 @@
+<!-- bricolage, j'en conviens -->
+<button data-statut="" data-nomprof="" data-abreviation="{$acronyme}" class="btn btn-sm btn-block btn-prof btn-primary hidden" type="button">
+</button>
+
 <div class="container">
+
 
     <div class="row">
 
-<div class="col-md-2 col-sm-6" style="max-height:40em; overflow:auto">
+        <div class="col-md-9 col-sm-6">
 
-<div class="panel-group" id="profs">
-    {foreach from=$listeProfs key=initiale item=desProfs}
-
-      <div class="panel panel-default">
-
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#" href="#{$initiale}">
-              <button type="button" class="btn btn-default btn-block">{$initiale}</button>
-            </a>
-          </h4>
-        </div>
-        <div id="{$initiale}" class="panel-collapse collapse">
-          <div class="panel-body">
-              <ul class="list-unstyled">
-                  {foreach from=$desProfs key=abr item=data}
-                  <li title="{$data.nom} {$data.prenom}">
-                      <button
-                          type="button"
-                          class="btn btn-sm btn-block btn-prof{if (isset($acronyme)) && ($abr == $acronyme)} btn-primary{else btn-default}{/if}"
-                          data-abreviation="{$data.acronyme}"
-                          data-nomprof="{$data.prenom} {$data.nom}"
-                          data-statut="{$data.statut}">
-                          {$data.nom} {$data.prenom}
-                      </button>
-                  </li>
-                  {/foreach}
-
-              </ul>
-
-          </div>
-        </div>
-      </div>
-    {/foreach}
-</div>
-
-</div>  <!-- col-md-... -->
-
-
-        <div class="col-md-7 col-sm-6">
 
             <!-- liste des RV et liste d'attente -->
             <div id="listeRV" style="max-height:40em; overflow: auto">
@@ -62,7 +27,16 @@
         <!-- col-md-... -->
 
 
-        <div class="col-md-3 col-sm-12">
+        <div class="col-md-3 col-sm-6">
+
+                <button
+                    type="button"
+                    id="printProf"
+                    title="Imprimer"
+                    class="btn btn-primary btn-block"
+                    data-date="{$date}"
+                    data-acronyme="{$acronyme}">
+                    <i class="fa fa-print fa-2x"></i></button>
 
             <div id="listeEleves" style="max-height: 40em; overflow:auto;">
                 {if isset($listeEleves)} {include file="reunionParents/listeElevesProf.tpl"} {/if}
@@ -80,6 +54,7 @@
     {include file="reunionParents/modal/modalAttente.tpl"}
     {include file="reunionParents/modal/modalElevePlz.tpl"}
     {include file="reunionParents/modal/modalHeureRvPlz.tpl"}
+    {include file="reunionParents/modal/modalPrintRV.tpl"}
 
 </div>
 <!-- container -->
@@ -237,6 +212,20 @@ var typeRP="{$typeRP}"
                 $('#attenteAcronyme').val(acronyme);
                 $('#modalAttente').modal('show');
             } else $("#modalElevePlz").modal('show');
+        })
+
+        $("#printProf").click(function() {
+            var date = $(this).data('date');
+            var acronyme = $(this).data('acronyme');
+            $.post('inc/reunionParents/RV2pdf.inc.php',{
+                date: date,
+                acronyme: acronyme,
+                module: 'thot'
+            },
+        function(resultat){
+            $("#modalPrintRV").modal('show');
+            })
+
         })
 
         // attribution d'un RV à un élève qui se trouve en liste d'attente

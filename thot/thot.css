@@ -33,7 +33,7 @@
     border-radius: 10px;
 }
 
-.table-bulletin > tbody > tr > td {
+.table-bulletin> tbody> tr> td {
     padding: 2px;
 }
 
@@ -202,4 +202,24 @@ form input:disabled {
 
 .grise {
     color: #aaa;
+}
+
+.showAccuse {
+    cursor: pointer;
+}
+
+.memoSharedFile {
+    cursor:pointer;
+}
+
+.memoSharedFile:hover{
+    background: #ddd;
+}
+
+.active {
+    background: #FCE5A8 !important;
+}
+
+.shareList li {
+    background-color: #ddd;
 }

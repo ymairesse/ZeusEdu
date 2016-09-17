@@ -53,7 +53,7 @@
                     <h4>Disponibilité</h4>
                     <p>Les périodes de RV peuvent être <span class="indisponible">désactivées</span> en utilisant les commutateurs <i class="fa fa-toggle-on"></i>. Les périodes <span class="indisponible">désactivées</span> sont marquées "occupées" pour les parents, sans autre signe distinctif.</p>
                     <p>Il vous appartient de réserver suffisamment de périodes disponibles pour recevoir les parents qui le souhaitent.</p>
-                    <p>La modification du statut "disponible / indisponible" est immédiate. Il ne faut pas enregistrer ou sauvegarder quoi que ce soit.</p>
+                    <div class="alert alert-info">La modification du statut "disponible / indisponible" est immédiate. Il ne faut pas enregistrer ou sauvegarder quoi que ce soit.</div>
 
                 </div>
                 <div class="panel-footer">
@@ -63,8 +63,11 @@
 
         </div>
 
-        {include file="reunionParents/modal/modalDel.tpl"} {include file="reunionParents/modal/modalDoublonRV.tpl"} {include file="reunionParents/modal/heureNonSelect.tpl"} {include file="reunionParents/modal/modalPrintRV.tpl"}
-         {include file="reunionParents/modal/modalMaxRV.tpl"}
+        {include file="reunionParents/modal/modalDel.tpl"}
+        {include file="reunionParents/modal/modalDoublonRV.tpl"}
+        {include file="reunionParents/modal/heureNonSelect.tpl"}
+        {include file="reunionParents/modal/modalPrintRV.tpl"}
+        {include file="reunionParents/modal/modalMaxRV.tpl"}
 
     </div>
 

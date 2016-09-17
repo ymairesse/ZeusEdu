@@ -42,7 +42,7 @@
                             <td>{if isset($data.nom)} {$data.prenom} {$data.nom} - {$data.classe} {else} {$data.destinataire} {/if}
                             </td>
                             <td>
-                                <meter value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
+                                <meter title="Cliquer pour voir le détail" data-container="body" value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
                                 <span class="discret">{$statsAccuses.$id.confirme}/{$statsAccuses.$id.count}</span>
                             </td>
                             <td>
@@ -83,7 +83,7 @@
                             <td>{$data.objet}</td>
                             <td>{$data.destinataire}</td>
                             <td>
-                                <meter value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
+                                <meter title="Cliquer pour voir le détail" data-container="body" value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
                                 <span class="discret">{$statsAccuses.$id.confirme}/{$statsAccuses.$id.count}</span>
                             </td>
                             <td>
@@ -124,7 +124,7 @@
                             <td>{$data.objet}</td>
                             <td>{$data.destinataire}</td>
                             <td>
-                                <meter value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
+                                <meter title="Cliquer pour voir le détail" data-container="body" value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
                                 <span class="discret">{$statsAccuses.$id.confirme}/{$statsAccuses.$id.count}</span>
                             </td>
                             <td>
@@ -164,7 +164,7 @@
                             <td>{$data.objet}</td>
                             <td>{$data.destinataire}e années</td>
                             <td>
-                                <meter value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
+                                <meter title="Cliquer pour voir le détail" data-container="body" value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
                                 <span class="discret">{$statsAccuses.$id.confirme}/{$statsAccuses.$id.count}</span>
                             </td>
                             <td>
@@ -204,7 +204,7 @@
                             <td>{$data.objet}</td>
                             <td>{$data.destinataire}</td>
                             <td>
-                                <meter value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
+                                <meter title="Cliquer pour voir le détail" data-container="body" value="{$statsAccuses.$id.confirme}" min="0" max="{$statsAccuses.$id.count}"></meter>
                                 <span class="discret">{$statsAccuses.$id.confirme}/{$statsAccuses.$id.count}</span>
                             </td>
                             <td>

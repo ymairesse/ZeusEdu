@@ -13,4 +13,7 @@ switch ($mode) {
     case 'ecole':
         require 'inc/notif/notificationEcole.inc.php';
         break;
+    case 'historique':
+        require 'inc/notif/historique.inc.php';
+        break;
     }

@@ -70,6 +70,12 @@ $(document).ready (function() {
 		trigger:'hover'
 		});
 
+	$(".pop").click(function(){
+		$(".pop").not(this).popover("hide");
+		})
+
+	$("input").tabEnter();
+
 	$("input").not(".autocomplete").attr("autocomplete","off");
 
 })

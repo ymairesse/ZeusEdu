@@ -34,6 +34,7 @@
 				<th>User</th>
 				<th>date</th>
 				<th>heure</th>
+				<th>Par</th>
 			</tr>
 		</thead>
 		{foreach from=$listeLogins item=unLogin}
@@ -50,6 +51,7 @@
 				{/if}
 				<td>{$unLogin.date}</td>
 				<td>{$unLogin.heure}</td>
+				<td title="{$unLogin.ip}">{$unLogin.host}</td>
 			</tr>
 
 		{/foreach}
