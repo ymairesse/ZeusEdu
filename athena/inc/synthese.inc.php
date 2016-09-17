@@ -14,5 +14,3 @@ if ($etape == 'showliste') {
 	}
 $smarty->assign('etape','showliste');
 $smarty->assign('selecteur','selectPeriode');
-
-?>

@@ -69,4 +69,3 @@ if ($smarty->getTemplateVars('corpsPage') == Null) {
 // ----------------------------------------------------------------------------
 $smarty->assign('executionTime', round($chrono->stop(),6));
 $smarty->display ('index.tpl');
-?>

@@ -1,3 +1,4 @@
+{$ANNEEENCOURS}
 {if isset($degre) && ($degre == 1)}
 
 <h3>Résultats du CEB</h3>
