@@ -1,7 +1,7 @@
 <div class="container hidden-print">
 
 <nav class="navbar navbar-default" role="navigation">
-	
+
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#barreNavigation">
 			<span class="sr-only">Navigation portable</span>
@@ -9,11 +9,11 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		
+
 		<a class="navbar-brand" href="../index.php"><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-home"></span></button></a>
 
-	</div> 
-	
+	</div>
+
 	<div class="collapse navbar-collapse" id="barreNavigation">
 		<ul class="nav navbar-nav">
 			<li><a href="index.php"><button class="btn btn-primary">Admin <img src="../images/adminIco.png" alt="adminIco"></button></a></li>
@@ -33,11 +33,7 @@
 					<li><a href="index.php?action=import&amp;table=passwd">Mots de passe élèves</a></li>
 				</ul>
 			</li>
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Mises à jour<b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					<li><a href="index.php?action=maj&amp;table=anciens">Suppression anciens élèves</a></li>
-				</ul>
-			</li>
+
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Sauvegardes<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=backup&amp;mode=liste">Liste des sauvegardes</a></li>
@@ -60,7 +56,7 @@
 					<li><a href="index.php?action=look&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
 					<li><a href="index.php?action=look&amp;table=elevesEcoles">Élèves/écoles</a></li>
 					<li><a href="index.php?action=look&amp;table=infirmInfos">Informations médicales</a></li>
-		
+
 				</ul>
 		</li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Vider<b class="caret"></b></a>
@@ -77,7 +73,7 @@
 				<li><a href="index.php?action=clear&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
 				<li><a href="index.php?action=clear&amp;table=passwd">Mots de passe élèves</a></li>
 				<li><a href="index.php?action=clear&amp;table=infirmInfos">Informations médicales</a></li>
-				
+
 			</ul>
 		</li>
 		<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Utilisateurs<b class="caret"></b></a>
@@ -97,6 +93,8 @@
 				<li><a href="index.php?action=gestEleves&amp;mode=envoiPhotos">Envoyer les photos</a></li>
 				<li><a href="index.php?action=gestEleves&amp;mode=groupEleve">Gestion des groupes/classes</a></li>
 				<li><a href="index.php?action=gestEleves&amp;mode=attribMdp">Attribuer des mots de passe</a></li>
+				<li><a href="index.php?action=gestEleves&amp;mode=printPwd">Imprimer les mots de passe</a></li>
+				<li><a href="index.php?action=maj&amp;table=anciens">Suppression anciens élèves</a></li>
 			</ul>
 		</li>
 
@@ -110,7 +108,7 @@
 			</ul>
 		</li>
 	</ul>
-		
+
 	<ul class="nav navbar-nav pull-right">
 			{if isset($alias)}
 			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>
@@ -129,4 +127,3 @@
 </nav>
 
 </div>  <!-- container -->
-

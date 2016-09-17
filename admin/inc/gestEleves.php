@@ -137,5 +137,12 @@ switch ($mode) {
             break;
         }
         break;
-    default: die('missing mode');
+    case 'printPwd':
+        $listeClasses = $Ecole->listeClasses();
+        $smarty->assign('listeClasses', $listeClasses);
+        $smarty->assign('corpsPage', 'eleves/printPwd');
+        break;
+    default:
+        die('missing mode');
+        break;
     }

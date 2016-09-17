@@ -101,5 +101,3 @@ switch ($mode) {
 		$smarty->assign('corpsPage', 'formulaireImport');
 		break;
 		}
-
-?>
