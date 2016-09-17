@@ -11,7 +11,9 @@
 
              <div class="panel-body">
                 {if ($date == '')}
-                    <p class="alert alert-warning">Complétez d'abord la page 1</p>
+                <div class="alert alert-info">
+                    Définissez d'abord l'horaire et la liste des enseignants concernés à la page 1.
+                </div>
                 {/if}
 
             <form action="index.php" method="POST" role="form" class="form-inline">
@@ -97,14 +99,15 @@
                     </fieldset>
 
                     <div class="btn-group-vertical pull-right">
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                        <button type="reset" class="btn btn-default">Annuler</button>
+                        <button type="submit" class="btn btn-primary" {if ($date == '')}disabled{/if}>Enregistrer</button>
+                        <button type="reset" class="btn btn-default" {if ($date == '')}disabled{/if}>Annuler</button>
                     </div>
 
                     <input type="hidden" name="date" value="{$date|default:''}">
                     <input type="hidden" name="action" value="{$action}">
                     <input type="hidden" name="mode" value="enregistrer">
                     <input type="hidden" name="etape" value="etape2">
+                    <input type="hidden" name="onglet" class="onglet" value="{$onglet}">
 
                 </div>
 

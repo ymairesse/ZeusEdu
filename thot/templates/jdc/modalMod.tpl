@@ -146,7 +146,7 @@
 
 </div>  <!-- modal -->
 
-<script type='text/javascript' src="configEditor.js"></script>
+
 
 <script type="text/javascript">
 

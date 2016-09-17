@@ -3,12 +3,14 @@
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
 		<select name="date" id="date">
-			<option value="">{$firstLine}</option>
-			{foreach from=$listeDates item=uneDate}
-			<option value="{$uneDate}" {if isset($date) && ($uneDate==$date)} selected="selected" {/if}>
-				Réunion du {$uneDate}
-			</option>
-			{/foreach}
+			<option value="">Sélectionnez une date</option>
+			{if isset($listeDates)}
+				{foreach from=$listeDates item=uneDate}
+				<option value="{$uneDate}" {if isset($date) && ($uneDate==$date)} selected="selected" {/if}>
+					Réunion du {$uneDate}
+				</option>
+				{/foreach}
+			{/if}
 		</select>
 
 		<button type="submit" class="btn btn-primary btn-sm">OK</button>

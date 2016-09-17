@@ -3,9 +3,16 @@
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
 		{if $userStatus == 'admin'}
-		<select name="type" id="type">
-			<option value="eleve"{if isset($type) && ($type == 'eleve')} selected{/if}>Par élève</option>
-			<option value="prof"{if isset($type) && ($type == 'prof')} selected{/if}>Par enseignant</option>
+		<select name="typeGestion" id="type">
+			<option
+				value="eleve"
+				{if isset($type) && ($type == 'eleve')} selected{/if}
+				{if isset($type) && ($type == 'titulaires')} disabled{/if}>
+				Par élève
+			</option>
+			<option id="optProf"
+				value="prof"
+				{if isset($type) && ($type == 'prof')} selected{/if}>Par enseignant</option>
 		</select>
 		{/if}
 
@@ -23,6 +30,7 @@
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode|default:'voir'}">
 		<input type="hidden" name="etape" value="show">
+		<input type="hidden" name="typeRP" id="typeRP" value="{$typeRP|default:''}">
 
 	</form>
 
@@ -33,9 +41,24 @@
 $(document).ready(function(){
 
 	$("#date").change(function(){
-		$("#wait").show();
-		$.blockUI();
-		$("#formSelecteur").submit();
+		var date = $(this).val();
+		$.post('inc/reunionParents/chercheTypeRP.inc.php', {
+			date: date
+			},
+		function(resultat){
+			// on ne doit pas pouvoir sélectionner les RV par élèves si la RP est par titulaire
+			if (resultat == 'profs') {
+				$("#typeGestion option[value='eleve']").prop('disabled', false);
+				}
+				else {
+					$("#typeGestion option[value='eleve']").prop('disabled', true);
+					$("#typeGestion option[value='prof']").prop('selected', true);
+				}
+			$("#typeRP").val(resultat);
+		})
+		// $("#wait").show();
+		//$.blockUI();
+		// $("#formSelecteur").submit();
 		})
 
 })

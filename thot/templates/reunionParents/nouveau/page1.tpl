@@ -2,7 +2,7 @@
 
     <div class="col-md-3 col-sm-4">
         {if $date != ''}
-        <button class="btn btn-lg btn-danger" id="btnDelRp">Supprimer la RP du {$date|date_format:'%m/%d'}</button>
+        <button class="btn btn-block btn-danger" id="btnDelRp">Supprimer la RP du {$date}</button>
         {/if}
 
         <div class="panel panel-default">
@@ -16,11 +16,41 @@
                 <form action="" id="setCanevas" method="" class="form-vertical disabled" role="form">
 
                     <div class="form-group">
+                      <p><strong>Type de Réunion de Parents</strong></p>
+                      <label class="radio-inline">
+                          {if $date != ''}
+                              {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'profs')}
+                              <i class="fa fa-check-circle-o"></i>
+                              {else}
+                                <i class="fa fa-circle-o"></i>
+                              {/if}
+                          {else}
+                          <input type="radio" name="leType" value="profs"
+                            {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'profs')}checked{/if}>
+                          {/if}
+                          Tous
+                      </label>
+                      <label class="radio-inline">
+                          {if $date != ''}
+                              {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'titulaires')}
+                                <i class="fa fa-check-circle-o"></i>
+                              {else}
+                                <i class="fa fa-circle-o"></i>
+                              {/if}
+                          {else}
+                          <input type="radio" name="leType" value="titulaires"
+                          {if isset($infoRp) && $infoRp.typeRP == 'titulaires'}checked{/if}>
+                          {/if}
+                        Titulaires
+                      </label>
+                        <p class="help-block">Concerne tous les enseignants ou seulement les titulaires</p>
+                    </div>
+
+                    <div class="form-group">
                         <label for="date">Date</label>
                         <input type="text" class="form-control" id="datepicker" placeholder="Date" value="{$date|default:''}" {if $date != ''}disabled{/if}>
                         <p class="help-block">Date de la réunion</p>
                     </div>
-
 
                     <div class="form-group">
                         <label for="debut" class="sr-only">Heure de début</label>
@@ -58,6 +88,11 @@
     <!-- col-md-... -->
 
     <div class="col-md-7 col-sm-8">
+        {if isset($readonly) && ($readonly == 1)}
+        <div class="alert alert-info">
+            Cette page n'est plus modifiable après enregistrement.
+        </div>
+        {/if}
 
         <div class="panel panel-default">
 
@@ -67,35 +102,19 @@
 
             <div class="panel-body">
 
-                <form action="index.php" method="POST" role="form" id="tableHoraire" name="table" class="form-inline">
+                <form action="index.php" method="POST" role="form" name="table" class="form-inline">
 
                     <div class="row">
 
                         <div class="col-md-4 col-sm-6">
 
-                            <div style="height:30em; overflow:auto;">
+                            <div style="height:30em; overflow:auto;" id='tableHoraire'>
 
-                                <table class="table table-condensed" id="plusIntervalle">
-                                    <thead>
-                                        <tr>
-                                            <th>&nbsp;</th>
-                                            <th>Heure</th>
-                                            <th class="text-center">Publié<br>
-                                            <input type="checkbox" id="attribHeures" title="Attribuer tout"{if $date != ''} disabled{/if}></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="3" class="alert alert-info">
-                                            {if $date == ''}
-                                                Le canevas de la réunion de parents apparaîtra ici lorsque le formulaire de la colonne de gauche sera complété.</td>
-                                            {else}
-                                                Seules les informations de la page 2 sont modifiables
-                                            {/if}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                {if isset($listeHeuresRP)}
+                                    {include file='reunionParents/nouveau/listeHeures.tpl'}
+                                {else}
+                                    {include file='reunionParents/nouveau/listeHeuresVide.tpl'}
+                                {/if}
 
                             </div>
 
@@ -103,33 +122,12 @@
 
                         <div class="col-md-8 col-sm-6">
 
-                            <div style="height:30em; overflow:auto;">
-                                <table class="table table-condensed">
-                                    <thead>
-                                        <tr>
-                                            <th>Prof</th>
-                                            <th class="text-center">Attribution<br>
-                                            <input type="checkbox" id="attribProfs" title="Attribuer à tous"{if $date != ''} disabled{/if}></th>
-                                            <th>Dir<br>
-                                            <input type="checkbox" id="attribDir" title="Attribuer à tous"{if $date != ''} disabled{/if}></th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {assign var=i value=0}
-                                        {foreach from=$listeProfs key=acronyme item=unProf}
-                                            <tr>
-                                                <td>
-                                                    <span title="{$unProf.acronyme}">{$unProf.nom} {$unProf.prenom}</span>
-                                                </td>
-                                                <td class="text-center"><input type="checkbox" value="{$acronyme}" id="prof_{$acronyme}" name="prof[{$acronyme}]" class="cbProf"{if $date != ''} disabled{/if}></td>
-                                                <td class="text-center"><input type="checkbox" value="{$acronyme}" name="dir[{$acronyme}]" class="dir"{if $date != ''} disabled{/if}>
-                                                </td>
-                                            </tr>
-                                            {assign var=i value=$i+1}
-                                        {/foreach}
+                            <div style="height:30em; overflow:auto;" id="listeProfs">
 
-                                    </tbody>
-                                </table>
+                            {if isset($listeProfs)}
+                            {include file='reunionParents/nouveau/listeProfs.tpl'}
+                            {/if}
+
                             </div>
 
                         </div>  <!-- col-md-... -->
@@ -140,12 +138,18 @@
                     <input type="hidden" name="mode" value="enregistrer">
                     <input type="hidden" name="etape" value="etape1">
                     <input type="hidden" name="date" id="ladate" value="">
+                    <input type="hidden" name="typeRP" id="typeRP" value="">
+                    <input type="hidden" name="onglet" class="onglet" value="{$onglet}">
                     <button type="submit" class="btn btn-primary pull-right" id="submit" style="display:none">Enregistrer</button>
                     <div class="clearfix"></div>
 
                 </form>
 
         </div>  <!-- panel-body -->
+
+        <div class="panel-footer">
+            <img src="../images/ajax-loader.gif" alt="wait" class="hidden" id="ajaxLoader">
+        </div>
 
     </div>  <!-- panel -->
 
@@ -184,3 +188,25 @@
 <!-- row -->
 
 {include file='reunionParents/modal/modalDel.tpl'}
+
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+    $("#submit").click(function(){
+        var nbPeriodes = $('.cbHeure:checked').length;
+        if (nbPeriodes == 0) {
+            alert('Au moins une période de RV svp');
+            return false;
+        }
+        var nbProfs = $('.cbProf:checked').length;
+        if (nbProfs == 0) {
+            alert('Au moins un professeur svp');
+            return false;
+        }
+
+    })
+})
+
+</script>
