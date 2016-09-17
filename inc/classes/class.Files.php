@@ -41,26 +41,38 @@ class Files
       * @param $fileName : le nom du fichier
       * @param $path : le path
       * @param $acronyme : l'abréviation de l'utilisateur actif
+      * @param $create : si false, on ne crée pas l'enregistrement en cas d'échec de la recherche
       *
       * @return int
       */
-     public function findFileId($path, $fileName, $acronyme)
+     public function findFileId($path, $fileName, $acronyme, $create = false)
      {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          // recherche d'un éventuel 'fileId' existant pour le fichier
-         $details = $this->requestFileDetails($path, $fileName, $acronyme);
-         $fileId = isset($details[0]['fileId']) ? $details[0]['fileId'] : null;
+         $sql = 'SELECT fileId ';
+         $sql .= 'FROM '.PFX.'thotFiles ';
+         $sql .= 'WHERE path=:path AND fileName=:fileName AND acronyme=:acronyme ';
+         $requete = $connexion->prepare($sql);
 
-         // si on n'a pas trouvé d'enregistrement dans la BD, on ajoute le fichier
-         if ($fileId == null) {
-             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $data = array(':path' => $path, ':fileName' => $fileName, ':acronyme' => $acronyme);
+         $resultat = $requete->execute($data);
+         $fileId = null;
+         if ($resultat) {
+             $ligne = $requete->fetch();
+             $fileId = $ligne['fileId'];
+         }
+
+         // si on n'a pas trouvé d'enregistrement dans la BD, on crée éventuellement cet enregistrement
+         if (($fileId == null) && ($create == true)) {
              $sql = 'INSERT INTO '.PFX.'thotFiles ';
              $sql .= 'SET acronyme=:acronyme, path=:path, fileName=:fileName ';
              $requete = $connexion->prepare($sql);
              $data = array(':acronyme' => $acronyme, ':path' => $path, ':fileName' => $fileName);
              $resultat = $requete->execute($data);
              $fileId = $connexion->lastInsertId();
-             Application::DeconnexionPDO($connexion);
          }
+
+         Application::DeconnexionPDO($connexion);
 
          return $fileId;
      }
@@ -81,16 +93,19 @@ class Files
          $sql = 'SELECT files.fileId, share.shareId, acronyme, fileName, path ';
          $sql .= 'FROM '.PFX.'thotFiles AS files ';
          $sql .= 'JOIN '.PFX.'thotShares AS share ON share.fileId = files.fileId ';
-         $sql .= 'WHERE acronyme=:acronyme AND path=:path AND fileName=:fileName ';
+         $sql .= "WHERE acronyme='$acronyme' AND path='$path' AND fileName='$fileName' ";
 
-         $requete = $connexion->prepare($sql);
-         $data = array(':acronyme' => $acronyme, ':path' => $path, ':fileName' => $fileName);
+         //$requete = $connexion->prepare($sql);
+         // $data = array(':acronyme' => $acronyme, ':path' => $path, ':fileName' => $fileName);
 
-         $resultat = $requete->execute($data);
+         //$resultat = $requete->execute($data);
+         $resultat = $connexion->query($sql);
          $liste = array();
          if ($resultat) {
-             $requete->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $requete->fetch()) {
+             // $requete->setFetchMode(PDO::FETCH_ASSOC);
+             $resultat->setFetchMode(PDO::FETCH_ASSOC);
+             //while ($ligne = $requete->fetch()) {
+             while ($ligne = $resultat->fetch()) {
                  $liste[] = $ligne;
              }
 
@@ -109,15 +124,14 @@ class Files
      */
     public function getSharesByFileName($path, $fileName, $acronyme)
     {
-        $fileId = $this->findFileId($path, $fileName, $acronyme);
-
+        $fileId = $this->findFileId($path, $fileName, $acronyme, false);  // ne pas créer l'enregistrement
         return $this->getSharesByFileId($fileId);
     }
 
     /**
      * retourne la liste des partages d'un fichier dont on founrnit le fileId dans la table des fichiers.
      *
-     * @fileIaram $fileId
+     * @param $fileId
      *
      * @return array
      */
@@ -140,7 +154,9 @@ class Files
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
-                $liste[] = $ligne;
+                $fileId = $ligne['fileId'];
+                $shareId = $ligne['shareId'];
+                $liste[$shareId] = $ligne;
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -149,7 +165,7 @@ class Files
     }
 
     /**
-     * renvoie le path et le fileName d'un document dont on fournit le fileId.
+     * renvoie le path, fileName, acronyme du propriétaire et shareId d'un document dont on fournit le fileId.
      *
      * @param $fileId
      *
@@ -168,6 +184,7 @@ class Files
         $resultat = $requete->execute($data);
         $file = array();
         if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
             $file = $requete->fetch();
         }
         Application::deconnexionPDO($connexion);
@@ -186,8 +203,8 @@ class Files
     {
         $fileName = $post['fileName'];
         $path = $post['path'];
-        // définir un fileId ou retrouver le fileId existant
-        $fileId = $this->findFileId($path, $fileName, $acronyme);
+        // retrouver le fileId existant ou définir un fileId -paramètre "true"
+        $fileId = $this->findFileId($path, $fileName, $acronyme, true);
 
         $type = $post['type'];
         $groupe = $post['groupe'];
@@ -197,8 +214,9 @@ class Files
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // enregistrer les partages
-        $sql = 'INSERT IGNORE INTO '.PFX.'thotShares ';
+        $sql = 'INSERT INTO '.PFX.'thotShares ';
         $sql .= 'SET fileId=:fileId, type=:type, groupe=:groupe, destinataire=:destinataire, commentaire=:commentaire ';
+        $sql .= 'ON DUPLICATE KEY UPDATE commentaire=:commentaire ';
 
         $requete = $connexion->prepare($sql);
         $resultat = 0;
@@ -233,7 +251,7 @@ class Files
      */
     public function delAllShares($path, $fileName, $acronyme)
     {
-        $fileId = $this->findFileId($path, $fileName, $acronyme);
+        $fileId = $this->findFileId($path, $fileName, $acronyme, false);
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'DELETE FROM '.PFX.'thotShares ';
@@ -416,7 +434,8 @@ class Files
             $resultat = $connexion->exec($sql);
             Application::DeconnexionPDO($connexion);
 
-            return $resultat;
+            if ($resultat)
+                return $shareId;
         } else {
             die('Ce fichier ne vous appartient pas');
         }
@@ -577,7 +596,7 @@ class Files
     }
 
     /**
-     * renvoie le catalogue des fichiers partagés avec un prof.
+     * renvoie le catalogue des fichiers partagés avec un prof classés par shareId.
      *
      * @param $acronyme
      *
@@ -593,18 +612,114 @@ class Files
         $sql .= 'JOIN '.PFX.'profs AS p ON p.acronyme = files.acronyme ';
         $sql .= "WHERE (share.groupe = 'prof' AND destinataire = 'all') ";
         $sql .= "OR destinataire = '$acronyme' ";
-        $sql .= 'ORDER BY nom, prenom, fileName ';
+        $sql .= 'ORDER BY commentaire, fileName, nom, prenom ';
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
-                $id = $ligne['shareId'];
-                $liste[$id] = $ligne;
+                $shareId = $ligne['shareId'];
+                $liste[$shareId] = $ligne;
             }
         }
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * retourne la liste des fileId des partages avec l'utilisateur dont on fournit l'acronyme.
+     *
+     * @param $acronyme
+     *
+     * @return array : liste des fileId partagés avec cet utilisateur
+     */
+    public function getFilesSharedWith($acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT share.fileId ';
+        $sql .= 'FROM '.PFX.'thotShares AS share ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = share.fileId ';
+        $sql .= "WHERE (share.groupe = 'prof' AND destinataire = 'all') ";
+        $sql .= "OR destinataire = '$acronyme' ";
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $fileId = $ligne['fileId'];
+                array_push($liste, $fileId);
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+    * retourne la liste des partages pour un utilisateur dont on fournit l'acronyme
+    *
+    * @param $acronyme
+    *
+    * @return array
+    */
+    public function getUserShares($acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT share.fileId, type, share.groupe, destinataire, commentaire, shareId, path, fileName, CONCAT(de.nom," ",de.prenom) AS nomEleve,  de.groupe AS classe, CONCAT(dp.prenom," ", dp.nom) AS nomProf, dc.libelle, pc.nomCours ';
+        $sql .= 'FROM '.PFX.'thotShares AS share ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = share.fileId ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = share.destinataire ';
+        $sql .= 'LEFT JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(share.groupe, 1, LOCATE ('-', share.groupe)-1) ";
+        $sql .= 'LEFT JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = share.groupe ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = share.destinataire ';
+        $sql .= 'WHERE files.acronyme =:acronyme ';
+        $sql .= 'ORDER BY path, fileName ';
+
+        $requete = $connexion->prepare($sql);
+        $data = array(':acronyme'=>$acronyme);
+        $liste = array();
+        $resultat = $requete->execute($data);
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $fileId = $ligne['fileId'];
+                $shareId = $ligne['shareId'];
+                if (!(isset($liste[$fileId])))
+                    $liste[$fileId] = array(
+                        // 'fileId'=>$fileId,
+                        'path'=>$ligne['path'],
+                        'fileName'=>$ligne['fileName'],
+                        'share'=>array());
+                $liste[$fileId]['share'][$shareId] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+    * retourne le commentaire associé à un partage $shareId pour l'utilisateur dont on fournit l'acronyme
+    *
+    * @param $shareId
+    * @param $acronyme
+    *
+    * @return string
+    */
+    public function getCommentaire($shareId, $acronyme) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT commentaire ';
+        $sql .= 'FROM '.PFX.'thotShares AS share ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = share.fileId ';
+        $sql .= "WHERE shareId='$shareId' AND acronyme = '$acronyme' ";
+        $resultat = $connexion->query($sql);
+        $commentaire = '';
+        if ($resultat) {
+            $ligne = $resultat->fetch();
+            $commentaire = $ligne['commentaire'];
+        }
+
+        Application::DeconnexionPDO($connexion);
+        return $commentaire;
     }
 }

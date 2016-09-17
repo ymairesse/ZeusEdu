@@ -9,7 +9,9 @@ class Treeview
     public function __construct($dir)
     {
         $this->baseDir = $dir;
-        $this->files = $this->scan($dir);
+        $sharedFiles = $this->sharedFiles();
+        $sharedDirs = $this->sharedDirs();
+        $this->files = $this->scan($dir, $sharedFiles, $sharedDirs);
     }
 
      /**
@@ -29,13 +31,73 @@ class Treeview
      }
 
      /**
+      * renvoie la liste de tous les fichiers partagés par l'utilisateur.
+      *
+      * @param void
+      *
+      * @return array
+      */
+     private function sharedFiles()
+     {
+         $base = $this->baseDir;
+         $acronyme = substr($base, strrpos($base, '/') + 1);
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT path, fileName ';
+         $sql .= 'FROM '.PFX.'thotFiles AS files ';
+         $sql .= 'JOIN '.PFX.'thotShares AS shares ON shares.fileId = files.fileId ';
+         $sql .= "WHERE acronyme='$acronyme' AND fileName != '' ";
+         $resultat = $connexion->query($sql);
+         $liste = array();
+         if ($resultat) {
+             $resultat->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $resultat->fetch()) {
+                 $path = $ligne['path'];
+                 $liste[] = $ligne['path'].'/'.$ligne['fileName'];
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+     /**
+      * renvoie la liste de tous les répertoires partagés par l'utilsateur courant.
+      *
+      * @param void
+      *
+      * @return array
+      */
+     private function sharedDirs()
+     {
+         $base = $this->baseDir;
+         $acronyme = substr($base, strrpos($base, '/') + 1);
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT path ';
+         $sql .= 'FROM '.PFX.'thotFiles AS files ';
+         $sql .= 'JOIN '.PFX.'thotShares AS shares ON shares.fileId = files.fileId ';
+         $sql .= "WHERE acronyme='$acronyme' AND fileName = '' ";
+         $resultat = $connexion->query($sql);
+         $liste = array();
+         if ($resultat) {
+             $resultat->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $resultat->fetch()) {
+                 $path = $ligne['path'];
+                 $liste[] = $path;
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+     /**
       * construit l'arborescence des fichiers du répertoire $dir fourni.
       *
       * @param $dir : répertoire à lister
       *
       * @return array: arborescence
       */
-     public function scan($dir)
+     private function scan($dir, $sharedFiles, $sharedDirs)
      {
          // stockage séparé des fichiers ordinaires et des répertoires, chacun par ordre alphabétique
          $files = array('files' => array(), 'dir' => array());
@@ -48,22 +110,40 @@ class Treeview
 
                  if (is_dir($dir.'/'.$f)) {
                      // C'est un répertoire
+                     $repertoire = ($f == '') ? '/' : '/'.$f.'/';
+                     if (in_array($repertoire, $sharedDirs)) {
+                         $shared = true;
+                     }
+                    else $shared = false;
+
                      $files['dir'][] = array(
                          'name' => $f,
                          'type' => 'folder',
                          'path' => substr($dir, strlen($this->baseDir) + 1),
-                         'items' => $this->scan($dir.'/'.$f), // appel récursif dans le répertoire
+                         'shared' => $shared,
+                         'items' => $this->scan($dir.'/'.$f, $sharedFiles, $sharedDirs), // appel récursif dans le répertoire
                      );
                  } else {
                      // C'est un fichier ordinaire
+                     // Application::afficher($sharedFiles);
+                     $path = substr($dir, strlen($this->baseDir) + 1);
+                     $fileName = $path.'/'.$f;
+                     $fileName = ($fileName[0] != '/')?'/'.$fileName:$fileName;
+
+                     // echo "$fileName <br>";
+                     if (in_array($fileName, $sharedFiles))
+                        $shared = true;
+                        else $shared = false;
                      $files['files'][] = array(
                          'name' => $f,
                          'type' => 'file',
                          'path' => substr($dir, strlen($this->baseDir) + 1),
+                         'shared' => $shared,
                          'size' => $this->unitFilesize(filesize($dir.'/'.$f)),
                          'date' => strftime('%x %X', filemtime($dir.'/'.$f)),
                          'ext' => pathinfo($dir.'/'.$f)['extension'],
                      );
+                     // Application::afficher($files['files']);
                  }
              }
              // fusion des deux tableaux, fichiers ordinaires et répetoires (d'abord les répertoires)
