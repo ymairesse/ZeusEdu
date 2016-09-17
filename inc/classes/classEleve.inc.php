@@ -65,6 +65,37 @@ class eleve
             return;
         }
     }
+
+    /**
+    * retourne toutes les informations connues sur l'élève dont on fournit le matricule
+    * procédure static sans l'objet Eleve
+    *
+    * @param $matricule
+    *
+    * @return array
+    */
+    public static function staticGetDetailsEleve($matricule) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT de.*, user, mailDomain FROM '.PFX.'eleves AS de ';
+        $sql .= 'LEFT JOIN '.PFX.'passwd AS dp ON (de.matricule = dp.matricule) ';
+        $sql .= "WHERE de.matricule = '$matricule' ";
+        $resultat = $connexion->query($sql);
+        $detailsEleve = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $detailsEleve = $resultat->fetch();
+            $dateNaissance = $detailsEleve['DateNaiss'];
+            $detailsEleve['age'] = self::calculeAge($dateNaissance);
+            $detailsEleve['photo'] = Ecole::photo($detailsEleve['matricule']);
+            $detailsEleve['DateNaiss'] = Application::datePHP($detailsEleve['DateNaiss']);
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $detailsEleve;
+
+    }
+
+
     /**
      * function classe.
      *
@@ -137,8 +168,55 @@ class eleve
      */
     public function age()
     {
+        // list($ajd['Y'], $ajd['m'], $ajd['d']) = explode('-', date('Y-m-d'));
+        // list($nais['Y'], $nais['m'], $nais['d']) = explode('-', $this->detailsEleve['DateNaiss']);
+        $dateNaissance = $this->detailsEleve['DateNaiss'];
+        $age = self::calculeAge($dateNaissance);
+
+        return $age;
+
+        // calcul du nombre d'années d'âge
+        // $age['Y'] = $ajd['Y'] - $nais['Y'];
+        //
+        // // calcul du nombre de mois d'âge en plus des années
+        // // L'anniversaire est-il passé, cette année?
+        // if ($ajd['m'] >= $nais['m']) {
+        //     // depuis combien de mois?
+        //     $age['m'] = $ajd['m'] - $nais['m'];
+        // } else {
+        //     // on a compté une année de trop: l'anniversaire n'est pas passé
+        //     --$age['Y'];
+        //     // combien de mois avant l'anniversaire?
+        //     $age['m'] = 12 - $nais['m'] + $ajd['m'];
+        // }
+        //
+        // // calcul du nombre de jours après la date-jour de l'anniversaire
+        // if ($ajd['d'] >= $nais['d']) {
+        //     // la date-jour est passée, le calcul est simple
+        //     $age['d'] = $ajd['d'] - $nais['d'];
+        // } else {
+        //     --$age['m'];
+        //     if ($age['m'] < 0) {
+        //         $age['m'] = $age['m'] + 12;
+        //         --$age['Y'];
+        //     }
+        //     $nbJoursMois = intval(date('t', $nais['m']));
+        //     $age['d'] = $nbJoursMois - $nais['d'] + $ajd['d'];
+        // }
+        //
+        // return $age;
+    }
+
+    /**
+    * calcule l'âge approximatif d'un élève dont on fournit la date de naissance
+    *
+    * @param $dateNaissance
+    *
+    * @return array
+    */
+    public static function calculeAge($dateNaissance) {
         list($ajd['Y'], $ajd['m'], $ajd['d']) = explode('-', date('Y-m-d'));
-        list($nais['Y'], $nais['m'], $nais['d']) = explode('-', $this->detailsEleve['DateNaiss']);
+        list($nais['Y'], $nais['m'], $nais['d']) = explode('-', $dateNaissance);
 
         // calcul du nombre d'années d'âge
         $age['Y'] = $ajd['Y'] - $nais['Y'];
@@ -403,5 +481,54 @@ class eleve
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * renvoie les données de mot de passe en clair de l'élève.
+     *
+     * @param void
+     *
+     * @return arry
+     */
+    public function getDataPwd()
+    {
+        $matricule = $this->matricule();
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, user, passwd, mailDomain ';
+        $sql .= 'FROM '.PFX.'passwd ';
+        $sql .= "WHERE matricule = '$matricule' ";
+        $resultat = $connexion->query($sql);
+        $dataPwd = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $dataPwd = $resultat->fetch();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $dataPwd;
+    }
+
+    /**
+    * renvoie les informations de passwd de l'élève dont on fournit le matricule
+    * procédure n'utilisant pas l'objet eleve
+    *
+    * @param $matricule
+    *
+    * @return array
+    */
+    public static function staticGetDataPwd($matricule) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, user, passwd, mailDomain ';
+        $sql .= 'FROM '.PFX.'passwd ';
+        $sql .= "WHERE matricule = '$matricule' ";
+        $resultat = $connexion->query($sql);
+        $dataPwd = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $dataPwd = $resultat->fetch();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $dataPwd;
     }
 }

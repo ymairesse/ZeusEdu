@@ -153,16 +153,6 @@ class thot
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-        $sql = 'INSERT INTO '.PFX.'thotNotifications ';
-        $sql .= 'SET id=:id, type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
-        $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
-        $sql .= 'urgence=:urgence, mail=:mail, accuse=:accuse, freeze=:freeze ';
-        $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
-        $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
-        $sql .= 'urgence=:urgence, mail=:mail, accuse=:accuse, freeze=:freeze ';
-        $requete = $connexion->prepare($sql);
-
         $data = array(
             ':id' => $post['id'],
             ':type' => $post['type'],
@@ -175,8 +165,25 @@ class thot
             ':dateFin' => Application::dateMysql($post['dateFin']),
             ':mail' => isset($post['mail']) ? 1 : 0,
             ':accuse' => isset($post['accuse']) ? 1 : 0,
-            'freeze' => isset($post['freeze']) ? 1 : 0,
+            ':freeze' => isset($post['freeze']) ? 1 : 0,
         );
+        $id = isset($post['id']) ? $post['id'] : null;
+
+        if ($id == null) {
+            $sql = 'INSERT INTO '.PFX.'thotNotifications ';
+            $sql .= 'SET type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
+            $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
+            $sql .= 'urgence=:urgence, mail=:mail, accuse=:accuse, freeze=:freeze ';
+            unset($data[':id']);
+        } else {
+            $sql .= 'UPDATE '.PFX.'thotNotifications ';
+            $sql .= 'type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
+            $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
+            $sql .= 'urgence=:urgence, mail=:mail, accuse=:accuse, freeze=:freeze ';
+            $sql .= 'WHERE id=:id ';
+        }
+
+        $requete = $connexion->prepare($sql);
 
         $listeId = array();
         if ($post['type'] == 'eleves') {
@@ -202,6 +209,48 @@ class thot
         Application::deconnexionPDO($connexion);
 
         return $listeId;
+    }
+
+    /**
+     * retourne le nombre de notifications dans la même catégorie que celle de la notification $id pour l'utlisateur précisé.
+     *
+     * @param $id : identifiant d'une notification
+     * @param $acronyme: identifiant de l'utilisateur
+     *
+     * @return int
+     */
+    public function nbNotifType($id, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT type ';
+        $sql .= 'FROM '.PFX.'thotNotifications ';
+        $sql .= 'WHERE id=:id ';
+        $requete = $connexion->prepare($sql);
+        $data = array(':id' => $id);
+        $resultat = $requete->execute($data);
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            $type = $ligne['type'];
+        } else {
+            $type = null;
+        }
+
+        $nb = 0;
+        if ($type) {
+            $sql = 'SELECT count(*) AS nb ';
+            $sql .= 'FROM '.PFX.'thotNotifications ';
+            $sql .= 'WHERE proprietaire=:acronyme AND type=:type ';
+            $requete = $connexion->prepare($sql);
+            $data = array(':acronyme' => $acronyme, ':type' => $type);
+            $resultat = $requete->execute($data);
+            if ($resultat) {
+                $ligne = $requete->fetch();
+                $nb = $ligne['nb'];
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
     }
 
     /**
@@ -341,8 +390,9 @@ class thot
                 if (isset($post['notif_'.$matricule])) {
                     $decision = $listeDecisions[$matricule]['decision'];
                     $restriction = trim($listeDecisions[$matricule]['restriction']);
-                    if ($restriction == '')
+                    if ($restriction == '') {
                         $restriction = 'Néant';
+                    }
                     $texte = sprintf($texteNotification, $decision, $restriction);
                     $notification = array(':matricule' => $matricule, ':texte' => $texte);
                     $resultat = $requete->execute($notification);
@@ -385,9 +435,11 @@ class thot
             $mail->AddAddress($mailDestinataire, $nomDestinataire);
             $mail->Subject = $objet;
             $mail->Body = $texte.$signature;
-            if ($mail->Send())
+            if ($mail->Send()) {
                 $liste[$matricule] = $matricule;
+            }
         }
+
         return $liste;
     }
 
@@ -756,7 +808,7 @@ class thot
 
     /**
      * retourne la liste des profs en prévision d'une réunion de parents; y compris les membres du personnel à "statut spécial" (direction,...).
-     * les profs sont groupés sur base de l'initiale de leur nom de famille
+     * les profs sont groupés sur base de l'initiale de leur nom de famille.
      *
      * @param void()
      *
