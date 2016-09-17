@@ -20,7 +20,7 @@ class Ades
     }
 
     /**
-     * liste des utilisateurs du module ADES
+     * liste des utilisateurs du module ADES.
      *
      * @param
      *
@@ -245,7 +245,7 @@ class Ades
      *
      * @return array
      */
-    public function listeRetenues($typeRetenue, $affiche = true, $anneeEnCours=true)
+    public function listeRetenues($typeRetenue, $affiche = true, $anneeEnCours = true)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT type, idretenue, dateRetenue, heure, duree, local, places, affiche ';
@@ -255,7 +255,7 @@ class Ades
             $sql .= "AND affiche = 'O' ";
         }
         if ($anneeEnCours == true) {
-            $annees = explode('-',ANNEESCOLAIRE);
+            $annees = explode('-', ANNEESCOLAIRE);
             $sql .= "AND (substr(dateRetenue,1,4) = $annees[0] OR substr(dateRetenue,1,4) = $annees[1]) ";
         }
         $sql .= 'ORDER BY dateRetenue, heure ';
@@ -450,7 +450,8 @@ class Ades
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT '.PFX.'adesRetenues.type, idretenue, dateRetenue, heure, duree, local, places, titrefait, ';
-        $sql .= '(SELECT COUNT(*) FROM '.PFX."adesFaits WHERE idretenue='$idretenue') AS occupation ";
+        $sql .= '(SELECT COUNT(*) FROM '.PFX.'adesFaits ';
+        $sql .= "WHERE idretenue='$idretenue') AS occupation ";
         $sql .= 'FROM '.PFX.'adesRetenues ';
         $sql .= 'JOIN '.PFX.'adesTypesFaits ON ('.PFX.'adesTypesFaits.typeRetenue = '.PFX.'adesRetenues.type) ';
         $sql .= "WHERE idretenue = '$idretenue' ";
@@ -704,5 +705,62 @@ class Ades
         }
 
         return $string;
+    }
+
+    /**
+     * retourne la liste des envois par mail aux parents pour l'élève dont on fournit le matricule.
+     *
+     * @param $matricule
+     *
+     * @return array
+     */
+    public function sentMails($matricule)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, idfait, date, destinataire ';
+        $sql .= 'FROM '.PFX.'adesSent ';
+        $sql .= "WHERE matricule='$matricule' ";
+        $sql .= 'ORDER BY date ASC ';
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $liste[] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+    * retourne la liste des envois par idFait pour un élève dont on fournit le matricule
+    *
+    * @param $matricule
+    *
+    * @return array
+    */
+    public function sentByIdFait($matricule) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idfait, date, destinataire, de.nomResp, dep.nomPere, dem.nomMere ';
+        $sql .= 'FROM '.PFX.'adesSent AS sent ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.courriel = sent.destinataire ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS dep ON dep.mailPere = sent.destinataire ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS dem ON dem.mailMere = sent.destinataire ';
+        $sql .= "WHERE de.matricule='$matricule' ";
+        $sql .= 'ORDER BY date ASC ';
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $idFait = $ligne['idFait'];
+                $liste[$idFait][] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
     }
 }
