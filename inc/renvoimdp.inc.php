@@ -25,5 +25,3 @@ if ($identite != Null) {
         $smarty->assign('message',$message)
         }
     }
-
-?>
