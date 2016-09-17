@@ -1,7 +1,8 @@
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<td style="text-align:left; width:30%"><img alt="Logo Ecole" src="http://localhost/sio2/peda/images/logoEcole.png" style="height:90px; width:103px" /></td>
+			<img alt="Logo Ecole" src="{$BASEDIR}images/logoEcole.png" style="height:90px; width:103px" />
+			<td style="text-align:left; width:30%"></td>
 			<td style="text-align:right; width:70%">
 			<h3>{$ECOLE}</h3>
 			<strong>{$ADRESSE}<br />
@@ -11,7 +12,7 @@
 	</tbody>
 </table>
 
-<h3 style="text-align:center">{$titreFait}</h3>
+<h3 style="text-align:center; width:100%; border: 5px solid black;">{$titreFait}</h3>
 
 <p><strong>{$prenom}</strong> <strong>{$nom}</strong> en classe de {$classe}<br />
 a m&eacute;rit&eacute; une retenue de {$duree} h le {$dateRetenue} &agrave; {$heure} (local {$local}) pour le motif suivant</p>

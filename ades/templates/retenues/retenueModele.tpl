@@ -11,7 +11,7 @@
 	</tbody>
 </table>
 
-<h3 style="text-align:center">##titreFait##</h3>
+<h3>##titreFait##</h3>
 
 <p><strong>##prenom##</strong> <strong>##nom##</strong> en classe de ##classe##<br />
 a m&eacute;rit&eacute; une retenue de ##duree## h le ##dateRetenue## &agrave; ##heure## (local ##local##) pour le motif suivant</p>

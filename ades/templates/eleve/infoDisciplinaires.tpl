@@ -59,6 +59,7 @@
 								{strip}
 								{if $descriptionTypeFait.imprimable == 1}
 									<th style="width:1em">&nbsp;</th>
+									<th style="width:1em">&nbsp;</th>
 								{/if}
 								{* on examine chacun des champs qui décrivent le fait *}
 								{foreach from=$descriptionTypeFait.listeChamps item=champ}
@@ -92,7 +93,17 @@
 									</button>
 									{else}&nbsp; {/if}
 								</td>
+								<td style="width:1em">
+									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
+									<button type="button" class="btn btn-success btn-xs send-eDoc" data-idfait="{$idfait}" title="Envoyer">
+										<i class="fa fa-mail-forward"></i>
+									</button>
+									{else}
+										&nbsp;
+									{/if}
+								</td>
 								{/if}
+
 								{foreach from=$descriptionTypeFait.listeChamps item=champ}
 									{strip}
 									{if in_array($contexte, $descriptionChamps.$champ.contextes)}

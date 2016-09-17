@@ -1,5 +1,5 @@
 <div class="container">
 
-En construction...
+{$sentMails|print_r}
 
 </div>
