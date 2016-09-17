@@ -60,8 +60,12 @@
 						<input type="checkbox" name="disclaimer" id='disclaimer' value="1" checked="checked">
 						</span>
 					<div class="clearfix"></div>
+
 					{foreach from=$nbPJ key=n item=wtf}
-						<p class="labelpj" id="pj{$n}"><span style="float:left">Pièce jointe</span> <input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}"></p>
+						<p class="labelpj" id="pj{$n}">
+							<span style="float:left">Pièce jointe</span>
+							<input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}">
+						</p>
 					{/foreach}
 
 					<input type="hidden" name="MAX_FILE_SIZE" value="10000000">

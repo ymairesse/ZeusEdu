@@ -83,7 +83,7 @@
 					id = $(this).data('id');
 					liste[i] = id;
 				})
-			// la boucle sort avec la dernière valeur de id
+				// la boucle sort avec la dernière valeur de id
 			var ligne = $('#tr_' + id);
 			if (ligne.next().html() != undefined) {
 				var newId = ligne.next().data('id');
@@ -101,12 +101,11 @@
 							// supprimer la ligne du tableau à l'écran
 							$("#tr_" + id).remove();
 						})
-					// rechercher une ligne affichable (la première?)
+						// rechercher une ligne affichable (la première?)
 					var first = $(".unMail").eq(0);
 					if (first.html() != undefined) {
 						newId = first.data('id');
-					}
-					else newId = undefined;
+					} else newId = undefined;
 					// mettre la première ligne éventuelle en exergue
 					if (newId != undefined) {
 						$(".unMail").removeClass('selected');
