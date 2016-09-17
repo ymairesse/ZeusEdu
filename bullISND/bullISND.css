@@ -413,11 +413,11 @@ td.TJ, td.EX, th {
 }
 
 th.echec, td.echec, .echec {
-    border: 2px ridge #f00 !important;
+    border: 2px solid #f00 !important;
 }
 
 th.cert, td.cert, .cert {
-    border: 2px ridge black !important;
+    border: 2px solid black !important;
 }
 
 .couleur0 {
@@ -685,4 +685,25 @@ th.cert, td.cert, .cert {
 
 .wait * {
     cursor: wait;
+}
+
+.interne {
+     background-color: rgba(47, 159, 193, 0.5);
+  text-align:center;
+
+}
+
+td.interne {
+  border-left: 2px solid blue;
+  border-bottom: 2px solid blue;
+}
+
+.externe {
+     background-color: rgba(85, 202, 138, 0.5);
+  text-align:center;
+}
+
+td.externe {
+  border-right: 2px solid green;
+  border-bottom: 2px solid green;
 }

@@ -15,13 +15,6 @@ chef de l'établissement susmentionné, certifie que</p>
         né(e) à <strong>{$unEleve.commNaissance}</strong><br>
         le <strong>{$unEleve.DateNaiss}</strong><br>
         Sexe: {$unEleve.sexe}</p>
-    </td>
-        <td style="width:40%; padding: 2em; text-align: right">
-            <p>Responsable légal: <br>
-            <strong>{$unEleve.nomResp}</strong><br>
-            {$unEleve.adresseResp}<br>
-            {$unEleve.cpostResp} {$unEleve.localiteResp}
-            </p>
         </td>
     </tr>
 </table>

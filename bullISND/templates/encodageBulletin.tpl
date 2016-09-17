@@ -68,10 +68,11 @@
 				</div>
 			{/if}
 		</div>  <!-- row -->
-		{*  --------------- commentaire du prof et attitudes (éventuellement) ------------------- *}
 
+		{*  --------------- Visualisation et choix des situations au bulletin ------------------- *}
 		{include file="tableSituations.inc.tpl"}
 
+		{*  --------------- rappels des situations de l'année et des remarques précédentes ------------------- *}
 		{include file="archiveSitRem.inc.tpl"}
 
 		<div class="clearfix" style="border-bottom:1px solid black; padding-bottom:2em;"></div>
@@ -303,6 +304,29 @@ $(document).ready(function(){
 		return resultat;
 		}
 	// *************************************************************************************************************
+
+	$(".externe").click(function(){
+		modification();
+		var cote=$(this).data('cote');
+		var matricule = $(this).data('matricule');
+		coteDelibe = choixDelibe(matricule, cote, cote);
+
+		// la cote choisie par le prof, fournie sans l'attribut dans le champ hidden
+		$("#choixProf-matricule_"+matricule).val(cote);
+		// la cote finale de délibé calculée plus haut dans le champ hidden
+		$("#sitDelibe-matricule_"+matricule).val(coteDelibe);
+
+		// le champ "attribut" hidden contenant l'attribut sélectionné pour le choix du prof
+		$("#attributProf-matricule_"+matricule).val('externe');
+		// la cote sélectionnée par le prof lisible et sans crochets
+		$("#textChoixProf_"+matricule).html(cote+' <i class="fa fa-graduation-cap"></i>');
+
+		$("#attributDelibe-matricule_"+matricule).val('externe');
+		$("#editable_"+matricule).html(coteDelibe+' <i class="fa fa-graduation-cap"></i>');
+
+		$("#led_"+matricule).removeClass().addClass('invisible');
+	})
+
 
 	$(".hook, .nohook").click(function(){
 		modification();

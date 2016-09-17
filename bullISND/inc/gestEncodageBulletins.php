@@ -52,6 +52,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 		// recalculs APRES ENREGISTREMENT ------------------------------------------------------
 		// recherche de la liste des nouvelles cotes par élève, par compétence et par type (form ou cert) dans le bulletion indiqué
 		$listeCotes = $Bulletin->listeCotes($listeEleves, $coursGrp, $listeCompetences, $bulletin);
+
 		// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération
 		$listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
 		// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
@@ -64,6 +65,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 	// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 	// cette liste doit être re-générée après l'enregistrement qui vient (éventuellement) d'avoir lieu
 	$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);
+
 
 	// recherche de la liste des cotes par élève, par compétence et par type (form ou cert) dans le bulletion indiqué
 	if (!(isset($listeCotes)))  // si on a enregistré, on a déjà la liste des cotes; alors, on saute cette étape

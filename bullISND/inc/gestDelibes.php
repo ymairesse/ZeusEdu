@@ -48,4 +48,7 @@ switch ($mode) {
     case 'notifications':
         include 'delibe/notifications.inc.php';
         break;
+    case 'eprExternes':
+        include 'delibe/eprExternes.inc.php';
+        break;
     }

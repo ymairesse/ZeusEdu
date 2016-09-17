@@ -38,6 +38,7 @@
 		<ul class="dropdown-menu">
 			<li><a href="index.php?action=nota">Notices coordinateurs</a></li>
 			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences / PIA</a></li>
+			<li><a href="index.php?action=direction&amp;mode=resultatsExternes">Résultats des épreuves externes</a></li>
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
 			<!-- <li><a href="index.php?action=direction&amp;mode=eprExternes">Épreuves externes/délibés</a></li> -->
@@ -91,6 +92,7 @@
 			<li><a href="index.php?action=delibes&amp;mode=individuel">Feuille de délibé individuelle</a></li>
 			{if $titulaire}
 			<li><a href="index.php?action=delibes&amp;mode=notifications">Envoi des notifications</a></li>
+			{* <li><a href="index.php?action=delibes&amp;mode=eprExternes">Gestion des épreuves externes</a></li> *}
 			{/if}
 			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses des situations par période</a></li>
 		</ul>

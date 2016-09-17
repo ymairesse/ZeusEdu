@@ -1,4 +1,3 @@
-
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 		<label for="bulletin">Bulletin n° </label>

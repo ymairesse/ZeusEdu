@@ -35,8 +35,10 @@
     {/if}
 </table>
 
+{if $typeDoc == 'competences'}
+    <p>Dans le cas où l'élève est orienté vers une année complémentaire au premier degré, le présent rapport sera complété par un plan individuel d'apprentissage élaboré par le Conseil de Guidance.</p>
+{/if}
 
-<p>Dans le cas où l'élève est orienté vers une année complémentaire au pemier degré, le présent rapport sera complété par un plan individuel d'apprentissage élaboré par le Conseil de Guidance.</p>
 <p>Donné à ANDERLECHT, le {$laDate}</p>
 
 <table style="width:100%;">

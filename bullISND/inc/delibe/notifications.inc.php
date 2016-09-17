@@ -1,13 +1,14 @@
 <?php
+
 $listeClasses = $user->listeTitulariats();
-$smarty->assign('listeClasses',$listeClasses);
-$smarty->assign('selecteur','selectClasse');
-$smarty->assign('classe',$classe);
+$smarty->assign('listeClasses', $listeClasses);
+$smarty->assign('selecteur', 'selectClasse');
+$smarty->assign('classe', $classe);
 // la classe actuellement active fait-elle partie des classes dont l'utilisateur est titulaire?
-if (in_array($classe,$listeClasses)) {
+if (in_array($classe, $listeClasses)) {
     // retrouver la liste des élèves de la classe
     $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-    $smarty->assign('listeEleves',$listeEleves);
+    $smarty->assign('listeEleves', $listeEleves);
 
     // établir la liste des décisions éventuelles pour cette liste d'élèves
     // (tous, même ceux pour lesquels aucune décision n'est prise maintenant)
@@ -15,9 +16,8 @@ if (in_array($classe,$listeClasses)) {
 
     // ajouter le texte qui figurera dans la BD pour accès par Thot
     $texteNotification = file_get_contents('templates/notification/templateNote.html');
-    $texteNotification = str_replace(PHP_EOL, '', $texteNotification); 	// suppression des /n
-    $listeDecisions = $Bulletin->listeDecisionsAvecTexte($listeDecisions,$listeEleves,$texteNotification);
-
+    $texteNotification = str_replace(PHP_EOL, '', $texteNotification);    // suppression des /n
+    $listeDecisions = $Bulletin->listeDecisionsAvecTexte($listeDecisions, $listeEleves, $texteNotification);
     /*****************************************************************************************************/
     // certains parents souhaitent que leur enfant ne reçoive pas la notification par mail
     // et/ou la notification dans la plate-forme Thot. On les exclut donc au cas par cas
@@ -27,6 +27,7 @@ if (in_array($classe,$listeClasses)) {
 
     // la liste des élèves pour lesquels une notification dans la BD est souhaitée
     $listeDecisionsBD = $Bulletin->listeDecisionsNote($listeDecisions);
+
     // la liste des élèves pour lesquels une notification par mail est souhaitée
     $listeDecisionsMails = $Bulletin->listeDecisionsMail($listeDecisions);
 
@@ -36,11 +37,13 @@ if (in_array($classe,$listeClasses)) {
         $texte = file_get_contents('templates/notification/texteMail.tpl');
         $signature = file_get_contents('templates/notification/signatureMail.tpl');
 
-        require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
+        require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
         $Thot = new thot();
+
+        $texteNotification = file_get_contents('templates/notification/texteNotification.tpl');
         // envoi des notifications dans la BD; la liste des notifications obtenues est celle des matricules
         // des élèves pour lesquels on a enregistré une décision durant la procédure
-        $listeNotifications = $Thot->notifier($_POST, $listeDecisionsBD, $listeEleves, $acronyme);
+        $listeNotifications = $Thot->notifier($_POST, $listeDecisionsBD, $listeEleves, $acronyme, $texteNotification);
 
         // envoi des mails d'avertissement $listeNotifications contient les matricules / $listeDecisions contient
         // la fonction revient avec la liste des élèves auxquels le mail a été envoyé
@@ -56,24 +59,24 @@ if (in_array($classe,$listeClasses)) {
         $smarty->assign('listeDecisions', $listeDecisions);
         // chercher la liste de synthèse des décisions qui viennent d'être actées (et seulement celles-là)
         $listeSynthDecisions = $Bulletin->listeSynthDecisions($listeNotifications);
-        $smarty->assign('listeSynthDecisions',$listeSynthDecisions);
+        $smarty->assign('listeSynthDecisions', $listeSynthDecisions);
 
         $smarty->assign('message', array(
-                'title'=>'Notifications',
-                'texte'=>"$nbNotifs notification(s) et $nbMails mail(s) envoyée(s)",
-                'urgence'=>'success')
+                'title' => 'Notifications',
+                'texte' => sprintf('%d notification(s) et %d Mails mail(s) envoyée(s)',$nbNotifs,$nbMails),
+                'urgence' => 'success', )
                 );
-        $smarty->assign('corpsPage','synthNotifications');
-        }
+        $smarty->assign('corpsPage', 'synthNotifications');
+    }
         // sinon, on affiche le statut de chaque élève du point de vue des décisions du C.Cl.
         else {
-            $estTitulaire = in_array($classe,$user->listeTitulariats());
-            $smarty->assign('estTitulaire',$estTitulaire);
+            $estTitulaire = in_array($classe, $user->listeTitulariats());
+            $smarty->assign('estTitulaire', $estTitulaire);
             $smarty->assign('listeDecisions', $listeDecisions);
-            $smarty->assign('corpsPage','notifications');
-            }
-    }
+            $smarty->assign('corpsPage', 'notifications');
+        }
+}
     // on ne sait pas encore quelle classe traiter et seul le selecteur est présenté
     else {
-        $smarty->assign('corpsPage',Null);
-        }
+        $smarty->assign('corpsPage', null);
+    }

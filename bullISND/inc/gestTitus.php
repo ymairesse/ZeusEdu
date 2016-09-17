@@ -199,7 +199,7 @@ switch ($mode) {
 
 					$smarty->assign('prevNext', $prevNext);
 					$smarty->assign('etape','enregistrer');
-					$smarty->assign('corpsPage', 'ficheEleve');
+					$smarty->assign('corpsPage', 'direction/ficheEleve');
 				}
 			}
 		$smarty->assign('selecteur','selectClasseEleve');

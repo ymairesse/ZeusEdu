@@ -23,7 +23,7 @@ switch ($mode) {
         switch ($etape) {
             case 'confirmer':
                 $listeEleves = $Ecole->listeEleves();
-                $Bulletin->archiveEleves(ANNEESCOLAIRE, $listeEleves);
+//                $Bulletin->archiveEleves(ANNEESCOLAIRE, $listeEleves);
                 $Bulletin->archiveSituations(ANNEESCOLAIRE);
                 $Bulletin->deleteSituations();
                 $Bulletin->archiveEprExternes();

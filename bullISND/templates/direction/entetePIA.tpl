@@ -1,5 +1,3 @@
-<h1 style="page-break-before:always; text-align:center">COMMUNAUTÉ FRANÇAISE DE BELGIQUE</h1>
-<h2 style="text-align:center">ENSEIGNEMENT SECONDAIRE</h2>
 <h3 style="text-align:center">PLAN INDIVIDUEL D'APPRENTISSAGE</h3>
 <p style="text-decoration: underline;">Dénomination et siège de l'établissement</p>
 <p><strong>{$ECOLE}</strong><br>

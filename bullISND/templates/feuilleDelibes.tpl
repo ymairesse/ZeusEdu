@@ -8,7 +8,7 @@
 			<th style="vertical-align: bottom;">
 				<p>Nom de l'élève</p>
 			</th>
-			
+
 			{foreach from=$listeCours key=cours item=detailsCours}
 			<th>
 				<span class="pop"
@@ -28,9 +28,9 @@
 			<th><img src="images/mentionInit.png" alt="mention Initiale"></th>
 			<th><img src="images/mentionFinale.png" alt="mention Finale"></th>
 		</tr>
-	
+
 		<!-- fin de l'entête ----------------------------------------------------------------- -->
-		
+
 		{foreach from=$listeEleves key=matricule item=unEleve}
 		<tr>
 			{assign var=nomPrenom value=$unEleve.nom|cat:' '|cat:$unEleve.prenom}
@@ -42,7 +42,7 @@
 				data-original-title="{$nomPrenom|truncate:20}">
 				{$unEleve.classe} {$nomPrenom|truncate:25:'...'}
 			</td>
-	
+
 			{foreach from=$listeCours key=cours item=detailsCours}
 				{if !(isset($listeCoursListeEleves.$matricule.$cours))}
 					<td class="pasCours">&nbsp;</td>
@@ -56,7 +56,7 @@
 						data-content="{if $attributDelibe == 'externe'}Épreuve externe<br>{/if}
 									{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}
 									{if isset($listeSituations.$matricule.$cours.choixProf)}
-										<br>Sit. interne {$listeSituations.$matricule.$cours.choixProf}%
+										<br>Sit. interne {$listeSituations.$matricule.$cours.situationPourcent}%
 									{/if}"
 						data-placement="top"
 						data-html="true">
@@ -72,7 +72,7 @@
 					{/if}
 				{/if}
 			{/foreach}
-	
+
 			<td class="delibe">{$delibe.$matricule.moyenne|default:'&nbsp;'}</td>
 			<td class="pop delibe"
 				{if ($delibe.$matricule.nbEchecs >0)}
@@ -95,9 +95,9 @@
 				{if $delibe.$matricule.nbEchecs > 0}{$delibe.$matricule.nbHeuresEchec|default:'-'}h{else}&nbsp;{/if}
 			</td>
 			<td class="cote delibe">{$delibe.$matricule.mention|default:'&nbsp;'}</td>
-			<td class="delibe">{$listeMentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</td> 
+			<td class="delibe">{$listeMentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</td>
 		</tr>
-		{/foreach} 
+		{/foreach}
 	</table>
 
 </div>  <!-- table-responsive -->

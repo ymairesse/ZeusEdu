@@ -44,8 +44,8 @@
 										&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
 										&& ($listeSituations.$coursGrp.$periode.attributDelibe != 'hook')}echec{/if}"
 										{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
-										{if isset($listeSituations.$coursGrp.$periode.sitInterne)}
-											title="Cote interne {$listeSituations.$coursGrp.$periode.sitInterne}%"
+										{if isset($listeSituations.$coursGrp.$periode.pourcent)}
+											title="Situation interne {$listeSituations.$coursGrp.$periode.pourcent}%"
 											data-container="body"
 										{/if}>
 									{if $listeSituations.$coursGrp.$periode.attributDelibe == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}] {else} {$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}{$listeSituations.$coursGrp.$periode.symbole} {/if}

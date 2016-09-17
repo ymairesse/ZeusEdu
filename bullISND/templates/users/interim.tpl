@@ -151,9 +151,11 @@
         })
 
         $("#interim").click(function() {
+            // identité du prof titulaire
             var prof = $("#listeProfs").find("input:radio:checked");
             var acronymeProf = prof.val();
             var nomProf = prof.data('nomprof');
+            // identité du prof interimaire
             var interim = $("#listeInterims").find("input:radio:checked");
             var acronymeInterim = interim.val();
             var nomInterim = interim.data('nomprof');
