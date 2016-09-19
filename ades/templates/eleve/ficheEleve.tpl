@@ -10,7 +10,6 @@
 		<li><a href="#tabs-2" data-toggle="tab"><i class="fa fa-user-plus"></i> Parents et responsables</a></li>
 		<li><a href="#tabs-3" data-toggle="tab"><i class="fa fa-user"></i> Données personnelles</a></li>
 		<li><a href="#tabs-4" data-toggle="tab">{if $leMemo.texte|count_characters > 0}<i class="fa fa-pencil-square-o text-danger"></i>{/if} Mémo</a></li>
-		<li><a href="#tabs-5" data-toggle="tab"><i class="fa fa-paper-plane"></i> Envois</a></li>
 	</ul>
 
 	<div id="FicheEleve" class="tab-content">
@@ -27,9 +26,7 @@
 		<div class="tab-pane hidden-print" id="tabs-4">
 			{include file="eleve/memoEleve.tpl"}
 		</div>
-		<div class="tab-pane hidden-print" id="tabs-5">
-			{include file="eleve/envoisParents.tpl"}
-		</div>
+
 
 	</div>
 	<!-- tab-content -->
