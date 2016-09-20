@@ -41,11 +41,12 @@ if ($matricule != null) {
     $html2pdf->WriteHTML($pwd4PDF);
     $nomFichier = sprintf('pwd_%s.pdf', $matricule);
 
+
     $ds = DIRECTORY_SEPARATOR;
     // création éventuelle du répertoire au nom de l'utlilisateur
     $chemin = INSTALL_DIR.$ds."upload".$ds.$acronyme.$ds."pwd";
     if (!(file_exists($chemin))) {
-        mkdir(INSTALL_DIR.$ds."upload".$ds.$acronyme.$ds."pwd");
+        mkdir(INSTALL_DIR.$ds."upload".$ds.$acronyme.$ds."pwd", 0700, true);
     }
 
     $html2pdf->Output($chemin.$ds.$nomFichier, 'F');
