@@ -75,15 +75,13 @@ $ds = DIRECTORY_SEPARATOR;
 $dir = INSTALL_DIR."/upload/$acronyme/ades";
 
 if (!(file_exists($dir))) {
-    @mkdir($dir);
+    @mkdir($dir, 0700, true);
 }
 
 $nomFichier = $dir.$ds.'retenue_'.$idfait.'.pdf';
-
 $html2pdf->Output($nomFichier, 'F');
 
 $photo = $Eleve['photo'];
-// echo sprintf("<a href='%s'><img src='../photos/%s.jpg' alt='%d' style='height:150px'></a>", BASEDIR.$module.$ds.$nomFichier, $photo, $matricule);
-die(BASEDIR);
+$link = $ds.'ades'.$ds.'retenue_'.$idfait.'.pdf';
 
-echo sprintf("<a href='%s'><img src='../photos/%s.jpg' alt='%d' style='height:150px'></a>", BASEDIR.$nomFichier, $photo, $matricule);
+echo sprintf("<a href='inc/download.php?type=pfN&f=%s'><img src='../photos/%s.jpg' alt='%d' style='height:150px'></a>", $link, $photo, $matricule);
