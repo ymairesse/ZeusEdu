@@ -772,7 +772,7 @@ CREATE TABLE IF NOT EXISTS didac_presencesEleves (
   matricule int(6) NOT NULL,
   `date` date NOT NULL,
   periode tinyint(1) NOT NULL,
-  statut enum('indetermine','present','absent','signale','justifie','sortie','renvoi') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève',
+  statut enum('indetermine','present','absent','signale','justifie','sortie','renvoi','ecarte','suivi') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève',
   PRIMARY KEY (matricule,`date`,periode),
   KEY matricule (matricule),
   KEY n (id),
