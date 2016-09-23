@@ -13,7 +13,7 @@ $smarty->assign('classe', $classe);
 $listeEleves = $Ecole->listeEleves($classe, 'groupe');
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
-$smarty->assign('selecteur', 'selectClasse');
+$smarty->assign('selecteur', 'selecteurs/selectClassePost');
 
 if ($classe != null) {
     $smarty->assign('listeBulletinsEleves', $Thot->listeBulletinsEleves($classe));
