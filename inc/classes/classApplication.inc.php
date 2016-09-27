@@ -1624,10 +1624,9 @@ class Application
             // le compte du nombre de champs est-il bon dans la variable $insert
             if ($nbChampsInsert == count($insert)) {
                 $requete->execute($insert);
-                $ajouts++;
-            }
-            else {
-                $erreurs ++;
+                ++$ajouts;
+            } else {
+                ++$erreurs;
             }
         }
         // $connexion->commit();
@@ -2008,5 +2007,20 @@ class Application
         $dir = explode('/', getcwd());
 
         return $dir[count($dir) - $level];
+    }
+
+    /**
+     * renvoie la valeur numérique d'une variable, y compris avec des nombres à virgules ou contenant des espaces.
+     *
+     * @param $chaine
+     *
+     * @return float
+     */
+    public static function floatVal($nombre)
+    {
+        $nombre = str_replace(',', '.', $nombre);
+        $nombre = str_replace(' ', '', $nombre);
+
+        return floatval($nombre);
     }
 }
