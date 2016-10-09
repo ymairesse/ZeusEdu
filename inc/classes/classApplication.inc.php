@@ -726,7 +726,7 @@ class Application
      */
     public static function timeNow()
     {
-        return date('H:m:i');
+        return date('H:i:s');
     }
 
     /**
