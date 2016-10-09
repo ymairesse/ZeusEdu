@@ -5,8 +5,6 @@ require_once '../../config.inc.php';
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-$module = $Application->getModule(2);
-
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
@@ -21,19 +19,24 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'fileId';
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-$fileNotFound = 'Document non identifié';
+define ('FILENOTFOUND', 'Document non identifié');
+define ('NOTSHARED', 'Ce document n\'est pas partagé avec vous.');
+
 $ds = DIRECTORY_SEPARATOR;
+
+
 switch ($type) {
     case 'fileId':
         // une valeur de fileId a été passée
+        // document provenant de la listes des "partagés avec moi"
         $fileId = isset($_GET['f']) ? $_GET['f'] : null;
         if ($fileId == null) {
-            die($fileNotFound);
+            die(FILENOTFOUND);
         }
         $file = $Files->getSharedfileById($fileId);
 
         if (empty($file)) {
-            die('Ce document n\'est pas partagé avec vous.');
+            die(NOTSHARED);
         }
 
         $path = $file['path'].$ds;
@@ -44,10 +47,11 @@ switch ($type) {
 
     case 'pfN':
         // le path et le nom du fichier ont été indiqués
+        // documents dans l'arborescence des fichiers partagés
         $pfN = isset($_REQUEST['f']) ? $_REQUEST['f'] : null;
 
         if ($pfN == null) {
-            die($fileNotFound);
+            die(FILENOTFOUND);
         }
         $path = substr($pfN, 0, strrpos($pfN, '/') + 1);
         $fileName = substr($pfN, strrpos($pfN, '/') + 1);
@@ -55,6 +59,8 @@ switch ($type) {
         $proprio = $acronyme;
         break;
     case 'pfNid':
+        // on a précisé le nom du fichier et le $fileId
+        // documents dans un dossier partagé
         $fileId = isset($_GET['f']) ? $_GET['f'] : null;
         $fileName = isset($_GET['file']) ? $_GET['file'] : null;
         // recherche des informations sur le répertoire concerné
@@ -64,14 +70,20 @@ switch ($type) {
         $proprio = $fileInfo['acronyme'];
 
         $sharedList = array_keys($Files->sharedWith($acronyme));
-        // Application::afficher($shareId);
-        // Application::afficher(($sharedList));
         if (!in_array($shareId, $sharedList)) {
-            die('Ce document n\'est pas partagé avec vous.');
+            die(NOTSHARED);
         }
-
         break;
-
+    case 'pTrEl':
+        // on a l'id du travail et le matricule de l'élève
+        // il s'agit d'un travail d'élève à évaluer
+        $matricule = isset($_GET['matricule']) ? $_GET['matricule'] : null;
+        $idTravail = isset($_GET['idTravail']) ? $_GET['idTravail'] : null;
+        $fileInfo = $Files->getFileInfos($matricule, $idTravail, $acronyme);
+        $fileName = $fileInfo['fileName'];
+        $proprio = $acronyme;
+        $path = $ds.'#thot'.$ds.$idTravail.$ds.$matricule.$ds;
+        break;
     default:
         // wtf
         break;
@@ -91,6 +103,7 @@ require_once INSTALL_DIR.'/inc/classes/class.chip_download.php';
 |------------------
 */
 
+// répertoire global des fichiers pour l'utilisateur $proprio
 $download_path = INSTALL_DIR.$ds.'upload'.$ds.$proprio;
 
 $args = array(

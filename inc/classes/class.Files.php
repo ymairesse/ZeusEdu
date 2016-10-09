@@ -434,8 +434,9 @@ class Files
             $resultat = $connexion->exec($sql);
             Application::DeconnexionPDO($connexion);
 
-            if ($resultat)
+            if ($resultat) {
                 return $shareId;
+            }
         } else {
             die('Ce fichier ne vous appartient pas');
         }
@@ -657,13 +658,14 @@ class Files
     }
 
     /**
-    * retourne la liste des partages pour un utilisateur dont on fournit l'acronyme
-    *
-    * @param $acronyme
-    *
-    * @return array
-    */
-    public function getUserShares($acronyme){
+     * retourne la liste des partages pour un utilisateur dont on fournit l'acronyme.
+     *
+     * @param $acronyme
+     *
+     * @return array
+     */
+    public function getUserShares($acronyme)
+    {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT share.fileId, type, share.groupe, destinataire, commentaire, shareId, path, fileName, CONCAT(de.nom," ",de.prenom) AS nomEleve,  de.groupe AS classe, CONCAT(dp.prenom," ", dp.nom) AS nomProf, dc.libelle, pc.nomCours ';
         $sql .= 'FROM '.PFX.'thotShares AS share ';
@@ -676,7 +678,7 @@ class Files
         $sql .= 'ORDER BY path, fileName ';
 
         $requete = $connexion->prepare($sql);
-        $data = array(':acronyme'=>$acronyme);
+        $data = array(':acronyme' => $acronyme);
         $liste = array();
         $resultat = $requete->execute($data);
         if ($resultat) {
@@ -684,12 +686,13 @@ class Files
             while ($ligne = $requete->fetch()) {
                 $fileId = $ligne['fileId'];
                 $shareId = $ligne['shareId'];
-                if (!(isset($liste[$fileId])))
+                if (!(isset($liste[$fileId]))) {
                     $liste[$fileId] = array(
                         // 'fileId'=>$fileId,
-                        'path'=>$ligne['path'],
-                        'fileName'=>$ligne['fileName'],
-                        'share'=>array());
+                        'path' => $ligne['path'],
+                        'fileName' => $ligne['fileName'],
+                        'share' => array(), );
+                }
                 $liste[$fileId]['share'][$shareId] = $ligne;
             }
         }
@@ -699,14 +702,15 @@ class Files
     }
 
     /**
-    * retourne le commentaire associé à un partage $shareId pour l'utilisateur dont on fournit l'acronyme
-    *
-    * @param $shareId
-    * @param $acronyme
-    *
-    * @return string
-    */
-    public function getCommentaire($shareId, $acronyme) {
+     * retourne le commentaire associé à un partage $shareId pour l'utilisateur dont on fournit l'acronyme.
+     *
+     * @param $shareId
+     * @param $acronyme
+     *
+     * @return string
+     */
+    public function getCommentaire($shareId, $acronyme)
+    {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT commentaire ';
         $sql .= 'FROM '.PFX.'thotShares AS share ';
@@ -720,6 +724,409 @@ class Files
         }
 
         Application::DeconnexionPDO($connexion);
+
         return $commentaire;
+    }
+
+    /**
+     * retourne la liste des travaux pour l'utilisateur dont on fournit l'acronyme.
+     *
+     * @param $acronyme
+     *
+     * @return array
+     */
+    public function listeTravaux($acronyme, $coursGrp)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idTravail, tt.coursGrp, titre, consigne, dateDebut, dateFin, statut, libelle, nomCours, nbheures ';
+        $sql .= 'FROM '.PFX.'thotTravaux AS tt ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON SUBSTR(coursGrp, 1, LOCATE('-', coursGrp) -1) = dc.cours ";
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON tt.coursGrp = pc.coursGrp AND tt.acronyme = pc.acronyme ';
+        $sql .= "WHERE tt.acronyme='$acronyme' AND tt.coursGrp = '$coursGrp' ";
+        $sql .= 'ORDER BY dateDebut, dateFin,  tt.coursGrp, libelle ';
+
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $idTravail = $ligne['idTravail'];
+                $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
+                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
+                $liste[$idTravail] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne les caractéristiques générales d'un travail déjà défini dont on fournit le $idTravail ou une structure vide.
+     *
+     * @param $idTravail : un identifiant ou null
+     *
+     * @return array
+     */
+    public function getDataTravail($idTravail, $acronyme)
+    {
+        $dataTravail = null;
+        if ($idTravail != null) {
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT idTravail, coursGrp, titre, consigne, dateDebut, dateFin, statut ';
+            $sql .= 'FROM '.PFX.'thotTravaux ';
+            $sql .= 'WHERE idTravail=:idTravail AND acronyme=:acronyme ';
+            $requete = $connexion->prepare($sql);
+            $data = array(':idTravail' => $idTravail, ':acronyme' => $acronyme);
+            $resultat = $requete->execute($data);
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $dataTravail = $requete->fetch();
+                $dataTravail['dateDebut'] = Application::datePHP($dataTravail['dateDebut']);
+                $dataTravail['dateFin'] = Application::datePHP($dataTravail['dateFin']);
+            }
+            Application::DeconnexionPDO($connexion);
+        }
+        if ($dataTravail == null) {
+            $dataTravail = array(
+                'idTravail' => null,
+                'coursGrp' => '',
+                'consigne' => '',
+                'titre' => '',
+                'dateDebut' => Application::dateNow(),
+                'dateFin' => '',
+                'statut' => 'readwrite',
+            );
+        }
+
+        return $dataTravail;
+    }
+
+    /**
+     * Enregistre les informations générales relatives à un travail.
+     *
+     * @param $post : informations provenant du formulaire
+     *
+     * @return array ('idTravail', 'coursGrp')
+     */
+    public function saveDataTravail($post, $acronyme)
+    {
+        $idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
+        $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
+        $titre = isset($_POST['titre']) ? $_POST['titre'] : null;
+        $consigne = isset($_POST['consigne']) ? $_POST['consigne'] : null;
+        $dateDebut = isset($_POST['dateDebut']) ? Application::dateMysql($_POST['dateDebut']) : null;
+        $dateFin = isset($_POST['dateFin']) ? Application::dateMysql($_POST['dateFin']) : null;
+        $statut = isset($_POST['statut']) ? $_POST['statut'] : null;
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        if ($idTravail == '') {
+            $sql = 'INSERT INTO '.PFX.'thotTravaux ';
+            $sql .= 'SET acronyme=:acronyme, coursGrp=:coursGrp, titre=:titre, ';
+            $sql .= 'consigne=:consigne, dateDebut=:dateDebut, dateFin=:dateFin, statut=:statut ';
+            $requete = $connexion->prepare($sql);
+            $data = array(
+                ':acronyme' => $acronyme,
+                ':coursGrp' => $coursGrp,
+                ':titre' => $titre,
+                ':consigne' => $consigne,
+                ':dateDebut' => $dateDebut,
+                ':dateFin' => $dateFin,
+                ':statut' => $statut,
+            );
+            $resultat = $requete->execute($data);
+            if ($resultat) {
+                $idTravail = $connexion->lastInsertId();
+            }
+        } else {
+            $sql = 'UPDATE '.PFX.'thotTravaux ';
+            $sql .= 'SET acronyme=:acronyme, coursGrp=:coursGrp, titre=:titre, ';
+            $sql .= 'consigne=:consigne, dateDebut=:dateDebut, dateFin=:dateFin, statut=:statut ';
+            $sql .= 'WHERE idTravail=:idTravail AND acronyme=:acronyme ';
+            $requete = $connexion->prepare($sql);
+            $data = array(
+                ':idTravail' => $idTravail,
+                ':acronyme' => $acronyme,
+                ':coursGrp' => $coursGrp,
+                ':titre' => $titre,
+                ':consigne' => $consigne,
+                ':dateDebut' => $dateDebut,
+                ':dateFin' => $dateFin,
+                ':statut' => $statut,
+            );
+            $resultat = $requete->execute($data);
+        }
+        Application::DeconnexionPDO($connexion);
+        if ($idTravail != null) {
+            return array(
+                'idTravail' => $idTravail,
+                'coursGrp' => $coursGrp,
+                'date' => sprintf('%s à %s', Application::dateNow(), Application::timeNow()),
+                );
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * initialise les informations pour la remise des travaux dans la table thotTravauxRemis.
+     *
+     * @param $acronyme : identifiant du prof propriétaire
+     * @param $idTravail : l'identifiant du travail
+     * @param $listeEleves : array -> la liste des élèves du coursGrp
+     *
+     * @return int : le nombre d'enregistrements réussis
+     */
+    public function initTravauxEleves($acronyme, $idTravail, $listeEleves)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotTravauxRemis ';
+        $sql .= 'SET matricule=:matricule, idTravail=:idTravail ';
+        $requete = $connexion->prepare($sql);
+        $nb = 0;
+
+        $ds = DIRECTORY_SEPARATOR;
+        $targetPath = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'#thot'.$ds.$idTravail.$ds;
+
+        foreach ($listeEleves as $matricule => $data) {
+            $data = array(':matricule' => $matricule, ':idTravail' => $idTravail);
+            $resultat = $requete->execute($data);
+            if ($resultat) {
+                // creation des répertoires correspondants pour les dépôts
+                @mkdir($targetPath.$matricule, 0700, true);
+                ++$nb;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * retourne la liste des travaux des élèves; on fournit le $idTravail.
+     *
+     * @param $idTravail
+     * @param $acronyme : identité de l'utilisateur (pour la sécurité)
+     *
+     * @return array
+     */
+    public function listeTravauxRemis($idTravail, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT tr.idTravail, tr.matricule, cote, max, evaluation, ';
+        $sql .= 'nom, prenom, groupe, remarque, statutEleve ';
+        $sql .= 'FROM '.PFX.'thotTravauxRemis AS tr ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = tr.matricule ';
+        $sql .= 'JOIN '.PFX.'thotTravaux AS tt ON tt.idTravail = tr.idTravail ';
+        $sql .= 'WHERE tr.idTravail=:idTravail AND acronyme=:acronyme ';
+        $requete = $connexion->prepare($sql);
+        $liste = array();
+        $data = array(':idTravail' => $idTravail, 'acronyme' => $acronyme);
+
+        $resultat = $requete->execute($data);
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * enregistre le résultat de l'évaluation d'un travail pour un élève.
+     *
+     * @param $post : array contenant les informations à enregistrer
+     * @param $acronyme : identifiant de l'utilisateur courant (sécurité)
+     *
+     * @return string : date d'enregistrement
+     */
+    public function saveEvaluation($post)
+    {
+        $idTravail = isset($post['idTravail']) ? $post['idTravail'] : null;
+        $matricule = isset($post['matricule']) ? $post['matricule'] : null;
+        $cote = isset($post['cote']) ? $post['cote'] : null;
+        $cote = ($cote != null) ? Application::floatVal($cote) : null;
+        $max = isset($post['max']) ? $post['max'] : null;
+        $max = ($max != null) ? Application::floatVal($max) : null;
+        $statut = ($post['statut'] == 'false') ? 'ouvert' : 'ferme';
+        $evaluation = isset($post['evaluation']) ? $post['evaluation'] : null;
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'thotTravauxRemis ';
+        $sql .= 'SET idTravail=:idTravail, matricule=:matricule, ';
+        $sql .= 'cote=:cote, max=:max, evaluation=:evaluation, statutEleve=:statut ';
+        $sql .= 'ON DUPLICATE KEY UPDATE ';
+        $sql .= 'cote=:cote, max=:max, evaluation=:evaluation, statutEleve=:statut ';
+
+        $requete = $connexion->prepare($sql);
+        $data = array(
+                ':idTravail' => $idTravail,
+                ':matricule' => $matricule,
+                ':cote' => $cote,
+                ':max' => $max,
+                ':statut' => $statut,
+                ':evaluation' => $evaluation,
+            );
+        $resultat = $requete->execute($data);
+
+        Application::DeconnexionPDO($connexion);
+
+        if ($resultat) {
+            return sprintf('%s à %s', Application::dateNow(), Application::timeNow());
+        } else {
+            return "Problème durant l'enregistremnt";
+        }
+    }
+
+    /*
+    * vérifie que l'utilisateur dont on fournit l'acronyme est propriétaire du travail dont on fournit le $idTravail
+    *
+    * @param $acronyme
+    * @param $idTravail
+    *
+    * @return bool
+    */
+    public function verifProprietaireTravail($acronyme, $idTravail)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT * FROM '.PFX.'thotTravaux ';
+        $sql .= 'WHERE acronyme=:acronyme AND idTravail=:idTravail ';
+        $requete = $connexion->prepare($sql);
+
+        $data = array(':acronyme' => $acronyme, ':idTravail' => $idTravail);
+        $resultat = $requete->execute($data);
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne['idTravail'];
+    }
+
+    /**
+     * retourne les informations "prof" d'un travail dont on fournit le $idTravail et le $matricule de l'élève.
+     *
+     * @param $idTravail
+     * @param $matricule
+     *
+     * @return array
+     */
+    public function getResultatTravail($idTravail, $matricule, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idTravail, remarque, cote, max, evaluation, statutEleve ';
+        $sql .= 'FROM '.PFX.'thotTravauxRemis ';
+        $sql .= 'WHERE idTravail=:idTravail AND matricule=:matricule ';
+        $requete = $connexion->prepare($sql);
+        $data = array(':idTravail' => $idTravail, ':matricule' => $matricule);
+
+        $resultat = $requete->execute($data);
+        $ligne = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $ligne['fileInfos'] = $this->getFileInfos($matricule, $idTravail, $acronyme);
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
+    /**
+     * recherche les détails relatifs à un fichier déposé par l'élève $matricule pour un $idTravail donné.
+     *
+     * @param $matricule
+     * @param $idTravail
+     *
+     * @return array
+     */
+    public function getFileInfos($matricule, $idTravail, $acronyme)
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $dir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'#thot'.$ds.$idTravail.$ds.$matricule;
+        $files = array_diff(scandir($dir), array('..', '.'));
+        // le premier fichier significatif est le numéro 2 (.. et . ont été supprimés)
+        $infos = array('fileName' => null, 'size' => '', 'dateRemise' => 'Non remis');
+        if (isset($files[2])) {
+            $file = $files[2];
+            $infos = array(
+                'fileName' => $file,
+                'size' => $this->unitFilesize(filesize($dir.'/'.$file)),
+                'dateRemise' => strftime('%x %X', filemtime($dir.'/'.$file)),
+            );
+        }
+
+        return $infos;
+    }
+
+    /**
+     * convertit les tailles de fichiers en valeurs usuelles avec les unités.
+     *
+     * @param $bytes : la taille en bytes
+     *
+     * @return string : la taille en unités usuelles
+     */
+    public function unitFilesize($size)
+    {
+        $precision = ($size > 1024) ? 2 : 0;
+        $units = array('octet(s)', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo');
+        $power = $size > 0 ? floor(log($size, 1024)) : 0;
+
+        return number_format($size / pow(1024, $power), $precision, '.', ',').' '.$units[$power];
+    }
+
+    /**
+     * suppression complète d'un travail d'un prof propriétaire, y compris les documents des élèves.
+     *
+     * @param $idTravail : identifiant du travail
+     * @param $acronyme : identifiant du propriétaire
+     *
+     * @return bool : true si tout s'est bien passé
+     */
+    public function delTravail($acronyme, $idTravail)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // suppression de la liste des travaux
+        $sql = 'DELETE FROM '.PFX.'thotTravaux ';
+        $sql .= "WHERE idTravail = '$idTravail' ";
+        $resultat = $connexion->exec($sql);
+
+        // suppresion de la liste des travaux remis
+        $sql = 'DELETE FROM '.PFX.'thotTravauxRemis ';
+        $sql .= "WHERE idTravail = '$idTravail' ";
+        $resultat = $connexion->exec($sql);
+
+        Application::DeconnexionPDO($connexion);
+
+        // effacement des répertoires et des fichiers des élèves
+        $ds = DIRECTORY_SEPARATOR;
+        $dir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'#thot'.$ds.$idTravail;
+
+        return $this->delTree($dir);
+    }
+
+    /**
+     * retourne le nombre de travaux rendus pour un travail dont on fournit le $idTravail.
+     *
+     * @param $idTravail
+     *
+     * @return int
+     */
+    public function getNbTravaux($idTravail)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT count(*) AS nb FROM '.PFX.'thotTravauxRemis ';
+        $sql .= "WHERE idTravail = '$idTravail' AND remis = '1' ";
+
+        $resultat = $connexion->query($sql);
+        $ligne = $resultat->fetch();
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne['nb'];
     }
 }

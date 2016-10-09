@@ -64,6 +64,7 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=files&amp;mode=share"><i class="fa fa-arrow-right"></i> Je partage</a></li>
 					<li><a href="index.php?action=files&amp;mode=e-docs">Partagés avec moi <i class="fa fa-arrow-left"></i></a></li>
+					<li><a href="index.php?action=files&amp;mode=casier">Mon casier virtuel</a></li>
 				</ul>
 			</li>
 

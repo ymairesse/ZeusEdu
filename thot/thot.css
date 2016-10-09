@@ -33,7 +33,7 @@
     border-radius: 10px;
 }
 
-.table-bulletin> tbody> tr> td {
+.table-bulletin>tbody>tr>td {
     padding: 2px;
 }
 
@@ -209,10 +209,11 @@ form input:disabled {
 }
 
 .memoSharedFile {
-    cursor:pointer;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.memoSharedFile:hover{
+.memoSharedFile:hover {
     background: #ddd;
 }
 
@@ -222,4 +223,79 @@ form input:disabled {
 
 .shareList li {
     background-color: #ddd;
+}
+
+.input-group-addon.primary {
+    background: #fbdf93;
+    background: -moz-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fbdf93), color-stop(49%, #f8b500), color-stop(50%, #fccd4d), color-stop(100%, #fceabb));
+    background: -webkit-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
+    background: -o-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
+    background: -ms-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#fbdf93', endColorstr='#fceabb', GradientType=0);
+    background: linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
+    color: black;
+}
+
+.input-group-addon.success {
+    color: rgb(255, 255, 255);
+    background-color: rgb(92, 184, 92);
+    border-color: rgb(76, 174, 76);
+}
+
+.input-group-addon.info {
+    color: rgb(255, 255, 255);
+    background-color: rgb(57, 179, 215);
+    border-color: rgb(38, 154, 188);
+}
+
+.input-group-addon.warning {
+    color: rgb(255, 255, 255);
+    background-color: rgb(240, 173, 78);
+    border-color: rgb(238, 162, 54);
+}
+
+.input-group-addon.danger {
+    color: rgb(255, 255, 255);
+    background-color: rgb(217, 83, 79);
+    border-color: rgb(212, 63, 58);
+}
+
+.nonRemis {
+    background-color: #fcc;
+}
+
+.remis {
+    background-color: #cfc;
+}
+
+fieldset.info {
+    background: #dfd;
+    padding: 0 1em;
+    border: 1px solid #999;
+}
+
+fieldset.info legend {
+    background: #faa;
+    padding: 0 1em;
+    margin-left: -1em;
+}
+
+.box {
+    border: 2px solid #555555;
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px #fff;
+    margin: 0 0 15px;
+    padding: 5px;
+}
+
+.box h3 {
+    margin: 0;
+}
+
+.nomFichier {
+    padding: 0 0 0 22px;
+    background-image: url(images/disk.png);
+    background-position: left center;
+    background-repeat: no-repeat;
 }

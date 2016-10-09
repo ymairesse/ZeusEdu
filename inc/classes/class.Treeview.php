@@ -104,8 +104,9 @@ class Treeview
          if (file_exists($dir)) {
              $listeFichiers = scandir($dir);
              foreach ($listeFichiers as $f) {
-                 if (!$f || $f[0] == '.') {
-                     continue; // Ignorer les fichiers cachés
+                 // Ignorer les fichiers cachés et les répertoires protégés par "#" initial
+                 if (!$f || $f[0] == '.' || $f[0] == '#') {
+                     continue;
                  }
 
                  if (is_dir($dir.'/'.$f)) {
@@ -125,7 +126,6 @@ class Treeview
                      );
                  } else {
                      // C'est un fichier ordinaire
-                     // Application::afficher($sharedFiles);
                      $path = substr($dir, strlen($this->baseDir) + 1);
                      $fileName = $path.'/'.$f;
                      $fileName = ($fileName[0] != '/')?'/'.$fileName:$fileName;

@@ -65,6 +65,7 @@ switch ($action) {
     case 'formulaires':
         include_once 'inc/forms/gestForms.inc.php';
         break;
+
     default:
         // wtf
         break;

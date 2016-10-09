@@ -60,7 +60,7 @@
                         if (nextActive != '/')
                             $("#btnDeldir").removeClass('disabled');
                         else $("#btnDeldir").addClass('disabled');
-                    } else alert('Impossible de supprimer ce dossier');
+                    } else alert('Houston, We\'ve Got a Problem. Ce dossier ne peut être supprimé');
                 })
             $("#modalDelDir").modal('hide');
         })

@@ -35,14 +35,9 @@ switch ($mode) {
     case 'casier':
         $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
         $smarty->assign('coursGrp', $coursGrp);
-        require_once INSTALL_DIR.'/inc/classes/class.Files.php';
-        $Files = new Files();
         $listeCours = $User->listeCoursProf();
         $smarty->assign('listeCours', $listeCours);
-        if ($etape == 'enregistrer') {
-            Application::afficher($_POST);
-        }
-        $smarty->assign('corpsPage', 'files/casierVirtuel');
+        $smarty->assign('corpsPage', 'casier/casierVirtuel');
         break;
     default:
         # code...

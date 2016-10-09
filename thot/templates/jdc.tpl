@@ -253,8 +253,10 @@ $(document).ready(function(){
 			type: type
 			},
 			function (resultat) {
+				// construction de la boîte modale d'édition du JDC
 				$("#zoneMod").html(resultat);
 				$("#modalMod").modal('show');
+				// mise à jour du calendrier
 				$('#calendar').fullCalendar('gotoDate', startDate);
 				$('#calendar').fullCalendar('changeView', viewState);
 				}
