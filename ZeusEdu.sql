@@ -131,6 +131,23 @@ INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleur
 (2, 'Fait disciplinaire', 'F19D9D', '000000', 0, '0', 4, 'ladate,matricule,idfait,qui,type,professeur,motif,anneeScolaire', '');
 
 
+--
+-- Structure de la table `didac_athena`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_athena` (
+`id` int(11) NOT NULL,
+  `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
+  `matricule` int(11) NOT NULL,
+  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
+  `date` date NOT NULL,
+  `heure` time NOT NULL,
+  `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
+  `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
+  `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
+  `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
+  `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
+) ENGINE=MyISAM AUTO_INCREMENT=683 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE IF NOT EXISTS `didac_applications` (
