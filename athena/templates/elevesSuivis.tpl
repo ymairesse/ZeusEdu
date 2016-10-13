@@ -72,6 +72,43 @@
 
     </div>  <!-- col-md-... -->
 
+    <div class="col-md-6 col-sm-12">
+
+        <h2>Élèves suivis</h2>
+        <div style="max-height: 35em; overflow: auto;">
+
+        <table class="table table-condensed">
+            <tbody>
+
+                {foreach from=$clients key=matricule item=dataClient}
+                <tr>
+                    <td>
+                        <form action="index.php" method="POST" role="form" class="form-inline microform">
+                            <input type="hidden" name="matricule" value="{$matricule}">
+                            <input type="hidden" name="action" value="ficheEleve">
+                            <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
+                        </form>
+
+                    </td>
+                    <td style="font-weight: bold">{$dataClient.eleve.nom}</td>
+                    <td style="font-weight: bold">{$dataClient.eleve.classe}</td>
+                </tr>
+                    {foreach from=$dataClient.coaches key=acronyme item=dataCoach}
+
+                    <tr style="color:#777">
+                        <td>{$acronyme}</td>
+                        <td>{$dataCoach.nomCoach}</td>
+                        <td>{$dataCoach.nb} visite(s)</td>
+                    </tr>
+                    {/foreach}
+                {/foreach}
+            </tbody>
+
+        </table>
+
+        </div>
+    </div>
+
     <!-- <div class="col-md-6 col-sm-12">
         <div class="panel panel-info">
           <div class="panel-heading">

@@ -235,4 +235,45 @@ class athena
          return $liste;
      }
 
+     /**
+     * liste de tous les élèves ayant fréquenté le coaching
+     *
+     * @param void
+     *
+     * @return array
+     */
+     public static function clientCoaching() {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT da.matricule, proprietaire, de.nom, de.prenom, groupe, dp.nom AS nomCoach, dp.prenom AS prenomCoach ';
+        $sql .= 'FROM '.PFX.'athena AS da ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = da.matricule ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = proprietaire ';
+        $sql .= 'ORDER BY groupe, nom, prenom, date ';
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $matricule = $ligne['matricule'];
+                $coach = $ligne['proprietaire'];
+                if(!(isset($liste[$matricule]))) {
+                    $liste[$matricule]['eleve'] = array('classe'=>$ligne['groupe'], 'nom'=>sprintf('%s %s', $ligne['nom'], $ligne['prenom']));
+                    $liste[$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
+                }
+                else {
+                    if (!(isset($liste[$matricule]['coaches'][$coach]))) {
+                        $liste[$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
+                    }
+                    else {
+                        $liste[$matricule]['coaches'][$coach]['nb']++;
+                    }
+                }
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+     }
+
+
 }
