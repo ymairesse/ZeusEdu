@@ -423,7 +423,7 @@ class Files
      * @param $shareId
      * @param $acronyme (pour vérifier que le fichier appartient bien à l'utilisateur actif)
      *
-     * @return int : le nombre d'enregistrements supprimés (0 en cas d'échec ou 1)
+     * @return int : le shareId du partage qui vient d'être clôturé
      */
     public function unShareByShareId($shareId, $acronyme)
     {
@@ -744,7 +744,6 @@ class Files
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON tt.coursGrp = pc.coursGrp AND tt.acronyme = pc.acronyme ';
         $sql .= "WHERE tt.acronyme='$acronyme' AND tt.coursGrp = '$coursGrp' ";
         $sql .= 'ORDER BY dateDebut, dateFin,  tt.coursGrp, libelle ';
-
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -914,11 +913,13 @@ class Files
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT tr.idTravail, tr.matricule, cote, max, evaluation, ';
-        $sql .= 'nom, prenom, groupe, remarque, statutEleve ';
+        $sql .= 'remis, nom, prenom, groupe, remarque, statutEleve ';
         $sql .= 'FROM '.PFX.'thotTravauxRemis AS tr ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = tr.matricule ';
         $sql .= 'JOIN '.PFX.'thotTravaux AS tt ON tt.idTravail = tr.idTravail ';
         $sql .= 'WHERE tr.idTravail=:idTravail AND acronyme=:acronyme ';
+        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
+
         $requete = $connexion->prepare($sql);
         $liste = array();
         $data = array(':idTravail' => $idTravail, 'acronyme' => $acronyme);
