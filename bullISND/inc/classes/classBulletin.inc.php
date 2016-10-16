@@ -47,6 +47,8 @@ class Bulletin
      *
      * @param $coursGrp
      * @param $bulletin
+     *
+     * @return array
      */
     public function getPonderations($listeCoursGrp, $bulletin = null)
     {
@@ -82,18 +84,24 @@ class Bulletin
      * fonction artificielle pour déterminer s'il faut ouvrir ou non les cases de poids de bulletin dans le carnet de cotes
      * si les sommes des pondérations pour une périoe ([all] et par matricule) sont 0, alors c'est que personne n'a de pondération pour la période
      * et il ne faut pas ouvrir la possibilité de mettre un poids pour la compétence correspondante.
+     *
+     * @param $coursGrp : la dénomination du cours
+     *
+     * @param array : tableau des pondérations prévues pour chaque période, respectivement en formatif et en certificatif
      */
     public function sommesPonderations($coursGrp)
     {
         $listePonderations = current(self::getPonderations($coursGrp));
         $liste = array();
-        foreach ($listePonderations as $key => $lesPonderations) {
-            foreach ($lesPonderations as $periode => $ponderation) {
-                if (!(isset($liste[$periode]))) {
-                    $liste[$periode] = array('form' => 0, 'cert' => 0);
+        if ($listePonderations != null) {
+            foreach ($listePonderations as $key => $lesPonderations) {
+                foreach ($lesPonderations as $periode => $ponderation) {
+                    if (!(isset($liste[$periode]))) {
+                        $liste[$periode] = array('form' => 0, 'cert' => 0);
+                    }
+                    $liste[$periode]['form'] += $ponderation['form'];
+                    $liste[$periode]['cert'] += $ponderation['cert'];
                 }
-                $liste[$periode]['form'] += $ponderation['form'];
-                $liste[$periode]['cert'] += $ponderation['cert'];
             }
         }
 
@@ -129,7 +137,7 @@ class Bulletin
     }
 
     /**
-     * recherche les pondérations applicable aux cours de la liste fournie
+     * recherche les pondérations applicables aux cours de la liste fournie
      * pour le bulletin numéro $bulletin.
      *
      * @param $listeCours
@@ -140,9 +148,9 @@ class Bulletin
     public function getPonderationsBulletin($listeCours, $bulletin)
     {
         if (is_array($listeCours)) {
-            $listeCoursString = "'".implode('\',\'', array_keys($listeCours))."'";
+            $listeCoursString = "'".implode("','", array_keys($listeCours))."'";
         } else {
-            $listeCoursString = $listeCours;
+            $listeCoursString = "'".$listeCours."'";
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT form, cert, matricule, coursGrp ';
@@ -151,11 +159,15 @@ class Bulletin
 
         $resultat = $connexion->query($sql);
         $listePonderations = array();
-        while ($ligne = $resultat->fetch()) {
-            $coursGrp = $ligne['coursGrp'];
-            $matricule = $ligne['matricule'];
-            $listePonderations[$coursGrp][$matricule] = array('form' => $ligne['form'], 'cert' => $ligne['cert']);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $matricule = $ligne['matricule'];
+                $listePonderations[$coursGrp][$matricule] = array('form' => $ligne['form'], 'cert' => $ligne['cert']);
+            }
         }
+
         Application::DeconnexionPDO($connexion);
 
         return $listePonderations;
@@ -388,7 +400,8 @@ class Bulletin
                 if ($value == '' || (is_numeric($value) && ($value >= 0))) {
                     $sql = 'INSERT INTO '.PFX.'bullPonderations ';
                     $sql .= "SET matricule='$matricule', periode='$periode', $nom='$value', coursGrp='$coursGrp' ";
-                    $sql .= "ON DUPLICATE KEY UPDATE $nom='$value'";
+                    $sql .= "ON DUPLICATE KEY UPDATE $nom='$value' ";
+
                     $resultat = $connexion->exec($sql);
                     if ($resultat > 0) {
                         // comptage pour éviter le doublement par DUPLICATE
@@ -4023,16 +4036,26 @@ class Bulletin
      *
      * @return array
      */
-    public function listePoidsCompetences($coursGrp, $listeCompetences)
+    public function listePoidsCompetences($coursGrp, $listeCompetences, $nbPeriodes)
     {
+        // Application::afficher($listeCompetences, true);
+        // préparer un tableau complet mais vide
+        $listePoids = array();
+        foreach ($listeCompetences as $idComp=>$data) {
+            foreach (range(1, $nbPeriodes) as $periode) {
+                $listePoids[$periode][$idComp]['form'] = '';
+                $listePoids[$periode][$idComp]['cert'] = '';
+            }
+        }
+
         $listeCompetencesString = implode(',', array_keys($listeCompetences));
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT bulletin, certForm, poids, idComp ';
         $sql .= 'FROM '.PFX.'bullCarnetPoidsCompetences ';
         $sql .= "WHERE coursGrp = '$coursGrp' AND idComp IN ($listeCompetencesString) ";
-        $sql .= 'ORDER BY bulletin, idComp';
+        $sql .= 'ORDER BY bulletin, idComp ';
         $resultat = $connexion->query($sql);
-        $listePoids = array();
+
         if ($resultat) {
             while ($ligne = $resultat->fetch()) {
                 $bulletin = $ligne['bulletin'];
@@ -4727,11 +4750,12 @@ class Bulletin
      */
     public function transfertCarnetCotes($post, $listeLocks)
     {
+        Application::afficher($post);
         $sqlForm = 'INSERT INTO '.PFX.'bullDetailsCotes ';
         $sqlForm .= 'SET matricule=:matricule, coursGrp=:coursGrp, bulletin=:bulletin, ';
         $sqlForm .= 'idComp=:idComp, form=:form, maxForm=:maxForm ';
         $sqlForm .= 'ON DUPLICATE KEY UPDATE ';
-        $sqlForm .= 'form=:form, maxForm=:maxForm';
+        $sqlForm .= 'form=:form, maxForm=:maxForm ';
 
         $sqlCert = 'INSERT INTO '.PFX.'bullDetailsCotes ';
         $sqlCert .= 'SET matricule=:matricule, coursGrp=:coursGrp, bulletin=:bulletin, ';
@@ -4745,6 +4769,7 @@ class Bulletin
 
         // récupération des poids par évaluation
         foreach ($post as $variable => $value) {
+            // tous les champs dont le nom commence par "poids"
             if (preg_match('/^poids/', $variable)) {
                 $data = explode('-', $variable);
                 $coursGrp = explode('_', $data[1]);
@@ -4786,8 +4811,8 @@ class Bulletin
                         case 'form':
                             $data = array(
                                 ':matricule' => $matricule,    ':coursGrp' => $coursGrp,
-                                ':type' => $type,                ':idComp' => $idComp,
-                                ':bulletin' => $bulletin,        ':form' => $this->sansVirg($value),
+                                ':type' => $type,              ':idComp' => $idComp,
+                                ':bulletin' => $bulletin,      ':form' => $this->sansVirg($value),
                                 ':maxForm' => $poids[$coursGrp][$idComp][$type][$bulletin],
                                 );
                             $nbResultats += $requeteForm->execute($data);

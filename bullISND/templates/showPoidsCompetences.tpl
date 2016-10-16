@@ -1,18 +1,17 @@
-
 <div class="container">
 
 <h2>Poids des compétences par période {$coursGrp}</h2>
 
 <div class="row">
-	
+
 	<div class="col-md-9 col-sm-12">
 		<form name="poidsCompetences" method="POST" action="index.php" id="formPoids" role="form" class="form-vertical">
-		
+
 		<div class="btn-group pull-right">
 			<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
 			<button type="reset" class="btn btn-default pull-right">Annuler</button>
 		</div>
-		
+
 		<table class="table table-condensed">
 			<tr>
 			<th>&nbsp;</th>
@@ -43,15 +42,14 @@
 					{section name=boucleBulletin start=1 loop=$nbBulletins+1}
 						{assign var=nbull value=$smarty.section.boucleBulletin.index}
 						<td class="cote">
-							<input type="text" maxlength="4" name="comp_{$idComp}-bull_{$nbull}-form" 
+							<input type="text" maxlength="4" name="comp_{$idComp}-bull_{$nbull}-form"
 								value="{$tableauPoids.$nbull.$idComp.form|default:''}"
 								class="poids form-control"
 								{if $ponderations.$nbull.form == '0'} readonly="readonly"{/if}
-								{if $ponderations.$nbull.form != '0'} tabIndex="{$tabIndex}"{/if}
-								>
+								{if $ponderations.$nbull.form != '0'} tabIndex="{$tabIndex}"{/if}>
 						</td>
 						<td class="cote">
-							<input type="text" name="comp_{$idComp}-bull_{$nbull}-cert" 
+							<input type="text" name="comp_{$idComp}-bull_{$nbull}-cert"
 							value="{$tableauPoids.$nbull.$idComp.cert|default:''}"
 							class="poids form-control"
 							{if $ponderations.$nbull.cert == '0'} readonly="readonly"{/if}
@@ -65,7 +63,7 @@
 				{assign var=tabIndex value=$noCompetence}
 			{/foreach}
 		</table>
-		
+
 		<input type="hidden" name="coursGrp" value="{$coursGrp}">
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
@@ -73,7 +71,7 @@
 		</form>
 
 			</div>  <!-- col-md-... -->
-	
+
 			<div class="col-md-3 col-sm-12">
 			{include  file="noticePoidsCompetences.html"}
 			</div>  <!-- col-md... -->
@@ -85,7 +83,7 @@
 <script type="text/javascript">
 
 	var noPonderation = "Aucune pondération n'est prévue pour cette période";
-	var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";	
+	var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";
 	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
 	var modifie = false;
 
@@ -97,7 +95,7 @@
 		}
 
 	$(document).ready(function(){
-		
+
 		$("#formPoids").submit(function(){
 			var toutNumerique = true;
 			$(".poids").each(function(){
@@ -111,14 +109,14 @@
 			if (!(toutNumerique)) {
 				alert("Attention, toutes les cotes doivent être numériques.\nVeuillez corriger.");
 				return false;
-				}	
+				}
 			})
 
 		$("#formPoids input:text").each(function(){
 			if ($(this).attr("readonly") == "readonly")
 				$(this).attr("title", noPonderation);
 			})
-		
+
 		})
 
 		$(".poids").keyup(function(){
@@ -130,7 +128,7 @@
 						$("#wait").hide();
 						return false;
 						}
-				};			
+				};
 			})
 
 		$("#submit").click(function(){
