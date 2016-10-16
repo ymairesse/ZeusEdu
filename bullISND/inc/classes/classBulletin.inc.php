@@ -86,7 +86,6 @@ class Bulletin
      * et il ne faut pas ouvrir la possibilité de mettre un poids pour la compétence correspondante.
      *
      * @param $coursGrp : la dénomination du cours
-     *
      * @param array : tableau des pondérations prévues pour chaque période, respectivement en formatif et en certificatif
      */
     public function sommesPonderations($coursGrp)
@@ -2666,7 +2665,10 @@ class Bulletin
                 if (isset($dataSit[$bulletin]['max'])) {
                     $cotesPeriode = $dataSit[$bulletin];
                     $sit = $this->sansVirg(trim($cotesPeriode['sit']));
-                    $sit = ($sit > 50) ? round($sit, 0) : round($sit, 1);    // l'arrondi qui va bien
+                    // si ce n'est pas une cote vide, on l'arrondit comme il le faut
+                    if ($sit != '') {
+                        $sit = ($sit > 50) ? round($sit, 0) : round($sit, 1); // l'arrondi qui va bien
+                    }
                     $max = $this->sansVirg($cotesPeriode['max']);
                     $pourcent = $cotesPeriode['pourcent'];
                     $sitDelibe = isset($cotesPeriode['sitDelibe']) ? $cotesPeriode['sitDelibe'] : null;
@@ -4041,7 +4043,7 @@ class Bulletin
         // Application::afficher($listeCompetences, true);
         // préparer un tableau complet mais vide
         $listePoids = array();
-        foreach ($listeCompetences as $idComp=>$data) {
+        foreach ($listeCompetences as $idComp => $data) {
             foreach (range(1, $nbPeriodes) as $periode) {
                 $listePoids[$periode][$idComp]['form'] = '';
                 $listePoids[$periode][$idComp]['cert'] = '';
@@ -4313,13 +4315,14 @@ class Bulletin
     }
 
     /**
-    * vide les tables profs/cours et eleves/cours en début d'année scolaire
-    *
-    * @param void()
-    *
-    * @return true si tout s'est bien passé
-    */
-    public function delProfsElevesCours() {
+     * vide les tables profs/cours et eleves/cours en début d'année scolaire.
+     *
+     * @param void()
+     *
+     * @return true si tout s'est bien passé
+     */
+    public function delProfsElevesCours()
+    {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'TRUNCATE TABLE '.PFX.'elevesCours ';
         $resultat = $connexion->exec($sql);

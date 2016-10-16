@@ -1,6 +1,6 @@
 {if isset($infoPerso)}
 <div class="container">
-	
+
 	<h1 style="clear:both" title="{$infoPerso.matricule}">{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}</h1>
 	<img src="../photos/{$infoPerso.matricule}.jpg" title="{$infoPerso.matricule}" alt="{$infoPerso.matricule}"
 		style="position: absolute; top: 0em; right: 0; width: 100px" class="photo">
@@ -32,15 +32,16 @@
 			{/if}
 		</div>
 		<div class="col-md-6 col-sm-12">
-			{if isset($sitActuelles.$matricule.$coursGrp.sit)}
+			<div style="display:block; border: 1px solid black; min-height: 1.5em; color: white; background-color: #555;">
+			{if isset($sitActuelles.$matricule.$coursGrp.sit) && ($sitActuelles.$matricule.$coursGrp.sit != '')}
 				{assign var=sitActuelle value=$sitActuelles.$matricule.$coursGrp}
-				<span style="display:block; border: 1px solid black; color: white; background-color: #555;">
+
 				<strong>Situation actuelle: {$sitActuelle.sit} / {$sitActuelle.maxSit}</strong>
 				{if $sitActuelle.maxSit > 0}
 					{assign var=sitAct value=100*$sitActuelle.sit/$sitActuelle.maxSit}
 					<span class="micro">soit {$sitAct|number_format:1}%</span>
 				{/if}
-		
+
 				{if isset($sitActuelle.sitDelibe) && $sitActuelle.sitDelibe != ''}
 					<strong class="pull-right">Délibé:
 					{if isset($sitActuelle.attribut) && ($sitActuelle.attribut == 'hook')}[{$sitActuelle.sitDelibe}] %
@@ -50,11 +51,12 @@
 					{/if}
 					</strong>
 				{/if}
-				</span>
+
 			{/if}
+			</div>
 		</div>
 
-		<div class="col-md-6 col-sm-12">	
+		<div class="col-md-6 col-sm-12">
 
 				<table class="tableauBulletin">
 					<tr>
@@ -83,7 +85,7 @@
 					</tr>
 					{* s'il y a des cotes pour ce coursGrp *}
 					{if isset($listeCotes.$matricule.$coursGrp)}
-					
+
 					{assign var='lesCotes' value=$listeCotes.$matricule.$coursGrp}
 					{assign var='cours' value=$unCours.cours}
 						{foreach from=$listeCotes.$matricule.$coursGrp key=idComp item=uneCote}
@@ -101,16 +103,16 @@
 						</tr>
 						{/if}
 						{/foreach}
-						
+
 					{/if}
 				</table>
 			</div>
-		
+
 
 
 		</div>  <!-- row -->
-		
-		{/foreach}		
+
+		{/foreach}
 
 		<div class="row">
 		<!-- attitudes -->
@@ -150,7 +152,7 @@
 			</table>
 			</div>
 		{/if}
-		
+
 		<!-- Éducateurs -->
 		{if $ficheEduc == 1}
 		<div class="col-md-6 col-sm-12">
@@ -164,7 +166,7 @@
 			</table>
 		</div>
 		{/if}
-		
+
 		{assign var=laMention value=$mention.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:Null}
 		<div class="col-md-6 col-sm-12">
 			<div class="alert alert-info"
@@ -187,7 +189,7 @@
 				</tr>
 			</table>
 			{/if}
-		
+
 			{if isset($noticeDirection)}
 			<table class="table">
 				<tr>
@@ -213,11 +215,9 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
-		
+
 		$().UItoTop({ easingType: 'easeOutQuart' });
-		
+
 	})
 
 </script>
-
-
