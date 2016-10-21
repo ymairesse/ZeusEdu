@@ -2,24 +2,23 @@
 
 require_once '../../../config.inc.php';
 
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
+$Application = new Application();
+
 session_start();
-if (!(isset($_SESSION[APPLICATION]))) {
+if (!(isset($_SESSION[APPLICATION])))
     die("<div class='alert alert-danger'>".RECONNECT.'</div>');
 
 $acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
 $statut = isset($_POST['statut']) ? $_POST['statut'] : null;
 $typeRP = isset($_POST['typeRP']) ? $_POST['typeRP'] : null;
 
-require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
-$Application = new Application();
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
-
-
 
 if ($typeRP == 'profs') {
     $listeEleves = $thot->getElevesDeProf($acronyme, $statut);
@@ -30,8 +29,8 @@ if ($typeRP == 'profs') {
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../templates';
-$smarty->compile_dir = '../templates_c';
+$smarty->template_dir = '../../templates';
+$smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeEleves', $listeEleves);
-$smarty->display('../../templates/reunionParents/listeElevesProf.tpl');
+$smarty->display('reunionParents/listeElevesProf.tpl');
