@@ -86,6 +86,8 @@ class Application
      *
      * @param :    $data n'importe quel tableau ou variable
      * @param bool $die  : si l'on souhaite interrompre le programme avec le dump
+     *
+     * @return string
      */
     public static function afficher($data, $die = false)
     {
@@ -333,6 +335,8 @@ class Application
      * @param $usersList : la liste des utilisateurs à affecter
      * @param $applications : la liste des application à affecter
      * @param $droits : les droits à donner à ces utilisateurs sur les applications données
+     *
+     * @return array
      */
     public function affecteDroitsApplications($usersList, $applications, $droits)
     {
@@ -482,6 +486,7 @@ class Application
             return !$mail->Send();
         }
     }
+
     /**
      * lire la liste des FlashInfos pour le module donné.
      *
@@ -494,7 +499,7 @@ class Application
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT * FROM '.PFX.'flashInfos ';
         $sql .= "WHERE application = '$module' ";
-        $sql .= 'ORDER BY date DESC';
+        $sql .= 'ORDER BY date DESC ';
         $resultat = $connexion->query($sql);
 
         $flashInfos = array();
@@ -556,7 +561,7 @@ class Application
     }
 
     /**
-     * génération d'un mot de passe d'une longueur donnée et de robustesse donné.
+     * génération d'un mot de passe d'une longueur donnée et de robustesse donnée.
      *
      * @param $length: longueur souhaitée pour le mot de passe
      * @param $robustesse : robustesse souhaitée
@@ -890,15 +895,19 @@ class Application
             die();
         }
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'DELETE FROM '.PFX."profs WHERE acronyme='$acronyme'";
+        $sql = 'DELETE FROM '.PFX."profs WHERE acronyme='$acronyme' ";
         $resultat = $connexion->exec($sql);
         $erreur1 = ($resultat === false);
-        $sql = 'DELETE FROM '.PFX."profsApplications WHERE acronyme='$acronyme'";
+        $sql = 'DELETE FROM '.PFX."profsApplications WHERE acronyme='$acronyme' ";
         $resultat = $connexion->exec($sql);
         $erreur2 = ($resultat === false);
+        $sql = 'DELETE FROM '.PFX."hermesListes WHERE membre='$acronyme' ";
+        $resultat = $connexion->exec($sql);
+        $erreur3 = ($resultat === false);
+
         self::DeconnexionPDO($connexion);
 
-        return !($erreur1 || $erreur2);
+        return !($erreur1 || $erreur2 || $erreur3);
     }
 
     /**
@@ -1635,43 +1644,43 @@ class Application
         return array('erreurs' => $erreurs, 'ajouts' => $ajouts);
     }
 
-    /**
-     * function newPasswdAssign.
-     *
-     * @param array $table : liste des élèves dont il faut réinitialiser le pwd
-     *
-     * @return array : liste des erreurs et des réussites
-     */
-    public function newPasswdAssign($table)
-    {
-        $tableauCSV = self::csv2array($table);
-        $entete = array_shift($tableauCSV);
-        $erreurs = 0;
-        $ajouts = 0;
-        $tousEleves = self::listeTousEleves();
-        $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        foreach ($tableauCSV as $unEleve) {
-            $matricule = $unEleve[0];
-            $passwd = $unEleve[2];
-            $eleve = $tousEleves[$matricule];
-            $nom = $tousEleves[$matricule]['nom'];
-            $prenom = $tousEleves[$matricule]['prenom'];
-            $username = self::username($matricule, $nom, $prenom);
-            $sql = 'INSERT INTO '.PFX.'passwd ';
-            $sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
-            // en cas de doublon, seul le "mot de passe" est modifié
-            $sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
-            $resultat = $connexion->exec($sql);
-            if ($resultat === false) {
-                ++$erreurs;
-            } else {
-                ++$ajouts;
-            }
-        }
-        self::DeconnexionPDO($connexion);
-
-        return array('erreurs' => $erreurs, 'ajouts' => $ajouts);
-    }
+    // /**
+    //  * initialise les mots de passe "élèves" depuis un CSV (encore utilisé?)
+    //  *
+    //  * @param array $table : liste des élèves dont il faut réinitialiser le pwd
+    //  *
+    //  * @return array : liste des erreurs et des réussites
+    //  */
+    // public function newPasswdAssign($table)
+    // {
+    //     $tableauCSV = self::csv2array($table);
+    //     $entete = array_shift($tableauCSV);
+    //     $erreurs = 0;
+    //     $ajouts = 0;
+    //     $tousEleves = self::listeTousEleves();
+    //     $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     foreach ($tableauCSV as $unEleve) {
+    //         $matricule = $unEleve[0];
+    //         $passwd = $unEleve[2];
+    //         $eleve = $tousEleves[$matricule];
+    //         $nom = $tousEleves[$matricule]['nom'];
+    //         $prenom = $tousEleves[$matricule]['prenom'];
+    //         $username = self::username($matricule, $nom, $prenom);
+    //         $sql = 'INSERT INTO '.PFX.'passwd ';
+    //         $sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
+    //         // en cas de doublon, seul le "mot de passe" est modifié
+    //         $sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
+    //         $resultat = $connexion->exec($sql);
+    //         if ($resultat === false) {
+    //             ++$erreurs;
+    //         } else {
+    //             ++$ajouts;
+    //         }
+    //     }
+    //     self::DeconnexionPDO($connexion);
+    //
+    //     return array('erreurs' => $erreurs, 'ajouts' => $ajouts);
+    // }
 
     /**
      * supprimer les caractèes accentués d'une chaîne et les remplacer par le caractères non accentué.
@@ -1963,7 +1972,6 @@ class Application
      * Enregistre le mot de passe provenant du formulaire et correspondant à l'utilisateur indiqué.
      *
      * @param array  $post     : contenu du formulaire
-     * @param string $userName : nom d'utilisateur
      *
      * @return nombre d'enregistrements réussis (normalement 1)
      */
