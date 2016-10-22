@@ -299,3 +299,7 @@ fieldset.info legend {
     background-position: left center;
     background-repeat: no-repeat;
 }
+
+#unTravail .panel {
+    background-image: url('images/carre.png');
+}
