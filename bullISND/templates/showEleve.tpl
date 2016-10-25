@@ -33,7 +33,7 @@
 		</div>
 		<div class="col-md-6 col-sm-12">
 			<div style="display:block; border: 1px solid black; min-height: 1.5em; color: white; background-color: #555;">
-			{if isset($sitActuelles.$matricule.$coursGrp.sit) && ($sitActuelles.$matricule.$coursGrp.sit != '')}
+			{if isset($sitActuelles.$matricule.$coursGrp.sit) && ($sitActuelles.$matricule.$coursGrp.sit|is_numeric)}
 				{assign var=sitActuelle value=$sitActuelles.$matricule.$coursGrp}
 
 				<strong>Situation actuelle: {$sitActuelle.sit} / {$sitActuelle.maxSit}</strong>
