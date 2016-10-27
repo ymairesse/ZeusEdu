@@ -30,7 +30,6 @@
 					{/if}
 					<li role="separator" class="divider"></li>
 					<li><a href="index.php?action=notification&amp;mode=historique">Historique des annonces</a></li>
-					{* <li><a href="index.php?action=gestion&amp;mode=gestAccuses">Gestion des accusés de lecture</a></li> *}
 				</ul>
 			</li>
 
@@ -68,7 +67,7 @@
 				</ul>
 			</li>
 
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Contacts parents <b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Réunion de parents <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=reunionParents&amp;mode=editNew">Nouvelle RP ou modification</a></li>

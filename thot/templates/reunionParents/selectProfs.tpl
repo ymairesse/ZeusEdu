@@ -11,7 +11,7 @@
         <option class="statutSpecial"
             value="{$acronyme}"
             data-nomprof="{$data.nom} {$data.prenom}">
-            {($data.sexe=='F')?'Mme':'M.'} {$data.nom} {$data.prenom} => Direction et encadrement
+            {($data.sexe=='F')?'Mme':'M.'} {$data.nom} {$data.prenom} => {$data.titre}
         </option>
     {/foreach}
 </select>

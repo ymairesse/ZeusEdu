@@ -6,13 +6,13 @@ require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
 session_start();
-if (!(isset($_SESSION[APPLICATION])))
+if (!(isset($_SESSION[APPLICATION]))) {
     die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+}
 
 $acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
 $statut = isset($_POST['statut']) ? $_POST['statut'] : null;
 $typeRP = isset($_POST['typeRP']) ? $_POST['typeRP'] : null;
-
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();

@@ -17,9 +17,9 @@ $listeDirection = $thot->listeStatutsSpeciaux();
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../templates';
-$smarty->compile_dir = '../templates_c';
+$smarty->template_dir = '../../templates';
+$smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeProfsCours', $listeProfsCours);
 $smarty->assign('listeStatutsSpeciaux', $listeDirection);
-$smarty->display('../../templates/reunionParents/selectProfs.tpl');
+$smarty->display('reunionParents/selectProfs.tpl');
