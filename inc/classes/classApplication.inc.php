@@ -1915,6 +1915,8 @@ class Application
         $heure = date('H:i');
 
         $smarty = new Smarty();
+        $smarty->template_dir = '../templates';
+        $smarty->compile_dir = '../templates_c';
         $smarty->assign('date', $date);
         $smarty->assign('heure', $heure);
         $smarty->assign('jour', $jSemaine);
@@ -1925,7 +1927,8 @@ class Application
         $smarty->assign('BASEDIR', BASEDIR);
         $smarty->assign('TITRECOURT', TITRECOURT);
         $smarty->assign('token', $link);
-        $texteFinal = $smarty->fetch('../templates/texteMailmdp.tpl');
+        $texteFinal = $smarty->fetch('texteMailmdp.tpl');
+
         require_once '../phpMailer/class.phpmailer.php';
         $mail = new PHPmailer();
         $mail->IsHTML(true);
@@ -1971,7 +1974,7 @@ class Application
     /**
      * Enregistre le mot de passe provenant du formulaire et correspondant à l'utilisateur indiqué.
      *
-     * @param array  $post     : contenu du formulaire
+     * @param array $post : contenu du formulaire
      *
      * @return nombre d'enregistrements réussis (normalement 1)
      */
