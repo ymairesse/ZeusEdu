@@ -196,13 +196,13 @@ legend {
 }
 
 .blocDroit {
-    float: right;
-    width: 47%;
+    /*float: right;
+    width: 47%;*/
 }
 
 .blocGauche {
-    float: left;
-    width: 47%;
+    /*float: left;
+    width: 47%;*/
 }
 
 #menu1 {
