@@ -1010,6 +1010,36 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
 
 -- --------------------------------------------------------
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `didac_thotJdc`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
+`id` int(6) NOT NULL,
+  `destinataire` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matricule ou coursGrp ou classe ou...',
+  `type` enum('cours','classe','eleve','niveau','ecole') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type du destinataire',
+  `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `idCategorie` tinyint(4) NOT NULL,
+  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `enonce` mediumblob COMMENT 'Énoncé du travail à effectuer',
+  `url` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Lien web pour ce travail',
+  `class` enum('event-warning','event-success','event-info','event-inverse','event-special','event-important') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'event-info',
+  `start` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'time() de PHP avec 3 zéros pour les ms',
+  `startDate` datetime NOT NULL,
+  `end` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'time() de PHP avec 3 zéros pour les ms',
+  `endDate` datetime NOT NULL,
+  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée'
+) ENGINE=MyISAM AUTO_INCREMENT=2339 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
+
+
+ALTER TABLE `didac_thotJdc`
+ ADD PRIMARY KEY (`id`), ADD KEY `proprietaire` (`proprietaire`), ADD KEY `destinataire` (`destinataire`), ADD KEY `endDate` (`endDate`);
+
+ALTER TABLE `didac_thotJdc`
+MODIFY `id` int(6) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+
 --
 -- Table structure for table `didac_thotJdcCategories`
 --
