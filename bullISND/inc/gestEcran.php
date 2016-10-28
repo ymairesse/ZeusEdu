@@ -48,7 +48,6 @@ switch ($mode) {
 				$listeCoursGrp = $listeCoursGrp[$matricule];
 				$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 				$listeSituations = $Bulletin->listeSituationsCours($matricule, array_keys($listeCoursGrp), Null, true);
-
 				$sitPrecedentes = $Bulletin->situationsPrecedentes($listeSituations,$bulletin);
 				$sitActuelles = $Bulletin->situationsPeriode($listeSituations, $bulletin);
 				$listeCompetences = $Bulletin->listeCompetencesListeCoursGrp($listeCoursGrp);
@@ -89,4 +88,3 @@ switch ($mode) {
 		break;
 	default: die ('missing mode');
 	}
-?>

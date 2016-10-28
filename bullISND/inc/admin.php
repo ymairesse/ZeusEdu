@@ -67,7 +67,7 @@ switch ($mode) {
             $smarty->assign('message', array(
                             'title' => SAVE,
                             'texte' => sprintf('%d enregistrement(s) effectué(s)', $nb),
-                            'urgence' => 'success' )
+                            'urgence' => 'success', )
                             );
         }
         $listeProfs = $Application->listeProfs(true);
@@ -81,17 +81,6 @@ switch ($mode) {
     case 'attributionsProfs':
         if ($userStatus != 'admin') {
             die('get out of here');
-        }
-        if ($niveau) {
-            $listeCoursGrp = $Ecole->listeCoursGrp($niveau);
-            $smarty->assign('listeCoursGrp', $listeCoursGrp);
-        }
-        if ($coursGrp) {
-            $smarty->assign('coursGrp', $coursGrp);
-            $listeEleves = $Ecole->listeElevesCours($coursGrp);
-            $smarty->assign('listeEleves', $listeEleves);
-            $listeTousProfs = $Ecole->listeProfs();
-            $smarty->assign('listeTousProfs', $listeTousProfs);
         }
 
         $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
@@ -116,8 +105,23 @@ switch ($mode) {
                 break;
             }
 
+            if ($niveau) {
+                $listeCoursGrp = $Ecole->listeCoursGrp($niveau);
+                $smarty->assign('listeCoursGrp', $listeCoursGrp);
+            }
+            if ($coursGrp) {
+                $smarty->assign('coursGrp', $coursGrp);
+                $listeEleves = $Ecole->listeElevesCours($coursGrp);
+                $smarty->assign('listeEleves', $listeEleves);
+                $listeTousProfs = $Ecole->listeProfs();
+                $smarty->assign('listeTousProfs', $listeTousProfs);
+            }
+
+        // quels sont les niveaux d'étude dans l'école
         $smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
         $smarty->assign('niveau', $niveau);
+
+        // qui sont les profs titulaires de ce cours?
         $listeProfsTitulaires = $Ecole->listeProfsCoursGrp($coursGrp);
         $smarty->assign('listeProfsTitulaires', $listeProfsTitulaires);
 
@@ -504,9 +508,9 @@ switch ($mode) {
             $smarty->assign('message', array(
                         'title' => SAVE,
                         'texte' => sprintf('%d statut(s) enregistré(s).', $nb),
-                        'urgence' => 'success' )
+                        'urgence' => 'success', )
                         );
-            }
+        }
         $statutsCadres = $Bulletin->getStatutsCadres();
         $smarty->assign('statutsCadres', $statutsCadres);
         $smarty->assign('corpsPage', 'statutsCadres');
