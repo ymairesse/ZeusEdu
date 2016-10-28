@@ -131,12 +131,14 @@ INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleur
 (2, 'Fait disciplinaire', 'F19D9D', '000000', 0, '0', 4, 'ladate,matricule,idfait,qui,type,professeur,motif,anneeScolaire', '');
 
 
+-- --------------------------------------------------------
+
 --
--- Structure de la table `didac_athena`
+-- Table structure for table `didac_athena`
 --
 
 CREATE TABLE IF NOT EXISTS `didac_athena` (
-`id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
   `matricule` int(11) NOT NULL,
   `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
@@ -147,7 +149,25 @@ CREATE TABLE IF NOT EXISTS `didac_athena` (
   `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
   `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
   `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
-) ENGINE=MyISAM AUTO_INCREMENT=683 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `didac_athena`
+--
+ALTER TABLE `didac_athena`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `codeInfo` (`matricule`),
+  ADD KEY `date` (`date`);
+
+--
+-- AUTO_INCREMENT for table `didac_athena`
+--
+ALTER TABLE `didac_athena`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 
 CREATE TABLE IF NOT EXISTS `didac_applications` (
@@ -987,6 +1007,38 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
   `ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `didac_thotJdcCategories`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotJdcCategories` (
+`idCategorie` tinyint(4) NOT NULL,
+  `ordre` tinyint(2) NOT NULL DEFAULT '0',
+  `urgence` enum('urgence0','urgence1','urgence2') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'urgence0',
+  `categorie` varchar(30) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des mentions au journal de classe';
+
+--
+-- Dumping data for table `didac_thotJdcCategories`
+--
+
+INSERT INTO `didac_thotJdcCategories` (`idCategorie`, `ordre`, `urgence`, `categorie`) VALUES
+(1, 1, 'urgence0', 'Devoir'),
+(2, 2, 'urgence1', 'Leçon'),
+(3, 3, 'urgence0', 'Préparation'),
+(4, 6, 'urgence0', 'Document à remettre'),
+(5, 0, 'urgence2', 'Évaluation certificative'),
+(6, 5, 'urgence0', 'Matériel à apporter'),
+(7, 7, 'urgence0', 'Information');
+
+ALTER TABLE `didac_thotJdcCategories`
+ ADD PRIMARY KEY (`idCategorie`);
+
+ALTER TABLE `didac_thotJdcCategories`
+MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 
 
 CREATE TABLE IF NOT EXISTS `didac_thotParents` (
