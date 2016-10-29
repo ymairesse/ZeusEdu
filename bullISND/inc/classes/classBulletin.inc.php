@@ -5064,15 +5064,17 @@ class Bulletin
      *
      * @return integer: nombre d'enregistrements
      */
-    public function saveNoticeCoordinateurs($annee, $bulletin, $notice)
+    public function saveNoticeCoordinateurs($annee, $bulletin, $remarque)
     {
         if ($bulletin && $annee) {
-            $notice = addslashes($notice);
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'INSERT INTO '.PFX.'bullNotesDirection ';
-            $sql .= "(bulletin, annee, remarque) VALUES ('$bulletin', '$annee', '$notice') ";
-            $sql .= "ON DUPLICATE KEY UPDATE remarque='$notice'";
-            $resultat = $connexion->exec($sql);
+            $sql .= "SET bulletin=:bulletin, annee=:annee, remarque=:remarque ";
+            $sql .= "ON DUPLICATE KEY UPDATE remarque=:remarque ";
+            $requete = $connexion->prepare($sql);
+            $data = array(':bulletin'=>$bulletin, ':annee'=>$annee, ':remarque'=>$remarque);
+            $resultat = $requete->execute($data);
+
             Application::DeconnexionPDO($connexion);
 
             return $resultat;
