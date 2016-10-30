@@ -55,6 +55,10 @@
 				<span>Effacement des notifications de décisions Thot</span>
 			</li>
 			<li>
+				<input type="radio" name="mode" value="initBulletinThot" {if (isset($mode)) && ($mode == 'initBulletinThot')} checked="checked"{/if}>
+				<span>Réinitialisation des accès aux bulletins dans Thot</span>
+			</li>
+			<li>
 				<input type="radio" name="mode" value="verrous"{if (isset($mode)) && ($mode == 'verrous')} checked="checked"{/if}>
 				<span>Initialisation des verrous des cours</span>
 			</li>

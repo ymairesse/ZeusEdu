@@ -64,7 +64,9 @@
 			<h3>Depuis le bulletin...</h3>
 				<div id="divBulletin">
 				{foreach from=$listePeriodes key=wtf item=periode}
-					<strong>{$periode}></strong><input type="radio" name="bulletin" value="{$periode}"{if isset($bulletin) && ($periode == $bulletin)} checked="checked"{/if}>
+				<label class="radio-inline">
+			      <input type="radio" name="bulletin" value="{$periode}"{if isset($bulletin) && ($periode == $bulletin)} checked="checked"{/if}> < {$periode}
+			    </label>
 				{/foreach}
 				</div>
 

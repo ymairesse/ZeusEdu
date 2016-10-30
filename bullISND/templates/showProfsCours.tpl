@@ -23,11 +23,11 @@
 						<input type="hidden" name="action" value="admin">
 						<input type="hidden" name="mode" value="attributionsProfs">
 						<input type="hidden" name="etape" value="supprProfs">
-						<button class="btn btn-primary btn-block" type="submit" name="Envoyer">Supprimer <span class="glyphicon glyphicon-arrow-right"></span></button>
+						<button class="btn btn-primary btn-block" type="submit" name="Envoyer">Supprimer les enseignants sélectionnés <span class="glyphicon glyphicon-arrow-right"></span></button>
 						<input type="hidden" name="niveau" value="{$niveau}">
 
-						<h4>Élèves inscrits</h4>
-						<select size="15" name="eleves" id="eleves" class="form-control">
+						<h4>Élèves inscrits (pour information)</h4>
+						<select size="15" name="eleves" id="eleves" class="form-control" readonly>
 							{foreach from=$listeEleves key=matricule item=eleve}
 							<option value="{$matricule}">{$eleve.classe} - {$eleve.nom} {$eleve.prenom}</option>
 							{/foreach}
@@ -62,7 +62,7 @@
 						<input type="hidden" name="action" value="admin">
 						<input type="hidden" name="mode" value="attributionsProfs">
 						<input type="hidden" name="etape" value="addProfs">
-						<button button class="btn btn-primary btn-block" name="Envoyer" type="submit"><span class="glyphicon glyphicon-arrow-left"></span>Ajouter</button>
+						<button button class="btn btn-primary btn-block" name="Envoyer" type="submit"><span class="glyphicon glyphicon-arrow-left"></span> Ajouter les enseignants sélectionnés</button>
 						<input type="hidden" name="niveau" value="{$niveau}">
 					</div>
 

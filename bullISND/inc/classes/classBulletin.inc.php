@@ -807,8 +807,7 @@ class Bulletin
     }
 
     /**
-     * Réinitialisation de tous les verrous à l'état "ouvert"
-     * à faire en début d'année scolaire.
+     * Réinitialisation de tous les verrous à l'état "ouvert" à faire en début d'année scolaire.
      *
      * @param
      *
@@ -836,6 +835,19 @@ class Bulletin
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
+    }
+
+    /**
+     * vide la table des accès aux bulletins depuis thot.
+     *
+     * @param void()
+     */
+    public function initialiserThot()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'TRUNCATE '.PFX.'thotBulletin ';
+        $resultat = $connexion->exec($sql);
+        Application::DeconnexionPDO($connexion);
     }
 
     /**
@@ -4439,8 +4451,14 @@ class Bulletin
         return $ligne;
     }
 
-    // --------------------------------------------------------------------
-    // liste simple de tous les élèves d'un niveau provenant d'une école
+    /**
+     * liste simple de tous les élèves d'un niveau provenant d'une école.
+     *
+     * @param $niveau : niveau d'étude
+     * @param $ecole: identifiant de l'école d'origine de l'élève
+     *
+     * @return array
+     */
     public function listeElevesEcoleNiveau($niveau, $ecole)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -4449,13 +4467,15 @@ class Bulletin
         $sql .= 'JOIN '.PFX.'elevesEcoles ON ('.PFX.'elevesEcoles.matricule = '.PFX.'eleves.matricule) ';
         $sql .= 'JOIN '.PFX.'ecoles ON ('.PFX.'ecoles.ecole = '.PFX.'elevesEcoles.ecole) ';
         $sql .= 'WHERE SUBSTR('.PFX."eleves.annee,1,1) = '$niveau' AND ".PFX."elevesEcoles.ecole = '$ecole' ";
-        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom";
+        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
         $resultat = $connexion->query($sql);
         $listeEleves = array();
-        while ($ligne = $resultat->fetch()) {
-            $matricule = $ligne['matricule'];
-            $photo = Ecole::photo($matricule);
-            $listeEleves[$matricule] = array('photo' => $photo, 'identite' => $ligne['groupe'].': '.$ligne['nomEleve']);
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $matricule = $ligne['matricule'];
+                $photo = Ecole::photo($matricule);
+                $listeEleves[$matricule] = array('photo' => $photo, 'identite' => $ligne['groupe'].': '.$ligne['nomEleve']);
+            }
         }
         Application::DeconnexionPDO($connexion);
 
@@ -4481,13 +4501,15 @@ class Bulletin
 
         $resultat = $connexion->query($sql);
         $listeEvaluations = array();
-        while ($ligne = $resultat->fetch()) {
-            $idCarnet = $ligne['idCarnet'];
-            $idComp = $ligne['idComp'];
-            $formCert = $ligne['formCert'];
-            $max = $ligne['max'];
-            $libelle = $ligne['libelle'];
-            $listeEvaluations[$idCarnet] = array('idComp' => $idComp, 'formCert' => $formCert, 'max' => $max, 'libelle' => $libelle);
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $idCarnet = $ligne['idCarnet'];
+                $idComp = $ligne['idComp'];
+                $formCert = $ligne['formCert'];
+                $max = $ligne['max'];
+                $libelle = $ligne['libelle'];
+                $listeEvaluations[$idCarnet] = array('idComp' => $idComp, 'formCert' => $formCert, 'max' => $max, 'libelle' => $libelle);
+            }
         }
         Application::DeconnexionPDO($connexion);
 
@@ -4513,13 +4535,15 @@ class Bulletin
         $sql .= 'ORDER BY formCert, ordre';
         $resultat = $connexion->query($sql);
         $listeEvaluations = array();
-        while ($ligne = $resultat->fetch()) {
-            // $idCarnet = $ligne['idCarnet'];
-            $idComp = $ligne['idComp'];
-            $formCert = $ligne['formCert'];
-            $max = $ligne['max'];
-            $libelle = $ligne['libelle'];
-            $listeEvaluations[$idComp][$formCert] = array('libelle' => $libelle, 'max' => $max);
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                // $idCarnet = $ligne['idCarnet'];
+                $idComp = $ligne['idComp'];
+                $formCert = $ligne['formCert'];
+                $max = $ligne['max'];
+                $libelle = $ligne['libelle'];
+                $listeEvaluations[$idComp][$formCert] = array('libelle' => $libelle, 'max' => $max);
+            }
         }
         Application::DeconnexionPDO($connexion);
 
@@ -4540,18 +4564,20 @@ class Bulletin
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idCarnet, matricule, cote FROM '.PFX.'bullCarnetEleves ';
         $sql .= "WHERE idCarnet IN ($listeIdCarnetString) ";
-        $sql .= 'ORDER BY idCarnet';
+        $sql .= 'ORDER BY idCarnet ';
         $resultat = $connexion->query($sql);
         $listeCotes = array();
-        while ($ligne = $resultat->fetch()) {
-            $idCarnet = $ligne['idCarnet'];
-            $matricule = $ligne['matricule'];
-            $cote = $ligne['cote'];
-            $max = $listeColonnes[$idCarnet]['max'];
-            $idComp = $listeColonnes[$idCarnet]['idComp'];
-            $formCert = $listeColonnes[$idCarnet]['formCert'];
-            $libelle = $listeColonnes[$idCarnet]['libelle'];
-            $listeCotes[$matricule][$idComp][$formCert][] = array('cote' => $cote, 'max' => $max, 'libelle' => $libelle);
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $idCarnet = $ligne['idCarnet'];
+                $matricule = $ligne['matricule'];
+                $cote = $ligne['cote'];
+                $max = $listeColonnes[$idCarnet]['max'];
+                $idComp = $listeColonnes[$idCarnet]['idComp'];
+                $formCert = $listeColonnes[$idCarnet]['formCert'];
+                $libelle = $listeColonnes[$idCarnet]['libelle'];
+                $listeCotes[$matricule][$idComp][$formCert][] = array('cote' => $cote, 'max' => $max, 'libelle' => $libelle);
+            }
         }
         Application::DeconnexionPDO($connexion);
 
@@ -4693,7 +4719,8 @@ class Bulletin
      * @param $coursGrp
      * @param $bulletin
      * @param $listeCompetences
-     * return boolean
+     *
+     * @return bool
      */
     public function poidsCompetencesOK($coursGrp, $bulletin, $listeCompetences)
     {
@@ -4753,7 +4780,6 @@ class Bulletin
      */
     public function transfertCarnetCotes($post, $listeLocks)
     {
-        Application::afficher($post);
         $sqlForm = 'INSERT INTO '.PFX.'bullDetailsCotes ';
         $sqlForm .= 'SET matricule=:matricule, coursGrp=:coursGrp, bulletin=:bulletin, ';
         $sqlForm .= 'idComp=:idComp, form=:form, maxForm=:maxForm ';
@@ -5019,12 +5045,20 @@ class Bulletin
         $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'bullDecisions ';
-        $sql .= "SET matricule='$matricule', decision='$decision', restriction='$restriction', mail='$mail', notification='$notification', ";
-        $sql .= "adresseMail='$adresseMail', periode='$periode' ";
+        $sql .= 'SET matricule=:matricule, decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
+        $sql .= 'adresseMail=:adresseMail, periode=:periode ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= "decision='$decision', restriction='$restriction', mail='$mail', notification='$notification', ";
-        $sql .= "adresseMail='$adresseMail', periode='$periode' ";
-        $resultat = $connexion->exec($sql);
+        $sql .= 'decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
+        $sql .= 'adresseMail=:adresseMail, periode=:periode ';
+        $requete = $connexion->prepare($sql);
+        $data = array(
+                ':matricule' => $matricule,
+                ':decision' => $decision,
+                ':restriction' => $restriction,
+                ':mail' => $mail,
+                ':notification' => $notification,
+            );
+        $resultat = $requete->execute($data);
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
@@ -5069,10 +5103,10 @@ class Bulletin
         if ($bulletin && $annee) {
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'INSERT INTO '.PFX.'bullNotesDirection ';
-            $sql .= "SET bulletin=:bulletin, annee=:annee, remarque=:remarque ";
-            $sql .= "ON DUPLICATE KEY UPDATE remarque=:remarque ";
+            $sql .= 'SET bulletin=:bulletin, annee=:annee, remarque=:remarque ';
+            $sql .= 'ON DUPLICATE KEY UPDATE remarque=:remarque ';
             $requete = $connexion->prepare($sql);
-            $data = array(':bulletin'=>$bulletin, ':annee'=>$annee, ':remarque'=>$remarque);
+            $data = array(':bulletin' => $bulletin, ':annee' => $annee, ':remarque' => $remarque);
             $resultat = $requete->execute($data);
 
             Application::DeconnexionPDO($connexion);

@@ -250,6 +250,14 @@ switch ($mode) {
                 break;
             }
         break;
+    case 'initBulletinThot':
+        $Bulletin->initialiserThot();
+        $smarty->assign('message', array(
+            'title' => 'Réinitialisation',
+            'texte' => 'La table a été initialisée',
+            'urgence' => 'success', )
+            );
+        break;
     case 'verrous':
         $nb = $Bulletin->renewAllLocks();
         $smarty->assign('message',
