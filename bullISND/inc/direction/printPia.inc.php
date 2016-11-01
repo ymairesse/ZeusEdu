@@ -33,8 +33,8 @@ require_once (INSTALL_DIR.'/inc/classes/classEleve.inc.php');
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../templates';
-$smarty->compile_dir = '../templates_c';
+$smarty->template_dir = '../../templates';
+$smarty->compile_dir = '../../templates_c';
 
 require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
 $html2pdf = new HTML2PDF('P', 'A4', 'fr');
@@ -52,7 +52,7 @@ foreach ($listeEleves as $matricule) {
     $listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin);
     $listeCoursGrp = $listeCoursGrp[$matricule];
     $listeProfs = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
-    $listeMails = $Ecole->listeMailsEleves($listeEleves);
+
     if ($resultatsPre != null) {
         //millésimes de l'année précédente
         $anPrec = array_keys($resultatsPre);
@@ -88,21 +88,23 @@ foreach ($listeEleves as $matricule) {
         );
 
     $smarty->assign('eleve', $eleve);
-    $doc4PDF = $smarty->fetch('../../templates/direction/pia2pdf.tpl');
+    $doc4PDF = $smarty->fetch('direction/pia2pdf.tpl');
     $html2pdf->WriteHTML($doc4PDF);
 }
 
+$ds = DIRECTORY_SEPARATOR;
+
 $nomFichier = sprintf('doc_%s.pdf', $classe);
 
-// création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR."/$module/pdf/$acronyme/";
+ // création éventuelle du répertoire au nom de l'utlilisateur
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
 if (!(file_exists($chemin))) {
-    mkdir(INSTALL_DIR."/$module/pdf/$acronyme");
+    mkdir($chemin);
 }
 
-$html2pdf->Output($chemin.$nomFichier, 'F');
+$html2pdf->Output(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds.$nomFichier, 'F');
+// $smarty->assign('module', $module);
+$smarty->assign('nomFichier', $module.$ds.$nomFichier);
 
-$smarty->assign('acronyme',$acronyme);
-$smarty->assign('classe',$classe);
-$link = $smarty->fetch('../../templates/direction/lienDocument.tpl');
+$link = $smarty->fetch('direction/lienDocument.tpl');
 echo $link;
