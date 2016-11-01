@@ -39,8 +39,8 @@ $listeAcquis = $Bulletin->listeAcquis($sommeCotes);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../templates';
-$smarty->compile_dir = '../templates_c';
+$smarty->template_dir = '../../templates';
+$smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('acronyme', $acronyme);
 $smarty->assign('module', $module);
@@ -58,24 +58,29 @@ $smarty->assign('DIRECTION', DIRECTION);
 $smarty->assign('ECOLE', ECOLE);
 $smarty->assign('ADRESSE', ADRESSE);
 $smarty->assign('VILLE', VILLE);
+
 require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
 $html2pdf = new HTML2PDF('P', 'A4', 'fr');
 
 foreach ($listeEleves as $matricule => $unEleve) {
     $smarty->assign('matricule', $matricule);
     $smarty->assign('unEleve', $unEleve);
-    $doc4PDF = $smarty->fetch('../../templates/direction/piaCompetences2pdf.tpl');
+    $doc4PDF = $smarty->fetch('direction/piaCompetences2pdf.tpl');
     $html2pdf->WriteHTML($doc4PDF);
 }
-$nomFichier = sprintf('doc_%s.pdf', $classe);
+
+$ds = DIRECTORY_SEPARATOR;
+
+$nomFichier = sprintf('%s_%s.pdf', $typeDoc, $classe);
 
 // création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR."/$module/pdf/$acronyme/";
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
 if (!(file_exists($chemin))) {
-    mkdir(INSTALL_DIR."/$module/pdf/$acronyme");
+    mkdir($chemin);
 }
 
-$html2pdf->Output($chemin.$nomFichier, 'F');
+$html2pdf->Output($chemin.$ds.$nomFichier, 'F');
+$smarty->assign('nomFichier', $module.$ds.$nomFichier);
 
-$link = $smarty->fetch('../../templates/direction/lienDocument.tpl');
+$link = $smarty->fetch('direction/lienDocument.tpl');
 echo $link;

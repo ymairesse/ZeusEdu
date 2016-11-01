@@ -1,5 +1,7 @@
 <div class="container">
 
+    <h2>Couvertures des documents PIA</h2>
+
     <div class="row">
 
         <div class="col-md-3 col-sm-6">

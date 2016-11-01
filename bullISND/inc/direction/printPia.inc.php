@@ -94,7 +94,7 @@ foreach ($listeEleves as $matricule) {
 
 $ds = DIRECTORY_SEPARATOR;
 
-$nomFichier = sprintf('doc_%s.pdf', $classe);
+$nomFichier = sprintf('couvertPIA_%s.pdf', $classe);
 
  // création éventuelle du répertoire au nom de l'utlilisateur
 $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
@@ -102,8 +102,7 @@ if (!(file_exists($chemin))) {
     mkdir($chemin);
 }
 
-$html2pdf->Output(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds.$nomFichier, 'F');
-// $smarty->assign('module', $module);
+$html2pdf->Output($chemin.$ds.$nomFichier, 'F');
 $smarty->assign('nomFichier', $module.$ds.$nomFichier);
 
 $link = $smarty->fetch('direction/lienDocument.tpl');

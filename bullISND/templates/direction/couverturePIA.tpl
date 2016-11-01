@@ -1,6 +1,7 @@
 <div class="container">
 
-	{assign var=n value=0} {foreach from=$listePIA key=matricule item=eleve}
+	{assign var=n value=0}
+	{foreach from=$listePIA key=matricule item=eleve}
 	<div id="pia">
 		<h1>Plan Individuel d'Apprentissage et d'accompagnement</h1>
 
@@ -12,7 +13,8 @@
 			<img src="../photos/{$eleve.detailsEleve.photo}.jpg" style="height:150px; float:left;" alt="{$eleve.detailsEleve.photo}">
 			<br>
 			<div id="nomPrenom">
-				<h3>Ce document appartient à </h3> Nom: <strong>{$eleve.detailsEleve.nom}</strong>
+				<h3>Ce document appartient à </h3>
+				Nom: <strong>{$eleve.detailsEleve.nom}</strong>
 				<br> Prénom: <strong>{$eleve.detailsEleve.prenom}</strong>
 				<br> Classe: <strong>{$eleve.detailsEleve.groupe}</strong>
 			</div>
