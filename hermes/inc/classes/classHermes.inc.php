@@ -117,6 +117,7 @@ class hermes
         $objet = $post['objet'];
         $texte = htmlspecialchars($post['texte']);
         $nbDestinataires = count($post['mails']);
+        // si plus de 4 destinataires, on ne retient plus les noms
         if ($nbDestinataires > 4) {
             $destinataires = "$nbDestinataires destinataires";
         } else {
@@ -138,6 +139,34 @@ class hermes
     }
 
     /**
+     * récupérer le mail dont on fournit l'ID pour l'utilisateur dont on fournit l'acronyme (sécurité).
+     *
+     * @param $id : l'id du mail dans la BD
+     * @param $acronyme : l'identifiant de l'utilisateur actif
+     *
+     * @return array
+     */
+    public function getMailById($id, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT id, mailExp, date, DATE_FORMAT(heure,'%H:%i') AS heure, objet, texte, destinataires, PJ ";
+        $sql .= 'FROM '.PFX.'hermesArchives ';
+        $sql .= "WHERE id = '$id' AND acronyme = '$acronyme' ";
+
+        $resultat = $connexion->query($sql);
+        $mail = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $mail = $resultat->fetch();
+            $mail['date'] = Application::datePHP($mail['date']);
+            $mail['texte'] = html_entity_decode($mail['texte']);
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $mail;
+    }
+
+    /**
      * renvoie la liste des archives pour l'utilisateur indiqué depuis la borne $debut et pour $nb enregistrements.
      *
      * @param string $acronyme
@@ -146,15 +175,14 @@ class hermes
      *
      * @return array
      */
-    public function listeArchives($acronyme, $debut, $nb)
+    public function listeArchives($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, mailExp, nom, prenom, date, heure, objet, texte, destinataires, PJ ';
+        $sql = "SELECT id, mailExp, nom, prenom, date, DATE_FORMAT(heure,'%H:%i') AS heure, objet, texte, destinataires, PJ ";
         $sql .= 'FROM '.PFX.'hermesArchives AS ha ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON (dp.acronyme = ha.acronyme) ';
         $sql .= "WHERE ha.acronyme='$acronyme' ";
         $sql .= 'ORDER BY date DESC, heure DESC ';
-        $sql .= "LIMIT $debut, $nb ";
 
         $resultat = $connexion->query($sql);
         $listeArchives = array();
@@ -230,21 +258,35 @@ class hermes
     }
 
     /**
-     * efface l'enregistrement dont on fournit l'id de la base de données.
+     * efface l'enregistrement dont on fournit l'id de la base de données et l'acronyme du propriétaire (sécurité).
      *
-     * @param $id
+     * @param $id : identifiant de lenregistremnt en BD
+     * @param $acronyme : identifiant du propriétaire
      *
      * @return $nb : nombre d'enregistrements effacés (1)
      */
-    public function delArchive($id)
+    public function delArchive($id, $acronyme)
     {
+		// récupérer les référérences et effacer les fichiers joints
+		$mail = $this->getMailById($id, $acronyme);
+		$pj = explode(',',$mail['PJ']);
+
+		foreach ($pj as $unFichier) {
+		    @unlink("../upload/$acronyme/$unFichier");
+		}
+
+		// effacer le mail en BD
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'DELETE FROM '.PFX.'hermesArchives ';
-        $sql .= "WHERE id='$id' ";
-        $resultat = $connexion->exec($sql);
+        $sql .= "WHERE id=:id AND acronyme=:acronyme ";
+		$requete = $connexion->prepare($sql);
+
+		$data = array(':id'=>$id, ':acronyme'=>$acronyme);
+        $resultat = $requete->execute($data);
+
         Application::DeconnexionPDO($connexion);
 
-        return $resultat;
+        // return $resultat;
     }
 
     /**
@@ -733,11 +775,11 @@ class hermes
                 case 'abonner':
                     foreach ($listValues as $id) {
                         $nomListe = $post['liste_'.$id];
+                        $nomListe = $connexion::quote($nomListe);
                         $sql = 'INSERT IGNORE INTO '.PFX.'hermesProprio ';
-                        $sql .= 'SET id=:id, proprio=:acronyme, nomListe=:nomListe, statut=:abonne ';
-                        $requete = $connexion->prepare($sql);
-                        $data = array(':id' => $id, ':acronyme' => $acronyme, ':nomListe' => $nomListe, ':abonne' => $abonne);
-                        $resultat += $requete->execute($data);
+                        $sql .= "SET id='$id', proprio='$acronyme', nomListe='$nomListe', statut='abonne' ";
+                        die($sql);
+                        $resultat += $connexion->exec($sql);
                     }
                     break;
                 case 'approprier':
@@ -746,11 +788,10 @@ class hermes
                         $proprio = $post['proprio_'.$id];
                         // ajout dans la table des propriétaires
                         $sql = 'INSERT INTO '.PFX.'hermesProprio ';
-                        $sql .= "SET proprio=:acronyme, nomListe=:nomListe, statut='prive' ";
-                        $requete = $connexion->prepare($sql);
-                        $data = array(':acronyme' => $acronyme, ':nomListe' => $nomListe);
-                        $resultat += $requete->execute($data);
+                        $sql .= "SET proprio='$acronyme', nomListe='$nomListe', statut='prive' ";
+                        $resultat += $connexion->exec($sql);
                         $newId = $connexion->lastInsertId();
+
                         // recopie des abonnés dans la nouvelle liste
                         $sql = 'INSERT IGNORE INTO '.PFX.'hermesListes (id, membre) ';
                         $sql .= "SELECT '$newId', membre FROM ".PFX.'hermesListes ';

@@ -1,7 +1,7 @@
 .selectMail {
     overflow: auto;
     height: 45em;
-	}
+}
 
 h4.teteListe {
     background-color: #ffe37f;
@@ -9,85 +9,84 @@ h4.teteListe {
     margin: 0 0 0.5em 0;
 }
 
-
 .titreListe {
-  background-color: #FFE37F;
-	width: 90%;
-  }
+    background-color: #FFE37F;
+    width: 90%;
+}
 
 .listeMails {
-	list-style-type: none;
-	padding: 0;
+    list-style-type: none;
+    padding: 0;
 }
 
-.listeMails li {
-}
+.listeMails li {}
 
 .gauche {
-	float: left;
-	width: 250px;
+    float: left;
+    width: 250px;
 }
 
 .droit {
-	margin-left: 255px;
-	padding: 0 1em;
+    margin-left: 255px;
+    padding: 0 1em;
 }
 
 .champ {
-	// width:100%;
-	padding: 0.2em 0.5em;
-	background-color: #ffe;
-	box-shadow: 2px 2px 5px #aaa;
-	border-radius: 3px;
+    // width:100%;
+    padding: 0.2em 0.5em;
+    background-color: #ffe;
+    box-shadow: 2px 2px 5px #aaa;
+    border-radius: 3px;
 }
 
 .label {
-	cursor:pointer;
+    cursor: pointer;
 }
 
 #cadre {
-	width: 90%;
-	margin-left:auto;
-	margin-right: auto;
-	border: 1px solid orange;
-	padding: 2em;
-	border-radius: 15px;
-	margin-top: 1em;
-	box-shadow: 10px 10px 5px #656565;
-	min-height: 30em;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid orange;
+    padding: 2em;
+    border-radius: 15px;
+    margin-top: 1em;
+    box-shadow: 10px 10px 5px #656565;
+    min-height: 30em;
 }
 
 .cadreCache {
-	width: 90%;
-	margin-left:auto;
-	margin-right: auto;
-	border: 1px solid orange;
-	padding: 2em;
-	border-radius: 15px;
-	margin-top: 1em;
-	box-shadow: 10px 10px 5px #656565;
-	min-height: 30em;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid orange;
+    padding: 2em;
+    border-radius: 15px;
+    margin-top: 1em;
+    box-shadow: 10px 10px 5px #656565;
+    min-height: 30em;
 }
 
 .microForm {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .tableauHermes {
-	width: 100%;
+    width: 100%;
 }
 
 .tableauHermes td {
-  border: 1px solid #dddddd;
-  font-size: 0.9em;
+    border: 1px solid #dddddd;
+    font-size: 0.9em;
 }
+
 .tableauHermes th {
-  border: 1px outset black;
-  padding: 0;
-  background-color: #dddddd;
-  font-weight: normal;
-  font-size: 0.9em;
+    border: 1px outset black;
+    padding: 0;
+    background-color: #dddddd;
+    font-weight: normal;
+    font-size: 0.9em;
 }
 
 .blocMails {
@@ -100,10 +99,40 @@ h4.teteListe {
     width: 15em;
 }
 
-.blocMails h5 {margin-top: 0;}
+.blocMails h5 {
+    margin-top: 0;
+}
+
+.unMail {
+    cursor: pointer;
+}
 
 .enteteMail {
-	float: left;
-	display:  block;
-	width:10em;
+    background-color: #f8b708;
+    color: #222;
+    padding: 0.5em;
+    width: 100%;
+}
+
+.enteteMail span {
+    background-color: #555;
+    padding: 0 0.5em;
+    color: #fff;
+}
+
+#texteMail {
+    height: 20em;
+    overflow: auto;
+    margin-top: 3em;
+    padding: 0.8em;
+    border: 1px solid black;
+    background: #eee
+}
+
+.selected {
+    background-color: #F9C331;
+}
+
+.permanent {
+    background-color: #f55;
 }

@@ -12,7 +12,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
     die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
 }
 
-$liste = isset($_POST['liste'])?$_POST['liste']:Null;
+$liste = isset($_POST['liste']) ? $_POST['liste'] : null;
 
 $module = $Application->getModule(2);
 
@@ -24,7 +24,7 @@ $acronyme = $User->getAcronyme();
 
 $nb = 0;
 foreach ($liste as $id) {
-    $nb += $hermes->delArchive($id,$acronyme);
+    $nb += $hermes->delArchive($id, $acronyme);
 }
 
 // renvoyer le dernier $id traité pour chercher la ligne la plus proche

@@ -54,7 +54,6 @@ $(document).ready(function(){
 		$("#selectionDest").text(0)
 		})
 
-
 	$("#deleteList").submit(function(){
 		if (!(confirm('Les éléments sélectionnés seront effacés. Veuillez confirmer.')))
 			return false;

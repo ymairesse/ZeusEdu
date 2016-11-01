@@ -3,12 +3,12 @@
 	<div class="row">
 
 		<div class="col-md-3 col-sm-12">
-			
+
 			<h3>Création d'une liste</h3>
 			<form role="form" name="creation" id="creation" method="POST" action="index.php" class="form-vertical" role="form">
 			<input type="text" placeholder="Nom de la liste à créer" maxlenght="32" id="nomListe" name="nomListe" class="form-control">
 			<div class="btn-group pull-right">
-				<button type="reset" class="btn btn-default">Annuler</button>				
+				<button type="reset" class="btn btn-default">Annuler</button>
 				<button type="submit" class="btn btn-primary">Créer la liste</button>
 			</div>
 			<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
@@ -38,21 +38,21 @@
 				</table>
 			{/if}
 			</form>
-			
+
 		</div>  <!-- col-md-... -->
-			
+
 		<div class="col-md-9 col-sm-12">
 			<h3>Ajout de membres à une liste</h3>
 			{if $listesPerso|count > 0}
-				
+
 				<div class="row">
-					
+
 					<form name="ajoutMembres" id="ajoutMembres" method="POST" action="index.php" class="form-vertical" role="form">
-							
+
 					<div class="col-md-5 col-sm-5">
-					
+
 						<h4>Listes existantes</h4>
-						
+
 							<select name="idListe" id="selectListe" size="5" class="form-control">
 								<option value=''>Veuillez choisir une liste</option>
 								{foreach from=$listesPerso key=idListe item=liste}
@@ -61,15 +61,15 @@
 							</select>
 
 							<div id="listeExistants" style="max-height:20em; overflow: auto">
-				
+
 						</div>
-					
+
 					</div>  <!-- col-md-... -->
-				
+
 					<div class="col-md-5 col-sm-5">
-						
+
 						<h4>Destinataires à ajouter</h4>
-						
+
 						<div class="selectMail" style="max-height: 20em">
 							<!--	tous les utilisateurs -->
 							<ul class="listeMails">
@@ -83,11 +83,11 @@
 						</div>
 
 					<p style="clear:both">Sélections: <strong id="selectionAdd">0</strong> destinataire(s)</p>
-					
+
 					</div>  <!-- col-md-... -->
-					
+
 					<div class="col-md-2 col-sm-2">
-						
+
 						<div class="btn-group-vertical">
 							<button type="reset" class="btn btn-default" id="resetAdd">Annuler</button>
 							<button type="submit" class="btn btn-primary">Ajouter</button>
@@ -95,19 +95,19 @@
 						<input type="hidden" class="onglet" name="onglet" value="{$onglet|default:0}">
 						<input type="hidden" name="action" value="{$action}">
 						<input type="hidden" name="mode" value="ajoutMembres"><br>
-						
+
 					</div>
-					
+
 					<div class="clearfix"></div>
 					</form>
-				
+
 				</div>  <!-- row -->
-			
+
 			{else}
 				<p>Aucune liste définie</p>
 			{/if}
 			</div>
-			
+
 			<div class="clearfix"></div>
 
 	</div>  <!-- row -->
