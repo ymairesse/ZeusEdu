@@ -67,14 +67,15 @@ class eleve
     }
 
     /**
-    * retourne toutes les informations connues sur l'élève dont on fournit le matricule
-    * procédure static sans l'objet Eleve
-    *
-    * @param $matricule
-    *
-    * @return array
-    */
-    public static function staticGetDetailsEleve($matricule) {
+     * retourne toutes les informations connues sur l'élève dont on fournit le matricule
+     * procédure static sans l'objet Eleve.
+     *
+     * @param $matricule
+     *
+     * @return array
+     */
+    public static function staticGetDetailsEleve($matricule)
+    {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT de.*, user, mailDomain FROM '.PFX.'eleves AS de ';
         $sql .= 'LEFT JOIN '.PFX.'passwd AS dp ON (de.matricule = dp.matricule) ';
@@ -92,9 +93,7 @@ class eleve
         Application::DeconnexionPDO($connexion);
 
         return $detailsEleve;
-
     }
-
 
     /**
      * function classe.
@@ -208,13 +207,14 @@ class eleve
     }
 
     /**
-    * calcule l'âge approximatif d'un élève dont on fournit la date de naissance
-    *
-    * @param $dateNaissance
-    *
-    * @return array
-    */
-    public static function calculeAge($dateNaissance) {
+     * calcule l'âge approximatif d'un élève dont on fournit la date de naissance.
+     *
+     * @param $dateNaissance
+     *
+     * @return array
+     */
+    public static function calculeAge($dateNaissance)
+    {
         list($ajd['Y'], $ajd['m'], $ajd['d']) = explode('-', date('Y-m-d'));
         list($nais['Y'], $nais['m'], $nais['d']) = explode('-', $dateNaissance);
 
@@ -275,7 +275,6 @@ class eleve
 
         $resultat = $connexion->query($sql);
         $listeEleves = array();
-        $listeMatricules = array();
         if ($resultat) {
             while ($ligne = $resultat->fetch()) {
                 $listeEleves[] = $ligne['nomPrenom'];
@@ -355,7 +354,7 @@ class eleve
             $matricule = $post['matricule'];
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             // recherche des noms des champs à enregistrer
-            $sql = 'SHOW COLUMNS FROM '.PFX.'eleves';
+            $sql = 'SHOW COLUMNS FROM '.PFX.'eleves ';
             $resultat = $connexion->query($sql);
             $listeChamps = array();
             while ($ligne = $resultat->fetch()) {
@@ -484,11 +483,44 @@ class eleve
     }
 
     /**
+     * liste détaillée de tous les cours qui se donnent à l'élève courant
+     *
+     * @return array
+     */
+    public function listeCoursEleve()
+    {
+        $matricule = $this->matricule();
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT DISTINCT ec.coursGrp, SUBSTR(ec.coursGrp, 1,LOCATE('-',ec.coursGrp)-1) AS cours, ";
+        $sql .= 'libelle, nbheures, dsc.statut, section, nom, prenom ';
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(coursGrp, 1,LOCATE('-',coursGrp)-1) ";
+        $sql .= 'JOIN '.PFX.'statutCours AS dsc ON dsc.cadre = dc.cadre ';
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = ec.coursGrp ';
+        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = pc.acronyme ';
+        $sql .= "WHERE matricule = '$matricule' ";
+        $sql .= 'ORDER BY nbheures DESC, libelle ';
+
+        $resultat = $connexion->query($sql);
+        $listeCours = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $cours = $ligne['cours'];
+                $listeCours[$cours] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeCours;
+    }
+
+    /**
      * renvoie les données de mot de passe en clair de l'élève.
      *
      * @param void
      *
-     * @return arry
+     * @return array
      */
     public function getDataPwd()
     {
@@ -509,14 +541,15 @@ class eleve
     }
 
     /**
-    * renvoie les informations de passwd de l'élève dont on fournit le matricule
-    * procédure n'utilisant pas l'objet eleve
-    *
-    * @param $matricule
-    *
-    * @return array
-    */
-    public static function staticGetDataPwd($matricule) {
+     * renvoie les informations de passwd de l'élève dont on fournit le matricule
+     * procédure n'utilisant pas l'objet eleve.
+     *
+     * @param $matricule
+     *
+     * @return array
+     */
+    public static function staticGetDataPwd($matricule)
+    {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT matricule, user, passwd, mailDomain ';
         $sql .= 'FROM '.PFX.'passwd ';

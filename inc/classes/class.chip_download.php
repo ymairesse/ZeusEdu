@@ -37,7 +37,8 @@ class chip_download
 
                         /* Documents */
                         'txt' => 'text/plain',
-						'csv' => 'text/csv',
+			                  'csv' => 'text/csv',
+                        'html' => 'text/html',
                         'pdf' => 'application/pdf',
                         'doc' => 'application/msword',
                         'xls' => 'application/vnd.ms-excel',

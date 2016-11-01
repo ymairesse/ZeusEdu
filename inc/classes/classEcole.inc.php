@@ -300,15 +300,14 @@ class ecole
     public function listeClassesProf($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT groupe, acronyme,  dpc.coursGrp ';
+        $sql = 'SELECT DISTINCT groupe ';
         $sql .= 'FROM '.PFX.'profsCours AS dpc ';
         $sql .= 'JOIN '.PFX.'elevesCours AS `dec` ON `dec`.coursGrp = dpc.coursGrp ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = `dec`.matricule ';
         $sql .= "WHERE acronyme = '$acronyme' ";
-        $sql .= 'GROUP BY groupe ';
         $sql .= 'ORDER BY groupe ';
         $resultat = $connexion->query($sql);
-        $listeClasses = array();
+        $liste = array();
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
@@ -976,8 +975,7 @@ class ecole
         return $listeCours;
     }
     /**
-     * retourne la liste de tous les cours qui se donnent dans une classe
-     * chaque ligne contient
+     * retourne la liste de tous les cours qui se donnent dans une classe; chaque ligne contient
      *  - le cours comme clef
      *  - le nombre d'heures de cours et le libellé du cours
      * pour chaque cours, on distingue
@@ -1236,7 +1234,7 @@ class ecole
     }
 
     /**
-     * renvoie le nombre total d'élèves de l'école
+     * renvoie le nombre total d'élèves de l'école.
      *
      * @param void()
      *
@@ -1283,7 +1281,7 @@ class ecole
     }
 
     /**
-     * renvoie un tableau de la liste des anniversaires dans 0, 1, 2 et 3 jours
+     * renvoie un tableau de la liste des anniversaires dans 0, 1, 2 et 3 jours.
      *
      * @param
      *

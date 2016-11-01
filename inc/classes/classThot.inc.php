@@ -1384,7 +1384,7 @@ class thot
     public function listeStatutsSpeciaux()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT rv.acronyme,  nom, prenom, sexe ';
+        $sql = 'SELECT DISTINCT rv.acronyme,  nom, prenom, sexe, titre ';
         $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
         $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rv.acronyme ';
         $sql .= "WHERE rv.statut = 'dir' ";
