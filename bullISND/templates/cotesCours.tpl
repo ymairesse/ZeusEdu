@@ -1,5 +1,4 @@
-<!-- Gestion des moyennes par compétence pour l'ensemble des élèves d'un cours  
-Les informations sont données pour un bulletin donné -->
+<!-- Aperçu des cotes pour vos cours -->
 <h2 title="[{$intituleCours.option} | {$intituleCours.cours_ID}]">{$intituleCours.nom} {$intituleCours.heures}h -> {$intituleCours.classes} Bulletin {$bulletin}</h2>
 <table class="tableauAdmin">
 	<tr>
@@ -25,13 +24,13 @@ Les informations sont données pour un bulletin donné -->
 			<td class="TJ {$uneCote.echec}">{$uneCote.cote}</td>
 			<td>{$uneCote.max}</td>
 		{/foreach}
-		
+
 		<td>&nbsp;</td>
 		{foreach from=$unResultat.EX item=uneCote}
 			<td class="EX {$uneCote.echec}">{$uneCote.cote}</td>
 			<td>{$uneCote.max}</td>
 		{/foreach}
-		
+
 		<td>&nbsp;</td>
 		<td class="TJ {$unResultat.moyennes.TJ.echec}">
 			{$unResultat.moyennes.TJ.cote|default:'&nbsp;'}

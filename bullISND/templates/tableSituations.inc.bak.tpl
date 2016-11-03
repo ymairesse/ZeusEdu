@@ -90,8 +90,9 @@
 
 	{* Faut-il traiter le cas d'une période avec délibération? *}
 	{if in_array($bulletin,$PERIODESDELIBES)}
-
+		{* si c'est une période de délibé, on recueille les cotes de bilan *}
 		{if ($bulletin == $nbBulletins) &&  isset($listeCotesExternes.$matricule)}
+			{* si c'est la dernière période de l'année scolaire, on traite la cote externe *}
 			{include file='encodageBulletin/avecExterne.tpl'}
 			{else}
 			{include file='encodageBulletin/sansExterne.tpl'}

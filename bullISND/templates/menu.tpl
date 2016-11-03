@@ -28,9 +28,6 @@
 			<li><a href="index.php?action=pdf&amp;mode=bulletinClasse">Bulletins par classe PDF</a></li>
 			<li><a href="index.php?action=pdf&amp;mode=niveau">Bulletins par niveaux</a></li>
 			<li><a href="index.php?action=pdf&amp;mode=archive">Archives des bulletins</a></li>
-			{if ($userStatus == 'admin')}
-				<li><a href="index.php?action=pdf&amp;mode=gestFichiers">Gestion des fichiers PDF</a></li>
-			{/if}
 		</ul>
 	</li>
 		{if ($userStatus == 'admin') || ($userStatus == 'direction')}

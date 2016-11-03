@@ -8,7 +8,7 @@
 
 {if isset($tableErreurs) && ($tableErreurs != Null)}
 	{assign var=ancre value=''}
-	{include file="erreurEncodage.tpl"}
+	{include file="encodageBulletin/erreurEncodage.tpl"}
 {/if}
 
 <form name="encodage" id="encodage" action="index.php" method="POST" autocomplete="off" role="form" class="form-vertical">
@@ -48,7 +48,7 @@
 			</div>
 
 			<div class="col-md-10 col-xs-12">
-				{include file="introCotes.inc.tpl"}
+				{include file="encodageBulletin/introCotes.inc.tpl"}
 			</div>
 
 		</div>  <!-- row -->
@@ -57,23 +57,23 @@
 		<div class="row">
 			{if $listeAttitudes}
 				<div class="col-md-7 col-sm-12">
-					{include file="blocCommentaireProf.tpl"}
+					{include file="encodageBulletin/blocCommentaireProf.tpl"}
 				</div>
 				<div class="col-md-5 col-sm-12">
-					{include file="blocAttitudes.tpl"}
+					{include file="encodageBulletin/blocAttitudes.tpl"}
 				</div>
 			{else}
 				<div class="col-md-12 col-sm-12">
-					{include file="blocCommentaireProf.tpl"}
+					{include file="encodageBulletin/blocCommentaireProf.tpl"}
 				</div>
 			{/if}
 		</div>  <!-- row -->
 
 		{*  --------------- Visualisation et choix des situations au bulletin ------------------- *}
-		{include file="tableSituations.inc.tpl"}
+		{include file="encodageBulletin/tableSituations.inc.tpl"}
 
 		{*  --------------- rappels des situations de l'année et des remarques précédentes ------------------- *}
-		{include file="archiveSitRem.inc.tpl"}
+		{include file="encodageBulletin/archiveSitRem.inc.tpl"}
 
 		<div class="clearfix" style="border-bottom:1px solid black; padding-bottom:2em;"></div>
 

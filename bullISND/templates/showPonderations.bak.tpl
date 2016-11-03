@@ -86,7 +86,7 @@
 		<!-- col-md... -->
 
 		<div class="col-md-2 col-sm-12">
-			{include file="noticeBaremes.html"}
+			{include file="ponderation/noticeBaremes.html"}
 		</div>
 		<!-- col-md... -->
 

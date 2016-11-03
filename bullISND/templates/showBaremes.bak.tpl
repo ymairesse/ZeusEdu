@@ -1,5 +1,5 @@
 <h2>Voir et modfier les pondérations par périodes</h2>
-{include file="noticeBaremes.html"}
+{include file="ponderation/noticeBaremes.html"}
 
 <h2>{$intituleCours.coursGrp} | {$intituleCours.nomCours} {$intituleCours.nbheures}h {$intituleCours.statut} ({$listeClasses})</h2>
 <table class="tableauAdmin">
@@ -42,7 +42,7 @@
 						<input type="hidden" name="mode" value="ajoutBaremeParticulier">
 						<input type="hidden" name="coursGrp" value="{$coursGrp}">
 					</form>
-			
+
 			{else}
 					<form name="supprBaremeParticulier" method="POST" action="index.php" class="microForm supprBareme">
 					<input type="hidden" name="action" value="gestionBaremes">
@@ -78,7 +78,7 @@
 <script type="text/javascript">
 {literal}
 	$(document).ready(function(){
-	
+
 		$(".listeEleves").change(function(){
 			var matricule = $(this).val();
 			if (matricule > 0)
@@ -97,9 +97,9 @@
 					return false;
 					}
 		})
-		
+
 		$("#ajoutBaremeEleve").submit(function(){
-			$.blockUI();			
+			$.blockUI();
 			$("#wait").show();
 		})
 	})

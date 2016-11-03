@@ -9,7 +9,12 @@
 	<ul>
 	{foreach $periodes item=bulletin}
 		{if $bulletin > 0}
-		<li><a href="archives/{$anneeScolaire}/{$bulletin}/{$classeArchive}-{$bulletin}.pdf" target="_blank" title="Tous les bulletins de {$classeArchive}">Bulletin numéro {$bulletin}</a></li>
+		<li>
+			<a href="archives/{$anneeScolaire}/{$bulletin}/{$classeArchive}-{$bulletin}.pdf"
+				target="_blank"
+				title="Tous les bulletins de {$classeArchive}">Bulletin numéro {$bulletin}
+			</a>
+		</li>
 		{/if}
 	{/foreach}
 	</ul>

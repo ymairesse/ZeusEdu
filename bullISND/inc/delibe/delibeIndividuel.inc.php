@@ -35,7 +35,7 @@ switch ($etape) {
         // recherche toutes les décisions prises en délibération, y compris les infos nécessaires à la notification de l'élève $matricule
         $decision = $Bulletin->listeDecisions($matricule);
         $decision = $decision[$matricule];
-        
+
         // liste doublement liée des élèves de la classe (pour suivant et précédent)
         $prevNext = $Bulletin->prevNext($matricule,$listeEleves);
         // liste de tous les commentaires de titulaires de différents cours
@@ -56,7 +56,7 @@ switch ($etape) {
         $smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
         $smarty->assign('NBPERIODES',NBPERIODES);
         $smarty->assign('listePeriodes',$listePeriodesDelibe);
-        $smarty->assign('corpsPage','delibeIndividuel');
+        $smarty->assign('corpsPage','delibe/delibeIndividuel');
         break;
     default:
         // wtf

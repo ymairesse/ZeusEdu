@@ -34,6 +34,7 @@
                         <tbody>
 
                             <!--  emplacement à compléter en Ajax -->
+                            <!-- ponderation/formPonderation.tpl  -->
 
                         </tbody>
 

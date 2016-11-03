@@ -73,7 +73,7 @@
 			</div>  <!-- col-md-... -->
 
 			<div class="col-md-3 col-sm-12">
-			{include  file="noticePoidsCompetences.html"}
+			{include  file="carnet/noticePoidsCompetences.html"}
 			</div>  <!-- col-md... -->
 	</div>  <!-- row -->
 

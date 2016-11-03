@@ -16,6 +16,20 @@ class Bulletin
     }
 
     /**
+     *  renvoie le nom du module courant.
+     *
+     * @param $level : le niveau de sous-repertoire à explorer
+     *
+     * @return string
+     */
+    public function getModule($level)
+    {
+        $dir = explode('/', getcwd());
+
+        return $dir[count($dir) - $level];
+    }
+
+    /**
      * retourne un array contenant une liste des périodes de l'année scolaire.
      *
      * @param $nbBulletins
@@ -1857,9 +1871,8 @@ class Bulletin
      /**
       * Enregistrement des cotes de situations recalculées après remplissage du bulletin.
       *
-      * @param $listeNouvellesSituations
-      * @param $bulletin
-      * @result Null
+      * @param $listeNouvellesSituations : array
+      * @param $bulletin: le numéro du bulletin
       */
      public function enregistrerSituations($listeSituations, $bulletin)
      {
@@ -2081,6 +2094,8 @@ class Bulletin
      * utile pour des listes chaînées.
      *
      * @param $listeEleves
+     *
+     * @return array
      */
     public function listeElevesSuivPrec($listeEleves)
     {
@@ -5444,6 +5459,32 @@ class Bulletin
     }
 
     /**
+     * compression de tous les fichiers bulletin d'un niveau.
+     *
+     * @param $dir : répertoire où se trouvent les fichiers
+     * @param $bulletin : numéro du bulletin concerné
+     * @param $listeClasses : liste des classes à ce niveu d'études
+     */
+    public function zipFilesNiveau($dir, $bulletin, $listeClasses)
+    {
+        $niveau = substr($listeClasses[0], 0, 1);
+
+        $zip = new ZipArchive();
+        $zipName = "$dir/niveau_$niveau-Bulletin_$bulletin.zip";
+        if ($zip->open($zipName, ZIPARCHIVE::CREATE) !== true) {
+            exit("Impossible d'ouvrir ".$zipName);
+        }
+        // $listeFichiers = $this->dirFiles($dir);
+        foreach ($listeClasses as $uneClasse) {
+            $zip->addFile("$dir/$uneClasse-$bulletin.pdf");
+        }
+        $zip->close();
+
+        $module = substr($dir, strrpos($dir,'/'));
+        return sprintf('%s/niveau_%s-Bulletin_%d.zip',$module, $niveau, $bulletin);
+    }
+
+    /**
      * rédaction du bulletin d'un élève.
      *
      * @param array  $dataEleve : tableau contenant $matricule, $annee, $degre et noms des titulaires
@@ -5576,14 +5617,18 @@ class Bulletin
                 unset($eleve);
             }
         }
+
         // création éventuelle du répertoire au nom de l'utlilisateur
-        if (!(file_exists("pdf/$acronyme"))) {
-            mkdir("pdf/$acronyme");
-        }
+        $ds = DIRECTORY_SEPARATOR;
+        $module = $this->getModule(1);
+        $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
+        if (!(file_exists($chemin)))
+            mkdir ($chemin, 0700, true);
+
         // s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
-        $pdf->Output("pdf/$acronyme/$classe-$bulletin.pdf");
+        $pdf->Output($chemin.$ds.$classe."-".$bulletin.".pdf", 'F');
         if ($parNiveau == false) {
-            return "pdf/$acronyme/$classe-$bulletin.pdf";
+            return $module.$ds.$classe."-".$bulletin.".pdf";
         } else {
             return;
         }

@@ -8,6 +8,10 @@ $Application = new Application();
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
+if (!(isset($_SESSION[APPLICATION]))) {
+    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+}
+
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $laDate = isset($_POST['laDate']) ? $_POST['laDate'] : null;
 $typeDoc = isset($_POST['typeDoc']) ? $_POST['typeDoc'] : null;

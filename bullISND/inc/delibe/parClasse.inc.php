@@ -21,9 +21,6 @@ if (($etape == 'showCotes') && ($classe != null)) {
 
     $listeSituations = $Bulletin->listeSituationsDelibe($listeEleves, array_keys($listeCoursGrp), $bulletin);
 
-    //// À LA DERNIÈRE PÉRIODE DE L'ANNÉE, ON TIENT COMPTE DES ÉPREUVES EXTERNES ÉVENTUELLES
-    //if ($bulletin == NBPERIODES)
-    //	$listeSituations = $Bulletin->listeSitDelibeExternes($listeSituations, $listeEleves, $listeCoursGrp);
     $delibe = $Bulletin->echecMoyennesDecisions($listeSituations);
 
     $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
@@ -36,5 +33,5 @@ if (($etape == 'showCotes') && ($classe != null)) {
     $smarty->assign('titusClasse', $titusClasse);
     $smarty->assign('listeCours', $listeCours);
     $smarty->assign('listeMentions', $listeMentions);
-    $smarty->assign('corpsPage', 'feuilleDelibes');
+    $smarty->assign('corpsPage', 'delibe/feuilleDelibes');
 }

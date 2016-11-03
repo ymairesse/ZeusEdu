@@ -4,7 +4,8 @@
 
 		<div class="col-md-6 col-sm-12">
 
-			<h2>Voir et modifier les pondérations</h2> Bulletin en cours: {$bulletin}
+			<h2>Voir et modifier les pondérations</h2>
+			Bulletin en cours: {$bulletin}
 			<h3 title="{$intituleCours.coursGrp}">
 				{$intituleCours.annee} : {$intituleCours.statut}
 				{if $intituleCours.nomCours}  {$intituleCours.nomCours}
@@ -21,7 +22,9 @@
 						<td>Certificatif</td>
 					</tr>
 
-					{section name=periodes start=1 loop=$nbPeriodes+1} {assign var=ponderation value=$ponderations.$coursGrp.$matricule} {assign var=n value=$smarty.section.periodes.index}
+					{section name=periodes start=1 loop=$nbPeriodes+1}
+					{assign var=ponderation value=$ponderations.$coursGrp.$matricule}
+					{assign var=n value=$smarty.section.periodes.index}
 					<tr>
 						<td>{$n}: <strong>{$periodes.{$n-1}}</strong></td>
 						<td>
@@ -51,7 +54,7 @@
 
 		<div class="col-md-6 col-sm-12">
 
-			{include file="noticeBaremes.html"}
+			{include file="ponderation/noticeBaremes.html"}
 
 		</div>
 		<!-- col-md... -->

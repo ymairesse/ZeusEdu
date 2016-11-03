@@ -8,6 +8,10 @@ $Application = new Application();
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
+if (!(isset($_SESSION[APPLICATION]))) {
+    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+}
+
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $listeEleves = isset($_POST['listeEleves']) ? $_POST['listeEleves'] : null;
 
@@ -16,11 +20,6 @@ $Bulletin = new Bulletin();
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
-
-if (!isset($_SESSION[APPLICATION])) {
-    die("<p><strong>Votre session est expirée. Veuillez vous reconnecter.</strong></p>");
-    exit();
-    }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();

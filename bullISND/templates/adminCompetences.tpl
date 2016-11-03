@@ -5,11 +5,16 @@
 		<div class="row">
 
 			<div class="col-md-6 col-sm-12">
-				<h3>Compétences actuelles</h3> {if $listeCompetences|@count > 0} {assign var=competences value=$listeCompetences.$cours} {foreach from=$competences key=idComp item=data}
-				<input type="checkBox" name="suppr_{$idComp}" class="supprComp form-control" id="chck_{$idComp}">
-				<input type="text" name="libelle_{$idComp}" value="{$data.libelle}" class="lblComp form-control" id="lbl_{$idComp}" size="40">
-				<input type="text" name="ordre_{$idComp}" value="{$data.ordre}" size="3" class="form-control">
-				<br> {/foreach} {/if}
+				<h3>Compétences actuelles</h3>
+				{if $listeCompetences|@count > 0}
+				{assign var=competences value=$listeCompetences.$cours}
+					{foreach from=$competences key=idComp item=data}
+					<input type="checkBox" name="suppr_{$idComp}" class="supprComp form-control" id="chck_{$idComp}">
+					<input type="text" name="libelle_{$idComp}" value="{$data.libelle}" class="lblComp form-control" id="lbl_{$idComp}" size="40">
+					<input type="text" name="ordre_{$idComp}" value="{$data.ordre}" size="3" class="form-control">
+					<br>
+					{/foreach}
+				{/if}
 				<input type="checkBox" name="toutCocher" id="toutCocher">
 				<label for="toutCocher">Tout Cocher</label>
 				<button type="button" class="btn btn-primary" id="effacer"><i class="fa fa-arrow-up"></i> Effacer</button>
@@ -26,9 +31,8 @@
 
 			<div class="col-md-2 col-sm-12">
 				<div class="btn-group-vertical pull-right">
-					<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
-					<br>
-					<button type="reset" class="btn btn-default pull-right">Annuler</button>
+					<button type="submit" class="btn btn-primary">Enregistrer</button>
+					<button type="reset" class="btn btn-default">Annuler</button>
 				</div>
 				<input type="hidden" name="cours" value="{$cours}">
 				<input type="hidden" name="niveau" value="{$niveau}">
