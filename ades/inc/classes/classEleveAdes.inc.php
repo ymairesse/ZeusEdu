@@ -29,7 +29,6 @@ class EleveAdes
         $sql .= 'JOIN '.PFX.'adesTypesFaits AS atf ON (af.type = atf.type) ';
         $sql .= "WHERE matricule = '$matricule' ";
         $sql .= 'ORDER BY anneeScolaire DESC, atf.ordre, ladate, idFait ';
-
         $resultat = $connexion->query($sql);
         $listeFaits = array(ANNEESCOLAIRE => null);
         if ($resultat) {
@@ -237,6 +236,7 @@ class EleveAdes
             $sql = 'INSERT INTO '.PFX.'adesFaits ';
             $sql .= 'SET '.$listeSQL.' ';
         }
+        
         $resultat = $connexion->exec($sql);
         Application::DeconnexionPDO($connexion);
 
@@ -265,50 +265,50 @@ class EleveAdes
         return $resultat;
     }
 
-        /**
-         * incrémentation du nombre d'inscriptions à une retenue.
-         *
-         * @param int $idretenue
-         * @result boolean: true si tout s'est bien passé
-         */
-        public function occupePlaceRetenue($idretenue)
-        {
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'UPDATE '.PFX.'adesRetenues ';
-            $sql .= 'SET occupation = occupation+1 ';
-            // $sql .= "SET occupation = occupation+1, places = places-1 ";
-            $sql .= "WHERE idretenue = '$idretenue' ";
-            $resultat = $connexion->exec($sql);
-            Application::DeconnexionPDO($connexion);
-            if ($resultat) {
-                return true;
-            }
+    /**
+     * incrémentation du nombre d'inscriptions à une retenue.
+     *
+     * @param int $idretenue
+     * @result boolean: true si tout s'est bien passé
+     */
+    public function occupePlaceRetenue($idretenue)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'adesRetenues ';
+        $sql .= 'SET occupation = occupation+1 ';
+        // $sql .= "SET occupation = occupation+1, places = places-1 ";
+        $sql .= "WHERE idretenue = '$idretenue' ";
+        $resultat = $connexion->exec($sql);
+        Application::DeconnexionPDO($connexion);
+        if ($resultat) {
+            return true;
         }
+    }
 
-        /**
-         * décrémentation du nombre d'inscriptions à une retenue.
-         *
-         * @param int $idretenue
-         * @result boolean: true si tout s'est bien passé
-         */
-        public function liberePlaceRetenue($idretenue)
-        {
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'UPDATE '.PFX.'adesRetenues ';
-            $sql .= 'SET occupation = occupation-1 ';
-            $sql .= "WHERE idretenue = '$idretenue' ";
-            $resultat = $connexion->exec($sql);
-            Application::DeconnexionPDO($connexion);
-            if ($resultat) {
-                return true;
-            }
+    /**
+     * décrémentation du nombre d'inscriptions à une retenue.
+     *
+     * @param int $idretenue
+     * @result boolean: true si tout s'est bien passé
+     */
+    public function liberePlaceRetenue($idretenue)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'adesRetenues ';
+        $sql .= 'SET occupation = occupation-1 ';
+        $sql .= "WHERE idretenue = '$idretenue' ";
+        $resultat = $connexion->exec($sql);
+        Application::DeconnexionPDO($connexion);
+        if ($resultat) {
+            return true;
         }
+    }
 
     /**
      * renvoie la variable $listeFaits de l'objet EleveAdes.
      *
-     * @param
-     * @result array : la liste structurée des faits disciplinaires
+     * @param void
+     * @return array : la liste structurée des faits disciplinaires
      */
     public function laListeFaits()
     {

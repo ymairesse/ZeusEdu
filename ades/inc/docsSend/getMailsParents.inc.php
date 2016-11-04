@@ -11,7 +11,7 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
+    die("<div class='alert alert-danger'>".RECONNECT."</div>");
 }
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 

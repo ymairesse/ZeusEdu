@@ -735,13 +735,14 @@ class Ades
     }
 
     /**
-    * retourne la liste des envois par idFait pour un élève dont on fournit le matricule
-    *
-    * @param $matricule
-    *
-    * @return array
-    */
-    public function sentByIdFait($matricule) {
+     * retourne la liste des envois par idFait pour un élève dont on fournit le matricule.
+     *
+     * @param $matricule
+     *
+     * @return array
+     */
+    public function sentByIdFait($matricule)
+    {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idfait, date, destinataire, de.nomResp, dep.nomPere, dem.nomMere ';
         $sql .= 'FROM '.PFX.'adesSent AS sent ';
@@ -762,5 +763,46 @@ class Ades
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * retourne un tableau avec la largeur des champs pour l'impression tenant compte de la largeur de la PAGE.
+     *
+     * @param $pageWidth
+     * @param $descriptionChamps
+     *
+     * @return array
+     */
+    public function fieldWidth($PAGEWIDTH, $listeTypesFaits, $descriptionChamps)
+    {
+        $width = array();
+        // recension des tailles d'impression des champs
+        foreach ($listeTypesFaits as $idTypeFait => $dataTypeFait) {
+            // $type = $dataTypeFait['titreFait'];
+            $listeChamps = $dataTypeFait['listeChamps'];
+            foreach ($listeChamps as $fieldId => $unChamp) {
+                if (in_array('tableau', $descriptionChamps[$unChamp]['contextes'])) {
+                    $width[$idTypeFait][$unChamp] = $descriptionChamps[$unChamp]['printWidth'];
+                }
+            }
+        }
+        // calcul de la longueur totale pour chaque fait
+        $totalWidth = array();
+        foreach ($width as $idTypeFait => $longueurs) {
+            $totalWidth[$idTypeFait] = array_sum($longueurs);
+        }
+        // calculs de la taille de chaque champ pour chaque type de fait
+        $echelles = array();
+        foreach ($listeTypesFaits as $idType => $dataTypeFait) {
+            $listeChamps = $dataTypeFait['listeChamps'];
+            foreach ($listeChamps as $fieldId => $unChamp) {
+                if (in_array('tableau', $descriptionChamps[$unChamp]['contextes'])) {
+                    $original = $descriptionChamps[$unChamp]['printWidth'];
+                    $echelles[$idType][$unChamp] = round($descriptionChamps[$unChamp]['printWidth'] * $PAGEWIDTH / $totalWidth[$idType]);
+                }
+            }
+        }
+
+        return $echelles;
     }
 }

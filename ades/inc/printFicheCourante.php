@@ -1,0 +1,65 @@
+<?php
+
+require_once '../../config.inc.php';
+
+// définition de la class Application
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
+$Application = new Application();
+
+// définition de la class USER utilisée en variable de SESSION
+require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+session_start();
+
+if (!(isset($_SESSION[APPLICATION]))) {
+    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
+}
+
+$anScol = isset($_GET['anScol']) ? $_GET['anScol'] : null;
+$matricule = isset($_GET['matricule']) ? $_GET['matricule'] : null;
+
+require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+$eleve = new Eleve($matricule);
+$Eleve = $eleve->getDetailsEleve();
+
+$module = $Application->getModule(2);
+require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
+$ficheDisc = new EleveAdes($matricule);
+
+$listeFaits = $ficheDisc->laListeFaits()[$anScol];
+$listeRetenues = $ficheDisc->laListeRetenues();
+
+require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
+$Ades = new Ades();
+$listeTypesFaits = $Ades->listeTypesFaits();
+// Application::afficher($listeTypesFaits);
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty();
+$smarty->template_dir = '../templates';
+$smarty->compile_dir = '../templates_c';
+
+$smarty->assign('ECOLE', ECOLE);
+$smarty->assign('ADRESSE', ADRESSE);
+$smarty->assign('TELEPHONE', TELEPHONE);
+$smarty->assign('COMMUNE', COMMUNE);
+$smarty->assign('DATE', $Application->dateNow());
+$smarty->assign('BASEDIR', BASEDIR);
+$smarty->assign('ANNEESCOLAIRE', $anScol);
+
+$smarty->assign('Eleve', $Eleve);
+$smarty->assign('listeFaits', $listeFaits);
+$smarty->assign('listeRetenues', $listeRetenues);
+$smarty->assign('listeTypesFaits', $listeTypesFaits);
+$descriptionChamps = $Ades->listeChamps();
+// Application::afficher($descriptionChamps);
+$smarty->assign('descriptionChamps', $descriptionChamps);
+define('PAGEWIDTH', 600);
+$echelles = $Ades->fieldWidth(PAGEWIDTH, $listeTypesFaits, $descriptionChamps);
+$smarty->assign('echelles', $echelles);
+$smarty->assign('contexte', 'tableau');
+
+require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
+$html2pdf = new Html2PDF('P', 'A4', 'fr');
+
+$ficheEleve4PDF = $smarty->fetch('eleve/ficheEleve4PDF.tpl');
+$html2pdf->WriteHTML($ficheEleve4PDF);
+$html2pdf->Output('fiche'.$matricule.'.pdf');

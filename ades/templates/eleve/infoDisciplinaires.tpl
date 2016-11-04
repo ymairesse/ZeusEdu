@@ -19,13 +19,24 @@
 
 <div class="container">
 
-	<!-- Tabs différentes années scolaires -->
-	<ul class="nav nav-tabs navbar-right hidden-print" id="tabsDisc">
-		{foreach from=$listeFaitsAnnees key=anneeScolaire item=wtf}
-		<li><a href="#tab{$anneeScolaire}" data-toggle="tab">{$anneeScolaire}</a></li>
-		{/foreach}
-	</ul>
-	<!-- Tabs -->
+	<div class="row">
+
+		<div class="col-xs-12">
+			<!-- Tabs différentes années scolaires -->
+			<ul class="nav nav-tabs navbar-right hidden-print" id="tabsDisc">
+				{foreach from=$listeFaitsAnnees key=anneeScolaire item=wtf name=boucleAnScol}
+				<li {if $smarty.foreach.boucleAnScol.iteration == 1}class="active"{/if} data-anneescolaire="{$anneeScolaire}">
+					<a href="#tab{$anneeScolaire}"
+						data-anneescolaire="{$anneeScolaire}"
+						data-toggle="tab">
+						{$anneeScolaire}
+					</a>
+				</li>
+				{/foreach}
+			</ul>
+			<!-- Tabs -->
+		</div>
+	</div>
 
 	<div class="row">
 
@@ -39,7 +50,13 @@
 
 				<div class="tab-pane{if $tour == 0} active{assign var=tour value=$tour+1}{else} hidden-print{/if}" id="tab{$anneeScolaire}">
 
-					<h3><button type="button" id="openAll" class="btn btn-success btn-xs"><i class="fa fa-arrow-down"></i></button> {$anneeScolaire}</h3>
+					<h3>
+						<button type="button" id="openAll" class="btn btn-success btn-xs"><i class="fa fa-arrow-down"></i></button>
+						{$anneeScolaire}
+						<a target="_blank" href="inc/printFicheCourante.php?matricule={$matricule}&amp;anScol={$anneeScolaire}" class="btn btn-primary btn-xs pull-right">
+							<i class="fa fa-print"></i> Imprimer
+						</a>
+					</h3>
 					{foreach from=$listeTypesFaits key=typeFait item=descriptionTypeFait}
 					{* si un fait de ce type figure dans la fiche disciplinaire *}
 					{if isset($listeFaits[$typeFait])}
@@ -49,7 +66,9 @@
 					{* on indique le titre de ce type de faits *}
 					<h3 style="clear:both;background-color: #{$descriptionTypeFait.couleurFond}; color: #{$descriptionTypeFait.couleurTexte}">
 						<button type="button" class="btn btn-warning btn-xs openThis"><i class="fa fa-arrow-right"></i></button>
-							{$descriptionTypeFait.titreFait} <span class="badge pull-right" style="background:red"> {$listeFaits.$typeFait|@count}</span></h3>
+							{$descriptionTypeFait.titreFait}
+							<span class="badge pull-right" style="background:red"> {$listeFaits.$typeFait|@count}</span>
+					</h3>
 
 					<div class="table-responsive">
 						<table class="table table-striped table-condensed tableauBull">
@@ -72,6 +91,7 @@
 								<th style="width:16px">&nbsp;</th>
 							</tr>
 							{* // ----------------- ligne de titre du tableau -------------------------- *}
+
 							{* ------------------ description du fait -------------------------------- *}
 							{foreach from=$listeFaits.$typeFait key=idfait item=unFaitDeCeType}
 							<tr>
@@ -88,11 +108,15 @@
 								{if $descriptionTypeFait.imprimable == 1}
 								<td style="width:1em">
 									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
-									<button type="button" class="btn btn-info btn-xs print" data-idfait="{$idfait}" title="Imprimer">
+									<a href="inc/retenues/printRetenue.php?idfait={$idfait}"
+										target="_blank"
+										class="btn btn-info btn-xs">
 										<i class="fa fa-print"></i>
-									</button>
-									{else}&nbsp; {/if}
+									</a>
+									{else}&nbsp;
+									{/if}
 								</td>
+
 								<td style="width:1em">
 									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
 									<button type="button" class="btn btn-success btn-xs send-eDoc" data-idfait="{$idfait}" title="Envoyer">
@@ -158,7 +182,6 @@
 			<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
 
 		</div>
-
 
 	</div>
 	<!-- row -->

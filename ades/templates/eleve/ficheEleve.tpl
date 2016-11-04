@@ -3,6 +3,16 @@
 {assign var=memo value=$memoEleve.proprio} {assign var=idProprio value=$memo|key} {assign var=leMemo value=$memo.$idProprio}
 <div class="container">
 
+	<div class="alert alert-danger alert-dismissible hidden" role="alert" id="mailKO">
+		<button type="button" class="close pull-right">&times;</button>
+		L'envoi du mail a échoué
+	</div>
+
+	<div class="alert alert-success alert-dismissible hidden" role="alert" id="mailOK">
+		<button type="button" class="close pull-right">&times;</button>
+		Le mail a été envoyé
+	</div>
+
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
 	<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
@@ -43,7 +53,6 @@
 				</div>
 				<div class="modal-body" id="formFait">
 
-
 				</div>
 			</div>
 		</div>
@@ -64,34 +73,20 @@
 		</div>
 	</div>
 
-	<!-- boîte modale d'impression d'un fait disciplinaire -->
-	<div class="modal fade" id="retenuePDF" tabindex="-1" role="dialog" aria-labelledby="titrePDF" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="titrePDF">Retenue à imprimer</h4>
-				</div>
-				<div class="modal-body">
-					<p style="text-align:center">
-						Votre document est prêt: <span id="lePdf"></span>
-						<br> Veuillez cliquer sur la photo.
-					</p>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	{include file="eleve/modal/envoiRetenue.tpl"}
 
 </div>
 <!-- container -->
 
+<iframe width="1px" height="1px" id="iframePrint">
+
+</iframe>
+
 <script type="text/javascript">
-	<!-- quel est l'onglet actif? -->
+	<!-- quel est l onglet actif? -->
 	var onglet = "{$onglet|default:''}";
 
-	<!-- activer l'onglet dont le numéro a été passé -->
+	<!-- activer l onglet dont le numéro a été passé -->
 	$(".nav-tabs li a[href='#tabs-" + onglet + "']").tab('show');
 
 
@@ -145,23 +140,18 @@
 			})
 		})
 
-		$(".print").click(function() {
+		$(".print").click(function(event) {
 			var idfait = $(this).data('idfait');
 			$.post('inc/retenues/printRetenue.inc.php', {
 					idfait: idfait
 				},
-				function(resultat) {
-					$("#lePdf").html(resultat);
-					$("#retenuePDF").modal('show');
-				}
+				function(resultat) {}
 			)
 		})
 
 		$("#lePdf").click(function() {
 			$("#retenuePDF").modal('hide');
 		})
-
-
 
 
 		$("#tabs li a").click(function() {
@@ -182,6 +172,22 @@
 				$("#formFait").html(resultat);
 				$("#editFait").modal('show');
 			})
+		})
+
+		$("#printPage").click(function() {
+			var anScol = $("#tabsDisc li.active").data('anneescolaire');
+			var matricule = $(this).data('matricule');
+			$.post('inc/printFicheCourante.inc.php', {
+					anScol: anScol,
+					matricule: matricule
+				},
+				function(resultat) {
+
+				})
+		})
+
+		$(".close").click(function(){
+			$(this).parent('div').addClass('hidden');
 		})
 
 	})
