@@ -258,6 +258,8 @@
 				function(resultat) {
 					// construction de la boîte modale d'édition du JDC
 					$("#zoneMod").html(resultat);
+					// indispensable pour réactiver le CKEDITOR après un "dismiss" de la boîte modale
+					CKEDITOR.replace('enonce');
 					$("#modalMod").modal('show');
 					// mise à jour du calendrier
 					$('#calendar').fullCalendar('gotoDate', startDate);
