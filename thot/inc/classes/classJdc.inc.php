@@ -75,8 +75,9 @@ class Jdc
                 $nom = 'M. ';
             }
             if ($travail['prenom'] != '') {
-                $nom .= substr($travail['prenom'], 0, 1).'.';
+                $nom .= mb_substr($travail['prenom'], 0, 1, 'UTF-8').'.';
             }
+
             $travail['nom'] = $nom.' '.$travail['nom'];
             // $travail['startDate'] = date('d/m/Y', strtotime($travail['startDate']));
 
@@ -87,7 +88,6 @@ class Jdc
             }
         }
         Application::DeconnexionPDO($connexion);
-
         return $travail;
     }
 
