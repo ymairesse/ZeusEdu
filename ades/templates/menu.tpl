@@ -46,6 +46,8 @@
 				<ul class="dropdown-menu">
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=admin&amp;mode=editBilletRetenue">Édition des billets de retenue</a></li>
+					<li><a href="index.php?action=admin&amp;mode=editSignature">Édition de la signature des mails</a></li>
+					<li><a href="index.php?action=admin&amp;mode=editMailRetenue">Édition du texte type des mails</a></li>
 					<li><a href="index.php?action=admin&amp;mode=users">Utilisateurs</a></li>
 					{/if}
 					<li><a href="index.php?action=admin&amp;mode=remAuto">Gestion des textes automatiques</a></li>

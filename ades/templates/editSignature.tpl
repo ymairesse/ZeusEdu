@@ -15,7 +15,8 @@
 				<form role="form" name="editeur" method="POST" action="index.php">
 					<button type="submit" class="btn btn-primary pull-right" name="submit">Enregistrer</button>
 					<input type="hidden" name="action" value="{$action}">
-					<input type="hidden" name="mode" value="enregistrer">
+					<input type="hidden" name="mode" value="{$mode}">
+					<input type="hidden" name="etape" value="enregistrer">
 					<textarea id="signature" name="signature" cols="80" rows="15" class="ckeditor" placeholder="Frappez votre texte ici" autofocus="true">{$signature}</textarea>
 				</form>
 

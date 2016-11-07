@@ -73,7 +73,7 @@
 		</div>
 	</div>
 
-	{include file="eleve/modal/envoiRetenue.tpl"}
+	{include file="retenues/modal/envoiRetenue.tpl"}
 
 </div>
 <!-- container -->
