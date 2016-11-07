@@ -22,7 +22,7 @@ $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 
-$idfait = isset($_POST['idfait']) ? $_POST['idfait'] : null;
+$idfait = isset($_GET['idfait']) ? $_GET['idfait'] : null;
 
 $infosFait = $Ades->infosFait($idfait);
 foreach ($infosFait as $key => $chaine) {
@@ -37,11 +37,6 @@ $Eleve = $Eleve->getDetailsEleve();
 $idretenue = $infosFait['idretenue'];
 $infosRetenue = $Ades->infosRetenue($idretenue);
 
-$date = str_replace('-','',Application::dateMysql($infosRetenue['dateRetenue']));
-$heure = str_replace(':','', $infosRetenue['heure']);
-$user = $Eleve['user'];
-$fileName= $user.'_'.$date.'_'.$heure.'.pdf';
-
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
@@ -54,9 +49,6 @@ $smarty->assign('COMMUNE', COMMUNE);
 $smarty->assign('DATE', $Application->dateNow());
 $smarty->assign('BASEDIR', BASEDIR);
 
-foreach ($infosRetenue as $key => $value) {
-    $smarty->assign("$key", $value);
-}
 foreach ($infosFait as $key => $value) {
     $smarty->assign("$key", $value);
 }
@@ -64,24 +56,21 @@ foreach ($Eleve as $key => $value) {
     $smarty->assign("$key", $value);
 }
 
-// création éventuelle du répertoire au nom de l'utlilisateur
-$ds = DIRECTORY_SEPARATOR;
-$module = $Application->getModule(3);
-$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
-if (!(file_exists($chemin)))
-    mkdir ($chemin, 0700, true);
+if ($idretenue != '') {
+    foreach ($infosRetenue as $key => $value) {
+        $smarty->assign("$key", $value);
+    }
 
-// chargement de la présentation du billet de retenue
-$format = json_decode(file_get_contents('../../templates/retenues/format.json'), true);
+    // chargement de la présentation du billet de retenue
+    $format = json_decode(file_get_contents('../../templates/retenues/format.json'), true);
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$orientation = ($format['orientation'] == 'portrait') ? 'P' : 'L';
-$page = ($format['page'] == 'A5') ? 'A5' : 'A4';
-$html2pdf = new HTML2PDF($orientation, $page, 'fr');
+    require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
+    $orientation = ($format['orientation'] == 'portrait') ? 'P' : 'L';
+    $page = ($format['page'] == 'A5') ? 'A5' : 'A4';
+    $html2pdf = new HTML2PDF($orientation, $page, 'fr');
 
-$retenue4PDF = $smarty->fetch('retenues/retenue.tpl');
+    $retenue4PDF = $smarty->fetch('retenues/retenue.tpl');
 
-$html2pdf->WriteHTML($retenue4PDF);
-$html2pdf->Output($chemin.$ds.$fileName,'F');
-
-echo $fileName;
+    $html2pdf->WriteHTML($retenue4PDF);
+    $html2pdf->Output('retenue_'.$matricule.'.pdf');
+}
