@@ -36,7 +36,6 @@
 
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Sauvegardes<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=backup&amp;mode=liste">Liste des sauvegardes</a></li>
 					<li><a href="index.php?action=backup&amp;mode=choose">Faire une sauvegarde</a></li>
 					<li><a href="index.php?action=backup&amp;mode=tables">Liste des tables</a></li>
 				</ul>
