@@ -4,7 +4,7 @@
 
     </page_header>
 
-<p><img src="../../../images/logo1.jpg" alt="Logo École" style="float:right; width: 100px">{$entete} </p>
+<p><img src="../../../images/logoEcole.png" alt="Logo École" style="float:right; width: 100px">{$entete} </p>
 
 <h1>Réunion de parents du {$date}</h1>
 

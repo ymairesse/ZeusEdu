@@ -1085,6 +1085,52 @@ CREATE TABLE IF NOT EXISTS `didac_thotParents` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des parents';
 
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `didac_thotRpRv`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotRpRv` (
+`id` int(11) NOT NULL COMMENT 'Identifiant du RV',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'acronyme du propriétaire',
+  `statut` enum('prof','dir') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'prof' COMMENT 'Statut du membre du personnel',
+  `matricule` int(11) DEFAULT NULL COMMENT 'matricule de l''élève',
+  `userParent` varchar(25) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'userName du parent',
+  `date` date NOT NULL COMMENT 'Date de la réunion de parents',
+  `heure` time NOT NULL COMMENT 'Heure du RV',
+  `dispo` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le prof est-il libre à ce moment?'
+) ENGINE=MyISAM AUTO_INCREMENT=14654 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rendez-vous pour la réunion de parents';
+
+-- Indexes for table `didac_thotRpRv`
+--
+ALTER TABLE `didac_thotRpRv`
+ ADD PRIMARY KEY (`id`);
+
+-- AUTO_INCREMENT for table `didac_thotRpRv`
+--
+ALTER TABLE `didac_thotRpRv`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du RV',AUTO_INCREMENT=1;
+
+
+--
+-- Table structure for table `didac_thotRp`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotRp` (
+  `date` date NOT NULL COMMENT 'Date de la réunion de parents',
+  `ouvert` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La RP est-elle ouverte à l''inscription',
+  `active` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La réunion est-elle activée',
+  `notice` blob NOT NULL COMMENT 'Texte d''information sur la réunion de parents',
+  `typeRP` enum('profs','titulaires') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'profs' COMMENT 'Réunion de parents pour les titulaires ou tous les profs '
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Date et activité (ou non) d''une réunion de parents';
+
+--
+-- Indexes for table `didac_thotRp`
+--
+ALTER TABLE `didac_thotRp`
+ ADD PRIMARY KEY (`date`);
+
 CREATE TABLE IF NOT EXISTS didac_titus (
   acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   classe varchar(6) COLLATE utf8_unicode_ci NOT NULL,
@@ -1100,6 +1146,56 @@ CREATE TABLE IF NOT EXISTS didac_userStatus (
   PRIMARY KEY (ordre),
   UNIQUE KEY userStatus (userStatus)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for table `didac_thotRpHeures`
+--
+
+CREATE TABLE IF NOT EXISTS `didac_thotRpHeures` (
+  `date` date NOT NULL,
+  `minPer1` time NOT NULL,
+  `maxPer1` time NOT NULL,
+  `minPer2` time NOT NULL,
+  `maxPer2` time NOT NULL,
+  `minPer3` time NOT NULL,
+  `maxPer3` time NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Heures limites des périodes de liste d''attente';
+
+--
+-- Indexes for table `didac_thotRpHeures`
+--
+ALTER TABLE `didac_thotRpHeures`
+ ADD PRIMARY KEY (`date`);
+
+
+ --
+ -- Table structure for table `didac_thotRpLocaux`
+ --
+
+ CREATE TABLE IF NOT EXISTS `didac_thotRpLocaux` (
+   `date` date NOT NULL,
+   `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+   `local` varchar(12) COLLATE utf8_unicode_ci DEFAULT NULL
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Locaux affectés aux profs pour la réunion de parents';
+
+
+ --
+ -- Table structure for table `didac_thotRpAttente`
+ --
+
+ CREATE TABLE IF NOT EXISTS `didac_thotRpAttente` (
+   `date` date NOT NULL COMMENT 'Date de la réunion de parents',
+   `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme du prof',
+   `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève concerné',
+   `userName` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Nom d''utilisateur du parent',
+   `periode` smallint(6) NOT NULL COMMENT 'Période présélectionnée pour le RV'
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste d''attente pour les réunions de parents';
+
+ --
+ -- Indexes for table `didac_thotRpAttente`
+ --
+ ALTER TABLE `didac_thotRpAttente`
+  ADD PRIMARY KEY (`date`,`acronyme`,`matricule`,`periode`);
 
 --
 -- Contenu de la table `didac_userStatus`
