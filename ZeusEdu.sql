@@ -772,8 +772,8 @@ CREATE TABLE IF NOT EXISTS didac_logins (
   `user` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
   heure time NOT NULL,
-  ip varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `host` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  ip varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `host` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (id),
   KEY `user` (`user`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
