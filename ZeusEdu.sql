@@ -919,7 +919,7 @@ CREATE TABLE IF NOT EXISTS didac_profsCours (
 
 CREATE TABLE IF NOT EXISTS didac_sessions (
   `user` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
-  ip varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  ip varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
