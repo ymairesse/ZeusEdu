@@ -12,6 +12,7 @@
 
 <link rel="stylesheet" href="screen.css" type="text/css" media="screen">
 <link rel="stylesheet" href="print.css" type="text/css" media="print">
+<link rel="stylesheet" href="bootstrap/fa/css/font-awesome.min.css" type="text/css" media="screen, print">
 
 </head>
 <body>
@@ -22,7 +23,7 @@
 
 	<div class="row">
 
-		{if (isset($message) && $message == 'logout')}
+		{if (isset($message) && ($message == 'logout'))}
 		<div class="alert alert-dismissible alert-success auto-fadeOut">
 			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<p>Votre session est terminée. Veuillez vous reconnecter pour poursuivre le travail.</p>
@@ -80,7 +81,13 @@
 
 		<div class="col-md-5 col-sm-12">
 			<h4>Avertissement!</h4>
-			<p><span class="glyphicon glyphicon-warning-sign" style="font-size:2em"></span> Cette application gère des données privées et strictement confidentielles. Toute tentative d'accès sans autorisation est <a href="#" id="popModal" title="Cliquer pour plus d'informations">punissable au sens de la Loi</a>.
+			<p><button type="button" class="btn btn-primary pull-right btn-lg" id="popModal" title="Cliquer pour plus d'informations">
+				<i class="fa fa-gavel fa-2x"></i>
+			</button>
+				<span class="glyphicon glyphicon-warning-sign" style="font-size:2em"></span> Cette application gère des données privées et strictement confidentielles. Toute tentative d'accès sans autorisation est punissable au sens de la Loi.
+
+			<img src="images/logoAccueil.png" alt="Logo de l'école" class="img-responsive">
+
 			<p><span class="glyphicon glyphicon-eye-open" style="font-size:2em"></span> Votre adresse IP: {$identification.ip}. Votre passage est enregistré.</p>
 		</div>  <!-- col-md -->
 
