@@ -33,17 +33,17 @@
 				</ul>
 			</li>
 
-			{if !empty($titulaire) || $listeCours != Null}
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if !empty($titulaire)}
 					<li><a href="index.php?action=jdc&amp;mode=classe&amp;destinataire={','|implode:$titulaire}">Titulaire de [{','|implode:$titulaire}]</a></li>
 					{/if}
+					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
+					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=eleves">Journal de classe élève</a></li>
 				</ul>
 			</li>
-			{/if}
 
 			{if !empty($titulaire) || ($userStatus == 'direction')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>

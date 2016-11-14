@@ -19,8 +19,8 @@ switch ($mode) {
         if ($id == $verifId) {
             $nb = $jdc->deleteJdc($id);
         } else {
-                die('Ce journal de classe ne vous appartient pas');
-            }
+            die('Ce journal de classe ne vous appartient pas');
+        }
             $message = array(
                 'title' => DELETE,
                 'texte' => sprintf('%d enregistrement supprimé', $nb),
@@ -108,8 +108,8 @@ switch ($mode) {
 
             setcookie('classe', $classe, $unAn, null, null, false, true);
         } else {
-                $classe = (isset($_COOKIE['classe'])) ? $_COOKIE['classe'] : null;
-            }
+            $classe = (isset($_COOKIE['classe'])) ? $_COOKIE['classe'] : null;
+        }
 
         $smarty->assign('classe', $classe);  // pour le sélecteur
         $smarty->assign('selecteur', 'selecteurs/selectClasse');
@@ -127,11 +127,16 @@ switch ($mode) {
             $classe = $_GET['classe'];
             setcookie('classe', $classe, $unAn, null, null, false, true);
         } else {
-                $classe = (isset($_COOKIE['classe'])) ? $_COOKIE['classe'] : null;
-            }
+            $classe = (isset($_COOKIE['classe'])) ? $_COOKIE['classe'] : null;
+        }
         $smarty->assign('classe', $classe);  // pour le sélecteur
 
-        $listeClasses = $Ecole->listeClassesProf($acronyme);
+        if (in_array($userStatus, array('educ', 'admin', 'direction'))) {
+            $listeClasses = $Ecole->listeClasses();
+        } else {
+            $listeClasses = $Ecole->listeClassesProf($acronyme);
+        }
+
         $smarty->assign('listeClasses', $listeClasses);
 
         $listeEleves = ($classe != null) ? $Ecole->listeEleves($classe, 'groupe') : null;
@@ -139,8 +144,8 @@ switch ($mode) {
             $eleve = $listeEleves[$matricule];
             $classeNomPrenom = sprintf('%s %s de %s', $eleve['prenom'], $eleve['nom'], $eleve['classe']);
         } else {
-                $classeNomPrenom = null;
-            }
+            $classeNomPrenom = null;
+        }
         $smarty->assign('lblDestinataire', $classeNomPrenom);
         $smarty->assign('classe', $classe);
         $smarty->assign('matricule', $matricule);
