@@ -19,7 +19,7 @@ $Application = new Application();
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
-// max trois rendez-vous
+// max MAX rendez-vous
 $resultat = $thot->inscriptionEleve($id, $matricule, MAX, $userName);
 // le cas échéant, supprimer de la liste d'attente
 if ($resultat > 0) {
