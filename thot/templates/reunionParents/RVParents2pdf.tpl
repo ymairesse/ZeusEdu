@@ -19,6 +19,7 @@
             <tr>
                 <th style="width:20%">Heure</th>
                 <th style="width:40%">Professeur</th>
+                <th style="width:20%">Local</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,9 @@
             <tr>
                 <td>{$dataRV.heure}</td>
                 <td>{if ($dataRV.sexe == 'F')}Mme{else}M.{/if} {$dataRV.prenom} {$dataRV.nom}</td>
+                {assign var=acronyme value=$dataRV.acronyme}
+                {assign var=local value=$listeLocaux.$acronyme.local}
+                <td>{$local|default:'À définir'}</td>
             </tr>
             {/foreach}
         </tbody>

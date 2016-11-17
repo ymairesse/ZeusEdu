@@ -16,6 +16,7 @@ require_once(INSTALL_DIR.'/smarty/Smarty.class.php');
 $smarty = new Smarty();
 
 $listeRV = $thot->listeRVParents($date, $mode=='complet');
+$listeLocaux = $thot->getLocauxRp($date);
 $listeAttente = $thot->listeAttenteParents($date, $mode=='complet');
 
 // établir une liste complete de tous les élèves qui figurent dans l'une ou dans l'autre liste
@@ -23,6 +24,8 @@ $fullListe = array_unique(array_merge(array_keys($listeRV), array_keys($listeAtt
 $listeEleves = $thot->listeElevesMatricules($fullListe);
 $smarty->assign('date', $date);
 $smarty->assign('listeRV', $listeRV);
+$smarty->assign('listeLocaux', $listeLocaux);
+
 $smarty->assign('listeAttente', $listeAttente);
 $smarty->assign('fullListe',$fullListe);
 $smarty->assign('listeEleves',$listeEleves);
