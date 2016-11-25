@@ -1,11 +1,11 @@
 <div class="container">
 
 <div class="table-responsive">
-	
+
 	<table class="tableauAdmin table table-hover" style="width:100%">
 	<tr>
 		<th><h2>Classe: {$classe}</h2></th>
-		
+
 		{foreach from=$listeCours key=cours item=detailsCours}
 			<th style="text-align:center"
 				class="pop"
@@ -17,7 +17,7 @@
 			<img src="imagesCours/{$cours}.png" alt="{$cours}">
 			</th>
 		{/foreach}
-		
+
 	</tr>
 	{foreach from=$listeEleves key=matricule item=dataEleve}
 	<tr>
@@ -29,12 +29,12 @@
 			data-placement="right"
 			data-container = "body">
 
-			{$dataEleve.nom} {$dataEleve.prenom}			
+			{$dataEleve.nom} {$dataEleve.prenom}
 
 		</td>
 		{foreach from=$listeCours key=cours item=detailsCours}
 			{assign var=data value=$listeSituations.$matricule.$cours.$bulletin|default:''}
-			
+
 			{if isset($listeCoursEleves.$matricule.$cours)}
 				{assign var=coursGrp value=$listeCoursEleves.$matricule.$cours.coursGrp}
 				{assign var=nomCours value=$listeCours.$cours.dataCours.libelle}
@@ -42,7 +42,7 @@
 				{else}
 				{assign var=texte value=Null}
 			{/if}
-			
+
 			<td	class="pop {if isset($data.cote) && ($data.cote =='I')} echec{/if}"
 				data-toggle="popover"
 				data-content="{$texte}"
@@ -50,13 +50,13 @@
 				data-placement="bottom"
 				data-original-title="{$nomPrenom}"
 				data-container="body">
-				
+
 			{if isset($listeCoursEleves.$matricule.$cours)}
 				{$data.cote|default:'-'}
 			{else}
 				X
 			{/if}
-			
+
 			</td>
 		{/foreach}
 	</tr>
@@ -69,18 +69,18 @@
 
 
 <script type="text/javascript">
-	
+
 	$('document').ready(function(){
-		
+
 		$(".popover-eleve").mouseover(function(){
 		$(this).popover('show');
 		})
-		
+
 	$(".popover-eleve").mouseout(function(){
 		$(this).popover('hide');
 		})
-	
+
 	})
-	
-	
+
+
 </script>
