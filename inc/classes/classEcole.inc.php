@@ -567,7 +567,7 @@ class ecole
             $listeElevesString = $listeEleves;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT de.matricule, nom, prenom, groupe, classe, DateNaiss, commNaissance, user, mailDomain ';
+        $sql = 'SELECT de.matricule, nom, prenom, groupe, classe, annee, DateNaiss, commNaissance, user, mailDomain ';
         $sql .= 'FROM '.PFX.'eleves AS de ';
         $sql .= 'LEFT JOIN '.PFX.'passwd AS dp ON (de.matricule = dp.matricule) ';
         $sql .= "WHERE de.matricule IN ($listeElevesString) ";
@@ -869,13 +869,14 @@ class ecole
             while ($ligne = $resultat->fetch()) {
                 $coursGrp = $ligne['coursGrp'];
                 $acronyme = $ligne['acronyme'];
+                $initiale = mb_substr($ligne['prenom'], 0, 1, 'UTF-8').'.';
                 $sexe = $ligne['sexe'];
                 $ved = ($sexe == 'M') ? 'M. ' : 'Mme';
                 if ($type == 'string') {
                     if (isset($liste[$coursGrp])) {
-                        $liste[$coursGrp] .= ', '.$ved.' '.$ligne['prenom'].' '.$ligne['nom'];
+                        $liste[$coursGrp] .= ', '.$ved.' '.$initiale.' '.$ligne['nom'];
                     } else {
-                        $liste[$coursGrp] = $ved.' '.$ligne['prenom'].' '.$ligne['nom'];
+                        $liste[$coursGrp] = $ved.' '.$initiale.' '.$ligne['nom'];
                     }
                 } else {
                     $liste[$coursGrp][$acronyme] = $ligne;
@@ -1033,22 +1034,35 @@ class ecole
             $listeElevesString = $listeEleves;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT DISTINCT matricule, coursGrp, SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) AS cours, libelle, nbheures ";
-        $sql .= 'FROM '.PFX.'elevesCours ';
-        $sql .= 'JOIN '.PFX."cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE ('-',coursGrp)-1)) ";
+        $sql = "SELECT DISTINCT matricule, ec.coursGrp, SUBSTR(ec.coursGrp,1,LOCATE('-',ec.coursGrp)-1) AS cours, libelle, nbheures, sc.statut, ";
+        $sql .= 'pc.acronyme, dp.nom, dp.prenom ';
+        // ajout du statut du cours le 18/11/2016
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON (dc.cours = SUBSTR(ec.coursGrp, 1, LOCATE ('-',ec.coursGrp)-1)) ";
         $sql .= 'JOIN '.PFX.'statutCours AS sc ON (sc.cadre = dc.cadre) ';
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = ec.coursGrp ';
+        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = pc.acronyme ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
-        $sql .= 'ORDER BY matricule, coursGrp ';
+        $sql .= 'ORDER BY matricule, nbheures DESC, libelle, coursGrp ';
 
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
                 $cours = $ligne['cours'];
-                $liste[$matricule][$cours] = array('coursGrp' => $ligne['coursGrp'], 'nbheures' => $ligne['nbheures'], 'libelle' => $ligne['libelle']);
+                $acronyme = $ligne['acronyme'];
+                // simplification le 18/11/2016
+                // $liste[$matricule][$cours] = array('coursGrp' => $ligne['coursGrp'], 'nbheures' => $ligne['nbheures'], 'libelle' => $ligne['libelle']);
+                if (!isset($liste[$matricule][$cours])) {
+                    $liste[$matricule][$cours] = $ligne;
+                    $liste[$matricule][$cours]['profs'] = array();
+                }
+                $liste[$matricule][$cours]['profs'][$acronyme] = $ligne['prenom'].' '.$ligne['nom'];
             }
         }
+
         Application::DeconnexionPDO($connexion);
 
         return $liste;
@@ -1349,7 +1363,7 @@ class ecole
         if ($resultat) {
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
-                $liste[$matricule] = array('mail' => $ligne['user'].$ligne['mailDomain'], 'passwd' => $ligne['passwd']);
+                $liste[$matricule] = array('mail' => sprintf('%s@%s', $ligne['user'], $ligne['mailDomain']), 'passwd' => $ligne['passwd']);
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -2398,9 +2412,11 @@ class ecole
         if ($fullEdition == 0) {
             $cours = $_POST['cours'];
             $sql = 'UPDATE '.PFX.'cours ';
-            $sql .= "SET libelle = '$libelle' ";
-            $sql .= "WHERE cours = '$cours' ";
-            $nb = $connexion->exec($sql);
+            $sql .= 'SET libelle =:libelle ';
+            $sql .= 'WHERE cours =:cours ';
+            $requete = $connexion->prepare($sql);
+            $data = array(':libelle' => $libelle, ':cours' => $cours);
+            $nb = $requete->execute($data);
         } else {
             $annee = $post['niveau'];
             $section = $post['section'];
@@ -2410,9 +2426,11 @@ class ecole
             $cadre = $post['cadre'];
             $cours = $annee.$forme.':'.$code.$nbheures;
             $sql = 'INSERT INTO '.PFX.'cours ';
-            $sql .= "SET cours = '$cours', nbheures='$nbheures', libelle='$libelle', cadre='$cadre', section='$section' ";
-            $sql .= "ON DUPLICATE KEY UPDATE libelle='$libelle' ";
-            $nb = $connexion->exec($sql);
+            $sql .= 'SET cours = :cours, nbheures=:nbheures, libelle=:libelle, cadre=:cadre, section=:section ';
+            $sql .= 'ON DUPLICATE KEY UPDATE libelle=:libelle ';
+            $requete = $connexion->prepare($sql);
+            $data = array(':cours' => $cours, ':nbheures' => $nbheures, ':libelle' => $libelle, ':cadre' => $cadre, ':section' => $section);
+            $nb = $requete->execute($data);
         }
         Application::DeconnexionPDO($connexion);
 
