@@ -1,14 +1,14 @@
 <div class="container">
-	
+
 	<h1 title="{$eleve.matricule}">{$eleve.prenom} {$eleve.nom} {$eleve.classe} | Bulletin {$bulletin}</h1>
 
 		{foreach from=$listeCoursGrp key=coursGrp item=dataCours}
-	
+
 			{assign var=cours value=$listeCoursGrp.$coursGrp.cours}
-			
+
 			<h2 title="{$coursGrp}">{$dataCours.libelle} {$dataCours.nbheures}h ({$listeProfs.$coursGrp})</h2>
 			<h3>Mentions globales</h3>
-			
+
 			{assign var=matricule value=$eleve.matricule}
 			<table class="tableauBull">
 				<tr style="background-color: #FECF69;">
@@ -21,9 +21,9 @@
 					<th style="width:12%; text-align: center;">Global > </th>
 					<td style="width:12%; text-align: center;"><strong>{$cotesGlobales.$coursGrp.$matricule.global|default:'&nbsp;'}</strong></td>
 				</tr>
-				
+
 			</table>
-			
+
 			{if isset($listeCotesGeneraux.$bulletin.$matricule.$coursGrp)}
 			<h3>Détails par compétence</h3>
 			<table class="tableauBull">
@@ -44,13 +44,30 @@
 				{/foreach}
 			</table>
 			{/if}
-		
+
 			<h3>Commentaire du professeur</h3>
 			<div class="remarqueProf">
 			{$commentaires.$bulletin.$coursGrp.$matricule|default:''|nl2br}
 			</div>
-			
+
 		{/foreach}
+
+		<h2>Qualification</h2>
+		<table class="table table-condensed">
+			<tr>
+				<th>Année</th>
+				<th>Épreuve</th>
+				<th>Mention</th>
+			</tr>
+		{foreach $listeEpreuvesQualif item=epreuve}
+			<tr>
+				<td>{$epreuve.annee}e année</td>
+				<td>{$epreuve.legende}</td>
+				{assign var=sigle value=$epreuve.sigle}
+				<td>{$qualification.$sigle}</td>
+			</tr>
+		{/foreach}
+		</table>
 
 		<h3>Commentaire du titulaire</h3>
 			<div class="remarqueProf">

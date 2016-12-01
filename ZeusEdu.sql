@@ -577,6 +577,35 @@ CREATE TABLE IF NOT EXISTS didac_bullTQtypologie (
   PRIMARY KEY (coursGrp)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+
+--
+-- Table structure for table `didac_bullTQdetailsStages`
+--
+
+CREATE TABLE `didac_bullTQdetailsStages` (
+  `annee` tinyint(4) NOT NULL COMMENT 'Année d''étude pour l''épreuve',
+  `sigle` varchar(12) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation utilisée pour l''épreuve',
+  `legende` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Label pour l''épreuve'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Légende des épreuves de qualification';
+
+--
+-- Dumping data for table `didac_bullTQdetailsStages`
+--
+
+INSERT INTO `didac_bullTQdetailsStages` (`annee`, `sigle`, `legende`) VALUES
+(5, 'E1', 'Évaluation du stage 5e'),
+(5, 'E2', 'Rapport de stage 5e'),
+(6, 'E3', 'Évaluation du stage 6e'),
+(6, 'E4', 'Rapport de stage 6e'),
+(6, 'JURY', 'Jury'),
+(6, 'TOTAL', 'Total');
+
+--
+-- Indexes for table `didac_bullTQdetailsStages`
+--
+ALTER TABLE `didac_bullTQdetailsStages`
+  ADD PRIMARY KEY (`annee`,`sigle`);
+
 --
 -- Table structure for table `didac_config`
 --

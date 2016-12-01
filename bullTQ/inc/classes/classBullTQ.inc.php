@@ -482,7 +482,7 @@ class bullTQ
         $sql .= 'FROM '.PFX.'bullTQTitus ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
         if ($bulletin != null) {
-            $sql .= "AND bulletin='$bulletin'";
+            $sql .= "AND bulletin='$bulletin' ";
         }
         $resultat = $connexion->query($sql);
         $listeRemarques = array();
@@ -1451,10 +1451,41 @@ class bullTQ
     }
 
     /**
+     * impression des mentions de qualification.
+     *
+     * @param $listeEpreuvesQualif : liste des épreuves prévues
+     * @param $mentionsQualif : mentions acquises par l'élève
+     */
+    private function qualifPDF($pdf, $listeEpreuvesQualif, $mentionsQualif)
+    {
+        $pdf->SetLineWidth(0.2);
+        $pdf->SetFont('Arial', '', 10);
+        $texte = $this->utf8('Évaluations des stages');
+        $pdf->Cell(0, 5, $texte, 1, 1, 'C', true);
+        $pdf->SetFont('Arial', '', 7);
+
+        $pdf->Cell(20, 5, $this->utf8('Année'), 1, 0, 'C', true);
+        $pdf->Cell(130, 5, $this->utf8('Épreuve'), 1, 0, 'L', true);
+        $pdf->Cell(44, 5, $this->utf8('Mention'), 1, 1, 'C', true);
+
+        foreach ($listeEpreuvesQualif as $wtf => $epreuve) {
+            $annee = $this->utf8($epreuve['annee'].'e année');
+            $sigle = $epreuve['sigle'];
+            $libelle = $this->utf8($epreuve['legende']);
+            $mention = isset($mentionsQualif[$sigle]) ? $mentionsQualif[$sigle] : '';
+            $pdf->Cell(20, 5, $annee, 1, 0, '', false);
+            $pdf->Cell(130, 5, $libelle, 1, 0, 'L', false);
+            $pdf->Cell(44, 5, $mention, 1, 1, 'C', false);
+        }
+        $pdf->Ln();
+    }
+
+    /**
      * impression des mentions obtenues (en périodes de délibés).
      *
      * @param $pdf : objet PDF
-     * @mentions array('option_final'=>..., 'global_final'=>...)
+     *
+     * @return array('option_final'=>..., 'global_final'=>...)
      */
     private function mentionsPDF($pdf, $mentions)
     {
@@ -1513,6 +1544,10 @@ class bullTQ
         $listeCotesGlobales = $this->listeCotesGlobales($listeCoursGrp, $bulletin);
         $listeCotesGeneraux = $this->toutesCotesCoursGeneraux($listeCoursGrp, $matricule, $bulletin);
         $listeCommentaires = $this->listeCommentaires($matricule, $listeCoursGrp);
+
+        $listeEpreuvesQualif = $this->listeEpreuvesQualif();
+        $mentionsQualif = $this->mentionsQualif($matricule);
+
         $periodesDelibes = explode(',', str_replace(' ', '', PERIODESDELIBES));
         if (in_array($bulletin, $periodesDelibes)) {
             $mentions = $this->mentionsBulletin($matricule, $bulletin);
@@ -1589,6 +1624,11 @@ class bullTQ
             } else {
                 $pdf->Ln(1);
             }
+        }
+
+        // mentions de qualification
+        if ($listeEpreuvesQualif != null) {
+            $this->qualifPDF($pdf, $listeEpreuvesQualif, $mentionsQualif);
         }
 
         // remarque du titulaire
@@ -2078,11 +2118,13 @@ class bullTQ
         Application::DeconnexionPDO($connexion);
 
         // on comble les trous: il n'y a pas encore de données dans la BD
-        if(!(isset($liste[$matricule])))
+        if (!(isset($liste[$matricule]))) {
             $liste[$matricule] = array();
+        }
         foreach ($listeChamps as $epreuve => $legende) {
-            if (!(isset($liste[$matricule][$epreuve])))
+            if (!(isset($liste[$matricule][$epreuve]))) {
                 $liste[$matricule][$epreuve] = '';
+            }
         }
 
         return $liste;
@@ -2110,5 +2152,29 @@ class bullTQ
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
+    }
+
+    /**
+     * renvoie la iste des épreuves de qualification pour toutes les années d'étude.
+     *
+     * @param void()
+     *
+     * @return array
+     */
+    public function listeEpreuvesQualif()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT annee, sigle, legende ';
+        $sql .= 'FROM '.PFX.'bullTQdetailsStages ';
+
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $liste = $resultat->fetchAll();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
     }
 }

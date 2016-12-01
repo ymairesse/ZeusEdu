@@ -14,8 +14,6 @@ $listeClasses = $Ecole->listeGroupes(array('TQ'));
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('classe', $classe);
 
-
-
 switch ($mode) {
     case 'indivEcran':
         $smarty->assign('selecteur', 'selecteurs/selectBulletinClasseEleve');
@@ -50,6 +48,12 @@ switch ($mode) {
 
                 $listeCommentaires = $BullTQ->listeCommentaires($matricule, $listeCoursGrp);
                 $smarty->assign('commentaires', $listeCommentaires);
+
+                $listeEpreuvesQualif = $BullTQ->listeEpreuvesQualif();
+                $smarty->assign('listeEpreuvesQualif', $listeEpreuvesQualif);
+
+                $qualification = $BullTQ->mentionsQualif($matricule);
+                $smarty->assign('qualification', $qualification);
 
                 $remarqueTitu = $BullTQ->remarqueTitu($matricule, $bulletin);
                 $smarty->assign('remarqueTitu', $remarqueTitu);
