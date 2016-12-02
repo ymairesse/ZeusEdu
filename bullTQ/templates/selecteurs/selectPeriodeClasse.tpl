@@ -1,13 +1,14 @@
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n°
+		Période
 		<select name="bulletin" id="bulletin">
+			<option value="">Veuillez choisir</option>
 			{foreach from=$listePeriodes key=no item=nomPeriode}
-			<option value="{$no}" {if $no eq $bulletin}selected{/if}>{$nomPeriode}
+			<option value="{$no}" {if $no == $bulletin}selected{/if}>{$nomPeriode}
 			</option>
 			{/foreach}
 		</select>
-
+		Classe
 		<select name="classe" id="classe">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
@@ -23,7 +24,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#formSelecteur").submit(function() {
-			if ($("#classe").val() == '') {
+			if (($("#classe").val() == '') || ($("#bulletin").val() == '')) {
 				return false
 			}
 			$("#wait").show();
