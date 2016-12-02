@@ -1,6 +1,6 @@
 <?php
 
-if (isset($classe)) {
+if (isset($classe) && isset($bulletin)) {
     $listeSituations = $BullTQ->listeSituationsClasse($classe, $bulletin);
     $smarty->assign('listeSituations', $listeSituations);
 
