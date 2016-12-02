@@ -88,7 +88,6 @@
 
                 memMatricule = matricule;
             }
-
         });
 
         $("#listeEleves").change(function() {
@@ -105,7 +104,6 @@
             }, function(resultat) {
                 $("#evaluations").html(resultat);
             })
-
         })
 
         $("#evaluations").on('click', '#submitStages', function() {
@@ -128,6 +126,9 @@
                 })
         })
 
+        $('#evaluations').on('change', 'input.majuscules', function() {
+            $(this).val($(this).val().toUpperCase());
+        })
 
     })
 </script>
