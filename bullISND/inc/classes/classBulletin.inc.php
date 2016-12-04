@@ -16,20 +16,6 @@ class Bulletin
     }
 
     /**
-     *  renvoie le nom du module courant.
-     *
-     * @param $level : le niveau de sous-repertoire à explorer
-     *
-     * @return string
-     */
-    public function getModule($level)
-    {
-        $dir = explode('/', getcwd());
-
-        return $dir[count($dir) - $level];
-    }
-
-    /**
      * retourne un array contenant une liste des périodes de l'année scolaire.
      *
      * @param $nbBulletins
@@ -829,7 +815,7 @@ class Bulletin
      */
     public function renewAllLocks()
     {
-        // $this->resetLocks();
+        $this->resetLocks();
         $listePeriodes = $this->listePeriodes(NBPERIODES);
         $listeElevesCours = $this->listeElevesCoursGrp();
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -1871,8 +1857,9 @@ class Bulletin
      /**
       * Enregistrement des cotes de situations recalculées après remplissage du bulletin.
       *
-      * @param $listeNouvellesSituations : array
-      * @param $bulletin: le numéro du bulletin
+      * @param $listeNouvellesSituations
+      * @param $bulletin
+      * @result Null
       */
      public function enregistrerSituations($listeSituations, $bulletin)
      {
@@ -2094,8 +2081,6 @@ class Bulletin
      * utile pour des listes chaînées.
      *
      * @param $listeEleves
-     *
-     * @return array
      */
     public function listeElevesSuivPrec($listeEleves)
     {
@@ -5459,32 +5444,6 @@ class Bulletin
     }
 
     /**
-     * compression de tous les fichiers bulletin d'un niveau.
-     *
-     * @param $dir : répertoire où se trouvent les fichiers
-     * @param $bulletin : numéro du bulletin concerné
-     * @param $listeClasses : liste des classes à ce niveu d'études
-     */
-    public function zipFilesNiveau($dir, $bulletin, $listeClasses)
-    {
-        $niveau = substr($listeClasses[0], 0, 1);
-
-        $zip = new ZipArchive();
-        $zipName = "$dir/niveau_$niveau-Bulletin_$bulletin.zip";
-        if ($zip->open($zipName, ZIPARCHIVE::CREATE) !== true) {
-            exit("Impossible d'ouvrir ".$zipName);
-        }
-        // $listeFichiers = $this->dirFiles($dir);
-        foreach ($listeClasses as $uneClasse) {
-            $zip->addFile("$dir/$uneClasse-$bulletin.pdf");
-        }
-        $zip->close();
-
-        $module = substr($dir, strrpos($dir,'/'));
-        return sprintf('%s/niveau_%s-Bulletin_%d.zip',$module, $niveau, $bulletin);
-    }
-
-    /**
      * rédaction du bulletin d'un élève.
      *
      * @param array  $dataEleve : tableau contenant $matricule, $annee, $degre et noms des titulaires
@@ -5617,18 +5576,14 @@ class Bulletin
                 unset($eleve);
             }
         }
-
         // création éventuelle du répertoire au nom de l'utlilisateur
-        $ds = DIRECTORY_SEPARATOR;
-        $module = $this->getModule(1);
-        $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
-        if (!(file_exists($chemin)))
-            mkdir ($chemin, 0700, true);
-
+        if (!(file_exists("pdf/$acronyme"))) {
+            mkdir("pdf/$acronyme");
+        }
         // s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
-        $pdf->Output($chemin.$ds.$classe."-".$bulletin.".pdf", 'F');
+        $pdf->Output("pdf/$acronyme/$classe-$bulletin.pdf");
         if ($parNiveau == false) {
-            return $module.$ds.$classe."-".$bulletin.".pdf";
+            return "pdf/$acronyme/$classe-$bulletin.pdf";
         } else {
             return;
         }
@@ -7044,4 +6999,49 @@ class Bulletin
 
         return $resultat;
     }
+
+   public function decoder()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, remarque FROM didac_bullTitus WHERE bulletin = 1 ';
+        $resultat = $connexion->query($sql);
+        $tableau = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $remarque = $ligne['remarque'];
+                $remarque = self::utf8($remarque);
+                $matricule = $ligne['matricule'];
+                $tableau[$matricule] = $remarque;
+            }
+        }
+
+        $sql = "UPDATE didac_bullTitus SET remarque2=:remarque WHERE matricule=:matricule AND bulletin='1' ";
+        $requete = $connexion->prepare($sql);
+        foreach ($tableau as $matricule => $remarque) {
+            $remarque = html_entity_decode($remarque);
+            $remarque = str_replace('<h2>', '', $remarque);
+            $remarque = str_replace('</h2>', '', $remarque);
+            $remarque = str_replace('<p>', ' ', $remarque);
+            $remarque = str_replace('</p>', '\n', $remarque);
+            $remarque = str_replace('&#39;', '\'', $remarque);
+
+            $data = array(':remarque' => $remarque, ':matricule' => $matricule);
+            $resultat = $requete->execute($data);
+
+            // $resulat = $connexion->exec($sql);
+
+            // $sql = "UPDATE didac_bullTitus SET remarque2 = REPLACE(remarque2, '&#39;', '\'')";
+            // $resulat = $connexion->exec($sql);
+
+            //$sql = "UPDATE didac_bullTitus SET remarque2 = REPLACE(remarque2, '&#39;', '\'')";
+            // $resulat = $connexion->exec($sql);
+        }
+
+        Application::DeconnexionPDO($connexion);
+        die();
+
+        return $tableau;
+    }
+
 }
