@@ -51,16 +51,16 @@
 						{assign var=statut value=$listePr.$noPeriode.statut|default:''}
 						<td class="{$statut}
 							{if $noPeriode==$periode} now{else} notNow{/if}
-							{if (in_array($statut, array('sortie','signale','justifie','ecarte','renvoi','suivi')))} lock{/if}"
+							{if (!in_array($statut, array_keys($justifications)))} lock{/if}"
 							id="lock-{$matricule}_periode-{$noPeriode}"
 							data-statut="{$statut}"
 							data-periode="{$noPeriode}"
 							data-matricule="{$matricule}">
 
-							{if (in_array($statut, array('sortie','signale','justifie','ecarte','renvoi','suivi')))}
-								<span class="glyphicon glyphicon-lock" title="absence déjà signalée"></span>
-								{else}
+							{if (in_array($statut, array_keys($justifications)))}
 								<strong>{$noPeriode}</strong>
+								{else}
+								<span class="glyphicon glyphicon-lock" title="absence déjà signalée"></span>
 							{/if}
 
 							{if ($noPeriode == $periode)}
@@ -69,7 +69,7 @@
 									name="matr-{$matricule}_periode-{$noPeriode}"
 									class="cb"
 									id="matr-{$matricule}_periode-{$noPeriode}"
-									{if (in_array($statut, array('sortie','signale','justifie','ecarte','renvoi','suivi')))}
+									{if (!in_array($statut, array_keys($justifications)))}
 										disabled
 									{/if}>
 							{/if}
@@ -353,7 +353,5 @@ $(document).ready(function(){
 
 
 })
-
-
 
 </script>

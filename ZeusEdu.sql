@@ -836,17 +836,21 @@ CREATE TABLE IF NOT EXISTS `didac_passwd` (
   PRIMARY KEY (`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS didac_presencesEleves (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  matricule int(6) NOT NULL,
+CREATE TABLE `didac_presencesEleves` (
+  `id` int(11) NOT NULL,
+  `matricule` int(6) NOT NULL,
   `date` date NOT NULL,
-  periode tinyint(1) NOT NULL,
-  statut enum('indetermine','present','absent','signale','justifie','sortie','renvoi','ecarte','suivi','stage') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève',
-  PRIMARY KEY (matricule,`date`,periode),
-  KEY matricule (matricule),
-  KEY n (id),
-  KEY id (id)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
+  `periode` tinyint(1) NOT NULL,
+  `statut` varchar(12) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
+
+--
+-- Indexes for table `didac_presencesEleves`
+--
+ALTER TABLE `didac_presencesEleves`
+  ADD PRIMARY KEY (`matricule`,`date`,`periode`),
+  ADD KEY `matricule` (`matricule`),
+  ADD KEY `id` (`id`);
 
 CREATE TABLE IF NOT EXISTS didac_presencesHeures (
   debut time NOT NULL COMMENT 'Début de l''heure de cours',
@@ -881,6 +885,40 @@ CREATE TABLE IF NOT EXISTS didac_presencesLogs (
   PRIMARY KEY (id),
   KEY matricule (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Logs des prises de présences';
+
+
+--
+-- Table structure for table `didac_presencesJustifications`
+--
+
+CREATE TABLE `didac_presencesJustifications` (
+  `justif` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
+  `shortJustif` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `ordre` tinyint(4) NOT NULL DEFAULT '0',
+  `libelle` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `color` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+  `background` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+  `accesProf` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Mention accessible aux profs',
+  `obligatoire` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Obligatoire dans toutes les configurations',
+  `speed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'sélection spéciale possible',
+  `sms` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Justifications d''absences possibles';
+
+
+INSERT INTO `didac_presencesJustifications` (`justif`, `shortJustif`, `ordre`, `libelle`, `color`, `background`, `accesProf`, `obligatoire`, `speed`, `sms`) VALUES
+('indetermine', 'NP', 1, 'Indéterminé', '#000000', '#dddddd', 1, 1, 1, 0),
+('present', 'PRES', 2, 'Présent', '#000000', '#77FF77', 1, 1, 0, 0),
+('absent', 'ABS', 3, 'Absent', '#000000', '#ff7777', 1, 1, 0, 1),
+('suivi', 'SUI', 4, 'Suivi (PMS, CAS)', '#f7ff10', '#ff0000', 0, 0, 0, 0),
+('ecarte', 'ECAR', 5, 'Écarté', '#ffffff', '#102457', 0, 0, 0, 0),
+('renvoi', 'RENV', 6, 'Renvoyé', '#fffe00', '#000000', 0, 0, 0, 0),
+('signale', 'SIGN', 7, 'Signalé', '#000000', '#ff5500', 0, 0, 0, 0),
+('sortie', 'SORT', 8, 'Sortie autorisée', '#000000', '#ff00ff', 0, 0, 1, 0),
+('justifie', 'JUST', 9, 'Justifié', '#000000', '#27bdf1', 0, 0, 0, 0),
+('stage', 'STAG', 10, 'Stage', '#ffffff', '#0a7135', 0, 0, 0, 0);
+
+ALTER TABLE `didac_presencesJustifications`
+  ADD PRIMARY KEY (`justif`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_profs` (

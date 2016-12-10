@@ -1,10 +1,11 @@
 {if $classe != Null && $date != Null}
 <div class="container">
-	
+
 <h3>Feuille de présences pour la classe de <strong>{$classe}</strong> le <strong>{$date}</strong></h3>
 <div class="table-responsive">
-	
+
 	<table class="table table-condensed">
+		<thead>
 		<tr>
 			<th style="width:6em">Matricule</th>
 			<th style="width:30em">Nom/prénom</th>
@@ -12,7 +13,8 @@
 			<th><strong>{$noPeriode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
 			{/foreach}
 		</tr>
-	
+		</thead>
+
 		{foreach from=$listeEleves key=matricule item=dataEleve}
 		<tr>
 			<td>{$matricule}</td>
@@ -23,7 +25,8 @@
 			</td>
 			{foreach from=$listePeriodes key=noPeriode item=data}
 				{assign var=p value=$listePresences.$matricule.$noPeriode}
-				{if $p.statut != 'indetermine'}
+				{assign var=statut value=$p.statut}
+				{if $statut != 'indetermine'}
 					{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
 					{else}
 					{assign var=titre value='Présences non prises'}
@@ -34,8 +37,8 @@
 					data-container="body"
 					data-original-title="{$titre}"
 					data-placement="top">
-					<span style="display:block; width:100%"	class="{$p.statut}">
-						<img src="images/{$p.statut}.png" alt="{$p.statut}">
+					<span style="display:block; width:100%; color:{$listeJustifications.$statut.color|default:'#e00'}; background:{$listeJustifications.$statut.background|default:'#666'}; text-align:center">
+						{$listeJustifications.$statut.shortJustif|default:'!!!'}
 					</span>
 				</td>
 			{/foreach}
@@ -45,20 +48,20 @@
 
 </div>
 
-{include file='legendeAbsences.html'}
+{include file='legendeAbsences.tpl'}
 </div>
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		
+
 	$(".popover-eleve").mouseenter(function(event){
 		$(this).popover('show');
 		})
-	
+
 	$(".popover-eleve").mouseout(function(event){
 			$(this).popover('hide');
 		})
-		
+
 	})
 
 </script>

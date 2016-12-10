@@ -1,12 +1,15 @@
 <div class="container">
 <h3>Liste des absences du {$date}</h3>
 <h4>Liste 1
-{foreach from=$statutsAbs['liste1'] key=wtf item=statut}
-	<span class="{$statut}">{$statut}</span>
-{/foreach}</h4>
+{foreach from=$statutsAbs.liste1 item=item key=statut}
+	<span style="color:{$listeJustifications.$item.color}; background:{$listeJustifications.$item.background}"
+			title="{$listeJustifications.$item.libelle}">{$item}
+	</span>
+{/foreach}
+</h4>
 
 <div class="table-responsive">
-<table class="tableauPresences table table-hover table-condensed">
+<table class="tableauPresences table table-striped table-condensed">
 	<tr>
 		<th>Matricule</th>
 		<th>Classe</th>
@@ -36,25 +39,19 @@
 			{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
 			<td>
 				<span
-					style="display:block; width:100%"
-					class="periode {$statut} pop"
+					style="display:block; width:100%; color:{$listeJustifications.$statut.color|default:'#f00'}; background:{$listeJustifications.$statut.background|default:'#666'}"
+					class="periode pop micro"
 					data-toggle="popover"
-					data-content="{$p.parent|cat:'<br>'|cat:$p.media}"
+					data-content="{$listeJustifications.$statut.libelle|default:'!!!'|cat:'<br>'|cat:$p.parent|cat:'<br>'|cat:$p.media}"
 					data-html="true"
 					data-container="body"
 					data-original-title="{$titre}">
-					{if $p.statut == 'absent'}
-						{$p.educ|default:'???'}
-					{else}
-						<span class="micro">{$p.statut|truncate:2:''}</span>
-					{/if}
-					<!-- <img src="images/{$statut}.png" alt="{$statut}"> -->
+					{$listeJustifications.$statut.shortJustif|default:'!!!'}
 				</span>
 			</td>
 		{else}
 			<td title="indetermine" data-container="body" data-html="true">
 				<span style="display:block; width:2em" class="periode indetermine">
-				<!-- <img src="images/indetermine.png" alt="indetermine"> -->
 				-
 				</span>
 			</td>
@@ -64,17 +61,18 @@
 	</tr>
 	{/foreach}
 </table>
-
 </div>
 
-<h4>Liste 2
-{foreach from=$statutsAbs['liste2'] key=wtf item=statut}
-	<span class="{$statut}"><img src="images/{$statut}.png" alt="{$statut}">{$statut}</span>
-{/foreach}</h4>
+<h4>Liste 2 (justifie un SMS)
+{foreach from=$statutsAbs.liste2 item=item key=statut}
+	<span style="color:{$listeJustifications.$item.color|default:null}; background:{$listeJustifications.$item.background|default:null}"
+		title="{$listeJustifications.$item.libelle|default:null}">{$item}</span>
+{/foreach}
+</h4>
 
 <div class="table-responsive">
 
-<table class="tableauPresences table table-hover table-condensed">
+<table class="tableauPresences table table-striped table-condensed">
 	<tr>
 		<th>Matricule</th>
 		<th>Classe</th>
@@ -103,27 +101,19 @@
 			{assign var=statut value=$p.statut}
 			{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
 			<td>
-				<span style="display:block; width:100%"
-					  class="periode {$statut} pop"
-					  data-toggle="popover"
-					  data-content="{$p.parent|cat:'<br>'|cat:$p.media}"
-					  data-html="true"
-					  data-container="body"
-					  data-original-title="{$titre}">
-					{if $p.statut == 'absent'}
-						{$p.educ|default:'???'}
-					{else}
-						<span class="micro">{$p.statut|truncate:2:''}</span>
-					{/if}
-					<!-- <img src="images/{$statut}.png" alt="{$statut}"> -->
+				<span style="display:block; width:100%; color:{$listeJustifications.$statut.color|default:'#f00'};  background:{$listeJustifications.$statut.background|default:'#666'}"
+					class="periode pop micro"
+					data-toggle="popover"
+					data-content="{$listeJustifications.$statut.libelle|default:'!!!'|cat:'<br>'|cat:$p.parent|cat:'<br>'|cat:$p.media}"
+					data-html="true"
+					data-container="body"
+					data-original-title="{$titre}">
+				{$listeJustifications.$statut.shortJustif|default:'-'}
 				</span>
 			</td>
 		{else}
 			<td title="indetermine" data-container="body" data-html="true">
-				<span style="display:block; width:2em" class="periode indetermine">
-				<!-- <img src="images/indetermine.png" alt="indetermine"> -->
-				-
-				</span>
+				<span style="display:block; width:2em" class="periode indetermine">-</span>
 			</td>
 		{/if}
 	{/foreach}
@@ -133,5 +123,5 @@
 </table>
 </div>
 
-{include file='legendeAbsences.html'}
+{include file='legendeAbsences.tpl'}
 </div>

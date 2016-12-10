@@ -2,8 +2,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META HTTP-EQUIV="Expires" CONTENT="-1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{$titre}</title>
 

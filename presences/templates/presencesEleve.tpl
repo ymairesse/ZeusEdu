@@ -1,5 +1,5 @@
 <div class="container">
-	
+
 <h3>Absences de {$detailsEleve.nom} {$detailsEleve.prenom} {$detailsEleve.classe}</h3>
 {if $listePresences|count == 0}
 	<p>Aucune absence</p>
@@ -15,7 +15,7 @@
 		<tr>
 			<th>Date</th>
 			{foreach from=$listePeriodes key=noPeriode item=bornes}
-				<th><strong>{$noPeriode}<br></strong>{$bornes.debut} / {$bornes.fin}</th>
+				<th><strong>{$noPeriode}</strong><br>{$bornes.debut} - {$bornes.fin}</th>
 			{/foreach}
 		</tr>
 		{foreach from=$listePresences key=date item=presence}
@@ -29,27 +29,28 @@
 					{/if}
 					{if $statut != 'indetermine'}
 						{assign var=laPeriode value=$listePresences.$date.$noPeriode}
-						{assign var=titre value=$laPeriode.educ|cat:' ['|cat:$laPeriode.quand|cat:' à '|cat:$laPeriode.heure|cat:']'}			
+						{assign var=titre value=$laPeriode.educ|cat:' ['|cat:$laPeriode.quand|cat:' à '|cat:$laPeriode.heure|cat:']'}
 						{assign var=parent value=$laPeriode.parent|cat:'<br>'|cat:$laPeriode.media}
 					{else}
 						{assign var=parent value=Null}
 						{assign var=titre value='Présences non prises'}
 					{/if}
-					<td class="pop {$statut}"
+					<td class="pop"
 						data-content="{$parent}"
 						data-html="true"
 						data-container="body"
 						data-original-title="{$titre}"
-						data-placement="top"
-						>
-						<img src="images/{$statut}.png" alt="{$statut}">
-					</td>	
+						data-placement="top">
+						<span style="display:block; width:100%; color:{$listeJustifications.$statut.color|default:'#e00'}; background:{$listeJustifications.$statut.background|default:'#666'}; text-align:center">
+							{$listeJustifications.$statut.shortJustif|default:'!!!'}
+						</span>
+					</td>
 				{/foreach}
 			</tr>
 		{/foreach}
 	</table>
 </div>
-{include file='legendeAbsences.html'}
+{include file='legendeAbsences.tpl'}
 
 {/if}
 
@@ -57,4 +58,3 @@
 	{* bidouille pour assurer le fonctionnement du sélecteur avec autocomplete *}
 </form>
 </div>  <!-- container -->
-
