@@ -19,6 +19,13 @@
 
 <script type="text/javascript" src="../bootstrap/typeahead/bootstrap3-typeahead.js"></script>
 
+<script type="text/javascript" src="../js/bootbox/bootbox.min.js"></script>
+<script type="text/javascript">
+bootbox.setDefaults({
+  locale: "fr",
+  backdrop: false
+});
+</script>
 
 <script type="text/javascript">
 	$.blockUI.defaults.message = 'Veuillez patienter';
