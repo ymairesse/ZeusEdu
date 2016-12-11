@@ -13,6 +13,10 @@ $smarty->assign('lesCours', $user->listeCoursProf());
 
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 
+// les photos sont-elles visibles?
+$photosVis = isset($_COOKIE['photosVis']) ? $_COOKIE['photosVis'] : null;
+$smarty->assign('photosVis', $photosVis);
+
 switch ($action) {
     case 'admin':
         include 'inc/gestAdmin.inc.php';
@@ -25,6 +29,9 @@ switch ($action) {
         break;
     case 'signalements':
         include 'inc/signalements.inc.php';
+        break;
+    case 'preferences':
+        include 'inc/preferences.inc.php';
         break;
     default:
         include 'inc/gestPresences.inc.php';

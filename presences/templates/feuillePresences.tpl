@@ -35,10 +35,18 @@
 				{assign var=listePr value=$listePresences.$matricule}
 				<tr>
 					<th style="width:30px" class="hidden-sm hidden-xs">{$unEleve.classe|default:'&nbsp;'}</th>
-					<td style="width:230px">
+					<td style="width:230px"
+						{if $photosVis == 'visible'}
+						class="pop"
+						data-toggle="popover"
+						data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$unEleve.matricule}' style='width:100px'>"
+						data-html="true"
+						data-container="body"
+						{/if}>
 						{assign var=statut value=$listePr.$periode.statut|default:'indetermine'}
 						<button class="btn btn-large btn-block nomEleve {$statut} clip"
 								id="nomEleve-{$matricule}"
+								data-matricule="{$matricule}"
 								data-statut="{$statut}"
 								type="button">
 							<span class="visible-xs">{$unEleve.nom|truncate:10:'..'} {$unEleve.prenom|truncate:10:'.'}</span>
@@ -350,7 +358,6 @@ $(document).ready(function(){
 				$("#presAuto").val(true);
 				}
 		})
-
 
 })
 
