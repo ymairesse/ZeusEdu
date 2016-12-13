@@ -303,11 +303,7 @@
                 $.post('inc/files/unShareFile.inc.php', {
                     shareId: shareId
                 }, function(resultat) {
-                    if (resultat.length != 0)
-                        alert(resultat);
-                    else {
-                        $(".unShare[data-shareid='" + shareId + "']").closest('.shared').remove();
-                    }
+                    $(".unShare[data-shareid='" + shareId + "']").closest('.shared').remove();
                 })
             } else {
                 var shareWith = $(this).data('libelle');
