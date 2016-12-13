@@ -37,7 +37,9 @@ class chip_download
 
                         /* Documents */
                         'txt' => 'text/plain',
-			                  'csv' => 'text/csv',
+			            'csv' => 'text/csv',
+                        'mm' => 'application/x-freeplane',
+                        'json' => 'application/json',
                         'html' => 'text/html',
                         'pdf' => 'application/pdf',
                         'doc' => 'application/msword',
@@ -58,7 +60,7 @@ class chip_download
                         /* Images */
                         'gif' => 'image/gif',
                         'png' => 'image/png',
-                        'jpg' => 'image/jpeg',
+                        'jpg' => 'image/jpg',
                         'jpeg' => 'image/jpeg',
 
                         /* Audio */
@@ -321,8 +323,6 @@ class chip_download
 
         /* Referrer - Validation */
         if ($referrer_check == true && !empty($referrer) && strpos(strtoupper($_SERVER['HTTP_REFERER']), strtoupper($referrer)) === false) {
-            die('coucou');
-                    Application::afficher($_SERVER['HTTP_REFERER'], true);
             $this->download_hook['download'] = false;
             $this->download_hook['message'] = 'Internal server error - Please contact system administrator';
 
