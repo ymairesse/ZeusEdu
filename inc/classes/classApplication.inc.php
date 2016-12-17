@@ -198,19 +198,26 @@ class Application
     /**
      * renvoie la liste des applications existantes (et, éventuellement, seulement celles qui sont activées).
      *
-     * @param bool $active
+     * @param bool $active : rien que les applications actives?
+     * @param bool $alpha : tri alphabétique demandé
      *
      * @return array
      */
-    public function listeApplis($actives = '')
+    public function listeApplis($actives = true, $alpha = false)
     {
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT nom, nomLong, active ';
         $sql .= 'FROM '.PFX.'applications ';
-        if ($actives) {
-            $sql .= 'WHERE active ';
+        $sql .= 'WHERE 1 ';
+        if ($actives == true) {
+            $sql .= 'AND active ';
         }
-        $sql .= 'ORDER BY ordre, LOWER(nom)';
+        if ($alpha == false) {
+            $sql .= 'ORDER BY ordre, LOWER(nomLong) ';
+        } else {
+            $sql .= 'ORDER BY LOWER(nomLong), ordre ';
+        }
+
         $resultat = $connexion->query($sql);
         $liste = array();
         while ($ligne = $resultat->fetch()) {
@@ -418,7 +425,7 @@ class Application
                 $value = addslashes($value);
                 $sql = 'INSERT INTO '.PFX.'config ';
                 $sql .= "SET parametre='$parametre', valeur='$value' ";
-                $sql .= "ON DUPLICATE KEY UPDATE valeur='$value'";
+                $sql .= "ON DUPLICATE KEY UPDATE valeur='$value' ";
                 $resultat = $connexion->exec($sql);
                 if ($resultat > 0) {
                     ++$n;
@@ -1644,44 +1651,6 @@ class Application
         return array('erreurs' => $erreurs, 'ajouts' => $ajouts);
     }
 
-    // /**
-    //  * initialise les mots de passe "élèves" depuis un CSV (encore utilisé?)
-    //  *
-    //  * @param array $table : liste des élèves dont il faut réinitialiser le pwd
-    //  *
-    //  * @return array : liste des erreurs et des réussites
-    //  */
-    // public function newPasswdAssign($table)
-    // {
-    //     $tableauCSV = self::csv2array($table);
-    //     $entete = array_shift($tableauCSV);
-    //     $erreurs = 0;
-    //     $ajouts = 0;
-    //     $tousEleves = self::listeTousEleves();
-    //     $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //     foreach ($tableauCSV as $unEleve) {
-    //         $matricule = $unEleve[0];
-    //         $passwd = $unEleve[2];
-    //         $eleve = $tousEleves[$matricule];
-    //         $nom = $tousEleves[$matricule]['nom'];
-    //         $prenom = $tousEleves[$matricule]['prenom'];
-    //         $username = self::username($matricule, $nom, $prenom);
-    //         $sql = 'INSERT INTO '.PFX.'passwd ';
-    //         $sql .= "SET matricule='$matricule',passwd='$passwd', user='$username' ";
-    //         // en cas de doublon, seul le "mot de passe" est modifié
-    //         $sql .= "ON DUPLICATE KEY UPDATE passwd='$passwd' ";
-    //         $resultat = $connexion->exec($sql);
-    //         if ($resultat === false) {
-    //             ++$erreurs;
-    //         } else {
-    //             ++$ajouts;
-    //         }
-    //     }
-    //     self::DeconnexionPDO($connexion);
-    //
-    //     return array('erreurs' => $erreurs, 'ajouts' => $ajouts);
-    // }
-
     /**
      * supprimer les caractèes accentués d'une chaîne et les remplacer par le caractères non accentué.
      *
@@ -1949,7 +1918,7 @@ class Application
      * @param $token : le token cherché
      * @param $user : le nom d'utilisateur correspondant au token
      *
-     * @return bool
+     * @return string : l'utilisateur recherché s'il est dans la table
      */
     public function chercheToken($token, $user)
     {
@@ -1971,40 +1940,45 @@ class Application
         return $userName;
     }
 
-    /**
-     * Enregistre le mot de passe provenant du formulaire et correspondant à l'utilisateur indiqué.
-     *
-     * @param array $post : contenu du formulaire
-     *
-     * @return nombre d'enregistrements réussis (normalement 1)
-     */
-    public function savePasswd($post)
-    {
-        $passwd = isset($post['passwd']) ? $post['passwd'] : null;
-        $passwd2 = isset($post['passwd2']) ? $post['passwd2'] : null;
-        $token = $post['token'];
-        // confirmation du userName dans la BD (sécurité)
-        $userName = strtoupper($this->chercheToken($post['token'], $post['userName']));
-        $nb = 0;
-        if (($passwd == $passwd2) && ($userName != '') && (strlen($passwd) >= 8)) {
-            $passwd = md5($passwd);
-            $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'UPDATE '.PFX.'profs ';
-            $sql .= "SET mdp = '$passwd' ";
-            $sql .= "WHERE UPPER(acronyme) = '$userName' ";
-            $resultat = $connexion->exec($sql);
-            if ($resultat) {
-                $nb = 1;
-            }
-            // suppression de tous les tokens de cet utilisateur dans la table des mots de passe à récupérer
-            $sql = 'DELETE FROM '.PFX.'lostPasswd ';
-            $sql .= "WHERE user = '$userName' ";
-            $resultat = $connexion->exec($sql);
-            self::DeconnexionPDO($connexion);
-        }
+     /**
+      * Enregistre le mot de passe provenant du formulaire et correspondant à l'utilisateur indiqué.
+      *
+      * @param array $post : contenu du formulaire
+      *
+      * @return nombre d'enregistrements réussis (normalement 1)
+      */
+     public function savePasswd($post)
+     {
+         $passwd = isset($post['passwd']) ? $post['passwd'] : null;
+         $passwd2 = isset($post['passwd2']) ? $post['passwd2'] : null;
+         $token = $post['token'];
+     // confirmation du userName dans la BD (sécurité)
+     $userName = strtoupper($this->chercheToken($post['token'], $post['userName']));
+         $nb = 0;
+         if (($passwd == $passwd2) && ($userName != '') && (strlen($passwd) >= 8)) {
+             $passwd = md5($passwd);
+             $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+             $sql = 'UPDATE '.PFX.'profs ';
+             $sql .= 'SET mdp =:passwd ';
+             $sql .= 'WHERE UPPER(acronyme) = :userName ';
+             $requete = $connexion->prepare($sql);
+             $data = array(':passwd' => $passwd, ':userName' => $userName);
+             $resultat = $requete->execute($data);
+             if ($resultat) {
+                 $nb = 1;
+             }
+         // suppression de tous les tokens de cet utilisateur dans la table des mots de passe à récupérer
+         $sql = 'DELETE FROM '.PFX.'lostPasswd ';
+             $sql .= 'WHERE UPPER(user) = :userName ';
+             $data = array(':userName' => $userName);
+             $requete = $connexion->prepare($sql);
+             $resultat = $requete->execute($data);
 
-        return $nb;
-    }
+             self::DeconnexionPDO($connexion);
+         }
+
+         return $nb;
+     }
 
     /**
      *  renvoie le nom du module courant.
@@ -2033,5 +2007,20 @@ class Application
         $nombre = str_replace(' ', '', $nombre);
 
         return floatval($nombre);
+    }
+
+    /**
+     * Suppression de la virgule et remplacement par un point dans les nombres + suppression des espaces.
+     *
+     * @param $nombre string
+     *
+     * @return string
+     */
+    public static function sansVirg($nombre)
+    {
+        $nombre = str_replace(',', '.', $nombre);
+        $nombre = str_replace(' ', '', $nombre);
+
+        return $nombre;
     }
 }

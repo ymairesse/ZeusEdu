@@ -50,7 +50,8 @@ switch ($mode) {
             $smarty->assign('acronyme', $acronyme);
             $smarty->assign('userIdentite', $oldUser->identite());
             $smarty->assign('userApplications', $oldUser->getApplications());
-            $smarty->assign('applications', $Application->listeApplis());
+            // liste des applications actives/inactives et dans l'ordre alphabétique
+            $smarty->assign('applications', $Application->listeApplis(false, true));
             $smarty->assign('applicationDroits', $Application->listeDroits());
             $smarty->assign('dejaConnu', true);
             $smarty->assign('corpsPage', 'users/formPerso');

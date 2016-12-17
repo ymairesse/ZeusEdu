@@ -97,6 +97,7 @@
 
 		<table width="100%"class="table table-striped table-condensed">
 		<tr>
+			<th>&nbsp;</th>
 			<th>Application</th>
 			{foreach from=$applicationDroits item=unStatut}
 				<th id="{$unStatut}" class="statut" title="statut '{$unStatut}'  pour toutes les applications" data-container="body" style="text-align:center"><a href="javascript:void(0)">{$unStatut}</a></th>
@@ -105,6 +106,7 @@
 
 		{foreach from=$applications key=nomApplication item=uneApplication}
 			<tr {if $uneApplication.active == 0}class="inactif" title="Application inactive"{/if}>
+			<td>{if $uneApplication.active == 0}<i class="fa fa-minus-circle fa-lg"></i>{else}&nbsp;{/if}</td>
 			<td>{$uneApplication.nomLong}</td>
 			{foreach from=$applicationDroits item=unStatut}
 				<td style="text-align:center">
