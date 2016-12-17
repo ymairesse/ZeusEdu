@@ -103,7 +103,6 @@
 				<li><a href="index.php?action=autres&amp;mode=alias">Prendre un alias</a></li>
 				<li><a href="index.php?action=autres&amp;mode=switchApplications">Activer/désactiver les applications</a></li>
 				<li><a href="index.php?action=autres&amp;mode=config">Paramètres généraux</a></li>
-				<li><a href="index.php?action=autres&amp;mode=mentions">Réorganiser les mentions</a></li>
 			</ul>
 		</li>
 	</ul>
