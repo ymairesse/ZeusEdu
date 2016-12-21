@@ -25,7 +25,7 @@ $smarty->assign('onglet', $onglet);
 
 $noBulletin = isset($_POST['noBulletin']) ? $_POST['noBulletin'] : PERIODEENCOURS;
 
-require_once INSTALL_DIR."/$module/inc/classes/classAthena.inc.php";
+require_once INSTALL_DIR."/inc/classes/class.Athena.php";
 
 switch ($action) {
     case 'ficheEleve':
