@@ -13,6 +13,7 @@
 				<li><a href="#tabs-2" data-toggle="tab">Données scolaires</a></li>
 				<li><a href="#tabs-3" data-toggle="tab">Données personnelles</a></li>
 				<li><a href="#tabs-4" data-toggle="tab">Parents et responsable</a></li>
+				<li><a href="#tabs-5" data-toggle="tab">Athena {if $listeSuivi|@count > 0}<span class="badge" style="color:red; background: white;">{$listeSuivi|count}</span>{/if}</a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -36,6 +37,11 @@
 					{include file="direction/pad/tabEleve4.inc.tpl"}
 				</div>
 				<!-- tabs-4 -->
+
+				<div class="tab-pane" id="tabs-5">
+					{include file="direction/pad/tabEleve5.inc.tpl"}
+				</div>
+				<!-- tabs-5 -->
 
 			</div>
 			<!-- my-tab-content -->
@@ -63,6 +69,13 @@
 	$(".nav-tabs li a[href='#tabs-" + onglet + "']").tab('show');
 
 	$(document).ready(function() {
+
+		$(".popover-eleve").mouseover(function(){
+			$(this).popover('show');
+			})
+		$(".popover-eleve").mouseout(function(){
+			$(this).popover('hide');
+			})
 
 		var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";
 		var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
