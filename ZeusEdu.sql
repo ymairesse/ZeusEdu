@@ -316,7 +316,7 @@ CREATE TABLE IF NOT EXISTS didac_bullCarnetEleves (
   idCarnet int(6) NOT NULL,
   matricule int(6) NOT NULL,
   cote varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  remarque varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  remarque varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (idCarnet,matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -619,6 +619,11 @@ CREATE TABLE `didac_config` (
   `signification` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Indexes for table `didac_config`
+--
+ALTER TABLE `didac_config`
+  ADD PRIMARY KEY (`parametre`);
 --
 -- Contenu de la table `didac_config`
 --
