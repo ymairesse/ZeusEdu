@@ -7,6 +7,8 @@ include INSTALL_DIR.'/inc/entetesMin.inc.php';
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
+
+
 switch ($action) {
     case 'etape2':
         // on a un nom d'utilisateur; il reste à vérifier son existence dans la BD
