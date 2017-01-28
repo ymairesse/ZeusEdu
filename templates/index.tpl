@@ -28,7 +28,7 @@
 		<span class="glyphicon glyphicon-star" style="color:red"></span>
 		{/if}
 
-		<div class="col-md-offset-2 col-md-9 col-sm-12 col-xs-12">
+		<div class="col-md-offset-2 col-md-9 col-xs-12">
 
 			{foreach from=$applisDisponibles key=k item=v}
 				<div class="sousPrg btn btn-primary" title="{$v.nomLong}">
