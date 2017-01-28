@@ -12,7 +12,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
     die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
 }
 
-$id = isset($_POST['id']) ? $_POST['id'] : null;
+$id = isset($_POST['id'])?$_POST['id']:Null;
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();

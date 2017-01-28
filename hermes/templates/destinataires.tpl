@@ -7,7 +7,6 @@
 	<div class="panel-body">
 
 	{assign var=noListe value=1}
-
 	<!--	tous les utilisateurs -->
 	<div style="width:100%">
 		<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
@@ -55,7 +54,7 @@
 
 	{if $membresProfs != Null}
 	<ul class="listeMails" style="display:none">
-		{foreach from=$membresProfs key=acro item=prof}
+			{foreach from=$membresProfs key=acro item=prof}
 		<li>
 			<input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
 			<span class="labelProf">{$prof.nom|truncate:15:'...'} {$prof.prenom} {$prof.classe|default:''}</span>

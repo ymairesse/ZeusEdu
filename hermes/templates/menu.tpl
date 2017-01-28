@@ -1,7 +1,7 @@
 <div class="container hidden-print">
-
+	
 	<nav class="navbar navbar-default" role="navigation">
-
+		
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#barreNavigation">
 			<span class="sr-only">Navigation portable</span>
@@ -9,13 +9,13 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-
+		
 		<a class="navbar-brand" href="../index.php"><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-home"></span></button></a>
 
-	</div>
-
+	</div> 
+	
 	<div class="collapse navbar-collapse" id="barreNavigation">
-
+		
 		<ul class="nav navbar-nav">
 			<li><a href="index.php"><button class="btn btn-primary">HERMES <img src="images/hermesIco.png" alt="HERMES" title="Page d'accueil de HERMES"></button></a></li>
 			<li><a href="index.php">Envoyer un mail</a>
@@ -33,7 +33,7 @@
 			{/if}
 
 		</ul>  <!-- nav navbar-nav -->
-
+		
 		<ul class="nav navbar-nav pull-right">
 			{if isset($alias)}
 			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>
@@ -45,11 +45,11 @@
 					<li><a href="../logout.php"><span class="glyphicon glyphicon-off"></span> Déconnexion</a></li>
 				</ul>
 			</li>
-
-		</ul>
-
+			
+		</ul>		
+	
 	</div>  <!-- collapse -->
-
+	
 	</nav>
 
 </div>  <!-- container -->

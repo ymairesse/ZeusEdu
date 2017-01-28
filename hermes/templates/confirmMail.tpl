@@ -1,5 +1,5 @@
 <div class="container">
-
+	
 	<h2>Votre envoi</h2>
 
 	<div id="cadre">
@@ -16,7 +16,7 @@
 	<strong>Texte</strong><br>
 	<div class="champ">{$detailsMail.post['texte']}</div>
 	<br>
-
+	
 	<strong>Fichiers joints:</strong><br>
 	{assign var=n value=0}
 	{foreach from=$detailsMail.files key=wtf item=data}

@@ -29,4 +29,5 @@ $smarty = new Smarty();
 
 $smarty->assign('acronyme', $acronyme);
 $smarty->assign('mail', $mail);
-echo $smarty->fetch('../templates/inc/texteMail.tpl');
+$texte = $smarty->fetch('../templates/inc/texteMail.tpl');
+echo $texte;
