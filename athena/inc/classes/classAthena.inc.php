@@ -209,7 +209,7 @@ class athena
       *
       * @return array
       */
-     public static function getEleveUser($acronyme)
+     public static function getEleveUser($acronyme, $dateDebut=null, $dateFin=null)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          $sql = "SELECT da.matricule, DATE_FORMAT(date,'%d/%m/%Y') AS laDate, DATE_FORMAT(heure,'%H:%i') AS heure, ";
@@ -217,6 +217,12 @@ class athena
          $sql .= 'FROM '.PFX.'athena AS da ';
          $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = da.matricule ';
          $sql .= "WHERE proprietaire = '$acronyme' ";
+         if ($dateDebut != null) {
+             $sql .= "AND date >= '$dateDebut' ";
+         }
+         if ($dateFin != null) {
+             $sql .= "AND date <= '$dateFin' ";
+         }
          $sql .= 'ORDER BY date DESC, heure ASC ';
 
          $resultat = $connexion->query($sql);

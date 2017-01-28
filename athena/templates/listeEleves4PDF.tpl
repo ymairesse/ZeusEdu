@@ -18,14 +18,14 @@
         {$nomCoach.prenom} {$nomCoach.nom}
      </page_footer>
 
+    <h3>Période: {if $dateDebut != ''} depuis le {$dateDebut}{/if} {if $dateFin != ''}jusqu'au {$dateFin}{/if}</h3>
+
      <table style="width:100%">
-         <thead>
              <tr>
-                 <th style="width: 60%">Nom</th>
-                 <th style="width: 40%">Date et heure</th>
+                 <td style="width: 60%">Nom</td>
+                 <td style="width: 40%">Date et heure</td>
              </tr>
-         </thead>
-         <tbody>
+
              {foreach from=$elevesSuivis key=matricule item=unEleve}
                  {assign var=n value=1}
                  {foreach from=$unEleve key=date item=uneVisite}
@@ -40,7 +40,6 @@
                  {/foreach}
              {/foreach}
 
-         </tbody>
      </table>
 
 </page>

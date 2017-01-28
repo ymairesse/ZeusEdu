@@ -5,9 +5,7 @@
         <div class="col-md-6 col-sm-12">
 
             <h2>Les élèves que je suis
-                <a target="_blank" href="inc/printListe.php" class="btn btn-primary btn-xs pull-right">
-                    <i class="fa fa-print"></i> Imprimer
-                </a>
+                <button type="button" class="btn btn-primary btn-xs pull-right" id="print"><i class="fa fa-print"></i> Imprimer</button>
             </h2>
 
             <table class="table table-hover table-condensed">
@@ -21,37 +19,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach from=$elevesSuivis key=matricule item=unEleve}
-                        {assign var=n value=0}
-                        {foreach from=$unEleve key=date item=uneVisite}
+                    {foreach from=$elevesSuivis key=matricule item=unEleve} {assign var=n value=0} {foreach from=$unEleve key=date item=uneVisite}
 
-                        <tr class="{if ($uneVisite.absent == 1)}absent {/if}
+                    <tr class="{if ($uneVisite.absent == 1)}absent {/if}
                             {if $n > 0}more_{$matricule}{/if}" {if $n> 0} style="display: none"{/if}>
-                            <td class="hidden-print">
-                                {if $n == 0}
-                                <form action="index.php" method="POST" role="form" class="form-inline microform">
-                                    <input type="hidden" name="matricule" value="{$uneVisite.matricule}">
-                                    <input type="hidden" name="action" value="ficheEleve">
-                                    <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
-                                </form>
-                                {else} &nbsp; {/if}
-                            </td>
-                            <td class="hidden-print">
-                                {if ($n == 0) && ($unEleve|@count > 1)}
-                                <button type="button" class="btn btn-default btn-xs more" data-matricule="{$uneVisite.matricule}" data-open="0">
+                        <td class="hidden-print">
+                            {if $n == 0}
+                            <form action="index.php" method="POST" role="form" class="form-inline microform">
+                                <input type="hidden" name="matricule" value="{$uneVisite.matricule}">
+                                <input type="hidden" name="action" value="ficheEleve">
+                                <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
+                            </form>
+                            {else} &nbsp; {/if}
+                        </td>
+                        <td class="hidden-print">
+                            {if ($n == 0) && ($unEleve|@count > 1)}
+                            <button type="button" class="btn btn-default btn-xs more" data-matricule="{$uneVisite.matricule}" data-open="0">
                                     <i class="fa fa-arrow-circle-down"></i>
                                     <span class="badge">{$unEleve|count}</span>
                                 </button> {else} &nbsp; {/if}
-                            </td>
-                            <td class="hidden-print">{$uneVisite.groupe}</td>
-                            <td class="pop" data-toggle="popover" data-content="<img src='../photos/{$uneVisite.photo}.jpg' alt='{$uneVisite.matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$uneVisite.photo}">
-                                {$uneVisite.prenom} {$uneVisite.nom}
-                            </td>
-                            <td>Le {$date} à {$uneVisite.heure}</td>
-                        </tr>
-                        {assign var=n value=$n+1}
-                        {/foreach}
-                    {/foreach}
+                        </td>
+                        <td class="hidden-print">{$uneVisite.groupe}</td>
+                        <td class="pop" data-toggle="popover" data-content="<img src='../photos/{$uneVisite.photo}.jpg' alt='{$uneVisite.matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$uneVisite.photo}">
+                            {$uneVisite.prenom} {$uneVisite.nom}
+                        </td>
+                        <td>Le {$date} à {$uneVisite.heure}</td>
+                    </tr>
+                    {assign var=n value=$n+1} {/foreach} {/foreach}
 
                 </tbody>
             </table>
@@ -116,8 +110,82 @@
 
 </div>
 
+<div class="modal fade" id="modalPrint" tabindex="-1" role="dialog" aria-labelledby="titleModalPrint2" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="titleModalPrint2">Imprimer</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="dateDebut">Date de début</label>
+                    <input type="text" class="form-control dates" id="dateDebut" placeholder="Date de début" class="datepicker">
+                    <p class="help-block">Laisser vide si pas de date limite</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateFin">Date de Fin</label>
+                    <input type="text" class="form-control dates" id="dateFin" placeholder="Date de Fin" class="datepicker">
+                    <p class="help-block">Laisser vide si pas de date limite</p>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    <a href="#" class="btn btn-primary" role="button" id="btnPrint">Imprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script type="text/javascript">
     $(document).ready(function() {
+
+        var printUrl = 'inc/printListe.php';
+
+        $("#btnPrint").attr('href', printUrl);
+
+        $(".dates").change(function() {
+            var dateDebut = $("#dateDebut").val();
+            var dateFin = $("#dateFin").val();
+            var url = printUrl + '?dateDebut=' + dateDebut + '&dateFin=' + dateFin;
+            $("#btnPrint").attr('href', url)
+        })
+
+        $("#print").click(function() {
+            $("#modalPrint").modal('show');
+        })
+
+        $("#btnPrint").click(function() {
+            $("#modalPrint").modal('hide');
+        })
+
+        $("#dateDebut").datepicker({
+                format: "dd/mm/yyyy",
+                clearBtn: true,
+                language: "fr",
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true
+            })
+            .off('focus')
+            .click(function() {
+                $(this).datepicker('show');
+            });
+
+        $("#dateFin").datepicker({
+            format: "dd/mm/yyyy",
+            clearBtn: true,
+            language: "fr",
+            calendarWeeks: true,
+            autoclose: true,
+            todayHighlight: true
+        });
 
         $(".more").click(function() {
             var matricule = $(this).data('matricule');
@@ -258,14 +326,6 @@
                 // 	}
 
         });
-
-        $("#print").click(function() {
-            $.post('inc/printListe.inc.php', {
-
-            }, function(resultat) {
-
-            })
-        })
 
     })
 </script>
