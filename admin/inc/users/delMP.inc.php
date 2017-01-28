@@ -16,10 +16,10 @@ $listeAffectations = $Ecole->listeAffectations($acronyme);
 
 require_once(INSTALL_DIR.'/smarty/Smarty.class.php');
 $smarty = new Smarty();
-$smarty->template_dir = "../../templates";
-$smarty->compile_dir = "../../templates_c";
+$smarty->template_dir = "../../../templates";
+$smarty->compile_dir = "../../../templates_c";
 
 $smarty->assign('listeAffectations', $listeAffectations);
 $smarty->assign('nomProf', $nomProf);
 
-$smarty->display('../../templates/users/listeAffectations.tpl');
+$smarty->display('users/listeAffectations.tpl');

@@ -15,9 +15,9 @@
 			<div class="col-md-6 col-sm-12">
 			{assign var=n value = -10000}
 		{/if}
-		<div class="input-group">
+		<div class="form-group">
 			<label for="{$parametre}">{$data.label} [{$parametre}]</label>
-			<input type="text" maxlength="{$data.size}" name="{$parametre}" id="{$parametre}" value="{$data.valeur}" class="form-control">
+			<input type="text" maxlength="{$data.size}" name="{$parametre}" id="{$parametre}" value="{$data.valeur|escape}" class="form-control">
 			<div class="help-block">{$data.signification}</div>
 		</div>
 		{assign var=n value=$n+1}

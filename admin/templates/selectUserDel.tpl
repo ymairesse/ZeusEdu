@@ -1,0 +1,13 @@
+<div id="selecteur" class="noprint" style="clear:both">
+<fieldset style="clear:both"><legend>Suppression d'un utilisateur</legend>
+	<form name="selecteur" id="formSelecteur" method="POST" action="{$smarty.server.PHP_SELF}">
+	<select name="acronyme" id="selectUser">
+		<option value="">Sélectionner un utilisateur</option>
+		{html_options options=$usersList selected=$acronyme}
+	</select>
+	<input type="hidden" name="mode" value="confUserDel">
+	<input type="hidden" name="action" value="gestUsers">
+	<input type="submit" value="OK" name="OK" id="envoi">
+	</form>
+</fieldset>
+</div>

@@ -82,4 +82,6 @@ switch ($mode) {
                 $smarty->assign('corpsPage', 'paramGeneraux');
             break;
         }
+		break;
+
     }

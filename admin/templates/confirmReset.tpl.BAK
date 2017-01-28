@@ -1,0 +1,15 @@
+<fieldset style="clear:both">
+	<legend>Confirmation du dégroupage</legend>
+{if $resetOK == "OK"}
+	<p class="message">Tous les groupes ont été réinitialisés à leur classe.</p>
+
+	{else}
+	<form name="form" action="{$smarty.server.PHP_SELF}" method="POST">
+		<p>Ré-initialisation de tous les groupes à leur classe d'origine</p>
+		<p class="message">Veuillez confirmer cette opération</p>
+		<button type="submit" class="btn btn-primary">Confirmation</button>
+		<input type="hidden" name="action" value="gestEleves">
+		<input type="hidden" name="mode" value="initGroupes">
+	</form>
+{/if}
+</fieldset>

@@ -28,7 +28,7 @@
 					<li><a href="index.php?action=import&amp;table=bullCompetences">Compétences</a></li>
 					<li><a href="index.php?action=import&amp;table=ecoles">Écoles</a></li>
 					<li><a href="index.php?action=import&amp;table=elevesEcoles">Élèves/écoles</a></li>
-					<li><a href="index.php?action=import&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
+					<li><a href="index.php?action=import&amp;table=bullCE1B">Résultats CEB primaire</a></li>
 					<li><a href="index.php?action=import&amp;table=infirmInfos">Informations médicales</a></li>
 					<li><a href="index.php?action=import&amp;table=passwd">Mots de passe élèves</a></li>
 				</ul>
