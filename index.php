@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once('config.inc.php');
 
 // définition de la class USER
@@ -53,4 +57,3 @@ if (!($user->accesApplication(APPLICATION))) {
 		$smarty->assign('executionTime', round($chrono->stop(),6));
         $smarty->display('index.tpl');
         }
-?>
