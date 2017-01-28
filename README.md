@@ -21,6 +21,7 @@ Installation
  - lancer la procédure d'installation et d'initialisation des tables de la base de données à partir de http://ecole.org/install/index.php
  (où ecole.org désigne l'adresse URL de votre serveur)
  - vérifier le fonctionnement de l'application avec l'utilisateur ADM et le mot de passe 123456
+ - effacer le répertoir /install.php !!!
  - configurer le fichier /config.ini pour l'établissement scolaire
  - importer les contenus des tables depuis les fichiers .csv
 
