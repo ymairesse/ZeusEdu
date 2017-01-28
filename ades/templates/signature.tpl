@@ -1,7 +1,7 @@
 <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
 	<tbody>
 		<tr>
-			<td style="width:150px">Logo de l'école</td>
+			<td style="width:150px">Logo de l'école </td>
 			<td>
 			<p>##expediteur##<br />
 			ECOLE<br />

@@ -48,6 +48,10 @@ switch ($mode) {
 		$smarty->assign('listeFaits', $listeFaits);
 		$smarty->assign('corpsPage', 'synthese');
 		break;
+	case 'printFiches':
+		// génération du fichier PDF des fiches disciplinaires
+		$listeChamps = $Ades->champsInContexte('tableau');
+		break;
 	case 'statistiques':
 		// élève isolé
 		if (isset($matricule) && $matricule != '')
@@ -75,4 +79,3 @@ if (isset($listeFaits)) {
 
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
-?>

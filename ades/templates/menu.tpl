@@ -38,6 +38,7 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=synthese&amp;mode=showFiches">Synthèses de comportement</a></li>
 					<li><a href="index.php?action=synthese&amp;mode=statistiques">Statistiques par niveau</a></li>
+					<li><a href="index.php?action=synthese&amp;mode=printFiches">Générer les fiches pour impression</a></li>
 				</ul>
 			</li>
 
