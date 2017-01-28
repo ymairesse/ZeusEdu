@@ -17,8 +17,8 @@ Installation
 
  - Configurer le fichier /config.inc.php pour la base de données
  - uploader tous les fichiers sur le serveur web
- - créer les tables dans la base de données: fichier ZeusEdu.sql avec phpMyAdmin. La base de données doit être en utf8_unicode_ci
- - lancer la procédure d'installtion de la base de données à partir de http://ecole.org/install/index.php
+ - créer la base de données: par exemple avec phpMyAdmin. La base de données doit être en utf8_unicode_ci
+ - lancer la procédure d'installation et d'initialisation des tables de la base de données à partir de http://ecole.org/install/index.php
  (où ecole.org désigne l'adresse URL de votre serveur)
  - vérifier le fonctionnement de l'application avec l'utilisateur ADM et le mot de passe 123456
  - configurer le fichier /config.ini pour l'établissement scolaire
