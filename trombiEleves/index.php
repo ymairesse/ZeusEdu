@@ -47,6 +47,7 @@ switch ($action) {
 		if ($matricule != Null) {
 			$eleve = new Eleve($matricule);
 			$smarty->assign('eleve', $eleve->getDetailsEleve());
+            $smarty->assign('listeCours', $eleve->listeCoursEleve());
             $classe = $eleve->classe();
 			$smarty->assign('classe', $classe);
             $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
