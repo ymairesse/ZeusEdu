@@ -396,7 +396,7 @@ class eleve
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $matricule = $this->matricule();
-        $sql = 'SELECT annee, nomEcole, adresse,cPostal,commune ';
+        $sql = 'SELECT DISTINCT annee, nomEcole, adresse,cPostal,commune ';
         $sql .= 'FROM '.PFX.'elevesEcoles ';
         $sql .= 'JOIN '.PFX.'ecoles ON ('.PFX.'ecoles.ecole = '.PFX.'elevesEcoles.ecole) ';
         $sql .= "WHERE matricule='$matricule' ";

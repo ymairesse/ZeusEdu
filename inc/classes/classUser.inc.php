@@ -650,12 +650,37 @@ class user
      *
      * @return array : 'nom'=>$nom, 'prenom'=>$prenom
      */
-    private function getNom()
+    public function getNom()
     {
         $nom = $this->identite['nom'];
         $prenom = $this->identite['prenom'];
 
         return array('nom' => $nom, 'prenom' => $prenom);
+    }
+
+    /**
+     * renvoie le titre (la fonction) de l'utilisateur.
+     *
+     * @param void()
+     *
+     * @return string
+     */
+    public function getFunction()
+    {
+        return $this->identite['titre'];
+    }
+
+    /**
+    * retourne la formule M. ou Mme pour l'utilisateur courant
+    *
+    * @param void()
+    *
+    * @return string
+    */
+    public function getFormule() {
+        if ($this->identite['sexe'] == 'F')
+            return 'Mme';
+            else return 'M.';
     }
 
     /**
@@ -724,16 +749,16 @@ class user
     }
 
     /**
-    * supprime la photo existante pour l'utilisateur courant
-    *
-    * @param void()
-    *
-    * @return void()
-    */
-    public function delPhoto() {
+     * supprime la photo existante pour l'utilisateur courant.
+     *
+     * @param void()
+     */
+    public function delPhoto()
+    {
         $photo = $this->photoExiste();
-        if ($photo != null)
+        if ($photo != null) {
             unlink(INSTALL_DIR.'/photosProfs/'.$photo);
+        }
     }
 
     /**

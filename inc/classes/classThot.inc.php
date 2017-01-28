@@ -1116,7 +1116,6 @@ class thot
         $listeBrute = array();
         $resultat = $connexion->query($sql);
 
-        // Application::afficher($resultat);
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
@@ -2095,5 +2094,126 @@ class thot
         } else {
             return 0;
         }
+    }
+
+    /**
+     * retourne la liste des collections de questions/exercices existantes pour l'utilisateur $acronyme.
+     *
+     * @param $acronyme
+     *
+     * @return array
+     */
+    public function listeCollections($acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idCollection, nom ';
+        $sql .= 'FROM '.PFX.'thotQCollections ';
+        $sql .= "WHERE acronyme = '$acronyme' ";
+        $sql .= 'ORDER BY nom ';
+        $resultat = $connexion->query($sql);
+
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $idCollection = $ligne['idCollection'];
+                $liste[$idCollection] = $ligne;
+            };
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste des questions pour la liste des collections donnée.
+     *
+     * @param $listeCollections : array
+     *
+     * @return array
+     */
+    public function listeQuestionsParCollection($listeCollections)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        if (is_array($listeCollections)) {
+            $listeCollectionsString = implode(',', array_keys($listeCollections));
+        } else {
+            $listeCollectionsString = $listeCollections;
+        }
+        $sql = 'SELECT idCollection, idQuestion, type ';
+        $sql .= 'FROM '.PFX.'thotQQuestions ';
+        $sql .= "WHERE idCollection IN ($listeCollectionsString) ";
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $idCollection = $ligne['idCollection'];
+                $idQuestion = $ligne['idQuestion'];
+                $liste[$idCollection][$idQuestion] = $ligne;
+            };
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste détaillée des questions pour une collection donnée.
+     *
+     * @param $idCollection : integer
+     *
+     * @return array
+     */
+    public function detailQuestionsParCollection($idCollection)
+    {
+        $listeQuestions = $this->listeQuestionsParCollection($idCollection);
+        $listeQuestions = $listeQuestions[$idCollection];
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        $sqlQC = 'SELECT idQuestion, question, explication, points ';
+        $sqlQC .= 'FROM '.PFX.'thotQQcuQcm ';
+        $sqlQC .= 'WHERE idQuestion =:idQuestion ';
+        $requeteQC = $connexion->prepare($sqlQC);
+
+        foreach ($listeQuestions as $idQuestion => $question) {
+
+            $type = $question['type'];
+
+            $data = array(':idQuestion' => $idQuestion);
+            $ligne = null;
+            switch ($type) {
+                case 'qcm':
+                    $resultat = $requeteQC->execute($data);
+                    if ($resultat) {
+                        $requeteQC->setFetchMode(PDO::FETCH_ASSOC);
+                        $ligne = $requeteQC->fetch();
+                    }
+                    break;
+                case 'qcu':
+                    $resultat = $requeteQC->execute($data);
+                    if ($resultat) {
+                        $requeteQC->setFetchMode(PDO::FETCH_ASSOC);
+                        $ligne = $requeteQC->fetch();
+                    }
+                    break;
+                case 'vraifaux':
+                    $resultat = $requeteVraiFaux->execute($data);
+                    if ($resultat) {
+                        $requeteQC->setFetchMode(PDO::FETCH_ASSOC);
+                        $ligne = $requeteVF->fetch();
+                    }
+                    break;
+            }
+            $listeQuestions[$idQuestion]['details'] = $ligne;
+
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $listeQuestions;
     }
 }
