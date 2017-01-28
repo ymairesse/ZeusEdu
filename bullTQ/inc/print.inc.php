@@ -20,6 +20,7 @@ switch ($mode) {
         $listeEleves = isset($classe) ? $Ecole->listeEleves($classe, 'groupe') : null;
         $smarty->assign('listeElevesClasse', $listeEleves);
         $smarty->assign('matricule', $matricule);
+
         if (($etape == 'showEleve') && ($listeEleves != null)) {
             $eleve = new Eleve($matricule);
             $infoPersoEleve = $eleve->getDetailsEleve();
@@ -37,6 +38,7 @@ switch ($mode) {
                 $smarty->assign('listeCompetences', $listeCompetences);
 
                 $listeCotesGlobales = $BullTQ->listeCotesGlobales($listeCoursGrp, $bulletin);
+
                 if ($listeCotesGlobales != null) {
                     $smarty->assign('cotesGlobales', $listeCotesGlobales[$bulletin]);
                 } else {

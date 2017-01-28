@@ -43,7 +43,7 @@
 				{assign var=texte value=Null}
 			{/if}
 
-			<td	class="pop {if isset($data.cote) && ($data.cote =='I')} echec{/if}"
+			<td	class="pop {if isset($data.cote) && (($data.cote =='I') || ($data.cote == 'TI'))} echec{/if}"
 				data-toggle="popover"
 				data-content="{$texte}"
 				data-html="true"

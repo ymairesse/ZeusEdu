@@ -7,48 +7,78 @@
 			{assign var=cours value=$listeCoursGrp.$coursGrp.cours}
 
 			<h2 title="{$coursGrp}">{$dataCours.libelle} {$dataCours.nbheures}h ({$listeProfs.$coursGrp})</h2>
-			<h3>Mentions globales</h3>
 
 			{assign var=matricule value=$eleve.matricule}
-			<table class="tableauBull">
-				<tr style="background-color: #FECF69;">
-					<th style="width:12%; text-align: center;">TJ > </th>
-					<td style="width:12%; text-align: center;"><strong>{$cotesGlobales.$coursGrp.$matricule.Tj|default:'&nbsp;'}</strong></td>
-					<th style="width:12%; text-align: center;">Ex > </th>
-					<td style="width:12%; text-align: center;"><strong>{$cotesGlobales.$coursGrp.$matricule.Ex|default:'&nbsp;'}</strong></td>
-					<th style="width:12%; text-align: center;">Période > </th>
-					<td style="width:12%; text-align: center;"><strong>{$cotesGlobales.$coursGrp.$matricule.periode|default:'&nbsp;'}</strong></td>
-					<th style="width:12%; text-align: center;">Global > </th>
-					<td style="width:12%; text-align: center;"><strong>{$cotesGlobales.$coursGrp.$matricule.global|default:'&nbsp;'}</strong></td>
-				</tr>
+			<div class="row">
 
-			</table>
+				<div class="col-md-3 col-sm-12">
 
-			{if isset($listeCotesGeneraux.$bulletin.$matricule.$coursGrp)}
-			<h3>Détails par compétence</h3>
-			<table class="tableauBull">
-				<tr>
-					<th style="width:70%">Compétence</th>
-					<th style="width:15%">Travail Journalier</th>
-					<th style="width:15%">Examen</th>
-				</tr>
-				{foreach from=$listeCompetences.$cours key=idComp item=data}
-				{assign var=cotes value=$listeCotesGeneraux.$bulletin.$matricule.$coursGrp.$idComp}
-				{if ($cotes.Tj != '') || ($cotes.Ex != '')}
-				<tr>
-					<td data-container="body" title="compétence {$idComp}" style="text-align:right">{$data.libelle}</td>
-					<td style="text-align: center;"><strong>{$listeCotesGeneraux.$bulletin.$matricule.$coursGrp.$idComp.Tj|default:'&nbsp;'}</strong></td>
-					<td style="text-align: center;"><strong>{$listeCotesGeneraux.$bulletin.$matricule.$idComp.Ex|default:'&nbsp;'}</strong></td>
-				</tr>
-				{/if}
-				{/foreach}
-			</table>
-			{/if}
+					<h4>Mentions pour la période</h4>
 
-			<h3>Commentaire du professeur</h3>
+					<table class="table table-condensed table-striped">
+						<tr>
+							<td>TJ</td>
+							<td><strong>{$cotesGlobales.$coursGrp.$matricule.Tj|default:'&nbsp;'}</strong></td>
+						</tr>
+						<tr>
+							<td>Examen</td>
+							<td><strong>{$cotesGlobales.$coursGrp.$matricule.Ex|default:'&nbsp;'}</strong></td>
+						</tr>
+						<tr>
+							<td>Période</td>
+							<td><strong>{$cotesGlobales.$coursGrp.$matricule.periode|default:'&nbsp;'}</strong></td>
+						</tr>
+						<tr>
+							<td>Global</td>
+							<td><strong>{$cotesGlobales.$coursGrp.$matricule.global|default:'&nbsp;'}</strong></td>
+						</tr>
+
+					</table>
+
+
+				</div>
+
+				<div class="col-md-9 col-sm-12">
+
+					{if isset($listeCotesGeneraux.$bulletin.$matricule.$coursGrp)}
+					{assign var=competences value=1}
+					<h4>Détails par compétence</h4>
+					<table class="tableauBull">
+						<tr>
+							<th style="width:70%; text-align:center">Compétence</th>
+							<th style="width:15%; text-align:center">Travail Journalier</th>
+							<th style="width:15%; text-align:center">Examen</th>
+						</tr>
+						{foreach from=$listeCompetences.$cours key=idComp item=data}
+						{assign var=cotes value=$listeCotesGeneraux.$bulletin.$matricule.$coursGrp.$idComp}
+						{if ($cotes.Tj != '') || ($cotes.Ex != '')}
+						<tr>
+							<td data-container="body" title="compétence {$idComp}" style="text-align:right">{$data.libelle}</td>
+							<td style="text-align: center;"><strong> {$listeCotesGeneraux.$bulletin.$matricule.$coursGrp.$idComp.Tj|default:'&nbsp'} </strong></td>
+							<td style="text-align: center;"><strong> {$listeCotesGeneraux.$bulletin.$matricule.$coursGrp.$idComp.Ex|default:'&nbsp;'} </strong></td>
+						</tr>
+						{/if}
+						{/foreach}
+					</table>
+
+					{else}
+						{assign var=competences value=0}
+						<h4>Commentaire du professeur</h4>
+						<div class="remarqueProf">
+						{$commentaires.$bulletin.$coursGrp.$matricule|default:''|nl2br}
+						</div>
+					{/if}
+
+				</div>
+
+			</div>
+
+			{if $competences == 1}
+			<h4>Commentaire du professeur</h4>
 			<div class="remarqueProf">
 			{$commentaires.$bulletin.$coursGrp.$matricule|default:''|nl2br}
 			</div>
+			{/if}
 
 		{/foreach}
 
