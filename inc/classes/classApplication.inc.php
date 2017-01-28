@@ -199,7 +199,7 @@ class Application
      * renvoie la liste des applications existantes (et, éventuellement, seulement celles qui sont activées).
      *
      * @param bool $active : rien que les applications actives?
-     * @param bool $alpha : tri alphabétique demandé
+     * @param bool $alpha  : tri alphabétique demandé
      *
      * @return array
      */
@@ -413,20 +413,21 @@ class Application
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
         // vérification du nom des paramètres existants dans la BD afin d'éviter
         // d'enregistrer un paramètre qui n'existerait pas
-        $sql = 'SELECT parametre FROM '.PFX.'config';
+        $sql = 'SELECT parametre FROM '.PFX.'config ';
         $resultat = $connexion->query($sql);
         $listeParametres = array();
         while ($ligne = $resultat->fetch()) {
-            $listeParametres[] = addslashes($ligne['parametre']);
+            $listeParametres[] = $ligne['parametre'];
         }
+        $sql = 'INSERT INTO '.PFX.'config ';
+        $sql .= 'SET parametre=:parametre, valeur=:valeur ';
+        $sql .= 'ON DUPLICATE KEY UPDATE valeur=:valeur ';
+        $requete = $connexion->prepare($sql);
         $n = 0;
-        foreach ($post as $parametre => $value) {
+        foreach ($post as $parametre => $valeur) {
             if (in_array($parametre, $listeParametres)) {
-                $value = addslashes($value);
-                $sql = 'INSERT INTO '.PFX.'config ';
-                $sql .= "SET parametre='$parametre', valeur='$value' ";
-                $sql .= "ON DUPLICATE KEY UPDATE valeur='$value' ";
-                $resultat = $connexion->exec($sql);
+                $data = array(':valeur' => $valeur, ':parametre' => $parametre);
+                $resultat = $requete->execute($data);
                 if ($resultat > 0) {
                     ++$n;
                 }
@@ -2023,4 +2024,15 @@ class Application
 
         return $nombre;
     }
+
+    /**
+    * mode debug de php
+    *
+    */
+    public static function debug() {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+    }
+
 }
