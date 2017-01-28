@@ -23,7 +23,13 @@
 		{if isset($situationsPrecedentes.$matricule.$coursGrp.maxSit) &&  ($situationsPrecedentes.$matricule.$coursGrp.maxSit!= Null)}
 			{assign var=sit value=$situationsPrecedentes.$matricule.$coursGrp.sit}
 			{assign var=max value=$situationsPrecedentes.$matricule.$coursGrp.maxSit}
-		<div class="fraction">
+			{assign var=echec value=''}
+			{if ($max > 0)}
+				{if ($sit / $max) < 0.5}
+					{assign var=echec value='echec'}
+				{/if}
+			{/if}
+		<div class="fraction {$echec}">
 			<div class="num">{$sit|default:'&nbsp;'}</div>
 			<div class="den">{$max|default:'&nbsp;'}</div>
 		</div>
@@ -37,18 +43,30 @@
 		{* ------------------------------------------------------ *}
 		<td>
 			{if is_numeric($cotes.form.cote)}
-			<div class="lblFraction">TJ</div>
-			<div class="fraction">
-			<div class="num">{$cotes.form.cote}</div>
-			<div class="den">{$cotes.form.max}</div>
-			</div>
+			{assign var=echec value=''}
+			{if ($cotes.form.max > 0)}
+				{if ($cotes.form.cote / $cotes.form.max) < 0.5}
+					{assign var=echec value='echec'}
+				{/if}
+			{/if}
+				<div class="lblFraction">TJ</div>
+				<div class="fraction {$echec}">
+					<div class="num">{$cotes.form.cote}</div>
+					<div class="den">{$cotes.form.max}</div>
+				</div>
 			{/if}
 			{if is_numeric($cotes.cert.cote)}
-			<div class="lblFraction">Cert.</div>
-			<div class="fraction">
-			<div class="num">{$cotes.cert.cote}</div>
-			<div class="den">{$cotes.cert.max}</div>
-			</div>
+				{assign var=echec value=''}
+				{if ($cotes.cert.max > 0)}
+					{if ($cotes.cert.cote / $cotes.cert.max) < 0.5}
+						{assign var=echec value='echec'}
+					{/if}
+				{/if}
+				<div class="lblFraction">Cert.</div>
+				<div class="fraction {$echec}">
+					<div class="num">{$cotes.cert.cote}</div>
+					<div class="den">{$cotes.cert.max}</div>
+				</div>
 			{/if}
 		</td>
 
@@ -61,8 +79,14 @@
 		{* ------------------------------------------------------ *}
 		<td>
 			{if isset($sitEleve.sit) && is_numeric($sitEleve.sit)}
-				{if $sitEleve.max neq 0}
-				<div class="fraction">
+				{assign var=echec value=''}
+				{if ($sitEleve.max > 0)}
+					{if ($sitEleve.sit / $sitEleve.max) < 0.5}
+						{assign var=echec value='echec'}
+					{/if}
+				{/if}
+				{if $sitEleve.max > 0}
+				<div class="fraction {$echec}">
 					<div class="num">{$sitEleve.sit}</div>
 					<div class="den">{$sitEleve.max}</div>
 				</div>

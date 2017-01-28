@@ -4028,7 +4028,8 @@ class Bulletin
             die('invalid user');
         }
         $sql = 'DELETE FROM '.PFX.'bullCarnetCotes ';
-        $sql .= "WHERE idCarnet = '$idCarnet'";
+        $sql .= "WHERE idCarnet = '$idCarnet' ";
+
         $nbResultats = $connexion->exec($sql);
         if ($nbResultats > 0) {
             $sql = 'DELETE FROM '.PFX.'bullCarnetEleves ';
