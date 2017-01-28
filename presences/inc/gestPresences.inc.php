@@ -33,9 +33,6 @@ if (!empty($listePeriodes)) {
         case 'tituCours':
             require 'presencesTituCours.inc.php';
             break;
-        case 'eleve':
-            require 'presencesEleve.inc.php';
-            break;
         case 'cours':
             require 'presencesCours.inc.php';
             break;

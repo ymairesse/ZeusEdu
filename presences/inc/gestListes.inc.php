@@ -43,7 +43,7 @@ switch ($mode) {
         $smarty->assign('selecteur', 'selectDate');
         $smarty->assign('corpsPage', 'listeParDate');
         break;
-        
+
     case 'parEleve':
         $smarty->assign('classe', $classe);
         $listeEleves = isset($classe) ? $Ecole->listeEleves($classe, 'groupe') : null;

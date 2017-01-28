@@ -293,6 +293,7 @@ class presences
 
         $resultat = $connexion->query($sql);
         $statutsAbsMerge = array_merge($statutsAbs['liste1'], $statutsAbs['liste2']);
+
         $liste = array();
         $absentsListe1 = $absentsListe2 = array();
 
