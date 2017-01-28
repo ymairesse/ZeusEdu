@@ -1,8 +1,8 @@
 <?php
 
-function bulletinEnCours () {
-	return $_SESSION['configuration']['periodeEnCours'];
-	}
+// function bulletinEnCours () {
+// 	return $_SESSION['configuration']['periodeEnCours'];
+// 	}
 
 function dirFiles ($dir) {
 	$listeFichiers = array();
@@ -11,7 +11,7 @@ function dirFiles ($dir) {
 			if (($file != '.') && ($file != '..'))
 				$listeFichiers[] = $file;
 			}
-		closedir($handle);			
+		closedir($handle);
 		}
     return $listeFichiers;
 	}
@@ -60,28 +60,6 @@ function sansVirg ($nombre) {
 	 return $listeCours;
 	 }
 
-
-
-// --------------------------------------------------------------------
-// liste des dates (et lieux) de naissance des élèves de la liste
-//~ function listeNaissanceEleves ($listeEleves) {
-	//~ $listeElevesString = implode(',', array_keys($listeEleves));
-	//~ $connexion = connexion (NOM, MDP, BASE, SERVEUR);
-	//~ $sql = "SELECT codeInfo, DateNaiss ";
-	//~ $sql .= "FROM ".PFX."eleves ";
-	//~ $sql .= "WHERE codeInfo in ($listeElevesString)";
-	//~ $resultat = ExecuteRequete($sql, $connexion);
-	//~ Deconnexion($connexion);
-	//~ $liste = array();
-	//~ while ($ligne = ligneSuivante($resultat)) {
-		//~ $codeInfo = $ligne['codeInfo'];
-		//~ $dateNaiss = $ligne['DateNaiss'];
-		//~ $liste[$codeInfo] = array('date'=>$dateNaiss);
-		//~ }
-	//~ return ($liste);
-	//~ }
-	
-	
 // --------------------------------------------------------------------
 // détermine si une cote est en échec
 function echecBulletin ($cote, $max) {
@@ -102,7 +80,7 @@ function competencesTJEX ($listeResultats) {
 	$first = current($listeResultats);
 	$listeCompetencesTJ = array();
 	if (isset($first['TJ']))
-		foreach ($first['TJ'] as $key=>$cotes) 
+		foreach ($first['TJ'] as $key=>$cotes)
 			$listeCompetencesTJ[$key]= $cotes['comp'];
 
 	$listeCompetencesEX = array();
@@ -112,27 +90,6 @@ function competencesTJEX ($listeResultats) {
 	reset($listeResultats);
 	return array('compTJ'=>$listeCompetencesTJ, 'compEX'=>$listeCompetencesEX);
 	*/}
-
-
-
-// --------------------------------------------------------------------
-// détermination du degré dans lequel se trouve une classe
-// VOIR LA FONCTION degreDeClasse dans classEcole.inc.php
-/* function degreEleve ($classe) {
-	$annee = substr($classe,0,1);
-	$degre = 0;
-	switch ($annee) {
-		case 6: $degre = 3; break;
-		case 5: $degre = 3; break;
-		case 4: $degre = 2; break;
-		case 3: $degre = 2; break;
-		case 2: $degre = 1; break;
-		case 1: $degre = 1; break;
-		}
-	return $degre;
-	}
-
-*/
 
 // --------------------------------------------------------------------
 // création des étiquettes verticales "images" pour les noms des cours
@@ -158,16 +115,16 @@ function imagesPngCours ($hauteur) {
 function creeTexteVerticalPng ($largeur, $hauteur, $texte, $taillePolice, $font, $nomImage) {
     // crée un texte disposé verticalement pour les entêtes des feuilles de cotes
     $im = imagecreate($largeur,$hauteur);
-    
+
     // couleur de fond de l'image
     $gris = imagecolorallocate($im,0xdd,0xdd,0xdd);
-    $white = imagecolorallocate($im, 0xff, 0xff, 0xff);    
+    $white = imagecolorallocate($im, 0xff, 0xff, 0xff);
     $black = imagecolorallocate($im, 0x00, 0x00, 0x00);
-    
+
     // angle d'écriture = 90
     imagettftext($im, $taillePolice, 90, $taillePolice+3, $hauteur-4, $white, $font, $texte);
     imagettftext($im, $taillePolice, 90, $taillePolice+4, $hauteur-5, $black, $font, $texte);
-    
+
     // Sauvegarde l'image
     imagepng($im, "$nomImage");
     imagedestroy($im);
@@ -228,7 +185,7 @@ function listeEcoles($niveau) {
 		}
 	return $listeEcoles;
 	}
-	
+
 // --------------------------------------------------------------------
 // renvoie le nom de l'école dont on fournit l'identifiant
 function ecole ($identifiant) {
@@ -241,7 +198,7 @@ function ecole ($identifiant) {
 	Deconnexion($connexion);
 	return $ligne;
 	}
-	
+
 // --------------------------------------------------------------------
 // prépare une grille remplie de "-" pour tous les élèves et pour tous les cours
 // passés en arguments
@@ -254,7 +211,7 @@ function initGrille ($listeEleves, $listeCoursEleves) {
 		}
 	return $grille;
 	}
-	
+
 
 // --------------------------------------------------------------------
 // retourne la notice "coordinateurs" pour le bulletin donné au niveau donné
@@ -302,7 +259,7 @@ function recalculSituation ($listeEleves, $listeCours, $bulletin) {
 	$listeSitActuelles = listeSitActuelles($listeSitPrec, $listeGlobalPeriodePondere);
 	enregistrerSituation ($listeSitActuelles, $bulletin);
 	}
-	
+
 
 function date_php_sql ($date) {
 $chiffres = explode("/", $date);
@@ -325,9 +282,3 @@ function date_sql_php ($date) {
 
 
 ?>
-
-
-
-
-
-

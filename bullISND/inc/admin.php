@@ -516,6 +516,10 @@ switch ($mode) {
         $smarty->assign('corpsPage', 'statutsCadres');
         break;
 
+    case 'decoder':
+        var_dump($Bulletin->decoder());
+        break;
+
     default: 'missing mode';
         break;
     }

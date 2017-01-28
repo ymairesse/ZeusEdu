@@ -1,4 +1,3 @@
-{debug}
 <div class="container">
 {if $link != ''}
 <h2>Création du fichier terminée</h2>

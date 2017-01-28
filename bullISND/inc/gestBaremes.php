@@ -54,7 +54,7 @@ switch ($mode) {
                             'urgence' => 'success', )
                             );
             $smarty->assign('selecteur', 'selecteurs/selectCours');
-            $smarty->assign('corpsPage', 'showPonderations');
+            $smarty->assign('corpsPage', 'ponderation/showPonderations');
         } else {
             die("Vous ne donnez pas ce cours ou l'&eacute;l&egrave;ve ne suit pas ce cours...");
         }
@@ -89,7 +89,7 @@ switch ($mode) {
             $smarty->assign('intituleCours', $intituleCours);
             $smarty->assign('listeEleves', $listeEleves);
             $smarty->assign('selecteur', 'selecteurs/selectCours');
-            $smarty->assign('corpsPage', 'showPonderations');
+            $smarty->assign('corpsPage', 'ponderation/showPonderations');
         }
         break;
 

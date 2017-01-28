@@ -97,6 +97,7 @@
 
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Préférences <b class="caret"></b></a>
 		<ul class="dropdown-menu">
+			<li><a href="index.php?action=admin&amp;mode=decoder">Décoder</a></li>
 			<li><a href="index.php?action=admin&amp;mode=nommerCours">Nommer vos cours</a></li>
 			{if $userStatus eq 'admin'}
 			<li><a href="index.php?action=init">Initialisations</a></li>
