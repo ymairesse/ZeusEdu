@@ -7,20 +7,20 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 
-CREATE TABLE IF NOT EXISTS didac_adesChamps (
-  champ varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  label varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  contextes varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'formulaire',
-  typeDate tinyint(4) NOT NULL,
-  typeDateRetenue tinyint(4) NOT NULL,
-  typeChamp enum('text','textarea','select','hidden','') COLLATE utf8_unicode_ci NOT NULL,
-  size smallint(6) NOT NULL,
-  maxlength smallint(6) NOT NULL,
-  colonnes smallint(6) NOT NULL,
-  lignes smallint(6) NOT NULL,
-  classCSS varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  autocomplete enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N' COMMENT 'Le champ permet "autocomplete"',
-  PRIMARY KEY (champ)
+CREATE TABLE IF NOT EXISTS `didac_adesChamps` (
+  `champ` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `label` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `contextes` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'formulaire',
+  `typeDate` tinyint(4) NOT NULL,
+  `typeDateRetenue` tinyint(4) NOT NULL,
+  `typeChamp` enum('text','textarea','select','hidden','') COLLATE utf8_unicode_ci NOT NULL,
+  `size` smallint(6) NOT NULL,
+  `maxlength` smallint(6) NOT NULL,
+  `colonnes` smallint(6) NOT NULL,
+  `lignes` smallint(6) NOT NULL,
+  `classCSS` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `autocomplete` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N' COMMENT 'Le champ permet "autocomplete"',
+  `printWidth` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Description des champs dans la base de données';
 
 ALTER TABLE `didac_adesChamps`
@@ -29,27 +29,27 @@ ALTER TABLE `didac_adesChamps`
 -- Contenu de la table `didac_adesChamps`
 --
 
-INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `typeDateRetenue`, `typeChamp`, `size`, `maxlength`, `colonnes`, `lignes`, `classCSS`, `autocomplete`) VALUES
-('ladate', 'Date du jour', 'formulaire,tableau,minimum', 1, 0, 'text', 12, 10, 0, 0, 'obligatoire', 'N'),
-('professeur', 'Professeur', 'formulaire,tableau,minimum', 0, 0, 'text', 5, 10, 0, 0, 'obligatoire', 'O'),
-('motif', 'Motif', 'formulaire,tableau,minimum', 0, 0, 'textarea', 0, 0, 60, 4, 'obligatoire', 'N'),
-('idretenue', 'Date de retenue', 'formulaire', 0, 1, 'select', 0, 0, 0, 0, 'obligatoire', 'N'),
-('travail', 'Travail à effectuer', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N'),
-('sanction', 'Sanction', 'formulaire,tableau', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N'),
-('nopv', 'Numéro de PV', 'formulaire,tableau', 0, 0, 'text', 20, 20, 0, 0, 'obligatoire', 'N'),
-('idorigine', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('qui', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('matricule', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('idfait', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('type', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('typeDeRetenue', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('dermodif', '', 'formulaire', 1, 0, 'hidden', 0, 0, 0, 0, '', 'N'),
-('materiel', 'Matériel à prévoir', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N'),
-('dateRetenue', 'Date de retenue', 'tableau,billetRetenue', 1, 0, '', 0, 0, 0, 0, '', 'N'),
-('heure', 'Heure', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N'),
-('duree', 'Durée', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N'),
-('local', 'Local', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N'),
-('anneeScolaire', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N');
+INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `typeDateRetenue`, `typeChamp`, `size`, `maxlength`, `colonnes`, `lignes`, `classCSS`, `autocomplete`, `printWidth`) VALUES
+('ladate', 'Date du jour', 'formulaire,tableau,minimum', 1, 0, 'text', 12, 10, 0, 0, 'obligatoire', 'N', 12),
+('professeur', 'Professeur', 'formulaire,tableau,minimum', 0, 0, 'text', 5, 10, 0, 0, 'obligatoire', 'O', 16),
+('motif', 'Motif', 'formulaire,tableau,minimum', 0, 0, 'textarea', 0, 0, 60, 4, 'obligatoire', 'N', 60),
+('idretenue', 'Date de retenue', 'formulaire', 0, 1, 'select', 0, 0, 0, 0, 'obligatoire', 'N', 0),
+('travail', 'Travail à effectuer', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N', 50),
+('sanction', 'Sanction', 'formulaire,tableau', 0, 0, 'textarea', 0, 0, 60, 2, 'obligatoire', 'N', 60),
+('nopv', 'Numéro de PV', 'formulaire,tableau', 0, 0, 'text', 20, 20, 0, 0, 'obligatoire', 'N', 6),
+('idorigine', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0),
+('qui', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 12),
+('matricule', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 4),
+('idfait', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0),
+('type', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0),
+('typeDeRetenue', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0),
+('dermodif', '', 'formulaire', 1, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0),
+('materiel', 'Matériel à prévoir', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N', 30),
+('dateRetenue', 'Date de retenue', 'tableau,billetRetenue', 1, 0, '', 0, 0, 0, 0, '', 'N', 12),
+('heure', 'Heure', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 15),
+('duree', 'Durée', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 10),
+('local', 'Local', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 6),
+('anneeScolaire', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 9);
 
 
 
