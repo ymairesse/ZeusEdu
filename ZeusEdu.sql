@@ -883,19 +883,22 @@ CREATE TABLE IF NOT EXISTS didac_hermesProprio (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS didac_infirmConsult (
-  consultID int(11) NOT NULL AUTO_INCREMENT,
-  matricule int(11) NOT NULL,
-  acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+CREATE TABLE IF NOT EXISTS `didac_infirmConsult` (
+`consultID` int(11) NOT NULL,
+  `matricule` int(11) NOT NULL,
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
-  heure time NOT NULL,
-  motif varchar(250) COLLATE utf8_unicode_ci NOT NULL,
-  traitement varchar(250) COLLATE utf8_unicode_ci NOT NULL,
-  aSuivre varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (consultID),
-  KEY codeInfo (matricule),
-  KEY `date` (`date`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `heure` time NOT NULL,
+  `motif` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `traitement` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `aSuivre` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_infirmConsult`
+ ADD PRIMARY KEY (`consultID`), ADD KEY `date` (`date`), ADD KEY `matricule` (`matricule`);
+
+ALTER TABLE `didac_infirmConsult`
+MODIFY `consultID` int(11) NOT NULL AUTO_INCREMENT;
 
 
 CREATE TABLE IF NOT EXISTS didac_infirmerie (
