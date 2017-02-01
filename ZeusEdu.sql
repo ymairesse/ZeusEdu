@@ -75,8 +75,6 @@ CREATE TABLE IF NOT EXISTS didac_adesFaits (
   KEY idorigine (idorigine)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_adesFaits`
- ADD PRIMARY KEY (`idfait`), ADD KEY `ideleve` (`matricule`), ADD KEY `date` (`ladate`), ADD KEY `idorigine` (`idorigine`);
 
 CREATE TABLE IF NOT EXISTS didac_adesMemo (
   matricule int(4) NOT NULL,
@@ -84,8 +82,6 @@ CREATE TABLE IF NOT EXISTS didac_adesMemo (
   PRIMARY KEY (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_adesMemo`
- ADD PRIMARY KEY (`matricule`);
 
 CREATE TABLE IF NOT EXISTS didac_adesRetenues (
   `type` tinyint(4) NOT NULL DEFAULT '0',
@@ -100,9 +96,6 @@ CREATE TABLE IF NOT EXISTS didac_adesRetenues (
   PRIMARY KEY (idretenue)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_adesRetenues`
- ADD PRIMARY KEY (`idretenue`);
-
 
 CREATE TABLE IF NOT EXISTS didac_adesTextes (
   idTexte int(11) NOT NULL AUTO_INCREMENT,
@@ -113,8 +106,6 @@ CREATE TABLE IF NOT EXISTS didac_adesTextes (
   PRIMARY KEY (idTexte)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Réserves de textes automatiques';
 
-ALTER TABLE `didac_adesTextes`
- ADD PRIMARY KEY (`idTexte`);
 
 CREATE TABLE IF NOT EXISTS didac_adesTypesFaits (
   `type` tinyint(4) NOT NULL,
@@ -129,8 +120,6 @@ CREATE TABLE IF NOT EXISTS didac_adesTypesFaits (
   PRIMARY KEY (`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_adesTypesFaits`
- ADD PRIMARY KEY (`type`);
 --
 -- Contenu de la table `didac_adesTypesFaits`
 --
@@ -176,10 +165,6 @@ CREATE TABLE IF NOT EXISTS `didac_applications` (
   `ordre` tinyint(4) NOT NULL,
   PRIMARY KEY (`nom`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_applications`
- ADD PRIMARY KEY (`nom`);
-
 --
 -- Contenu de la table `didac_applications`
 --
@@ -206,9 +191,6 @@ CREATE TABLE IF NOT EXISTS didac_appliTables (
   nomTable varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (application,nomTable)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des tables par application (pour backup)';
-
-ALTER TABLE `didac_appliTables`
- ADD PRIMARY KEY (`application`,`nomTable`);
 
 --
 -- Contenu de la table `didac_appliTables`
@@ -288,9 +270,6 @@ CREATE TABLE IF NOT EXISTS didac_bullArchives (
   KEY classe (classe)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Tablea des anciens élèves pour archives des bulletins';
 
-ALTER TABLE `didac_bullArchives`
- ADD PRIMARY KEY (`lematricule`,`annee`), ADD KEY `classe` (`classe`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullAttitudes (
   matricule int(6) NOT NULL,
@@ -302,9 +281,6 @@ CREATE TABLE IF NOT EXISTS didac_bullAttitudes (
   att4 enum('A','N','NE') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N',
   PRIMARY KEY (matricule,coursGrp,bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullAttitudes`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullCarnetCotes (
@@ -323,9 +299,6 @@ CREATE TABLE IF NOT EXISTS didac_bullCarnetCotes (
   KEY bulletin (bulletin)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullCarnetCotes`
- ADD PRIMARY KEY (`idCarnet`), ADD KEY `coursGrp` (`coursGrp`), ADD KEY `bulletin` (`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullCarnetEleves (
   idCarnet int(6) NOT NULL,
@@ -334,9 +307,6 @@ CREATE TABLE IF NOT EXISTS didac_bullCarnetEleves (
   remarque varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (idCarnet,matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullCarnetEleves`
- ADD PRIMARY KEY (`idCarnet`,`matricule`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullCarnetPoidsCompetences (
@@ -351,9 +321,6 @@ CREATE TABLE IF NOT EXISTS didac_bullCarnetPoidsCompetences (
   KEY bulletin (bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullCarnetPoidsCompetences`
- ADD PRIMARY KEY (`coursGrp`,`idComp`,`bulletin`,`certForm`), ADD KEY `coursGrp` (`coursGrp`), ADD KEY `idComp` (`idComp`), ADD KEY `bulletin` (`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullCE1B (
   matricule int(6) NOT NULL,
@@ -365,9 +332,6 @@ CREATE TABLE IF NOT EXISTS didac_bullCE1B (
   PRIMARY KEY (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullCE1B`
- ADD PRIMARY KEY (`matricule`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullCommentProfs (
   matricule int(6) NOT NULL,
@@ -376,9 +340,6 @@ CREATE TABLE IF NOT EXISTS didac_bullCommentProfs (
   commentaire mediumtext COLLATE utf8_unicode_ci NOT NULL COMMENT 'Remarque du professeur',
   PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullCommentProfs`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullCompetences (
@@ -389,9 +350,6 @@ CREATE TABLE IF NOT EXISTS didac_bullCompetences (
   PRIMARY KEY (cours,libelle),
   KEY id (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullCompetences`
- ADD PRIMARY KEY (`cours`,`libelle`), ADD KEY `id` (`id`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
@@ -404,9 +362,6 @@ CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
   `quand` datetime DEFAULT NULL,
   PRIMARY KEY (`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullDecisions`
-ADD PRIMARY KEY (`matricule`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullDetailsCotes (
@@ -424,16 +379,12 @@ CREATE TABLE IF NOT EXISTS didac_bullDetailsCotes (
   KEY bulletin (bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullDetailsCotes`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`,`idComp`), ADD KEY `matricule` (`matricule`), ADD KEY `cours` (`coursGrp`), ADD KEY `bulletin` (`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullEducs (
   matricule int(6) NOT NULL,
   bulletin tinyint(2) NOT NULL,
   fiche tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Existence éventuelle de fiches disciplinaires';
-
 
 
 CREATE TABLE IF NOT EXISTS `didac_bullEprExterne` (
@@ -444,9 +395,6 @@ CREATE TABLE IF NOT EXISTS `didac_bullEprExterne` (
   PRIMARY KEY (`matricule`,`coursGrp`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
 
-ALTER TABLE `didac_bullEprExterne`
- ADD PRIMARY KEY (`matricule`,`coursGrp`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullExterneArchives (
   matricule int(6) NOT NULL,
@@ -455,9 +403,6 @@ CREATE TABLE IF NOT EXISTS didac_bullExterneArchives (
   coteExterne varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (matricule,anscol,coursGrp)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
-
-ALTER TABLE `didac_bullExterneArchives`
- ADD PRIMARY KEY (`matricule`,`anscol`,`coursGrp`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullHistoCours (
@@ -468,20 +413,15 @@ CREATE TABLE IF NOT EXISTS didac_bullHistoCours (
   PRIMARY KEY (matricule,bulletin,coursGrp,mouvement)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullHistoCours`
- ADD PRIMARY KEY (`matricule`,`bulletin`,`coursGrp`,`mouvement`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullListeAttitudes (
   idAttitude int(11) NOT NULL,
   attitude varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (idAttitude)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des attitudes figurant au bulletin';
-
 --
 -- Contenu de la table `didac_bullListeAttitudes`
 --
-
 INSERT INTO `didac_bullListeAttitudes` (`idAttitude`, `attitude`) VALUES
 (1, 'Respect des autres'),
 (2, 'Respect des consignes'),
@@ -497,9 +437,6 @@ CREATE TABLE IF NOT EXISTS didac_bullLockElevesCours (
   PRIMARY KEY (matricule,coursGrp,periode)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullLockElevesCours`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`periode`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullMentions (
   matricule int(6) NOT NULL,
@@ -511,9 +448,6 @@ CREATE TABLE IF NOT EXISTS didac_bullMentions (
   KEY annee (annee)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullMentions`
- ADD PRIMARY KEY (`matricule`,`periode`,`annee`,`anscol`), ADD KEY `annee` (`annee`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullNotesDirection (
   bulletin tinyint(4) NOT NULL,
@@ -521,9 +455,6 @@ CREATE TABLE IF NOT EXISTS didac_bullNotesDirection (
   remarque blob NOT NULL,
   PRIMARY KEY (bulletin,annee)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullNotesDirection`
- ADD PRIMARY KEY (`bulletin`,`annee`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullPonderations (
@@ -534,9 +465,6 @@ CREATE TABLE IF NOT EXISTS didac_bullPonderations (
   cert varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (coursGrp,periode,matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Pondérations par périodes';
-
-ALTER TABLE `didac_bullPonderations`
- ADD PRIMARY KEY (`coursGrp`,`periode`,`matricule`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullSitArchives (
@@ -557,9 +485,6 @@ CREATE TABLE IF NOT EXISTS didac_bullSitArchives (
   KEY matricule (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullSitArchives`
- ADD PRIMARY KEY (`annee`,`matricule`,`coursGrp`,`bulletin`), ADD KEY `annee` (`annee`), ADD KEY `coursGrp` (`coursGrp`), ADD KEY `matricule` (`matricule`);
-
 
 CREATE TABLE IF NOT EXISTS `didac_bullSituations` (
   `matricule` int(6) NOT NULL,
@@ -574,9 +499,6 @@ CREATE TABLE IF NOT EXISTS `didac_bullSituations` (
   PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullSituations`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullTitus (
   matricule int(6) NOT NULL,
@@ -584,9 +506,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTitus (
   remarque blob NOT NULL,
   PRIMARY KEY (matricule,bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullTitus`
- ADD PRIMARY KEY (`matricule`,`bulletin`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCommentProfs (
@@ -597,9 +516,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCommentProfs (
   PRIMARY KEY (matricule,coursGrp,bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Commentaires des profs des branches dans les bulletins';
 
-ALTER TABLE `didac_bullTQCommentProfs`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCompetences (
   id int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide',
@@ -609,9 +525,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCompetences (
   PRIMARY KEY (cours,libelle),
   KEY id (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullTQCompetences`
- ADD PRIMARY KEY (`cours`,`libelle`), ADD KEY `id` (`id`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCotesCompetences (
@@ -626,9 +539,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCotesCompetences (
   KEY cours (coursGrp),
   KEY bulletin (bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Détails des cotes par branche, par compétence et par bulleti';
-
- ALTER TABLE `didac_bullTQCotesCompetences`
-  ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`,`idComp`), ADD KEY `matricule` (`matricule`), ADD KEY `cours` (`coursGrp`), ADD KEY `bulletin` (`bulletin`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCotesGlobales (
@@ -645,9 +555,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCotesGlobales (
   KEY bulletin (bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Détails des cotes par branche, par compétence et par bulleti';
 
-ALTER TABLE `didac_bullTQCotesGlobales`
- ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`), ADD KEY `matricule` (`matricule`), ADD KEY `cours` (`coursGrp`), ADD KEY `bulletin` (`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullTQMentions (
   matricule int(11) NOT NULL,
@@ -658,9 +565,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTQMentions (
   KEY codeInfo (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullTQMentions`
- ADD PRIMARY KEY (`matricule`,`type`,`periode`), ADD KEY `codeInfo` (`matricule`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullTQQualif (
   matricule int(5) NOT NULL,
@@ -669,8 +573,6 @@ CREATE TABLE IF NOT EXISTS didac_bullTQQualif (
   PRIMARY KEY (matricule,epreuve)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_bullTQQualif`
- ADD PRIMARY KEY (`matricule`,`epreuve`);
 
  CREATE TABLE IF NOT EXISTS `didac_bullTQstages` (
    `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
@@ -688,18 +590,12 @@ CREATE TABLE IF NOT EXISTS didac_bullTQTitus (
   PRIMARY KEY (matricule,bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Remarques des titulaires par élève et par bulletin';
 
-ALTER TABLE `didac_bullTQTitus`
- ADD PRIMARY KEY (`matricule`,`bulletin`);
-
 
 CREATE TABLE IF NOT EXISTS didac_bullTQtypologie (
   coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `type` enum('general','option') COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (coursGrp)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_bullTQtypologie`
- ADD PRIMARY KEY (`coursGrp`);
 
 
 CREATE TABLE `didac_bullTQdetailsStages` (
@@ -719,9 +615,6 @@ INSERT INTO `didac_bullTQdetailsStages` (`annee`, `sigle`, `legende`) VALUES
 (6, 'JURY', 'Jury'),
 (6, 'TOTAL', 'Total');
 
---
--- Table structure for table `didac_config`
---
 
 CREATE TABLE `didac_config` (
   `ordre` tinyint(4) DEFAULT NULL,
@@ -768,9 +661,6 @@ CREATE TABLE IF NOT EXISTS didac_cours (
   PRIMARY KEY (cours),
   KEY cadre (cadre)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE `didac_cours`
- ADD PRIMARY KEY (`cours`), ADD KEY `cadre` (`cadre`);
 
 
 CREATE TABLE IF NOT EXISTS didac_ecoles (
@@ -1074,9 +964,6 @@ CREATE TABLE IF NOT EXISTS didac_profsApplications (
   UNIQUE KEY acronyme (acronyme,application)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `didac_profsApplications`
- ADD UNIQUE KEY `acronyme` (`acronyme`,`application`);
-
 INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) VALUES
 ('ades', 'ADM', 'admin'),
 ('adm', 'ADM', 'admin'),
@@ -1192,8 +1079,8 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
 
-CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
-`id` int(6) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1,
+CREATE TABLE `didac_thotJdc` (
+  `id` int(6) NOT NULL,
   `destinataire` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matricule ou coursGrp ou classe ou...',
   `type` enum('cours','classe','eleve','niveau','ecole') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type du destinataire',
   `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
@@ -1207,14 +1094,18 @@ CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
   `end` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'time() de PHP avec 3 zéros pour les ms',
   `endDate` datetime NOT NULL,
   `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée'
-) ENGINE=MyISAM AUTO_INCREMENT=2339 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
 
+--
 ALTER TABLE `didac_thotJdc`
- ADD PRIMARY KEY (`id`), ADD KEY `proprietaire` (`proprietaire`), ADD KEY `destinataire` (`destinataire`), ADD KEY `endDate` (`endDate`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `proprietaire` (`proprietaire`),
+  ADD KEY `destinataire` (`destinataire`),
+  ADD KEY `endDate` (`endDate`);
 
---
--- Table structure for table `didac_thotJdcCategories`
---
+  ALTER TABLE `didac_thotJdc`
+    MODIFY `id` int(6) NOT NULL AUTO_INCREMENT;
+
 
 CREATE TABLE IF NOT EXISTS `didac_thotJdcCategories` (
 `idCategorie` tinyint(4) NOT NULL,
@@ -1253,12 +1144,8 @@ CREATE TABLE IF NOT EXISTS `didac_thotParents` (
   KEY `matricule` (`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des parents';
 
-ALTER TABLE `didac_thotParents`
- ADD PRIMARY KEY (`matricule`,`userName`), ADD KEY `matricule` (`matricule`);
-
-
-CREATE TABLE IF NOT EXISTS `didac_thotRpRv` (
-`id` int(11) NOT NULL COMMENT 'Identifiant du RV',
+CREATE TABLE `didac_thotRpRv` (
+  `id` int(11) NOT NULL COMMENT 'Identifiant du RV',
   `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'acronyme du propriétaire',
   `statut` enum('prof','dir') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'prof' COMMENT 'Statut du membre du personnel',
   `matricule` int(11) DEFAULT NULL COMMENT 'matricule de l''élève',
@@ -1266,10 +1153,13 @@ CREATE TABLE IF NOT EXISTS `didac_thotRpRv` (
   `date` date NOT NULL COMMENT 'Date de la réunion de parents',
   `heure` time NOT NULL COMMENT 'Heure du RV',
   `dispo` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le prof est-il libre à ce moment?'
-) ENGINE=MyISAM AUTO_INCREMENT=14654 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rendez-vous pour la réunion de parents';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rendez-vous pour la réunion de parents';
 
 ALTER TABLE `didac_thotRpRv`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du RV';
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `didac_thotRpRv`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du RV';
 
 
 CREATE TABLE IF NOT EXISTS `didac_thotRp` (
@@ -1384,9 +1274,6 @@ CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
   `date` datetime NOT NULL COMMENT 'Date de validité du jeton',
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des demandes de reset de passwd';
-
-ALTER TABLE `didac_lostPasswd`
- ADD PRIMARY KEY (`user`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_thotFiles` (
