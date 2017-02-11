@@ -29,7 +29,7 @@
         Dropzone.options.myDropZone = {
             maxFilesize: maxFileSize,
             maxFiles: nbFichiersMax,
-            acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf",
+            acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb",
             url: "inc/files/upload.inc.php",
             queuecomplete: function() {
                 // raffraîchissement du treeview
