@@ -4,15 +4,15 @@
 2010=;;;;;
 2011=;;;;;
 2018=;;;;;
-3656=;;;;;
+CSTtitre=;
 CSTmdp=;
-CSTstatut=prof;
+CSTstatut=user;
 2099=;;;;;
 2107=;;;;;
 2141=;;;;;
 2101=;;;;;
-2104=;;;;;
 2103=;;;;;
+2104=;;;;;
 2102=;;;;;
 
 [Width]
@@ -21,18 +21,18 @@ ABREVIATION__2019=123;Arial;;9;acronyme;-2147483640;0;O
 NOM__2010=424;Arial;;9;nom;-2147483640;0;O
 PRENOM__2011=193;Arial;;9;prenom;-2147483640;0;O
 SEXE__2018=77;Arial;;9;sexe;-2147483640;0;O
-CALC__3656=78;Arial;;9;titre;-2147483640;0;O
-CSTMDP1=61;Arial;;9;mdp;-2147483640;0;O
-CSTSTATUT2=80;Arial;;9;statut;-2147483640;0;O
-EMAIL2__2099=354;Arial;;9;mail;-2147483640;0;O
+CSTTITRE1=69;Arial;;9;titre;-2147483640;0;O
+CSTMDP2=61;Arial;;9;mdp;-2147483640;0;O
+CSTSTATUT3=80;Arial;;9;statut;-2147483640;0;O
+EMAIL2__2099=564;Arial;;9;mail;-2147483640;0;O
 TELDOMI__2107=179;Arial;;9;telephone;-2147483640;0;O
 GSM__2141=179;Arial;;9;GSM;-2147483640;0;O
 RUEDOMI__2101=326;Arial;;9;adresse;-2147483640;0;O
-COMMDOMI__2104=214;Arial;;9;commune;-2147483640;0;O
 CPOSTDOMI__2103=117;Arial;;9;codePostal;-2147483640;0;O
+COMMDOMI__2104=214;Arial;;9;commune;-2147483640;0;O
 PAYSDOMI__2102=106;Arial;;9;pays;-2147483640;0;O
 MATRIC__2001=-1;Arial;;9;Matric Info;-2147483640;1;N
-NOMNET__2012=-1;Arial;;9;Nom Nettoyï¿½;-2147483640;0;N
+NOMNET__2012=-1;Arial;;9;Nom Nettoyé;-2147483640;0;N
 ORDNO=-1;Arial;;9;ORDNO;-2147483640;1;N
 Grid=;Arial;;9;1;
 
@@ -42,23 +42,24 @@ ABREVIATION__2019=1
 NOM__2010=2
 PRENOM__2011=3
 SEXE__2018=4
-CALC__3656=5
-CSTMDP1=6
-CSTSTATUT2=7
+CSTTITRE1=5
+CSTMDP2=6
+CSTSTATUT3=7
 EMAIL2__2099=8
 TELDOMI__2107=9
 GSM__2141=10
 RUEDOMI__2101=11
-COMMDOMI__2104=12
-CPOSTDOMI__2103=13
+CPOSTDOMI__2103=12
+COMMDOMI__2104=13
 PAYSDOMI__2102=14
 MATRIC__2001=15
 NOMNET__2012=16
 ORDNO=17
 
 [Constantes]
+titre=;
 mdp=;
-statut=prof;
+statut=user;
 
 [Titres]
 No
@@ -73,8 +74,8 @@ mail
 telephone
 GSM
 adresse
-commune
 codePostal
+commune
 pays
 
 [NumLignes]
@@ -108,3 +109,4 @@ Page.BottomMargin= 1.00000000000000E+0001
 [RTFRegroup]
 
 [RTFSousGroupe]
+
