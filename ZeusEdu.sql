@@ -1237,7 +1237,7 @@ ALTER TABLE `didac_thotRpHeures`
  CREATE TABLE IF NOT EXISTS `didac_thotTravaux` (
   `idTravail` int(11) NOT NULL,
     `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
-    `coursGrp` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
+    `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
     `titre` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Titre du travail',
     `consigne` blob NOT NULL,
     `dateDebut` date NOT NULL,
