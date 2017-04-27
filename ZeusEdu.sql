@@ -1221,6 +1221,9 @@ ALTER TABLE `didac_thotRpHeures`
    `local` varchar(12) COLLATE utf8_unicode_ci DEFAULT NULL
  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Locaux affectés aux profs pour la réunion de parents';
 
+ ALTER TABLE `didac_thotRpLocaux`
+ ADD PRIMARY KEY (`date`,`acronyme`);
+
 
  CREATE TABLE IF NOT EXISTS `didac_thotRpAttente` (
    `date` date NOT NULL COMMENT 'Date de la réunion de parents',
