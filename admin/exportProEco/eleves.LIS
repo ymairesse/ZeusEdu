@@ -6,25 +6,21 @@
 17=;;;;;
 80=;;;;;
 80=;;;;;
-85=;'';T;;;
+85=;'';;;;
 80=;;;;;
-85=;'';T;;;
-18=2;;;;Année;Année de DateNaiss
-CSTtiret=-;''
-18=3;'';T;;Mois;Mois de DateNaiss
-CSTtiret=-;''
-18=4;'';T;;Jour;Jour de DateNaiss
-20=;;;;;
-205=;;;;;
+85=;'';;;;
+203=;;;;;
 220=;;;;;
 216=;;;;;
 219=;;;;;
-218=;;;;;
-265=;;;;;
+219=;;;;;
+263=;;;;;
+264=;' ';;;;
 276=;;;;;
 279=;;;;;
 280=;;;;;
-295=;;;;;
+293=;;;;;
+294=;' ';;;;
 306=;;;;;
 309=;;;;;
 310=;;;;;
@@ -34,49 +30,55 @@ CSTtiret=-;''
 210=;;;;;
 213=;;;;;
 215=;;;;;
-123=11;;;;Forme Filière (code Réaf);Forme Filière
+18=2;;;;Année;Année de DateNaiss
+18=3;'-';;;Mois;Mois de DateNaiss
+18=4;'-';;;Jour;Jour de DateNaiss
+20=;;;;;
+81=;;;;;
+82=;'';;;;
 
 [Width]
 LIGNE=-1;Arial;;9;No;-2147483640;1;N
 MATRIC__8=74;Arial;;9;matricule;-2147483640;1;O
-NOM__9=424;Arial;;9;nom;-2147483640;0;O
-PRENOM__10=193;Arial;;9;prenom;-2147483640;0;O
-SEXE__17=63;Arial;;9;sexe;-2147483640;0;O
-AN__80=48;Arial;;9;annee;-2147483640;0;O
+NOM__9=110;Arial;;9;nom;-2147483640;0;O
+PRENOM__10=123;Arial;;9;prenom;-2147483640;0;O
+SEXE__17=36;Arial;;9;sexe;-2147483640;0;O
+AN__80=63;Arial;;9;annee;-2147483640;0;O
 AN__80_1=62;Arial;;9;classe;-2147483640;0;O
 CLASSE__85=0;Arial;;9;Classe;-2147483640;0;O
-AN__80_2=62;Arial;;9;groupe;-2147483640;0;O
+AN__80_2=43;Arial;;9;groupe;-2147483640;0;O
 CLASSE__85_3=0;Arial;;9;Classe;-2147483640;0;O
-DATENAISS__18=98;Arial;;9;DateNaiss;-2147483640;0;O
-CSTTIRET1=0;Arial;;9;tiret;-2147483640;0;O
-DATENAISS__18_4=0;Arial;;9;Mois de DateNaiss;-2147483640;0;O
-CSTTIRET2=0;Arial;;9;tiret;-2147483640;0;O
-DATENAISS__18_5=0;Arial;;9;Jour de DateNaiss;-2147483640;0;O
-VILLENAISS__20=354;Arial;;9;commNaissance;-2147483640;0;O
-NOMADR__205=284;Arial;;9;nomResp;-2147483640;0;O
-EMAIL__220=424;Arial;;9;courriel;-2147483640;0;O
-TEL__216=179;Arial;;9;telephone1;-2147483640;0;O
-GSM__219=179;Arial;;9;telephone2;-2147483640;0;O
-FAX__218=179;Arial;;9;telephone3;-2147483640;0;O
-NOMADR__265=284;Arial;;9;nomPere;-2147483640;0;O
+NOM__203=112;Arial;;9;nomResp;-2147483640;0;O
+EMAIL__220=201;Arial;;9;courriel;-2147483640;0;O
+TEL__216=112;Arial;;9;telephone1;-2147483640;0;O
+GSM__219=111;Arial;;9;telephone2;-2147483640;0;O
+GSM__219_4=179;Arial;;9;telephone3;-2147483640;0;O
+NOM__263=134;Arial;;9;nomPere;-2147483640;0;O
+PRENOM__264=0;Arial;;9;Prénom Père;-2147483640;0;O
 TEL__276=179;Arial;;9;telPere;-2147483640;0;O
 GSM__279=179;Arial;;9;gsmPere;-2147483640;0;O
-EMAIL__280=424;Arial;;9;mailPere;-2147483640;0;O
-NOMADR__295=284;Arial;;9;nomMere;-2147483640;0;O
+EMAIL__280=145;Arial;;9;mailPere;-2147483640;0;O
+NOM__293=142;Arial;;9;nomMere;-2147483640;0;O
+PRENOM__294=0;Arial;;9;Prénom Mère;-2147483640;0;O
 TEL__306=179;Arial;;9;telMere;-2147483640;0;O
 GSM__309=179;Arial;;9;gsmMere;-2147483640;0;O
-EMAIL__310=424;Arial;;9;mailMere;-2147483640;0;O
-RUE__240=326;Arial;;9;adresseEleve;-2147483640;0;O
+EMAIL__310=104;Arial;;9;mailMere;-2147483640;0;O
+RUE__240=143;Arial;;9;adresseEleve;-2147483640;0;O
 CPOST__243=88;Arial;;9;cpostEleve;-2147483640;0;O
-LOCALITE__245=186;Arial;;9;localiteEleve;-2147483640;0;O
-RUE__210=326;Arial;;9;adresseResp;-2147483640;0;O
+LOCALITE__245=120;Arial;;9;localiteEleve;-2147483640;0;O
+RUE__210=174;Arial;;9;adresseResp;-2147483640;0;O
 CPOST__213=88;Arial;;9;cpostResp;-2147483640;0;O
-LOCALITE__215=186;Arial;;9;localiteResp;-2147483640;0;O
-ANFOFI__123=81;Arial;;9;section;-2147483640;0;O
+LOCALITE__215=122;Arial;;9;localiteResp;-2147483640;0;O
+DATENAISS__18=98;Arial;;9;DateNaiss;-2147483640;0;O
+DATENAISS__18_5=0;Arial;;9;Mois de DateNaiss;-2147483640;0;O
+DATENAISS__18_6=0;Arial;;9;Jour de DateNaiss;-2147483640;0;O
+VILLENAISS__20=108;Arial;;9;commNaissance;-2147483640;0;O
+FO__81=65;Arial;;9;section;-2147483640;0;O
+FI__82=0;Arial;;9;Filière;-2147483640;0;O
 ECOPROPRIO__3=-1;Arial;;9;Ecoles Propriétaires;-2147483640;0;N
 ECOLE__76=-1;Arial;;9;Ecole;-2147483640;0;N
-SEXE__17_6=-1;Arial;;9;Sexe;-2147483640;0;N
-ANFOFI__123_7=-1;Arial;;9;AnFF;-2147483640;0;N
+SEXE__17_7=-1;Arial;;9;Sexe;-2147483640;0;N
+ANFOFI__123=-1;Arial;;9;AnFF;-2147483640;0;N
 IMPLANTATION__97=-1;Arial;;9;Implantation;-2147483640;0;N
 MATRIC__8_8=-1;Arial;;9;Matric Info;-2147483640;1;N
 NOMNET__11=-1;Arial;;9;Nom Nettoyé pour Tris;-2147483640;0;N
@@ -94,43 +96,43 @@ AN__80_1=6
 CLASSE__85=7
 AN__80_2=8
 CLASSE__85_3=9
-DATENAISS__18=10
-CSTTIRET1=11
-DATENAISS__18_4=12
-CSTTIRET2=13
-DATENAISS__18_5=14
-VILLENAISS__20=15
-NOMADR__205=16
-EMAIL__220=17
-TEL__216=18
-GSM__219=19
-FAX__218=20
-NOMADR__265=21
-TEL__276=22
-GSM__279=23
-EMAIL__280=24
-NOMADR__295=25
-TEL__306=26
-GSM__309=27
-EMAIL__310=28
-RUE__240=29
-CPOST__243=30
-LOCALITE__245=31
-RUE__210=32
-CPOST__213=33
-LOCALITE__215=34
-ANFOFI__123=35
-ECOPROPRIO__3=36
-ECOLE__76=37
-SEXE__17_6=38
-ANFOFI__123_7=39
-IMPLANTATION__97=40
-MATRIC__8_8=41
-NOMNET__11=42
-ORDNO=43
+NOM__203=10
+EMAIL__220=11
+TEL__216=12
+GSM__219=13
+GSM__219_4=14
+NOM__263=15
+PRENOM__264=16
+TEL__276=17
+GSM__279=18
+EMAIL__280=19
+NOM__293=20
+PRENOM__294=21
+TEL__306=22
+GSM__309=23
+EMAIL__310=24
+RUE__240=25
+CPOST__243=26
+LOCALITE__245=27
+RUE__210=28
+CPOST__213=29
+LOCALITE__215=30
+DATENAISS__18=31
+DATENAISS__18_5=32
+DATENAISS__18_6=33
+VILLENAISS__20=34
+FO__81=35
+FI__82=36
+ECOPROPRIO__3=37
+ECOLE__76=38
+SEXE__17_7=39
+ANFOFI__123=40
+IMPLANTATION__97=41
+MATRIC__8_8=42
+NOMNET__11=43
+ORDNO=44
 
 [Constantes]
-tiret=-;
 
 [Titres]
 No
@@ -143,22 +145,18 @@ classe
 Classe
 groupe
 Classe
-DateNaiss
-tiret
-Mois de DateNaiss
-tiret
-Jour de DateNaiss
-commNaissance
 nomResp
 courriel
 telephone1
 telephone2
 telephone3
 nomPere
+Prénom Père
 telPere
 gsmPere
 mailPere
 nomMere
+Prénom Mère
 telMere
 gsmMere
 mailMere
@@ -168,7 +166,12 @@ localiteEleve
 adresseResp
 cpostResp
 localiteResp
+DateNaiss
+Mois de DateNaiss
+Jour de DateNaiss
+commNaissance
 section
+Filière
 
 [NumLignes]
 NLig=N
