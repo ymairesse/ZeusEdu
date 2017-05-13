@@ -24,7 +24,6 @@ define ('NOTSHARED', 'Ce document n\'est pas partagé avec vous.');
 
 $ds = DIRECTORY_SEPARATOR;
 
-
 switch ($type) {
     case 'fileId':
         // une valeur de fileId a été passée
@@ -65,12 +64,25 @@ switch ($type) {
         $fileName = isset($_GET['file']) ? $_GET['file'] : null;
         // recherche des informations sur le répertoire concerné
         $fileInfo = $Files->getSharedfileById($fileId);
-        $shareId = $fileInfo['shareId'];
-        $path = $fileInfo['path'];
-        $proprio = $fileInfo['acronyme'];
 
-        $sharedList = array_keys($Files->sharedWith($acronyme));
-        if (!in_array($shareId, $sharedList)) {
+        $shared = false;
+        if ($fileInfo != Null) {
+            // le fichier $fileId a été trouvé
+            // on extrait la liste des partages
+            $shareIds = $fileInfo['shareId'];
+            $path = $fileInfo['path'];
+            $proprio = $fileInfo['acronyme'];
+            // liste des fichiers partagés avec $acronyme
+            $sharedList = array_keys($Files->sharedWith($acronyme));
+            // pour chacun des partages du fichier, on vérifie s'il existe dans la
+            // liste des partages de l'utilisateur courant ($acronyme)
+            foreach ($shareIds as $oneShare) {
+                if (in_array($oneShare, $sharedList))
+                    $shared = true;
+            }
+        }
+
+        if ($shared == false) {
             die(NOTSHARED);
         }
         break;
