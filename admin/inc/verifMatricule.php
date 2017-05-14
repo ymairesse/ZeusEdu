@@ -1,9 +1,13 @@
 <?php
-require_once("../config.inc.php");
 
-// définition de la class Ecole
-require_once (INSTALL_DIR."/inc/classes/classEleve.inc.php");
+require_once("../../config.inc.php");
+
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
+$Application = new Application();
+
+// définition de la class Eleve
+require_once (INSTALL_DIR."/inc/classes/classEcole.inc.php");
+$Ecole = new Ecole();
 
 $matricule = $_GET['matricule'];
-echo (Eleve::eleveExists($matricule));
-?>
+echo ($Ecole->eleveExiste($matricule));
