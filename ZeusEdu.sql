@@ -642,7 +642,7 @@ INSERT INTO `didac_config` (`ordre`, `parametre`, `label`, `size`, `valeur`, `si
 (11, 'NOMSPERIODES', 'Noms des périodes', 30, 'Toussaint,Noël,Carnaval,Pâques,Juin', 'Noms des différentes périodes de cours'),
 (12, 'PERIODEENCOURS', 'Période en cours', 2, '5', 'Numéro de la période en cours'),
 (13, 'PERIODESDELIBES', 'Périodes de délibés', 20, '2,5', 'Numéro des périodes de délibérations'),
-(14, 'SECTIONS', 'Sections', 12, 'G,TT,TQ', 'Liste des sections proposées dans l''école'),
+(14, 'SECTIONS', 'Sections', 12, 'G,TT,TQ,S,P', 'Liste des sections proposées dans l''école'),
 (15, 'SITEWEB', 'Adresse web', 45, 'http://www.ecole.org', 'Adresse URL du site web de l''école'),
 (16, 'TELEPHONE', 'Téléphone', 20, '+32 xx xx xx', 'Téléphone général de l''école'),
 (2, 'VILLE', 'Ville', 45, 'xxxxx - VILLE', 'Code postal et Localité de l''école'),
@@ -1133,18 +1133,22 @@ ALTER TABLE `didac_thotJdcCategories`
 MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 
 
-CREATE TABLE IF NOT EXISTS `didac_thotParents` (
+CREATE TABLE `didac_thotParents` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
   `formule` enum('M.','Mme') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Formule pour l''envoi de mails',
   `nom` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `prenom` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `userName` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `userName` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `mail` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Adresse mail du parent',
   `lien` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Lien de parenté',
   `md5pwd` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`matricule`,`userName`),
-  KEY `matricule` (`matricule`)
+  `confirme` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''adresse mail a été confirmée'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des parents';
+
+ALTER TABLE `didac_thotParents`
+  ADD PRIMARY KEY (`matricule`,`userName`),
+  ADD KEY `matricule` (`matricule`);
+
 
 CREATE TABLE `didac_thotRpRv` (
   `id` int(11) NOT NULL COMMENT 'Identifiant du RV',
