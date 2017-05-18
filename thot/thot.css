@@ -303,3 +303,12 @@ fieldset.info legend {
 #unTravail .panel {
     background-image: url('images/carre.png');
 }
+
+.checked {
+    background-color: #9f9;
+}
+
+.btn-xl {
+    padding: 10% 0;
+    heigth: 5em;
+}

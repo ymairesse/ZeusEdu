@@ -2,8 +2,8 @@
 
     <div class="panel-heading">
         <h4 class="panel-title">
-<a data-toggle="collapse" data-target="#collapse5" href="#collapse5">Informatique</a>
-</h4>
+            <a data-toggle="collapse" data-target="#collapse5" href="#collapse5">Informatique</a>
+        </h4>
     </div>
 
     <div id="collapse5" class="panel-collapse collapse">
@@ -43,7 +43,6 @@
                 </div>
 
             </div>
-
 
         </div>
         <!-- row -->

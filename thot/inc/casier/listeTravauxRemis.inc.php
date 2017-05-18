@@ -33,7 +33,8 @@ $Ecole = new Ecole();
 
 $listeEleves = $Ecole->listeElevesCours($coursGrp);
 foreach ($listeTravaux as $matricule => $dataTravail) {
-    $listeTravaux[$matricule]['photo'] = $listeEleves[$matricule]['photo'];
+    if (isset($listeEleves[$matricule]))
+        $listeTravaux[$matricule]['photo'] = $listeEleves[$matricule]['photo'];
 }
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -44,4 +45,4 @@ $smarty->compile_dir = '../../templates_c';
 $smarty->assign('listeTravaux', $listeTravaux);
 $smarty->assign('infoTravail', $infoTravail);
 
-echo $smarty->fetch('casier/showTravauxRemis.tpl');
+echo $smarty->fetch('casier/evalTravaux.tpl');

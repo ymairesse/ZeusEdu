@@ -1,18 +1,3 @@
-<script type="text/javascript">
-{literal}
-$(document).ready(function(){
-
-	$("#formSelecteur").submit(function(){
-		$("#wait").show();
-	})
-
-	$("#selectUser").change(function(){
-		$("#formSelecteur").submit();
-		})
-})
-{/literal}
-</script>
-
 <div id="selecteur" class="noprint" style="clear:both">
 <fieldset style="clear:both"><legend>Modification d'un utilisateur</legend>
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
@@ -28,3 +13,18 @@ $(document).ready(function(){
 	</form>
 </fieldset>
 </div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+	$("#formSelecteur").submit(function(){
+		$("#wait").show();
+	})
+
+	$("#selectUser").change(function(){
+		$("#formSelecteur").submit();
+		})
+})
+
+</script>

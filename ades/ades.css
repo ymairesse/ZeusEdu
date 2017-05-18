@@ -48,7 +48,7 @@
     background-color: #CCCCCC;
     color: #008000;
 	}
-	
+
 .rempli {
     color: #FF0000;
 	}
@@ -89,7 +89,7 @@
 .noScreen {
 	display: none;
 	}
-	
+
 .microForm {
 	margin: 0;
 	padding: 0;
@@ -97,12 +97,12 @@
 
 
 @media print {
- 
+
 .classeEntete {
 	font-size: 800%;
 	text-align:center;
 	}
-	
+
 .eleveEntete {
 	font-size: 200%;
 	text-align:center;
@@ -111,7 +111,7 @@
 h2 {
 	font-size: 200%;
 	}
-	
+
 .pageBreak {
 	page-break-before:always;
 	}
@@ -119,9 +119,8 @@ h2 {
 .noScreen {
 	display: block;
 	}
-	
+
 .noScreen tr td {
 	text-align: center;
 	}
-
 }

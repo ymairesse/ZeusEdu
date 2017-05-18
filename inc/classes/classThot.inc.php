@@ -1833,6 +1833,7 @@ class thot
             $sql = 'INSERT INTO '.PFX.'thotRpLocaux ';
             $sql .= 'SET date = :date, acronyme= :acronyme, local=:local ';
             $sql .= 'ON DUPLICATE KEY UPDATE local=:local ';
+            echo $sql;
             $requete = $connexion->prepare($sql);
             $nb = 0;
             foreach ($post as $field => $local) {
@@ -1840,6 +1841,7 @@ class thot
                 if ($field[0] == 'local') {
                     $acronyme = $field[1];
                     $data = array(':acronyme' => $acronyme, ':local' => $local, ':date' => $date);
+                    Application::afficher($data);
                     $nb += $requete->execute($data);
                 }
             }

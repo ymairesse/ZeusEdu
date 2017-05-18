@@ -24,7 +24,6 @@ $Files = new Files();
 // informations générales sur le travail (dates, consigne,...)
 $infoTravail = $Files->getDataTravail($idTravail, $acronyme);
 
-
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';

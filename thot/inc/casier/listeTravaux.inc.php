@@ -31,4 +31,5 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeTravaux', $listeTravaux);
 $smarty->assign('idTravail', $idTravail);
+
 echo $smarty->fetch('casier/listeTravaux.tpl');

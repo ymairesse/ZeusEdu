@@ -1233,6 +1233,7 @@ class Application
         // $acronyme = $user->getAcronyme();
         $userMail = $user->getMail();
 
+        setlocale(LC_TIME, 'fra_fra');
         $jSemaine = strftime('%A');
         $date = date('d/m/Y');
         $heure = date('H:i');

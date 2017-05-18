@@ -15,4 +15,3 @@ $fragment = trim($fragment);
 $listeEleves = Eleve::searchEleve2($fragment);
 
 echo json_encode($listeEleves);
-?>

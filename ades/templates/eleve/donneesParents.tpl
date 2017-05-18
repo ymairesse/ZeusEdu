@@ -2,7 +2,7 @@
 
 	<div class="col-md-10 col-sm-10">
 
-		<div class="row">
+		<div class="row table-row">
 
 			<div class="col-md-4 col-sm-12">
 

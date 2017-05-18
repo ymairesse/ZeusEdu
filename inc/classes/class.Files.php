@@ -1300,7 +1300,7 @@ class Files
     {
         $ds = DIRECTORY_SEPARATOR;
         $dir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'#thot'.$ds.$idTravail.$ds.$matricule;
-        $files = array_diff(scandir($dir), array('..', '.'));
+        $files = @array_diff(scandir($dir), array('..', '.'));
         // le premier fichier significatif est le numéro 2 (.. et . ont été supprimés)
         $infos = array('fileName' => null, 'size' => '', 'dateRemise' => 'Non remis');
         if (isset($files[2])) {

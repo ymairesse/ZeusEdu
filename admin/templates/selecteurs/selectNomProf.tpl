@@ -1,5 +1,3 @@
-<div class="container">
-	
 <div id="selecteur" class="noprint">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 	<select name="acronyme" id="selectUser">
@@ -17,8 +15,6 @@
 	</form>
 </div>
 
-</div>  <!-- container -->
-
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -27,7 +23,7 @@ $(document).ready(function(){
 		if ($("#selectUser").val() != "")
 			$("#formSelecteur").submit();
 		})
-	
+
 	$("#formSelecteur").submit(function(){
 		if ($("#selectUser").val() == "")
 			return false;

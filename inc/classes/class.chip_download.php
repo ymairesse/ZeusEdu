@@ -31,50 +31,57 @@ class chip_download
 
     private $allowed_extensions = array(
 
-                        /* Archives */
-                        'zip' => 'application/zip',
-                        '7z' => 'application/octet-stream',
+            /* Archives */
+            'zip' => 'application/zip',
+            '7z' => 'application/octet-stream',
 
-                        /* Documents */
-                        'txt' => 'text/plain',
-			            'csv' => 'text/csv',
-                        'mm' => 'application/x-freeplane',
-                        'json' => 'application/json',
-                        'html' => 'text/html',
-                        'pdf' => 'application/pdf',
-                        'doc' => 'application/msword',
-                        'xls' => 'application/vnd.ms-excel',
-                        'ppt' => 'application/vnd.ms-powerpoint',
-                        'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-                        'odt' => 'application/vnd.oasis.opendocument.text',
-                        'odp' => 'application/vnd.oasis.opendocument.presentation',
-                        'odg' => 'application/vnd.oasis.opendocument.graphics',
-                        'ott' => 'application/vnd.oasis.opendocument.text-template',
-						'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-						'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-						'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            /* Documents */
+            'txt' => 'text/plain',
+            'csv' => 'text/csv',
+            'mm' => 'application/x-freeplane',
+            'json' => 'application/json',
+            'html' => 'text/html',
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+            'odt' => 'application/vnd.oasis.opendocument.text',
+            'odp' => 'application/vnd.oasis.opendocument.presentation',
+            'odg' => 'application/vnd.oasis.opendocument.graphics',
+            'ott' => 'application/vnd.oasis.opendocument.text-template',
+			'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 
-                        /* Executables */
-                        //  	'exe'	=> 'application/octet-stream',
+            /* Executables */
+            //  	'exe'	=> 'application/octet-stream',
 
-                        /* Images */
-                        'gif' => 'image/gif',
-                        'png' => 'image/png',
-                        'jpg' => 'image/jpg',
-                        'jpeg' => 'image/jpeg',
+            /* Images */
+            'gif' => 'image/gif',
+            'png' => 'image/png',
+            'jpg' => 'image/jpg',
+            'jpeg' => 'image/jpeg',
+            'xcf' => 'image/xcf',
 
-                        /* Audio */
-                        'mp3' => 'audio/mpeg',
-//					  	'wav'	=> 'audio/x-wav',
+            /* Audio */
+            'mp3' => 'audio/mpeg',
+            // 	'wav'	=> 'audio/x-wav',
 
-                        /* Video */
-                        //  	'mpeg'	=> 'video/mpeg',
-                        //  	'mpg'	=> 'video/mpeg',
-                        //  	'mpe'	=> 'video/mpeg',
-                        //  	'mov'	=> 'video/quicktime',
-                        //  	'avi'	=> 'video/x-msvideo'
+            /* Geogebra */
+            'ggb' => 'application/vnd.geogebra.file',
 
-                    );
+            /* mindmap Freeplane */
+            'mm' => 'application/x-freeplane',
+
+            /* Video */
+            //  	'mpeg'	=> 'video/mpeg',
+            //  	'mpg'	=> 'video/mpeg',
+            //  	'mpe'	=> 'video/mpeg',
+            //  	'mov'	=> 'video/quicktime',
+            //  	'avi'	=> 'video/x-msvideo'
+
+        );
 
     /*
     |---------------------------

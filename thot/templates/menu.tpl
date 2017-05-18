@@ -83,12 +83,21 @@
 				</ul>
 			</li>
 
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Formulaires <b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Bibliothèque <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					{if $userStatus == 'educ'}
+					<li><a href="index.php?action=bib">Gestion bibliothèque</a></li>
+					{/if}
+					<li><a href="index.php?action=bib&amp;mode=consult">Emprunt de livre</a></li>
+				</ul>
+			</li>
+
+			{* <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Formulaires <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=formulaires&amp;mode=edit">Création/modification d'un formulaire</a></li>
 					<li><a href="index.php?action=formulaires&amp;mode=voir">Consulter mes formulaires</a></li>
 				</ul>
-			</li>
+			</li> *}
 
 			{if ($userStatus == 'admin')}
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Admin <b class="caret"></b></a>

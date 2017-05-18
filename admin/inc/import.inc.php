@@ -14,8 +14,8 @@ switch ($mode)
 		$entete = array_shift($tableau);
 		$differences = hiatus($entete, $champs);
 
-		$smarty->assign("table", $table);								
-		$smarty->assign("class","tableauAdmin");				
+		$smarty->assign("table", $table);
+		$smarty->assign("class","tableauAdmin");
 		$smarty->assign("entete", $entete);
 		$smarty->assign("tableau", $tableau);
 		if ($differences)
@@ -24,7 +24,7 @@ switch ($mode)
 			$smarty->assign("hiatus", $differences);
 			$smarty->display("problemeImport.tpl");
 			}
-			else 
+			else
 			$smarty->display("noproblemeImport.tpl");
 		break;
 	case 'Confirmer':

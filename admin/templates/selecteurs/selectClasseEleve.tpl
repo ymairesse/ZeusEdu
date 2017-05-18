@@ -1,7 +1,7 @@
 <div id="selecteur" class="noprint" style="clear:both">
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 
-	<select name="laClasse" id="selectClasse">
+	<select name="laClasse" id="selectClasse" class="form-control">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=classe}
 			<option value="{$classe}"{if $classe eq $laClasse} selected{/if}>{$classe}</option>
@@ -10,7 +10,7 @@
 
 	<span id="choixEleve">
 		{* Emplacement de la liste de sélection des élèves *}
-		<select name="matricule" id="selectEleve">
+		<select name="matricule" id="selectEleve" class="form-control">
 			<option value="">Choisir un élève</option>
 			{if isset($listeEleves)}
 				{* key = matric car $matricule est passé en argument *}

@@ -24,6 +24,15 @@ $idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-$dataTravail = $Files->getDataTravail($idTravail, $acronyme);
+$dataTravail = $Files->getDataTravail($idTravail, $acronyme, $coursGrp);
+$listeCompetences = $Files->getCompetencesCoursGrp($coursGrp);
 
-echo json_encode($dataTravail);
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty();
+$smarty->template_dir = '../../templates';
+$smarty->compile_dir = '../../templates_c';
+
+$smarty->assign('dataTravail', $dataTravail);
+$smarty->assign('listeCompetences', $listeCompetences);
+
+echo $smarty->fetch('casier/editTravail.tpl');
