@@ -12,7 +12,7 @@ if ($etape == 'enregistrer') {
     }
 }
 
-// une classe a été sélectionnée
+// une classe a été sélectionnée 
 if (isset($classe)) {
     $smarty->assign('classe', $classe);
     if (!(isset($listeEleves))) {

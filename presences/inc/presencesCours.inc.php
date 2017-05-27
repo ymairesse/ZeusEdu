@@ -41,6 +41,9 @@ if (isset($coursGrp)) {
 $justifications = $Presences->listeJustificationsAbsences(false);
 $smarty->assign('justifications', $justifications);
 
+$listeJustifications = $Presences->listeJustificationsAbsences();
+$smarty->assign('listeJustifications', $listeJustifications);
+
 $listePresences = isset($listePresences) ? $listePresences : null;
 $smarty->assign('listePresences', $listePresences);
 $smarty->assign('action', $action);
