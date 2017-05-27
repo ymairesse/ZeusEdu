@@ -1,10 +1,10 @@
-	<strong>{$jourSemaine|ucwords} {$date}</strong>
-	<div style="float:right; font-size:110%;">
-		[<span>{$nbEleves}</span> <span class="glyphicon glyphicon-user"></span> ]
-		[<i class="fa fa-clock-o"></i> {$periode} <span style="font-size:10pt"><span class="glyphicon glyphicon-arrow-right"></span> {$listePeriodes.$periode.debut}-{$listePeriodes.$periode.fin}</span> ]
-		[<span class="glyphicon glyphicon-user" style="color:green"></span> <span style="color:green" id="nbPres"></span>]
-		[<span class="glyphicon glyphicon-user" style="color:red"></span> <span style="color:red" id="nbAbs"></span> ]
-	</div>
+<strong>{$jourSemaine|ucwords} {$date}</strong>
+<div style="float:right; font-size:110%;">
+	[<span>{$nbEleves}</span> <span class="glyphicon glyphicon-user"></span> ]
+	[<i class="fa fa-clock-o"></i> {$periode} <span style="font-size:10pt"><span class="glyphicon glyphicon-arrow-right"></span> {$listePeriodes.$periode.debut}-{$listePeriodes.$periode.fin}</span> ]
+	[<span class="glyphicon glyphicon-user" style="color:green"></span> <span style="color:green" id="nbPres"></span>]
+	[<span class="glyphicon glyphicon-user" style="color:red"></span> <span style="color:red" id="nbAbs"></span> ]
+</div>
 
 	{* répartition des élèves dans deux colonnes sur les écrans larges; sinon, les deux tableaux seront superposés *}
 	{assign var=nbCol1 value=round($listeEleves|count / 2)}
@@ -57,10 +57,12 @@
 					{* on passe les différentes périodes existantes en revue *}
 					{foreach from=$lesPeriodes item=noPeriode}
 						{assign var=statut value=$listePr.$noPeriode.statut|default:''}
-						<td class="{$statut}
-							{if $noPeriode==$periode} now{else} notNow{/if}
+						{assign var=color value=$listeJustifications.$statut.color|default:'#000'}
+						{assign var=background value=$listeJustifications.$statut.background|default:'#fff'}
+						<td class="{if $noPeriode==$periode} now{else} notNow{/if}
 							{if (!in_array($statut, array_keys($justifications)))} lock{/if}"
 							id="lock-{$matricule}_periode-{$noPeriode}"
+							style="color:{$color}; background:{$background}"
 							data-statut="{$statut}"
 							data-periode="{$noPeriode}"
 							data-matricule="{$matricule}">
@@ -68,7 +70,7 @@
 							{if (in_array($statut, array_keys($justifications)))}
 								<strong>{$noPeriode}</strong>
 								{else}
-								<span class="glyphicon glyphicon-lock" title="absence déjà signalée"></span>
+								<span class="glyphicon glyphicon-lock" title="{$listeJustifications.$statut.libelle|default:'Absence déjà signalée'}"></span>
 							{/if}
 
 							{if ($noPeriode == $periode)}
@@ -131,6 +133,8 @@
 	</table>
 
 	</div>
+
+	{include file='legendeAbsences.tpl'}
 
 </div>  <!-- container -->
 
