@@ -449,6 +449,7 @@ class presences
         $requete = $connexion->prepare($sql);
 
         $data = array(':educ' => $educ, ':parent' => $parent, ':media' => $media, ':quand' => $quand, ':heure' => $heure);
+
         $resultat = $requete->execute($data);
         $id = $connexion->lastInsertId();
 
@@ -467,7 +468,7 @@ class presences
                     $sql = 'INSERT INTO '.PFX.'presencesEleves ';
                     $sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
                     $sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
-
+// die($sql);
                     $resultat = $connexion->exec($sql);
                     if ($resultat) {
                         ++$nb;
@@ -530,9 +531,11 @@ class presences
 
      /**
       * retourne la liste des justifications d'absences possibles, avec leurs caractéristiques
-      * accesAdmin = true si toutes les justifications sont présentées sinon, seulement celles pour les profs.
+      * $admin = true si toutes les justifications sont présentées sinon, seulement celles pour les profs.
       *
-      * @param $complet : si "true", toutes les justifications, sinon, seulement celles des profs
+      * @param $admin : si "true", toutes les justifications, sinon, seulement celles des profs
+      * @param $sms : si true, les justifications d'absences nécessitant un SMS
+      * @param $speed: si true, les justifications d'asences pour inscription rapide
       *
       * @return array
       */
