@@ -35,6 +35,9 @@ if (isset($coursGrp)) {
 	$justifications = $Presences->listeJustificationsAbsences(false);
 	$smarty->assign('justifications', $justifications);
 
+    $listeJustifications = $Presences->listeJustificationsAbsences(true);
+    $smarty->assign('listeJustifications', $listeJustifications);
+
     $listePresences = $Presences->listePresencesElevesDate($date, $listeEleves);
     $smarty->assign('listeEleves', $listeEleves);
     $smarty->assign('nbEleves', count($listeEleves));
