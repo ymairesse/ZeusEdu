@@ -65,7 +65,9 @@
 							style="color:{$color}; background:{$background}"
 							data-statut="{$statut}"
 							data-periode="{$noPeriode}"
-							data-matricule="{$matricule}">
+							data-matricule="{$matricule}"
+							title="{$listePr.$noPeriode.educ}"
+							data-container="body">
 
 							{if (in_array($statut, array_keys($justifications)))}
 								<strong>{$noPeriode}</strong>
