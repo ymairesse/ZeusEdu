@@ -113,7 +113,7 @@ class presences
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'presencesHeures ';
-        $sql .= "SET debut='', fin=''";
+        $sql .= "SET debut='', fin='' ";
         $resultat = $connexion->exec($sql);
         Application::deconnexionPDO($connexion);
 
@@ -386,9 +386,10 @@ class presences
 
         // introduction dans la table des logs et récupération de l'id autoIncrementé
         $sql = 'INSERT INTO '.PFX.'presencesLogs ';
-        $sql .= "SET educ='$educ', parent='$parent', media='$media', quand='$quand', heure='$heure' ";
-
-        $resultat = $connexion->exec($sql);
+        $sql .= 'SET educ=:educ, parent=:parent, media=:media, quand=:quand, heure=:heure ';
+        $requete = $connexion->prepare($sql);
+        $data = array(':educ' => $educ, ':parent' => $parent, ':media' => $media, ':quand' => $quand, ':heure' => $heure);
+        $resultat = $requete->execute($data);
         $id = $connexion->lastInsertId();
 
         $sql = 'INSERT INTO '.PFX.'presencesEleves ';
@@ -468,7 +469,7 @@ class presences
                     $sql = 'INSERT INTO '.PFX.'presencesEleves ';
                     $sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
                     $sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
-// die($sql);
+
                     $resultat = $connexion->exec($sql);
                     if ($resultat) {
                         ++$nb;
@@ -494,17 +495,22 @@ class presences
          $sql = 'SELECT date, periode, statut, educ, heure, quand, parent, media ';
          $sql .= 'FROM '.PFX.'presencesEleves AS dpe ';
          $sql .= 'JOIN '.PFX.'presencesLogs AS dpl ON dpl.id = dpe.id ';
-         $sql .= "WHERE matricule='$matricule' ORDER BY date ";
+         $sql .= 'WHERE matricule=:matricule ORDER BY date ';
+         $requete = $connexion->prepare($sql);
 
-         $resultat = $connexion->query($sql);
-         $statutsAbs = array('absent', 'signale', 'justifie', 'sortie');
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $resultat = $requete->execute();
+
+         // liste de tous les statuts d'absence existants dans la BD, sauf "present" et "indetermine"
+         $statutsAbs = array_diff(array_keys($this->listeJustificationsAbsences()), array('present', 'indetermine'));
+
          $listePeriodes = $this->lirePeriodesCours();
          $empty = array('statut' => '', 'quand' => '', 'heure' => '', 'educ' => '', 'parent' => '', 'media' => '');
          $liste = array();
          $absents = array();
          if ($resultat) {
-             $resultat->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $resultat->fetch()) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
                  $date = Application::datePHP($ligne['date']);
                  if (!(isset($liste[$date]))) {
                      foreach ($listePeriodes as $noPeriode => $bornes) {
