@@ -51,7 +51,98 @@ INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `type
 ('local', 'Local', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 6),
 ('anneeScolaire', '', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 9);
 
+CREATE TABLE `didac_adesChampsFaits` (
+  `typeFait` tinyint(4) NOT NULL COMMENT 'id du fait',
+  `champ` enum('ladate','matricule','idfait','type','qui','idretenue','motif','travail','professeur','materiel','dateRetenue','heure','duree','local','sanction','nopv','anneeScolaire') COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des champs pour chaque type de faits';
 
+ALTER TABLE `didac_adesChampsFaits`
+  ADD PRIMARY KEY (`typeFait`,`champ`);
+
+INSERT INTO `didac_adesChampsFaits` (`typeFait`, `champ`) VALUES
+(0, 'ladate'),
+(0, 'matricule'),
+(0, 'idfait'),
+(0, 'type'),
+(0, 'qui'),
+(0, 'anneeScolaire'),
+(1, 'ladate'),
+(1, 'matricule'),
+(1, 'idfait'),
+(1, 'type'),
+(1, 'qui'),
+(1, 'professeur'),
+(1, 'anneeScolaire'),
+(2, 'ladate'),
+(2, 'matricule'),
+(2, 'idfait'),
+(2, 'type'),
+(2, 'qui'),
+(2, 'motif'),
+(2, 'professeur'),
+(2, 'anneeScolaire'),
+(3, 'ladate'),
+(3, 'matricule'),
+(3, 'idfait'),
+(3, 'type'),
+(3, 'qui'),
+(3, 'motif'),
+(3, 'professeur'),
+(3, 'anneeScolaire'),
+(4, 'ladate'),
+(4, 'matricule'),
+(4, 'idfait'),
+(4, 'type'),
+(4, 'qui'),
+(4, 'idretenue'),
+(4, 'motif'),
+(4, 'travail'),
+(4, 'professeur'),
+(4, 'materiel'),
+(4, 'dateRetenue'),
+(4, 'heure'),
+(4, 'duree'),
+(4, 'local'),
+(4, 'anneeScolaire'),
+(5, 'ladate'),
+(5, 'matricule'),
+(5, 'idfait'),
+(5, 'type'),
+(5, 'qui'),
+(5, 'idretenue'),
+(5, 'motif'),
+(5, 'travail'),
+(5, 'professeur'),
+(5, 'materiel'),
+(5, 'dateRetenue'),
+(5, 'heure'),
+(5, 'duree'),
+(5, 'local'),
+(5, 'anneeScolaire'),
+(6, 'ladate'),
+(6, 'matricule'),
+(6, 'idfait'),
+(6, 'type'),
+(6, 'qui'),
+(6, 'idretenue'),
+(6, 'motif'),
+(6, 'travail'),
+(6, 'professeur'),
+(6, 'materiel'),
+(6, 'dateRetenue'),
+(6, 'heure'),
+(6, 'duree'),
+(6, 'local'),
+(6, 'anneeScolaire'),
+(7, 'ladate'),
+(7, 'matricule'),
+(7, 'idfait'),
+(7, 'type'),
+(7, 'qui'),
+(7, 'motif'),
+(7, 'sanction'),
+(7, 'nopv'),
+(7, 'anneeScolaire');
 
 CREATE TABLE IF NOT EXISTS didac_adesFaits (
   idfait int(11) NOT NULL AUTO_INCREMENT,
@@ -83,18 +174,23 @@ CREATE TABLE IF NOT EXISTS didac_adesMemo (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS didac_adesRetenues (
-  `type` tinyint(4) NOT NULL DEFAULT '0',
-  idretenue int(11) NOT NULL AUTO_INCREMENT,
-  dateRetenue date NOT NULL DEFAULT '0000-00-00',
-  heure varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  duree tinyint(4) NOT NULL DEFAULT '1',
-  `local` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  places tinyint(4) NOT NULL DEFAULT '0',
-  occupation tinyint(4) NOT NULL DEFAULT '0',
-  affiche enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'O',
-  PRIMARY KEY (idretenue)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `didac_adesRetenues` (
+  `type` tinyint(4) DEFAULT NULL COMMENT 'Type de retenue',
+  `idretenue` int(11) NOT NULL COMMENT 'Identifiant de la retenue',
+  `dateRetenue` date DEFAULT NULL COMMENT 'Date de la retenue',
+  `heure` varchar(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Heure de la retenue',
+  `duree` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'Durée de la retenue',
+  `local` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Local prévu pour la retenue',
+  `places` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Nombre de places disponibles',
+  `occupation` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Nombre de places occupées',
+  `affiche` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'O' COMMENT 'La retenue est-elle affichée?'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_adesRetenues`
+  ADD PRIMARY KEY (`idretenue`);
+
+ALTER TABLE `didac_adesRetenues`
+  MODIFY `idretenue` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la retenue';
 
 
 CREATE TABLE IF NOT EXISTS didac_adesTextes (
@@ -107,32 +203,31 @@ CREATE TABLE IF NOT EXISTS didac_adesTextes (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Réserves de textes automatiques';
 
 
-CREATE TABLE IF NOT EXISTS didac_adesTypesFaits (
+CREATE TABLE `didac_adesTypesFaits` (
   `type` tinyint(4) NOT NULL,
-  titreFait varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  couleurFond varchar(7) COLLATE utf8_unicode_ci NOT NULL,
-  couleurTexte varchar(7) COLLATE utf8_unicode_ci NOT NULL,
-  typeRetenue tinyint(4) NOT NULL,
-  imprimable enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '0' COMMENT 'Le fait donne-il lieu à une impression séparée',
-  ordre tinyint(4) NOT NULL,
-  listeChamps varchar(300) COLLATE utf8_unicode_ci NOT NULL,
-  focus varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`type`)
+  `titreFait` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `couleurFond` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Couleur de fond pour ce champ',
+  `couleurTexte` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Couleur du texte pour ce champ',
+  `typeRetenue` tinyint(4) NOT NULL,
+  `ordre` tinyint(4) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_adesTypesFaits`
+  ADD PRIMARY KEY (`type`);
 
 --
 -- Contenu de la table `didac_adesTypesFaits`
 --
 
-INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleurTexte`, `typeRetenue`, `imprimable`, `ordre`, `listeChamps`, `focus`) VALUES
-(0, 'Retard après-midi', 'ccbb68', '000000', 0, '0', 1, 'ladate,matricule,idfait,type,qui,anneeScolaire', ''),
-(1, 'Retard au cours', '187718', 'ffffff', 0, '0', 2, 'ladate,matricule, idfait, qui, type, professeur,anneeScolaire', 'professeur'),
-(3, 'Exclusion du cours', 'aaaaaa', 'ffffff', 0, '0', 3, 'ladate, matricule, idfait, qui, type, professeur, motif,anneeScolaire', 'professeur'),
-(4, 'Retenue de travail', '6cec05', '000000', 1, '1', 5, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
-(5, 'Retenue Disciplinaire', 'ffffff', '000000', 2, '1', 6, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
-(6, 'Retenue Bleue', '8888ff', '000000', 3, '1', 7, 'ladate, matricule, idfait, type, qui, idretenue, motif, travail, professeur, materiel, dateRetenue, heure, duree, local,anneeScolaire', 'motif'),
-(7, 'Renvoi', 'ff0000', 'ffffff', 0, '0', 8, 'ladate, matricule, idfait, type, qui, motif, sanction, nopv,anneeScolaire', 'motif'),
-(2, 'Fait disciplinaire', 'F19D9D', '000000', 0, '0', 4, 'ladate,matricule,idfait,qui,type,professeur,motif,anneeScolaire', '');
+INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleurTexte`, `typeRetenue`, `ordre`) VALUES
+(0, 'Retard après-midi', 'ccbb68', '000000', 0, 1),
+(1, 'Retard au cours', '187718', 'ffffff', 0, 2),
+(2, 'Fait disciplinaire', 'F19D9D', '000000', 0, 3),
+(3, 'Exclusion du cours', 'aaaaaa', 'ffffff', 0, 4),
+(4, 'Retenue de travail', '6cec05', '000000', 1, 5),
+(5, 'Retenue Disciplinaire', 'ffffff', '000000', 2, 6),
+(6, 'Retenue Bleue', '8888ff', '000000', 3, 7),
+(7, 'Renvoi', 'ff0000', 'ffffff', 0, 8);
 
 --
 -- Table structure for table `didac_athena`
@@ -380,11 +475,16 @@ CREATE TABLE IF NOT EXISTS didac_bullDetailsCotes (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS didac_bullEducs (
-  matricule int(6) NOT NULL,
-  bulletin tinyint(2) NOT NULL,
-  fiche tinyint(1) NOT NULL DEFAULT '0'
+CREATE TABLE `didac_bullEducs` (
+  `matricule` int(6) NOT NULL,
+  `bulletin` tinyint(2) NOT NULL,
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme dupropriétaire',
+  `fiche` tinyint(1) NOT NULL DEFAULT '0',
+  `commentaire` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Note de l''éducateur'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Existence éventuelle de fiches disciplinaires';
+
+ALTER TABLE `didac_bullEducs`
+  ADD PRIMARY KEY (`matricule`,`bulletin`,`acronyme`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_bullEprExterne` (
@@ -733,15 +833,28 @@ CREATE TABLE IF NOT EXISTS didac_elevesEcoles (
 
 CREATE TABLE IF NOT EXISTS didac_flashInfos (
   id int(11) NOT NULL AUTO_INCREMENT,
-  `date` date NOT NULL,
+  date date NOT NULL,
   heure time NOT NULL,
-  urgence tinyint(4) NOT NULL DEFAULT '0',
-  application tinytext COLLATE utf8_unicode_ci NOT NULL,
+  application varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   titre varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-  sujet text COLLATE utf8_unicode_ci NOT NULL,
   texte text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `didac_flashInfos` (
+  `id` int(11) NOT NULL,
+  `date` date NOT NULL COMMENT 'date de parution',
+  `heure` time NOT NULL COMMENT 'Heure de parution',
+  `application` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Application à laquelle le "flash info" est affecté',
+  `titre` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Titre du "flash info"',
+  `texte` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Le texte du "Flash Info"'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_flashInfos`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `didac_flashInfos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 
 CREATE TABLE IF NOT EXISTS didac_hermesArchives (
