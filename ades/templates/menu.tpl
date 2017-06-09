@@ -36,22 +36,24 @@
 			<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
 				Que s'est-il passé? <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=synthese&amp;mode=showFiches">Synthèses de comportement</a></li>
+					<li><a href="index.php?action=synthese&amp;mode=showFiches">Fiches de comportement (écran)</a></li>
+					<li><a href="index.php?action=synthese&amp;mode=printFiches">Fiches de comportement (PDF)</a></li>
 					<li><a href="index.php?action=synthese&amp;mode=statistiques">Statistiques par niveau</a></li>
-					<li><a href="index.php?action=synthese&amp;mode=printFiches">Générer les fiches pour impression</a></li>
 				</ul>
 			</li>
 
 			<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-				Options <b class="caret"></b></a>
+				Admin <b class="caret"></b></a>
 				<ul class="dropdown-menu">
+					<li><a href="index.php?action=admin&amp;mode=remAuto">Gestion des textes automatiques</a></li>
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=admin&amp;mode=editBilletRetenue">Édition des billets de retenue</a></li>
 					<li><a href="index.php?action=admin&amp;mode=editSignature">Édition de la signature des mails</a></li>
 					<li><a href="index.php?action=admin&amp;mode=editMailRetenue">Édition du texte type des mails</a></li>
 					<li><a href="index.php?action=admin&amp;mode=users">Utilisateurs</a></li>
+					<li class="divider"></li>
+					<li><a href="index.php?action=admin&amp;mode=editTypesFaits">Construction des faits disciplinaires</a></li>
 					{/if}
-					<li><a href="index.php?action=admin&amp;mode=remAuto">Gestion des textes automatiques</a></li>
 				</ul>
 			</li>
 			</ul>

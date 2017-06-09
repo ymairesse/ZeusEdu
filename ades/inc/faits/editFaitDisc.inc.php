@@ -50,6 +50,7 @@ else {
     $smarty->assign('fait', $faitVide);
     $smarty->assign('type', $type);
 }
+
 // mode = delete ou edit
 $smarty->assign('mode',$mode);
 
@@ -80,5 +81,4 @@ $smarty->assign('listeMemos', $Ades->listeMemos($User->acronyme()));
 
 $smarty->assign('classe', $classe);
 $smarty->assign('matricule', $matricule);
-$formulaire = $smarty->fetch('faitDisc/editFaitDisciplinaire.tpl');
-echo $formulaire;
+$smarty->display('faitDisc/editFaitDisciplinaire.tpl');

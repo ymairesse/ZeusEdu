@@ -27,13 +27,17 @@ class EleveAdes
         $sql = 'SELECT * ';
         $sql .= 'FROM '.PFX.'adesFaits AS af ';
         $sql .= 'JOIN '.PFX.'adesTypesFaits AS atf ON (af.type = atf.type) ';
-        $sql .= "WHERE matricule = '$matricule' ";
+        $sql .= 'WHERE matricule =:matricule ';
         $sql .= 'ORDER BY anneeScolaire DESC, atf.ordre, ladate, idFait ';
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
         $listeFaits = array(ANNEESCOLAIRE => null);
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $anneeScolaire = $ligne['anneeScolaire'];
                 $idfait = $ligne['idfait'];
                 $type = $ligne['type'];
@@ -236,7 +240,7 @@ class EleveAdes
             $sql = 'INSERT INTO '.PFX.'adesFaits ';
             $sql .= 'SET '.$listeSQL.' ';
         }
-        
+
         $resultat = $connexion->exec($sql);
         Application::DeconnexionPDO($connexion);
 

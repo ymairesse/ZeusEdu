@@ -21,7 +21,11 @@
 <img src="{$BASEDIR}/photos/{$Eleve.photo}.jpg" alt=" " style="float:right; width: 80px">
 <h3>Fiche disciplinaire de {$Eleve.prenom} {$Eleve.nom} Classe: {$Eleve.groupe}</h3>
 
-<h4>Année scolaire {$ANNEESCOLAIRE} - en date du {$DATE}</h4> {* parcourir la liste de tous les types de faits existants *} {foreach from=$listeTypesFaits key=idTypeFait item=descriptionTypeFait} {* si ce type de fait est imputé à l'élève, on le traite *} {if isset($listeFaits.$idTypeFait)}
+<h4>Année scolaire {$ANNEESCOLAIRE} - en date du {$DATE}</h4>
+{* parcourir la liste de tous les types de faits existants *}
+{foreach from=$listeTypesFaits key=idTypeFait item=descriptionTypeFait}
+{* si ce type de fait est imputé à l'élève, on le traite *}
+{if isset($listeFaits.$idTypeFait)}
 <h3>{$listeTypesFaits.$idTypeFait.titreFait}</h3>
 <table>
   {* ----------------- ligne de titre du tableau -------------------------- *}
@@ -55,6 +59,7 @@
 
         {if ($listeTypesFaits.$type.typeRetenue > 0) && (in_array($champ,array('dateRetenue','heure','duree','local')))}
         {assign var=idretenue value=$unFaitDeCeType.idretenue}
+
           {if isset($listeRetenues.$idretenue)}
             {assign var=typeRetenue value=$listeRetenues.$idretenue}
             {$listeRetenues.$idretenue.$champ|default:'&nbsp;'}

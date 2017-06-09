@@ -1,4 +1,5 @@
 <?php
+
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
 $id = isset($_REQUEST['id'])?$_REQUEST['id']:Null;
@@ -12,9 +13,9 @@ switch ($mode) {
 	case 'del':
 		$nb = $flashInfo->delFlashInfo($id,$module);
 		$smarty->assign('message',array(
-			'title'=>DELETE,
-			'texte'=>sprintf("%d nouvelle(s) supprimée(s)",$nb),
-			'urgence'=>'warning'
+			'title' => DELETE,
+			'texte' => sprintf("%d nouvelle(s) supprimée(s)", $nb),
+			'urgence' => 'warning'
 			));
 		$smarty->assign('flashInfos', $flashInfo->listeFlashInfos($module));
 		$smarty->assign('corpsPage', 'news');
@@ -30,14 +31,12 @@ switch ($mode) {
 				break;
 			default:
 				$lesFlashInfo = $flashInfo->getData($id);
-				$smarty->assign('flashInfo',$lesFlashInfo);
-				$smarty->assign('action',$action);
-				$smarty->assign('mode',$mode);
-				$smarty->assign('etape','enregistrer');
+				$smarty->assign('flashInfo', $lesFlashInfo);
+				$smarty->assign('action', $action);
+				$smarty->assign('mode', $mode);
+				$smarty->assign('etape', 'enregistrer');
 				$smarty->assign('corpsPage','editFlashInfo');
 				break;
 			}
 		break;
 	}
-
-?>

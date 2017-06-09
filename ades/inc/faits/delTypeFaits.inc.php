@@ -1,0 +1,19 @@
+<?php
+
+session_start();
+
+require_once '../../../config.inc.php';
+// définition de la class Application
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
+$Application = new Application();
+
+$module = $Application->getModule(3);
+
+require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
+$Ades = new Ades();
+
+$type = isset($_POST['type']) ? $_POST['type'] : null;
+
+if ($type != null)
+    echo $Ades->delTypeFaits($type);
+    else echo 0;

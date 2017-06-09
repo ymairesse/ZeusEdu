@@ -43,6 +43,7 @@
         break;
     case 'enregistrer':
         $type = isset($_POST['type']) ? $_POST['type'] : null;
+
         $oldIdretenue = isset($_POST['oldIdretenue']) ? $_POST['oldIdretenue'] : null;
         // quand c'est une retenue et qu'il s'agit d'une édition, un problème peut se poser.
         // si la date de retenue n'est plus disponible (elle est cachée), on ne peut plus la sélectionner
@@ -50,6 +51,7 @@
         // si la date n'est pas modifiée, on remet gentiment "oldIdretenue" à la place de "idretenue"
         $idretenue = (isset($_POST['idretenue']) && $_POST['idretenue'] != '') ? $_POST['idretenue'] : $oldIdretenue;
         $prototype = $Ades->prototypeFait($type);
+
         // si c'est une retenue, on retrouve les détails (date, local,...) de celle-ci dans la BD
         $retenue = ($prototype['structure']['typeRetenue'] != 0) ? $Ades->detailsRetenue($idretenue) : null;
         $nb = $ficheDisc->enregistrerFaitDisc($_POST, $prototype, $retenue, $acronyme);

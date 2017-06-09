@@ -31,7 +31,7 @@ $listeRetenues = $ficheDisc->laListeRetenues();
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 $listeTypesFaits = $Ades->listeTypesFaits();
-// Application::afficher($listeTypesFaits);
+
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../templates';
@@ -50,7 +50,7 @@ $smarty->assign('listeFaits', $listeFaits);
 $smarty->assign('listeRetenues', $listeRetenues);
 $smarty->assign('listeTypesFaits', $listeTypesFaits);
 $descriptionChamps = $Ades->listeChamps();
-// Application::afficher($descriptionChamps);
+
 $smarty->assign('descriptionChamps', $descriptionChamps);
 define('PAGEWIDTH', 600);
 $echelles = $Ades->fieldWidth(PAGEWIDTH, $listeTypesFaits, $descriptionChamps);

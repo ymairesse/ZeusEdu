@@ -13,6 +13,10 @@ switch ($mode) {
         require_once 'inc/signature.inc.php';
         break;
 
+    case 'editTypesFaits':
+        require_once 'inc/faits/editeTypesFaits.inc.php';
+        break;
+
     case 'users':
         if ($userStatus == 'admin') {
             switch ($etape) {

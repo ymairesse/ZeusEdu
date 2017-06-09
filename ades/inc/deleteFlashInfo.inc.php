@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require_once("../../config.inc.php");
 // définition de la class Application
@@ -17,7 +18,7 @@ require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
 $smarty->template_dir = "../templates";
 $smarty->compile_dir = "../templates_c";
+
 $smarty->assign("nb", $nb);
 $smarty->assign("titre", $titre);
 $smarty->display("deleteFlashInfo.tpl");
-?>

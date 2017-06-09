@@ -56,26 +56,204 @@ class Ades
       *
       * @return array
       */
-     private function getListeTypesFaits()
-     {
+    public function getListeTypesFaits()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, ordre, champ ';
+        $sql .= ' FROM '.PFX.'adesTypesFaits AS adtf ';
+        $sql .= 'JOIN '.PFX.'adesChampsFaits AS adcf ON adtf.type = adcf.typeFait ';
+        $sql .= 'ORDER BY ordre ';
+
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $type = $ligne['type'];
+                $champ = $ligne['champ'];
+                if (!isset($liste[$type])) {
+                    unset($ligne['champ']);
+                    $liste[$type] = $ligne;
+                }
+                $liste[$type]['listeChamps'][] = $champ;
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+     /**
+      * renvoie la liste des types de faits inutilisés et qui peuvent donc éventuellement être supprimés
+      * de la base de données
+      *
+      * @param void
+      *
+      * @return array
+      */
+     public function getTypesFaitsInutilises(){
+         // liste des identifiants des types de faits
+         $listeTypes = array_keys($this->getListeTypesFaits());
+         // établir la liste des faits réellement utilisés, classés par identifiant du type
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT * FROM '.PFX.'adesTypesFaits ';
-         $sql .= 'ORDER BY ordre ';
-         $resultat = $connexion->query($sql);
-         $liste = array();
+         $sql = 'SELECT DISTINCT type ';
+         $sql .= 'FROM '.PFX.'adesFaits ';
+         $requete = $connexion->prepare($sql);
+         $resultat = $requete->execute();
+         $listeUtilises = array();
          if ($resultat) {
-             $resultat->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $resultat->fetch()) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
                  $type = $ligne['type'];
-                 $ligne['listeChamps'] = explode(',', $ligne['listeChamps']);
-                 $ligne['listeChamps'] = str_replace(' ', '', $ligne['listeChamps']);
-                 $liste[$type] = $ligne;
+                 $listeUtilises[$type] = $ligne['type'];
              }
          }
+
          Application::deconnexionPDO($connexion);
 
-         return $liste;
+         $listeInutiles = array_diff($listeTypes, $listeUtilises);
+         return $listeInutiles;
+
      }
+
+     /**
+      * suppression d'un type de fait de la table des types de faits
+      *
+      * @param $type : l'identifiant du type de faits
+      *
+      * @return int : nombre d'effacement (0 ou 1)
+      */
+     public function delTypeFaits($type){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'DELETE FROM '.PFX.'adesTypesFaits ';
+         $sql .= 'WHERE type=:type ';
+         $requete = $connexion->prepare($sql);
+         $requete->bindParam(':type', $type, PDO::PARAM_INT);
+         $resultat = $requete->execute();
+
+         // suppression des mentions dans la table des relations faits => champs
+         $sql = 'DELETE FROM '.PFX.'adesChampsFaits ';
+         $sql .= 'WHERE typeFait=:typeFait ';
+         $requete = $connexion->prepare($sql);
+         $requete->bindParam(':typeFait', $type, PDO::PARAM_INT);
+         $resultat = $requete->execute();
+
+         Application::deconnexionPDO($connexion);
+
+         return $resultat;
+     }
+
+     /**
+      * Enregistre les informations sur un type de fait à partir du formulaire d'édition
+      *
+      * @param array $form (formulaire templates/fait/formEditTypeFAit.tpl)
+      *
+      * @return array
+      */
+     public function saveTypeFait($form) {
+         $nb = $this->saveDataFait($form);
+         $nb = $this->saveChampsFait($form);
+
+         return $form;
+     }
+
+     /**
+      * Enregistre les informations sur un **nouveau** type de fait à partir du formulaire d'édition
+      *
+      * @param array $form (formulaire templates/fait/formEditTypeFAit.tpl)
+      *
+      * @return array $form (le formulaire en entrée)
+      */
+     public function saveNewTypeFait($form){
+         $typeRetenue = ($form['typeRetenue'] == -1) ? 1: 0;
+         if ($typeRetenue == 1)
+            $typeRetenue = $this->getNextTypeRetenue();
+            else $typeRetenue = Null;
+        $type = $this->getNextTypeFait();
+        $ordre = $this->getNextOrdreTypeFait();
+
+        $form['typeRetenue'] = $typeRetenue;
+        $form['type'] = $type;
+        $form['ordre'] = $ordre;
+
+        return $this->saveTypeFait($form);
+     }
+
+     /**
+      * Enregistre les informations "texte" sur un type de fait à partir du formulaire d'édition
+      *
+      * @param array : $form (formulaire templates/fait/formEditTypeFAit.tpl)
+      *
+      * @return int : nombre d'enregistrements (0 ou 1)
+      */
+    public function saveDataFait ($form) {
+        $type = $form['type'];
+        $titreFait = $form['titreFait'];
+        $color = $form['color'];
+        $background = $form['background'];
+        $ordre = $form['ordre'];
+        $typeRetenue = $form['typeRetenue'];
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'adesTypesFaits ';
+        $sql .= 'SET type=:type, titreFait=:titreFait, couleurFond=:background, couleurTexte=:color, ';
+        $sql .= 'typeRetenue=:typeRetenue, ordre=:ordre ';
+        $sql .= 'ON DUPLICATE KEY UPDATE ';
+        $sql .= 'titreFait=:titreFait, couleurFond=:background, couleurTexte=:color, ';
+        $sql .= 'typeRetenue=:typeRetenue, ordre=:ordre ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':type', $type, PDO::PARAM_INT);
+        $requete->bindParam(':titreFait', $titreFait, PDO::PARAM_STR, 25);
+        $requete->bindParam(':background', $background, PDO::PARAM_STR, 7);
+        $requete->bindParam(':color', $color, PDO::PARAM_STR, 7);
+        $requete->bindParam(':typeRetenue', $typeRetenue, PDO::PARAM_INT);
+        $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * Enregistre les différents champs associés à un fait disciplinaire à partir du formulaire d'édition
+     *
+     * @param array : $form (formulaire templates/fait/formEditTypeFAit.tpl)
+     *
+     * @return int : nombre d'enregistrements
+     */
+    public function saveChampsFait($form) {
+        $typeFait = $form['type'];
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'adesChampsFaits ';
+        $sql .= 'SET champ=:champ, typeFait=:typeFait ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':typeFait', $typeFait, PDO::PARAM_INT);
+        $listeChamps = $form['champs'];
+
+        $resultat = 0;
+        foreach ($listeChamps as $wtf => $unChamp) {
+            $requete->bindParam(':champ', $unChamp, PDO::PARAM_STR);
+            $resultat += $requete->execute();
+        }
+
+        $listeChampsString = "'".implode("','", $listeChamps)."'";
+        $sql = 'DELETE FROM '.PFX.'adesChampsFaits ';
+        $sql .= 'WHERE typeFait=:typeFait AND champ NOT IN ('.$listeChampsString.') ';
+
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':typeFait', $typeFait, PDO::PARAM_INT);
+
+        $resultat -= $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
 
     /**
      * renvoie la liste des types de faits existants.
@@ -117,7 +295,7 @@ class Ades
      *
      * @return array
      */
-    private function lireDescriptionChamps()
+    public function lireDescriptionChamps()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT * FROM '.PFX.'adesChamps ';
@@ -177,29 +355,123 @@ class Ades
      * renvoie la liste des champs pour décrire un fait disciplinaire.
      *
      * @param int $type
-     *                  #return array
+     *
+     * @return array
      */
-    public function structureFait($type)
+    public function getFaitByType($type)
     {
-        if (!isset($type)) {
-            die('no type');
-        }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, listeChamps ';
-        $sql .= 'FROM '.PFX.'adesTypesFaits ';
-        $sql .= "WHERE type='$type' ";
-        $resultat = $connexion->query($sql);
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $ligne = $resultat->fetch();
-            $ligne['listeChamps'] = str_replace(' ', '', $ligne['listeChamps']);
-            $ligne['listeChamps'] = explode(',', $ligne['listeChamps']);
-        } else {
-            $ligne = null;
-        }
-        Application::DeconnexionPDO($connexion);
+        $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, ordre, champ ';
+        $sql .= 'FROM '.PFX.'adesTypesFaits AS adtf ';
+        $sql .= 'JOIN '.PFX.'adesChampsFaits AS adcf ON adtf.type = adcf.typeFait ';
+        $sql .= 'WHERE type=:type ';
+        $requete = $connexion->prepare($sql);
 
-        return $ligne;
+        $requete->bindParam(':type', $type, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        $tableauFait = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $champ = $ligne['champ'];
+                if (!isset($tableauFait['listeChamps'])) {
+                    unset($ligne['champ']);
+                    $tableauFait = $ligne;
+                }
+                $tableauFait['listeChamps'][] = $champ;
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $tableauFait;
+    }
+
+    /**
+     * Création d'un nouveau type de fait disciplinaire à partir de rien
+     *
+     * @param bool $retenue : s'agit-il d'une retenue?
+     *
+     * @return array
+     */
+    public function createNewTypeFait ($retenue) {
+        $newFait = array(
+            'type' => Null,
+            'titreFait' => '',
+            'couleurFond' => Null,
+            'couleurTexte' => Null,
+            // ce sera une retenue?
+            'typeRetenue' => ($retenue == 1) ? -1 : Null,
+            'ordre' => Null,
+            'listeChamps' => array_keys($this->getChampsObligatoires($retenue))
+        );
+
+        return $newFait;
+    }
+
+    /**
+     * retourne la fait disciplinaire dont on donne l'ordre d'apparition dans la fiche
+     *
+     * @param int $ordre
+     *
+     * @return array
+     */
+    public function getFaitByOrdre($ordre){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, ordre, champ ';
+        $sql .= 'FROM '.PFX.'adesTypesFaits AS adtf ';
+        $sql .= 'JOIN '.PFX.'adesChampsFaits AS adcf ON adtf.type = adcf.typeFait ';
+        $sql .= 'WHERE ordre=:ordre ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        $tableauFait = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $champ = $ligne['champ'];
+                if (!isset($tableauFait['listeChamps'])) {
+                    unset($ligne['champ']);
+                    $tableauFait = $ligne;
+                }
+                $tableauFait['listeChamps'][] = $champ;
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $tableauFait;
+    }
+
+    /**
+     * échange l'ordre de deux types de faits disciplinaires fournis en paramètres
+     *
+     * @param array $fait1
+     * @param array $fait2
+     *
+     * @return void
+     */
+    public function echanger($fait1, $fait2) {
+        $ordre1 = $fait1['ordre']; $type1 = $fait1['type'];
+        $ordre2 = $fait2['ordre']; $type2 = $fait2['type'];
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'adesTypesFaits ';
+        $sql .= 'SET ordre=:ordre ';
+        $sql .= 'WHERE type=:type ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':ordre', $ordre1, PDO::PARAM_INT);
+        $requete->bindParam(':type', $type2, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        $requete->bindParam(':ordre', $ordre2, PDO::PARAM_INT);
+        $requete->bindParam(':type', $type1, PDO::PARAM_INT);
+        $resultat += $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
     }
 
     /**
@@ -215,13 +487,14 @@ class Ades
         if (!isset($type)) {
             die('no type');
         }
-        $structure = $this->structureFait($type);
+        $structure = $this->getFaitByType($type);
         $listeChamps = "'".implode("','", $structure['listeChamps'])."'";
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT champ, label, contextes, typeDate, typeDateRetenue, typeChamp, size, maxlength, colonnes,lignes, classCSS, autocomplete ';
+        $sql = 'SELECT champ, label, contextes, typeDate, typeChamp, size, maxlength, colonnes,lignes, classCSS ';
         $sql .= 'FROM '.PFX.'adesChamps ';
         $sql .= "WHERE champ IN ($listeChamps) ";
+
         $resultat = $connexion->query($sql);
         $prototype = array('structure' => $structure, 'champs' => array());
         if ($resultat) {
@@ -234,6 +507,127 @@ class Ades
         Application::DeconnexionPDO($connexion);
 
         return $prototype;
+    }
+
+    /**
+     * retourne la liste des champs obligatoires pour décrire un fait
+     * si $retenue = true => on ajoute les champs obligatoires pour la retenue
+     *
+     * @param int $retenue (le type de retenue ou 0 si pas une retenue)
+     *
+     * @return array
+     */
+    public function getChampsObligatoires ($retenue){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT champ, label, typeChamp ';
+        $sql .= 'FROM '.PFX.'adesChamps ';
+        $sql .= 'WHERE obligatoire = 1 ';
+        if ($retenue > 0)
+            $sql .= 'OR retenue = 1 ';
+
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $champ = $ligne['champ'];
+                $liste[$champ] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste des champs disponibles pour la description d'un fait
+     * si $retenue = 0, alors on ne sélectionne pas les champs "retenue"
+     */
+    public function getListeChamps($retenue){
+        $listeChamps = $this->listeChamps();
+        if ($retenue > 0)
+            return $listeChamps;
+            else {
+                foreach ($listeChamps as $champ => $dataChamp) {
+                    if ($dataChamp['retenue'] == 1)
+                        unset($listeChamps[$champ]);
+                }
+                return $listeChamps;
+            }
+        }
+
+    /**
+     * retourne la plus haute valeur de l'ordre d'un type de fait dans la fiche disciplinaire
+     *
+     * @param void
+     *
+     * @return int
+     */
+    public function getNextOrdreTypeFait() {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT MAX(ordre) AS max FROM '.PFX.'adesTypesFaits ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+        $max = null;
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $max = $ligne['max'] + 1;
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $max;
+    }
+
+    /**
+     * retourne le premier identifiant "typeFait" possible pour un nouveau fait disciplinaire
+     *
+     * @param void
+     *
+     * @return int
+     */
+    public function getNextTypeFait () {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT MAX(type) AS max FROM '.PFX.'adesTypesFaits ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+        $max = null;
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $max = $ligne['max'] + 1;
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $max;
+    }
+
+    /**
+     * retourne le premier identifiant "typeRetenue" possible pour un nouveau type de retenue
+     *
+     * @param void
+     *
+     * @return int
+     */
+    public function getNextTypeRetenue () {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT MAX(typeRetenue) AS max FROM '.PFX.'adesTypesFaits ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+        $max = null;
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $max = $ligne['max'] + 1;
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $max;
     }
 
     /**
@@ -313,6 +707,53 @@ class Ades
         Application::DeconnexionPDO($connexion);
 
         return $retenue;
+    }
+
+    /**
+     * renvoie la liste des idRetenues pour l'élève dont on fournit le matricule.
+     *
+     * @param int $matricule
+     *
+     * @return array
+     */
+    public function getListeRetenues($matricule)
+    {
+        // recherche de toutes les retenues dans la table des faits disciplinaires
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idretenue ';
+        $sql .= 'FROM '.PFX.'adesFaits ';
+        $sql .= "WHERE matricule = '$matricule' AND idretenue != '' ";
+        $sql .= 'ORDER BY ladate ';
+        $resultat = $connexion->query($sql);
+        $listeRetenues = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $idretenue = $ligne['idretenue'];
+                $listeRetenues[] = $idretenue;
+            }
+        }
+
+        // recherche des détails pratiques concernant ces retenues dans la table des retenues
+        $listeRetenuesString = implode(',', $listeRetenues);
+        $sql = 'SELECT type, idretenue, dateRetenue, heure, duree, local ';
+        $sql .= 'FROM '.PFX.'adesRetenues ';
+        $sql .= "WHERE idRetenue IN ($listeRetenuesString) ";
+        $sql .= 'ORDER BY type, dateRetenue, heure ';
+
+        $resultat = $connexion->query($sql);
+        $listeRetenues = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $idretenue = $ligne['idretenue'];
+                $ligne['dateRetenue'] = Application::datePHP($ligne['dateRetenue']);
+                $listeRetenues[$idretenue] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeRetenues;
     }
 
     /**
@@ -427,12 +868,16 @@ class Ades
         $sql .= 'sanction, nopv, qui, typeRetenue, titreFait ';
         $sql .= 'FROM '.PFX.'adesFaits ';
         $sql .= 'JOIN '.PFX.'adesTypesFaits	ON ('.PFX.'adesTypesFaits.type = '.PFX.'adesFaits.type) ';
-        $sql .= "WHERE idfait = '$idfait' ";
-        $resultat = $connexion->query($sql);
+        $sql .= 'WHERE idfait =:idfait ';
+
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':idfait', $idfait, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
         $infoFaits = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $infosFait = $resultat->fetchAll();
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $infosFait = $requete->fetchAll();
         }
         Application::DeconnexionPDO($connexion);
 
@@ -477,22 +922,41 @@ class Ades
      *
      * @return array
      */
+    // public function infosRetenueType($type)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, ordre, listeChamps ';
+    //     $sql .= 'FROM '.PFX.'adesTypesFaits ';
+    //     $sql .= "WHERE typeRetenue = '$type' ";
+    //     $info = null;
+    //     $resultat = $connexion->query($sql);
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         $infos = $resultat->fetch();
+    //     }
+    //     Application::DeconnexionPDO($connexion);
+    //
+    //     return $infos;
+    // }
     public function infosRetenueType($type)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, ordre, listeChamps ';
-        $sql .= 'FROM '.PFX.'adesTypesFaits ';
-        $sql .= "WHERE typeRetenue = '$type' ";
-        $info = null;
-        $resultat = $connexion->query($sql);
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $infos = $resultat->fetch();
-        }
-        Application::DeconnexionPDO($connexion);
+        {
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT type, titreFait, couleurFond, couleurTexte, typeRetenue, ordre ';
+            $sql .= 'FROM '.PFX.'adesTypesFaits ';
+            $sql .= 'WHERE typeRetenue =:type ';
+            $requete = $connexion->prepare($sql);
 
-        return $infos;
-    }
+            $requete->bindParam(':type', $type, PDO::PARAM_INT);
+            $info = array();
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $infos = $requete->fetch();
+            }
+            Application::DeconnexionPDO($connexion);
+
+            return $infos;
+        }
 
     public function utf8($argument)
     {
@@ -506,19 +970,56 @@ class Ades
      *
      * @return array
      */
+    // public function champsInContexte($contexte)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     // recherche la liste de tous les types de faits existants avec les champs qui les décrivent
+    //     $sql = 'SELECT type, listeChamps ';
+    //     $sql .= 'FROM '.PFX.'adesTypesFaits ';
+    //     $resultat = $connexion->query($sql);
+    //     $listeFaits = array();
+    //     if ($resultat) {
+    //         while ($ligne = $resultat->fetch()) {
+    //             $type = $ligne['type'];
+    //             $ligne['listeChamps'] = str_replace(' ', '', $ligne['listeChamps']);
+    //             $listeFaits[$type] = explode(',', $ligne['listeChamps']);
+    //         }
+    //     }
+    //     // recherche de tous les champs à exposer dans le contexte d'apparition
+    //     $sql = 'SELECT champ ';
+    //     $sql .= 'FROM '.PFX.'adesChamps ';
+    //     $sql .= "WHERE LOCATE('$contexte', contextes) > 0 ";
+    //     $resultat = $connexion->query($sql);
+    //     $listeChamps = array();
+    //     if ($resultat) {
+    //         while ($ligne = $resultat->fetch()) {
+    //             $listeChamps[] = $ligne['champ'];
+    //         }
+    //     }
+    //     // parcours de la liste des faits existants et de leur description
+    //     foreach ($listeFaits as $type => $lesChamps) {
+    //         // pour chaque fait, on ne conserve que les champs qui figurent dans la "liste des champs à exposer"
+    //         $listeFaits[$type] = array_intersect($listeFaits[$type], $listeChamps);
+    //     }
+    //     Application::DeconnexionPDO($connexion);
+    //
+    //     return $listeFaits;
+    // }
     public function champsInContexte($contexte)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // recherche la liste de tous les types de faits existants avec les champs qui les décrivent
-        $sql = 'SELECT type, listeChamps ';
-        $sql .= 'FROM '.PFX.'adesTypesFaits ';
-        $resultat = $connexion->query($sql);
+        $sql = 'SELECT type, champ ';
+        $sql .= 'FROM '.PFX.'adesTypesFaits AS adtf ';
+        $sql .= 'JOIN '.PFX.'adesChampsFaits AS adcf ON adtf.type = adcf.typeFait ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
         $listeFaits = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            while ($ligne = $requete->fetch()) {
                 $type = $ligne['type'];
-                $ligne['listeChamps'] = str_replace(' ', '', $ligne['listeChamps']);
-                $listeFaits[$type] = explode(',', $ligne['listeChamps']);
+                $listeFaits[$type][] = $ligne['champ'];
             }
         }
         // recherche de tous les champs à exposer dans le contexte d'apparition
@@ -541,7 +1042,6 @@ class Ades
 
         return $listeFaits;
     }
-
     /**
      * renvoie une table de correspondance entre les noms et les titres des champs à exposer.
      *
@@ -643,7 +1143,7 @@ class Ades
                 $ligne['ladate'] = Application::datePHP($ligne['ladate']);
                 if ($ligne['nom'] != null) {
                     if ($ligne['sexe'] == 'M') {
-                        $ligne['professeur'] = 'Mr '.$ligne['nom'];
+                        $ligne['professeur'] = 'M. '.$ligne['nom'];
                     } else {
                         $ligne['professeur'] = 'Mme '.$ligne['nom'];
                     }

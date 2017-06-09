@@ -3,7 +3,7 @@
 {assign var=contexte value='formulaire'}
 {assign var="tabIndex" value="1" scope="global"}
 
-		<h3 style="color:#{$prototype.structure.couleurTexte}; background-color:#{$prototype.structure.couleurFond}">{$prototype.structure.titreFait}</h3>
+		<h3 style="color:{$prototype.structure.couleurTexte}; background-color:{$prototype.structure.couleurFond}">{$prototype.structure.titreFait}</h3>
 
 		<form role="form" name="editFaitDisc" id="editFaitDisc" action="index.php" method="POST" class="form-vertical">
 

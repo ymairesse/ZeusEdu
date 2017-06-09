@@ -3,7 +3,7 @@
 <div class="btn-group hidden-print">
 	{foreach from=$listeTypesFaits item=unTypeFait}
 	<button class="btn newFait" type="button"
-		style="color:#{$unTypeFait.couleurTexte};background-color:#{$unTypeFait.couleurFond}"
+		style="color:{$unTypeFait.couleurTexte};background-color:{$unTypeFait.couleurFond}"
 		data-matricule="{$eleve.matricule}"
 		data-classe="{$eleve.classe}"
 		data-typefait="{$unTypeFait.type}">
@@ -64,7 +64,7 @@
 					{assign var=contexte value='tableau'}
 
 					{* on indique le titre de ce type de faits *}
-					<h3 style="clear:both;background-color: #{$descriptionTypeFait.couleurFond}; color: #{$descriptionTypeFait.couleurTexte}">
+					<h3 style="clear:both;background-color: {$descriptionTypeFait.couleurFond}; color: {$descriptionTypeFait.couleurTexte}">
 						<button type="button" class="btn btn-warning btn-xs openThis"><i class="fa fa-arrow-right"></i></button>
 							{$descriptionTypeFait.titreFait}
 							<span class="badge pull-right" style="background:red"> {$listeFaits.$typeFait|@count}</span>
@@ -76,7 +76,7 @@
 							<tr>
 								<th>&nbsp;</th>
 								{strip}
-								{if $descriptionTypeFait.imprimable == 1}
+								{if $descriptionTypeFait.typeRetenue != 0}
 									<th style="width:1em">&nbsp;</th>
 									<th style="width:1em">&nbsp;</th>
 								{/if}
@@ -105,7 +105,7 @@
 									{/if}
 								</td>
 
-								{if $descriptionTypeFait.imprimable == 1}
+								{if $descriptionTypeFait.typeRetenue != 0}
 								<td style="width:1em">
 									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
 									<a href="inc/retenues/printRetenue.php?idfait={$idfait}"

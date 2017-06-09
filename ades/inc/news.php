@@ -6,4 +6,3 @@ $flashInfo = new flashInfo();
 $appli = $Application->repertoireActuel();
 $smarty->assign('flashInfos', $flashInfo->listeFlashInfos ($appli));
 $smarty->assign('corpsPage', 'news');
-?>

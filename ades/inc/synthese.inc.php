@@ -1,6 +1,8 @@
 <?php
+
 $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
+$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $debut = isset($_POST['debut'])?$_POST['debut']:date('d/m/Y');
 $fin = isset($_POST['fin'])?$_POST['fin']:date('d/m/Y');
 
@@ -21,27 +23,33 @@ $smarty->assign('matricule',$matricule);
 $smarty->assign('debut', $debut);
 $smarty->assign('fin', $fin);
 
-if (isset($niveau)) {
+$listeEleves = Null;
+
+if ($niveau != Null) {
 	$sections = array();
-	$listeClasses = $Ecole->listeClassesNiveau($niveau,'groupe',$sections);
+	$listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', $sections);
 	$smarty->assign('listeClasses', $listeClasses);
+	$listeEleves = $Ecole->listeElevesNiveaux($niveau);
+	$smarty->assign('listeEleves', $listeEleves);
+	$groupe = 'niveau_'.$niveau;
 	}
 
-if (isset($classe)) {
-	$listeEleves = $Ecole->listeEleves($classe,'groupe');
+if ($classe != Null) {
+	$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 	$smarty->assign('listeEleves', $listeEleves);
+	$groupe = 'classe_'.$classe;
 	}
+
+if ($matricule != Null) {
+	$listeEleves = array($matricule => Eleve::staticGetDetailsEleve($matricule));
+	$smarty->assign('listeEleves', $listeEleves);
+	$groupe = 'eleve_'.$matricule;
+}
+
+$smarty->assign('listeEleves', $listeEleves);
 
 switch ($mode) {
 	case 'showFiches':
-		// élève isolé
-		if (isset($matricule) && $matricule != '')
-			$listeEleves = $matricule;
-			// une seule classe du niveau
-			else if (isset($classe) && $classe != '')
-					$listeEleves = $Ecole->listeEleves($classe,'groupe');
-					// tout le niveau
-					else $listeEleves = $Ecole->listeElevesNiveaux($niveau);
 		// pour chaque type de faits, voir quel champ doit être affiché dans le contexte "tableau"
 		$listeChamps = $Ades->champsInContexte('tableau');
 		$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin);
@@ -49,18 +57,13 @@ switch ($mode) {
 		$smarty->assign('corpsPage', 'synthese');
 		break;
 	case 'printFiches':
-		// génération du fichier PDF des fiches disciplinaires
-		$listeChamps = $Ades->champsInContexte('tableau');
+
+		if (isset($listeEleves)) {
+			// génération du fichier PDF des fiches disciplinaires
+			require_once 'inc/eleves/printFichesPDF.inc.php';
+		}
 		break;
 	case 'statistiques':
-		// élève isolé
-		if (isset($matricule) && $matricule != '')
-			$listeEleves = $matricule;
-			// une seule classe du niveau
-			else if (isset($classe) && $classe != '')
-					$listeEleves = $Ecole->listeEleves($classe,'groupe');
-					// tout le niveau
-					else $listeEleves = $Ecole->listeElevesNiveaux($niveau);
 		$statistiques = $Ades->statistiques($listeEleves, $debut, $fin);
 		$smarty->assign('statistiques', $statistiques);
 		$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());

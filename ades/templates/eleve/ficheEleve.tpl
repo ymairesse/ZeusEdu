@@ -1,6 +1,8 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
-{assign var=memo value=$memoEleve.proprio} {assign var=idProprio value=$memo|key} {assign var=leMemo value=$memo.$idProprio}
+{assign var=memo value=$memoEleve.proprio}
+{assign var=idProprio value=$memo|key}
+{assign var=leMemo value=$memo.$idProprio}
 <div class="container">
 
 	<div class="alert alert-danger alert-dismissible hidden" role="alert" id="mailKO">

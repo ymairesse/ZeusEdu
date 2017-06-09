@@ -70,7 +70,9 @@ $(document).ready (function() {
 		trigger:'hover'
 		});
 
-	$("input").not(".autocomplete").attr("autocomplete","off");
+	$("input").tabEnter();
+
+	$("input").attr("autocomplete","off");
 
 })
 
