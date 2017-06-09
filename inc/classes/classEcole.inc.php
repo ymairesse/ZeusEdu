@@ -476,7 +476,7 @@ class ecole
     public function listeElevesClasse($groupe, $partis = false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, nom, prenom, section ';
+        $sql = 'SELECT matricule, nom, prenom, section, groupe, classe ';
         $sql .= 'FROM '.PFX.'eleves ';
         $sql .= "WHERE groupe = '$groupe' ";
         if ($partis == false) {
@@ -490,6 +490,7 @@ class ecole
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
+                $ligne['photo'] = self::photo($matricule);
                 $liste[$matricule] = $ligne;
             }
         }
@@ -637,6 +638,7 @@ class ecole
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
+                $ligne['photo'] = self::photo($matricule);
                 $listeEleves[$matricule] = $ligne;
             }
         }
