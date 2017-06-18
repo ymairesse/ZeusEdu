@@ -3,7 +3,6 @@
 require INSTALL_DIR.'/fpdf17/fpdf.php';
 require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
 require INSTALL_DIR.'/inc/classes/class.pdf.php';
-// require(INSTALL_DIR."/inc/classes/html2pdf.php");
 
 class Bulletin
 {
@@ -2977,37 +2976,84 @@ class Bulletin
     }
 
     /**
-     * retourne une liste des fiches éducs pour une liste d'élèves donnés et pour un bulletin donné.
+     * retourne la liste des commentaires "educ" par bulletin et par educ
+     * pour la liste d'élèves donnée
      *
-     * @param $listeEleves, $bulletin
-     *
-     * @return array
+     * @param  array $listeEleves : liste des élèves concernés
+     * @param int $bulletin : numéro du bulletin (éventuellement)
+     * @return array liste des commentaires
      */
-    public function listeFichesEduc($listeEleves, $bulletin)
-    {
+    public function listeCommentairesEduc($listeEleves, $bulletin = Null) {
         if (is_array($listeEleves)) {
             $listeElevesString = implode(',', array_keys($listeEleves));
         } else {
             $listeElevesString = $listeEleves;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, fiche ';
-        $sql .= 'FROM '.PFX.'bullEducs ';
-        $sql .= "WHERE matricule in ($listeElevesString) ";
+        $sql = 'SELECT matricule, bulletin, fiche, commentaire, dbe.acronyme, nom, prenom, sexe, titre ';
+        $sql .= 'FROM '.PFX.'bullEducs AS dbe ';
+        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dbe.acronyme ';
+        $sql .= 'WHERE matricule in ('.$listeElevesString.') ';
+        if ($bulletin != Null)
+            $sql .= 'AND bulletin=:bulletin ';
 
-        $resultat = $connexion->query($sql);
-        $listeEducs = array();
+        $requete = $connexion->prepare($sql);
+        if ($bulletin != Null)
+            $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $bulletin = $ligne['bulletin'];
+                $acronyme = $ligne['acronyme'];
+                $commentaire = trim($ligne['commentaire']);
+                if ($commentaire != '')
+                    $liste[$matricule][$bulletin][$acronyme] = $ligne;
+            }
         }
-        while ($ligne = $resultat->fetch()) {
-            $matricule = $ligne['matricule'];
-            $listeEducs[$matricule] = $ligne['fiche'];
-        }
+
         Application::DeconnexionPDO($connexion);
 
-        return $listeEducs;
+        return $liste;
     }
+
+    /**
+     * Enregistrement des commentaires Educ provenant du formulaire
+     * @param  array $post contenu du formulaire
+     * @param string $acronyme : propriétaire de la note
+     *
+     * @return int nombre d'enregistrements
+     */
+     public function saveCommentEduc($post, $acronyme) {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'INSERT INTO '.PFX.'bullEducs ';
+         $sql .= 'SET acronyme=:acronyme, bulletin=:bulletin, matricule=:matricule, commentaire=:commentaire ';
+         $sql .= 'ON DUPLICATE KEY UPDATE commentaire=:commentaire ';
+
+         $requete = $connexion->prepare($sql);
+         $data = array(
+             ':bulletin' => $post['bulletin'],
+             ':acronyme' => $acronyme
+         );
+         $n = 0;
+         foreach ($post as $field => $value) {
+             if (substr($field, 0,5) == 'note_') {
+                 $matricule = explode('_', $field);
+                 $matricule = $matricule[1];
+                 $data['matricule'] = $matricule;
+                 $data['commentaire'] = $value;
+                 $n += $requete->execute($data);
+             }
+         }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $n;
+     }
+
 
     /**
      * retourne un tableau des 4 attitudes pour tous les élèves de la liste
@@ -4053,7 +4099,6 @@ class Bulletin
      */
     public function listePoidsCompetences($coursGrp, $listeCompetences, $nbPeriodes)
     {
-        // Application::afficher($listeCompetences, true);
         // préparer un tableau complet mais vide
         $listePoids = array();
         foreach ($listeCompetences as $idComp => $data) {
@@ -5480,7 +5525,9 @@ class Bulletin
             $cotesPonderees = $this->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
             $commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
             $mention = $this->listeMentions($matricule, $bulletin, $annee);
-            $ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
+
+            $ficheEduc = $this->listeCommentairesEduc($matricule, $bulletin);
+
             $remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
             $tableauAttitudes = $degre == 1 ? $this->tableauxAttitudes($matricule, $bulletin) : null;
             $noticeDirection = $this->noteDirection($annee, $bulletin);
@@ -5556,7 +5603,7 @@ class Bulletin
                 $cotesPonderees = self::listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
                 $commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
                 $mention = $this->listeMentions($matricule, $bulletin, $annee);
-                $ficheEduc = $this->listeFichesEduc($matricule, $bulletin);
+                $ficheEduc = $this->listeCommentairesEduc($matricule, $bulletin);
                 $remarqueTitulaire = $this->remarqueTitu($matricule, $bulletin);
                 // tableau des attitudes seulement au premier degré.
                 $tableauAttitudes = $degre == 1 ? $this->tableauxAttitudes($matricule, $bulletin) : null;
@@ -5577,21 +5624,27 @@ class Bulletin
                 unset($eleve);
             }
         }
+        $ds = DIRECTORY_SEPARATOR;
         // création éventuelle du répertoire au nom de l'utlilisateur
-        if (!(file_exists("pdf/$acronyme"))) {
-            mkdir("pdf/$acronyme");
+        if (!(file_exists(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin/'))) {
+            mkdir(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin', 0700, true);
         }
+
         // s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
-        $pdf->Output("pdf/$acronyme/$classe-$bulletin.pdf");
+        $pdf->Output(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin'.$ds.$classe.'-'.$bulletin.'.pdf');
         if ($parNiveau == false) {
-            return "pdf/$acronyme/$classe-$bulletin.pdf";
+            return 'bulletin'.$ds.$classe.'-'.$bulletin.'.pdf';
         } else {
             return;
         }
     }
 
-    // --------------------------------------------------------------------
-
+    /**
+     * raccourci pour utf8_decode
+     * @param  string $argument
+     *
+     * @return string : la même chaîne décodée de l'UTF8
+     */
     private function utf8($argument)
     {
         return utf8_decode($argument);
@@ -5888,25 +5941,7 @@ class Bulletin
             $pdf->MultiCell(194, 5, 'Informations de la direction et/ou du coordinateur', 1, 'C', true);
             $pdf->SetX(5);
             $pdf->SetFont('Arial', '', 9);
-            // http://php.net/manual/fr/function.html-entity-decode.php
-            // conversion des codes du type &#39; -apostrophe- produits par ckEditor
-            // $nota = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $nota);
-
-            // ajustement si la $nota contient du HTML (balise <p>)
-            //$test = strpos($nota,'<');
-            //// afficher($test);
-            //if ($test === Null) {
-            //	$pdf->SetY($pdf->GetY()+3);
-            //	}
-            //	else {
-            //		// $pdf->SetY($pdf->GetY()-2);
-            //		// var_dump($nota);
-            //		}
-
-            // $pdf->SetY($pdf->GetY()-2);
-            // $nota = $pdf->WriteHTML($nota);
             $pdf->MultiCell(194, 4, $nota, 1);
-
             $pdf->Ln();
         }
     }
@@ -5923,18 +5958,6 @@ class Bulletin
         $pdf->MultiCell(194, 5, 'Avis du titulaire ou du Conseil de Classe', 1, 'C', 1);
         $pdf->SetX(5);
         $pdf->SetFont('Arial', '', 9);
-
-        // http://php.net/manual/fr/function.html-entity-decode.php
-        // $remarqueTitulaire = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $remarqueTitulaire);
-
-        // ajustement si la $remarqueTitulaire contient du HTML (balise <p>)
-        //$test = strpos($remarqueTitulaire,'<p');
-        //if ($test === Null)
-        //	$pdf->SetY($pdf->GetY()+3);
-        //	else $pdf->SetY($pdf->GetY()-2);
-
-        // $pdf->WriteHTML($remarqueTitulaire);
-
         $pdf->MultiCell(194, 4, $remarqueTitulaire, 1);
         $pdf->Ln();
     }
@@ -5959,7 +5982,13 @@ class Bulletin
         $pdf->setXY(91, $y);
         $pdf->MultiCell(0, 4, $commentaire, 1, 'L', false);
     }
-    // -------------------------------------------------------------------
+
+    /**
+     * génération de l'emplacement pour les signatures
+     * @param  obj $pdf objet PDF en cours
+     *
+     * @return void
+     */
     public function signatures($pdf)
     {
         $pdf->SetLineWidth(0.2);
@@ -5977,21 +6006,79 @@ class Bulletin
         $pdf->Ln();
     }
 
-    // -------------------------------------------------------------------
-    public function educPDF($pdf, $rubriques)
+    /**
+     * Génération de la partie "educs" du bulletin -> PDF
+     * @param  obj $pdf objet PDF en cours
+     * @param  array $remarques remarques des éducs à imprimer
+     *
+     * @return void
+     */
+    public function educPDF($pdf, $remarques)
     {
-        $ficheDisc = $rubriques['fiche'];
-        if ($ficheDisc) {
+        $pdf->SetLineWidth(0.2);
+        $x = 10;
+        $y = $pdf->GetY();
+        $pdf->SetXY($x, $y);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->MultiCell(0, 5, $this->utf8('Remarques des éducateurs'), 1, 'C', true);
+        $x = 10;
+        $y = $pdf->GetY()+3;
+        $fiche = false;
+        foreach ($remarques AS $acronyme => $dataEduc) {
+            $commentaire = $this->corrigeWord($dataEduc['commentaire']);
+            $commentaire = $this->utf8(html_entity_decode($commentaire));
+            $pdf->SetX($x);
+            $pdf->SetFont('Arial', '', 8);
+            $pdf->MultiCell(0, 4, $commentaire, 1, 'L');
+            $y = $pdf->GetY();
+            $nom = $this->utf8($dataEduc['nom']);
+            $prenom = $this->utf8($dataEduc['prenom']);
+            $initiale = substr($prenom, 0, 1);
+            $signature = html_entity_decode(sprintf('%s. %s', $initiale, $nom));
+
+            if ($dataEduc['titre'] != '')
+                $signature .= sprintf( ' (%s)', $this->utf8(html_entity_decode($dataEduc['titre'])));
+            $pdf->SetFont('Arial', '', 6);
+            $pdf->MultiCell(0, 4, $signature, 0, 'R', false);
+            $pdf->SetY($y+5);
+            // un éduc a-t-il demandé la fiche disciplinaire?
+            if (($dataEduc['fiche'] == 1) && ($fiche == false))
+                $fiche = true;
+        }
+        if ($fiche === true) {
             $pdf->SetLineWidth(0.2);
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->SetX(5);
-            $pdf->MultiCell(194, 5, $this->utf8('Note des éducateurs'), 1, 'C', true);
             $pdf->SetX(5);
             $pdf->SetFont('Arial', '', 9);
             $pdf->MultiCell(194, 4, $this->utf8('Feuille de comportements jointe au bulletin; à signer par les parents.'), 1, 'L');
             $pdf->Ln();
         }
     }
+
+    // /**
+    //  * Génération de la partie "educs" du bulletin -> écran
+    //  * @param  obj $pdf objet PDF en cours
+    //  * @param  array $rubriques informations à imprimer
+    //  *
+    //  * @return void
+    //  */
+    // public function educEcran ($remarques) {
+    //     $fiche = false;
+    //     $infos = array();
+    //     foreach ($remarques AS $acronyme => $dataEduc) {
+    //         $infos[$acronyme]['commentaire'] = $dataEduc['commentaire'];
+    //         $nom = $dataEduc['nom'];
+    //         $prenom = $dataEduc['prenom'];
+    //         $initiale = substr($prenom, 0, 1);
+    //         $infos[$acronyme]['signature'] = html_entity_decode(sprintf('%s. %s', $initiale, $nom));
+    //         if ($dataEduc['titre'] != '')
+    //             $infos[$acronyme]['signature'] .= sprintf( ' (%s)', html_entity_decode($dataEduc['titre']));
+    //         // un éduc a-t-il demandé la fiche disciplinaire?
+    //         if (($dataEduc['fiche'] == 1) && ($fiche == false))
+    //             $fiche = true;
+    //     }
+    //
+    //     return array($infos, $fiche);
+    // }
 
     // -------------------------------------------------------------------
     public function ecrireCotesPDF($pdf, $cotes, $listeCompetences)
@@ -6046,19 +6133,60 @@ class Bulletin
         }
     }
 
-    // -------------------------------------------------------------------
+    /**
+     * compression de tous les fichiers bulletin d'un niveau.
+     *
+     * @param $dir : répertoire où se trouvent les fichiers
+     * @param $bulletin : numéro du bulletin concerné
+     * @param $listeClasses : liste des classes à ce niveu d'études
+     */
+    public function zipFilesNiveau($dir, $bulletin, $listeClasses)
+    {
+        $memDir = getcwd();
+        $niveau = substr($listeClasses[0], 0, 1);
+        $zip = new ZipArchive();
+        chdir ($dir);
+        if ($zip->open("niveau_$niveau-Bulletin_$bulletin.zip", ZIPARCHIVE::CREATE) !== true) {
+            exit("Impossible d'ouvrir <niveau_$niveau-Bulletin--_$bulletin.zip>\n");
+        }
+
+        foreach ($listeClasses as $uneClasse) {
+            $zip->addFile("$uneClasse-$bulletin.pdf");
+        }
+        $zip->close();
+        chdir($memDir);
+        return "bulletin/niveau_$niveau-Bulletin_$bulletin.zip";
+    }
+
+    /**
+     * écrire en noir, dans le PDF
+     * @param  obj $pdf Objet PDF en cours
+     * @return void()
+     */
     public function noir($pdf)
     {
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFont('Arial');
     }
-    // -------------------------------------------------------------------
+
+    /**
+     * écrire en rouge, dans le PDF
+     * @param  obj $pdf Objet PDF en cours
+     * @return void()
+     */
     public function rouge($pdf)
     {
         $pdf->SetTextColor(217, 3, 3);
         $pdf->SetFont('Arial', 'BU');
     }
 
+    /**
+     * détermine si une cote est un échec (< 50%)
+     * @param  floate $cote cote
+     * @param  float $max  maximum pour l'évaluation
+     *
+     * @return bool true si échec
+     */
     public function echec($cote, $max)
     {
         if (($max > 0) && (is_numeric($cote))) {
@@ -6068,6 +6196,13 @@ class Bulletin
         }
     }
 
+    /**
+     * crée la numérotation des pages dans l'objet PDF passé
+     * @param  objet PDF $pdf  l'objet PDF existant
+     * @param  int $page numéro de la page
+     *
+     * @return void
+     */
     public function piedPage($pdf, $page)
     {
         $pdf->SetXY(180, 270);
@@ -6075,6 +6210,16 @@ class Bulletin
         $pdf->MultiCell(20, 5, "page $page / 2", 0, 'R', 0);
     }
 
+    /**
+     * Créer une nouvelle page en gérant le pied de page
+     * @param  object $pdf        Objet PDF courant
+     * @param  array $infoPerso   description de l'élève
+     * @param  string $titulaires titulaire de l'élève
+     * @param  int $bulletin   numéro du bulletin en cours
+     * @param  int $page       numéro de la page
+     *
+     * @return void (la page m)
+     */
     public function newPage($pdf, $infoPerso, $titulaires, $bulletin, $page)
     {
         $this->piedPage($pdf, $page);
@@ -6126,8 +6271,8 @@ class Bulletin
         foreach ($listeCoursEleve as $coursGrp => $dataCours) {
             $debutX = $pdf->GetX();
             $debutY = $pdf->GetY();
-            // s'il y a des cotes pour ce cours
 
+            // s'il y a des cotes pour ce cours
             if (isset($detailCotes[$matricule][$coursGrp])) {
                 $this->situationPrecedentePDF($pdf, $sitPrec[$matricule][$coursGrp], $bulletin, $degre);
                 $this->entetesColonnesPDF($pdf, $cotesPonderees[$matricule][$coursGrp]);
@@ -6194,6 +6339,7 @@ class Bulletin
         if (isset($ficheEduc[$matricule][$bulletin])) {
             $this->educPDF($pdf, $ficheEduc[$matricule][$bulletin]);
         }
+
         if (isset($noticeDirection)) {
             $this->notaBulletin($pdf, $noticeDirection);
         }
@@ -6741,7 +6887,7 @@ class Bulletin
      * @param array $listeSituations : la liste de situations de délibé pour chaque cours
      * @param int   $matricule       : le matricule de l'élève
      *
-     * @return $listeSituations
+     * @return array $listeSituations
      */
     public function eleveSitDelibeExternes($matricule, $listeSituations)
     {
@@ -6783,7 +6929,8 @@ class Bulletin
     }
 
     /**
-     * 	retourne la liste des coursGrp pour lesquels une épreuve externe est définie dans la table correspondante et pour le niveau donné.
+     * 	retourne la liste des coursGrp pour lesquels une épreuve externe est définie
+     * 	dans la table correspondante et pour le niveau donné.
      *
      * 	@param $niveau
      *
@@ -6826,58 +6973,6 @@ class Bulletin
 
         return $liste;
     }
-
-     /**
-      * retourne les résultats des épreuves externes dans les branches indiquées.
-      *
-      * @param array $listeBranches
-      *
-      * @return array
-      */
-    // public function cotesEprExternes()
-    // {
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //     $sql = "SELECT de.matricule, nom, prenom, classe, SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1) AS cours, coteExterne ";
-    //     $sql .= 'FROM '.PFX.'eleves AS de ';
-    //     $sql .= 'LEFT JOIN '.PFX.'bullEprExterne AS ex ON (ex.matricule = de.matricule) ';
-    //     $sql .= "WHERE SUBSTR(classe,1,1) = '2' AND classe != '2D' ";
-    //     $sql .= 'ORDER BY groupe, nom, prenom, cours ';
-    //     $resultat = $connexion->query($sql);
-    //     $liste = array();
-    //     if ($resultat) {
-    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
-    //         while ($ligne = $resultat->fetch()) {
-    //             $matricule = $ligne['matricule'];
-    //             if (!isset($liste[$matricule])) {
-    //                 $liste[$matricule]['matricule'] = $ligne['matricule'];
-    //                 $liste[$matricule]['nom'] = $ligne['nom'];
-    //                 $liste[$matricule]['prenom'] = $ligne['prenom'];
-    //                 $liste[$matricule]['classe'] = $ligne['classe'];
-    //             }
-    //             $cours = $ligne['cours'];
-    //             $liste[$matricule]['cotes'][] = $ligne['coteExterne'];
-    //         }
-    //     }
-    //     Application::DeconnexionPDO($connexion);
-    //
-    //     $texte = '"Matricule", "Classe","Nom","Prénom","coteFR","coteMATH","coteNL"'.chr(10);
-    //     foreach ($liste as $matricule => $data) {
-    //         $classe = $data['classe'];
-    //         $nom = $data['nom'];
-    //         $prenom = $data['prenom'];
-    //         $cote0 = $data['cotes'][0];
-    //         $cote1 = $data['cotes'][1];
-    //         $cote2 = $data['cotes'][2];
-    //         $texte .= "\"$matricule\", \"$classe\", \"$nom\", \"$prenom\", \"$cote0\",\"$cote1\", \"$cote2\"".chr(10);
-    //     }
-    //     if (!($fp = fopen('eprExternes.csv', 'w'))) {
-    //         die("erreur à l'ouverture du fichier");
-    //     }
-    //     fwrite($fp, $texte);
-    //     fclose($fp);
-    //
-    //     return $liste;
-    // }
 
      /**
       * enregistrement des noms attribués aux cours en provenance du formulaire ad hoc pour l'utilisateur actuel $acronyme.
@@ -6999,50 +7094,6 @@ class Bulletin
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
-    }
-
-   public function decoder()
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, remarque FROM didac_bullTitus WHERE bulletin = 1 ';
-        $resultat = $connexion->query($sql);
-        $tableau = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $remarque = $ligne['remarque'];
-                $remarque = self::utf8($remarque);
-                $matricule = $ligne['matricule'];
-                $tableau[$matricule] = $remarque;
-            }
-        }
-
-        $sql = "UPDATE didac_bullTitus SET remarque2=:remarque WHERE matricule=:matricule AND bulletin='1' ";
-        $requete = $connexion->prepare($sql);
-        foreach ($tableau as $matricule => $remarque) {
-            $remarque = html_entity_decode($remarque);
-            $remarque = str_replace('<h2>', '', $remarque);
-            $remarque = str_replace('</h2>', '', $remarque);
-            $remarque = str_replace('<p>', ' ', $remarque);
-            $remarque = str_replace('</p>', '\n', $remarque);
-            $remarque = str_replace('&#39;', '\'', $remarque);
-
-            $data = array(':remarque' => $remarque, ':matricule' => $matricule);
-            $resultat = $requete->execute($data);
-
-            // $resulat = $connexion->exec($sql);
-
-            // $sql = "UPDATE didac_bullTitus SET remarque2 = REPLACE(remarque2, '&#39;', '\'')";
-            // $resulat = $connexion->exec($sql);
-
-            //$sql = "UPDATE didac_bullTitus SET remarque2 = REPLACE(remarque2, '&#39;', '\'')";
-            // $resulat = $connexion->exec($sql);
-        }
-
-        Application::DeconnexionPDO($connexion);
-        die();
-
-        return $tableau;
     }
 
 }
