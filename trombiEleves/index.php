@@ -1,13 +1,18 @@
 <?php
+
 require_once("../config.inc.php");
 include(INSTALL_DIR.'/inc/entetes.inc.php');
 
 // ----------------------------------------------------------------------------
 //
 
-$classe = isset($_REQUEST['classe'])?$_REQUEST['classe']:Null;
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
-$cours = isset($_REQUEST['cours'])?$_REQUEST['cours']:Null;
+$unAn = time() + 365 * 24 * 3600;
+$classe = Application::postOrCookie('classe', $unAn);
+$matricule = isset($_GET['matricule']) ? $_GET['matricule'] : Null;
+if ($matricule == Null)
+    $matricule = Application::postOrCookie('matricule', $unAn);
+
+$cours = Application::postOrCookie('cours', $unAn);
 
 if ($classe != Null) {
     $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
@@ -58,7 +63,7 @@ switch ($action) {
 		}
 		break;
     default:
-		$smarty->assign('action','parClasses');
+		$smarty->assign('action','parEleve');
         $smarty->assign('nbEleves', $Ecole->nbEleves());
         $smarty->assign('nbClasses', $Ecole->nbClasses());
         $smarty->assign('statAccueil', $Ecole->anniversaires());
@@ -73,10 +78,12 @@ if (isset($matricule) && (isset($listeElevesClasse))) {
     $prevNext = $Ecole->prevNext($matricule, $listeElevesClasse);
     $smarty->assign('prevNext', $prevNext);
     }
+$smarty->assign('classe', $classe);
 
 $smarty->assign('selecteur','selecteurs/selectClasseEleve');
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
 $smarty->assign('lesCours', $user->listeCoursProf());
+
 //
 // ----------------------------------------------------------------------------
 $smarty->assign('executionTime', round($chrono->stop(),6));
