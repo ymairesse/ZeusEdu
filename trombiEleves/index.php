@@ -11,8 +11,9 @@ $classe = Application::postOrCookie('classe', $unAn);
 $matricule = isset($_GET['matricule']) ? $_GET['matricule'] : Null;
 if ($matricule == Null)
     $matricule = Application::postOrCookie('matricule', $unAn);
-
-$cours = Application::postOrCookie('cours', $unAn);
+$cours = isset($_GET['cours']) ? $_GET['cours'] : Null;
+if ($cours == Null)
+    $cours = Application::postOrCookie('cours', $unAn);
 
 if ($classe != Null) {
     $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
@@ -37,6 +38,7 @@ switch ($action) {
     case 'parCours':
         if ($cours != Null) {
 			$listeElevesCours = $Ecole->listeElevesCours($cours);
+
 			$fichierPDF = pagePDF($listeElevesCours, $cours);
 			$fichierCSV = fichierCSV($listeElevesCours, $cours);
 
