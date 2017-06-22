@@ -36,8 +36,8 @@
 		{/if}
 
 		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
-		<input type="hidden" name="action" id="action" value="{$action}">
-		<input type="hidden" name="mode" value="{$mode|default:Null}">
+		<input type="hidden" placeholder="action" name="action" id="action" value="{$action}">
+		<input type="hidden" placeholder="mode" name="mode" value="{$mode|default:Null}">
 
 		<input type="hidden" name="etape" value="showEleve">
 		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
@@ -97,14 +97,15 @@ $(document).ready (function() {
 		$('#formSelecteur').submit();
 	})
 
-	$('#nom').keydown(function(){
-		$("#action").val('parEleve');
-		$('#matricule').val('');
-		$('#selectEleve').fadeOut().val('');
-		$('#choixEleve').html('');
-		$('#selectClasse').val('');
-		$('#prev, #next').fadeOut();
-		$('#matrPrev, #matrNext').val('');
+	$('#nom').keydown(function(e){
+		if (e.which >= 65) {
+			$('#matricule').val('');
+			$('#selectEleve').fadeOut().val('');
+			$('#choixEleve').html('');
+			$('#selectClasse').val('');
+			$('#prev, #next').fadeOut();
+			$('#matrPrev, #matrNext').val('');
+		}
 		})
 
 	$("#nom").typeahead({
@@ -113,7 +114,7 @@ $(document).ready (function() {
 			$.ajax({
 				url: 'inc/searchMatricule.php',
 				type: 'POST',
-				data: 'query=' + item,
+				data: 'nomPrenomClasse=' + item,
 				dataType: 'text',
 				async: true,
 				success: function(data){
