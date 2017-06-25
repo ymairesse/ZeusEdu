@@ -1,24 +1,13 @@
 <?php
-$unAn = time() + 365*24*3600;
+
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
 
-if (isset($_POST['classe'])) {
-	$classe = $_POST['classe'];
-	setcookie('classe',$classe,$unAn, null, null, false, true);
-	}
-	else if (isset($_COOKIE['classe']))
-			$classe = $_COOKIE['classe'];
-			else $classe = Null;
+$unAn = time() + 365 * 24 * 3600;
+$classe = Application::postOrCookie('classe', $unAn);
 $smarty->assign('classe', $classe);
 
-if (isset($_POST['matricule'])) {
-	$matricule = $_POST['matricule'];
-	setcookie('matricule',$matricule,$unAn, null, null, false, true);
-	}
-	else if (isset($_COOKIE['matricule']))
-			$matricule = $_COOKIE['matricule'];
-			else $matricule = Null;
+$matricule = Application::postOrCookie('matricule', $unAn);
 $smarty->assign('matricule',$matricule);
 
 switch ($mode) {
@@ -58,7 +47,10 @@ switch ($mode) {
 
 				$commentairesCotes = $Bulletin->listeCommentairesTousCours($matricule, $bulletin);
 				$mentions = $Bulletin->listeMentions($matricule, $bulletin);
-				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);
+
+				$commentairesEducs = $Bulletin->listeCommentairesEduc($matricule, $bulletin);
+				$commentairesEducs = isset($commentairesEducs[$matricule][$bulletin]) ? $commentairesEducs[$matricule][$bulletin] : Null;
+
 				$remarqueTitulaire = $Bulletin->remarqueTitu($matricule, $bulletin);
 				if ($remarqueTitulaire != Null)
 					$remarqueTitulaire = $remarqueTitulaire[$matricule][$bulletin];
@@ -78,12 +70,12 @@ switch ($mode) {
 				$smarty->assign('cotesPonderees', $cotesPonderees);
 				$smarty->assign('commentaires', $commentairesCotes);
 				$smarty->assign('attitudes', $tableauAttitudes);
-				$smarty->assign('ficheEduc', $ficheEduc);
+				$smarty->assign('commentairesEducs', $commentairesEducs);
 				$smarty->assign('remTitu', $remarqueTitulaire);
 				$smarty->assign('mention',$mentions);
 				$smarty->assign('noticeDirection', $noticeDirection);
 			}
-			$smarty->assign('corpsPage', 'showEleve');
+			$smarty->assign('corpsPage', 'bulletinEcran');
 		}
 		break;
 	default: die ('missing mode');
