@@ -4,20 +4,10 @@ $unAn = time() + 365 * 24 * 3600;
 $bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : PERIODEENCOURS;
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 
-if (isset($_POST['classe'])) {
-    $classe = $_POST['classe'];
-    setcookie('classe', $classe, $unAn, null, null, false, true);
-} else {
-        $classe = isset($_COOKIE['classe']) ? $_COOKIE['classe'] : null;
-    }
+$classe = Application::postOrCookie('classe', $unAn);
 $smarty->assign('classe', $classe);
 
-if (isset($_POST['matricule'])) {
-    $matricule = $_POST['matricule'];
-    setcookie('matricule', $matricule, $unAn, null, null, false, true);
-} else {
-        $matricule = isset($_COOKIE['matricule']) ? $_COOKIE['matricule'] : null;
-    }
+$matricule = Application::postOrCookie('matricule', $unAn);
 $smarty->assign('matricule', $matricule);
 
 $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
