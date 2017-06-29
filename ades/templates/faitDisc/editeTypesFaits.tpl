@@ -83,6 +83,7 @@
 
 
 <script type="text/javascript">
+
     $(document).ready(function() {
 
         $(".btn-newType").click(function() {
@@ -159,10 +160,8 @@
                     type: type
                 },
                 function(resultat) {
-                    if (resultat == 1) {
-                        $("#tableauFaits").find('[data-type="' + type + '"]').closest('tr').remove();
-                        $("#modalDelFait").modal('hide');
-                    }
+                    $("#tableauFaits").html(resultat);
+                    $("#modalDelFait").modal('hide');
                 })
         })
 

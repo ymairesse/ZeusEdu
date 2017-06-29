@@ -14,6 +14,24 @@ $Ades = new Ades();
 
 $type = isset($_POST['type']) ? $_POST['type'] : null;
 
-if ($type != null)
-    echo $Ades->delTypeFaits($type);
-    else echo 0;
+if ($type != null) {
+    // suppression effective du fait de ce type
+    $Ades->delTypeFaits($type);
+    // réindexation des ordres par pas de 1 (pour éviter les trous)
+    $Ades->reIndexTypesFAits();
+
+    require_once INSTALL_DIR."/smarty/Smarty.class.php";
+    $smarty = new Smarty();
+    $smarty->template_dir = "../../templates";
+    $smarty->compile_dir = "../../templates_c";
+
+    // liste des types de faits existants
+    $listeTypesFaits = $Ades->getListeTypesFaits();
+    $smarty->assign('listeTypesFaits', $listeTypesFaits);
+
+    // liste des faits inutilisés et qui peuvent donc être effacés.
+    $listeInutiles = $Ades->getTypesFaitsInutilises();
+    $smarty->assign('listeInutiles', $listeInutiles);
+
+    echo $smarty->fetch('faitDisc/tableauFait.tpl');
+}

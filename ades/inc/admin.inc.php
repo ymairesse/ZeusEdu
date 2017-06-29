@@ -68,6 +68,7 @@ switch ($mode) {
             $smarty->assign('corpsPage', 'usersList');
             break;
         }
+
     case 'remAuto':
         $smarty->assign('listeMemos', $Ades->listeMemos($user->acronyme()));
         $smarty->assign('acronyme', $acronyme);

@@ -474,6 +474,41 @@ class Ades
         return $resultat;
     }
 
+
+    /**
+     * réindexe l'ordre des types de faits pour obtenir un pas de 1 entre les items
+     * nécessaire pour éviter les trous après effacement d'un fait disciplinaire
+     *
+     * @param void
+     *
+     * @result void
+     */
+    public function reIndexTypesFAits() {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT * FROM '.PFX.'adesTypesFaits ';
+        $sql .= 'ORDER BY ordre ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $liste = $requete->fetchall();
+        }
+        $sql = 'UPDATE '.PFX.'adesTypesFaits ';
+        $sql .= 'SET ordre=:ordre WHERE type=:type ';
+        $requete = $connexion->prepare($sql);
+        
+        foreach ($liste as $n => $dataTypeFait) {
+            $type = $dataTypeFait['type'];
+            $requete->bindParam(':ordre', $n, PDO::PARAM_INT);
+            $requete->bindParam(':type', $type, PDO::PARAM_INT);
+            $resultat = $requete->execute();
+            $n++;
+        }
+
+        Application::DeconnexionPDO($connexion);
+    }
+
     /**
      * renvoie la structure nécessaire à l'établissment du formulaire d'édition d'un fait disciplinaire
      * sans les données.
