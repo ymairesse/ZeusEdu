@@ -10,7 +10,8 @@
     </thead>
     <tbody>
 
-        {foreach $listeTypesFaits key=typeFait item=fait name=foo} {assign var=type value=$fait.type}
+        {foreach $listeTypesFaits key=typeFait item=fait name=foo}
+        {assign var=type value=$fait.type}
         <tr data-type="{$type}">
             <td>
                 <button type="button" class="btn btn-danger btn-xs btn-delFait" data-type="{$type}" {if !in_array($type, $listeInutiles)} disabled {else} title="Supprimer ce fait" {/if}>

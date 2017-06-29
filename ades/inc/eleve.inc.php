@@ -3,7 +3,8 @@
 $onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
 $smarty->assign('onglet',$onglet);
 
-$matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
+$matricule = Application::postOrCookie('matricule', $unAn);
+// $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
 $smarty->assign('matricule',$matricule);
 
 $smarty->assign('action',$action);

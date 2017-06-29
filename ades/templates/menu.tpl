@@ -36,8 +36,7 @@
 			<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
 				Que s'est-il passé? <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=synthese&amp;mode=showFiches">Fiches de comportement (écran)</a></li>
-					<li><a href="index.php?action=synthese&amp;mode=printFiches">Fiches de comportement (PDF)</a></li>
+					<li><a href="index.php?action=synthese&amp;mode=showFiches">Fiches de comportement</a></li>
 					<li><a href="index.php?action=synthese&amp;mode=statistiques">Statistiques par niveau</a></li>
 				</ul>
 			</li>

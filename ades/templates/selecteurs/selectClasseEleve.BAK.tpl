@@ -2,8 +2,8 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
-		<input type="hidden" name="matricule" id="matricule">
+	<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
+	<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
 
 		<select name="classe" id="selectClasse">
 			<option value="">Classe</option>
@@ -15,18 +15,20 @@
 		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
 			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
-				<span class="glyphicon glyphicon-chevron-left"></span>
+				<i class="fa fa-chevron-left"></i>
 			</button>
 		{/if}
 
 		<span id="choixEleve">
-			{include file="listeEleves.tpl"}
+			{if isset($listeEleves)}
+			{include file="selecteurs/listeEleves.tpl"}
+			{/if}
 		</span>
 
 		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
 			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
-				<span class="glyphicon glyphicon-chevron-right"></span>
+				<i class="fa fa-chevron-right"></i>
 			 </button>
 		{/if}
 
@@ -36,8 +38,8 @@
 		{/if}
 
 		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
-		<input type="hidden" placeholder="action" name="action" id="action" value="{$action}">
-		<input type="hidden" placeholder="mode" name="mode" value="{$mode|default:Null}">
+		<input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="mode" value="{$mode|default:Null}">
 
 		<input type="hidden" name="etape" value="showEleve">
 		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
@@ -49,9 +51,11 @@
 $(document).ready (function() {
 
 	$('#formSelecteur').submit(function(){
-		$('#wait').show();
-		$.blockUI();
-	})
+		if (($("#matricule").val() > 0) || ($("#selectEleve").val() != '')) {
+			$('#wait').show();
+			$.blockUI();
+			}
+		})
 
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
@@ -86,7 +90,7 @@ $(document).ready (function() {
 	$('#prev').click(function(){
 		var matrPrev = $("#matrPrev").val();
 		$('#matricule').val(matrPrev);
-		$("#selectEleve").val(matrPrev);
+		$('#selectEleve').val(matrPrev);
 		$('#formSelecteur').submit();
 	})
 
@@ -110,11 +114,13 @@ $(document).ready (function() {
 
 	$("#nom").typeahead({
 		minLength: 2,
+		hint: true,
+		highlight: true,
 		afterSelect: function(item){
 			$.ajax({
 				url: 'inc/searchMatricule.php',
 				type: 'POST',
-				data: 'nomPrenomClasse=' + item,
+				data: 'query=' + item,
 				dataType: 'text',
 				async: true,
 				success: function(data){

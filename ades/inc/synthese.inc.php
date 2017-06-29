@@ -1,10 +1,21 @@
 <?php
 
-$niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
-$classe = isset($_POST['classe'])?$_POST['classe']:Null;
-$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
-$debut = isset($_POST['debut'])?$_POST['debut']:date('d/m/Y');
-$fin = isset($_POST['fin'])?$_POST['fin']:date('d/m/Y');
+// $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
+// $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+// $mode = isset($_GET['mode']) ? $_GET['mode'] : Null;
+
+$debut = Application::postOrCookie('debut', $unAn);
+if ($debut == Null)
+	$debut = date('d/m/Y');
+// $debut = isset($_POST['debut'])?$_POST['debut']:date('d/m/Y');
+$fin = Application::postOrCookie('fin', $unAn);
+if ($fin == Null)
+	$fin = date('d/m/Y');
+// $fin = isset($_POST['fin'])?$_POST['fin']:date('d/m/Y');
+$niveau = Application::postOrCookie('niveau', $unAn);
+
+$classe = Application::postOrCookie('classe', $unAn);
 
 // mise en ordre éventuelle des dates de début et de fin
 $dateDebut = strptime($debut,'%d/%m/%Y');
@@ -26,59 +37,29 @@ $smarty->assign('fin', $fin);
 $listeEleves = Null;
 
 if ($niveau != Null) {
-	$sections = array();
-	$listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', $sections);
+	$listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe');
 	$smarty->assign('listeClasses', $listeClasses);
-	$listeEleves = $Ecole->listeElevesNiveaux($niveau);
-	$smarty->assign('listeEleves', $listeEleves);
-	$groupe = 'niveau_'.$niveau;
 	}
 
 if ($classe != Null) {
 	$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 	$smarty->assign('listeEleves', $listeEleves);
-	$groupe = 'classe_'.$classe;
 	}
 
 if ($matricule != Null) {
 	$listeEleves = array($matricule => Eleve::staticGetDetailsEleve($matricule));
 	$smarty->assign('listeEleves', $listeEleves);
-	$groupe = 'eleve_'.$matricule;
 }
-
-$smarty->assign('listeEleves', $listeEleves);
-
-switch ($mode) {
-	case 'showFiches':
-		// pour chaque type de faits, voir quel champ doit être affiché dans le contexte "tableau"
-		$listeChamps = $Ades->champsInContexte('tableau');
-		$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin);
-		$smarty->assign('listeFaits', $listeFaits);
-		$smarty->assign('corpsPage', 'synthese');
-		break;
-	case 'printFiches':
-
-		if (isset($listeEleves)) {
-			// génération du fichier PDF des fiches disciplinaires
-			require_once 'inc/eleves/printFichesPDF.inc.php';
-		}
-		break;
-	case 'statistiques':
-		$statistiques = $Ades->statistiques($listeEleves, $debut, $fin);
-		$smarty->assign('statistiques', $statistiques);
-		$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
-		$smarty->assign('corpsPage','statistiques');
-		break;
-	}
 
 $listeNiveaux = Ecole::listeNiveaux();
 $smarty->assign('listeNiveaux', $listeNiveaux);
-$smarty->assign('selecteur', 'selecteurs/selectSynthese');
-if (isset($listeFaits)) {
-	$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
-	$smarty->assign('listeChamps', $listeChamps);
-	$smarty->assign('listeTitres', $Ades->titreChamps());
-	}
 
-$smarty->assign('action',$action);
-$smarty->assign('mode',$mode);
+switch ($mode) {
+	case 'showFiches':
+		$smarty->assign('corpsPage', 'eleve/ficheDisciplineEcran');
+		break;
+
+	case 'statistiques':
+		$smarty->assign('corpsPage','eleve/statistiques');
+		break;
+	}

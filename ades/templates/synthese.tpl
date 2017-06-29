@@ -1,46 +1,49 @@
-<div class="container">
+{if $listeFaits|count > 0}
 
-{foreach from=$listeFaits key=classe item=Eleves}
-	{if $Eleves|count > 1}
-		<h2 class="classeEntete">{$classe}</h2>
-		<p  class="pageBreak"></p>
-	{/if}
+	{foreach from=$listeFaits key=classe item=tousLesEleves}
+		{if $tousLesEleves|count > 1}
+			<h1 class="classeEntete">{$classe}</h1>
+		{/if}
 
-	{foreach from=$Eleves key=matricule item=ficheEleve}
+		{foreach from=$tousLesEleves key=matricule item=ficheEleve}
 
-		<div class="row">
+			<div class="row ombre" style="border: 1px solid #555">
 
-			<div class="col-xs-10">
-				<h3 class="eleveEntete">{$listeEleves.$matricule.nom} {$listeEleves.$matricule.prenom} {$listeEleves.$matricule.classe}</h3>
-				<p style="font-weight: bolder">Du {$debut} au {$fin}</p>
+				<div class="col-xs-10">
+					<h2 class="eleveEntete">{$listeEleves.$matricule.nom} {$listeEleves.$matricule.prenom} {$listeEleves.$matricule.classe}</h2>
+					<p style="font-weight: bolder">Du {$debut} au {$fin}</p>
+				</div>
+				<div class="col-xs-2">
+					<img src="../photos/{$listeEleves.$matricule.photo}.jpg" alt="{$matricule}" style="width:100px" class="img-responsive pull-right">
+				</div>
+
 			</div>
-			<div class="col-xs-2 img-responsive">
-				<img src="../photos/{$listeEleves.$matricule.photo}.jpg" alt="{$matricule}" style="width:100px">
-			</div>
 
-		</div>
+			{foreach from=$ficheEleve key=typeFait item=listeFaits}
+				{assign var=dataFait value=$listeTypesFaits.$typeFait}
 
-		{foreach from=$ficheEleve key=typeFait item=listeFaits}
-			<h4 style="clear:both">{$listeTypesFaits.$typeFait.titreFait}</h4>
-				<table class="table table-condensed table-hover table-striped tableauSynthese">
-					<thead>
+				<h4 style="clear:both; color:{$dataFait.couleurTexte}; background:{$dataFait.couleurFond}">{$dataFait.titreFait}</h4>
+					<table class="table table-condensed table-hover table-striped tableauSynthese">
+						<thead>
+							<tr>
+								{foreach from=$listeChamps.$typeFait item=champ}
+								<th>{$descriptionsChamps.$champ.label}</th>
+								{/foreach}
+							</tr>
+						</thead>
+						{foreach from=$listeFaits key=wtf item=faits}
 						<tr>
-							{foreach from=$listeChamps.$typeFait item=champ}
-							<th>{$listeTitres.$champ}</th>
+							{foreach from=$listeChamps.$typeFait key=wtf item=unChamp}
+							<td>{$faits.$unChamp|default:''}</td>
 							{/foreach}
 						</tr>
-					</thead>
-					{foreach from=$listeFaits key=wtf item=faits}
-					<tr>
-						{foreach from=$listeChamps.$typeFait key=wtf item=unChamp}
-						<td>{$faits.$unChamp|default:''}</td>
 						{/foreach}
-					</tr>
-					{/foreach}
 
-				</table>
+					</table>
+			{/foreach}
+
 		{/foreach}
-
 	{/foreach}
-{/foreach}
-</div>
+{else}
+	<p style="font-size: 20pt; margin-top: 3em;">Aucun fait disciplinaire sur la période {$debut} -> {$fin}</p>
+{/if}

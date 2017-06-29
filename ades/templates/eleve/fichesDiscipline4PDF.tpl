@@ -1,7 +1,7 @@
 <style>
     td,
     th {
-        border: inset 1px #555;
+        border: solid 1px #ccc; border-collapse: collapse;
         padding: 5px;
         font-size: 9pt;
     }
@@ -9,7 +9,7 @@
 
 <page backtop="25mm" backbottom="7mm" backleft="7mm" backright="10mm" footer="date">
     <page_header>
-        <img src="images/logoEcole.png" alt="LOGO" style="float:right">
+        <img src="../../images/logoEcole.png" alt="LOGO" style="float:right">
         <p>{$ECOLE}
             <br> {$ADRESSE} {$COMMUNE}
             <br>Téléphone: {$TELEPHONE}</p>

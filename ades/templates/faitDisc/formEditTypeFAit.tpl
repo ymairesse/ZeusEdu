@@ -55,7 +55,7 @@
 
 </div>
 
-<input type="hidden" name="typeRetenue" value="{$fait.typeRetenue|default:Null}">
+<input type="hidden" name="typeRetenue" value="{$fait.typeRetenue|default:0}">
 <input type="hidden" name="ordre" value="{$fait.ordre|default:Null}">
 <input type="hidden" name="type" value="{$fait.type|default:Null}">
 

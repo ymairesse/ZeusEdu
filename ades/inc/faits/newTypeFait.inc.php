@@ -24,6 +24,7 @@ $typeRetenue = isset($_POST['retenue']) ? $_POST['retenue'] : Null;
 $fait = $Ades->createNewTypeFait($typeRetenue);
 
 $champsObligatoires = $Ades->getChampsObligatoires($typeRetenue);
+
 $listeChamps = $Ades->getListeChamps($typeRetenue);
 $listeTousChamps = $Ades->listeChamps();
 $champsDisponibles = array_diff(array_keys($listeChamps), array_keys($champsObligatoires));

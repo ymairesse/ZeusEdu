@@ -8,8 +8,11 @@ include INSTALL_DIR.'/inc/entetes.inc.php';
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
-$classe = isset($_REQUEST['classe']) ? $_REQUEST['classe'] : null;
-$matricule = isset($_REQUEST['matricule']) ? $_REQUEST['matricule'] : null;
+$classe = Application::postOrCookie('classe', $unAn);
+
+$matricule = isset($_GET['matricule']) ? $_GET['matricule'] : Null;
+if ($matricule == Null)
+    $matricule = Application::postOrCookie('matricule', $unAn);
 
 $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
 

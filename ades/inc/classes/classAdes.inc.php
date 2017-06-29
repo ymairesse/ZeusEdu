@@ -168,7 +168,7 @@ class Ades
          $typeRetenue = ($form['typeRetenue'] == -1) ? 1: 0;
          if ($typeRetenue == 1)
             $typeRetenue = $this->getNextTypeRetenue();
-            else $typeRetenue = Null;
+            else $typeRetenue = 0;
         $type = $this->getNextTypeFait();
         $ordre = $this->getNextOrdreTypeFait();
 
@@ -210,7 +210,7 @@ class Ades
         $requete->bindParam(':typeRetenue', $typeRetenue, PDO::PARAM_INT);
         $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
 
-        $resultat = $requete->execute();
+       $resultat = $requete->execute();
 
         Application::deconnexionPDO($connexion);
 
@@ -401,7 +401,7 @@ class Ades
             'couleurFond' => Null,
             'couleurTexte' => Null,
             // ce sera une retenue?
-            'typeRetenue' => ($retenue == 1) ? -1 : Null,
+            'typeRetenue' => ($retenue == 1) ? -1 : 0,
             'ordre' => Null,
             'listeChamps' => array_keys($this->getChampsObligatoires($retenue))
         );
@@ -1124,6 +1124,7 @@ class Ades
         }
         $debut = Application::dateMysql($debut);
         $fin = Application::dateMysql($fin);
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT af.idFait, af.type, af.*, titreFait, ae.groupe AS classe, ';
         $sql .= 'dateRetenue, local, heure, duree, ap.nom, ap.prenom, ap.sexe ';

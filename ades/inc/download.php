@@ -47,7 +47,6 @@ switch ($type) {
     case 'pfN':
         // le path et le nom du fichier ont été indiqués
         $pfN = isset($_REQUEST['f']) ? $_REQUEST['f'] : null;
-
         if ($pfN == null) {
             die($fileNotFound);
         }
@@ -95,7 +94,7 @@ require_once INSTALL_DIR.'/inc/classes/class.chip_download.php';
 |------------------
 */
 
-$download_path = INSTALL_DIR.$ds.'upload'.$ds.$proprio;
+$download_path = INSTALL_DIR.$ds.'upload'.$ds.$proprio.$ds;
 
 $args = array(
         'download_path' => $download_path,
