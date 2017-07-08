@@ -77,9 +77,12 @@ class eleve
     public static function staticGetDetailsEleve($matricule)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT de.*, user, mailDomain FROM '.PFX.'eleves AS de ';
+        $sql = 'SELECT de.*, user, mailDomain, acronyme ';
+        $sql .= 'FROM '.PFX.'eleves AS de ';
         $sql .= 'LEFT JOIN '.PFX.'passwd AS dp ON (de.matricule = dp.matricule) ';
+        $sql .= 'LEFT JOIN '.PFX.'titus AS dt ON dt.classe = de.groupe ';
         $sql .= "WHERE de.matricule = '$matricule' ";
+
         $resultat = $connexion->query($sql);
         $detailsEleve = array();
         if ($resultat) {
@@ -313,6 +316,38 @@ class eleve
 
         return $matricule;
     }
+
+    /**
+     * retourne la liste des titulaires d'un élève dont on fournit la classe
+     * (permet d'éviter de construire l'objet ELEVE)
+     *
+     * @param $classe
+     *
+     * @return array : liste des titulaires
+     */
+     public function staticGetTitulaires($classe)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT '.PFX.'titus.acronyme, nom, prenom ';
+         $sql .= 'FROM '.PFX.'titus ';
+         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'titus.acronyme) ';
+         $sql .= 'WHERE classe =:classe ';
+         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
+         $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 5);
+         $resultat = $requete->execute();
+         $listeTitus = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 array_push($listeTitus, $ligne['prenom'].' '.$ligne['nom']);
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $listeTitus;
+     }
 
     /**
      *retourne la liste des titulaires de la classe d'un élève.
