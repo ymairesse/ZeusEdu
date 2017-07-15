@@ -798,8 +798,9 @@ class Files
             }
 
             // recherche des infos % competences évaluées
-            $sql = 'SELECT  idCompetence, max, formCert, idCarnet ';
-            $sql .= 'FROM '.PFX.'thotTravauxCompetences ';
+            $sql = 'SELECT  idCompetence, max, formCert, idCarnet, libelle ';
+            $sql .= 'FROM '.PFX.'thotTravauxCompetences AS dtc ';
+            $sql .= 'JOIN '.PFX.'bullCompetences AS dbc ON dbc.id = dtc.idCompetence ';
             $sql .= 'WHERE idTravail=:idTravail ';
             $requete = $connexion->prepare($sql);
             $data = array(':idTravail' => $idTravail);
@@ -828,6 +829,7 @@ class Files
                 'statut' => 'readwrite',
                 'competences' => null,
                 'formCert' => 'form',
+                'libelle' => '',
             );
         } else {
             $dataTravail['competences'] = $competences;
@@ -1042,14 +1044,16 @@ class Files
     public function listeTravauxRemis($idTravail, $acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dttr.idTravail, dttr.matricule, remis, nom, prenom, groupe, dtte.idCompetence, dtte.cote ';
+        $sql = 'SELECT dttr.idTravail, dttr.matricule, remarque, remis, nom, prenom, groupe ';
         $sql .= 'FROM '.PFX.'thotTravauxRemis AS dttr ';
         $sql .= 'JOIN '.PFX.'thotTravaux AS dtt ON dtt.idTravail = dttr.idTravail ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dttr.matricule ';
         $sql .= 'LEFT JOIN '.PFX.'thotTravauxEvaluations AS dtte ON dtte.matricule = dttr.matricule AND dtte.idTravail = dttr.idTravail ';
         $sql .= 'WHERE dttr.idTravail=:idTravail AND acronyme=:acronyme ';
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
+
         $requete = $connexion->prepare($sql);
+
         $data = array(':idTravail' => $idTravail, 'acronyme' => $acronyme);
 
         $resultat = $requete->execute($data);
@@ -1058,17 +1062,61 @@ class Files
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
-                if (isset($liste[$matricule])) {
-                    $liste[$matricule]['total'] += Application::sansVirg($ligne['cote']);
-                } else {
-                    $liste[$matricule] = $ligne;
-                    $liste[$matricule]['total'] = Application::sansVirg($ligne['cote']);
-                }
+                $liste[$matricule] = $ligne;
             }
         }
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * recherche les sommes des évaluations de tous les élèves pour un travail donné
+     *
+     * @param $idTravail
+     *
+     * @return array
+     */
+    public function getEvaluations4Travail($idTravail)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtte.matricule, dtte.idTravail, dtte.idCompetence, dtte.cote, dttc.max, evaluation ';
+        $sql .= 'FROM '.PFX.'thotTravauxEvaluations AS dtte ';
+        $sql .= 'JOIN '.PFX.'thotTravauxCompetences AS dttc ON dttc.idTravail = dtte.idTravail AND dtte.idCompetence = dttc.idCompetence ';
+        $sql .= 'JOIN '.PFX.'thotTravauxRemis AS dttr ON dttr.idTravail = dtte.idTravail AND dttr.matricule = dtte.matricule ';
+        $sql .= 'WHERE dtte.idTravail =:idTravail ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $liste[$matricule]['evaluation'] = $ligne['evaluation'];
+                $idCompetence = $ligne['idCompetence'];
+                $liste[$matricule]['competences'][$idCompetence] = array('cote' => $ligne['cote'], 'max' => $ligne['max']);
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        // totalisation par compétence
+        foreach ($liste as $matricule => $data) {
+            foreach ($data['competences'] as $idCompetence => $cotation) {
+                if (!(isset($liste[$matricule]['total']))) {
+                    $liste[$matricule]['total'] = array('cote' => '', 'max' => '');
+                    }
+                $liste[$matricule]['total']['cote'] += $cotation['cote'];
+                $liste[$matricule]['total']['max'] += $cotation['max'];
+                }
+            }
+
+        return $liste;
+
     }
 
     /**
@@ -1236,19 +1284,6 @@ class Files
         $competencesCoursGrp = $this->getCompetencesCoursGrp($coursGrp);
 
         return array_diff_key($competencesCoursGrp, $competencesTravail);
-    }
-
-    /**
-     * recherche les évaluations de tous les élèves par compétence pour un travail donné.
-     *
-     * @param $idCompetence
-     * @param $idTravail
-     *
-     * @return array
-     */
-    public function getEvaluations4Competence($idTravail, $idCompetence)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
     }
 
     /**
@@ -1515,9 +1550,8 @@ class Files
      *
      * @return int : nombre d'enregistrements
      * */
-    public function creerEnteteCarnetCotes($dataTravail, $form, $idCompetence)
+    public function creerEnteteCarnetCotes($dataTravail, $bulletin, $idCompetence)
     {
-        // Application::afficher($dataTravail,true);
         $idCarnet = $dataTravail['competences'][$idCompetence]['idCarnet'];
         $coursGrp = isset($dataTravail['coursGrp']) ? $dataTravail['coursGrp'] : null;
         $idTravail = isset($dataTravail['idTravail']) ? $dataTravail['idTravail'] : null;
@@ -1525,7 +1559,6 @@ class Files
         $date = Application::dateMysql(Application::dateNow());
         $max = Application::sansVirg($dataTravail['competences'][$idCompetence]['max']);
         $formCert = $dataTravail['competences'][$idCompetence]['formCert'];
-        $bulletin = $form['bulletin'];
 
         if (($coursGrp == null) || ($bulletin == null) || ($max == null) || !(is_numeric($max))) {
             die("Erreur d'encodage");
@@ -1533,11 +1566,14 @@ class Files
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($idCarnet != null) {
-            $sql = 'UPDATE '.PFX.'bullCarnetCotes ';
-            $sql .= 'SET coursGrp=:coursGrp, bulletin=:bulletin, date=:date, ';
+            $sql = 'INSERT INTO '.PFX.'bullCarnetCotes ';
+            $sql .= 'SET idCarnet=:idCarnet, coursGrp=:coursGrp, bulletin=:bulletin, date=:date, ';
             $sql .= 'idComp=:idComp, formCert=:formCert, ';
-            $sql .= 'max=:max, libelle=:libelle,  ';
-            $sql .= 'WHERE idCarnet=:idCarnet, remarque=:remarque ';
+            $sql .= 'max=:max, libelle=:libelle ';
+            $sql .= 'ON DUPLICATE KEY UPDATE ';
+            $sql .= 'coursGrp=:coursGrp, bulletin=:bulletin, date=:date, ';
+            $sql .= 'idComp=:idComp, formCert=:formCert, ';
+            $sql .= 'max=:max, libelle=:libelle, remarque=:remarque ';
         } else {
             $sql = 'INSERT INTO '.PFX.'bullCarnetCotes ';
             $sql .= 'SET coursGrp=:coursGrp, bulletin=:bulletin, date=:date, ';
@@ -1559,7 +1595,8 @@ class Files
         if ($idCarnet != null) {
             $data[':idCarnet'] = $idCarnet;
         }
-
+// echo $sql;
+// Application::afficher($data);
         $resultat = $requete->execute($data);
 
         if ($idCarnet == null) {
@@ -1599,12 +1636,14 @@ class Files
         $sql .= 'FROM '.PFX.'thotTravauxEvaluations AS dtte ';
         $sql .= 'JOIN '.PFX.'thotTravauxCompetences AS dttc ON dttc.idTravail = dtte.idTravail ';
         $sql .= 'WHERE dtte.idTravail=:idTravail AND dtte.idCompetence =:idCompetence AND idCarnet =:idCarnet ';
+
         $requete = $connexion->prepare($sql);
         $data = array(
                 ':idTravail' => $idTravail,
                 ':idCompetence' => $idCompetence,
                 ':idCarnet' => $idCarnet,
             );
+
         $liste = array();
         $resultat = $requete->execute($data);
         if ($resultat) {
@@ -1641,6 +1680,7 @@ class Files
             $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
             $requete->bindParam(':cote', $cote, PDO::PARAM_STR, 6);
             $data = array(':idCarnet' => $idCarnet, ':matricule' => $matricule, ':cote' => $cote);
+
             $n += $requete->execute();
         }
         Application::DeconnexionPDO($connexion);
@@ -1659,37 +1699,61 @@ class Files
     public function getResultatTravail($idTravail, $matricule)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dtc.idTravail, dtc.idCompetence, dte.cote, dtc.max, remarque, evaluation, dte.matricule ';
-        $sql .= 'FROM '.PFX.'thotTravauxCompetences AS dtc ';
-        $sql .= 'JOIN '.PFX.'thotTravauxEvaluations AS dte ON dtc.idTravail = dte.idTravail  AND dte.idCompetence = dtc.idCompetence ';
-        $sql .= 'JOIN '.PFX.'thotTravauxRemis AS dtr ON dtr.matricule = dte.matricule AND dtr.idTravail = dte.idTravail ';
-        $sql .= 'WHERE dte.idTravail=:idTravail AND dte.matricule=:matricule ';
 
+        // recherche des compétences et des maximas pour ce travail
+        $sql = 'SELECT idCompetence, max ';
+        $sql .= 'FROM '.PFX.'thotTravauxCompetences ';
+        $sql .= 'WHERE idTravail =:idTravail ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        $listeCompetences = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $idCompetence = $ligne['idCompetence'];
+                $listeCompetences[$idCompetence] = $ligne['max'];
+            }
+        }
+
+        // recherche des cotes obenues pour chaque compétences
+        $sql = 'SELECT idCompetence, cote ';
+        $sql .= 'FROM '.PFX.'thotTravauxEvaluations ';
+        $sql .= 'WHERE matricule =:matricule AND idTravail =:idTravail ';
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
         $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
 
         $resultat = $requete->execute();
-        $liste = array();
+        $listeResulats = array();
         if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
-                if (!(isset($liste['data']))) {
-                    $liste['data'] = array(
-                        'idTravail' => $ligne['idTravail'],
-                        'remarque' => $ligne['remarque'],
-                        'evaluation' => $ligne['evaluation'],
-                        'matricule' => $ligne['matricule'],
-                    );
-                }
                 $idCompetence = $ligne['idCompetence'];
-                $liste['cotes'][$idCompetence] = array(
+                $listeResultats['cotes'][$idCompetence] = array(
                     'cote' => $ligne['cote'],
-                    'max' => $ligne['max'],
+                    'max' => $listeCompetences[$idCompetence]
                 );
+                }
             }
-        }
 
-        return $liste;
+        // recherche du commentaire professeur pour cette évaluation
+        $sql = 'SELECT evaluation ';
+        $sql .= 'FROM '.PFX.'thotTravauxRemis ';
+        $sql .= 'WHERE idTravail = :idTravail AND matricule =:matricule ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+        $commentaire = '';
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $commentaire = $ligne['evaluation'];
+        }
+        $listeResultats['commentaire'] = $commentaire;
+
+        return $listeResultats;
     }
 }

@@ -5,14 +5,12 @@ $smarty->assign('typeRetenue', $typeRetenue);
 $listeTypes = $Ades->getTypesRetenues();
 $smarty->assign('listeTypes', $listeTypes);
 
-require_once INSTALL_DIR.'/ades/inc/classes/classRetenue.inc.php';
-
 switch ($mode) {
     case 'liste':
         switch ($etape) {
             case 'showListe':
-                $idretenue = isset($_POST['idretenue']) ? $_POST['idretenue'] : null;
-                if (isset($idretenue)) {
+                $idretenue = isset($_POST['idretenue']) ? $_POST['idretenue'] : Null;
+                if ($idretenue != Null) {
                     $smarty->assign('etape', $etape);
                     $smarty->assign('idretenue', $idretenue);
                     $listeRetenues = $Ades->listeRetenues($typeRetenue, true);
@@ -22,7 +20,7 @@ switch ($mode) {
                     $listeElevesRetenue = $Ades->listeElevesRetenue($idretenue);
                     $smarty->assign('listeEleves', $listeElevesRetenue);
                     $smarty->assign('selecteur', 'selecteurs/selectRetenueDate');
-                    $smarty->assign('corpsPage', 'listeElevesRetenue');
+                    $smarty->assign('corpsPage', 'retenues/listeElevesRetenue');
                 }
                 break;
             default:

@@ -1,4 +1,5 @@
-<select name="idretenue" class="selecteur" id="selectRetenue">
+<select name="idretenue" class="selecteur form-control input-sm" id="selectRetenue">
+
 	<option value="">Choisir une retenue</option>
 	{if isset($listeRetenues)}
 		{foreach from=$listeRetenues key=cetteRetenue item=uneRetenue}
@@ -6,4 +7,5 @@
 			{$uneRetenue.jourSemaine} le {$uneRetenue.dateRetenue} {$uneRetenue.heure} {$uneRetenue.duree}h [{$uneRetenue.local}] ({$uneRetenue.occupation}/{$uneRetenue.places})</option>
 		{/foreach}
 	{/if}
+
 </select>

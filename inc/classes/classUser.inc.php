@@ -100,6 +100,7 @@ class user
             $sql .= "AND section IN ($sections) ";
         }
         $sql .= 'ORDER BY classe ';
+
         $resultat = $connexion->query($sql);
         $titulariats = array();
         if ($resultat) {

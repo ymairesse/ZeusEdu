@@ -24,39 +24,24 @@ $smarty->assign('identite', $identite);
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 
-if ($matricule != '') {
-    // si un matricule est donné, on aura sans doute besoin des données de l'élève
-    require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
-    $eleve = new Eleve($matricule);
-    $ficheDisc = new EleveAdes($matricule);
-    $titulaires = $eleve->titulaires($matricule);
-    $smarty->assign('matricule', $matricule);
-    $smarty->assign('eleve', $eleve->getDetailsEleve());
-
-    $classe = $eleve->getDetailsEleve();
-    $classe = $classe['groupe'];
-    $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-    $prevNext = $Ecole->prevNext($matricule, $listeEleves);
-    $smarty->assign('prevNext', $prevNext);
-    $smarty->assign('ficheDisc', $ficheDisc);
-    $smarty->assign('titulaires', $titulaires);
-}
+require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
+$EleveAdes = new EleveAdes();
 
 switch ($action) {
     case 'admin':
+        // toutes les fonctions d'administration de l'application
         include 'inc/admin.inc.php';
         break;
-    case 'users':
-        include 'inc/users.inc.php';
-        break;
     case 'synthese':
+        // fiches de comportement et statistiques
         include 'inc/synthese.inc.php';
         break;
     case 'retenues':
+        // gestion des heures et locaux de retenues
         include 'inc/retenues.inc.php';
         break;
     case 'print':
-        include 'inc/print.inc.php';
+        // include 'inc/print.inc.php';
         break;
     case 'news':
         if (in_array($userStatus, array('admin', 'educ'))) {
@@ -64,38 +49,13 @@ switch ($action) {
         }
         break;
     case 'fait':
+        // enregistrement d'un fait disciplinaire pour un élève donné
         include 'inc/fait.inc.php';
         break;
-    default:
+    case 'eleve':
+        // accès à la fiche de comportement d'un élève
         include 'inc/eleve.inc.php';
         break;
-
-}
-
-// pour les différents cas où il faut afficher une fiche d'élève, on affiche
-if (isset($afficherEleve) && ($afficherEleve == true)) {
-    require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
-    $memoEleve = new padEleve($matricule, 'ades');
-    $smarty->assign('memoEleve', $memoEleve->getPads());
-
-    if (isset($classe)) {
-        $smarty->assign('listeEleves', $Ecole->listeEleves($classe));
-        $smarty->assign('classe', $classe);
-        $prevNext = $Ecole->prevNext($matricule, $listeEleves);
-        $smarty->assign('prevNext', $prevNext);
-    }
-
-    $smarty->assign('user', $user);
-    $smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
-    $smarty->assign('descriptionChamps', $Ades->listeChamps());
-    $smarty->assign('sentByidFait', $Ades->sentByIdFait($matricule));
-    $smarty->assign('sentMails', $Ades->sentMails($matricule));
-    $smarty->assign('matricule', $matricule);
-    $smarty->assign('listeClasses', $Ecole->listeGroupes());
-    $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-    $smarty->assign('listeEleves', $listeEleves);
-    $smarty->assign('selecteur', 'selecteurs/selectClasseEleve');
-    $smarty->assign('corpsPage', 'eleve/ficheEleve');
 }
 
 //

@@ -1,12 +1,23 @@
 <?php
 
-session_start();
-require_once '../../../config.inc.php';
+/**
+ * récupérer et formater la liste des retenues disponibles
+ * Cette liste est utilisée dans le sélecteur type/date de retenue
+ */
 
-// définition de la class Application
-require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
-$Application = new Application();
-//// définition de la class Ecole
+ require_once '../../../config.inc.php';
+
+ // définition de la class Application
+ require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
+ $Application = new Application();
+
+ session_start();
+ if (!(isset($_SESSION[APPLICATION]))) {
+     echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+     exit;
+ }
+
+// définition de la class Ades
 require_once INSTALL_DIR.'/ades/inc/classes/classAdes.inc.php';
 $Ades = new Ades();
 

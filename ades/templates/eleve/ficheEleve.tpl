@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 {assign var=memo value=$memoEleve.proprio}
 {assign var=idProprio value=$memo|key}
 {assign var=leMemo value=$memo.$idProprio}
@@ -24,7 +22,7 @@
 		<li><a href="#tabs-4" data-toggle="tab">{if $leMemo.texte|count_characters > 0}<i class="fa fa-pencil-square-o text-danger"></i>{/if} Mémo</a></li>
 	</ul>
 
-	<div id="FicheEleve" class="tab-content">
+	<div id="ficheEleve" class="tab-content">
 
 		<div class="tab-pane active" id="tabs-1">
 			{include file="eleve/infoDisciplinaires.tpl"}
@@ -79,16 +77,11 @@
 
 </div>
 <!-- container -->
-
-<iframe width="1px" height="1px" id="iframePrint">
-
-</iframe>
-
 <script type="text/javascript">
-	<!-- quel est l onglet actif? -->
-	var onglet = "{$onglet|default:''}";
 
-	<!-- activer l onglet dont le numéro a été passé -->
+	// quel est l'onglet actif?
+	var onglet = {$onglet|default:''}
+	// activer l onglet dont le numéro a été passé 
 	$(".nav-tabs li a[href='#tabs-" + onglet + "']").tab('show');
 
 
@@ -96,85 +89,10 @@
 
 		window.location.hash = '#top';
 
-		$(".openThis").click(function() {
-			var table = $(this).closest('h3').next().find('table');
-			if (table.hasClass('hidden'))
-				table.removeClass('hidden');
-			else table.addClass('hidden');
-		})
-
-		$("#openAll").click(function() {
-			$(".openThis").trigger('click');
-		})
-
-		$(".delete").click(function() {
-			var idfait = $(this).data('idfait');
-			var mode = 'delete';
-			$.post('inc/faits/editFaitDisc.inc.php', {
-				idfait: idfait,
-				mode: 'delete'
-			}, function(resultat) {
-				$("#formDel").html(resultat);
-				// désactivation des champs sauf les "hidden"
-				$("#modalDel input:text").prop('disabled', true);
-				$("#modalDel textarea").prop('disabled', true);
-				$("#modalDel select").prop('disabled', true);
-				$('.motif').hide();
-				$("#modalDel").modal('show');
-			})
-		})
-
-		$(".edit").click(function() {
-			var idfait = $(this).data('idfait');
-			var matricule = '';
-			var classe = '';
-			var type = '';
-			var mode = 'edit';
-			$.post('inc/faits/editFaitDisc.inc.php', {
-				type: type,
-				matricule: matricule,
-				classe: classe,
-				idfait: idfait,
-				mode: 'edit'
-			}, function(resultat) {
-				$("#formFait").html(resultat);
-				$("#editFait").modal('show');
-			})
-		})
-
-		$(".print").click(function(event) {
-			var idfait = $(this).data('idfait');
-			$.post('inc/retenues/printRetenue.inc.php', {
-					idfait: idfait
-				},
-				function(resultat) {}
-			)
-		})
-
-		$("#lePdf").click(function() {
-			$("#retenuePDF").modal('hide');
-		})
-
-
 		$("#tabs li a").click(function() {
 			var ref = $(this).attr("href").split("-")[1];
 			$(".onglet").val(ref);
 		});
-
-		$(".newFait").click(function() {
-			var type = $(this).data('typefait');
-			var matricule = $(this).data('matricule');
-			var classe = $(this).data('classe');
-			$.post('inc/faits/editFaitDisc.inc.php', {
-				type: type,
-				matricule: matricule,
-				classe: classe,
-				mode: 'edit'
-			}, function(resultat) {
-				$("#formFait").html(resultat);
-				$("#editFait").modal('show');
-			})
-		})
 
 		$("#printPage").click(function() {
 			var anScol = $("#tabsDisc li.active").data('anneescolaire');
@@ -190,6 +108,15 @@
 
 		$(".close").click(function(){
 			$(this).parent('div').addClass('hidden');
+		})
+		$(".openThis").click(function() {
+			var table = $(this).closest('h3').next().find('table');
+			if (table.hasClass('hidden'))
+				table.removeClass('hidden');
+			else table.addClass('hidden');
+		})
+		$("#openAll").click(function() {
+			$(".openThis").trigger('click');
 		})
 
 	})

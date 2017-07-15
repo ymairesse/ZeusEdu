@@ -2036,4 +2036,23 @@ class Application
         error_reporting(E_ALL);
     }
 
+    /**
+     * retourne la valeur "POSTEE" ou, si pas de POST, la valeur du COOKIE
+     * fixe la valeur du COOKIE à la valeur "POSTEE"
+     *
+     * @param  string $name  $_POST[$name]
+     * @param  int $duree: durée de validité du cookie
+     *
+     * @return string
+     */
+    public static function postOrCookie ($name, $duree) {
+        if (isset($_POST[$name])) {
+            $value = $_POST[$name];
+            setcookie($name, $value, $duree, '/', null, false, true);
+        } else {
+                $value = (isset($_COOKIE[$name])) ? $_COOKIE[$name] : null;
+            }
+        return $value;
+    }
+
 }

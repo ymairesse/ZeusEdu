@@ -4,13 +4,13 @@
 
 		<h2>Statistiques</h2>
 
-		<div class="col-md-2 col-xs-12">
+		<div class="col-md-3 col-xs-12">
 
 			{include file='selecteurs/selectSynthese.tpl'}
 
 		</div>
 
-		<div class="col-md-10 col-xs-12" id="zoneSynthese">
+		<div class="col-md-9 col-xs-12" id="zoneSynthese">
 
 		</div>
 
@@ -29,18 +29,18 @@
             $('#ajaxLoader').addClass('hidden');
         });
 
+		$("#printSelect").click(function(){
+            $("#modalPrintFait").modal('show');
+        })
+
+        $("#confPrint").click(function(){
+            $("#modalPrintFait").modal('hide');
+        })
+
 		$("#genererPDF").click(function(){
-			var debut = $("#debut").val();
-			var fin = $("#fin").val();
-			var niveau = $("#niveau").val();
-			var classe = $("#selectClasse").val();
-			var matricule = $("#selectEleve").val();
+			var formulaire = $("#formPrint").serialize();
 			$.post('inc/eleves/generateStatsPDF.inc.php', {
-				debut: debut,
-				fin: fin,
-				niveau: niveau,
-				classe: classe,
-				matricule: matricule
+				formulaire: formulaire
 				},
 				function(resultat){
 					$("#zoneSynthese").html(resultat);
@@ -49,17 +49,9 @@
 		})
 
 		$("#generer").click(function(){
-			var debut = $("#debut").val();
-			var fin = $("#fin").val();
-			var niveau = $("#niveau").val();
-			var classe = $("#selectClasse").val();
-			var matricule = $("#selectEleve").val();
+			var formulaire = $("#formPrint").serialize();
 			$.post('inc/eleves/generateStats.inc.php', {
-				debut: debut,
-				fin: fin,
-				niveau: niveau,
-				classe: classe,
-				matricule: matricule
+				formulaire: formulaire
 				},
 				function(resultat){
 					$("#zoneSynthese").html(resultat);

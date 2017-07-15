@@ -19,31 +19,40 @@ require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-// durée de validité pour les Cookies
-$unAn = time() + 365 * 24 * 3600;
-
-// $debut = isset($_POST['debut']) ? $_POST['debut'] : null;
-$debut = Application::postOrCookie('debut', $unAn);
-// $fin = isset($_POST['fin']) ? $_POST['fin'] : null;
-$fin = Application::postOrCookie('fin', $unAn);
-// $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
-$niveau = Application::postOrCookie('niveau', $unAn);
-// $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
-$classe = Application::postOrCookie('classe', $unAn);
-
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-
-// génération pour un élève isolé, une classe ou le niveau d'étude
-if ($matricule == Null) {
-    if ($classe == Null)
-        $listeEleves = $listeEleves = $Ecole->listeElevesNiveaux($niveau);
-        else $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-    }
-    else $listeEleves = array($matricule => Eleve::staticGetDetailsEleve($matricule));
 
 $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
+
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$form = array();
+parse_str($formulaire, $form);
+
+$debut = $form['debut'];
+$fin = $form['fin'];
+$matricule = isset($form['matricule']) ? $form['matricule'] : null;
+$niveau = isset($form['niveau']) ? $form['niveau'] : null;
+$classe = isset($form['classe']) ? $form['classe'] : null;
+
+// détermination des types de faits à imprimer
+$aImprimer = array();
+foreach ($form AS $field => $value) {
+    if (substr($field, 0, 4) == 'type') {
+        $typeFait = explode('_', $field);
+        $aImprimer[$typeFait[1]] = 1;
+    }
+}
+
+// génération pour un élève isolé, une classe ou le niveau d'étude
+if ($matricule == Null) {
+    if ($classe == Null) {
+        $listeEleves = $listeEleves = $Ecole->listeElevesNiveaux($niveau);
+        }
+        else {
+            $listeEleves = $Ecole->listeEleves($classe, 'groupe');
+        }
+    }
+    else $listeEleves = array($matricule => Eleve::staticGetDetailsEleve($matricule));
 
 require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
@@ -51,7 +60,8 @@ $smarty->template_dir = "../../templates";
 $smarty->compile_dir = "../../templates_c";
 
 $listeChamps = $Ades->champsInContexte('tableau');
-$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin);
+$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin, ANNEESCOLAIRE, $aImprimer);
+Application::afficher($listeFaits);
 $descriptionsChamps = $Ades->listeChamps();
 
 $smarty->assign('debut', $debut);
@@ -63,4 +73,4 @@ $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
 $smarty->assign('descriptionsChamps', $descriptionsChamps);
 
-echo $smarty->fetch('synthese.tpl');
+echo $smarty->fetch('eleve/synthese.tpl');

@@ -9,16 +9,15 @@ $Application = new Application();
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
-
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
-
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 
@@ -33,7 +32,7 @@ $matricule = $infosFait['matricule'];
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 $Eleve = new Eleve($matricule);
 $Eleve = $Eleve->getDetailsEleve();
-
+Application::afficher($Eleve, true);
 $idretenue = $infosFait['idretenue'];
 $infosRetenue = $Ades->infosRetenue($idretenue);
 

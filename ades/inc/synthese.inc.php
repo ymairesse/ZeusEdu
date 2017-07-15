@@ -1,9 +1,6 @@
 <?php
 
-// $niveau = isset($_POST['niveau'])?$_POST['niveau']:Null;
-// $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-// $mode = isset($_GET['mode']) ? $_GET['mode'] : Null;
 
 $debut = Application::postOrCookie('debut', $unAn);
 if ($debut == Null)
@@ -53,6 +50,9 @@ if ($matricule != Null) {
 
 $listeNiveaux = Ecole::listeNiveaux();
 $smarty->assign('listeNiveaux', $listeNiveaux);
+
+$listeTypesFaits = $Ades->listeTypesFaits();
+$smarty->assign('listeTypesFaits', $listeTypesFaits);
 
 switch ($mode) {
 	case 'showFiches':

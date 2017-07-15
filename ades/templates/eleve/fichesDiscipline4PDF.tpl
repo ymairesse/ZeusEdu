@@ -9,7 +9,7 @@
 
 <page backtop="25mm" backbottom="7mm" backleft="7mm" backright="10mm" footer="date">
     <page_header>
-        <img src="../../images/logoEcole.png" alt="LOGO" style="float:right">
+        <img src="{$BASEDIR}images/logoEcole.png" alt="LOGO" style="float:right">
         <p>{$ECOLE}
             <br> {$ADRESSE} {$COMMUNE}
             <br>Téléphone: {$TELEPHONE}</p>
@@ -18,10 +18,10 @@
         {$Eleve.prenom} {$Eleve.nom}
     </page_footer>
 
-    <img src="{$BASEDIR}/photos/{$Eleve.photo}.jpg" alt=" " style="float:right; width: 80px">
-    <h3>Fiche disciplinaire de {$Eleve.prenom} {$Eleve.nom} Classe: {$Eleve.groupe}</h3>
+    <h3>Fiche de comportement de {$Eleve.prenom} {$Eleve.nom} Classe: {$Eleve.groupe}</h3>
 
     <h4>Année scolaire {$ANNEESCOLAIRE} - en date du {$DATE}</h4>
+    <p>Période du {$debut} au {$fin}</p>
 
     {* parcourir la liste de tous les types de faits existants *}
     {foreach from=$listeTypesFaits key=type item=descriptionTypeFait}

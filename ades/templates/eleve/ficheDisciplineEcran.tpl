@@ -4,18 +4,19 @@
 
         <h2>Fiches de comportement</h2>
 
-        <div class="col-md-2 col-xs-12">
+        <div class="col-md-3 col-xs-12">
 
             {include file='selecteurs/selectSynthese.tpl'}
 
         </div>
 
-        <div class="col-md-10 col-xs-12" id="zoneSynthese">
+        <div class="col-md-9 col-xs-12" id="zoneSynthese">
 
         </div>
 
     </div>
 </div>
+
 
 <script type="text/javascript">
 
@@ -27,18 +28,18 @@
             $('#ajaxLoader').addClass('hidden');
         });
 
+        $("#printSelect").click(function(){
+            $("#modalPrintFait").modal('show');
+        })
+
+        $("#confPrint").click(function(){
+            $("#modalPrintFait").modal('hide');
+        })
+
 		$("#genererPDF").click(function(){
-			var debut = $("#debut").val();
-			var fin = $("#fin").val();
-			var niveau = $("#niveau").val();
-			var classe = $("#selectClasse").val();
-			var matricule = $("#selectEleve").val();
+			var formulaire = $("#formPrint").serialize();
 			$.post('inc/eleves/generateFichesPDF.inc.php', {
-				debut: debut,
-				fin: fin,
-				niveau: niveau,
-				classe: classe,
-				matricule: matricule
+				formulaire: formulaire
 				},
 				function(resultat){
 					$("#zoneSynthese").html(resultat);
@@ -46,24 +47,16 @@
 			)
 		})
 
-		$("#generer").click(function(){
-			var debut = $("#debut").val();
-			var fin = $("#fin").val();
-			var niveau = $("#niveau").val();
-			var classe = $("#selectClasse").val();
-			var matricule = $("#selectEleve").val();
-			$.post('inc/eleves/generateFicheDisc.inc.php', {
-				debut: debut,
-				fin: fin,
-				niveau: niveau,
-				classe: classe,
-				matricule: matricule
-				},
-				function(resultat){
-					$("#zoneSynthese").html(resultat);
-				}
-			);
-		})
+        $("#generer").click(function(){
+            var formulaire = $("#formPrint").serialize();
+            $.post('inc/eleves/generateFicheDisc.inc.php', {
+                formulaire: formulaire
+                },
+            function (resultat){
+                $("#zoneSynthese").html(resultat);
+            })
+        })
+
 
 		$("#debut, #fin").datepicker({
 			clearBtn: true,

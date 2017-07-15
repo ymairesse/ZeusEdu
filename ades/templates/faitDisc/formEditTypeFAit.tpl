@@ -1,21 +1,32 @@
 <div class="row">
 
-    <div class="col-md-6 col-sm-12">
+    <div class="col-md-3 col-xs-12">
         <div class="form-group">
-            <label for="titreFait">Intitulé du fait disciplinaire</label>
+            <label for="titreFait">Dénomination</label>
             <input type="text" class="form-control" value="{$fait.titreFait|default:''}" id="titreFait" required id="titreFait" name="titreFait" placeholder="Intitulé du fait disciplinaire">
             <span class="help-block">&nbsp;</span>
         </div>
     </div>
 
-    <div class="col-md-3 col-xs-6">
+    <div class="col-md-3 col-xs-12">
+        <div class="form-group">
+            <label for="print">Imprimable par défaut</label>
+            <div class="checkbox" style="text-align:center">
+                <label>
+                    <input type="checkbox" name="print" value="1"{if $fait.print == 1}checked{/if}>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-xs-12">
         <div class="form-group">
             <label for="color">Couleur du texte</label>
             <input type="color" class="form-control" name="color" id="color" value="{$fait.couleurTexte|default:'#000000'}" required>
         </div>
     </div>
 
-    <div class="col-md-3 col-xs-6">
+    <div class="col-md-3 col-xs-12">
         <div class="form-group">
             <label for="background">Couleur de fond</label>
             <input type="color" class="form-control" name="background" id="background" value="{$fait.couleurFond|default:'#ffffff'}" required>

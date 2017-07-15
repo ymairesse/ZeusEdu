@@ -4,7 +4,6 @@
 
 		<input type="{$data.typeChamp}" name="{$unChamp}" id="{$unChamp}" class="form-control {$data.classCSS}
 				{if ($data.typeDate == 1)} uneDate{/if}
-				{* if ($data.autocomplete == 'O')} autocomplete{/if *}
 				{if ($data.classCSS == 'obligatoire')} required{/if}"
 				autocomplete="off"
 				placeholder="{$data.label}"

@@ -7,6 +7,7 @@
 			<label for="{$unChamp}" class="sr-only">{$data.label}</label>
 			{strip}
 			<textarea {if ($data.classCSS == 'obligatoire')} required {/if}
+				style="min-width: 100%"
 				name="{$unChamp}"
 				tabIndex="{$tabIndex}"
 				id="{$unChamp}"

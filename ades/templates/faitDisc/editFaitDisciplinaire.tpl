@@ -5,7 +5,7 @@
 
 		<h3 style="color:{$prototype.structure.couleurTexte}; background-color:{$prototype.structure.couleurFond}">{$prototype.structure.titreFait}</h3>
 
-		<form role="form" name="editFaitDisc" id="editFaitDisc" action="index.php" method="POST" class="form-vertical">
+		<form role="form" id="editFaitDisc" class="form-vertical">
 
 			{foreach from=$prototype.champs key=unChamp item=data}
 
@@ -37,32 +37,25 @@
 
 			{assign var="tabIndex" value=$tabIndex+1 scope="global"}
 			<div class="clearfix"></div>
-			{if $mode == 'edit'}
+
 			<div class="btn-group pull-right">
 				<button class="btn btn-default" type="reset" name="Reset">
 					Annuler
 				</button>
-				<button class="btn btn-primary" type="submit" name="Enregistrer">
+				<button class="btn btn-primary" type="button" name="Enregistrer" id="saveEditedFait">
 					<i class="fa fa-save"></i> Enregistrer
 				</button>
 			</div>
-			{else}
-			<button class="btn btn-danger pull-right" type="submit">
-				<i class="fa fa-times"></i> Supprimer
-			</button>
-			{/if}
+
 			<div class="clearfix"></div>
 
 			<input type="hidden" name="anneeScolaire" value="{$fait.anneeScolaire}">
 			<input type="hidden" name="classe" value="{$Eleve.groupe}">
-			<input type="hidden" name="idfait" value="{$fait.idfait|default:''}">
-			<input type="hidden" name="action" value="fait">
+			<input type="hidden" name="idfait" value="{$idfait|default:''}">
+			<input type="hidden" name="oldIdretenue" value="{$fait.idretenue|default:0}">
+			{* <input type="hidden" name="action" value="fait">
+			<input type="hidden" name="mode" value="enregistrer"> *}
 
-			{if $mode == 'edit'}
-			<input type="hidden" name="mode" value="enregistrer">
-			{else}
-			<input type="hidden" name="mode" value="delete">
-			{/if}
 		</form>
 
 	</div>  <!-- col-md.... -->
@@ -205,15 +198,15 @@ $(document).ready(function(){
 			}
 		})
 
-	var acronyme = $("#professeur").val().toUpperCase();
-	if (acronyme != '') {
-		$.post("inc/nomPrenom.inc.php", {
-			acronyme: acronyme
-			},
-			function(resultat) {
-				$("#nomPrenom").html(resultat)
-				});
-		}
+		if ($("#professeur").length > 0) {
+	        var acronyme = $("#professeur").val().toUpperCase();
+	        $.post("inc/nomPrenom.inc.php", {
+	            acronyme: acronyme
+	            },
+	            function(resultat) {
+	                $("#nomPrenom").html(resultat)
+	                });
+	        }
 })
 
 </script>

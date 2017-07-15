@@ -14,7 +14,7 @@
 					<p style="font-weight: bolder">Du {$debut} au {$fin}</p>
 				</div>
 				<div class="col-xs-2">
-					<img src="../photos/{$listeEleves.$matricule.photo}.jpg" alt="{$matricule}" style="width:100px" class="img-responsive pull-right">
+					<img src="../photos/{$listeEleves.$matricule.photo}.jpg" alt="{$matricule}" style="width:60px; margin: 0.5em" class="img-thumbnail pull-right">
 				</div>
 
 			</div>

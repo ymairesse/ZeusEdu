@@ -1,21 +1,19 @@
 {if ($userStatus == 'educ') || ($userStatus == 'admin')}
-{* boutons pour ajouter un fait disciplinaire *}
-<div class="btn-group hidden-print">
-	{foreach from=$listeTypesFaits item=unTypeFait}
-	<button class="btn newFait" type="button"
-		style="color:{$unTypeFait.couleurTexte};background-color:{$unTypeFait.couleurFond}"
-		data-matricule="{$eleve.matricule}"
-		data-classe="{$eleve.classe}"
-		data-typefait="{$unTypeFait.type}">
-		{$unTypeFait.titreFait}
-	</button>
-	{/foreach}
-</div>
+
+	{* boutons pour ajouter un fait disciplinaire *}
+	<div class="btn-group hidden-print">
+		{foreach from=$listeTypesFaits item=unTypeFait}
+		<button class="btn newFait" type="button"
+			style="color:{$unTypeFait.couleurTexte};background-color:{$unTypeFait.couleurFond}"
+			data-matricule="{$eleve.matricule}"
+			data-classe="{$eleve.classe}"
+			data-typefait="{$unTypeFait.type}">
+			{$unTypeFait.titreFait}
+		</button>
+		{/foreach}
+	</div>
 
 {/if}
-
-{assign var=listeFaitsAnnees value=$ficheDisc->laListeFaits()}
-{assign var=listeRetenues value=$ficheDisc->laListeRetenues()}
 
 <div class="container">
 
@@ -24,7 +22,7 @@
 		<div class="col-xs-12">
 			<!-- Tabs différentes années scolaires -->
 			<ul class="nav nav-tabs navbar-right hidden-print" id="tabsDisc">
-				{foreach from=$listeFaitsAnnees key=anneeScolaire item=wtf name=boucleAnScol}
+				{foreach from=$listeTousFaits key=anneeScolaire item=wtf name=boucleAnScol}
 				<li {if $smarty.foreach.boucleAnScol.iteration == 1}class="active"{/if} data-anneescolaire="{$anneeScolaire}">
 					<a href="#tab{$anneeScolaire}"
 						data-anneescolaire="{$anneeScolaire}"
@@ -46,14 +44,14 @@
 			<div class="tab-content">
 				{assign var=tour value=0}
 
-				{foreach from=$listeFaitsAnnees key=anneeScolaire item=listeFaits}
+				{foreach from=$listeTousFaits key=anneeScolaire item=listeFaits}
 
 				<div class="tab-pane{if $tour == 0} active{assign var=tour value=$tour+1}{else} hidden-print{/if}" id="tab{$anneeScolaire}">
 
 					<h3>
 						<button type="button" id="openAll" class="btn btn-success btn-xs"><i class="fa fa-arrow-down"></i></button>
 						{$anneeScolaire}
-						<a target="_blank" href="inc/printFicheCourante.php?matricule={$matricule}&amp;anScol={$anneeScolaire}" class="btn btn-primary btn-xs pull-right">
+						<a target="_blank" href="inc/printFicheCourante.php?matricule={$eleve.matricule}&amp;anScol={$anneeScolaire}" class="btn btn-primary btn-xs pull-right">
 							<i class="fa fa-print"></i> Imprimer
 						</a>
 					</h3>
@@ -71,6 +69,7 @@
 					</h3>
 
 					<div class="table-responsive">
+
 						<table class="table table-striped table-condensed tableauBull">
 							{* ----------------- ligne de titre du tableau -------------------------- *}
 							<tr>
@@ -93,8 +92,9 @@
 							{* // ----------------- ligne de titre du tableau -------------------------- *}
 
 							{* ------------------ description du fait -------------------------------- *}
+
 							{foreach from=$listeFaits.$typeFait key=idfait item=unFaitDeCeType}
-							<tr>
+							<tr data-idfait="{$idfait}">
 								<td style="width:1em">
 									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
 									<button type="button" class="btn btn-danger btn-xs delete" data-idfait="{$idfait}" title="Supprimer ce fait">
@@ -136,15 +136,9 @@
 										{assign var=type value=$descriptionTypeFait.type}
 										{if ($listeTypesFaits.$type.typeRetenue > 0) && (in_array($champ,array('dateRetenue','heure','duree','local')))}
 											{assign var=idretenue value=$unFaitDeCeType.idretenue}
-											{if isset($listeRetenues.$idretenue)}
-												{assign var=typeRetenue value=$listeRetenues.$idretenue}
-												{if $descriptionChamps.$champ.typeDate == '1'}
-													{$listeRetenues.$idretenue.$champ|default:'&nbsp;'}
-												{else}
-													{$listeRetenues.$idretenue.$champ|default:'&nbsp;'}
-												{/if}
-											{/if}
-										{else} {$unFaitDeCeType.$champ|default:'&nbsp;'}
+											{$listeRetenuesEleve.$idretenue.$champ}
+										{else}
+											{$unFaitDeCeType.$champ|default:'&nbsp;'}
 										{/if}
 									</td>
 									{/if}
@@ -153,11 +147,12 @@
 
 								<td style="width:16px">
 									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
-									<button type="button" class="btn btn-success btn-xs edit" data-idfait="{$idfait}" title="Modifier ce fait">
+									<button type="button" class="btn btn-success btn-xs edit" data-matricule="{$eleve.matricule}" data-idfait="{$idfait}" data-typefait="{$typeFait}" title="Modifier ce fait">
 										<i class="fa fa-edit"></i>
 									</button>
 
-									{else}&nbsp; {/if}
+									{else}&nbsp;
+									{/if}
 								</td>
 							</tr>
 							{/foreach} {* // ------------------ description du fait -------------------------------- *}
@@ -179,7 +174,7 @@
 
 		<div class="col-md-2 col-sm-2 hidden-print">
 
-			<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
+			<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
 
 		</div>
 

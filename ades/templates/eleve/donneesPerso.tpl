@@ -42,7 +42,7 @@
 
 	<div class="col-md-2 col-sm-2 hidden-print">
 
-		<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="draggable photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
+		<img src="../photos/{$eleve.photo}.jpg" alt="{$eleve.matricule}" class="draggable photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}">
 
 	</div>
 

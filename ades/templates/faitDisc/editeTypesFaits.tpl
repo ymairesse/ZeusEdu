@@ -49,9 +49,7 @@
                 <p>Vous allez supprimer définitivement le type de fait disciplinaire <strong id="modalTitreFait"></strong></p>
             </div>
             <div class="modal-footer">
-                <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-danger" name="button" id="btn-delTypeFait" data-type=''>Veuillez confirmer</button>
-                </div>
+                <button type="button" class="btn btn-danger pull-right" name="button" id="btn-delTypeFait" data-type=''>Veuillez confirmer</button>
             </div>
         </div>
     </div>
@@ -72,10 +70,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <div class="btn-group pull-right">
-                    <button type="reset" name="button" class="btn btn-default">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="btn-submitTypeFait">Enregistrer</button>
-                </div>
+            <button type="button" class="btn btn-primary pull-right" id="btn-submitTypeFait">Enregistrer</button>
             </div>
         </div>
     </div>

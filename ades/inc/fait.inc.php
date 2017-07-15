@@ -1,49 +1,15 @@
 <?php
 
-    $idfait = isset($_REQUEST['idfait']) ? $_REQUEST['idfait'] : null;
-    $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
-    switch ($mode) {
-    case 'delete':
-        if ($idfait != null) {
-            $nb = $ficheDisc->supprFait($idfait);
-            $smarty->assign('message', array(
-            'title' => DELETE,
-            'texte' => sprintf("Effacement de: %d fait(s)",$nb),
-            'urgence' => 'danger', ));
-            $ficheDisc->relireFaitsDisciplinaires($matricule);
-            $afficherEleve = true;
-        }
-        break;
+$idfait = isset($_REQUEST['idfait']) ? $_REQUEST['idfait'] : null;
+$type = isset($_REQUEST['type']) ? $_REQUEST['type'] : null;
 
-    case 'edit':
-        // if (isset($idfait)) {
-        //     // on ne vient pas du case 'new', il faut assigner le $fait et le $type
-        //     $fait = $ficheDisc->lireUnFait($idfait);
-        //     $smarty->assign('fait', $fait);
-        //     $type = $fait['type'];
-        //     $smarty->assign('type', $type);
-        // }
-        //
-        // // liste nécessaire pour obtenir une liste des profs à l'origine du signalement du fait
-        // $smarty->assign('listeProfs', $Ecole->listeProfs(false));
-        // // acronyme de l'utilisateur pour indiquer qui a pris note du fait
-        // $smarty->assign('acronyme', $user->acronyme());
-        //
-        // $prototype = $Ades->prototypeFait($type);
-        // $smarty->assign('prototype', $prototype);
-        // $listeRetenues = $Ades->listeRetenues($prototype['structure']['typeRetenue'], true);
-        // $smarty->assign('listeRetenues', $listeRetenues);
-        // $smarty->assign('listeMemos', $Ades->listeMemos($user->acronyme()));
-        //
-        // $smarty->assign('action', $action);
-        // $smarty->assign('mode', 'enregistrer');
-        // $smarty->assign('classe', $classe);
-        // $smarty->assign('matricule', $matricule);
-        // $smarty->assign('corpsPage', 'editFaitDisciplinaire');
-        break;
+$module = $Application->getModule(1);
+require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
+$EleveAdes = new EleveAdes();
+
+switch ($mode) {
     case 'enregistrer':
         $type = isset($_POST['type']) ? $_POST['type'] : null;
-
         $oldIdretenue = isset($_POST['oldIdretenue']) ? $_POST['oldIdretenue'] : null;
         // quand c'est une retenue et qu'il s'agit d'une édition, un problème peut se poser.
         // si la date de retenue n'est plus disponible (elle est cachée), on ne peut plus la sélectionner
@@ -54,7 +20,7 @@
 
         // si c'est une retenue, on retrouve les détails (date, local,...) de celle-ci dans la BD
         $retenue = ($prototype['structure']['typeRetenue'] != 0) ? $Ades->detailsRetenue($idretenue) : null;
-        $nb = $ficheDisc->enregistrerFaitDisc($_POST, $prototype, $retenue, $acronyme);
+        $nb = $EleveAdes->enregistrerFaitDisc($_POST, $prototype, $retenue, $acronyme);
         $smarty->assign('message', array(
             'title' => SAVE,
             'texte' => sprintf('Enregistrement de: %d fait',$nb),
@@ -63,8 +29,9 @@
 		$smarty->assign('classe',$classe);
 		$smarty->assign('action','');
 
-        $ficheDisc->relireFaitsDisciplinaires($matricule);
+        $ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
+        $smarty->assign('listeTousFaits', $ficheDisciplinaire);
 		$smarty->assign('selecteur','selecteurs/selectClasseEleve');
         $afficherEleve = true;
         break;
-    }
+}

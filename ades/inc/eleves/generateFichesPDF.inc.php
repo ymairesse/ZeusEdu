@@ -8,6 +8,7 @@ $Application = new Application();
 
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+
 session_start();
 if (!(isset($_SESSION[APPLICATION]))) {
     echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
@@ -17,39 +18,59 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-
 $module = $Application->getModule(3);
+
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 
-$debut = isset($_POST['debut']) ? $_POST['debut'] : null;
-$fin = isset($_POST['fin']) ? $_POST['fin'] : null;
-$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
-$classe = isset($_POST['classe']) ? $_POST['classe'] : null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
+require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
+$EleveAdes = new EleveAdes();
+
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
+
+require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$form = array();
+parse_str($formulaire, $form);
+
+$debut = $form['debut'];
+$fin = $form['fin'];
+$matricule = isset($form['matricule']) ? $form['matricule'] : null;
+$niveau = isset($form['niveau']) ? $form['niveau'] : null;
+$classe = isset($form['classe']) ? $form['classe'] : null;
+
+// détermination des types de faits à imprimer
+$aImprimer = array();
+foreach ($form AS $field => $value) {
+    if (substr($field, 0, 4) == 'type') {
+        $typeFait = explode('_', $field);
+        $aImprimer[$typeFait[1]] = 1;
+    }
+}
 
 // génération pour un élève isolé, une classe ou le niveau d'étude
 if ($matricule == Null) {
     if ($classe == Null) {
         $groupe = sprintf('Niveau %d e', $niveau);
+        $listeEleves = $listeEleves = $Ecole->listeElevesNiveaux($niveau);
         }
         else {
             $groupe = 'Classe '.$classe;
+            $listeEleves = $Ecole->listeEleves($classe, 'groupe');
         }
     }
     else {
-        $eleve = Eleve::staticGetDetailsEleve($matricule);
         $groupe = $eleve['nom'].' '.$eleve['prenom'];
+        $listeEleves = Eleve::staticGetDetailsEleve($matricule);
     }
 
 // liste de tous les champs existants
 $listeChamps = $Ades->lireDescriptionChamps();
 // description de chacun des types de faits
 $listeTypesFaits = $Ades->listeTypesFaits();
-$listeEleves = $Ecole->listeEleves($classe, 'groupe');
-$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin);
+$listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin, ANNEESCOLAIRE, $aImprimer);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
@@ -67,6 +88,8 @@ $smarty->assign('BASEDIR', BASEDIR);
 
 define('PAGEWIDTH', 600);
 $echelles = $Ades->fieldWidth(PAGEWIDTH, $listeTypesFaits, $listeChamps);
+$smarty->assign('debut', $debut);
+$smarty->assign('fin', $fin);
 $smarty->assign('echelles', $echelles);
 $smarty->assign('contexte', 'tableau');
 $smarty->assign('listeTypesFaits', $listeTypesFaits);
@@ -76,12 +99,11 @@ $smarty->assign('listeFaits', $listeFaits);
 require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
 $html2pdf = new Html2PDF('P', 'A4', 'fr');
 foreach ($listeFaits as $classe => $listeFaitsParEleves) {
-    $smarty->assign('listeFaitsParEleves', $listeFaitsParEleves);
     foreach ($listeFaitsParEleves as $matricule => $lesFaits) {
         $smarty->assign('lesFaits', $lesFaits);
         $Eleve = $listeEleves[$matricule];
         $smarty->assign('Eleve', $Eleve);
-        $listeRetenues = $Ades->getListeRetenues($matricule);
+        $listeRetenues = $EleveAdes->getListeRetenuesEleve($matricule);
         $smarty->assign('listeRetenues', $listeRetenues);
         $ficheEleve4PDF = $smarty->fetch('../../templates/eleve/fichesDiscipline4PDF.tpl');
         $html2pdf->WriteHTML($ficheEleve4PDF);

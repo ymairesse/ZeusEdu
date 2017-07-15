@@ -1,7 +1,8 @@
 <div id="selecteur" class="noprint">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
-		<select name="typeRetenue" id="selectType">
+
+		<select name="typeRetenue" id="selectType" class="form-control input-sm">
 		<option value="">Type de retenue</option>
 		{foreach from=$listeTypes key=ceType item=unType}
 			<option value="{$ceType}"{if isset($typeRetenue) && ($typeRetenue == $ceType)} selected="selected"{/if}>{$unType.titreFait}</option>
@@ -10,7 +11,7 @@
 
 		<span id="choixDateRetenue">
 
-		{include file="selecteurs/selectListesRetenues.tpl"}
+			{include file="selecteurs/selectListesRetenues.tpl"}
 
 		</span>
 

@@ -9,9 +9,9 @@ $Application = new Application();
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
-
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $anScol = isset($_GET['anScol']) ? $_GET['anScol'] : null;
@@ -23,10 +23,10 @@ $Eleve = $eleve->getDetailsEleve();
 
 $module = $Application->getModule(2);
 require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
-$ficheDisc = new EleveAdes($matricule);
+$EleveAdes = new EleveAdes($matricule);
 
-$listeFaits = $ficheDisc->laListeFaits()[$anScol];
-$listeRetenues = $ficheDisc->laListeRetenues();
+$listeFaits = $EleveAdes->getListeFaits($matricule)[$anScol];
+$listeRetenues = $EleveAdes->getListeRetenuesEleve($matricule);
 
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();

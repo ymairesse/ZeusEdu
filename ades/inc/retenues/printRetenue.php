@@ -8,10 +8,11 @@ $Application = new Application();
 
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
-session_start();
 
+session_start();
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
@@ -22,9 +23,12 @@ $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 
+require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
+$EleveAdes = new EleveAdes();
+
 $idfait = isset($_GET['idfait']) ? $_GET['idfait'] : null;
 
-$infosFait = $Ades->infosFait($idfait);
+$infosFait = $EleveAdes->infosFait($idfait);
 foreach ($infosFait as $key => $chaine) {
     $infosFait[$key] = html_entity_decode($chaine);
 }
@@ -56,7 +60,7 @@ foreach ($Eleve as $key => $value) {
     $smarty->assign("$key", $value);
 }
 
-if ($idretenue != '') {
+if ($idretenue != 0) {
     foreach ($infosRetenue as $key => $value) {
         $smarty->assign("$key", $value);
     }

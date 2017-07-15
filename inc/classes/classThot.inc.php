@@ -1095,6 +1095,118 @@ class thot
     }
 
     /**
+     * retourne la liste des parents d'une classe avec le statut de vérification de l'adresse Mailer
+     *
+     * @param $groupe : le groupe classe visé
+     *
+     * @return array
+     */
+    public function getMailsParentsClasse($groupe) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtp.matricule, classe, de.nom AS nomEleve, de.prenom AS prenomEleve, ';
+        $sql .= 'formule, dtp.nom, dtp.prenom, userName, mail, lien, confirme ';
+        $sql .= 'FROM '.PFX.'thotParents AS dtp ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
+        $sql .= 'WHERE groupe=:groupe ';
+        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nomEleve, ' ', ''),'''',''),'-',''), prenomEleve ";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 6);
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $liste[$matricule][] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * Vérification de l'existence d'un utilisateur dont on fournit l'identifiant ou l'adresse mail.
+     *
+     * @param string $parametre : identifiant ou adresse mail
+     * @param string $critere   : 'userName' ou 'mail'
+     *
+     * @return array : l'identité complète de l'utilisateur ou Null
+     */
+    public function verifUser($parametre, $critere)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, formule, nom, prenom, userName, mail, md5pwd, lien ';
+        $sql .= 'FROM '.PFX.'thotParents ';
+
+        if ($critere == 'userName') {
+            $sql .= 'WHERE userName =:parametre ';
+            $sql .= 'LIMIT 1 ';
+        } else {
+            $sql .= 'WHERE mail=:parametre ';
+            $sql .= 'LIMIT 1 ';
+        }
+
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':parametre', $parametre, PDO::PARAM_STR, 60);
+
+        $resultat = $requete->execute();
+        $identite = null;
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $identite = $requete->fetch();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $identite;
+    }
+
+    /**
+     * Envoi du mail de confirmation d'inscription sur la plate-forme
+     *
+     * @param $userName : nom d'utilisateur du parent
+     *
+     * @return bool : le mail a été envoyé
+     */
+    public function sendConfirmMail($userName, $texteMail) {
+        $identite = $this->verifUser($userName, 'userName');
+
+        require_once INSTALL_DIR.'/phpMailer/class.phpmailer.php';
+        $mail = new PHPmailer();
+        $mail->IsHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->From = MAILADMIN;
+        $mail->FromName = ADMINTHOT;
+        $mail->AddAddress($identite['mail']);
+        $mail->Subject = 'Confirmation de votre adresse mail';
+        $mail->Body = $texteMail;
+
+        return $mail->Send();
+    }
+
+    /**
+     * Suppression d'un utilisateur "parent"
+     *
+     * @param $userName : nom d'utilisateur
+     *
+     * @return int : nombre d'enregistrements supprimés (0 ou 1)
+     */
+    public function delUserParent($userName) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotParents ';
+        $sql .= 'WHERE userName=:userName ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':userName', $userName, PDO::PARAM_STR, 25);
+        $n = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $n;
+    }
+
+    /**
      * renvoie la liste des RV pris pour un prof donné et pour une date donnée.
      *
      * @param $acronyme : l'acronyme du profs
@@ -1833,7 +1945,7 @@ class thot
             $sql = 'INSERT INTO '.PFX.'thotRpLocaux ';
             $sql .= 'SET date = :date, acronyme= :acronyme, local=:local ';
             $sql .= 'ON DUPLICATE KEY UPDATE local=:local ';
-            echo $sql;
+
             $requete = $connexion->prepare($sql);
             $nb = 0;
             foreach ($post as $field => $local) {
@@ -1841,7 +1953,6 @@ class thot
                 if ($field[0] == 'local') {
                     $acronyme = $field[1];
                     $data = array(':acronyme' => $acronyme, ':local' => $local, ':date' => $date);
-                    Application::afficher($data);
                     $nb += $requete->execute($data);
                 }
             }

@@ -1,37 +1,51 @@
 <div id="selecteur" class="noprint">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
-		<select name="classe" id="selectClasse">
+
+	<form name="selecteur" id="formSelecteur" role="form" class="form-inline">
+		<select name="classe" id="selectTrombi" class='form-control input-sm'>
 		<option value="">Classe</option>
 			{foreach from=$lesGroupes item=unGroupe}
 				<option value="{$unGroupe}" {if isset($classe) && ($unGroupe == $classe)}selected{/if}>{$unGroupe}</option>
 			{/foreach}
 		</select>
-		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
-		<input type="hidden" name="action" value="{$action}">
-		<input type="hidden" name="mode" value="{$mode}">
-		<input type="hidden" name="etape" value="showEleve">
+		<button type="button" class="btn btn-primary btn-sm" id="envoiClasse">OK</button>
+		<span id="ajaxLoader" class="hidden pull-right">
+			<img src="images/ajax-loader.gif" alt="loading" class="img-responsive">
+		</span>
+
 	</form>
+
 </div>
 
 <script type="text/javascript">
-{literal}
-	$(document).ready (function() {
+
+	$(document).ready(function(){
 		
-		$("#selectClasse").change(function(){
-			if ($(this).val() != '') {
-				$("#envoi").show();
-				$("#formSelecteur").submit();
-			}
-		})
-		
-		$("#formSelecteur").submit(function(){
-			if ($("#selectClasse").val() == '')
-				return false;
-				else {
-					$.blockUI();
-					$("#wait").css("z-index","999").show();
-					}
+		$('#envoiClasse').click(function(){
+			var classe = $('#selectTrombi').val();
+			if (classe != '') {
+				$.post('inc/eleves/generateTrombi.inc.php', {
+					classe: classe
+				},
+				function(resultat){
+					$("#trombinoscope").html(resultat).show();
+					$("#ficheEleve").hide();
+					})
+				}
+				else $("#trombinoscope").hide();
+			})
+
+		$('#selectTrombi').change(function(){
+			var classe = $(this).val();
+			if (classe != '')
+				$.post('inc/eleves/generateTrombi.inc.php', {
+					classe: classe
+				},
+				function(resultat){
+					$("#ficheEleve").hide();
+					$("#trombinoscope").html(resultat).show();
+				})
+
 		})
 	})
-{/literal}
+
 </script>
