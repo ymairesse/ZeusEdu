@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="menu.css" type="text/css" media="screen">
 <link type="text/css" media="all" rel="stylesheet" href="bootstrap/css/bootstrap.css">
 
-<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/jquery.validate.js"></script>
 
