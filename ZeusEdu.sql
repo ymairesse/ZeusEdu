@@ -7,49 +7,50 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 
-CREATE TABLE `didac_adesChamps` (
+CREATE TABLE IF NOT EXISTS `didac_adesChamps` (
   `champ` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `label` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `contextes` varchar(60) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'formulaire',
   `typeDate` tinyint(4) NOT NULL,
+  `typeDateRetenue` tinyint(4) NOT NULL,
   `typeChamp` enum('text','textarea','select','hidden','') COLLATE utf8_unicode_ci NOT NULL,
   `size` smallint(6) NOT NULL,
   `maxlength` smallint(6) NOT NULL,
   `colonnes` smallint(6) NOT NULL,
   `lignes` smallint(6) NOT NULL,
   `classCSS` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `autocomplete` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N' COMMENT 'Le champ permet "autocomplete"',
   `printWidth` tinyint(4) NOT NULL DEFAULT '0',
-  `obligatoire` tinyint(1) NOT NULL DEFAULT '0',
-  `retenue` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Champ obligatoire pour une retenue?',
-  `info` text COLLATE utf8_unicode_ci COMMENT 'Information sur le rôle du champ'
+  `obligatoire` tinyint(1) NOT NULL,
+  `retenue` tinyint(1) NOT NULL COMMENT 'Champ obligatoire pour une retenue?',
+  `info` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Information sur le rôle du champ'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Description des champs dans la base de données';
 
-INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `typeChamp`, `size`, `maxlength`, `colonnes`, `lignes`, `classCSS`, `printWidth`, `obligatoire`, `retenue`, `info`) VALUES
-('ladate', 'Date du jour', 'formulaire,tableau,minimum', 1, 'text', 12, 10, 0, 0, 'obligatoire', 12, 1, 1, 'Date du jour où le fait disciplinaire est noté'),
-('professeur', 'Professeur', 'formulaire,tableau,minimum', 0, 'text', 5, 10, 0, 0, 'obligatoire', 16, 0, 0, 'Abréviation du professeur à l\'origine du fait disciplinaire.'),
-('motif', 'Motif', 'formulaire,tableau,minimum', 0, 'textarea', 0, 0, 60, 4, 'obligatoire', 60, 0, 0, 'Motif de la prise en compte d\'un fait disciplinaire pour l\'élève'),
-('idretenue', 'Identifiant de la retenue', 'formulaire', 0, 'select', 0, 0, 0, 0, 'obligatoire', 0, 0, 1, 'Identifiant de la retenue: information technique interne à l\'application ADES'),
-('travail', 'Travail à effectuer', 'formulaire,billetRetenue', 0, 'textarea', 0, 0, 60, 2, '', 50, 0, 0, 'Travail à effectuer en réparation ou punition du fait disciplinaire'),
-('sanction', 'Sanction', 'formulaire,tableau', 0, 'textarea', 0, 0, 60, 2, 'obligatoire', 60, 0, 0, 'Sanction appliquée (jour de renvoi, etc) en conséquence du fait disciplinaire'),
-('nopv', 'Numéro de PV', 'formulaire,tableau', 0, 'text', 20, 20, 0, 0, 'obligatoire', 6, 0, 0, 'Numéro du PV relatif au fait disciplinaire'),
-('qui', 'Resp. de l\'encodage', 'formulaire', 0, 'hidden', 0, 0, 0, 0, '', 12, 1, 1, 'Abréviation de la personne qui a noté le fait disciplinaire. Information technique  non visible à l\'utilisateur.'),
-('matricule', 'Matricule de l\'élève', 'formulaire', 0, 'hidden', 0, 0, 0, 0, '', 4, 1, 1, 'Matricule de l\'élève auquel on reproche un fait disciplinaire'),
-('idfait', 'Id. du fait', 'formulaire', 0, 'hidden', 0, 0, 0, 0, '', 0, 1, 1, 'Identifiant du fait disciplinaire. Information technique interne à ADES invisible à l\'utilisateur.'),
-('type', 'Type de fait', 'formulaire', 0, 'hidden', 0, 0, 0, 0, '', 0, 1, 0, 'Identifiant du type de fait disciplinaire. Information interne à l\'application ADES et invisible à l\'utilisateur'),
-('typeDeRetenue', 'Type de retenue', 'formulaire', 0, 'hidden', 0, 0, 0, 0, '', 0, 0, 1, 'Il peut exister plusieurs types de retenues. Identifiant de ce type. Information technique interne à l\'application et invisibles à l\'utilisateur.'),
-('materiel', 'Matériel à prévoir', 'formulaire,billetRetenue', 0, 'textarea', 0, 0, 60, 2, '', 30, 0, 0, 'Dans le cadre du travail à réaliser ou de la sanction appliquée, matériel dont l\'élève devra disposer.'),
-('dateRetenue', 'Date de retenue', 'tableau,billetRetenue', 1, '', 0, 0, 0, 0, '', 12, 0, 1, 'Date à laquelle aura lieu la retenue imposée à l\'élève.'),
-('heure', 'Heure', 'tableau,billetRetenue', 0, '', 0, 0, 0, 0, '', 15, 0, 1, 'Heure à laquelle aura lieu la retenue imposée à l\'élève'),
-('duree', 'Durée', 'tableau,billetRetenue', 0, '', 0, 0, 0, 0, '', 10, 0, 1, 'Durée de la retenue imposée à lélève'),
-('local', 'Local', 'billetRetenue', 0, '', 0, 0, 0, 0, '', 6, 0, 1, 'Local où se déroulera la retenue imposée à l\'élève'),
-('anneeScolaire', 'Année scolaire', 'formulaire', 0, 'hidden', 0, 0, 0, 0, '', 9, 1, 1, 'Année scolaire durant laquelle le fait disciplinaire est noté.');
+INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `typeDateRetenue`, `typeChamp`, `size`, `maxlength`, `colonnes`, `lignes`, `classCSS`, `autocomplete`, `printWidth`, `obligatoire`, `retenue`, `info`) VALUES
+('ladate', 'Date du jour', 'formulaire,tableau,minimum', 1, 0, 'text', 12, 10, 0, 0, 'obligatoire', 'N', 12, 1, 1, 'Date du jour où le fait disciplinaire est noté'),
+('professeur', 'Professeur', 'formulaire,tableau,minimum', 0, 0, 'text', 5, 10, 0, 0, 'obligatoire', 'O', 16, 0, 0, 'Abréviation du professeur à l''origine du fait disciplinaire.'),
+('motif', 'Motif', 'formulaire,tableau,minimum', 0, 0, 'textarea', 0, 0, 60, 4, 'obligatoire', 'N', 60, 0, 0, 'Motif de la prise en compte d''un fait disciplinaire pour l''élève'),
+('idretenue', 'Identifiant de la retenue', 'formulaire', 0, 1, 'select', 0, 0, 0, 0, 'obligatoire', 'N', 0, 0, 1, 'Identifiant de la retenue: information technique interne à l''application ADES'),
+('travail', 'Travail à effectuer', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N', 50, 0, 0, 'Travail à effectuer en réparation ou punition du fait disciplinaire'),
+('sanction', 'Sanction', 'formulaire,tableau', 0, 0, 'textarea', 0, 0, 60, 2, 'obligatoire', 'N', 60, 0, 0, 'Sanction appliquée (jour de renvoi, etc) en conséquence du fait disciplinaire'),
+('nopv', 'Numéro de PV', 'formulaire,tableau', 0, 0, 'text', 20, 20, 0, 0, 'obligatoire', 'N', 6, 0, 0, 'Numéro du PV relatif au fait disciplinaire'),
+('qui', 'Resp. de l''encodage', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 12, 1, 1, 'Abréviation de la personne qui a noté le fait disciplinaire. Information technique  non visible à l''utilisateur.'),
+('matricule', 'Matricule de l''élève', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 4, 1, 1, 'Matricule de l''élève auquel on reproche un fait disciplinaire'),
+('idfait', 'Id. du fait', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0, 1, 1, 'Identifiant du fait disciplinaire. Information interne à l''application ADES et invisible à l''utilisateur'),
+('type', 'Type de fait', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0, 1, 1, 'Identifiant du type de fait disciplinaire. Information interne à l''application ADES et invisible à l''utilisateur'),
+('typeDeRetenue', 'Type de retenue', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 0, 0, 1, 'Il peut exister plusieurs types de retenues. Identifiant de ce type. Information technique interne à l''application et invisibles à l''utilisateur.'),
+('materiel', 'Matériel à prévoir', 'formulaire,billetRetenue', 0, 0, 'textarea', 0, 0, 60, 2, '', 'N', 30, 0, 0, 'Dans le cadre du travail à réaliser ou de la sanction appliquée, matériel dont l''élève devra disposer.'),
+('dateRetenue', 'Date de retenue', 'tableau,billetRetenue', 1, 0, '', 0, 0, 0, 0, '', 'N', 12, 0, 1, 'Date à laquelle aura lieu la retenue imposée à l''élève.'),
+('heure', 'Heure', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 15, 0, 1, 'Heure à laquelle aura lieu la retenue imposée à l''élève'),
+('duree', 'Durée', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 10, 0, 1, 'Durée de la retenue imposée à lélève'),
+('local', 'Local', 'billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 6, 0, 1, 'Local où se déroulera la retenue imposée à l''élèveLocal où se déroulera la retenue imposée à l''élève'),
+('anneeScolaire', 'Année scolaire', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 9, 1, 1, 'Année scolaire durant laquelle le fait disciplinaire est noté.');
 --
 ALTER TABLE `didac_adesChamps`
   ADD PRIMARY KEY (`champ`);
 
 
-
-  CREATE TABLE `didac_adesChampsFaits` (
+  CREATE TABLE IF NOT EXISTS `didac_adesChampsFaits` (
     `typeFait` tinyint(4) NOT NULL COMMENT 'id du fait',
     `champ` enum('ladate','matricule','idfait','type','qui','idretenue','motif','travail','professeur','materiel','dateRetenue','heure','duree','local','sanction','nopv','anneeScolaire') COLLATE utf8_unicode_ci NOT NULL
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des champs pour chaque type de faits';
@@ -160,28 +161,31 @@ ALTER TABLE `didac_adesChamps`
   (9, 'anneeScolaire');
 
   ALTER TABLE `didac_adesChampsFaits`
-    ADD PRIMARY KEY (`typeFait`,`champ`);
+   ADD PRIMARY KEY (`typeFait`,`champ`);
 
-    CREATE TABLE `didac_adesFaits` (
-      `idfait` int(11) NOT NULL,
-      `type` smallint(6) NOT NULL DEFAULT '0' COMMENT 'Type du fait (table adesTypesFaits',
-      `matricule` int(11) NOT NULL DEFAULT '0' COMMENT 'Identifiant de l''élève',
-      `ladate` date DEFAULT NULL COMMENT 'date de survenance du fait',
-      `motif` text COLLATE utf8_unicode_ci,
-      `professeur` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'XXX',
-      `qui` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-      `idretenue` smallint(4) DEFAULT NULL,
-      `travail` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
-      `materiel` varchar(120) COLLATE utf8_unicode_ci DEFAULT NULL,
-      `sanction` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-      `nopv` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-      `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-    ALTER TABLE `didac_adesFaits`
-      ADD PRIMARY KEY (`idfait`),
-      ADD KEY `ideleve` (`matricule`),
-      ADD KEY `date` (`ladate`);
+   CREATE TABLE IF NOT EXISTS `didac_adesFaits` (
+   `idfait` int(11) NOT NULL,
+     `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+     `type` smallint(6) NOT NULL DEFAULT '0',
+     `matricule` int(11) NOT NULL DEFAULT '0',
+     `ladate` date NOT NULL DEFAULT '0000-00-00',
+     `motif` text COLLATE utf8_unicode_ci NOT NULL,
+     `professeur` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+     `idretenue` smallint(4) NOT NULL,
+     `present` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève était-il présent à la retenue',
+     `signe` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève a-t-il présenté un billet de retenue signé',
+     `travail` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+     `materiel` varchar(120) COLLATE utf8_unicode_ci NOT NULL,
+     `sanction` varchar(80) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+     `nopv` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+     `qui` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+     `supprime` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N'
+   ) ENGINE=MyISAM AUTO_INCREMENT=25407 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+   ALTER TABLE `didac_adesFaits`
+    ADD PRIMARY KEY (`idfait`), ADD KEY `ideleve` (`matricule`), ADD KEY `date` (`ladate`);
 
 ALTER TABLE `didac_adesFaits`
     MODIFY `idfait` int(11) NOT NULL AUTO_INCREMENT;
@@ -223,49 +227,52 @@ CREATE TABLE IF NOT EXISTS didac_adesTextes (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Réserves de textes automatiques';
 
 
-CREATE TABLE `didac_adesTypesFaits` (
+CREATE TABLE IF NOT EXISTS `didac_adesTypesFaits` (
   `type` tinyint(4) NOT NULL,
   `titreFait` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `couleurFond` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   `couleurTexte` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
-  `typeRetenue` tinyint(4) NOT NULL DEFAULT '0',
-  `ordre` tinyint(4) NOT NULL
+  `typeRetenue` tinyint(4) NOT NULL,
+  `ordre` tinyint(4) NOT NULL,
+  `print` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Ce type de fait doit-il être mentionné dans les rapports de comportement'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleurTexte`, `typeRetenue`, `ordre`) VALUES
-(0, 'Retard après-midi', '#ccbb68', '#000000', 0, 1),
-(1, 'Retard au cours', '#187718', '#ffffff', 0, 2),
-(3, 'Exclusion du cours', '#aaaaaa', '#ffffff', 0, 3),
-(4, 'Retenue de travail', '#6cec05', '#000000', 1, 5),
-(5, 'Retenue Disciplinaire', '#ffffff', '#000000', 2, 7),
-(6, 'Retenue Bleue', '#8888ff', '#000000', 3, 6),
-(7, 'Renvoi', '#ff0000', '#ffffff', 0, 8),
-(2, 'Fait disciplinaire', '#F19D9D', '#000000', 0, 4);
+INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleurTexte`, `typeRetenue`, `ordre`, `print`) VALUES
+(0, 'Retard après-midi', '#ccbb68', '#000000', 0, 0, 1),
+(1, 'Retard au cours', '#187718', '#ffffff', 0, 1, 1),
+(3, 'Exclusion du cours', '#aaaaaa', '#ffffff', 0, 2, 1),
+(4, 'Retenue de travail', '#6cec05', '#000000', 1, 4, 1),
+(5, 'Retenue Disciplinaire', '#ffffff', '#000000', 2, 5, 1),
+(6, 'Retenue Bleue', '#8888ff', '#000000', 3, 6, 1),
+(7, 'Renvoi', '#ff0000', '#ffffff', 0, 7, 1),
+(2, 'Fait disciplinaire', '#F19D9D', '#000000', 0, 3, 1);
 
 ALTER TABLE `didac_adesTypesFaits`
-  ADD PRIMARY KEY (`type`);
+ ADD PRIMARY KEY (`type`);
 
 
---
--- Table structure for table `didac_athena`
---
+ CREATE TABLE `didac_athena` (
+   `id` int(11) NOT NULL,
+   `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
+   `matricule` int(11) NOT NULL,
+   `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
+   `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire au format XXXX-XXXX',
+   `date` date NOT NULL,
+   `heure` time NOT NULL,
+   `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
+   `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
+   `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
+   `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
+   `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `didac_athena` (
-  `id` int(11) NOT NULL,
-  `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
-  `matricule` int(11) NOT NULL,
-  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
-  `date` date NOT NULL,
-  `heure` time NOT NULL,
-  `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
-  `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
-  `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
-  `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
-  `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+ ALTER TABLE `didac_athena`
+   ADD PRIMARY KEY (`id`),
+   ADD KEY `date` (`date`),
+   ADD KEY `matricule` (`matricule`);
 
-ALTER TABLE `didac_athena`
- ADD PRIMARY KEY (`id`), ADD KEY `date` (`date`), ADD KEY `matricule` (`matricule`);
+ ALTER TABLE `didac_athena`
+   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 
 CREATE TABLE IF NOT EXISTS `didac_applications` (
