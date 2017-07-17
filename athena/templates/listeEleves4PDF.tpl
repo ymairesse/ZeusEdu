@@ -18,7 +18,8 @@
         {$nomCoach.prenom} {$nomCoach.nom}
      </page_footer>
 
-    <h3>Période: {if $dateDebut != ''} depuis le {$dateDebut}{/if} {if $dateFin != ''}jusqu'au {$dateFin}{/if}</h3>
+    <h3>Période: {if $dateDebut != ''} depuis le {$dateDebut}{/if}
+                {if $dateFin != ''} jusqu'au {$dateFin}{/if} [{$anneeScolaire}]</h3>
 
      <table style="width:100%">
              <tr>
@@ -31,8 +32,10 @@
                  {foreach from=$unEleve key=date item=uneVisite}
 
                  <tr {if $n == 1}style="background:#555; color: #fff"{/if}>
-                     <td>
-                         {$n} - {$uneVisite.prenom} {$uneVisite.nom}
+                     <td>{$n}
+                         {if $n ==1}
+                          - {$uneVisite.prenom} {$uneVisite.nom}
+                         {/if}
                      </td>
                      <td>Le {$date} à {$uneVisite.heure}</td>
                  </tr>

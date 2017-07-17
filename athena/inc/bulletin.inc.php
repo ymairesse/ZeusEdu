@@ -1,9 +1,12 @@
 <?php
+
 session_start();
 require_once("../../config.inc.php");
+
 // définition de la class Application
 require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
 $Application = new Application();
+
 // définition de la class Bulletin
 require_once (INSTALL_DIR."/bullISND/inc/classes/classBulletin.inc.php");
 $Bulletin = new Bulletin();
@@ -30,7 +33,10 @@ if ($listeCoursGrp) {
 
     $commentairesCotes = $Bulletin->listeCommentairesTousCours($matricule, $noBulletin);
     $mentions = $Bulletin->listeMentions($matricule, $noBulletin);
-    $ficheEduc = $Bulletin->listeFichesEduc($matricule, $noBulletin);
+
+    $commentairesEducs = $Bulletin->listeCommentairesEduc($matricule, $noBulletin);
+    $commentairesEducs = isset($commentairesEducs[$matricule][$noBulletin]) ? $commentairesEducs[$matricule][$noBulletin] : Null;
+
     $remarqueTitulaire = $Bulletin->remarqueTitu($matricule, $noBulletin);
     if ($remarqueTitulaire != null) {
         $remarqueTitulaire = $remarqueTitulaire[$matricule][$noBulletin];
@@ -57,7 +63,7 @@ if ($listeCoursGrp) {
     $smarty->assign('cotesPonderees', $cotesPonderees);
     $smarty->assign('commentaires', $commentairesCotes);
     $smarty->assign('attitudes', $tableauAttitudes);
-    $smarty->assign('ficheEduc', $ficheEduc);
+    $smarty->assign('commentairesEducs', $commentairesEducs);
     $smarty->assign('remTitu', $remarqueTitulaire);
     $smarty->assign('mention', $mentions);
     $smarty->assign('noticeDirection', $noticeDirection);

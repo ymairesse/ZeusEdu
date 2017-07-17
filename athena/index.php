@@ -14,7 +14,8 @@ $smarty->assign('acronyme', $acronyme);
 
 $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : null;
+$classe = Application::postOrCookie('classe', $unAn);
+
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
@@ -58,10 +59,14 @@ if ($smarty->getTemplateVars('corpsPage') == null) {
     $listeEleves = ($classe != null) ? $Ecole->listeEleves($classe, 'groupe') : null;
     $smarty->assign('action', 'ficheEleve');
     $smarty->assign('mode', 'wtf');
+    $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
     $elevesSuivis = Athena::getEleveUser($acronyme);
     $smarty->assign('elevesSuivis', $elevesSuivis);
     $clients = Athena::clientCoaching();
     $smarty->assign('clients', $clients);
+
+    $listeNiveaux = Ecole::listeNiveaux();
+    $smarty->assign('listeNiveaux', $listeNiveaux);
 
     $smarty->assign('corpsPage', 'elevesSuivis');
     $smarty->assign('listeEleves', $listeEleves);

@@ -26,13 +26,18 @@ $smarty->assign('noBulletin', PERIODEENCOURS);
 $smarty->assign('listeBulletins', range(0, PERIODEENCOURS));
 
 require_once INSTALL_DIR.'/ades/inc/classes/classEleveAdes.inc.php';
-$ficheDisc = new EleveAdes($matricule);
-$smarty->assign('ficheDisc', $ficheDisc);
-$smarty->assign('nbFaits', $ficheDisc->nbFaits($matricule, ANNEESCOLAIRE));
+$EleveAdes = new EleveAdes();
+$ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
+$listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
+
+$smarty->assign('listeTousFaits', $ficheDisciplinaire);
+$smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
+
+$smarty->assign('nbFaits', $EleveAdes->nbFaits($matricule, ANNEESCOLAIRE));
 
 require_once INSTALL_DIR.'/ades/inc/classes/classAdes.inc.php';
 $Ades = new Ades();
-$smarty->assign('listeTypesFaits', $Ades->getTypesFaits());
+
 $smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
 $smarty->assign('descriptionChamps', $Ades->listeChamps());
 
@@ -85,13 +90,17 @@ switch ($mode) {
 
         $listeSuivi = $athena->getSuiviEleve($matricule);
         $smarty->assign('listeSuivi', $listeSuivi);
+        if ($Bulletin->listeFullCoursGrpActuel($matricule) != Null) {
+            $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule)[$matricule];
+            $smarty->assign('listeCoursGrp', $listeCoursActuelle);
 
-        $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule)[$matricule];
-        $smarty->assign('listeCoursGrp', $listeCoursActuelle);
-
-        $syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
-        $smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
-
+            $syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
+            $smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
+        }
+        else {
+            $smarty->assign('listeCoursGrp', Null);
+            $smarty->assign('anneeEnCours', Null);
+        }
         $syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
         $smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
 

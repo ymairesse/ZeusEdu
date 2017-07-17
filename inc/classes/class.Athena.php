@@ -167,7 +167,7 @@ class athena
     }
 
      /**
-      * liste des viistes au coaching. classées par date
+      * liste des vistes au coaching. classées par date
       * dans une période entre $dateDebut et $dateFin.
       *
       * @param $dateDebut
@@ -203,16 +203,32 @@ class athena
      }
 
      /**
+      * si une photo est présente, retourne le matricule de l'élève; sinon, retourne la chaîne 'nophoto'.
+      *
+      * @param $acronyme
+      *
+      * @return string
+      */
+     public static function photo($matricule)
+     {
+         if (file_exists(INSTALL_DIR."/photos/$matricule.jpg")) {
+             return $matricule;
+         } else {
+             return 'nophoto';
+         }
+     }
+
+     /**
       * recherche la liste des élèves suivis par l'utlisateur $acronyme.
       *
       * @param $acronyme
       *
       * @return array
       */
-     public static function getEleveUser($acronyme, $dateDebut=null, $dateFin=null)
+     public static function getEleveUser($acronyme, $dateDebut=null, $dateFin=null, $anneeScolaire=null)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = "SELECT da.matricule, DATE_FORMAT(date,'%d/%m/%Y') AS laDate, DATE_FORMAT(heure,'%H:%i') AS heure, ";
+         $sql = "SELECT anneeScolaire, da.matricule, DATE_FORMAT(date,'%d/%m/%Y') AS laDate, DATE_FORMAT(heure,'%H:%i') AS heure, ";
          $sql .= 'absent, nom, prenom, groupe ';
          $sql .= 'FROM '.PFX.'athena AS da ';
          $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = da.matricule ';
@@ -223,6 +239,9 @@ class athena
          if ($dateFin != null) {
              $sql .= "AND date <= '$dateFin' ";
          }
+         if ($anneeScolaire != null) {
+             $sql .= "AND anneeScolaire = '$anneeScolaire' ";
+         }
          $sql .= 'ORDER BY date DESC, heure ASC ';
 
          $resultat = $connexion->query($sql);
@@ -230,10 +249,11 @@ class athena
          if ($resultat) {
              $resultat->setFetchMode(PDO::FETCH_ASSOC);
              while ($ligne = $resultat->fetch()) {
+                 $anneeScolaire = $ligne['anneeScolaire'];
                  $date = $ligne['laDate'];
                  $matricule = $ligne['matricule'];
-                 $ligne['photo'] = Ecole::photo($matricule);
-                 $liste[$matricule][$date] = $ligne;
+                 $ligne['photo'] = self::photo($matricule);
+                 $liste[$anneeScolaire][$matricule][$date] = $ligne;
              }
          }
          Application::DeconnexionPDO($connexion);
@@ -254,24 +274,26 @@ class athena
         $sql .= 'FROM '.PFX.'athena AS da ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = da.matricule ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = proprietaire ';
-        $sql .= 'ORDER BY groupe, nom, prenom, date ';
+        $sql .= 'ORDER BY nom, prenom, date ';
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
+                $classe = $ligne['groupe'];
+                $niveau = substr($classe, 0, 1);
                 $coach = $ligne['proprietaire'];
-                if(!(isset($liste[$matricule]))) {
-                    $liste[$matricule]['eleve'] = array('classe'=>$ligne['groupe'], 'nom'=>sprintf('%s %s', $ligne['nom'], $ligne['prenom']));
-                    $liste[$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
+                if(!(isset($liste[$niveau][$matricule]))) {
+                    $liste[$niveau][$matricule]['eleve'] = array('classe'=>$ligne['groupe'], 'nom'=>sprintf('%s %s', $ligne['nom'], $ligne['prenom']));
+                    $liste[$niveau][$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
                 }
                 else {
-                    if (!(isset($liste[$matricule]['coaches'][$coach]))) {
-                        $liste[$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
+                    if (!(isset($liste[$niveau][$matricule]['coaches'][$coach]))) {
+                        $liste[$niveau][$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
                     }
                     else {
-                        $liste[$matricule]['coaches'][$coach]['nb']++;
+                        $liste[$niveau][$matricule]['coaches'][$coach]['nb']++;
                     }
                 }
             }

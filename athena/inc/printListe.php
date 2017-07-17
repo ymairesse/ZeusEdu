@@ -8,19 +8,19 @@ $Application = new Application();
 
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+
 session_start();
-
 if (!(isset($_SESSION[APPLICATION]))) {
-    header('Location: '.BASEDIR);
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
-
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 require_once INSTALL_DIR."/inc/classes/class.Athena.php";
 
+$anneeScolaire = isset($_GET['anneeScolaire']) ? $_GET['anneeScolaire'] : null;
 $dateDebut = isset($_GET['dateDebut']) ? $_GET['dateDebut'] : null;
 $dateFin = isset($_GET['dateFin']) ? $_GET['dateFin'] : null;
 
@@ -34,9 +34,11 @@ $smarty->assign('dateFin', $dateFin);
 
 $dateDebut = Application::dateMySQL($dateDebut);
 $dateFin = Application::dateMySQL($dateFin);
-$elevesSuivis = Athena::getEleveUser($acronyme, $dateDebut, $dateFin);
-$smarty->assign('elevesSuivis', $elevesSuivis);
+$elevesSuivis = Athena::getEleveUser($acronyme, $dateDebut, $dateFin, $anneeScolaire);
+$elevesSuivis = $elevesSuivis[$anneeScolaire];
 
+$smarty->assign('elevesSuivis', $elevesSuivis);
+$smarty->assign('anneeScolaire', $anneeScolaire);
 $nomCoach = $User->getNom($acronyme);
 $smarty->assign('nomCoach', $nomCoach);
 

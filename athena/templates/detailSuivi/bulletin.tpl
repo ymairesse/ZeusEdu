@@ -137,18 +137,24 @@
 	{/if}
 
 	<!-- Éducateurs -->
-	{if $ficheEduc == 1}
+	{if $commentairesEducs != Null}
 	<div class="col-md-6 col-sm-12">
+		<h3>Note des éducateurs</h3>
 		<table class="tableauBulletin remarque">
+			{foreach from=$commentairesEducs key=acronyme item=data}
 			<tr>
-				<th>Note des éducateurs</th>
+				<td>{$data.commentaire}</td>
 			</tr>
-			<tr>
-				<td>Feuille de comportements jointe au bulletin; à signer par les parents.</td>
+			<tr style="text-align:right">
+				<td>{$data.prenom|substr:0:1}. {$data.nom}{if $data.titre != ''}<span class="small"> ({$data.titre})</span>{/if}</td>
 			</tr>
+			{/foreach}
+
 		</table>
 	</div>
-	{/if} {assign var=laMention value=$mention.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:Null}
+	{/if}
+
+	{assign var=laMention value=$mention.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:Null}
 	<div class="col-md-6 col-sm-12">
 		{if isset($laMention)}
 		<div class="alert alert-info">

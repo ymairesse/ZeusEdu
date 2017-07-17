@@ -82,7 +82,7 @@
 
 		<div id="tabs-8" class="tab-pane fade in">
 
-			{include file="detailSuivi/ades.tpl"}
+			{include file="detailSuivi/infoDisciplinaires.tpl"}
 
 		</div>
 
@@ -98,7 +98,7 @@ var onglet = "{$onglet|default:0}";
 
 $(document).ready(function(){
 
-	<!-- activer l'onglet dont le numéro a été passé -->
+	// activer l'onglet dont le numéro a été passé
 	$('#tabs li a').eq(onglet).tab('show');
 
 
@@ -107,7 +107,7 @@ $(document).ready(function(){
 		$(".onglet").val(n);
 		})
 
-	<!-- si l'on clique sur un onglet, son numéro est retenu dans un des inputs cachés dont la class est 'onglet' -->
+	// si l'on clique sur un onglet, son numéro est retenu dans un des inputs cachés dont la class est 'onglet' 
 	$("#tabs ul li a").click(function(){
 		var no = $(this).attr("href").substr(6,1);
 		$(".onglet").val(no-1);

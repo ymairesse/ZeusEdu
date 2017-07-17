@@ -1,17 +1,17 @@
 <div id="selecteur" class="noprint">
-	
+
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
-		
-		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
+
+		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève" class="form-control input-sm">
 		<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
-			
-		<select name="classe" id="selectClasse">
+
+		<select name="classe" id="selectClasse" class="form-control input-sm">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
 			{/foreach}
 		</select>
-		
+
 		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
 			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
@@ -22,16 +22,16 @@
 		<span id="choixEleve">
 			{include file="listeEleves.tpl"}
 		</span>
-		
+
 		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
 			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 				<span class="glyphicon glyphicon-chevron-right"></span>
-			 </button> 
+			 </button>
 		{/if}
-		
+
 		<button type="submit" class="btn btn-primary btn-sm" id="envoi" style="display:none">OK</button>
-		
+
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode|default:Null}">
 
@@ -55,7 +55,7 @@ $(document).ready (function() {
 			}
 			else return false;
 		})
-	
+
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
@@ -81,29 +81,29 @@ $(document).ready (function() {
 		}
 			else $("#envoi").hide();
 		})
-		
+
 	$('#prev').click(function(){
 		var matrPrev = $("#matrPrev").val();
 		$('#matricule').val(matrPrev);
 		$("#selectEleve").val(matrPrev);
 		$('#formSelecteur').submit();
 	})
-	
+
 	$('#next').click(function(){
 		var matrNext = $("#matrNext").val();
 		$('#matricule').val(matrNext);
 		$("#selectEleve").val(matrNext);
 		$('#formSelecteur').submit();
 	})
-	
+
 	$('#nom').on('keydown', function(){
 		$('#selectEleve').fadeOut().val('');
 		$("#choixEleve").html('');
 		$('#selectClasse').val('');
 		$("#prev, #next").fadeOut();
 		})
-	
-	
+
+
 	$("#nom").typeahead({
 		minLength: 2,
 		updater: function (item) {
@@ -138,7 +138,7 @@ $(document).ready (function() {
 				}
 				)
 			}
-		})	
+		})
 
 })
 

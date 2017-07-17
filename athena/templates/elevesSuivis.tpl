@@ -2,91 +2,124 @@
 
     <div class="row">
 
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-7 col-sm-12">
 
             <h2>Les élèves que je suis
                 <button type="button" class="btn btn-primary btn-xs pull-right" id="print"><i class="fa fa-print"></i> Imprimer</button>
             </h2>
 
-            <table class="table table-hover table-condensed">
-                <thead>
-                    <tr>
-                        <th style="width:1em">&nbsp;</th>
-                        <th style="width:3em">&nbsp;</th>
-                        <th class="hidden-print">Classe</th>
-                        <th>Nom</th>
-                        <th>Date et heure</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {foreach from=$elevesSuivis key=matricule item=unEleve} {assign var=n value=0} {foreach from=$unEleve key=date item=uneVisite}
+            <ul id="tabsAnSCol" class="nav nav-tabs hidden-print" data-tabs="tabs">
+                {foreach from=$elevesSuivis key=anneeScolaire item=wtf}
+                <li {if $anneeScolaire == $ANNEESCOLAIRE}class="active"{/if}><a href="#tabs-{$anneeScolaire}" data-toggle="tab">
+                    {$anneeScolaire}</a></li>
+                {/foreach}
+            </ul>
 
-                    <tr class="{if ($uneVisite.absent == 1)}absent {/if}
-                            {if $n > 0}more_{$matricule}{/if}" {if $n> 0} style="display: none"{/if}>
-                        <td class="hidden-print">
-                            {if $n == 0}
-                            <form action="index.php" method="POST" role="form" class="form-inline microform">
-                                <input type="hidden" name="matricule" value="{$uneVisite.matricule}">
-                                <input type="hidden" name="action" value="ficheEleve">
-                                <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
-                            </form>
-                            {else} &nbsp; {/if}
-                        </td>
-                        <td class="hidden-print">
-                            {if ($n == 0) && ($unEleve|@count > 1)}
-                            <button type="button" class="btn btn-default btn-xs more" data-matricule="{$uneVisite.matricule}" data-open="0">
-                                    <i class="fa fa-arrow-circle-down"></i>
-                                    <span class="badge">{$unEleve|count}</span>
-                                </button> {else} &nbsp; {/if}
-                        </td>
-                        <td class="hidden-print">{$uneVisite.groupe}</td>
-                        <td class="pop" data-toggle="popover" data-content="<img src='../photos/{$uneVisite.photo}.jpg' alt='{$uneVisite.matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$uneVisite.photo}">
-                            {$uneVisite.prenom} {$uneVisite.nom}
-                        </td>
-                        <td>Le {$date} à {$uneVisite.heure}</td>
-                    </tr>
-                    {assign var=n value=$n+1} {/foreach} {/foreach}
+            <div id="mesEleves" class="tab-content">
+                {foreach from=$elevesSuivis key=anneeScolaire item=mesEleves}
+                    <div class="tab-pane {if $anneeScolaire == $ANNEESCOLAIRE}active{/if}" id="tabs-{$anneeScolaire}" style="max-height:35em; overflow: auto">
+                        <table class="table table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="width:1em">&nbsp;</th>
+                                <th style="width:3em">&nbsp;</th>
+                                <th class="hidden-print">Classe</th>
+                                <th>Nom</th>
+                                <th>Date et heure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach from=$mesEleves key=matricule item=unEleve}
+                                {assign var=n value=0}
+                                {foreach from=$unEleve key=date item=uneVisite}
 
-                </tbody>
-            </table>
+                                <tr class="{if ($uneVisite.absent == 1)}absent {/if}
+                                        {if $n > 0}more_{$matricule}{/if}" {if $n> 0} style="display: none"{/if}>
+                                    <td class="hidden-print">
+                                        {if $n == 0}
+                                        <form action="index.php" method="POST" role="form" class="form-inline microform">
+                                            <input type="hidden" name="matricule" value="{$uneVisite.matricule}">
+                                            <input type="hidden" name="action" value="ficheEleve">
+                                            <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
+                                        </form>
+                                        {else} &nbsp; {/if}
+                                    </td>
+                                    <td class="hidden-print">
+                                        {if ($n == 0) && ($unEleve|@count > 1)}
+                                        <button type="button" class="btn btn-default btn-xs more" data-matricule="{$uneVisite.matricule}" data-open="0">
+                                                <i class="fa fa-arrow-circle-down"></i>
+                                                <span class="badge">{$unEleve|count}</span>
+                                            </button> {else} &nbsp; {/if}
+                                    </td>
+                                    <td class="hidden-print">{$uneVisite.groupe}</td>
+                                    <td class="pop" data-toggle="popover" data-content="<img src='../photos/{$uneVisite.photo}.jpg' alt='{$uneVisite.matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$uneVisite.photo}">
+                                        {$uneVisite.prenom} {$uneVisite.nom}
+                                    </td>
+                                    <td>Le {$date} à {$uneVisite.heure}</td>
+                                </tr>
+                                {assign var=n value=$n+1}
+                                {/foreach}
+                            {/foreach}
 
+                        </tbody>
+                    </table>
+                    </div>
+                {/foreach}
+            </div>
         </div>
         <!-- col-md-... -->
 
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-5 col-sm-12">
 
             <h2>Élèves suivis</h2>
-            <div style="max-height: 35em; overflow: auto;">
 
-                <table class="table table-condensed">
-                    <tbody>
+                <ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
+                    {foreach from=$listeNiveaux item=niveau}
+                    <li {if $niveau == 1}class="active"{/if}><a href="#tabs-{$niveau}" data-toggle="tab">
+                        {$niveau}e</a></li>
+                    {/foreach}
+                </ul>
 
-                        {foreach from=$clients key=matricule item=dataClient}
-                        <tr>
-                            <td>
-                                <form action="index.php" method="POST" role="form" class="form-inline microform">
-                                    <input type="hidden" name="matricule" value="{$matricule}">
-                                    <input type="hidden" name="action" value="ficheEleve">
-                                    <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
-                                </form>
 
-                            </td>
-                            <td style="font-weight: bold">{$dataClient.eleve.nom}</td>
-                            <td style="font-weight: bold">{$dataClient.eleve.classe}</td>
-                        </tr>
-                        {foreach from=$dataClient.coaches key=acronyme item=dataCoach}
 
-                        <tr style="color:#777">
-                            <td>{$acronyme}</td>
-                            <td>{$dataCoach.nomCoach}</td>
-                            <td>{$dataCoach.nb} visite(s)</td>
-                        </tr>
-                        {/foreach} {/foreach}
-                    </tbody>
+                <div id="clients" class="tab-content" style="max-height: 35em; overflow: auto;">
 
-                </table>
+                    {foreach from=$clients key=niveau item=lesClients}
 
-            </div>
+                        <div class="tab-pane {if $niveau == 1}active{/if}" id="tabs-{$niveau}">
+
+                            {foreach from=$lesClients key=matricule item=dataClient}
+                                <table class="table table-condensed">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:2em;">
+                                                <form action="index.php" method="POST" role="form" class="form-inline microform">
+                                                    <input type="hidden" name="matricule" value="{$matricule}">
+                                                    <input type="hidden" name="action" value="ficheEleve">
+                                                    <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
+                                                </form>
+                                            </td>
+                                            <td style="font-weight: bold">{$dataClient.eleve.nom}</td>
+                                            <td style="font-weight: bold; width:10em">{$dataClient.eleve.classe}</td>
+                                        </tr>
+                                        {foreach from=$dataClient.coaches key=acronyme item=dataCoach}
+                                            <tr style="color:#777">
+                                                <td>{$acronyme}</td>
+                                                <td>{$dataCoach.nomCoach}</td>
+                                                <td>{$dataCoach.nb} visite(s)</td>
+                                            </tr>
+                                        {/foreach}
+
+                                    </tbody>
+
+                                </table>
+                            {/foreach}
+                        </div>
+
+                    {/foreach}
+
+                </div>
+
         </div>
 
         <!-- <div class="col-md-6 col-sm-12">
@@ -120,6 +153,16 @@
             <div class="modal-body">
 
                 <div class="form-group">
+                    <label for="anneeScolaire">Année scolaire</label>
+                    <select class="form-control dates" name="anneeScolaire" id="anneeScolaire">
+                        {foreach from=$elevesSuivis key=anneeScolaire item=wtf}
+                        <option value="{$anneeScolaire}"{if $anneeScolaire == $ANNEESCOLAIRE} selected{/if}>{$anneeScolaire}</option>
+                        {/foreach}
+                    </select>
+                    <p class="help-block">Année scolaire concernée</p>
+                </div>
+
+                <div class="form-group">
                     <label for="dateDebut">Date de début</label>
                     <input type="text" class="form-control dates" id="dateDebut" placeholder="Date de début" class="datepicker">
                     <p class="help-block">Laisser vide si pas de date limite</p>
@@ -144,16 +187,18 @@
 
 
 <script type="text/javascript">
+
     $(document).ready(function() {
 
-        var printUrl = 'inc/printListe.php';
+        var printUrl = 'inc/printListe.php?anneeScolaire={$ANNEESCOLAIRE}';
 
         $("#btnPrint").attr('href', printUrl);
 
         $(".dates").change(function() {
             var dateDebut = $("#dateDebut").val();
             var dateFin = $("#dateFin").val();
-            var url = printUrl + '?dateDebut=' + dateDebut + '&dateFin=' + dateFin;
+            var anneeScolaire = $("#anneeScolaire").val();
+            var url = printUrl + '?dateDebut=' + dateDebut + '&amp;dateFin=' + dateFin + '&amp;anneeScolaire=' + anneeScolaire;
             $("#btnPrint").attr('href', url)
         })
 

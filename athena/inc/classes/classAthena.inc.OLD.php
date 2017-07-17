@@ -261,23 +261,25 @@ class athena
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
                 $matricule = $ligne['matricule'];
+                $classe = $ligne['groupe'];
+                $niveau = substr($classe, 0, 1);
                 $coach = $ligne['proprietaire'];
-                if(!(isset($liste[$matricule]))) {
-                    $liste[$matricule]['eleve'] = array('classe'=>$ligne['groupe'], 'nom'=>sprintf('%s %s', $ligne['nom'], $ligne['prenom']));
-                    $liste[$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
+                if(!(isset($liste[$niveau][$matricule]))) {
+                    $liste[$niveau][$matricule]['eleve'] = array('classe'=>$ligne['groupe'], 'nom'=>sprintf('%s %s', $ligne['nom'], $ligne['prenom']));
+                    $liste[$niveau][$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
                 }
                 else {
-                    if (!(isset($liste[$matricule]['coaches'][$coach]))) {
-                        $liste[$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
+                    if (!(isset($liste[$niveau][$matricule]['coaches'][$coach]))) {
+                        $liste[$niveau][$matricule]['coaches'][$coach] = array('nomCoach'=> sprintf('%s %s', $ligne['prenomCoach'], $ligne['nomCoach']), 'nb'=>1);
                     }
                     else {
-                        $liste[$matricule]['coaches'][$coach]['nb']++;
+                        $liste[$niveau][$matricule]['coaches'][$coach]['nb']++;
                     }
                 }
             }
         }
         Application::DeconnexionPDO($connexion);
-
+Application::afficher($liste, true);
         return $liste;
      }
 
