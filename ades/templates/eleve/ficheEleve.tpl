@@ -37,7 +37,6 @@
 			{include file="eleve/memoEleve.tpl"}
 		</div>
 
-
 	</div>
 	<!-- tab-content -->
 
@@ -81,7 +80,7 @@
 
 	// quel est l'onglet actif?
 	var onglet = {$onglet|default:''}
-	// activer l onglet dont le numéro a été passé 
+	// activer l onglet dont le numéro a été passé
 	$(".nav-tabs li a[href='#tabs-" + onglet + "']").tab('show');
 
 

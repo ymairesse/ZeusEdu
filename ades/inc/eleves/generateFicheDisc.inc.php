@@ -61,7 +61,7 @@ $smarty->compile_dir = "../../templates_c";
 
 $listeChamps = $Ades->champsInContexte('tableau');
 $listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin, ANNEESCOLAIRE, $aImprimer);
-Application::afficher($listeFaits);
+
 $descriptionsChamps = $Ades->listeChamps();
 
 $smarty->assign('debut', $debut);
