@@ -24,7 +24,7 @@ switch ($etape) {
             // seulement la liste des matricules de tous les élèves du cours
             $matriculesTous = array_keys($listeEleves);
             // $matricules = liste de tous les élèves sélectionnés dans la classe
-            $matriculesSelect = isset($_POST['matricules']) ? array_flip($_POST['matricules']) : null;
+            $matriculesSelect = isset($_POST['membres']) ? array_flip($_POST['membres']) : null;
             $smarty->assign('listeMatricules', $matriculesSelect);
             // si pas d'élèves sélectionnés séparément, l'enregistrement concerne l'ensemble du cours
             $type = (count($matriculesSelect) != 0) ? 'eleves' : 'cours';

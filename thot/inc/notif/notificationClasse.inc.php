@@ -25,7 +25,7 @@ switch ($etape) {
             // liste des matricules de tous les élèves de la classe
             $matriculesTous = array_keys($listeEleves);
             // $matriculesSelect = liste de tous les élèves *sélectionnés* dans la classe (array_flip pour prendre les matricules)
-            $matriculesSelect = isset($_POST['matricules']) ? array_flip($_POST['matricules']) : null;
+            $matriculesSelect = isset($_POST['membres']) ? array_flip($_POST['membres']) : null;
             $smarty->assign('listeMatricules', $matriculesSelect);
 
             // si pas d'élèves sélectionnés séparément, la notification concerne l'ensemble de la classe.
