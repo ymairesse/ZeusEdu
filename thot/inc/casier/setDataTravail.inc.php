@@ -10,19 +10,20 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
+
 $listeCours = $User->listeCoursProf();
 
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
 $idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
-
-require_once INSTALL_DIR.'/inc/classes/class.Files.php';
-$Files = new Files();
 
 // recherche des caractéristiques générales du travail
 $dataTravail = $Files->getDataTravail($idTravail, $acronyme, $coursGrp);

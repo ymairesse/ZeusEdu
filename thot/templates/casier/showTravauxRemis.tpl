@@ -91,11 +91,7 @@
 
         CKEDITOR.replace('editeurEvaluation');
 
-        $("#hideShowConsignes").click(function() {
-            $("#consignes").toggle('slow');
-        })
-
-        $("#cote, #max").blur(function(e) {
+        $("#cote").blur(function(e) {
             laCote = $(this).val().replace(',', '.');
             $(this).val(laCote);
         })

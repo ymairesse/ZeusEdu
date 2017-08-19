@@ -6,8 +6,6 @@
 
         <div class="col-md-4 col-sm-12">
 
-            <button type="button" class="btn btn-primary btn-block hidden" id="newTravail">Nouveau travail</button>
-
             <div id="ajaxLoader" class="hidden">
                 <img src="images/ajax-loader.gif" alt="loading" class="center-block">
             </div>
@@ -15,25 +13,27 @@
             <select class="form-control" name="selectCours" id="selectCours">
                 <option value="">Sélectionnez un cours</option>
                 {foreach from=$listeCours key=ceCoursGrp item=dataCours}
-                <option value="{$ceCoursGrp}" {if $ceCoursGrp==$coursGrp} selected{/if}>{$dataCours.coursGrp} {$dataCours.nomCours|default:$dataCours.libelle} {$dataCours.nbheures}h</option>
+                    <option value="{$ceCoursGrp}" {if $ceCoursGrp==$coursGrp} selected{/if}>{$dataCours.coursGrp} {$dataCours.nomCours|default:$dataCours.libelle} {$dataCours.nbheures}h</option>
                 {/foreach}
             </select>
 
+            <button
+                type="button"
+                class="btn btn-primary btn-block{if !(isset($coursGrp))} hidden{/if}"
+                id="newTravail">
+                Nouveau travail
+            </button>
+
             <div id="listeTravaux">
-
-            </div>
-
-            <div id="detailsTravail">
-
+                {include file='casier/listeTravaux.tpl'}
             </div>
 
         </div>
 
-
         <div class="col-md-8 col-sm-12">
 
             <div id="zoneEdition">
-
+                {include file='casier/evalTravaux.tpl'}
             </div>
 
         </div>
@@ -42,13 +42,15 @@
 
 </div>
 
-{include file="casier/modal/modalConsignes.tpl"}
-
 {include file="casier/modal/modalDelTravail.tpl"}
 
 {include file="casier/modal/modalDelCompetence.tpl"}
 
 {include file="casier/modal/modalCarnetCotes.tpl"}
+
+{include file="casier/modal/modalConsignes.tpl"}
+
+{include file="casier/modal/modalArchives.tpl"}
 
 <script type="text/javascript">
 
@@ -60,7 +62,38 @@
             $('#ajaxLoader').addClass('hidden');
         });
 
-        $("#zoneEdition").on("click", "#carnetCotes", function(){
+        $('#listeTravaux').on('click', '#btn-archive', function(){
+            var coursGrp = $("#selectCours").val();
+            $.post('inc/casier/travauxArchives.inc.php', {
+                coursGrp: coursGrp
+            },
+            function(resultat){
+                $('#modalArchives .modal-body').html(resultat);
+                $('#modalArchives').modal('show');
+            })
+        })
+
+        $('#btn-submitArchive').click(function(){
+            var formulaire = $('#formArchives').serialize();
+            $.post('inc/casier/saveStatutFromArchive.inc.php', {
+                formulaire: formulaire
+                },
+                function(resultat){
+                    $('#modalArchives').modal('hide');
+                    var coursGrp = $('#selectCours').val();
+                    $.post('inc/casier/listeTravaux.inc.php', {
+                            coursGrp: coursGrp,
+                            idTravail: undefined,
+                            matricule: undefined
+                        },
+                        function(resultat) {
+                            $("#listeTravaux").html(resultat);
+                        });
+                    bootbox.alert(resultat + 'statut(s) mis à jour');
+                })
+        })
+
+        $("#zoneEdition").on('click', '#carnetCotes', function(){
             var idTravail = $(this).data('idtravail')
             $.post('inc/casier/modalTransfertCarnet.inc.php', {
                 idTravail: idTravail
@@ -71,13 +104,13 @@
             $("#modalCarnetCotes").modal('show');
         })
 
-        $("#btn-transfert").click(function() {
-            var formulaire = $("#formTransfert").serialize();
+        $('#btn-transfert').click(function() {
+            var formulaire = $('#formTransfert').serialize();
             $.post('inc/casier/transfertCarnet.inc.php', {
                     formulaire: formulaire
                 },
                 function(resultat) {
-                    $("#modalCarnetCotes").modal('hide');
+                    $('#modalCarnetCotes').modal('hide');
                     bootbox.alert({
                         message: resultat,
                         backdrop: true
@@ -85,13 +118,29 @@
                 })
         })
 
-        $("#selectCours").change(function() {
-            var coursGrp = $(this).val();
-            $.post('inc/casier/listeTravaux.inc.php', {
+        $("#zoneEdition").on('click', '#consignes', function(){
+            var idTravail = $('.btnShowTravail.active').data('idtravail');
+            var coursGrp = $("#selectCours").val();
+            $.post('inc/casier/getConsignes.inc.php', {
+                    idTravail: idTravail,
                     coursGrp: coursGrp
                 },
                 function(resultat) {
+                    $("#modalConsignes .modal-body").html(resultat);
+                    $("#modalConsignes").modal('show');
+                });
+        })
+
+        $("#selectCours").change(function() {
+            var coursGrp = $(this).val();
+            $.post('inc/casier/listeTravaux.inc.php', {
+                    coursGrp: coursGrp,
+                    idTravail: undefined,
+                    matricule: undefined
+                },
+                function(resultat) {
                     $("#listeTravaux").html(resultat);
+                    $("#zoneEdition").html("<p class='avertissement'>Veuillez sélectionner un travail dans la colonne de gauche</p>");
                 });
             if (coursGrp != '') {
                 $("#newTravail, #listeTravaux").removeClass('hidden');
@@ -105,7 +154,7 @@
         $("#newTravail").click(function() {
             var idTravail = null;
             var coursGrp = $("#selectCours").val();
-            $.post('inc/casier/getDataTravail.inc.php', {
+            $.post('inc/casier/getConsignesTravail.inc.php', {
                     idTravail: idTravail,
                     coursGrp: coursGrp
                 },
@@ -118,22 +167,17 @@
         $("#listeTravaux").on('click', '.btnEdit', function() {
             var idTravail = $(this).closest('div').data('idtravail');
             var coursGrp = $("#selectCours").val();
-            $.post('inc/casier/getDataTravail.inc.php', {
+            $('#listeTravaux button').removeClass('active');
+            $(this).prev('button').addClass('active');
+            $.post('inc/casier/getConsignesTravail.inc.php', {
                     idTravail: idTravail,
-                    coursGrp: coursGrp
+                    coursGrp: coursGrp,
+                    showArchive: 'hide'
                 },
                 function(resultat) {
                     $("#zoneEdition").html(resultat);
                 });
-
-            // Actualiser les détails du travail (dates, etc)
-            $.post('inc/casier/detailsTravail.inc.php', {
-                    idTravail: idTravail
-                },
-                function(resultat) {
-                    $("#detailsTravail").html(resultat);
-                })
-        })
+            })
 
         // voir et évaluer les travaux
         $("#listeTravaux").on('click', '.btnShowTravail', function() {
@@ -141,20 +185,27 @@
             $('.btnShowTravail').removeClass('active');
             // activer celui qui vient d'être sélectionné
             $(this).addClass('active');
-            var idTravail = $(this).closest('div').data('idtravail');
-            // dates du travail, consignes, etc.. au bas de la liste des travaux
-            $.post('inc/casier/detailsTravail.inc.php', {
-                        idTravail: idTravail
-                    },
-                    function(resultat) {
-                        $("#detailsTravail").html(resultat);
-                    })
+            var idTravail = $(this).data('idtravail');
+            var coursGrp = $("#selectCours :selected").val();
+
             // cadre d'évaluation du travail
-            $.post('inc/casier/listeTravauxRemis.inc.php', {
-                    idTravail: idTravail
+            $.post('inc/casier/listeElevesEvalues.inc.php', {
+                    idTravail: idTravail,
+                    coursGrp: coursGrp
                 },
                 function(resultat) {
                     $("#zoneEdition").html(resultat);
+                    // chercher les informations éventuelles sur le travail de l'élève actif
+                    if ($("#selectEleve").val() != '') {
+                        var matricule = $("#selectEleve :selected").val();
+                        $.post('inc/casier/getResultatTravail.inc.php', {
+                            idTravail: idTravail,
+                            matricule: matricule
+                            },
+                            function(resultat){
+                                $("#detailsEvaluation").html(resultat);
+                            })
+                    }
                 })
         })
 
@@ -166,7 +217,6 @@
                         formulaire: formulaire
                     },
                     function(resultat) {
-                        // alert(resultat);
                         var obj = JSON.parse(resultat);
                         var coursGrp = obj.coursGrp;
                         var idTravail = obj.idTravail;
@@ -184,27 +234,26 @@
                                 $("li[data-idtravail='" + idTravail + "']").addClass('active');
 
                             });
-                        // Actualiser les détails du travail (dates, etc)
-                        $.post('inc/casier/detailsTravail.inc.php', {
-                                idTravail: idTravail
+                        // Actualiser les détails du travail (consignes, dates, etc)
+                        $.post('inc/casier/getConsignesTravail.inc.php', {
+                                idTravail: idTravail,
+                                coursGrp: coursGrp,
+                                showArchive: 'hide'
                             },
                             function(resultat) {
-                                $("#detailsTravail").html(resultat);
-                                // Confirmation de l'enregistrement avec date et heure
+                                $("#zoneEdition").html(resultat);
                                 bootbox.alert({
-                                    message: "travail enregistré le "+date,
-                                    backdrop: true
+                                    message: "Travail enregistré le "+date
                                 });
                             });
                     });
             }
         })
 
-        $("#zoneEdition").on('change', "#selectEleve", function() {
+        $("#zoneEdition").on('change', '#selectEleve', function() {
             var matricule = $(this).val();
             if (matricule != '') {
                 var idTravail = $(this).find(':selected').data('idtravail');
-                var photo = $(this).find(':selected').data('photo');
                 // recherche les infos pour le travail "idTravail" de l'élève "matricule"
                 $.post('inc/casier/getResultatTravail.inc.php', {
                         idTravail: idTravail,
@@ -258,7 +307,8 @@
             },
             function(){
                 // on enlève la ligne correspondante dans le tableau des compétences
-                bouton.closest('tr').remove();
+                $('#tableCompetences tr[data-idcompetence="'+ idCompetence +'"]').remove();
+                $("#modalDelCompetence").modal('hide');
             })
         })
 
@@ -271,8 +321,7 @@
                 evaluation: evaluation
             }, function(date) {
                 bootbox.alert({
-                    message: "Évaluation enregistrée le "+date,
-                    backdrop: true
+                    message: "Évaluation enregistrée le "+date
                 });
             });
             // ajuster la cote obtenue dans le selectEleve (voir "evalTravaux.tpl")
@@ -285,14 +334,10 @@
             })
         })
 
-        $("#detailsTravail").on('click', '#btnVoirConsignes', function(){
-            var consigne = $(this).data('consigne');
-            $("#modalConsignes .modal-body").html(consigne);
-            $("#modalConsignes").modal('show');
-        })
-
         $("#listeTravaux").on('click', '.btnDelete', function(){
             var idTravail = $(this).closest('div').data('idtravail');
+            $('#listeTravaux button').removeClass('active');
+            $(this).next('button').addClass('active');
             $.post('inc/casier/getConfirmDelTravail.inc.php', {
                 idTravail: idTravail
             },
@@ -318,7 +363,7 @@
                 idTravail: idTravail
             },
             function(resultat){
-
+                $("#zoneEdition").html("<p class='avertissement'>Veuillez sélectionner un travail dans la colonne de gauche</p>");
             })
             var coursGrp = $("#selectCours :selected").val();
             $.post('inc/casier/listeTravaux.inc.php', {

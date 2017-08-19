@@ -10,17 +10,18 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
+
+$idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 
 $fileInfos = $Files->getFileInfos($matricule, $idTravail, $acronyme);
 

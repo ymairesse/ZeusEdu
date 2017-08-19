@@ -28,11 +28,8 @@
 
 		<div class="row">
 
-			{if ($notification.type == 'niveau') || ($notification.type == 'ecole')}
-			<div class="col-md-10 col-sm-12">
-				{else}
-				<div class="col md-8 col-sm-8">
-					{/if}
+				<div class="col-md-9 col-sm-8">
+
 					<div class="panel panel-default">
 
 						<div class="panel-heading">
@@ -47,20 +44,51 @@
 
 						<div class="panel-body">
 
-							<textarea id="texte" name="texte" rows="25" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true">{$notification.texte|default:''}</textarea>
-
-							{assign var=niveau value=$niveauUrgence|default:0} {assign var=texteNiveau value=['faible', 'moyen','urgent']}
-							<div class="form-group">
-								<label for="urgence">Urgence</label>
-								<br>
-								{foreach from=range(0,2) item=urgence}
-								<label class="radio-inline urgence{$urgence}" style="width:30%">
-									<input type="radio" name="urgence" class="form-control-inline" value="{$urgence}"
-									{if isset($notification.urgence) && ($notification.urgence==$urgence)}checked{/if}>
-									{$texteNiveau.$urgence}
-								</label>
-								{/foreach}
+							<div class="form-group col-md-2 col-xs-4">
+								<label for="dateDebut">Date début</label>
+								<input type="text" name="dateDebut" id="dateDebut" placeholder="Début" class="datepicker form-control" value="{$notification.dateDebut}" title="La notification apparaît à partir de cette date">
 							</div>
+
+							<div class="form-group col-md-2 col-xs-4">
+								<label for="dateFin">Date fin</label>
+								<input type="text" name="dateFin" id="dateFin" placeholder="Fin" class="datepicker form-control" value="{$notification.dateFin}" title="La notification disparaît à partir de cette date">
+								<div class="help-block">Déf:+1mois</div>
+							</div>
+							<div class="form-group col-md-2 col-xs-4">
+								<label for="mail" title="Un mail d'avertissement est envoyé">Envoi<br>mail</label>
+								<input type="checkbox" name="mail" id="mail" class="form-control-inline" value="1"
+								{if isset($notification.mail) && $notification.mail==1 } checked='checked' {/if}
+								{if $notification.type=='ecole' || $notification.type=='niveau' || isset($edition)} disabled{/if}>
+								{* disabled pour l'envoi de mail à toute l'école ou à tout un niveau afin d'éviter les over quota d'envois *}
+								{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
+							</div>
+
+							<div class="form-group col-md-2 col-xs-4">
+								<label for="accuse" title="Un accusé de lecture est demandé">Accusé<br>lecture</label>
+								<input type="checkbox" name="accuse" id="accuse" class="form-control-inline" value="1"
+								{if isset($notification.accuse) && $notification.accuse==1 } checked='checked' {/if}
+								{if $notification.type=='ecole' || isset($edition)} disabled{/if}>
+								{* disabled pour toute l'école car ingérable *}
+								{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
+							</div>
+
+							<div class="form-group col-md-2 col-xs-4">
+					            <label for="freeze" title="Notification permanente, n'est pas effacée après la date finale">Perma-<br>nent</label>
+					            <input type='checkbox' name='freeze' id='freeze' class='form-control-inline' value='1'
+					            {if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}>
+					        </div>
+
+							<div class="form-group col-md-2 col-xs-4">
+								<label for="parents" title="Notification par mail aux parents (qui ont accepté ces envois)">Mail<br>Parents</label>
+								<input type='checkbox' name='parent' id='parent' class='form-control-inline' value='1'
+								{if (isset($notification.parents)) && ($notification.parents==1 )} checked{/if}
+								{if $notification.type=='ecole' || isset($edition)} disabled{/if}>
+							</div>
+
+							<div class="clearfix">
+							</div>
+
+							<textarea id="texte" name="texte" rows="25" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true">{$notification.texte|default:''}</textarea>
 
 							<div class="btn-group pull-right">
 								<button type="reset" class="btn btn-default">Annuler</button>
@@ -70,24 +98,31 @@
 						</div>
 						<!-- panel-body -->
 
+						<div class="panel-footer">
+							{if $notification.type == 'niveau' || $notification.type == 'ecole'}
+					            <p>L'envoi de mails est désactivé pour les notifications à tout un niveau ou à toute l'école</p>
+					        {/if}
+					        {if $notification.type == 'ecole'}
+					            <p>La demande d'accusé de lecture est désactivée pour les notifications à l'ensemble de l'école</p>
+					        {/if}
+					        {if isset($edition)}
+					            Certaines options ne sont pas modifiables lors d'une modification
+					        {/if}
+						</div>
+
 					</div>
 					<!-- panel -->
 
 				</div>
 				<!-- col-md-...  -->
 
-
-				{if ($notification.type != 'niveau') && ($notification.type != 'ecole')}
-				<!-- le choix d'élèves en particulier n'est possible que pour les classes et les cours -->
-				<div class="col-md-2 col-sm-4">
+				<div class="col-md-3 col-xs-4">
+					<!-- le choix d'élèves en particulier n'est possible que pour les classes et les cours -->
+					{if ($notification.type != 'niveau') && ($notification.type != 'ecole')}
 					{include file="notification/listeEleves.tpl"}
-				</div>
-				{/if}
-
-				<div class="col-md-2 col-sm-12">
-
-					{include file="notification/attributs.tpl"}
-
+					{else}
+					<p class="notice">Il n'est pas possible de ne sélectionner que certains élèves dans ce mode.</p>
+					{/if}
 				</div>
 				<!--col-md-... -->
 
@@ -128,8 +163,18 @@
 
 		$("#notification").validate({
 			rules: {
-				'objet': 'required'
-			}
+				'objet': {
+					required: true
+					},
+				'membres[]': {
+					required: true,
+					minlength: 1
+					}
+				},
+			messages: {
+				'objet': 'Veuille indiquer un objet pour votre note',
+				'membres[]': 'Sélectionner au moins un élève'
+				}
 		});
 
 	})

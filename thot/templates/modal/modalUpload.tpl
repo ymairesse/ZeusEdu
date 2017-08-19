@@ -21,7 +21,6 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function() {
 
         var nbFichiersMax = 5;
         var maxFileSize = 25;
@@ -32,30 +31,35 @@
             acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind",
             url: "inc/files/upload.inc.php",
             queuecomplete: function() {
+                // raffraichissement de la liste des fichiers
+                //
+                alert('test');
+
+
                 // raffraîchissement du treeview
-                var activeDir = $("#activeDir").text();
-                $.post('inc/files/getTreeView.inc.php', {}, function(resultat) {
-                    $("#treeView").html(resultat);
-                    var listeDir = $("#activeDir").text();
-                    // ouvrir chacune des branches de l'arborescence
-                    while (listeDir != '/') {
-                        $(".dirLink[data-dir='" + listeDir + "']").trigger('click');
-                        listeDir = listeDir.substr(0, listeDir.substr(0, listeDir.length-1).lastIndexOf('/')+1);
-                    }
+                // var activeDir = $("#activeDir").text();
+                // $.post('inc/files/getTreeView.inc.php', {}, function(resultat) {
+                //     $("#treeView").html(resultat);
+                //     var listeDir = $("#activeDir").text();
+                //     // ouvrir chacune des branches de l'arborescence
+                //     while (listeDir != '/') {
+                //         $(".dirLink[data-dir='" + listeDir + "']").trigger('click');
+                //         listeDir = listeDir.substr(0, listeDir.substr(0, listeDir.length-1).lastIndexOf('/')+1);
+                //     }
+                //
+                //     // la branche active est celle de 'activeDir'
+                //     var dernierDirClique = activeDir.substr(0, activeDir.substr(1).indexOf('/')+2);
+                //     $(".dirLink[data-dir='" + dernierDirClique + "']").removeClass('activeDir');
+                //     $(".dirLink[data-dir='" + activeDir + "']").addClass('activeDir');
+                //     $("#activeDir").text(activeDir);
+                //
+                //     // remise en ordre des infos de la zone fileInfo
+                //     $("#diDir").text(activeDir);
+                //     var nbFiles = $(".dirLink[data-dir='" + activeDir + "']").data('nbfiles');
+                //     $("#diNb").text(nbFiles);
+                //     $("#dirInfo").fadeIn();
+                // });
 
-                    // la branche active est celle de 'activeDir'
-                    var dernierDirClique = activeDir.substr(0, activeDir.substr(1).indexOf('/')+2);
-                    $(".dirLink[data-dir='" + dernierDirClique + "']").removeClass('activeDir');
-                    $(".dirLink[data-dir='" + activeDir + "']").addClass('activeDir');
-                    $("#activeDir").text(activeDir);
-
-                    // remise en ordre des infos de la zone fileInfo
-                    $("#diDir").text(activeDir);
-                    var nbFiles = $(".dirLink[data-dir='" + activeDir + "']").data('nbfiles');
-                    $("#diNb").text(nbFiles);
-                    $("#dirInfo").fadeIn();
-
-                });
             },
             accept: function(file, done) {
                 done();
@@ -76,5 +80,5 @@
             }
         };
 
-    })
+
 </script>

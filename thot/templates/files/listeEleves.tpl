@@ -1,7 +1,7 @@
 <input type="checkbox" id="checkListe" name="TOUS" value="tous" checked>
 <strong class="clickable teteListe" title="Cliquer pour ouvrir"> TOUS </strong>
 
-<ul class="listeMembres list-unstyled" style="display:none">
+<ul class="listeMembres list-unstyled">
 {foreach from=$listeEleves key=matricule item=unEleve}
     <li>
         <label class="checkbox-inline">

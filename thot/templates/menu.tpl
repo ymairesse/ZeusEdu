@@ -61,8 +61,9 @@
 			<li class="dropdown"><a href="javascript.void(0)" class="dropdown-toggle" data-toggle="dropdown">
 				Documents <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=files&amp;mode=share"><i class="fa fa-arrow-right"></i> Je partage</a></li>
-					<li><a href="index.php?action=files&amp;mode=e-docs">Partagés avec moi <i class="fa fa-arrow-left"></i></a></li>
+					<li><a href="index.php?action=files&amp;mode=mydocs">Mes documents</a></li>
+					<li><a href="index.php?action=files&amp;mode=share">Mes partages</a></li>
+					<li><a href="index.php?action=files&amp;mode=sharedWithMe">Partagés avec moi <i class="fa fa-arrow-left"></i></a></li>
 					<li><a href="index.php?action=files&amp;mode=casier">Mon casier virtuel</a></li>
 				</ul>
 			</li>
@@ -88,7 +89,7 @@
 					{if $userStatus == 'educ'}
 					<li><a href="index.php?action=bib">Gestion bibliothèque</a></li>
 					{/if}
-					<li><a href="index.php?action=bib&amp;mode=consult">Emprunt de livre</a></li>
+					<li><a href="index.php?action=bib&amp;mode=emprunt">Emprunt de livre</a></li>
 				</ul>
 			</li>
 
@@ -106,6 +107,7 @@
 						<li><a href="index.php?action=connexions&amp;mode=logins">Logins en temps réel</a></li>
 						<li><a href="index.php?action=stats">Statistiques</a></li>
 						<li><a href="index.php?action=admin&amp;mode=bulletin">Accès aux bulletins</a></li>
+						<li><a href="index.php?action=admin&amp;mode=gestParents">Gestion des parents</a></li>
 					</ul>
 				</li>
 			{/if}

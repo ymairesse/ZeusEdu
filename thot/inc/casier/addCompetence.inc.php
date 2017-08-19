@@ -10,19 +10,21 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
+
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
+
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
 
 $idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
 $competences = isset($_POST['competences']) ? $_POST['competences'] : null;
 
 // enregistrer les nouvelles compétences pour ce travail
-require_once INSTALL_DIR.'/inc/classes/class.Files.php';
-$Files = new Files();
-
 $nb = $Files->saveNewCompetences ($idTravail, $competences);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -31,7 +33,6 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 // créer le nouveau tableau des compétences dans la page d'édition du travail
-
 $dataTravail = $Files->getDataTravail($idTravail, $acronyme, $coursGrp);
 $listeCompetences = $Files->getCompetencesCoursGrp($coursGrp);
 

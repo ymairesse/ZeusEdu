@@ -1,25 +1,46 @@
-<div id="listeTravaux">
+<h4>Travaux en cours <span class="badge badge-info pull-right">{$listeTravaux|@count}</span></h4>
 
-    <h4>Travaux en cours</h4>
+<div id="listeTravaux" style="max-height:35em; overflow: auto">
 
-    <ul class="list-unstyled">
-        {foreach from=$listeTravaux key=id item=unTravail}
-        <div class="input-group" data-idtravail="{$id}">
+    {if $listeTravaux == Null}
+        <p>Rien actuellement</p>
 
-            <span class="input-group-addon danger btnDelete" style="cursor:pointer">
-                <i class="fa fa-close"></i>
-            </span>
+    {else}
 
-            <button type="button" class="btn btn-default btn-block btnShowTravail" title="{$unTravail.titre}" style="width: 20em; overflow: hidden;  text-overflow: ellipsis" data-idtravail="{$id}">
-            {$unTravail.dateDebut|truncate:5:''} - {$unTravail.titre}
-            </button>
+        <ul class="list-unstyled">
+            {foreach from=$listeTravaux key=id item=unTravail}
+            <div class="input-group" data-idtravail="{$id}">
 
-            <span class="input-group-addon success btnEdit" style="cursor:pointer">
-                <i class="fa fa-edit"></i>
-            </span>
+                <span class="input-group-addon danger btnDelete" style="cursor:pointer">
+                    <i class="fa fa-close"></i>
+                </span>
 
-        </div>
-        {/foreach}
-    </ul>
+                <button
+                        type="button"
+                        class="btn btn-default btn-block btnShowTravail{if $id == $idTravail} active{/if}"
+                        title="{$unTravail.titre}"
+                        style="width: 20em; overflow: hidden; text-overflow: ellipsis"
+                        data-idtravail="{$id}">
+                    {if $unTravail.statut == 'termine'}<i class="fa fa-star text-danger"></i>
+                        {elseif $unTravail.statut == 'readwrite'}<i class="fa fa-star text-success"></i>
+                        {elseif $unTravail.statut == 'readonly'}<i class="fa fa-star-half-empty text-warning"></i>
+                        {elseif $unTravail.statut == 'hidden'}<i class="fa fa-star-o"></i>
+                    {/if}
+
+
+                    {$unTravail.dateDebut|truncate:5:''} - {$unTravail.titre}
+                </button>
+
+                <span class="input-group-addon success btnEdit" style="cursor:pointer">
+                    <i class="fa fa-edit"></i>
+                </span>
+
+            </div>
+            {/foreach}
+        </ul>
+
+    {/if}
 
 </div>
+
+<button type="button" class="btn btn-primary btn-block" id="btn-archive">Travaux archivés</button>

@@ -9,7 +9,7 @@
             <div class="modal-body">
 
                 <p>Création d'un nouveau dossier dans le dossier
-                    <br><strong id="father"></strong></p>
+                    <br><strong id="father" data-father=""></strong></p>
                 <form role="form">
                     <div class="form-group">
                         <label for="repName">Nom du nouveau dossier</label>
@@ -21,8 +21,8 @@
             </div>
             <div class="modal-footer">
                 <div class="btn-group pull-right">
-                    <button type="button" class="btn btn-primary" id="createDir">Créer le dossier</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="createDir">Créer le dossier</button>
                 </div>
 
             </div>
@@ -45,51 +45,35 @@
         })
 
         $("#createDir").click(function() {
-            var activeDir = $("#activeDir").text();
-            var dirName = $("#repName").val().trim();
+            var arborescence = $("#father").data('father');
+            var directory = $("#repName").val().trim();
 
-            if (!(reg.test(dirName)))
+            if (!(reg.test(directory)))
                 alert("Ce nom n'est pas admissible")
             else {
-                erreur = false;
-
                 $.post('inc/files/mkdir.inc.php', {
-                        dirName: dirName,
-                        activeDir: activeDir
+                        directory: directory,
+                        arborescence: arborescence
                     },
                     function(resultat) {
                         // la fonction revient avec un message d'erreur ou "true" si tout s'est bien passé
                         if (resultat != true) {
-                            erreur = true;
-                            alert(resultat);
+                            bootbox.alert({
+                                title: 'Problème lors de la création du dossier',
+                                message: resultat
+                            });
+                        }
+                        else
+                        {
+                            $.post('inc/files/refreshFileList.inc.php', {
+                                arborescence: arborescence,
+                                directory: undefined
+                            }, function(resultat){
+                                $("#listeFichiers").html(resultat);
+                            })
                         }
                     });
-
-                if (erreur == false) {
-                    // reconstruire le Treeview
-                    $.post('inc/files/getTreeView.inc.php', {},
-                        function(resultat) {
-                            $("#treeView").html(resultat);
-                            var listeDir = activeDir;
-                            // ouvrir chacune des branches de l'arborescence
-                            while (listeDir != '') {
-                                $(".dirLink[data-dir='" + listeDir + '/' +  "']").trigger('click');
-                                listeDir = listeDir.substr(0, listeDir.lastIndexOf('/'));
-                            }
-                            // la branche active est celle de 'activeDir'
-                            var dernierDirClique = activeDir.substr(0, activeDir.substr(1).indexOf('/')+1);
-                            $(".dirLink[data-dir='"+dernierDirClique+"']").removeClass('activeDir');
-                            $(".dirLink[data-dir='"+activeDir+"']").addClass('activeDir');
-                            $("#activeDir, .activeDir").text(activeDir);
-
-
-                            // remise en ordre des infos de la zone dirInfo
-                            $("#diDir").text(activeDir);
-                            var nbFiles = $(".dirLink[data-dir='" + activeDir + "']").data('nbfiles');
-                            $("#diNb").text(nbFiles);
-                        });
                 }
-            }
             $("#modalNewDir").modal('hide');
         })
 

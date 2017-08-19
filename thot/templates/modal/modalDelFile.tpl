@@ -14,12 +14,13 @@
                 <div id="modalDelShareList">
 
                 </div>
-            </div>
-            <div class="modal-footer">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-danger" id="confirmDelFile">Confirmer</button>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <p class="help-block">Ctrl + clic sur le bouton d'effacement pour éviter cette demande de confirmation</p>
             </div>
         </div>
     </div>
@@ -30,17 +31,15 @@
 
         $("#confirmDelFile").click(function() {
             var fileName = $('#delFileName').text();
-            var path = $('#delPath').text();
+            var arborescence = $('#delPath').text();
             $.post('inc/files/delFile.inc.php', {
                     fileName: fileName,
-                    path: path
+                    arborescence: arborescence
                 },
                 function(resultat) {
                     if (resultat == 1) {
-                        // suppression dans l'arboresence
-                        $('.activeFile').remove();
-                        $('#fileInfo').hide();
-                        $('#partages').html('-');
+                        $('tr.active').remove();
+                        $('#listePartages').html('-');
                     }
                     else alert('Impossible de supprimer ce fichier');
                 });

@@ -1,45 +1,45 @@
 {if $shareList|count != 0}
 <div class="alert alert-warning">
     <h4>Ce document est partagé avec</h4>
-    <ul class='list-unstyled'>
+    <table class='table table-condensed'>
         {foreach from=$shareList key=shareId item=share}
-        <li>
+        <tr>
             {if $share.type == 'ecole'}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 Tous les élèves de l'école
-            </div>
+            </td>
             {elseif $share.type == 'niveau'}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 Tous les élèves de {$share.destinataire}e
-            </div>
+            </td>
             {elseif $share.type == 'classe'} {if $share.destinataire == 'all'}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 Tous les élèves de {$share.groupe}
-            </div>
+            </td>
             {else}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 {$share.nomEleve} {$share.prenomEleve} de {$share.classe}
-            </div>
+            </td>
             {/if} {elseif $share.type == 'cours'} {if $share.destinataire == 'all'}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 Tous les élèves de {$share.groupe}
-            </div>
+            </td>
             {else}
-            <div class="shared {$share.type}">
-                {$share.nomEleve} {$share.prenomEleve} de {if $share.nomCours != ''} {$share.nomCours|escape:'htmlall'} {else} {$share.libelle|escape:'htmlall'} {/if}
-            </div>
+            <td class="shared {$share.type}">
+                {$share.nomEleve} {$share.prenomEleve} de {if $share.nomCours != ''} {$share.nomCours|escape:'htmlall'} {else} {$share.trbelle|escape:'htmlall'} {/if}
+            </td>
             {/if} {elseif $share.type == 'prof'} {if $share.destinataire == 'all'}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 Tous les collègues
-            </div>
+            </td>
             {else}
-            <div class="shared {$share.type}">
+            <td class="shared {$share.type}">
                 Collègue: {$share.prenomProf} {$share.nomProf}
-            </div>
+            </td>
             {/if} {/if}
-        </li>
+        </tr>
 
         {/foreach}
-    </ul>
+    </table>
 </div>
 {{/if}}

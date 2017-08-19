@@ -16,7 +16,7 @@
             <div class="modal-footer">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" id="btn-transfert">Transférer</button>
+                    <button type="button" class="btn btn-primary" id="btn-transfert">Transférer <i class="fa fa-arrow-left"></i></button>
                 </div>
             </div>
         </div>

@@ -10,17 +10,22 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
+
+$unAn = time() + 365 * 24 * 3600;
+$idTravail = Application::postOrCookie('idTravail', $unAn);
+$matricule = Application::postOrCookie('matricule', $unAn);
+
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$photo = ($matricule != Null) ? Ecole::photo($matricule) : Null;
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
@@ -35,8 +40,14 @@ $smarty->assign('evaluationsTravail', $evaluationsTravail);
 $competencesTravail = $Files->getCompetencesTravail($idTravail);
 $smarty->assign('competencesTravail', $competencesTravail);
 
+$infoTravail = $Files->getDataTravail($idTravail, $acronyme);
+$smarty->assign('infoTravail', $infoTravail);
+
 // caractéristiques du fichier joint par lélève
 $fileInfos = $Files->getFileInfos($matricule, $idTravail, $acronyme);
 $smarty->assign('fileInfos', $fileInfos);
+$smarty->assign('photo', $photo);
+$smarty->assign('matricule', $matricule);
+$smarty->assign('BASEDIR', BASEDIR);
 
-echo $smarty->fetch('casier/detailsEvaluation.tpl');
+$smarty->display('casier/detailsEvaluation.tpl');

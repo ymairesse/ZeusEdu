@@ -1393,7 +1393,7 @@ ALTER TABLE `didac_thotRpHeures`
     `consigne` blob NOT NULL,
     `dateDebut` date NOT NULL,
     `dateFin` date NOT NULL,
-    `statut` enum('hidden','readonly','readwrite','termine') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'readwrite'
+    `statut` enum('hidden','readonly','readwrite','termine','archive') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'readwrite'
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Travaux à remettre';
 
 ALTER TABLE `didac_thotTravaux`
@@ -1428,15 +1428,18 @@ CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
 
 
 CREATE TABLE IF NOT EXISTS `didac_thotFiles` (
-  `fileId` int(11) NOT NULL COMMENT 'Id du fichier',
+`fileId` int(11) NOT NULL COMMENT 'Id du fichier',
   `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'acronyme du propriétaire',
   `path` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'chemin vers le fichier',
-  `fileName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du fichier'
+  `fileName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du fichier',
+  `dirOrFile` enum('dir','file') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'file' COMMENT 'S''agit-il d''un répertoire?'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des fichiers partagés';
 
 ALTER TABLE `didac_thotFiles`
-  ADD PRIMARY KEY (`fileId`),
-  ADD KEY `acronyme` (`acronyme`);
+ ADD PRIMARY KEY (`fileId`), ADD KEY `acronyme` (`acronyme`);
+
+ALTER TABLE `didac_thotFiles`
+MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id du fichier';
 
 
 CREATE TABLE IF NOT EXISTS `didac_thotShares` (
@@ -1455,3 +1458,72 @@ ALTER TABLE `didac_thotShares`
 
 ALTER TABLE `didac_thotShares`
   MODIFY `shareId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du partage de document';
+
+
+CREATE TABLE `didac_thotSharesSpy` (
+    `spyId` int(11) NOT NULL COMMENT 'Identifiant de l''espion',
+    `shareId` int(11) NOT NULL COMMENT 'shareId du fichier surveillé',
+    `isDir` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'S''agit-il d''un répertoire? (traitement spécial)',
+    `fileId` int(11) DEFAULT NULL COMMENT 'Identifiant du document'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Surveillance des téléchargements';
+
+ALTER TABLE `didac_thotSharesSpy`
+    ADD PRIMARY KEY (`spyId`);
+
+ALTER TABLE `didac_thotSharesSpy`
+    MODIFY `spyId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de l''espion';
+
+
+CREATE TABLE `didac_thotSharesSpyUsers` (
+    `spyId` int(11) NOT NULL COMMENT 'spyId du fichier surveillé',
+    `userName` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom d''utilisateur',
+    `path` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Chemin d''accès au fichier dans un répertoire partagé',
+    `fileName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du fichier dans un répertoire partagé',
+    `date` datetime NOT NULL,
+    `userType` enum('eleve','prof','parent') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Où chercher l''identité de l''utilisateur?'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Surveillance des téléchargements';
+
+ALTER TABLE `didac_thotSharesSpyUsers`
+    ADD PRIMARY KEY (`spyId`,`userName`,`fileName`);
+
+
+CREATE TABLE `didac_thotBooksAuteurs` (
+    `idAuteur` int(11) NOT NULL,
+    `nom` varchar(64) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des auteurs des livres en bibliothèque';
+
+ALTER TABLE `didac_thotBooksAuteurs`
+    ADD UNIQUE KEY `idAuteur` (`idAuteur`);
+
+ALTER TABLE `didac_thotBooksAuteurs`
+    MODIFY `idAuteur` int(11) NOT NULL AUTO_INCREMENT;
+
+
+CREATE TABLE `didac_thotBooksCollection` (
+    `idBook` int(11) NOT NULL,
+    `exemplaire` smallint(6) NOT NULL DEFAULT '1',
+    `titre` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
+    `sousTitre` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `editeur` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `annee` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `lieu` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `collection` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `isbn` varchar(13) COLLATE utf8_unicode_ci NOT NULL,
+    `etat` enum('indetermine','neuf','TB','B','Correct') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'État du livre',
+    `cdu` varchar(12) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des ouvrages';
+
+ALTER TABLE `didac_thotBooksCollection`
+    ADD UNIQUE KEY `idBook` (`idBook`,`exemplaire`);
+
+ALTER TABLE `didac_thotBooksCollection`
+    MODIFY `idBook` int(11) NOT NULL AUTO_INCREMENT;
+
+
+CREATE TABLE `didac_thotBooksidBookIdAuteur` (
+    `idBook` int(11) NOT NULL,
+    `idAuteur` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des auteurs par livre en bibliothèque';
+
+ALTER TABLE `didac_thotBooksidBookIdAuteur`
+ADD PRIMARY KEY (`idBook`,`idAuteur`);

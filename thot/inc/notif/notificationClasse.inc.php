@@ -61,10 +61,12 @@ switch ($etape) {
 
             // voyons si un accusé de lecture est souhaité
             if (isset($_POST['accuse']) && $_POST['accuse'] == 1) {
-                if ($_POST['type'] == 'eleves') {
-                    $nbAccuses = $Thot->setAccuse($listeId, $matriculesSelect, 'eleves');
-                } else {
+                // la demande d'accusé de lecture a été postée pour l'ensemble d'un groupe?
+                if (($_POST['type'] == 'ecole') || ($_POST['type'] == 'niveau') || (isset($_POST['TOUS']))) {
                     $nbAccuses = $Thot->setAccuse($listeId, $matriculesTous, 'groupe');
+                } else {
+                    // ou pour des élèves isolés
+                    $nbAccuses = $Thot->setAccuse($listeId, $matriculesSelect, 'eleves');
                 }
                 $texte .= sprintf("<br>%d demande(s) d'accusé de lecture envoyée(s)", $nbAccuses);
             }

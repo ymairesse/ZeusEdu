@@ -393,7 +393,7 @@ class Books {
     public function getBookById($idBook) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // rechercher les paramètres généraux du livre
-        $sql = 'SELECT idBook, exemplaire, titre, sousTitre, editeur, annee, lieu ';
+        $sql = 'SELECT idBook, exemplaire, titre, sousTitre, editeur, annee, lieu, ';
         $sql .= 'collection, isbn, etat, cdu ';
         $sql .= 'FROM '.PFX.'thotBooksCollection ';
         $sql .= 'WHERE idBook=:idBook ';

@@ -1,6 +1,9 @@
 <?php
 
-$smarty->assign('icones', 'books/booksIcons');
+if ($userStatus == 'educ')
+    $smarty->assign('icones', 'books/booksIcons');
+    else $smarty->assign('icones', Null);
+
 
 switch ($mode) {
     case 'edit':

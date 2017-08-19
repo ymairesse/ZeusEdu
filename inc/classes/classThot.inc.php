@@ -160,12 +160,12 @@ class thot
             ':proprietaire' => $post['proprietaire'],
             ':objet' => $post['objet'],
             ':texte' => $post['texte'],
-            ':urgence' => $post['urgence'],
             ':dateDebut' => Application::dateMysql($post['dateDebut']),
             ':dateFin' => Application::dateMysql($post['dateFin']),
             ':mail' => isset($post['mail']) ? 1 : 0,
             ':accuse' => isset($post['accuse']) ? 1 : 0,
             ':freeze' => isset($post['freeze']) ? 1 : 0,
+            ':parent' => isset($post['parent']) ? 1 : 0,
         );
         $id = isset($post['id']) ? $post['id'] : null;
 
@@ -173,38 +173,40 @@ class thot
             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
             $sql .= 'SET type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
             $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
-            $sql .= 'urgence=:urgence, mail=:mail, accuse=:accuse, freeze=:freeze ';
+            $sql .= 'mail=:mail, accuse=:accuse, freeze=:freeze, parent=:parent ';
             unset($data[':id']);
         } else {
             $sql .= 'UPDATE '.PFX.'thotNotifications ';
             $sql .= 'type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
             $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
-            $sql .= 'urgence=:urgence, mail=:mail, accuse=:accuse, freeze=:freeze ';
+            $sql .= 'mail=:mail, accuse=:accuse, freeze=:freeze, parent=:parent ';
             $sql .= 'WHERE id=:id ';
         }
-
         $requete = $connexion->prepare($sql);
 
         $listeId = array();
-        if ($post['type'] == 'eleves') {
-            // vérifier qu'il y a bien au moins un élève sélectionné (la liste n'est pas vide)
-            if (isset($post['matricules'])) {
-                // un enregistrement pour chaque élève du groupe sélectionné
-            $listeEleves = $post['matricules'];
-                foreach ($listeEleves as $matricule) {
-                    $data[':destinataire'] = $matricule;
-                    $resultat = $requete->execute($data);
-                    $id = $connexion->lastInsertId();
-                    $listeId[$matricule] = $id;
-                }
-            }
-        } else {
+        // pour l'ensemble des élèves ou pour un niveau d'étude, ou quand il n'y a pas de sélection d'élèves
+        if (($post['type'] == 'ecole') || ($post['type'] == 'niveau') || (isset($post['TOUS']))) {
             // un seul enregistrement pour tout le groupe (classe, cours, niveau, ecole)
             $resultat = $requete->execute($data);
             $id = $connexion->lastInsertId();
             $destinataire = $post['destinataire'];
             $listeId[$destinataire] = $id;
-        }
+            }
+            else {
+            // pour les classes et les cours, on peut éventuellement sélectionner seulement certains élèves
+            // vérifier qu'il y a bien au moins un élève sélectionné (la liste n'est pas vide)
+            if (isset($post['membres'])) {
+                // un enregistrement pour chaque élève du groupe sélectionné
+                $listeEleves = $post['membres'];
+                    foreach ($listeEleves as $matricule) {
+                        $data[':destinataire'] = $matricule;
+                        $resultat = $requete->execute($data);
+                        $id = $connexion->lastInsertId();
+                        $listeId[$matricule] = $id;
+                    }
+                }
+            }
 
         Application::deconnexionPDO($connexion);
 
@@ -446,8 +448,9 @@ class thot
     /**
      * enregistre les demandes d'accusé de lecture.
      *
-     * @param $listeId : les 'id' des notifications à chaque élève
+     * @param array $listeId : les 'id' des notifications à chaque élève $matricule => $id de la notification
      * @param $listeMatricules : liste des matricules des élèves concernés
+     * @param string $type : 'groupe' ou 'eleves' (isolés)
      *
      * @return int : le nombre d'enregistrements dans la BD
      */
@@ -457,6 +460,7 @@ class thot
         $sql = 'INSERT INTO '.PFX.'thotAccuse ';
         $sql .= 'SET id=:id, matricule=:matricule ';
         $requete = $connexion->prepare($sql);
+        // est-ce une notification à certains élèves d'un groupe constitué (classe, cours)?
         if ($type == 'eleves') {
             foreach ($listeMatricules as $matricule => $wtf) {
                 $id = $listeId[$matricule];

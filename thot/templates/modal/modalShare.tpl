@@ -1,4 +1,5 @@
 <div class="modal fade" id="modalShare" tabindex="-1" role="dialog" aria-labelledby="titleModalShare" aria-hidden="true">
+
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,8 +9,9 @@
             <div class="modal-body">
 
                 <form id="formShare" action="index.php" method="POST" class="form-vertical" role="form">
-                    <p>Nom du dossier <strong id="shareDirName"></strong></p>
-                    <p>Nom du fichier <strong id="shareFileName"></strong></p>
+                    <p>Dossier: <i class="fa fa-folder-open-o"></i> <strong id="shareDirName"></strong> Fichier:&nbsp;<i class="fa fa-file-o"></i>&nbsp;<strong id="shareFileName"></strong></p>
+
+                    <p id="forDirOnly" class="help-text"><i class="fa fa-info-circle"></i> Tous les fichiers actuels et futurs des <strong>dossiers partagés</strong> sont automatiquement accessibles aux destinataires</p>
 
                     <div class="form-group">
                         <label for="Commentaire">Veuillez commenter ce partage</label>
@@ -20,9 +22,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="shareList">Partager avec</label>
 
                         <fieldset id="type" style="border: 1px solid #aaa; padding: 5px; margin: 0 0 10px">
+                            <label for="type">Partager avec</label>
 
                             <label class="radio-inline typePartage" title="Partage avec des collègues" data-container="body">
                                 <input type="radio" name="type" id="prof" value="prof"> Profs</label>
@@ -54,6 +56,7 @@
                     <input type="hidden" name="fileName" id="inputFileName" value="">
                     <input type="hidden" name="path" id="inputPath" value="">
                     <input type="hidden" name="type" id="inputType" value="">
+                    <input type="hidden" name="dirOrFile" id="dirOrFile" value="">
                     <input type="hidden" name="groupe" id="inputGroupe" value="">
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
@@ -68,7 +71,6 @@
             <div class="modal-footer">
                 <img src="../images/ajax-loader.gif" alt="wait" class="hidden" id="ajaxLoader">
             </div>
-
         </div>
 
     </div>
@@ -101,12 +103,19 @@
                     },
                     function(resultat) {
                         $("#modalShare").modal('hide');
-                        $.post('inc/files/shareList.inc.php', {
-                                fileId: resultat
-                            },
-                            function(resultat) {
-                                $("#partages").html(resultat).fadeIn();
-                            })
+                        var fileName = $("#inputFileName").val();
+                        var arborescence = $("#inputPath").val();
+                        var type = $('#dirOrFile').val();
+
+                        $.post('inc/files/getSharesForFile.inc.php', {
+                            fileName: fileName,
+                            arborescence: arborescence,
+                            type: type
+                        },
+                        function(resultat){
+                            $("#partages").html(resultat);
+                        })
+
                     })
             }
         })
@@ -119,7 +128,7 @@
         })
 
         $("#selection").on('click', '.teteListe', function() {
-            $('.listeMembres').toggle();
+            // $('.listeMembres').toggle();
         })
 
         $("#selection").on('change', '#checkListe', function() {

@@ -1,15 +1,11 @@
-{if $listFiles != array()}
-
-<ul class="list-unstyled">
-    {foreach from=$listFiles item=file}
-    <li>
-        {if $file.type == 'folder'}
-            <strong class='text-danger'><i class='fa fa-folder-open-o fa-lg'></i> {$file.name} (contient {$file.items|@count} fichier(s))</strong>
-        {else}
-            <strong class='text-warning'><i class='fa fa-file-o'></i> {$file.name}</strong>
-        {/if}
-    </li>
-    {/foreach}
-</ul>
-
-{/if}
+<div class="alert alert-warning">
+    <p>Attention, ce dossier contient les fichiers suivants:</p>
+    <ul class="list-unstyled" style="height:10em; overflow: auto    ">
+        {foreach from=$listFiles item=file}
+            <li>
+            {if $file.type == 'dir'}<i class="fa fa-folder-open-o"></i>{else}<i class="fa fa-file-o"></i>{/if}
+            {$file.fileName} {$file.size}
+                </li>
+        {/foreach}
+    </ul>
+</div>

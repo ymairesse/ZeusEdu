@@ -10,7 +10,8 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
@@ -27,22 +28,59 @@ parse_str($formulaire, $form);
 $idTravail = $form['idTravail'];
 $bulletin = $form['bulletin'];
 
-// informations générales concernant le travail
+// informations générales concernant le travail tel qu'enregistré dans la BD,
+// y compris les compétences et les points pour chacune d'elles
 $dataTravail = $Files->getDataTravail($idTravail, $acronyme);
+// Application::afficher($dataTravail);
+// Array
+// (
+//     [idTravail] => 195
+//     [coursGrp] => 2C:INFO2-01
+//     [titre] => SpaceX
+//     [consigne] =>  Dépose ici le .....
+//     [dateDebut] => 26/03/2017
+//     [dateFin] => 09/04/2017
+//     [statut] => readwrite
+//     [max] => 15
+//     [competences] => Array
+//         (
+//             [1116] => Array
+//                 (
+//                     [max] => 5
+//                     [formCert] => form
+//                     [idCarnet] => 5043
+//                 )
+//
+//             [1117] => Array
+//                 (
+//                     [max] => 10
+//                     [formCert] => form
+//                     [idCarnet] => 5042
+//                 )
+//
+//         )
+//
+// )
 
-$listeCompetences = isset($form['listeCompetences']) ? $form['listeCompetences'] : null;
-$libelleCompetences = $Files->getCompetencesTravail($idTravail);
 
-if ($listeCompetences != null) {
-    foreach ($listeCompetences as $key => $idCompetence) {
-        $idCarnet = $Files->creerEnteteCarnetCotes($dataTravail, $form, $idCompetence);
+$detailsCompetences = $Files->getCompetencesTravail($idTravail);
+// Application::afficher($detailsCompetences);
+$texte = '';
+if ($detailsCompetences != null) {
+    foreach ($detailsCompetences as $idCompetence => $laCompetence) {
+
+        // s'il n'y a pas encore de $idCarnet, on le crée; sinon, on récupère celui qui existe
+        $idCarnet = $Files->creerEnteteCarnetCotes($dataTravail, $bulletin, $idCompetence);
+
         // récupérer les cotes dans le casier virtuel
         $listeCotes = $Files->getCotes($idTravail, $idCompetence, $idCarnet);
-        // et les envoyer vers le carnet de cotes
+
+        // // et les envoyer vers le carnet de cotes
         $n = $Files->saveCarnetCotes($listeCotes);
-        $libelle = $libelleCompetences[$idCompetence]['libelle'];
-        echo sprintf('<strong>%s</strong>: <strong>%d</strong> cote(s) enregistrée(s)<br>', $libelle, $n);
+        $libelle = $laCompetence['libelle'];
+        $texte .= sprintf('<strong>%s</strong>: <strong>%d</strong> cote(s) enregistrée(s)<br>', $libelle, $n);
     }
+    echo $texte;
 } else {
     echo 'Rien à enregistrer';
 }

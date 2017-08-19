@@ -1,6 +1,6 @@
     <div class="row">
         <div id="icones">
-            {if isset($icones)}
+            {if isset($icones) && $userStatus == 'admin'}
                 {include file="$icones.tpl"}
             {/if}
         </div>

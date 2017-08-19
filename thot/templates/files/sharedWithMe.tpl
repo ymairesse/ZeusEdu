@@ -2,7 +2,7 @@
 
 <div class="container">
 
-    <h3>Documents partagés avec moi</h3>
+    <h2>Documents partagés avec moi</h2>
     <table class="table table-condensed">
         <thead>
             <tr>
@@ -22,16 +22,17 @@
                     <span title="{$unFichier.acronyme}">{$unFichier.prenom} {$unFichier.nom}</span>
                 </td>
                 <td>
-                    {if $unFichier.fileName == ''}
+                    {if $unFichier.dirOrFile == 'dir'}
                     <button
                         type="button"
                         class="btn btn-primary btn-xs btnFolder"
                         data-fileid="{$unFichier.fileId}"
+                        data-shareid="{$unFichier.shareId}"
                         data-commentaire="{$unFichier.commentaire}">
                         <i class="fa fa-folder-open"></i> {$unFichier.commentaire}
                     </button>
                     {else}
-                    <a href="inc/download.php?f={$unFichier.fileId}">{$unFichier.fileName}</a>
+                    <a href="inc/download.php?f={$unFichier.shareId}">{$unFichier.fileName}</a>
                     {/if}
                 </td>
                 <td>
@@ -52,19 +53,18 @@
 $(document).ready(function(){
 
     $(".btnFolder").click(function(){
-        var fileId = $(this).data('fileid');
+        // var fileId = $(this).data('fileid');
+        var shareId = $(this).data('shareid');
         var modalTitre = $(this).data('commentaire');
         $.post('inc/files/getTreeForId.inc.php',{
-            fileId: fileId
+            shareId: shareId
         },
         function(resultat){
             $("#titleTreeview").text(modalTitre);
             $("#treeview").html(resultat);
             $("#modalTreeView").modal('show');
         })
-
     })
-
 
     $("#treeview").on('click', '.dirLink', function(event) {
         $(this).next('.filetree').toggle('slow');

@@ -10,7 +10,8 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
@@ -27,4 +28,3 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $dataTravail = $Files->getDataTravail($idTravail, $acronyme);
-Application::afficher($dataTravail);

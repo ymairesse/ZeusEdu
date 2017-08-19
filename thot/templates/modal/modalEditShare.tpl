@@ -23,21 +23,3 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#saveComment").click(function() {
-            var shareId = $("#shareEditId").val();
-            var commentaire = $("#shareEditCommentaire").val();
-            $.post('inc/files/saveCommentaire.inc.php', {
-                    shareId: shareId,
-                    commentaire: commentaire
-                },
-                function(resultat) {
-                    $(".shareEdit[data-shareid='" + shareId + "']").data('commentaire', commentaire);
-                    $(".shareEdit[data-shareid='" + shareId + "']").closest('div').attr('title', commentaire);
-                    $("#modalShareEdit").modal('hide');
-                })
-        })
-    })
-</script>

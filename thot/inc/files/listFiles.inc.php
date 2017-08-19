@@ -5,32 +5,35 @@ require_once '../../../config.inc.php';
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-$module = $Application->getModule(3);
-
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$activeDir = isset($_POST['activeDir']) ? $_POST['activeDir'] : null;
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
+
+$arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : null;
+$fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
 
 $ds = DIRECTORY_SEPARATOR;
-// $activeDir = INSTALL_DIR.$ds.$module.$ds.'upload'.$ds.$acronyme.$ds.$activeDir;
-$activeDir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$activeDir;
 
-require_once INSTALL_DIR.'/inc/classes/class.Treeview.php';
-$Treeview = new Treeview($activeDir);
-$listFiles = $Treeview->getTree();
+$activeDir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$arborescence.$ds.$fileName;
+$listFiles = $Files->flatDirectory($activeDir);
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
+if (count($listFiles) > 0) {
+    require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+    $smarty = new Smarty();
+    $smarty->template_dir = '../../templates';
+    $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listFiles', $listFiles);
-echo $smarty->fetch('files/listFiles.tpl');
+    $smarty->assign('listFiles', $listFiles);
+    $smarty->display('files/listFiles.tpl');
+}
+else echo Null;

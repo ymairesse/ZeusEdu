@@ -12,10 +12,12 @@ if (!(isset($_SESSION[APPLICATION]))) {
     echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
     exit;
 }
+
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$type = isset($_GET['type']) ? $_GET['type'] : 'fileId';
+// le $type 'fileId' est donné par défaut
+$type = isset($_GET['type']) ? $_GET['type'] : 'shareId';
 
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
@@ -25,24 +27,32 @@ define ('NOTSHARED', 'Ce document n\'est pas partagé avec vous.');
 
 $ds = DIRECTORY_SEPARATOR;
 
+$erreur = Null;
+
 switch ($type) {
-    case 'fileId':
-        // une valeur de fileId a été passée
-        // document provenant de la listes des "partagés avec moi"
-        $fileId = isset($_GET['f']) ? $_GET['f'] : null;
-        if ($fileId == null) {
-            die(FILENOTFOUND);
+    // le fichier est référencé par son shareId
+    case 'shareId':
+        $shareId = isset($_GET['f']) ? $_GET['f'] : null;
+        if ($shareId == null) {
+            $erreur = FILENOTFOUND;
+            // die(FILENOTFOUND);
         }
-        $file = $Files->getSharedfileById($fileId);
-
-        if (empty($file)) {
-            die(NOTSHARED);
+        if ($erreur == Null) {
+            $fileInfo = $Files->getFileInfoByShareId($shareId);
+            // vérifier que le fichier est effectivement partagé avec l'utilisateur actif
+            $sharedFiles = array_keys($Files->sharedWith($acronyme));
+            if (!(in_array($fileInfo['shareId'], $sharedFiles))) {
+                $erreur = NOTSHARED;
+                // die(NOTSHARED);
+                }
         }
 
-        $path = $file['path'].$ds;
-        $fileName = $file['fileName'];
-        // le propriétaire a été trouvé dans la base de données
-        $proprio = $file['acronyme'];
+        if ($erreur == Null) {
+            $path = $fileInfo['path'].$ds;
+            $fileName = $fileInfo['fileName'];
+            // le propriétaire a été trouvé dans la base de données
+            $proprio = $fileInfo['acronyme'];
+        }
         break;
 
     case 'pfN':
@@ -51,42 +61,53 @@ switch ($type) {
         $pfN = isset($_REQUEST['f']) ? $_REQUEST['f'] : null;
 
         if ($pfN == null) {
-            die(FILENOTFOUND);
+            $erreur = FILENOTFOUND;
+            // die(FILENOTFOUND);
         }
-        $path = substr($pfN, 0, strrpos($pfN, '/') + 1);
-        $fileName = substr($pfN, strrpos($pfN, '/') + 1);
-        // le fichier doit appartenir à l'utilisateur courant
-        $proprio = $acronyme;
+        if ($erreur == Null) {
+            $path = substr($pfN, 0, strrpos($pfN, '/') + 1);
+            $fileName = substr($pfN, strrpos($pfN, '/') + 1);
+            // le fichier doit appartenir à l'utilisateur courant
+            $proprio = $acronyme;
+        }
         break;
+
     case 'pfNid':
-        // on a précisé le nom du fichier et le $fileId
+        // le lien cliqué contient le nom du fichier et le $shareId
         // documents dans un dossier partagé
-        $fileId = isset($_GET['f']) ? $_GET['f'] : null;
+        $shareId = isset($_GET['f']) ? $_GET['f'] : null;
+        // le $fileName contient le path et le nom du fichier
         $fileName = isset($_GET['file']) ? $_GET['file'] : null;
-        // recherche des informations sur le répertoire concerné
-        $fileInfo = $Files->getSharedfileById($fileId);
 
-        $shared = false;
-        if ($fileInfo != Null) {
-            // le fichier $fileId a été trouvé
-            // on extrait la liste des partages
-            $shareIds = $fileInfo['shareId'];
-            $path = $fileInfo['path'];
-            $proprio = $fileInfo['acronyme'];
-            // liste des fichiers partagés avec $acronyme
-            $sharedList = array_keys($Files->sharedWith($acronyme));
-            // pour chacun des partages du fichier, on vérifie s'il existe dans la
-            // liste des partages de l'utilisateur courant ($acronyme)
-            foreach ($shareIds as $oneShare) {
-                if (in_array($oneShare, $sharedList))
-                    $shared = true;
+        // $fileInfo = informations relatives au répertoire partagé de base (pas d'infos sur le fichier ou sur les sous-répertoires)
+        $fileInfo = $Files->getFileInfoByShareId($shareId);
+
+// Application::afficher($fileInfo);
+        $sharedDir = $fileInfo['fileName'];
+        // le fichier qui sera réellement téléchargé dans le répertoire partagé
+        $downloadedFileInfo = array(
+            'path' => substr($fileName, 0, strrpos($fileName, '/')+1),
+            'fileName' => substr($fileName, strrpos($fileName, '/') + 1),
+        );
+
+// Application::afficher($downloadedFileInfo);
+        $sharedFiles = array_keys($Files->sharedWith($acronyme));
+        if (!(in_array($fileInfo['shareId'], $sharedFiles))) {
+            $erreur = NOTSHARED;
+            //die(NOTSHARED);
             }
-        }
-
-        if ($shared == false) {
-            die(NOTSHARED);
-        }
+        if ($erreur == Null) {
+            if ($fileInfo != Null) {
+                $path = $fileInfo['path'].$ds.$sharedDir;
+                $proprio = $fileInfo['acronyme'];
+                }
+                else {
+                    $serreur = NOTSHARED;
+                    // die(NOTSHARED);
+                }
+            }
         break;
+
     case 'pTrEl':
         // on a l'id du travail et le matricule de l'élève
         // il s'agit d'un travail d'élève à évaluer
@@ -100,6 +121,10 @@ switch ($type) {
     default:
         // wtf
         break;
+}
+
+if ($erreur != Null) {
+    die('Erreur: '.$erreur);
 }
 
 /*
@@ -126,6 +151,9 @@ $args = array(
         'referrer_check' => false,
         'referrer' => null,
         );
+// echo "args";
+// Application::afficher($args);
+
 $download = new chip_download($args);
 
 /*
@@ -138,7 +166,7 @@ $download_hook = $download->get_download_hook();
 
 if ($download_hook['download'] != 1) {
     echo $download_hook['message'];
-    echo "Ce type de fichier n'est pas autorisé";
+    echo " Une erreur inattendue s'est produite";
 }
 // $download->chip_print($download_hook);
 // exit;
@@ -152,6 +180,16 @@ if ($download_hook['download'] != 1) {
 if ($download_hook['download'] == true) {
 
     /* You can write your logic before proceeding to download */
+
+    // enregistrement du suivi de téléchargement pour le document
+    $spyInfo = $Files->getSpyInfo4ShareId($shareId);
+    // il y a un espion sur le fichier ou le répertoire
+    if (!(empty($spyInfo))) {
+        $spyId = $spyInfo['spyId'];
+        $path = (isset($downloadedFileInfo['path'])) ? $downloadedFileInfo['path'] : Null;
+        $fileName = (isset($downloadedFileInfo['fileName'])) ? $downloadedFileInfo['fileName'] : Null;
+        $Files->setSpiedDownload ($acronyme, $spyId, $path, $fileName);
+    }
 
     /* Let's download file */
     $download->get_download();

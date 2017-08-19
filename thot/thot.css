@@ -217,8 +217,20 @@ form input:disabled {
     background: #ddd;
 }
 
-.active {
-    background: #FCE5A8 !important;
+
+#listeFichiers tr.active, #listePartages p.active {
+    background: #99f !important;
+    color: #000 !important;
+}
+#listeFichiers tr.active td {
+    background: #99f !important;
+}
+#listeFichiers.active a {
+    color: #ff0;
+}
+
+.btn-crumb.active {
+    border: 1px solid red !important;
 }
 
 .shareList li {
@@ -311,4 +323,24 @@ fieldset.info legend {
 .btn-xl {
     padding: 10% 0;
     heigth: 5em;
+}
+
+tr.dir {
+    background-color: #ffb;
+}
+
+#listeFichiers table {
+    cursor:pointer;
+}
+
+#listeTravaux button.active {
+    background-color: #F9E0AE;
+}
+
+.avertissement {
+    padding-top: 1.5em;
+    text-align: center;
+    font-size: 64px;
+    font-weight: bold;
+    color: #bbb;
 }

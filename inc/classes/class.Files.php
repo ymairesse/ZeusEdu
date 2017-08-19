@@ -45,7 +45,7 @@ class Files
       *
       * @return int
       */
-     public function findFileId($path, $fileName, $acronyme, $create = false)
+     public function findFileId($path, $fileName, $dirOrFile, $acronyme, $create = false)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          // recherche d'un éventuel 'fileId' existant pour le fichier
@@ -54,8 +54,10 @@ class Files
          $sql .= 'WHERE path=:path AND fileName=:fileName AND acronyme=:acronyme ';
          $requete = $connexion->prepare($sql);
 
-         $data = array(':path' => $path, ':fileName' => $fileName, ':acronyme' => $acronyme);
-         $resultat = $requete->execute($data);
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':path', $path, PDO::PARAM_STR, 255);
+         $requete->bindParam(':fileName', $fileName, PDO::PARAM_STR, 255);
+         $resultat = $requete->execute();
          $fileId = null;
          if ($resultat) {
              $ligne = $requete->fetch();
@@ -65,9 +67,9 @@ class Files
          // si on n'a pas trouvé d'enregistrement dans la BD, on crée éventuellement cet enregistrement
          if (($fileId == null) && ($create == true)) {
              $sql = 'INSERT INTO '.PFX.'thotFiles ';
-             $sql .= 'SET acronyme=:acronyme, path=:path, fileName=:fileName ';
+             $sql .= 'SET acronyme=:acronyme, path=:path, fileName=:fileName, dirOrFile=:dirOrFile ';
              $requete = $connexion->prepare($sql);
-             $data = array(':acronyme' => $acronyme, ':path' => $path, ':fileName' => $fileName);
+             $data = array(':acronyme' => $acronyme, ':path' => $path, ':fileName' => $fileName, ':dirOrFile' => $dirOrFile);
              $resultat = $requete->execute($data);
              $fileId = $connexion->lastInsertId();
          }
@@ -201,7 +203,39 @@ class Files
     }
 
     /**
-     * Enregistrement du partage d'un fichier.
+     * retourne la liste des fichiers partagés pour un utilisateur $acronyme
+     *
+     * @param string $acronyme
+     *
+     * @return array
+     */
+    public function listSharesByUser($acronyme) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT spyId, tss.shareId, tss.isDir,   tss.fileId ';
+        $sql .= 'FROM '.PFX.'thotSharesSpy AS tss ';
+        $sql .= 'JOIN '.PFX.'thotShares AS ts ON ts.shareId = tss.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS tf ON tf.fileId = ts.fileId ';
+        $sql .= 'WHERE acronyme=:acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $shareId = $ligne['shareId'];
+                $liste[$shareId] = $ligne;
+            }
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+
+        }
+    }
+
+    /**
+     * Enregistrement du partage d'un fichier
      *
      * @param $post : contenu du formulaire
      *
@@ -211,8 +245,9 @@ class Files
     {
         $fileName = $post['fileName'];
         $path = $post['path'];
+        $dirOrFile = $post['dirOrFile'];
         // retrouver le fileId existant ou définir un fileId -paramètre "true"
-        $fileId = $this->findFileId($path, $fileName, $acronyme, true);
+        $fileId = $this->findFileId($path, $fileName, $dirOrFile, $acronyme, true);
 
         $type = $post['type'];
         $groupe = $post['groupe'];
@@ -225,8 +260,8 @@ class Files
         $sql = 'INSERT INTO '.PFX.'thotShares ';
         $sql .= 'SET fileId=:fileId, type=:type, groupe=:groupe, destinataire=:destinataire, commentaire=:commentaire ';
         $sql .= 'ON DUPLICATE KEY UPDATE commentaire=:commentaire ';
-
         $requete = $connexion->prepare($sql);
+
         $resultat = 0;
         $data = array(':fileId' => $fileId, ':type' => $type, ':groupe' => $groupe, ':commentaire' => $commentaire);
 
@@ -438,17 +473,44 @@ class Files
         if ($this->verifProprietaireShare($shareId, $acronyme)) {
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'DELETE FROM '.PFX.'thotShares ';
-            $sql .= "WHERE shareId = '$shareId' ";
+            $sql .= "WHERE shareId = $shareId ";
+
             $resultat = $connexion->exec($sql);
+
             Application::DeconnexionPDO($connexion);
 
             if ($resultat) {
                 return $shareId;
-            }
+                }
         } else {
             die('Ce fichier ne vous appartient pas');
         }
     }
+
+    /**
+     * clôture le partage d'une liste de fichiers dont on passe le fileId (et autres infos)
+     *
+     * @param array $fileList (array($fileId, $fileName, $path))
+     *
+     * @return int : nombre de fin de partages
+     */
+    public function unShareFileList($fileList) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotShares ';
+        $sql .= 'WHERE fileId=:fileId ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = 0;
+        foreach ($fileList as $n => $file) {
+            $fileId = $file['fileId'];
+            $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
+            $resultat += $requete->execute();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
 
     /**
      * clôture le partage d'un fichier dont on fournit l'identifiant $fileId.
@@ -580,6 +642,222 @@ class Files
     }
 
     /**
+     * retourne la liste des fichiers partagés en les triant par groupes de destinataires
+     *
+     * @param string $acronyme : le propriétaire
+     * @param string $groupe : si l'on souhaite un groupe en particulier
+     *
+     * @return array
+     */
+    public function getSharedByGroups ($acronyme, $groupe=Null) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtf.fileId, fileName, path, dirOrFile, shareId, type, dts.groupe, destinataire, commentaire, ';
+        $sql .= 'de.nom, de.prenom, profs.nom AS nomProf, profs.prenom AS prenomProf ';
+        $sql .= 'FROM '.PFX.'thotFiles AS dtf ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dtf.fileId = dts.fileId ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dts.destinataire ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = dts.destinataire ';
+        $sql .= 'WHERE dtf.acronyme =:acronyme ';
+        if ($groupe != Null)
+            $sql .= 'AND groupe=:groupe ';
+        $sql .= 'ORDER BY type, groupe, destinataire, fileName ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        if ($groupe != Null)
+            $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 15);
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $type = $ligne['type'];
+                $shareId = $ligne['shareId'];
+                $groupe = $ligne['groupe'];
+                if ($groupe == $type)
+                    $groupe = ($ligne['destinataire'] == 'all') ? '[TOUS]' : $ligne['destinataire'];
+                switch ($type) {
+                    case 'ecole':
+                        $libelle = 'Tous les élèves';
+                        break;
+                    case 'niveau':
+                        $libelle = 'Tous les élèves de '.$ligne['destinataire'].'e';
+                        break;
+                    case 'prof':
+                        if ($ligne['destinataire'] == 'all') {
+                            $libelle = 'Tous les collègues';
+                        } else {
+                            $libelle = sprintf('Collègue: %s %s', $ligne['prenomProf'], $ligne['nomProf']);
+                        }
+                        break;
+                    case 'classe':
+                        if ($ligne['destinataire'] == 'all') {
+                            $libelle = 'Tous les élèves de '.$ligne['groupe'];
+                        } else {
+                            $libelle = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
+                        }
+                        break;
+                    case 'cours':
+                        if ($ligne['destinataire'] == 'all') {
+                            $libelle = 'Tous les élèves du cours '.$ligne['groupe'];
+                        } else {
+                            $libelle = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
+                        }
+                        break;
+                    default:
+                        // wtf;
+                        break;
+                    }
+                $ligne['libelle'] = $libelle;
+
+                $liste[$type][$groupe][$shareId] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        foreach ($liste as $type => $shares) {
+            ksort($liste[$type]);
+        }
+
+        return $liste;
+    }
+
+    /**
+     * renvoie un dictionnaire en "français" des noms des différents groupes de partages de documents
+     *
+     * @param void()
+     *
+     * @return array
+     */
+    public function getDicoShareGroups(){
+        return array(
+            'ecole' => 'Élèves de l\'école',
+            'niveau' => 'Élèves d\'un niveau d\'étude',
+            'classe' => 'Élèves d\'une classe',
+            'cours' => 'Élèves d\'un cours',
+            'prof' => 'Collègues',
+        );
+    }
+
+    /**
+     * renvoie un dictionnaire en "français" des statuts possibles pour les travaux dans les casiers
+     *
+     * @param void()
+     *
+     * @return array
+     */
+    public function getDicoStatuts(){
+        return array(
+            'hidden' => 'Caché aux élèves',
+            'readonly' => 'Lecture seule',
+            'readwrite' => 'Travail en cours',
+            'termine' => 'Travail terminé',
+            'archive' => 'Travail archivé',
+        );
+    }
+
+    /**
+     * retourne les caractéristiques d'un fichier dont on donne le shareId
+     *
+     * @param int $shareId
+     * @param string $acronyme : acronyme du propriétaire
+     *
+     * @return array
+     */
+    public function getFileInfoByShareId($shareId, $acronyme=Null) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT shareId, dts.fileId, type, dts.groupe, destinataire, commentaire, path, fileName, dirOrFile, ';
+        $sql .= ' dtf.acronyme, de.nom, de.prenom, profs.nom AS nomProf, profs.prenom AS prenomProf ';
+        $sql .= 'FROM '.PFX.'thotShares AS dts ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dts.destinataire ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = dts.destinataire ';
+        $sql .= 'WHERE dts.shareId =:shareId ';
+        if ($acronyme != Null)
+            $sql .= 'AND dtf.acronyme=:acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $ligne = array();
+        if ($acronyme != Null)
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $type = $ligne['type'];
+            switch ($type) {
+                case 'ecole':
+                    $ligne['libelle'] = 'Tous les élèves';
+                    break;
+                case 'niveau':
+                    $ligne['libelle'] = 'Tous les élèves de '.$ligne['destinataire'].'e';
+                    break;
+                case 'prof':
+                    if ($ligne['destinataire'] == 'all') {
+                        $ligne['libelle'] = 'Tous les collègues';
+                    } else {
+                        $ligne['libelle'] = sprintf('collègue: %s %s', $ligne['prenomProf'], $ligne['nomProf']);
+                    }
+                    break;
+                case 'classe':
+                    if ($ligne['destinataire'] == 'all') {
+                        $ligne['libelle'] = 'Tous les élèves de '.$ligne['groupe'];
+                    } else {
+                        $ligne['libelle'] = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
+                    }
+                    break;
+                case 'cours':
+                    if ($ligne['destinataire'] == 'all') {
+                        $ligne['libelle'] = 'Tous les élèves du cours '.$ligne['groupe'];
+                    } else {
+                        $ligne['libelle'] = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
+                    }
+                    break;
+                default:
+                    // wtf;
+                    break;
+                }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
+    /**
+     * renvoie le contenu d'un répertoire de manière non-récursive
+     *
+     * @param $dir : le répertoire, y compris le path
+     *
+     * @return array : liste des fichiers commençant par les répertoires
+     */
+    public function flatDirectory($dir) {
+        $results = scandir($dir);
+        $listFiles = array('dir' => array(), 'file' => array());
+        $ds = DIRECTORY_SEPARATOR;
+
+        foreach ($results as $entry) {
+            // éviter les répertoires "." et ".." ainsi que les répertoires de service (Ex: "#thot")
+            if (!(in_array($entry, array('.', '..'))) && (substr($entry,0,1) != '#')){
+                $type = is_dir($dir.$ds.$entry) ? 'dir' : 'file';
+                $ext = pathinfo($dir.$ds.$entry, PATHINFO_EXTENSION);
+                $listFiles[$type][] = array(
+                    'fileName' => $entry,
+                    'type' => $type,
+                    'size' => $this->unitFilesize(filesize($dir.$ds.$entry)),
+                    'dateTime' => strftime('%x %X', filemtime($dir.$ds.$entry)),
+                    'ext' => $ext,
+                );
+            }
+        }
+
+        return array_merge($listFiles['dir'], $listFiles['file']);
+    }
+
+    /**
      * renvoie tous les noms de fichiers (avec les répertoires) inclus dans l'arboresence indiquée.
      *
      * @param $root : emplacement du répertoire d'upload sur le serveur
@@ -592,11 +870,12 @@ class Files
         $path = $root.$upload;
         $directory = new \RecursiveDirectoryIterator($path);
         $iterator = new \RecursiveIteratorIterator($directory);
+        $n = strlen($root);
         $files = array();
         foreach ($iterator as $info) {
-            $dir = $info->getPath();
+            $dir = substr($info->getPath(), $n);
             $fileName = $info->getFilename();
-            if ($fileName != '..') {
+            if ($fileName != '..' && $fileName != '.') {
                 $files[] = array('path' => $dir, 'fileName' => $fileName);
             }
         }
@@ -614,7 +893,7 @@ class Files
     public function sharedWith($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT share.shareId, share.fileId, groupe, destinataire, commentaire, path, fileName, ';
+        $sql = 'SELECT share.shareId, share.fileId, groupe, destinataire, commentaire, path, fileName, dirOrFile, ';
         $sql .= 'files.acronyme, nom, prenom ';
         $sql .= 'FROM '.PFX.'thotShares AS share ';
         $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = share.fileId ';
@@ -635,6 +914,26 @@ class Files
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * ajoute l'information de l'extension aux informations de la liste des fichiers passés
+     *
+     * @param array $listeFichiers
+     * @param string $root : INSTALL_DIR
+     * @param string $acronyme
+     *
+     * @return array
+     */
+    public function addExtension($listeFichiers, $root, $acronyme) {
+        $ds = DIRECTORY_SEPARATOR;
+        foreach ($listeFichiers as $key => $unFichier) {
+            $path = $root.$ds.'upload'.$ds.$acronyme.$unFichier['path'].$ds.$unFichier['fileName'];
+            // rustine
+            $path = preg_replace('~/+~', '/', $path);
+            $listeFichiers[$key]['ext'] = pathinfo($path, PATHINFO_EXTENSION);
+        }
+        return $listeFichiers;
     }
 
     /**
@@ -664,6 +963,38 @@ class Files
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * retourne les fileId d'une liste de fichiers  array($path, $filename)
+     * pour un propriétaire $acronyme donné
+     *
+     * @param array $fileList
+     *
+     * @return array array($fileId, $path, $fileName)
+     */
+    public function getFileIdForFileList ($fileList, $acronyme) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        foreach ($fileList as $n => $file) {
+            $fileName = $file['fileName'];
+            $path = $file['path'];
+            $sql = 'SELECT fileId, path, fileName ';
+            $sql .= 'FROM '.PFX.'thotFiles ';
+            $sql .= "WHERE path='$path' AND fileName='$fileName' AND acronyme='$acronyme' ";
+
+            $resultat = $connexion->query($sql);
+            if ($resultat) {
+                $resultat->setFetchMode(PDO::FETCH_ASSOC);
+                $ligne = $resultat->fetch();
+
+                $fileId = $ligne['fileId'];
+                $fileList[$n]['fileId'] = $fileId;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $fileList;
     }
 
     /**
@@ -697,7 +1028,6 @@ class Files
                 $shareId = $ligne['shareId'];
                 if (!(isset($liste[$fileId]))) {
                     $liste[$fileId] = array(
-                        // 'fileId'=>$fileId,
                         'path' => $ligne['path'],
                         'fileName' => $ligne['fileName'],
                         'share' => array(), );
@@ -738,13 +1068,167 @@ class Files
     }
 
     /**
+     * retourne les caractéristiques d'un éventuel espion sur le fichier shareId
+     * @param  int $shareId
+     *
+     * @return array
+     */
+    public function getSpyInfo4ShareId ($shareId) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT spyId, dtss.shareId, dtf.isDir, dtss.fileId, acronyme ';
+        $sql .= 'FROM '.PFX.'thotSharesSpy AS dtss ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dtss.shareId = dts.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
+        $sql .= 'WHERE dtss.shareId =:shareId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+        $ligne = Null;
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
+    /**
+     * reourne la liste des accès à un fichier partagé $shareId donné pour un utilisateur donné
+     *
+     * @param int $shareId
+     * @param string acronyme : utilisateur, controle de sécurité
+     *
+     * @return array
+     */
+    public function getSpyList4ShareId ($shareId, $acronyme) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT tss.spyId, tss.shareId, tss.isDir, tss.fileId, userName, date, tssu.path, tssu.fileName ';
+        $sql .= 'FROM '.PFX.'thotSharesSpy AS tss ';
+        $sql .= 'LEFT JOIN '.PFX.'thotSharesSpyUsers AS tssu ON tssu.spyId = tss.spyId ';
+        $sql .= 'JOIN '.PFX.'thotShares AS ts ON ts.shareId = tss.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS tf ON tf.fileId = ts.fileId ';
+        $sql .= 'WHERE tss.shareId =:shareId AND acronyme=:acronyme ';
+        $sql .= 'ORDER BY userName ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $date = explode(' ', $ligne['date']);
+                $date[0] = Application::datePHP($date[0]);
+                $ligne['date'] = implode(' ', $date);
+                $liste[] = $ligne;
+                }
+            }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * création d'un espion pour le fichier shareId
+     *
+     * @param int $shareId
+     * @param boolean $isDir : 1 si le fichier à espionner est un répertoire, sinon 0
+     *
+     * @return int : nombre d'espions créés (0 ou 1 si tout s'est bien passé)
+     */
+    public function setSpyForShareId ($shareId, $isDir) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'thotSharesSpy ';
+        $sql .= 'SET shareId=:shareId, isDir=:isDir ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $requete->bindParam(':isDir', $isDir, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * Suppression d'un espion sur le fichier $shareId appartenant à $acronyme
+     *
+     * @param int $shareId : identifiant du partage
+     * @param string $acronyme : identifiant du propriétaire (sécurité)
+     *
+     * @return int nombre d'informations supprimées
+     */
+    public function delSpy4ShareId ($shareId, $acronyme) {
+        // recherche du spyId pour le partage $shareId
+        $fileInfos = $this->getSpyInfo4ShareId ($shareId, $acronyme);
+        $spyId = $fileInfos['spyId'];
+
+        // suppression du partage dans la table thotSharesSpy
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotSharesSpy ';
+        $sql .= 'WHERE spyId=:spyId ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':spyId', $spyId, PDO::PARAM_INT);
+        $requete->execute();
+
+        // suppression des informations récoltées dans la table thotSharesSpyUser
+        $sql = 'DELETE FROM '.PFX.'thotSharesSpyUsers ';
+        $sql .= 'WHERE spyId=:spyId ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':spyId', $spyId, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * note le téléchargement d'un fichier référence par $spyId par l'utilisateur $acronyme
+     * s'il s'agit d'un fichier dans un dossier, $fileId indique le fichier correspondant
+     *
+     * @param string $acronyme
+     * @param int $spyId
+     * @param int $fileId (éventuellement Null)
+     *
+     * @return void()
+     */
+    public function setSpiedDownload ($acronyme, $spyId, $path=Null, $fileName=Null) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'thotSharesSpyUsers ';
+        $sql .= 'SET spyId=:spyId, userName=:acronyme, date=NOW(), userType="prof", ';
+        $sql .= 'path=:path, fileName=:fileName ';
+        $sql .= 'ON DUPLICATE KEY UPDATE date=NOW() ';
+
+        $path = ($path != Null) ? $path : '';
+        $fileName = ($fileName != Null) ? $fileName : '';
+
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':spyId', $spyId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':path', $path, PDO::PARAM_STR, 255);
+        $requete->bindParam(':fileName', $fileName, PDO::PARAM_STR, 255);
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return ;
+    }
+
+    /**
      * retourne la liste des travaux pour l'utilisateur dont on fournit l'acronyme.
      *
      * @param $acronyme
      *
      * @return array
      */
-    public function listeTravaux($acronyme, $coursGrp)
+    public function listeTravaux($acronyme, $coursGrp, $statuts=Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idTravail, tt.coursGrp, titre, consigne, dateDebut, dateFin, statut, libelle, nomCours, nbheures ';
@@ -752,7 +1236,12 @@ class Files
         $sql .= 'JOIN '.PFX."cours AS dc ON SUBSTR(coursGrp, 1, LOCATE('-', coursGrp) -1) = dc.cours ";
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON tt.coursGrp = pc.coursGrp AND tt.acronyme = pc.acronyme ';
         $sql .= "WHERE tt.acronyme='$acronyme' AND tt.coursGrp = '$coursGrp' ";
+        if ($statuts != Null) {
+            $listeStatuts = "'".implode("','", $statuts)."'";
+            $sql .= "AND statut IN ($listeStatuts) ";
+        }
         $sql .= 'ORDER BY dateDebut, dateFin,  tt.coursGrp, libelle ';
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -860,6 +1349,59 @@ class Files
         );
 
         return $dataTravail;
+    }
+
+    /**
+     * retourne la liste de tous les statuts possibles pour un travail
+     *
+     * @param void
+     *
+     * @return array
+     */
+    public function getStatutsTravail () {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SHOW COLUMNS FROM didac_thotTravaux WHERE Field = 'statut' ";
+        $resultat = $connexion->query($sql);
+        $liste = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $resultat->fetch();
+            Application::afficher($ligne['Type']);
+
+            preg_match("/^enum\(\'(.*)\'\)$/", $ligne['Type'], $matches);
+            $liste = explode('\',\'', $matches[1]);
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * enregistre les modifications de statuts depuis la boîte modale 'modalArchives.tpl'
+     *
+     * @param array $form : le formulaire sérializé et parsé
+     *
+     * @return int : le nombre de modifications enregistrées
+     */
+    public function saveStatutsFromForm($form) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'thotTravaux SET statut=:statut ';
+        $sql .= 'WHERE idTravail=:idTravail ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = 0;
+        foreach ($form AS $field => $statut) {
+            $field = explode('_', $field);
+            $idTravail = $field[1];
+            $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+            $requete->bindParam(':statut', $statut, PDO::PARAM_STR);
+            $resultat += $requete->execute();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
     }
 
     /**
@@ -1041,21 +1583,20 @@ class Files
      *
      * @return array
      */
-    public function listeTravauxRemis($idTravail, $acronyme)
+    public function listeTravauxRemis($coursGrp, $idTravail, $acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dttr.idTravail, dttr.matricule, remarque, remis, nom, prenom, groupe ';
+        $sql = 'SELECT coursGrp, dttr.idTravail, dttr.matricule, remarque, remis, nom, prenom, groupe ';
         $sql .= 'FROM '.PFX.'thotTravauxRemis AS dttr ';
         $sql .= 'JOIN '.PFX.'thotTravaux AS dtt ON dtt.idTravail = dttr.idTravail ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dttr.matricule ';
         $sql .= 'LEFT JOIN '.PFX.'thotTravauxEvaluations AS dtte ON dtte.matricule = dttr.matricule AND dtte.idTravail = dttr.idTravail ';
-        $sql .= 'WHERE dttr.idTravail=:idTravail AND acronyme=:acronyme ';
+        $sql .= 'WHERE dttr.idTravail=:idTravail AND acronyme=:acronyme AND coursGrp=:coursGrp ';
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
 
         $requete = $connexion->prepare($sql);
 
-        $data = array(':idTravail' => $idTravail, 'acronyme' => $acronyme);
-
+        $data = array(':idTravail' => $idTravail, 'acronyme' => $acronyme, 'coursGrp' => $coursGrp);
         $resultat = $requete->execute($data);
         $liste = array();
         if ($resultat) {
@@ -1279,7 +1820,9 @@ class Files
      */
     public function listeCompetencesLibresTravail ($idTravail, $coursGrp) {
         // liste des compétences déjà existantes pour ce travail (par $idCompetence)
-        $competencesTravail = $this->getCompetencesTravail($idTravail);
+        if ($idTravail != Null)
+            $competencesTravail = $this->getCompetencesTravail($idTravail);
+            else $competencesTravail = array();
         // liste des compétences pour ce cours
         $competencesCoursGrp = $this->getCompetencesCoursGrp($coursGrp);
 
@@ -1364,6 +1907,73 @@ class Files
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
 
         return number_format($size / pow(1024, $power), $precision, '.', ',').' '.$units[$power];
+    }
+
+    /**
+     * construit l'arborescence des fichiers du répertoire $dir fourni.
+     *
+     * @param $dir : répertoire à lister
+     *
+     * @return array: arborescence
+     */
+    public function treeview($root, $path, $dirName, $originalPath)
+    {
+        // supprimer toutes les occurrences de '/' multiples
+        $originalPath = preg_replace('~/+~', '/', $originalPath);
+        $path = preg_replace('~/+~', '/', $path);
+
+        $ds = DIRECTORY_SEPARATOR;
+        // dans le répertoire upload de l'utilisateur, $chemin désigne le répertoire actuel, sans $root
+        $chemin = $path.($path == $ds ? '' : $ds).$dirName;
+        $chemin = substr($chemin, strlen($originalPath));
+
+        // stockage séparé des fichiers ordinaires et des répertoires, chacun par ordre alphabétique
+        $files = array('files' => array(), 'dir' => array());
+// Application::afficher(array($root, $path, $dirName, true));
+        if (file_exists($root.$path.$ds.$dirName)) {
+            $listeFichiers = scandir($root.$ds.$path.$ds.$dirName);
+
+            foreach ($listeFichiers as $unFichier) {
+                // Ignorer les fichiers cachés et les répertoires protégés par "#" initial
+                if ($unFichier[0] == '.' || $unFichier[0] == '#') {
+                    continue;
+                }
+
+
+                $fileName = ($unFichier[0] == $ds ? '' : $ds).$root.$path.($path == $ds ? '' : $ds).$dirName.$ds.$unFichier;
+                // Application::afficher($fileName);
+                // rustine
+                // $fileName = preg_replace('~/+~', '/', $fileName);
+
+                if (is_dir($fileName)) {
+                    // C'est un répertoire
+                    $fileInfo = pathinfo($root.$ds.$path.$ds.$unFichier);
+                    $files['dir'][] = array(
+                        'name' => $fileInfo['basename'],
+                        'type' => 'folder',
+                        'path' => $chemin,
+                        'items' => $this->treeview($root, $path.$ds.$dirName, $unFichier, $originalPath), // appel récursif dans le répertoire
+                    );
+                } else {
+                    // C'est un fichier ordinaire
+                    // $fileName = ($fileName[0] != $ds) ? $ds.$fileName : $fileName;
+                    $fileInfo = pathinfo($fileName);
+                    $files['files'][] = array(
+                        'name' => $fileInfo['basename'],
+                        'type' => 'file',
+                        'path' => $chemin,
+                        'size' => $this->unitFilesize(filesize($fileName)),
+                        'date' => strftime('%x %X', filemtime($root.$ds.$path.$ds.$dirName.$ds.$fileInfo['basename'])),
+                        'ext' => $fileInfo['extension'],
+                        'orig' => $originalPath,
+                    );
+                }
+            }
+            // fusion des deux tableaux, fichiers ordinaires et répetoires (d'abord les répertoires)
+            $files = array_merge($files['dir'], $files['files']);
+        }
+
+        return $files;
     }
 
     /**
@@ -1595,8 +2205,7 @@ class Files
         if ($idCarnet != null) {
             $data[':idCarnet'] = $idCarnet;
         }
-// echo $sql;
-// Application::afficher($data);
+
         $resultat = $requete->execute($data);
 
         if ($idCarnet == null) {
@@ -1756,4 +2365,6 @@ class Files
 
         return $listeResultats;
     }
+
+
 }

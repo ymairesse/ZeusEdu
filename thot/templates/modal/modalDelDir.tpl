@@ -14,11 +14,8 @@
                         <br>
                         <strong id="rootRep"></strong></p>
                 </div>
-                <div id="attention" class="hidden">
-                    <div class="alert alert-warning">
-                        <p>Attention, ce dossier contient les fichiers suivants:</p>
-                        <div id="listFiles"></div>
-                    </div>
+                <div id="listFiles">
+                    {include file="files/listFiles.tpl"}
                 </div>
 
             </div>
@@ -36,32 +33,26 @@
     $(document).ready(function() {
 
         $("#btnConfirmDelDir").click(function() {
-            var activeDir = $("#activeDir").text();
-            var nextActive = activeDir.substring(0, activeDir.length - 1).substring(0, activeDir.substring(0, activeDir.length - 1).lastIndexOf('/') + 1);
+            var arborescence = $('#rootRep').data('arborescence');
+            var directory = $('#delRep').data('filename');
 
             $.post('inc/files/delDir.inc.php', {
-                    activeDir: activeDir
+                    arborescence: arborescence,
+                    directory: directory
                 },
                 function(resultat) {
-                    if (parseInt(resultat) > 0) {
-                        $('[data-dir="' + activeDir + '"]').closest('.folder').remove();
-                        $("#activeDir").text(nextActive);
-                        $(".dirLink[data-dir='" + nextActive + "']").addClass('activeDir');
-
-                        // recalcul du nombre de fichiers dans le "nextActive"
-                        var nbFiles = parseInt($(".dirLink[data-dir='" + nextActive + "']").data('nbfiles'));
-                        $(".dirLink[data-dir='" + nextActive + "']").data('nbfiles', nbFiles - 1);
-
-                        // remise en ordre des infos de la zone dirInfo
-                        $("#diDir").text(nextActive);
-                        var nbFiles = $(".dirLink[data-dir='" + nextActive + "']").data('nbfiles');
-                        $("#diNb").text(nbFiles);
-
-                        if (nextActive != '/')
-                            $("#btnDeldir").removeClass('disabled');
-                        else $("#btnDeldir").addClass('disabled');
+                    var resultatJS = JSON.parse(resultat);
+                    var nbDir = parseInt(resultatJS.nbDir);
+                    var nbFiles = parseInt(resultatJS.nbFiles);
+                    if (nbDir > 0) {
+                        bootbox.alert({
+                                title: "Effacement d'un dossier",
+                                message: '<strong>1</strong> dossier contenant <strong>' + resultatJS.nbFiles + '</strong> fichier(s) supprimé(s)'
+                            });
                     } else alert('Houston, We\'ve Got a Problem. Ce dossier ne peut être supprimé');
-                })
+                });
+            // supprimer la ligne du tableau des fichiers
+            $('#listeFichiers tr.active').remove();
             $("#modalDelDir").modal('hide');
         })
 

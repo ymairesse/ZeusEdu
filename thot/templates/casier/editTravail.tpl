@@ -2,10 +2,40 @@
 
     <div class="row">
 
-        <div class="col-sm-12">
-            <label for="titre" class="sr-only">Titre du travail</label>
+        <div class="col-xs-5">
+            <label for="titre">Titre du travail</label>
             <input type="text" name="titre" maxlength="40" tabindex="1" value="{$dataTravail.titre|default:''}" id="titre" class="form-control" placeholder="Titre du travail">
+        </div>
 
+        <div class="col-xs-2">
+            <div class="form-group">
+                <label for="dateDebut">Date début</label>
+                <input type="text" name="dateDebut" id="dateDebut" tabindex="3" placeholder="Date de début" class="datepicker form-control" value="{$dataTravail.dateDebut|default:''}">
+            </div>
+        </div>
+
+        <div class="col-xs-2">
+            <div class="form-group">
+                <label for="dateFin">Date de fin</label>
+                <input type="text" name="dateFin" id="dateFin" tabindex="4" placeholder="Date de fin" class="datepicker form-control" value="{$dataTravail.dateFin|default:''}">
+            </div>
+        </div>
+
+        <div class="col-xs-3">
+            <div class="form-group">
+                <label for="statutForm">Statut</label>
+                <select class="form-control" name="statut" id="statut" tabindex="5">
+                    {foreach from=$listeStatuts key=unStatut item=libelle}
+                    <option value="{$unStatut}" {if $dataTravail.statut == $unStatut} selected{/if}>{$libelle}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+    </div> <!-- row -->
+
+    <div class="row">
+        <div class="col-xs-12">
             <div class="form-group">
                 <label for="modalConsigne"></label>
                 <textarea name="consigne" id="consigne" tabindex="2" class="form-control ckeditor">{$dataTravail.consigne|default:''}</textarea>
@@ -30,52 +60,22 @@
                 {include file="casier/tableauCompetences.tpl"}
 
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4">
-                        <button type="button" class="btn btn-success" id="btn-addCompetence" data-idtravail="{$dataTravail.idTravail|default:''}" data-coursgrp="{$dataTravail.coursGrp}">Ajouter une compétence</button>
-                    </td>
-                </tr>
-            </tfoot>
 
         </table>
 
-    </div>
-
-    <div class="row">
-
-        <div class="col-xs-4">
-            <div class="form-group">
-                <label for="dateDebut" class="sr-only">Date de début</label>
-                <input type="text" name="dateDebut" id="dateDebut" tabindex="3" placeholder="Date de début" class="datepicker form-control" value="{$dataTravail.dateDebut|default:''}">
-            </div>
+        <div class="clearfix"></div>
+        <div class="col-xs-6">
+            <button type="button" class="btn btn-info btn-block{if $dataTravail.idTravail == ''} hidden{/if}" id="btn-addCompetence" data-idtravail="{$dataTravail.idTravail|default:''}" data-coursgrp="{$dataTravail.coursGrp}">Ajouter une compétence</button>
         </div>
 
-        <div class="col-xs-4">
-            <div class="form-group">
-                <label for="dateFin" class="sr-only">Date de fin</label>
-                <input type="text" name="dateFin" id="dateFin" tabindex="4" placeholder="Date de fin" class="datepicker form-control" value="{$dataTravail.dateFin|default:''}">
-            </div>
-        </div>
-
-        <div class="col-xs-4">
-            <div class="form-group">
-                <label for="statutForm" class="sr-only">Statut</label>
-                <select class="form-control" name="statut" id="statut" tabindex="5">
-                    <option value="readwrite" {if !(isset($dataTravail.statut)) || $dataTravail.statut=='readwrite' } selected{/if}>Travail en cours</option>
-                    <option value="hidden" {if isset($dataTravail.statut) && $dataTravail.statut=='hidden' } selected{/if}>Caché aux élèves</option>
-                    <option value="readonly" {if isset($dataTravail.statut) && $dataTravail.statut=='readonly' } selected{/if}>Lecture seule</option>
-                    <option value="termine" {if isset($dataTravail.statut) && $dataTravail.statut=='termine' } selected{/if}>Travail terminé</option>
-                </select>
-            </div>
+        <div class="col-xs-4 col-xs-offset-2">
+            <button type="button" class="btn btn-primary btn-block pull-right" id="btnSubmit">Enregistrer</button>
         </div>
 
     </div>
 
     <input type="hidden" name="idTravail" id="idTravail" value="{$dataTravail.idTravail|default:''}">
     <input type="hidden" name="coursGrp" value="{$dataTravail.coursGrp}">
-
-    <button type="button" class="btn btn-primary pull-right" id="btnSubmit">Enregistrer</button>
 
     </div>
 
@@ -85,7 +85,10 @@
 
 
 <script type="text/javascript">
+
     $(document).ready(function() {
+
+        $('#titre').focus();
 
         $("#btn-addCompetence").click(function() {
             var idTravail = $(this).data('idtravail');

@@ -1,7 +1,7 @@
 {* Affichage des différentes compétences s'il s'agit d'une édition, sinon tbody vide *}
 {foreach $dataTravail.competences key=idCompetence item=data name=n}
 
-<tr>
+<tr data-idcompetence="{$idCompetence}">
     <td>
         <button type="button" class="btn btn-xs btn-danger btn-delComp" data-idcompetence="{$idCompetence}" data-idtravail="{$dataTravail.idTravail}"><i class="fa fa-minus"></i></button>
     </td>

@@ -10,9 +10,14 @@
     <div class="panel-body" style="height:35em; overflow:auto;">
 
         {if $notification.type == 'classes'}
-        <div class="geant">{$classe}</div> {/if} {if $notification.type == 'niveau'}
-        <div class="geant">{$notification.destinataire}<sup>e</sup></div> {/if} {if $notification.type == 'ecole'}
-        <div class="geant">Tous</div> {/if}
+        <div class="geant">{$classe}</div>
+        {/if}
+        {if $notification.type == 'niveau'}
+        <div class="geant">{$notification.destinataire}<sup>e</sup></div>
+        {/if} 
+        {if $notification.type == 'ecole'}
+        <div class="geant">Tous</div>
+        {/if}
 
         <div class="form-group">
             <label for="dateDebut">Date de début</label>

@@ -10,39 +10,34 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
+$unAn = time() + 365 * 24 * 3600;
+$idTravail = Application::postOrCookie('idTravail', $unAn);
+$matricule = Application::postOrCookie('matricule', $unAn);
 
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-// liste des travaux remis par les élèves
-$listeTravaux = $Files->listeTravauxRemis($idTravail, $acronyme);
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 
 // informations générales sur le travail (dates, consigne,...)
 $infoTravail = $Files->getDataTravail($idTravail, $acronyme);
-$coursGrp = $infoTravail['coursGrp'];
-
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-
-$listeEleves = $Ecole->listeElevesCours($coursGrp);
-foreach ($listeTravaux as $matricule => $dataTravail) {
-    if (isset($listeEleves[$matricule]))
-        $listeTravaux[$matricule]['photo'] = $listeEleves[$matricule]['photo'];
-}
+$listeTravauxRemis = $Files->listeTravauxRemis($idTravail, $acronyme);
+$photo = Ecole::photo($matricule);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeTravaux', $listeTravaux);
 $smarty->assign('infoTravail', $infoTravail);
+$smarty->assign('listeTravauxRemis', $listeTravauxRemis);
+$smarty->assign('matricule', $matricule);
 
 echo $smarty->fetch('casier/evalTravaux.tpl');

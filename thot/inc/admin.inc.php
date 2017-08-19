@@ -11,6 +11,9 @@ switch ($mode) {
     case 'bulletin':
         require_once ('inc/gestBulletins.inc.php');
         break;
+    case 'gestParents':
+        require_once('inc/parents/gestParents.inc.php');
+        break;
     case 'reunionParents':
         if ($etape == 'enregistrer') {
             $canevas = $thot->getCanevas($_POST);

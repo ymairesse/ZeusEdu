@@ -38,21 +38,6 @@
                             </div>
                         </div>
 
-
-                        <div class="col-xs-4">
-                            {assign var=texteNiveau value=['faible', 'moyen','urgent']}
-                            <div class="form-group">
-                                <label for="urgence">Urgence</label>
-                                <br>
-                                <select name="urgence" id="urgence" class="form-control">
-                                    {foreach from=range(0,2) item=urgence}
-                                    <option value="{$urgence}" class="urgence{$urgence}">{$texteNiveau.$urgence}</option>
-                                    {/foreach}
-                                </select>
-                            </div>
-
-                        </div>
-
                     </div> <!-- row -->
 
                     <input type="hidden" name="id" id="id" value="">
@@ -75,11 +60,6 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-
-        $("#urgence").change(function(){
-            var urgence = $(this).val();
-            $(this).removeClass().addClass('form-control urgence'+urgence);
-        })
 
         $("#dateDebut").datepicker({
                 format: "dd/mm/yyyy",

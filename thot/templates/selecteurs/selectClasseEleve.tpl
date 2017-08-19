@@ -3,7 +3,7 @@
 	<form name="selecteur" id="formSelecteur" method="GET" action="index.php" role="form" class="form-inline">
 
 		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
-		<input type="hidden" name="matricule" id="matricule">
+		<input type="hidden" name="matriculeS" id="matriculeS">
 
 		<select name="classe" id="selectClasse">
 			<option value="">Classe</option>
@@ -71,7 +71,7 @@ $(document).ready (function() {
 			)
 	});
 
-	$('#choixEleve').on('change','#selectEleve', function(){
+	$('#choixEleve').on('change','#matricule', function(){
 		var matricule = $(this).val();
 		if (matricule > 0) {
 			$("#matricule").val(matricule);

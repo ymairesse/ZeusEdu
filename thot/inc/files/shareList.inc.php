@@ -9,16 +9,18 @@ $Application = new Application();
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
+
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 // si la liste des partages est demandée par le 'fileId' du fichier
 $fileId = isset($_POST['fileId']) ? $_POST['fileId'] : null;
 
-// si la liste des partages est demandée par path et fileName
-$path = isset($_POST['path']) ? $_POST['path'] : null;
+// si la liste des partages est demandée par arborescence et fileName
+$arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : null;
 $fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
 
 // demande-t-on une liste simple (pas de boutons,...)
@@ -30,7 +32,7 @@ $Files = new Files();
 if ($fileId != null) {
     $shareList = $Files->getSharesByFileId($fileId);
 } else {
-    $shareList = $Files->getSharesByFileName($path, $fileName, $acronyme);
+    $shareList = $Files->getSharesByFileName($arborescence, $fileName, $acronyme);
 }
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';

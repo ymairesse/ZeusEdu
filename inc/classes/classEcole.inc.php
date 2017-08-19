@@ -1571,9 +1571,29 @@ class ecole
         return $resultat;
     }
 
+    /**
+     * renvoie l'année d'étude corresppondant à une classe donnée
+     * en principel le premier signe de la classe
+     * @param  string $classe
+     *
+     * @return int
+     */
     public function anneeDeClasse($classe)
     {
-        return substr($classe, 0, 1);
+        return (int) substr($classe, 0, 1);
+    }
+
+    /**
+     * renvoie l'année d'étude qui précède l'année de la classe passen en paramète
+     *
+     * @param string $saveGroupesClasses
+     *
+     * @return int
+     */
+     public function anneePrecedenteDeClasse ($classe)
+     {
+     $annee = $this->anneeDeClasse($classe);
+     return $annee-1;
     }
 
     /**

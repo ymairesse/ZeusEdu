@@ -19,5 +19,8 @@ $shareId = isset($_POST['shareId']) ? $_POST['shareId'] : null;
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-$nb = $Files->unShareByShareId($shareId, $acronyme);
-echo (int) $nb;
+// suppression des éventuels espions sur le document
+$nb = $Files->delSpy4ShareId($shareId, $acronyme);
+
+// suppression effective du partage
+echo $Files->unShareByShareId($shareId, $acronyme);

@@ -13,23 +13,24 @@ if (!(isset($_SESSION[APPLICATION]))) {
     die("<div class='alert alert-danger'>".RECONNECT.'</div>');
 }
 
-$module = $Application->getModule(3);
-require_once (INSTALL_DIR."/$module/inc/classes/class.books.inc.php");
-$Books = new Books();
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
 
-// récupérer le formulaire d'encodage du livre
-$idBook = isset($_POST['idBook']) ? $_POST['idBook'] : null;
+$listeCours = $User->listeCoursProf();
 
-// enregistrer les informations du livre et revenir avec le $idBook de la BD
-$book = $Books->getBookById($idBook);
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
+$idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
 
-$auteurs = $Books->getAuthorsByidBook($idBook);
-$book['auteurs'] = $auteurs;
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
+
+$dataTravail = $Files->getDataTravail($idTravail, $acronyme, $coursGrp);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('book', $book);
-echo $smarty->fetch('books/formBookInput.tpl');
+$smarty->assign('dataTravail', $dataTravail);
+
+$smarty->display('casier/consigneTravail.tpl');

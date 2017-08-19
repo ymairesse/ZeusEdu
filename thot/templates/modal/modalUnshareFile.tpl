@@ -1,4 +1,5 @@
 <div class="modal fade" id="modalUnShareFile" tabindex="-1" role="dialog" aria-labelledby="modalUnShareFTitle" aria-hidden="true">
+
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,19 +9,16 @@
             <div class="modal-body">
                 <div class="alert alert-warning">
                     <p>
-                        <i class="fa fa-share fa-4x text-danger pull-right"></i> Veuillez confirmer l'arrêt du partage du fichier
-                        <br>
-                        <strong id="modalUnShareFileName"></strong>
-                        <br> Actuellement partagé avec
-                        <br>
-                        <strong id="modalUnShareWith"></strong>
+                        <i class="fa fa-share-alt-square fa-2x"></i> Veuillez confirmer l'arrêt du partage du <strong id="modalFileType"></strong> <strong id="modalUnShareFileName"></strong>
+                        <br> Actuellement partagé avec <strong id="modalUnShareWith"></strong>
+                        <p><i class="fa fa-user-secret fa-2x"></i> S'ils existent, les suivis de téléchargement seront également supprimés.</p>
                     </p>
                 </div>
-                <div class="alert alert-info">
-                    <p>
-                        <i class="fa fa-info-circle fa-lg"></i> Le fichier est conservé. Seul le partage est interrompu.
-                    </p>
+                <div class="notice">
+                    Le fichier est conservé. Seul le partage est interrompu.<br>
+                    Les partages éventuels avec d'autres personnes ou groupes sont conservés.
                 </div>
+
             </div>
             <div class="modal-footer">
                 <div class="btn-group pull-right">
@@ -30,20 +28,5 @@
             </div>
         </div>
     </div>
+
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-
-        $("#btnUnShareFile").click(function() {
-            var shareId = $(this).data('shareid');
-            $.post('inc/files/unShareFile.inc.php', {
-                shareId: shareId
-            }, function(resultat) {
-                $(".unShare[data-shareid='" + shareId + "']").closest('.shared').remove();
-            })
-            $("#modalUnShareFile").modal('hide');
-        })
-
-    })
-</script>
