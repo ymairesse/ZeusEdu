@@ -82,7 +82,6 @@ switch ($etape) {
 
             $smarty->assign('notification', $notification);
             $smarty->assign('corpsPage', 'notification/syntheseNotification');
-            // $smarty->assign('corpsPage', 'notification/formNotification');
         }
             break;
         default:
@@ -93,7 +92,7 @@ switch ($etape) {
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
-// informations pour le sélecteru 'selectCours'
+// informations pour le sélecteur 'selectCours'
 $smarty->assign('listeCours', $user->listeCoursProf());
 $smarty->assign('coursGrp', $coursGrp);
 $smarty->assign('selecteur', 'selecteurs/selectCoursPOST');

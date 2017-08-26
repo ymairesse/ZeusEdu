@@ -78,7 +78,7 @@ switch ($mode) {
         $smarty->assign('BASEDIR', BASEDIR);
         $smarty->assign('photo', $photo);
         $smarty->assign('listeCours', $listeCours);
-        $smarty->assign('listeTravaux', $listeTravaux);
+        $smarty->assign('listeTravauxCours', $listeTravaux);
         $smarty->assign('listeTravauxRemis', $listeTravauxRemis);
         $smarty->assign('listeEvaluations', $listeEvaluations);
         $smarty->assign('competencesTravail', $competencesTravail);

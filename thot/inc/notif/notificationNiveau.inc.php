@@ -63,13 +63,8 @@ switch ($etape) {
                     );
 
             $notification = $_POST;
-			// remise en état de "$notification" si des élèves particuliers avaient été sélectionnés
-			// $notification['type'] = 'niveau';
-			// $notification['destinataire'] = $niveau;
-			// $smarty->assign('type', 'niveau');
 
             $smarty->assign('notification', $notification);
-            // $smarty->assign('corpsPage', 'notification/formNotification');
             $smarty->assign('corpsPage', 'notification/syntheseNotification');
         }
         break;

@@ -33,7 +33,7 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeTravaux', $listeTravaux);
+$smarty->assign('listeTravauxCours', $listeTravaux);
 $smarty->assign('idTravail', $idTravail);
 $smarty->assign('coursGrp', $coursGrp);
 $smarty->assign('idTravail', $idTravail);
