@@ -13,7 +13,9 @@
             <select class="form-control" name="selectCours" id="selectCours">
                 <option value="">Sélectionnez un cours</option>
                 {foreach from=$listeCours key=ceCoursGrp item=dataCours}
-                    <option value="{$ceCoursGrp}" {if $ceCoursGrp==$coursGrp} selected{/if}>{$dataCours.coursGrp} {$dataCours.nomCours|default:$dataCours.libelle} {$dataCours.nbheures}h</option>
+                    <option value="{$ceCoursGrp}" {if $ceCoursGrp==$coursGrp} selected{/if}>
+                        {$dataCours.coursGrp} {$dataCours.nomCours|default:$dataCours.libelle} {$dataCours.nbheures}h
+                    </option>
                 {/foreach}
             </select>
 
