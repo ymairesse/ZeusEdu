@@ -1207,6 +1207,16 @@ CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
   KEY `destinataire` (`destinataire`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
 
+CREATE TABLE `didac_thotNotifFlags` (
+  `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
+  `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
+  `dateHeure` datetime DEFAULT NULL COMMENT 'Jour et heure de l''accusé de lecture',
+  `lu` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'La notification a été lue'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des accusés de lecture des notifications';
+
+ALTER TABLE `didac_thotNotifFlags`
+  ADD PRIMARY KEY (`id`,`matricule`);
+
 
 CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
   `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
