@@ -1189,23 +1189,28 @@ CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
 
 
 CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+`id` int(11) NOT NULL,
   `type` enum('ecole','niveau','classes','eleves','cours') COLLATE utf8_unicode_ci NOT NULL,
   `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   `objet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Objet de la notification',
-  `texte` blob NOT NULL COMMENT 'Texte de la notification',
+  `texte` mediumblob NOT NULL COMMENT 'Texte de la notification',
   `dateDebut` date NOT NULL,
   `dateFin` date NOT NULL,
   `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  `urgence` tinyint(4) NOT NULL,
+  `urgence` tinyint(4) DEFAULT NULL,
   `mail` tinyint(1) NOT NULL,
   `accuse` tinyint(1) NOT NULL,
   `freeze` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La notification est conservée pour le proprio après péremption',
-  PRIMARY KEY (`id`),
-  KEY `proprietaire` (`proprietaire`),
-  KEY `dateDebut` (`dateDebut`),
-  KEY `destinataire` (`destinataire`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves' AUTO_INCREMENT=0 ;
+  `parent` tinyint(1) DEFAULT '0' COMMENT 'Un mail d''information est-il envoyé aux parents?',
+  `dateEnvoi` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves';
+
+ALTER TABLE `didac_thotNotifications`
+ ADD PRIMARY KEY (`id`), ADD KEY `proprietaire` (`proprietaire`), ADD KEY `dateDebut` (`dateDebut`), ADD KEY `destinataire` (`destinataire`);
+
+ALTER TABLE `didac_thotNotifications`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 
 CREATE TABLE `didac_thotNotifFlags` (
   `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
