@@ -36,6 +36,7 @@ $competencesTravail = $Files->getCompetencesTravail($idTravail);
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 $listeEleves = $Ecole->listeElevesCours($coursGrp);
+$photo = Ecole::photo($matricule);
 
 // caractéristiques du fichier joint par l'élève
 $fileInfos = $Files->getFileInfos($matricule, $idTravail, $acronyme);
@@ -58,6 +59,8 @@ $smarty->assign('listeEvaluations', $listeEvaluations);
 $smarty->assign('competencesTravail', $competencesTravail);
 $smarty->assign('infoTravail', $infoTravail);
 $smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('BASEDIR', BASEDIR);
+$smarty->assign('photo', $photo);
 $smarty->assign('listeCompetences', $listeCompetences);
 
 $smarty->display('casier/evalTravaux.tpl');

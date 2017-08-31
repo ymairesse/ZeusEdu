@@ -82,7 +82,6 @@ switch ($type) {
         // $fileInfo = informations relatives au répertoire partagé de base (pas d'infos sur le fichier ou sur les sous-répertoires)
         $fileInfo = $Files->getFileInfoByShareId($shareId);
 
-// Application::afficher($fileInfo);
         $sharedDir = $fileInfo['fileName'];
         // le fichier qui sera réellement téléchargé dans le répertoire partagé
         $downloadedFileInfo = array(
@@ -90,7 +89,6 @@ switch ($type) {
             'fileName' => substr($fileName, strrpos($fileName, '/') + 1),
         );
 
-// Application::afficher($downloadedFileInfo);
         $sharedFiles = array_keys($Files->sharedWith($acronyme));
         if (!(in_array($fileInfo['shareId'], $sharedFiles))) {
             $erreur = NOTSHARED;

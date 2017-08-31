@@ -28,32 +28,40 @@
 
     </div>
 
-    <table class="table table-condensed">
-        <thead>
-            <tr>
-                <th style="width:70%">Compétences</th>
-                <th style="width:10%">Form/Cert</th>
-                <th style="width:10%">Cote</th>
-                <th style="width:10%">Max</th>
-            </tr>
-        </thead>
-        <tbody>
-            {assign var=n value=2}
-            {foreach from=$competencesTravail key=idCompetence item=data}
-            <tr>
-                <td>{$data.libelle}</td>
-                <td>{if $data.formCert == 'form'}Formatif{else}Certificatif{/if}</td>
-                <td><input type="text" name="cote_{$idCompetence}" class="form-control input-sm" value="{$evaluationsTravail.cotes.$idCompetence.cote|default:''}"
-                    tabindex="{$n}"></td>
-                <td>
-                    <strong>/ {$data.max}</strong>
-                    <input type="hidden" name="max_{$idCompetence}" class="maxCompetence" value="{$data.max|default:''}">
-                </td>
-            </tr>
-            {assign var=n value=$n+1}
-            {/foreach}
-        </tbody>
-    </table>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th style="width:70%">Compétences</th>
+                    <th style="width:10%">Form/Cert</th>
+                    <th style="width:10%">Cote</th>
+                    <th style="width:10%">Max</th>
+                </tr>
+            </thead>
+            <tbody>
+                {if count($competencesTravail) > 0}
+                    {assign var=n value=2}
+                    {foreach from=$competencesTravail key=idCompetence item=data}
+                    <tr>
+                        <td>{$data.libelle}</td>
+                        <td>{if $data.formCert == 'form'}Formatif{else}Certificatif{/if}</td>
+                        <td><input type="text" name="cote_{$idCompetence}" class="form-control input-sm" value="{$evaluationsTravail.cotes.$idCompetence.cote|default:''}"
+                            tabindex="{$n}"></td>
+                        <td>
+                            <strong>/ {$data.max}</strong>
+                            <input type="hidden" name="max_{$idCompetence}" class="maxCompetence" value="{$data.max|default:''}">
+                        </td>
+                    </tr>
+                    {assign var=n value=$n+1}
+                    {/foreach}
+                {else}
+                    <tr>
+                        <td colspan="4">
+                            <i class="fa fa-warning text-danger"></i> Vous n'avez pas encore indiqué les compétences exercées pour ce travail
+                        </td>
+                    </tr>
+                {/if}
+            </tbody>
+        </table>
 
     <button type="button" tabindex="1" class="btn btn-primary btn-block" id="saveEval">Enregistrer</button>
 

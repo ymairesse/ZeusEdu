@@ -1,5 +1,5 @@
 <div class="alert alert-danger">
-    <i class="fa fa-user-secret fa-2x"></i> Supprimer le suivi de ce fichier
+    <i class="fa fa-eye fa-2x"></i> Supprimer le suivi de ce fichier
     {if $listeSpied[0].userName != ''}
     (<strong>les informations ci-dessous seront perdues</strong>)
     {/if}

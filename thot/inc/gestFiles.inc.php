@@ -58,7 +58,6 @@ switch ($mode) {
     case 'casier':
         $listeCours = $User->listeCoursProf();
         $listeTravauxPermis = array('hidden', 'readwrite', 'readonly', 'termine');
-
         $listeTravaux = ($coursGrp != Null) ? $Files->listeTravaux($acronyme, $coursGrp, $listeTravauxPermis) : Null;
         $listeTravauxRemis = ($idTravail != Null) ? $Files->listeTravauxRemis($coursGrp, $idTravail, $acronyme) : Null;
         $listeEvaluations = ($idTravail != Null) ? $Files->getEvaluations4Travail($idTravail) : Null;

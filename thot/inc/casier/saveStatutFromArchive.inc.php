@@ -28,4 +28,3 @@ parse_str($formulaire, $form);
 $nb = $Files->saveStatutsFromForm($form);
 
 echo $nb;
-// Application::afficher($form);

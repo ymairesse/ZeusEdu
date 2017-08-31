@@ -64,7 +64,8 @@
 					<li><a href="index.php?action=files&amp;mode=mydocs">Mes documents</a></li>
 					<li><a href="index.php?action=files&amp;mode=share">Mes partages</a></li>
 					<li><a href="index.php?action=files&amp;mode=sharedWithMe">Partagés avec moi <i class="fa fa-arrow-left"></i></a></li>
-					<li><a href="index.php?action=files&amp;mode=casier">Mon casier virtuel</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=files&amp;mode=casier">Mon casier électronique</a></li>
 				</ul>
 			</li>
 

@@ -1,14 +1,14 @@
-<h4>Travaux en cours <span class="badge badge-info pull-right">{$listeTravaux|@count}</span></h4>
+<h4>Travaux en cours <span class="badge badge-info pull-right">{$listeTravauxCours|@count}</span></h4>
 
 <div id="listeTravaux" style="max-height:35em; overflow: auto">
 
-    {if $listeTravaux == Null}
+    {if $listeTravauxCours == Null}
         <p>Rien actuellement</p>
 
     {else}
 
         <ul class="list-unstyled">
-            {foreach from=$listeTravaux key=id item=unTravail}
+            {foreach from=$listeTravauxCours key=id item=unTravail}
             <div class="input-group" data-idtravail="{$id}">
 
                 <span class="input-group-addon danger btnDelete" style="cursor:pointer">

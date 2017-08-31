@@ -49,8 +49,8 @@
                                         <button
                                             type="button"
                                             title="Placer/retirer un espion"
-                                            class="btn btn-xs {if isset ($spiedSharesList.$shareId)}btn-info btn-showSpy{else}btn-primary btn-spy{/if}" data-shareid="{$file.shareId}">
-                                            <i class="fa fa-user-secret"></i>
+                                            class="btn btn-xs {if isset ($spiedSharesList.$shareId)}btn-info btn-showSpy{else}btn-default btn-spy{/if}" data-shareid="{$file.shareId}">
+                                            <i class="fa fa-eye"></i>
                                         </button>
                                     </td>
                                     <td>
@@ -142,7 +142,7 @@
                 shareId: shareId
             },
             function(resultat){
-                $('#listePartages .btn-showSpy[data-shareid="' + shareId + '"]').removeClass('btn-info btn-showSpy').addClass('btn-primary btn-spy');
+                $('#listePartages .btn-showSpy[data-shareid="' + shareId + '"]').removeClass('btn-info btn-showSpy').addClass('btn-default btn-spy');
                 $('#modalShowSpied').modal('hide');
             })
         })

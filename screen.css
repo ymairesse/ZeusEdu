@@ -688,7 +688,7 @@ a.fauxBouton:hover {
     color: brown;
 }
 
-#wait {
+#wait, #ajaxLoader {
     position: absolute;
     width: 100px;
     height: 100px;
@@ -696,6 +696,13 @@ a.fauxBouton:hover {
     left: 50%;
     margin-left: -50px;
     margin-top: -50px;
+    z-index: 100;
+}
+
+#ajaxLoader {
+    position: absolute;
+    top: 50%;
+    left: 20%;
     z-index: 100;
 }
 
@@ -1147,12 +1154,12 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
     cursor: wait;
 }
 
-[class^="col-"] {
+/*[class^="col-"] {
   padding-top: 5px;
   padding-bottom: 5px;
   border: 1px solid #ddd;
   border: 1px solid rgba(86,61,124,.2);
-}
+}*/
 
 @media (min-width: 768px) {
   .table-row {

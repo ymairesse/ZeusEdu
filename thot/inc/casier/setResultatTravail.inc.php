@@ -39,6 +39,7 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
+$smarty->assign('BASEDIR', BASEDIR);
 $smarty->assign('fileInfos', $fileInfos);
 $smarty->assign('photo', $photo);
 $smarty->assign('competencesTravail', $competencesTravail);

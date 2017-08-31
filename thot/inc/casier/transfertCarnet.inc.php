@@ -31,7 +31,7 @@ $bulletin = $form['bulletin'];
 // informations générales concernant le travail tel qu'enregistré dans la BD,
 // y compris les compétences et les points pour chacune d'elles
 $dataTravail = $Files->getDataTravail($idTravail, $acronyme);
-// Application::afficher($dataTravail);
+
 // Array
 // (
 //     [idTravail] => 195
@@ -64,7 +64,7 @@ $dataTravail = $Files->getDataTravail($idTravail, $acronyme);
 
 
 $detailsCompetences = $Files->getCompetencesTravail($idTravail);
-// Application::afficher($detailsCompetences);
+
 $texte = '';
 if ($detailsCompetences != null) {
     foreach ($detailsCompetences as $idCompetence => $laCompetence) {
