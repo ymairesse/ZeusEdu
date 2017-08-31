@@ -1075,7 +1075,7 @@ class Files
      */
     public function getSpyInfo4ShareId ($shareId) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT spyId, dtss.shareId, dtf.isDir, dtss.fileId, acronyme ';
+        $sql = 'SELECT spyId, dtss.shareId, dtss.isDir, dtss.fileId, acronyme ';
         $sql .= 'FROM '.PFX.'thotSharesSpy AS dtss ';
         $sql .= 'JOIN '.PFX.'thotShares AS dts ON dtss.shareId = dts.shareId ';
         $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
@@ -1672,22 +1672,20 @@ class Files
     {
         $idTravail = isset($post['idTravail']) ? $post['idTravail'] : null;
         $matricule = isset($post['matricule']) ? $post['matricule'] : null;
-        $statutEleve = 'evalue';
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // informations générales sur l'évaluation
         $sql = 'INSERT INTO '.PFX.'thotTravauxRemis ';
         $sql .= 'SET idTravail=:idTravail, matricule=:matricule, ';
-        $sql .= 'evaluation=:evaluation, statutEleve=:statutEleve ';
+        $sql .= 'evaluation=:evaluation ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'evaluation=:evaluation, statutEleve=:statutEleve ';
+        $sql .= 'evaluation=:evaluation ';
 
         $requete = $connexion->prepare($sql);
         $data = array(
                 ':idTravail' => $idTravail,
                 ':matricule' => $matricule,
                 ':evaluation' => $evaluation,
-                ':statutEleve' => $statutEleve,
             );
         $resultat = $requete->execute($data);
 
@@ -1842,7 +1840,7 @@ class Files
         $evaluation = array();
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dttr.matricule, dttr.idTravail, remarque, evaluation, remis, statutEleve, dtte.idCompetence, cote, dttc.max ';
+        $sql = 'SELECT dttr.matricule, dttr.idTravail, remarque, evaluation, remis, dtte.idCompetence, cote, dttc.max ';
         $sql .= 'FROM '.PFX.'thotTravauxRemis AS dttr ';
         $sql .= 'LEFT JOIN '.PFX.'thotTravauxEvaluations AS dtte ON dtte.idTravail = dttr.idTravail AND dtte.matricule = dttr.matricule ';
         $sql .= 'LEFT JOIN '.PFX.'thotTravauxCompetences AS dttc ON dttc.idTravail = dtte.idTravail AND dttc.idCompetence = dtte.idCompetence ';
@@ -2313,6 +2311,7 @@ class Files
         $sql = 'SELECT idCompetence, max ';
         $sql .= 'FROM '.PFX.'thotTravauxCompetences ';
         $sql .= 'WHERE idTravail =:idTravail ';
+
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
         $resultat = $requete->execute();
@@ -2326,24 +2325,29 @@ class Files
             }
         }
 
-        // recherche des cotes obenues pour chaque compétences
-        $sql = 'SELECT idCompetence, cote ';
-        $sql .= 'FROM '.PFX.'thotTravauxEvaluations ';
-        $sql .= 'WHERE matricule =:matricule AND idTravail =:idTravail ';
-        $requete = $connexion->prepare($sql);
-        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-        $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+        if(count($listeCompetences) != 0)
+            {
+            // recherche des cotes obenues pour chaque compétences
+            $sql = 'SELECT idCompetence, cote ';
+            $sql .= 'FROM '.PFX.'thotTravauxEvaluations ';
+            $sql .= 'WHERE matricule =:matricule AND idTravail =:idTravail ';
 
-        $resultat = $requete->execute();
-        $listeResulats = array();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $idCompetence = $ligne['idCompetence'];
-                $listeResultats['cotes'][$idCompetence] = array(
-                    'cote' => $ligne['cote'],
-                    'max' => $listeCompetences[$idCompetence]
-                );
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+            $listeResulats = array();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                while ($ligne = $requete->fetch()) {
+                    Application::afficher($ligne);
+                    $idCompetence = $ligne['idCompetence'];
+                    $listeResultats['cotes'][$idCompetence] = array(
+                        'cote' => $ligne['cote'],
+                        'max' => $listeCompetences[$idCompetence]
+                    );
+                    }
                 }
             }
 
