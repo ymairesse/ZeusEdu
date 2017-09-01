@@ -1141,14 +1141,15 @@ class Files
      *
      * @return int : nombre d'espions créés (0 ou 1 si tout s'est bien passé)
      */
-    public function setSpyForShareId ($shareId, $isDir) {
+    public function setSpyForShareId ($shareId, $fileId, $isDir) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'thotSharesSpy ';
-        $sql .= 'SET shareId=:shareId, isDir=:isDir ';
+        $sql .= 'SET shareId=:shareId, fileId=:fileId, isDir=:isDir ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
         $requete->bindParam(':isDir', $isDir, PDO::PARAM_INT);
+        $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
         $resultat = $requete->execute();
 
         Application::DeconnexionPDO($connexion);
@@ -1366,7 +1367,6 @@ class Files
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             $ligne = $resultat->fetch();
-            Application::afficher($ligne['Type']);
 
             preg_match("/^enum\(\'(.*)\'\)$/", $ligne['Type'], $matches);
             $liste = explode('\',\'', $matches[1]);
@@ -1927,7 +1927,7 @@ class Files
 
         // stockage séparé des fichiers ordinaires et des répertoires, chacun par ordre alphabétique
         $files = array('files' => array(), 'dir' => array());
-// Application::afficher(array($root, $path, $dirName, true));
+
         if (file_exists($root.$path.$ds.$dirName)) {
             $listeFichiers = scandir($root.$ds.$path.$ds.$dirName);
 
@@ -1939,7 +1939,6 @@ class Files
 
 
                 $fileName = ($unFichier[0] == $ds ? '' : $ds).$root.$path.($path == $ds ? '' : $ds).$dirName.$ds.$unFichier;
-                // Application::afficher($fileName);
                 // rustine
                 // $fileName = preg_replace('~/+~', '/', $fileName);
 
@@ -2341,7 +2340,6 @@ class Files
             if ($resultat) {
                 $requete->setFetchMode(PDO::FETCH_ASSOC);
                 while ($ligne = $requete->fetch()) {
-                    Application::afficher($ligne);
                     $idCompetence = $ligne['idCompetence'];
                     $listeResultats['cotes'][$idCompetence] = array(
                         'cote' => $ligne['cote'],

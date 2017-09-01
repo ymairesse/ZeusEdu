@@ -22,9 +22,11 @@ require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
 $fileInfos = $Files->getFileInfoByShareId($shareId, $acronyme);
+
 $ds = DIRECTORY_SEPARATOR;
 $path = $fileInfos['path'];
 $fileName = $fileInfos['fileName'];
+$fileId = $fileInfos['fileId'];
 $root = INSTALL_DIR.$ds.'upload'.$ds.$acronyme;
 
 $arborescence = $root.$path.$ds.$fileName;
@@ -32,6 +34,6 @@ $arborescence = str_replace('//', '/', $arborescence);
 
 $isDir = is_dir($arborescence) ? 1 : 0;
 
-$nb = $Files->setSpyForShareId($shareId, $isDir);
+$nb = $Files->setSpyForShareId($shareId, $fileId, $isDir);
 
 echo $nb;
