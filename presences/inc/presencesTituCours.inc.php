@@ -6,7 +6,7 @@ $smarty->assign('mode', $mode);
 // prise de présence par cours par le titulaire du cours
 
 $listeCoursGrp = $Ecole->listeCoursProf($acronyme);
-$coursGrp = isset($_REQUEST['coursGrp']) ? $_REQUEST['coursGrp'] : null;
+$coursGrp = isset($_GET['coursGrp']) ? $_GET['coursGrp'] : null;
 
 $smarty->assign('listeCoursGrp', $listeCoursGrp);
 $smarty->assign('coursGrp', $coursGrp);
