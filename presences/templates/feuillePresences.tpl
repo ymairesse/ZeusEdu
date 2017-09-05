@@ -270,6 +270,7 @@ $(document).ready(function(){
 					var input = $(this).find('input:hidden');
 					input.val('indetermine');
 					$(this).closest('td').removeClass().addClass('now indetermine');
+					$(this).closest('td').removeAttr('style');
 					var matricule = $(this).data('matricule');
 					// changer le statut du bouton "nomEleve"
 					$("#nomEleve-"+matricule).removeClass().addClass("btn btn-large btn-block nomEleve indetermine");
