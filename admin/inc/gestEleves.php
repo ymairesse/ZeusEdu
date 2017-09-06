@@ -18,11 +18,11 @@ $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 $smarty->assign('etape', $etape);
 
-$listeClasses = $Ecole->listeClasses();
+$listeClasses = $Ecole->listeGroupes();
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('laClasse', $laClasse);
 if ($laClasse != '') {
-    $listeEleves = $Ecole->listeEleves($laClasse, 'classe');
+    $listeEleves = $Ecole->listeEleves($laClasse, 'groupe');
     $smarty->assign('listeEleves', $listeEleves);
 }
 

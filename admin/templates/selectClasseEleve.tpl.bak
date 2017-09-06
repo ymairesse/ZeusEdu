@@ -1,16 +1,14 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
-
-	<select name="laClasse" id="selectClasse" class="form-control">
+	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
+	<select name="laClasse" id="selectClasse">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=classe}
 			<option value="{$classe}"{if $classe eq $laClasse} selected{/if}>{$classe}</option>
 		{/foreach}
 	</select>
-
 	<span id="choixEleve">
 		{* Emplacement de la liste de sélection des élèves *}
-		<select name="matricule" id="selectEleve" class="form-control">
+		<select name="matricule" id="selectEleve">
 			<option value="">Choisir un élève</option>
 			{if isset($listeEleves)}
 				{* key = matric car $matricule est passé en argument *}
@@ -21,7 +19,7 @@
 			{/if}
 		</select>
 	</span>
-	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
+	<input type="submit" value="OK" name="OK" id="envoi">
 	<input type="hidden" name="action" value="gestEleves">
 	<input type="hidden" name="mode" value="modifEleve">
 	<input type="hidden" name="etape" value="showEleve">
@@ -45,8 +43,8 @@ $(document).ready (function() {
 		// la fonction listeEleves.inc.php renvoie la liste déroulante
 		// des élèves de la classe sélectionnée
 		$.post('inc/listeEleves.inc.php', {
-			classe: classe,
-			partis: true
+			'classe': classe,
+			'partis': true
 			},
 				function (resultat){
 					$("#choixEleve").html(resultat)
@@ -54,7 +52,7 @@ $(document).ready (function() {
 			)
 	});
 
-	$('#selecteur').on('change', '#selectEleve', function(){
+	$("#selectEleve").change(function(){
 		if ($(this).val() > 0) {
 			// si la liste de sélection des élèves renvoie une valeur significative
 			// le formulaire est soumis

@@ -1,5 +1,6 @@
 <?php
-// $table est le fichier éventuellement uploadé
+
+// $table est le nom du fichier éventuellement uploadé
 $table = isset($_REQUEST['table'])?$_REQUEST['table']:Null;
 
 if (!(isset($table)) || $table == Null) die("missing table");

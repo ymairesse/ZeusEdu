@@ -1,8 +1,11 @@
 <?php
+
 require_once("../config.inc.php");
 include (INSTALL_DIR.'/inc/entetes.inc.php');
 
 // ----------------------------------------------------------------------------
+//
+//
 //
 $etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
 $id = isset($_REQUEST['id'])?$_REQUEST['id']:Null;

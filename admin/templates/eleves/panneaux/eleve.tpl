@@ -54,7 +54,7 @@
                     <select name="section" id="section" class="form-control">
                         <option value=''>Section</option>
                         <option value='TQ' {if $eleve.section=='TQ' } selected{/if}>TQ</option>
-                        <option value='G' {if $eleve.section=='G' } selected{/if}>GT</option>
+                        <option value='GT' {if $eleve.section=='GT' } selected{/if}>GT</option>
                         <option value='TT' {if $eleve.section=='TT' } selected{/if}>TT</option>
                         <option value='S' {if $eleve.section=='S' } selected{/if}>S</option>
                         <option value='PARTI' {if $eleve.section=='PARTI' } selected{/if}>PARTI</option>
