@@ -13,7 +13,7 @@
             &nbsp;
         {/if}
     </td>
-    <td>{$uneRetenue.jourSemaine|truncate:3:''|upper} <span class="date">{$uneRetenue.dateRetenue|date_format:'%d/%m/%Y'}</span></td>
+    <td>{$uneRetenue.jourSemaine|truncate:3:''|upper} <span class="date">{$uneRetenue.dateRetenue}</span></td>
     <td class="heure">{$uneRetenue.heure}</td>
     <td class="duree">{$uneRetenue.duree}h</td>
     <td class="local">{$uneRetenue.local}</td>

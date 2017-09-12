@@ -724,6 +724,7 @@ class Ades
             $sql .= "AND (substr(dateRetenue,1,4) = $annees[0] OR substr(dateRetenue,1,4) = $annees[1]) ";
         }
         $sql .= 'ORDER BY dateRetenue, heure ';
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -779,6 +780,55 @@ class Ades
         Application::DeconnexionPDO($connexion);
 
         return $retenue;
+    }
+
+    /**
+     * Enregistrement des caractéristiques d'une retenue depuis un formulaire.
+     *
+     * @param $post
+     *
+     * @return int : idretenue (connu au départ ou nouvellement enregistré dans la BD)
+     */
+    public function saveRetenue($post)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $idRetenue = isset($post['idRetenue']) ? $post['idRetenue'] : null;
+        $type = $post['typeRetenue'];
+        $dateRetenue = Application::dateMysql($post['dateRetenue']);
+
+        $heure = $post['heure'];
+        $duree = $post['duree'];
+        $local = addslashes(htmlspecialchars($post['local']));
+        $places = $post['places'];
+        // $occupation = $post['occupation'];  // l'occupation est toujours calculée en temps réel
+        $affiche = isset($post['affiche']) ? 'O' : 'N';
+        $recurrence = isset($post['recurrence']) ? $post['recurrence'] : 0;
+
+        foreach (range(0, $recurrence) as $semaine) {
+            if ($idRetenue != '') {
+                $sql = 'UPDATE '.PFX.'adesRetenues ';
+                $sql .= "SET type='$type', dateRetenue='$dateRetenue', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
+                $sql .= "WHERE idretenue = '$idRetenue' ";
+            } else {
+                $sql = 'INSERT INTO '.PFX.'adesRetenues ';
+                $sql .= "SET type='$type', dateRetenue='$dateRetenue', heure='$heure', duree='$duree', local='$local', places='$places', affiche='$affiche' ";
+            }
+            $resultat = $connexion->exec($sql);
+            if ($recurrence > 0) {
+                $timeStamp = list($year, $month, $day) = explode('-', $dateRetenue);
+                $timestamp = mktime(0, 0, 0, $month, $day, $year);
+                $datePlus7 = date('d/m/Y', strtotime("+$semaine+1 week", $timestamp));
+                // la nouvelle date devient la date+7 et idretenue n'est plus défini car ce n'est plus une édition
+                $date = Application::dateMysql($datePlus7);
+                unset($idretenue);
+            }
+        }
+        if (!(isset($idretenue))) {
+            $idretenue = $connexion->lastInsertId();
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $idretenue;
     }
 
     /**

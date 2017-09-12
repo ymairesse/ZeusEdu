@@ -1,5 +1,7 @@
 <?php
 
+require_once INSTALL_DIR."/$module/inc/classes/classRetenue.inc.php";
+
 $typeRetenue = isset($_POST['typeRetenue']) ? $_POST['typeRetenue'] : null;
 $smarty->assign('typeRetenue', $typeRetenue);
 $listeTypes = $Ades->getTypesRetenues();
@@ -70,8 +72,7 @@ switch ($mode) {
         break;
 
     case 'Enregistrer':
-        $Retenue = new Retenue();
-        $idretenue = $Retenue->saveRetenue($_POST);
+        $idretenue = $Ades->saveRetenue($_POST);
         $smarty->assign('message', array(
                     'title' => 'Enregistrement',
                     'texte' => 'Retenue enregistrée',
