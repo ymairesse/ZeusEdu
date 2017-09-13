@@ -19,7 +19,7 @@
 					<option value="{$unidretenue}"
 					{if $uneRetenue.places <= $uneRetenue.occupation} disabled="disabled" {/if}
 					{if isset($fait.idretenue) && ($fait.idretenue == $unidretenue)} selected="selected" {/if}>
-						{$uneRetenue.jourSemaine} {$uneRetenue.dateRetenue|date_format:'%d/%m/%Y'} [durée: {$uneRetenue.duree}h à {$uneRetenue.heure}] : {$uneRetenue.occupation}/{$uneRetenue.places}
+						{$uneRetenue.jourSemaine} {$uneRetenue.dateRetenue} [durée: {$uneRetenue.duree}h à {$uneRetenue.heure}] : {$uneRetenue.occupation}/{$uneRetenue.places}
 					</option>
 				{/if}
 				{/foreach}
