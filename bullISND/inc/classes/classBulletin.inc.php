@@ -11,7 +11,7 @@ class Bulletin
     public function __construct()
     {
         // quelles sont les sections concernées par cette formule de bulletin
-        $this->sections = array('G', 'TT', 'S');
+        $this->sections = explode(',', SECTIONS);
     }
 
     /**
@@ -3237,7 +3237,7 @@ class Bulletin
         $sql .= 'FROM '.PFX.'cours ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE SUBSTR(cours, 1,1) IN ($listeNiveauxString) ";
-        $sql .= "AND section IN ($sections) ";
+        // $sql .= "AND section IN ($sections) ";
         $sql .= 'ORDER BY libelle ';
 
         $listeCours = array();
@@ -5067,48 +5067,50 @@ class Bulletin
         return $resultat;
     }
 
-    /**
-     * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle.
-     *
-     * @param $post
-     *
-     * @return int : normalement, 1
-     */
-    public function enregistrerDecision($post)
-    {
-        $matricule = $post['matricule'];
-        $decision = $post['decision'];
-        $periode = $post['bulletin'];
-        if ($decision == 'Restriction') {
-            $restriction = $post['restriction'];
-        } else {
-            $restriction = '';
-        }
-        $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
-        $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
-        $mailEleve = $post['mailEleve'];
-        // il se peut que l'adresse mail d'envoi soit différente de l'adresse mail élève
-        $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'bullDecisions ';
-        $sql .= 'SET matricule=:matricule, decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
-        $sql .= 'adresseMail=:adresseMail, periode=:periode ';
-        $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
-        $sql .= 'adresseMail=:adresseMail, periode=:periode ';
-        $requete = $connexion->prepare($sql);
-        $data = array(
-                ':matricule' => $matricule,
-                ':decision' => $decision,
-                ':restriction' => $restriction,
-                ':mail' => $mail,
-                ':notification' => $notification,
-            );
-        $resultat = $requete->execute($data);
-        Application::DeconnexionPDO($connexion);
+        /**
+         * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle.
+         *
+         * @param $post
+         *
+         * @return int : normalement, 1
+         */
+        public function enregistrerDecision($post)
+        {
+            $matricule = $post['matricule'];
+            $decision = $post['decision'];
+            $periode = $post['bulletin'];
+            if ($decision == 'Restriction') {
+                $restriction = $post['restriction'];
+            } else {
+                $restriction = '';
+            }
+            $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
+            $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
+            $mailEleve = $post['mailEleve'];
+            // il se peut que l'adresse mail d'envoi soit différente de l'adresse mail élève
+            $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'INSERT INTO '.PFX.'bullDecisions ';
+            $sql .= 'SET matricule=:matricule, decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
+            $sql .= 'adresseMail=:adresseMail, periode=:periode ';
+            $sql .= 'ON DUPLICATE KEY UPDATE ';
+            $sql .= 'decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
+            $sql .= 'adresseMail=:adresseMail, periode=:periode ';
 
-        return $resultat;
-    }
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 30);
+            $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
+            $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
+            $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
+            $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
+            $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+            Application::DeconnexionPDO($connexion);
+
+            return $resultat;
+        }
 
     /**
      * retourne la notice "coordinateurs" pour le bulletin donné au niveau donné.
@@ -6694,11 +6696,9 @@ class Bulletin
     // }
 
     /**
-     * renvoie les cotes des épreuves externes pour tous les cours des élèves d'une classe donnée
-     * pour une année scolaire donnée.
-     *
-     * @param $classe
-     *
+     * retourne les résultats des épreuves externes des élèves de la classe donnée pour l'année scolaire donné
+     * @param  string $classe        la classe des élèves
+     * @param  string $anneeScolaire sous la forme XXXX-YYYY
      * @return array
      */
     public function getResultatsExternes($classe, $anneeScolaire)
@@ -7095,5 +7095,221 @@ class Bulletin
 
         return $resultat;
     }
+
+    /**
+     * retourne les mentions obtenues par une liste d'élèves données à une période donnée
+     * pour l'année scoalire donnée
+     *
+     * @param array $listeEleves
+     * @param int $periode : numéro de la période de l'année sélectionnée
+     * @param string $anneeScolaire (sous la forme XXXX-YYYY)
+     */
+     public function listeSimpleMentions($listeEleves, $periode, $anneeScolaire)
+     {
+         if (is_array($listeEleves)) {
+             $listeElevesString = implode(',', array_keys($listeEleves));
+         } else {
+             $listeElevesString = $listeEleves;
+         }
+       $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+       $sql = 'SELECT matricule, mention, anscol, periode ';
+       $sql .= 'FROM didac_bullMentions ';
+       $sql .= "WHERE matricule IN ($listeElevesString) ";
+       $sql .= "AND periode = $periode AND anscol= '$anneeScolaire' ";
+       $sql .= "ORDER BY matricule ";
+
+       $resultat = $connexion->query($sql);
+       $liste = array();
+       if ($resultat) {
+         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+         while ($ligne = $resultat->fetch()) {
+             $matricule = $ligne['matricule'];
+             $mention = $ligne['mention'];
+             $liste[$matricule] = $mention;
+         }
+       }
+
+       Application::DeconnexionPDO($connexion);
+
+       return $liste;
+   }
+
+
+   /**
+    * renvoie les cotes finales (de délibé) obtenues pour l'ensemble des cours pour l'année scolaire en cours
+    * et pour les élèves sélectionnés
+    *
+    * @param array : liste des élèves par matricule
+    *
+    * @return array
+    */
+   public function resultatsTousCours($listeEleves, $periode) {
+       if (is_array($listeEleves)) {
+           $listeElevesString = implode(',', array_keys($listeEleves));
+       } else {
+           $listeElevesString = $listeEleves;
+       }
+       $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+       $sql = 'SELECT matricule, coursGrp, sitDelibe, libelle ';
+       $sql .= 'FROM '.PFX.'bullSituations AS dbs ';
+       $sql .= "LEFT JOIN ".PFX."cours AS dc ON dc.cours = substr(coursGrp, 1, LOCATE('-', coursGrp)-1) ";
+       $sql .= "WHERE bulletin=$periode ";
+       $sql .= "AND matricule IN ($listeElevesString) ";
+       $sql .= 'ORDER BY matricule, nbHeures DESC, libelle ';
+
+       $liste = array();
+       $resultat = $connexion->query($sql);
+       if ($resultat) {
+           $resultat->setFetchMode(PDO::FETCH_ASSOC);
+           while ($ligne = $resultat->fetch()) {
+               $matricule = $ligne['matricule'];
+               $coursGrp = $ligne['coursGrp'];
+               $liste[$matricule][$coursGrp] = $ligne;
+           }
+       }
+
+       Application::deconnexionPDO($connexion);
+
+       return $liste;
+   }
+
+
+   /**
+    * renvoie les cotes obtenues pour l'ensemble des cours durant l'année scolaire indiquée pour les élèves sélectionnés
+    * les informations proviendront du dernier bulletin de l'année scolaire de cette année écoulée
+    *
+    * @param  int $matricule     identifiant de l'élève
+    * @param  string  $anneeScolaire année scolaire concernée sous la forme YYYY-YYYY
+    *
+    * @return array
+    */
+
+   public function infoAnneePrecedente ($matricule, $anneesPrecedentes) {
+       // a-t-on des informations sur l'année précédente (élève arrivé à l'école en cours de degré)
+       if (isset($anneesPrecedentes[$matricule])) {
+           $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+           $sql = 'SELECT annee, matricule, coursGrp, sitDelibe, cours, libelle ';
+           $sql .= 'FROM '.PFX.'bullSitArchives AS arch ';
+           $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = substr(arch.coursGrp, 1, LOCATE('-', arch.coursGrp)-1) ";
+           $sql .= 'JOIN '.PFX.'statutCours AS dsc ON dsc.cadre = dc.cadre ';
+           $sql .= "WHERE annee LIKE :anneeScolaire AND matricule =:matricule AND bulletin =:periode ";
+           $sql .= 'ORDER BY rang, nbheures DESC, libelle ';
+           $requete = $connexion->prepare($sql);
+
+           $liste = array();
+           $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+           $anneeScolaire = $anneesPrecedentes[$matricule]['anScol'];
+           $requete->bindParam(':anneeScolaire', $anneeScolaire, PDO::PARAM_STR, 9);
+           $nbPeriodes = $anneesPrecedentes[$matricule]['nbPeriodes'];
+           $requete->bindParam(':periode', $nbPeriodes, PDO::PARAM_INT);
+
+           $liste = array();
+           $resultat = $requete->execute();
+           if ($resultat) {
+               $requete->setFetchMode(PDO::FETCH_ASSOC);
+               while ($ligne = $requete->fetch()) {
+                   $coursGrp = $ligne['coursGrp'];
+                   $liste[$coursGrp] = $ligne;
+               }
+           }
+
+           Application::deconnexionPDO($connexion);
+
+           return $liste;
+       }
+       else return Null;
+   }
+
+
+   /**
+    * retourne les classes dont le prof est titulaire et qui sont des "fins de degré"
+    *
+    * @param array $listeClasses : liste des classes dont le prof est titulaire
+    * @param array $anneesDegre : liste des années d'étude de fin de degré (typiquement 2, 4, 6)
+    *
+    * @return array
+    */
+    function listeClassesFinDegre ($listeClasses, $anneesDegre) {
+        $listeClassesDegre = array();
+        foreach ($listeClasses as $uneClasse) {
+            $annee = substr($uneClasse, 0, 1);
+            if (in_array($annee, $anneesDegre)){
+                $listeClassesDegre[$uneClasse] = $uneClasse;
+            }
+        }
+
+        return $listeClassesDegre;
+    }
+
+    /**
+     * recherche les années scolaires correspondant à une année d'étude pour les élèves de la liste
+     * Ex: année scolaire 2013-2014 pour un élève en 2e année (année d'étude)
+     *
+     * @param int | array : liste des matricules des élèves
+     * @param int : $anneeEtude
+     *
+     * @return array
+     */
+    public function anneesScolairesPrecedentes($listeEleves, $anneeEtude) {
+        if (is_array($listeEleves)) {
+            $listeElevesString = implode(',', array_keys($listeEleves));
+        } else {
+            $listeElevesString = $listeEleves;
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT matricule, annee ';
+        $sql .= 'FROM '.PFX.'bullSitArchives ';
+        $sql .= "WHERE matricule IN ($listeElevesString) AND SUBSTR(coursGrp, 1, 1) =:anneeEtude ";
+
+        $requete = $connexion->prepare ($sql);
+        $requete->bindParam(':anneeEtude', $anneeEtude, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $liste[$matricule]['anScol'] = $ligne['annee'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+        }
+
+    /**
+     * recherche pour chaque élève de la liste le nombre de périodes dans l'année scolaire (type 2016-2017) donnée
+     *
+     * @param array $anneesScolairesPrecedentes (liste des élèves avec leurs années scolaires précédentes, 1ère année du degré
+     * @param $anneEtude : l'année d'étude po
+     * @return array
+     */
+    public function nbPeriodesAnScol($anneesScolairesPrecedentes) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT annee, MAX(bulletin) AS periodes ';
+        $sql .= 'FROM '.PFX.'bullSitArchives ';
+        $sql .= 'WHERE annee=:anScol ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        foreach ($anneesScolairesPrecedentes as $matricule => $data) {
+            $anScol = $data['anScol'];
+            $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                while ($ligne = $requete->fetch()) {
+                    $annee = $ligne['annee'];
+                    $liste[$annee] = $ligne['periodes'];
+                }
+            }
+
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        return $liste;
+        }
 
 }
