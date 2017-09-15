@@ -365,17 +365,17 @@
                 idTravail: idTravail
             },
             function(resultat){
+                var coursGrp = $("#selectCours :selected").val();
+                $.post('inc/casier/listeTravaux.inc.php', {
+                        coursGrp: coursGrp
+                    },
+                    function(resultat) {
+                        $("#listeTravaux").html(resultat);
+                        $("#editTravail").addClass('hidden');
+                        $("#showTravail").addClass('hidden');
+                    });
                 $("#zoneEdition").html("<p class='avertissement'>Veuillez sélectionner un travail dans la colonne de gauche</p>");
             })
-            var coursGrp = $("#selectCours :selected").val();
-            $.post('inc/casier/listeTravaux.inc.php', {
-                    coursGrp: coursGrp
-                },
-                function(resultat) {
-                    $("#listeTravaux").html(resultat);
-                    $("#editTravail").addClass('hidden');
-                    $("#showTravail").addClass('hidden');
-                });
             $("#modalDelTravail").modal('hide');
         })
 
