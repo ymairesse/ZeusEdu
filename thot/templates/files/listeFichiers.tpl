@@ -14,14 +14,14 @@
               <td{if $file.type == 'file'} class="ext_{$file.ext}"{/if} style="width:32px">
                 {if $file.type == 'dir'}<i class="fa fa-folder-open-o"></i>{/if}
             </td>
-              <td title="{$file.fileName}" data-container="body">{if $file.type == 'file'}
-                  <a href="inc/download.php?type=pfN&amp;f={$arborescence}/{if $directory != ''}{$directory}/{/if}{$file.fileName}">
+              <td>{if $file.type == 'file'}
+                  <a title="{$file.fileName}" href="inc/download.php?type=pfN&amp;f={$arborescence}/{if $directory != ''}{$directory}/{/if}{$file.fileName}">
                    {$file.fileName|truncate:30:'...'}
                    </a>
                    {/if}
 
                    {if $file.type == 'dir'}
-                   <a href="javascript:void(0)" class="directory" data-dir="{$file.fileName}">{$file.fileName}</a>
+                   <a title="{$file.fileName}" href="javascript:void(0)" class="directory" data-dir="{$file.fileName}">{$file.fileName}</a>
                    {/if}
               </td>
               <td>{$file.dateTime}</td>

@@ -225,10 +225,10 @@ Dropzone.options.myDropZone = {
         })
 
         $('#partages').on('click', '#btn-share', function() {
-            var fileName = $(this).data('filename');
             // dir ou file?
             var type = $(this).data('type');
-            var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
+            var arborescence = $(this).data('arborescence');
+            var fileName = $(this).data('filename');
 
             $('#inputFileName').val(fileName).removeClass('hidden');
             $('#inputPath').val(arborescence);
@@ -269,6 +269,7 @@ Dropzone.options.myDropZone = {
 
         $("#breadcrumbs").on('click', '.btn-crumb', function(){
             var arborescence = $(this).data('dir');
+            var crumb = $(this);
             $('#arborescence').val(arborescence);
              $.post('inc/files/refreshBreadcrumbs.inc.php', {
                 arborescence: arborescence,
@@ -283,8 +284,15 @@ Dropzone.options.myDropZone = {
                 directory: ''
             }, function(resultat){
                 $("#listeFichiers").html(resultat);
-                $("#listePartages").html('');
+                var arborescence = crumb.data('dir');
+                $.post('inc/files/getSharesForDir.inc.php', {
+                    arborescence: arborescence,
+                },
+                function(resultat){
+                    $("#partages").html(resultat);
+                })
             })
+
 
         })
 
