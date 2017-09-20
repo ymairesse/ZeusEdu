@@ -3237,7 +3237,7 @@ class Bulletin
         $sql .= 'FROM '.PFX.'cours ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE SUBSTR(cours, 1,1) IN ($listeNiveauxString) ";
-        // $sql .= "AND section IN ($sections) ";
+        $sql .= "AND section IN ($sections) ";
         $sql .= 'ORDER BY libelle ';
 
         $listeCours = array();
@@ -5203,6 +5203,7 @@ class Bulletin
         $sql = 'SELECT lematricule, nomPrenom, classe ';
         $sql .= 'FROM '.PFX.'bullArchives ';
         $sql .= "WHERE annee = '$annee' AND SUBSTR(classe,1,1) = '$niveau' ";
+        $sql .= 'ORDER BY nomPrenom, classe ';
         $resultat = $connexion->query($sql);
         $listeEleves = array();
         if ($resultat) {
