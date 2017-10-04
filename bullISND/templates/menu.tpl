@@ -34,12 +34,13 @@
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Coordinateurs <b class="caret"></b></a>
 		<ul class="dropdown-menu">
 			<li><a href="index.php?action=nota">Notices coordinateurs</a></li>
-			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences / PIA</a></li>
-			<li><a href="index.php?action=direction&amp;mode=resultatsExternes">Résultats des épreuves externes</a></li>
 			<li><a href="index.php?action=parEcole">Résultats par école</a></li>
 			<li><a href="index.php?action=direction&amp;mode=padEleve">Bloc Note Élèves</a></li>
-			<!-- <li><a href="index.php?action=direction&amp;mode=eprExternes">Épreuves externes/délibés</a></li> -->
+			<li class="divider"></li>
 			<li><a href="index.php?action=direction&amp;mode=pia">Couverture PIA</a></li>
+			<li><a href="index.php?action=direction&amp;mode=competences">Rapports de compétences / PIA</a></li>
+			<li><a href="index.php?action=direction&amp;mode=resultatsExternes">Résultats des épreuves externes</a></li>
+			<li><a href="index.php?action=direction&amp;mode=recapDegre">Récapitulatif du degré</a></li>
 		</ul>
 	</li>
 	{/if}
@@ -52,28 +53,24 @@
 	</li>
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Bulletin <b class="caret"></b></a>
 		<ul class="dropdown-menu">
+		{if $userStatus == 'educ' || $userStatus == 'admin'}
+		<li><a href="index.php?action=educ&amp;mode=noteEduc">Note de l'éducateur</a></li>
+		{/if}
 		<li><a href="index.php?action=gestionBaremes&amp;mode=voir">Pondération par période</a></li>
 		<li><a href="index.php?action=gestionCotes&amp;mode=voir">Aperçu des cotes pour vos cours</a></li>
 		<li><a href="index.php?action=gestEncodageBulletins">Encodage des bulletins</a></li>
 		<li><a href="index.php?action=gestEprExternes">Épreuves externes</a></li>
 		{if $userStatus eq 'admin'}
 		<li class="divider"></li>
-		<li><a href="index.php?action=admin&amp;mode=poserVerrous">Ouvrir/fermer des verrous</a></li>
-		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Verrous classe/cours/élève</a></li>
+		<li><a href="index.php?action=admin&amp;mode=poserVerrous">Ouvrir/fermer des verrous niveau/classe</a></li>
+		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Ouvrir/fermer des Verrous classe/cours/élève</a></li>
 		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>
 		<li><a href="index.php?action=admin&amp;mode=eprExternes">Init. Épreuves externes</a></li>
+		<li><a href="index.php?action=admin&amp;mode=ponderations">Voir les pondérations</a></li>
 		{/if}
 		</ul>
 	</li>
-	{*
-	{if $userStatus == 'educ' || $userStatus == 'admin'}
-	<li><a href="javascript:void(0)">Éducateurs</a>
-		<ul>
-			<li><a href="#">Fiches disciplinaires</a></li>
-		</ul>
-	</li>
-	{/if}
-	*}
+
 	{if $titulaire }
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Titu. {','|implode:$titulaire} <b class="caret"></b></a>
 		<ul class="dropdown-menu">
@@ -97,7 +94,6 @@
 
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Préférences <b class="caret"></b></a>
 		<ul class="dropdown-menu">
-			<li><a href="index.php?action=admin&amp;mode=decoder">Décoder</a></li>
 			<li><a href="index.php?action=admin&amp;mode=nommerCours">Nommer vos cours</a></li>
 			{if $userStatus eq 'admin'}
 			<li><a href="index.php?action=init">Initialisations</a></li>
