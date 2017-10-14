@@ -287,6 +287,7 @@ class user
         $sql .= 'JOIN '.PFX."cours AS c ON (SUBSTR(pc.coursGrp,1,LOCATE('-', pc.coursGrp)-1) = c.cours) ";
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = c.cadre) ';
         $sql .= "WHERE acronyme = '$acronyme' ";
+
         if ($sections) {
             $sql .= "AND c.section IN ($sections) ";
         }
@@ -843,6 +844,7 @@ class user
     public function userStatus($appli)
     {
         $applications = $_SESSION[APPLICATION]->applications;
+        $resultat = Null;
         if (isset($applications[$appli])) {
             $resultat = isset($applications[$appli]) ? $applications[$appli]['userStatus'] : null;
         }
