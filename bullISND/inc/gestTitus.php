@@ -21,8 +21,21 @@ if (count($listeTitus) == 1) {
 	$classe = array_shift($lesClasses);
 	}
 
-$annee = ($classe != Null)?SUBSTR($classe,0,1):Null;
-$onglet = isset($_POST['onglet'])?$_POST['onglet']:0;
+// le prof est-il titulaire d'une classe de fin de degré
+$tituFinDegre = false;
+$arrayAnneeDegre = explode(',', ANNEEDEGRE);
+if (count($listeTitus > 0)) {
+	foreach ($listeTitus as $classe){
+		// on extrait l'année d'étude, le premier caractère de la classe
+		$annee = substr($classe, 0, 1);
+		if (in_array($annee, $arrayAnneeDegre))
+			$tituFinDegre = true;
+	}
+}
+
+$annee = ($classe != Null) ? SUBSTR($classe,0,1) : Null;
+// récupérer l'onglet actif
+$onglet = isset($_POST['onglet']) ? $_POST['onglet']: 0;
 
 $smarty->assign('listeClasses', $listeTitus);
 $smarty->assign('annee',$annee);
@@ -30,13 +43,15 @@ $smarty->assign('classe',$classe);
 $smarty->assign('bulletin', $bulletin);
 $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
-$smarty->assign('onglet',$onglet);
+$smarty->assign('onglet', $onglet);
+$smarty->assign('tituFinDegre', $tituFinDegre);
 
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 
 switch ($mode) {
 	case 'verrous':
+
 		$smarty->assign ('selecteur','selectBulletinClasse');
 		$smarty->assign('etape','showVerrous');
 		switch ($etape) {
@@ -54,6 +69,7 @@ switch ($mode) {
 					$listeCoursGrpClasse = $Ecole->listeCoursGrpClasse($classe);
 					$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
 					$listeVerrous = $Bulletin->listeLocksBulletin($listeEleves, $listeCoursGrpClasse, $bulletin);
+
 					$smarty->assign('listeEleves',$listeEleves);
 					$smarty->assign('listeCoursGrpEleves',$listeCoursGrpEleves);
 					$smarty->assign('listeCoursGrpClasse',$listeCoursGrpClasse);
@@ -67,7 +83,7 @@ switch ($mode) {
 		$smarty->assign ('selecteur','selectBulletinClasseEleve');
 		$smarty->assign('etape','showEleve');
 		// si une classe a déjà été choisie -présente éventuellement dans un Cookie- ET que le prof est titulaire de cette classe
-		if (isset($classe) && in_array($classe,$listeTitus)) {
+		if (isset($classe) && in_array($classe, $listeTitus)) {
 			$smarty->assign('classe',$classe);
 			$listeEleves = $Ecole->listeEleves($classe,'groupe');
 			$smarty->assign('listeEleves', $listeEleves);
@@ -100,8 +116,6 @@ switch ($mode) {
 				$commentairesProfs = $Bulletin->listeCommentairesTousCours($matricule, Null);
 				// liste des mentions (grades) attribués durant cette année d'étude à l'élève dont on fournit le matricule
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
-				// fiche de discipline pour l'élève concerné
-				$ficheEduc = $Bulletin->listeFichesEduc($matricule, $bulletin);
 
 				// recherche des cotes de situation et délibé éventuelles pour toutes les périodes de l'année en cours
 				$listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
@@ -131,7 +145,7 @@ switch ($mode) {
 
 				$smarty->assign('syntheseCotes', $syntheseCotes4Titu);
 				$smarty->assign('attitudes', $tableauAttitudes);
-				$smarty->assign('ficheEduc', $ficheEduc);
+				// $smarty->assign('ficheEduc', $ficheEduc);
 				$smarty->assign('listeRemarquesTitu', $listeRemarquesTitulaire);
 				$smarty->assign('remarqueTitu', $remarqueTitulaire);
 				$smarty->assign('mentions',$mentions);
@@ -171,7 +185,9 @@ switch ($mode) {
 					$padEleve = new padEleve($matricule, $acronyme);
 
 					$smarty->assign('padsEleve', $padEleve->getPads());
-
+					// CEB
+					$smarty->assign('degre', $Ecole->degreDeClasse($eleve->groupe()));
+					$smarty->assign('ceb', $Bulletin->getCEB($matricule));
 					// recherche des infos personnelles de l'élève
 					$smarty->assign('eleve', $eleve->getDetailsEleve());
 					// recherche des infos concernant le passé scolaire
