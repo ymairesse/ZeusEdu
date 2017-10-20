@@ -35,7 +35,7 @@
 						  data-content="<img src='../photos/{$detailsEleve.photo}.jpg' alt='{$matricule}' style='width:100px'><br>{$matricule}"
 						  data-html="true"
 						  data-placement="right"
-						  data-contaienr="body"
+						  data-container="body"
 						  data-original-title="{$nomPrenom|truncate:15}">
 						{$detailsEleve.classe} {$nomPrenom}
 					</span>
@@ -55,7 +55,7 @@
 								  data-content="{$listeCours.$cours.$coursGrp.profs|@implode:'<br>'}"
 								  data-placement="top"
 								  data-html="true"
-								  data-contaienr="body">
+								  data-container="body">
 								{$listeSituations100.$matricule.$cours.sit100|default:'&nbsp;'}
 							</span>
 						</td>
