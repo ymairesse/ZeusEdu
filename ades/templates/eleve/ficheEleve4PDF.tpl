@@ -25,8 +25,8 @@
 
 {* parcourir la liste de tous les types de faits existants *}
 {foreach from=$listeTypesFaits key=idTypeFait item=descriptionTypeFait}
-    {* si ce type de fait est imputé à l'élève, on le traite *}
-    {if isset($listeFaits.$idTypeFait)}
+    {* si ce type de fait est imputé à l'élève et s'il est imprimable, on le traite *}
+    {if isset($listeFaits.$idTypeFait) && ($descriptionTypeFait.print == 1)}
 
     <h3>{$listeTypesFaits.$idTypeFait.titreFait}</h3>
     <table>
