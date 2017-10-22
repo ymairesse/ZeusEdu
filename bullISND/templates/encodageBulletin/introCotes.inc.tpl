@@ -1,12 +1,12 @@
 <!-- introduction des cotes -->
-	
+
 	{if isset($listeVerrous.$matricule.$coursGrp) && ($listeVerrous.$matricule.$coursGrp == 1)}
 	<div class="alert alert-danger" role="alert">
 		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 		Les cotes et mentions de la période <strong>{$bulletin}</strong> de <strong>{$unEleve.prenom} {$unEleve.nom}</strong> ne sont plus modifiables. Contactez le titulaire ou le coordinateur.
 	</div>
 	{/if}
-		
+
 	{assign var=formExiste value=(isset($ponderations.$coursGrp.all.$bulletin.form) && ($ponderations.$coursGrp.all.$bulletin.form != '')) ||
 				(isset($ponderations.$coursGrp.$matricule.$bulletin.form) && ($ponderations.$coursGrp.$matricule.$bulletin.form != ''))}
 	{assign var=certExiste value=(isset($ponderations.$coursGrp.all.$bulletin.cert) && ($ponderations.$coursGrp.all.$bulletin.cert != '')) ||
@@ -35,7 +35,7 @@
 							data-content="Pondération &laquo;certificatif&raquo; pour cette période<br>Le bulletin électronique reportera automatiquement tous les notes sur <strong>{$ponderations.$coursGrp.$matricule.$bulletin.cert|default:$ponderations.$coursGrp.all.$bulletin.cert}</strong> points"
 							data-html="true"
 							data-container="body"
-							data-placement="left"></span>						
+							data-placement="left"></span>
 					{$ponderations.$coursGrp.$matricule.$bulletin.cert|default:$ponderations.$coursGrp.all.$bulletin.cert}
 					</span>
 				</th>
@@ -48,7 +48,7 @@
 			{foreach from=$lesCompetences key=idComp item=uneCompetence}
 				<tr{if isset($tableErreurs.$matricule.$idComp)} class="erreurEncodage"{/if}>
 					<td style="text-align:right" data-container="body"> {$uneCompetence.libelle}</td>
-	
+
 					{if $formExiste}
 						{* Il y a, au moins, une pondération pour le "Formatif" durant cette période *}
 						<td style="text-align:center; width:6em"
@@ -64,7 +64,7 @@
 								class="cote form-control coteTJ">
 							</div>
 						</td>
-	
+
 						{* Le max de Formatif pour cette compétence *}
 						<td style="text-align:center; width:8em">
 						<div class="input-group input-group-sm">
@@ -89,7 +89,7 @@
 						</td>
 						{assign var="tabIndexForm" value=$tabIndexForm+2 scope="global"}
 					{/if}
-	
+
 					{if $certExiste}
 						{* Il y a, au moins, une pondération générale pour le "Certificatif" durant cette période *}
 						<td style="text-align:center; width:6em"
@@ -105,7 +105,7 @@
 									class="cote form-control coteCert">
 						</div>
 						</td>
-	
+
 						{* Le max de Certificatif pour cette compétence *}
 						<td style="text-align:center; width:8em">
 							<div class="input-group input-group-sm">
@@ -157,7 +157,7 @@
 
 		</tr>
 	</table>
-	
+
 	<span class="pull-right smallNotice pop"
 			data-content="Mentions admises: <strong>{$COTEABS}</strong> <br>Toutes ces mentions sont neutres"
 			data-html="true"

@@ -1,7 +1,8 @@
 <div id="selecteur" class="noprint" style="clear:both">
+
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 		<label for="bulletin">Bulletin n° </label>
-		<select name="bulletin" id="bulletin">
+		<select name="bulletin" id="bulletin" class="form-control input-sm">
 		{section name=boucleBulletin start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.boucleBulletin.index}"
 					{if isset($bulletin) && $smarty.section.boucleBulletin.index == $bulletin} selected="selected"{/if}>
@@ -9,7 +10,7 @@
 		{/section}
 	</select>
 
-	<select name="coursGrp" id="coursGrp">
+	<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 		<option value="">Cours</option>
 		{if isset($listeCours)}
 		{foreach from=$listeCours key=unCoursGrp item=unCours}
@@ -21,7 +22,7 @@
 	</select>
 
 	<label for="tri">Ordre</label>
-	<select name="tri" id="tri">
+	<select name="tri" id="tri" class="form-control input-sm">
 		<option value="alpha"{if $tri == 'alpha'} selected="selected"{/if}>Alphabétique</option>
 		<option value="classes"{if $tri == 'classes'} selected="selected"{/if}>Par classes</option>
 	</select>

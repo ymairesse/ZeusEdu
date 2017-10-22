@@ -1,14 +1,15 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
+
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
+		Bulletin n° <select name="bulletin" id="bulletin" class="form-control input-sm">
 		{section name=bidule start=0 loop=$nbBulletins+1}
-			<option value="{$smarty.section.bidule.index}" 
+			<option value="{$smarty.section.bidule.index}"
 			{if $smarty.section.bidule.index == $bulletin}selected{/if}>{$smarty.section.bidule.index}
 			</option>
 		{/section}
 	</select>
-	
-	<select name="classe" id="classe">
+
+	<select name="classe" id="classe" class="form-control input-sm">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=laClasse}
 			<option value="{$laClasse}"{if isset($classe) && ($laClasse == $classe)}selected{/if}>{$laClasse}</option>
@@ -29,7 +30,7 @@ $(document).ready (function() {
 		$("#corpsPage").hide();
 		})
 	})
-	
+
 	$("#classe").change (function(){
 		$("#formSelecteur").submit();
 	})

@@ -12,7 +12,7 @@ switch ($etape) {
         $nb = $Bulletin->enregistrerDecision($_POST);
         $smarty->assign('message', array(
                             'title'=>SAVE,
-                            'texte'=>sprintf('%d mention(s) enregistrée(s)',$nb),
+                            'texte'=>sprintf('%d mention(s) enregistrée(s)', $nb),
                             'urgence'=>'success')
                             );
         // pas de break;

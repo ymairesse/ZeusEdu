@@ -2,13 +2,21 @@
 
 require_once '../../../config.inc.php';
 
-require_once '../../../inc/classes/classApplication.inc.php';
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
-require_once '../../inc/classes/classBulletin.inc.php';
+if (!(isset($_SESSION[APPLICATION]))) {
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
+}
+
+// retrouver le nom du module actif
+$module = $Application->getModule(3);
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classBulletin.inc.php';
 $Bulletin = new Bulletin();
 
 $User = $_SESSION[APPLICATION];
@@ -17,7 +25,9 @@ $acronyme = $User->getAcronyme();
 // retrouver le nom du module actif
 $module = $Application->getModule(3);
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : null;
+$unAn = time() + 365 * 24 * 3600;
+$classe = Application::postOrCookie('classe', $unAn);
+
 $annee = isset($_POST['annee']) ? $_POST['annee'] : null;
 $mois = isset($_POST['mois']) ? $_POST['mois'] : null;
 $signature = isset($_POST['signature']) ? $_POST['signature'] : null;
@@ -40,8 +50,11 @@ $html2pdf = new HTML2PDF('P', 'A4', 'fr');
 
 $resultatsExternes = $Bulletin->getResultatsExternes($classe, ANNEESCOLAIRE);
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new HTML2PDF('P', 'A4', 'fr');
+// une page d'entête pour la classe
+$smarty->assign('classe', $classe);
+$smarty->assign('titreDoc', 'Synthèse des épreuves externes');
+$doc4PDF = $smarty->fetch('../../templates/direction/entetePageClasse2pdf.tpl');
+$html2pdf->WriteHTML($doc4PDF);
 
 foreach ($resultatsExternes as $matricule => $unEleve) {
     $smarty->assign('matricule', $matricule);
@@ -53,15 +66,17 @@ foreach ($resultatsExternes as $matricule => $unEleve) {
     $doc4PDF = $smarty->fetch('../../templates/direction/eprExt2pdf.tpl');
     $html2pdf->WriteHTML($doc4PDF);
 }
-$nomFichier = sprintf('doc_%s.pdf', $classe);
+
+$nomFichier = sprintf('eprExterne_%s.pdf', $classe);
 
 // création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR."/$module/pdf/$acronyme/";
+$chemin = INSTALL_DIR."/upload/$acronyme/bulletin/";
 if (!(file_exists($chemin))) {
-    mkdir(INSTALL_DIR."/$module/pdf/$acronyme");
+    mkdir(INSTALL_DIR."/$module/pdf/$acronyme", 0700, true);
 }
 
 $html2pdf->Output($chemin.$nomFichier, 'F');
 
+$smarty->assign('nomFichier', 'bulletin/'.$nomFichier);
 $link = $smarty->fetch('../../templates/direction/lienDocument.tpl');
 echo $link;

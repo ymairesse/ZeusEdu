@@ -3,23 +3,16 @@
 $unAn = time() + 365 * 24 * 3600;
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 
-if (isset($_POST['coursGrp'])) {
-    $coursGrp = $_POST['coursGrp'];
-    setcookie('coursGrp', $coursGrp, $unAn, null, null, false, true);
-} else {
-    $coursGrp = isset($_COOKIE['coursGrp']) ? $_COOKIE['coursGrp'] : null;
-}
+$coursGrp = Application::postOrCookie('coursGrp', $unAn);
 $smarty->assign('coursGrp', $coursGrp);
 
-if (isset($_POST['matricule'])) {
-    $matricule = $_POST['matricule'];
-    setcookie('matricule', $matricule, $unAn, null, null, false, true);
-} else {
-    $matricule = isset($_COOKIE['matricule']) ? $_COOKIE['matricule'] : null;
-}
+$matricule = Application::postOrCookie('matricule', $unAn);
 $smarty->assign('matricule', $matricule);
 
-$listeCours = $user->listeCoursProf("'G','S','TT'");
+$sections = SECTIONS;
+$sections = "'".implode("','", explode(',', $sections))."'";
+
+$listeCours = $user->listeCoursProf($sections);
 $smarty->assign('listeCours', $listeCours);
 
 $smarty->assign('action', $action);
@@ -76,7 +69,8 @@ switch ($mode) {
     default:
         $smarty->assign('selecteur', 'selecteurs/selectCours');
         // on revient avec un cours à traiter...
-        if ($coursGrp != null) {
+        $listeCoursProf = array_keys($Ecole->listeCoursProf($acronyme));
+        if (($coursGrp != null) && in_array($coursGrp, $listeCoursProf)) {
             $ponderations = $Bulletin->getPonderations($coursGrp);
             if ($ponderations == null) {
                 $ponderations = $Bulletin->ponderationsVides(NBPERIODES, $coursGrp);
@@ -88,9 +82,7 @@ switch ($mode) {
             $smarty->assign('ponderations', $ponderations);
             $smarty->assign('intituleCours', $intituleCours);
             $smarty->assign('listeEleves', $listeEleves);
-            $smarty->assign('selecteur', 'selecteurs/selectCours');
             $smarty->assign('corpsPage', 'ponderation/showPonderations');
         }
         break;
-
     }

@@ -49,7 +49,6 @@
         <div class="clearfix"></div>
         </form>
 
-
     </div>  <!-- col-md-... -->
 
     <div class="col-md-8 col-sm-6">

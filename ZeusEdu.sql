@@ -786,7 +786,7 @@ CREATE TABLE IF NOT EXISTS didac_cours (
   nbheures tinyint(4) NOT NULL DEFAULT '0' COMMENT 'nombre d''heures du cours',
   libelle varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Libelle long du cours (50 caractères)',
   cadre tinyint(4) NOT NULL COMMENT 'cadre de formation (code ministère) permet de déterminer les AC,OC,OB,FC,...',
-  section enum('G','S','TT','TQ') COLLATE utf8_unicode_ci NOT NULL COMMENT '''G'',''S'',''TT'',''TQ''',
+  section enum('GT','S','TT','TQ','P','D') COLLATE utf8_unicode_ci NOT NULL COMMENT '''GT'',''S'',''TT'',''TQ'', ''D'', ''P''',
   PRIMARY KEY (cours),
   KEY cadre (cadre)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -832,7 +832,7 @@ CREATE TABLE `didac_eleves` (
   `localiteResp` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'max 60 car',
   `DateNaiss` date NOT NULL COMMENT 'au format YYYY-MM-JJ',
   `commNaissance` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'max 40 caractères',
-  `section` enum('TQ','G','TT','S','PARTI') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'G' COMMENT '''TQ'',''G'',''TT'',''S'',''PARTI'' (laisser vide pour ''G'')'
+  `section` enum('P','TQ','GT','TT','S','PARTI') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'GT' COMMENT '''P'',''TQ'',''GT'',''TT'',''S'',''PARTI'' (laisser vide pour ''GT'')'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `didac_eleves`

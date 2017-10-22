@@ -66,11 +66,20 @@
                     </div>
 
                     <div class="col-md-3 col-sm-6">
-                        <div class="form-group">
-                            <label for="heure" class="sr-only">Heure</label>
-                            <input type="text" name="heure" id="timepicker" value="{$heure|default:''}" placeholder="Heure de notification" class="form-control" autocomplete="off">
-                            <div class="help-block">Heure</div>
+
+                        <div class="input-group">
+                            <input type="text" name="heure" id='heure' value="{$heure|default:''}" class="form-control" autocomplete="off">
+                            <div class="input-group-btn">
+                                <button id="listePeriodes" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-hourglass"></i> <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu pull-right" id="choixPeriode">
+                                    {foreach from=$listePeriodes item=unePeriode}
+                                    <li><a href="javascript:void(0)" data-periode="{$unePeriode['debut']}">{$unePeriode['debut']}</a></li>
+                                    {/foreach}
+                                </ul>
+                            </div>
                         </div>
+
                     </div>
 
                     <div class="col-md-4 col-sm-6">
@@ -108,7 +117,6 @@
 
                 </div>  <!-- row -->
 
-
                 <div class="form-group">
                     <label for="titre" class="sr-only">Titre</label>
                     <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="" class="form-control" autocomplete="off">
@@ -132,7 +140,6 @@
             </div>
             <input type="hidden" name="type" id="type" value="{$type|default:''}">
             <input type="hidden" name="startDate" value="{$startDate|default:''}" id="startDate">
-            <input type="hidden" name="viewState" value="{$viewState}">
 
             <input type="hidden" name="action" value="jdc">
             <input type="hidden" name="mode" value="save">
@@ -144,8 +151,6 @@
     </div>  <!-- modal-dialog -->
 
 </div>  <!-- modal -->
-
-<script type='text/javascript' src="configEditor.js"></script>
 
 <script type="text/javascript">
 
@@ -221,9 +226,9 @@ $(document).ready(function(){
                 required: true,
                 time: true
                 },
-            duree: {
-                required: true
-            },
+            // duree: {
+            //     required: true
+            // },
             titre: {
                 required: true
                 },
@@ -255,11 +260,14 @@ $(document).ready(function(){
         $("#duree").val($(this).attr("data-value"))
         })
 
+    $('#choixPeriode li a').click(function(){
+        $('#heure').val($(this).attr('data-periode'));
+    })
+
     $("#datepicker").change(function(){
         var date = $(this).val();
         $("#startDate").val(moment(dateMysql(date)).format('YYYY-MM-DD HH:mm'));
         })
-
 
 })
 

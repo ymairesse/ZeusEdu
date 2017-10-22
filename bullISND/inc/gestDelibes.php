@@ -15,7 +15,9 @@ $annee = ($classe != null) ? SUBSTR($classe, 0, 1) : null;
 
 // liste des classes dont le prof utilisateur est titulaire
 $listeTitus = $user->listeTitulariats();
-$listeClasses = $Ecole->listeGroupes($sections = array('G', 'TT', 'S'));
+$sections = SECTIONS;
+$sections = explode(',', SECTIONS);
+$listeClasses = $Ecole->listeGroupes($sections);
 
 $smarty->assign('listeTitus', $listeTitus);
 $smarty->assign('listeClasses', $listeClasses);

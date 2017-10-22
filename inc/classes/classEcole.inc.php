@@ -1162,7 +1162,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE classe = '$classe' ";
-        $sql .= 'ORDER BY statut DESC, nbheures DESC, libelle';
+        $sql .= 'ORDER BY rang, nbheures DESC, libelle';
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -1250,19 +1250,24 @@ class ecole
     }
 
     /**
-     * renvoie le nombre total d'élèves de l'école.
+     * renvoie le nombre total d'élèves de l'école ou du niveau d'étude
      *
-     * @param void()
+     * @param int $niveau (éventuellement Null)
      *
      * @return int
      */
-    public function nbEleves()
+    public function nbEleves($niveau = Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT COUNT(*) FROM '.PFX.'eleves ';
+        $sql = 'SELECT COUNT(*) AS nb FROM '.PFX.'eleves ';
         $sql .= "WHERE section != 'PARTI' ";
+        if ($niveau != Null)
+            $sql .= "AND SUBSTR(groupe,1,1) = $niveau ";
+
         $resultat = $connexion->query($sql);
-        $nbEleves = $resultat->fetchColumn();
+        $ligne = $resultat->fetch();
+        $nbEleves = $ligne['nb'];
+
         Application::DeconnexionPDO($connexion);
 
         return $nbEleves;
@@ -1598,6 +1603,7 @@ class ecole
 
     /**
      * renvoie la liste des cours pour les niveaux (1,2,3,4,5,6) passés en paramètre.
+     * /!\ sans doute à remplacer par function listeCoursNiveau($niveau) /!\
      *
      * @param $listeNiveaux
      *
@@ -1728,6 +1734,67 @@ class ecole
 
         return $listeAffectations;
     }
+
+    /**
+     * renvoie la liste des **cours** donnés aux différents niveaux passés en paramètre
+     * recherche en deux temps: 1. dans la table des eleves/cours & 2. dans la table des profs/cours
+     * certains cours peuvent n'avoir aucun élève ou aucun prof titulaire.
+     *
+     * @param $listeNiveaux
+     *
+     * @return array
+     */
+    public function listeCoursNiveau($listeNiveaux){
+        if (is_array($listeNiveaux)) {
+            $listeNiveauxString = implode(',', $listeNiveaux);
+        } else {
+            $listeNiveauxString = $listeNiveaux;
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        // 1. recherche dans la table eleves/cours
+        $sql = "SELECT DISTINCT SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1) AS cours, libelle, nbHeures, statut ";
+        $sql .= 'FROM '.PFX.'elevesCours AS delc ';
+        $sql .= "JOIN ".PFX."cours AS dc ON dc.cours = SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1) ";
+        $sql .= 'JOIN didac_statutCours AS dsc ON dsc.cadre = dc.cadre ';
+        $sql .= "WHERE SUBSTR(coursGrp, 1,1) IN ($listeNiveauxString) ";
+        $sql .= 'ORDER BY cours ';
+
+        $listeCours = array();
+        $resultat = $connexion->query($sql);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()){
+                $cours = $ligne['cours'];
+                $listeCours[$cours] = $ligne;
+            }
+        }
+        $listeConnusString = ("'".implode("','", array_keys($listeCours))."' ");
+
+        // 2. recheche dans la table profs/cours
+        $sql = "SELECT DISTINCT SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1) AS cours, libelle, nbHeures, statut ";
+        $sql .= 'FROM '.PFX.'profsCours AS dpc ';
+        $sql .= "JOIN ".PFX."cours AS dc ON dc.cours = SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1) ";
+        $sql .= 'JOIN didac_statutCours AS dsc ON dsc.cadre = dc.cadre ';
+        $sql .= "WHERE SUBSTR(coursGrp, 1,1) IN ($listeNiveauxString) ";
+        $sql .= "AND cours NOT IN ($listeConnusString) ";
+        $sql .= 'ORDER BY cours ';
+
+        $resultat = $connexion->query($sql);
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()){
+                $cours = $ligne['cours'];
+                $listeCours[$cours] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+        ksort($listeCours);
+
+        return $listeCours;
+    }
+
 
     /**
      * fournit la liste des coursGrp donnés aux différentes niveaux passés en paramètre

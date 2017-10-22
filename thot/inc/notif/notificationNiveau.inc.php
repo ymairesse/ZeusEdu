@@ -12,8 +12,16 @@ switch ($etape) {
         }
         break;
     case 'enregistrer':
-        // l'$id est celui de la nouvelle notification créée dans la BD
+        // enregistrement de la notification avec retour de la liste des identifiants correspondants
+        // dans le cas d'une notification à un niveau, la liste ne contient qu'une seule notification
+        // (il n'est pas possible de cibler quelques élèves)
         $listeId = $Thot->enregistrerNotification($_POST);
+        // enregistrement éventuel des PJ
+        if (isset($_POST['files']) && count($_POST['files']) > 0) {
+            require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+            $Files = new Files();
+            $nb = $Files->linkFilesNotifications($listeId, $_POST);
+            }
         if (count($listeId) > 0) {
 
             $listeEleves = $Ecole->listeElevesNiveaux($niveau);
@@ -25,6 +33,8 @@ switch ($etape) {
             $texte = sprintf('Notification aux %d élèves de %s e enregistrée ', $nbEleves, $niveau);
             $smarty->assign('listeMatricules', Null);
 
+            // le code qui suit a été supprimé: il n'est pas souhaitable d'envoyer tant de mails.
+            // ----------------------------------------------------------------------------------
 			// ok pour la notification en BD, passons éventuellement à l'envoi de mail
 			// if (isset($_POST['mail']) && $_POST['mail'] == 1) {
 			// 	if ($type == 'eleves') {

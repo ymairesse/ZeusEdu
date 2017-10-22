@@ -1,4 +1,5 @@
 <?php
+
 // prise de présence par cours
 if ($etape == 'enregistrer') {
     if (isset($coursGrp)) {

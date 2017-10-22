@@ -30,7 +30,7 @@
                                 <input type="radio" name="type" id="prof" value="prof"> Profs</label>
 
                             <label class="radio-inline typePartage" title="Partage avec une classe ou des élèves d'une classe" data-container="body">
-                                <input type="radio" name="type" id="classe" value="classe"> Classe</label>
+                                <input type="radio" name="type" id="classes" value="classes"> Classe</label>
 
                             <label class="radio-inline typePartage" title="Partage avec un cours ou des élèves d'un cours" data-container="body">
                                 <input type="radio" name="type" id="cours" value="cours"> Cours</label>
@@ -127,10 +127,6 @@
             $("#commentairesvp").addClass('hidden');
         })
 
-        $("#selection").on('click', '.teteListe', function() {
-            // $('.listeMembres').toggle();
-        })
-
         $("#selection").on('change', '#checkListe', function() {
             var checked = $(this).prop('checked');
             $(".cb").prop('checked', checked);
@@ -178,7 +174,7 @@
                             $("#selection").html(resultat);
                         })
                     break;
-                case 'classe':
+                case 'classes':
                     $.post('inc/files/selectClasses.inc.php', {},
                         function(resultat) {
                             $("#selection").html(resultat);

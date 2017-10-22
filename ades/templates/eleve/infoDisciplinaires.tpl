@@ -64,7 +64,7 @@
 					{* on indique le titre de ce type de faits *}
 					<h3 style="clear:both;background-color: {$descriptionTypeFait.couleurFond}; color: {$descriptionTypeFait.couleurTexte}">
 						<button type="button" class="btn btn-warning btn-xs openThis"><i class="fa fa-arrow-right"></i></button>
-							{$descriptionTypeFait.titreFait}
+							{$descriptionTypeFait.titreFait} {if $descriptionTypeFait.print == 1}<i class="fa fa-print" title="Ce type de fait sera imprimé dans la fiche disciplinaire PDF"></i>{/if}
 							<span class="badge pull-right" style="background:red"> {$listeFaits.$typeFait|@count}</span>
 					</h3>
 

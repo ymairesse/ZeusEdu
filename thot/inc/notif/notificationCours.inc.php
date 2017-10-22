@@ -15,8 +15,17 @@ switch ($etape) {
         break;
 
     case 'enregistrer':
+        // enregistrement de la notification avec retour de la liste des identifiants correspondants
+        // il peut y avoir plusieurs identifiants quand plusieurs destinataires "élèves" dans le cours
         $listeId = $Thot->enregistrerNotification($_POST);
-        // l'$id est celui de la dernière nouvelle notification créée dans la BD
+        // enregistrement éventuel des PJ
+        if (isset($_POST['files']) && count($_POST['files']) > 0) {
+            require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+            $Files = new Files();
+            $nb = $Files->linkFilesNotifications($listeId, $_POST);
+            }
+
+        // si des notifications ont été enregistrées
         if (count($listeId) > 0) {
             // liste de tous les élèves du cours
             $listeEleves = $Ecole->listeElevesCours($coursGrp);

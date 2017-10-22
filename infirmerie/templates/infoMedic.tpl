@@ -42,8 +42,8 @@
 
 		<div class="col-md-4 col-sm-6">
 			<div class="panel panel-default">
-				<div class="panel-header">
-					<h4>Médecin traitant</h4>
+				<div class="panel-heading">
+					<h3>Médecin traitant</h3>
 				</div>
 				<div class="panel-body">
 					<dl>
@@ -59,8 +59,8 @@
 
 		<div class="col-md-4 col-sm-6">
 			<div class="panel panel-default">
-				<div class="panel-header">
-					<h4>Situation personnelle</h4>
+				<div class="panel-heading">
+					<h3>Situation personnelle</h3>
 				</div>
 				<div class="panel-body">
 					<dl>
@@ -76,8 +76,8 @@
 
 		<div class="col-md-4 col-sm-6">
 			<div class="panel panel-default">
-				<div class="panel-header">
-					<h4>Particularités</h4>
+				<div class="panel-heading">
+					<h3>Particularités</h3>
 				</div>
 				<div class="panel-body">
 					<dl>

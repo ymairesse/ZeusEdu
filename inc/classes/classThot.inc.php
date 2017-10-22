@@ -56,7 +56,6 @@ class thot
                 'type' => $type,
                 'proprietaire' => $proprio,
                 'destinataire' => $destinataire,
-                'urgence' => 0,
                 'mail' => 0,
                 'accuse' => 0,
                 );
@@ -77,7 +76,7 @@ class thot
     public function getNotification($id, $acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, type, proprietaire, objet, texte, dateDebut, dateFin, destinataire, urgence, mail, accuse, freeze ';
+        $sql = 'SELECT id, type, proprietaire, objet, texte, dateDebut, dateFin, destinataire, mail, accuse, freeze ';
         $sql .= 'FROM '.PFX.'thotNotifications ';
         $sql .= "WHERE id='$id' AND proprietaire = '$acronyme' ";
 
@@ -152,6 +151,12 @@ class thot
     public function enregistrerNotification($post)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        if (in_array($post['type'], array('classes', 'cours'))) {
+            // reclasser éventuellement dans le type 'eleves' s'il sagit d'un élève isolé dans une classe ou dans un cours
+            if (is_numeric($post['destinataire']))
+                $post['type'] = 'eleves';
+        }
 
         $data = array(
             ':id' => $post['id'],
@@ -307,16 +312,19 @@ class thot
     public function listeUserNotification($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, type, objet, texte, urgence, destinataire, dateDebut, dateFin, mail, accuse, freeze ';
-        $sql .= 'FROM '.PFX.'thotNotifications ';
-        $sql .= "WHERE proprietaire = '$acronyme' ";
+        $sql = 'SELECT id, type, objet, texte, dtn.destinataire, dateDebut, dateFin, mail, accuse, freeze ';
+        $sql .= 'FROM '.PFX.'thotNotifications  AS dtn ';
+        $sql .= 'WHERE proprietaire = :acronyme ';
         $sql .= 'ORDER BY dateDebut, destinataire ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR,7);
+
+        $resultat = $requete->execute();
         $liste = array('ecole' => array(), 'niveau' => array(), 'classes' => array(), 'cours' => array(), 'eleves' => array());
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $id = $ligne['id'];
                 $type = $ligne['type'];
                 $ligne['objet'] = stripslashes($ligne['objet']);
@@ -328,6 +336,20 @@ class thot
             }
         }
         Application::deconnexionPDO($connexion);
+
+        // placement en type 'eleves' pour les notifications "cours" ou "classe" à un élève ciblé
+        foreach ($liste as $type => $lesNotifications) {
+            if ($type == 'classes' || $type == 'cours'){
+                foreach ($lesNotifications as $id => $uneNotification) {
+                    // le destinataire est-il un 'matricule' (numérique, donc)?
+                    if (is_numeric($uneNotification['destinataire'])) {
+                        $uneNotification['type'] = 'eleves';
+                        $liste['eleves'][$id] = $uneNotification;
+                        unset($liste[$type][$id]);
+                    }
+                }
+            }
+        }
 
         return $liste;
     }
@@ -358,6 +380,141 @@ class thot
 
         return $liste;
     }
+
+    /**
+     * retourne la liste des PJ pour une liste de notifications donnée
+     *
+     * @param array $listeNotifications (les notifications groupées par type: 'ecole', 'niveau',...)
+     * @param string $acronyme : propriétaire des notifications (sécurité)
+     *
+     * @return array
+     */
+    public function getPj4Notifs($listeNotifications, $acronyme){
+        // on peut passer une liste de notifications par type ('classe'=> ..., 'cours'=>...) ou un notifId isolé
+        if (!(is_array($listeNotifications))){
+            $listeNotifications = array('type' => array($listeNotifications => 'wtf'));
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtnp.shareId, path, fileName ';
+        $sql .= 'FROM '.PFX.'thotNotifPJ AS dtnp ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = dtnp.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
+        $sql .= 'WHERE notifId = :notifId AND acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $liste = array();
+        foreach ($listeNotifications as $type => $notifications) {
+            foreach ($notifications as $notifId => $data) {
+                $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+                $resultat = $requete->execute();
+                if ($resultat) {
+                    $requete->setFetchMode(PDO::FETCH_ASSOC);
+                    while ($ligne = $requete->fetch()){
+                        $shareId = $ligne['shareId'];
+                        $liste[$notifId][$shareId] = $ligne;
+                    }
+                }
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * Arrêter le partage de la PJ "shareId" pour la notification "notifId"
+     *
+     * @param int $shareId : shareId de le PJ
+     * @param int $notifId : la notification
+     * @param string $acronyme : le propriétaire (sécurité)
+     *
+     * @return bool
+     */
+    public function unShare4notifId($shareId, $notifId, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotNotifPJ ';
+        $sql .= 'WHERE shareId = :shareId AND notifId = :notifId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * retourne le nombre d'accusés de lecture pour chaque notification de l'utilisateur $acronyme
+     *
+     * @param $acronyme
+     *
+     * @return array
+     */
+    public function getAccuses4user($acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, dateHeure, matricule ';
+        $sql .= 'FROM '.PFX.'thotNotifFlags ';
+        $sql .= "WHERE dateHeure != '' AND id IN (SELECT id FROM didac_thotNotifications WHERE proprietaire = :acronyme)";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR,7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['id'];
+                $matricule = $ligne['matricule'];
+                $liste[$id][$matricule] = $ligne['dateHeure'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste détaillée des accusés de lecture pour l'élément dont l'id est fourni.
+     *
+     * @param $id: id d'une notificaiton dans la table des accusés
+     * @param $acronyme: acronyme de l'utilisateur actuel (sécurité)
+     *
+     * @return array les enregistrements correspondants indexés sur le matricule
+     */
+    public function getAccuses4id($id, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT flags.id, DATE_FORMAT(dateHeure, '%d/%m %H:%i') AS dateHeure, matricule ";
+        $sql .= 'FROM '.PFX.'thotNotifFlags AS flags ';
+        $sql .= 'JOIN '.PFX.'thotNotifications AS dtn ON dtn.id = flags.id ';
+        $sql .= 'WHERE flags.id=:id AND proprietaire=:acronyme ';
+        $sql .= 'ORDER BY dateHeure ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR,7);
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $dateHeure = Application::datePHP($ligne['dateHeure']);
+                $liste[$matricule] = $dateHeure;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+        }
 
     /**
      * Ajout des notifications de conseils de classe de fin d'année.
@@ -491,7 +648,7 @@ class thot
     }
 
     /**
-     * liste succincte de tous les accusés de lecture demandés par un utilisateur.
+     * liste succincte de tous les accusés de lecture demandés par un l'utilisateur $acronyme
      *
      * @param $acronyme
      *
@@ -500,11 +657,11 @@ class thot
     public function listeAccuses($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, type, objet, dateDebut, dateFin, destinataire, nom, prenom, classe ';
+        $sql = 'SELECT id, type, objet, dateDebut, dateFin, destinataire ';
         $sql .= 'FROM '.PFX.'thotNotifications AS dtn ';
-        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dtn.destinataire ';
         $sql .= "WHERE proprietaire = '$acronyme' AND accuse = '1' ";
         $sql .= 'ORDER BY dateDebut ';
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -523,19 +680,19 @@ class thot
     }
 
     /**
-     * renvoie les statistiques des accusés de lecture par élèves, classes, cours, niveau, éclassEcole
-     * depuis la liste des accusés.
+     * renvoie les nombres des accusés de lecture pour une liste de notifications dont
+     * on fournit les id's
      *
      * @param $listeNotifications : la liste des demandes d'accusés de lecture
      *
      * @return array
      */
-    public function statsAccuses($listeNotifications)
+    public function nbAccuses($listeNotifications)
     {
         $listeIdsString = implode(',', array_keys($listeNotifications));
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, matricule, dateHeure ';
-        $sql .= 'FROM '.PFX.'thotAccuse ';
+        $sql .= 'FROM '.PFX.'thotNotifFlags ';
         $sql .= "WHERE id IN ($listeIdsString) ";
 
         $resultat = $connexion->query($sql);
@@ -546,51 +703,12 @@ class thot
                 $id = $ligne['id'];
                 $dateHeure = $ligne['dateHeure'];
                 if (!(isset($liste[$id]))) {
-                    $liste[$id]['count'] = 1;
                     $liste[$id]['confirme'] = ($dateHeure != null) ? 1 : 0;
                 } else {
-                    $liste[$id]['count'] += 1;
                     if ($dateHeure != null) {
                         $liste[$id]['confirme'] += 1;
                     }
                 }
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * renvoie la liste des accusés de lecture pour l'élément dont l'id est fourni.
-     *
-     * @param $id: id d'une notificaiton dans la table des accusés
-     * @param $acronyme: acronyme de l'utilisateur actuel (sécurité)
-     *
-     * @return array les enregistrements correspondants indexés sur le matricule
-     */
-    public function getAccuses($id, $acronyme)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT dta.id, dta.matricule, DATE_FORMAT(dateHeure,'%d/%m %H:%i') AS dateHeure, nom, prenom, classe, proprietaire ";
-        $sql .= 'FROM '.PFX.'thotAccuse AS dta ';
-        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dta.matricule ';
-        $sql .= 'JOIN '.PFX.'thotNotifications AS dtn ON dtn.id = dta.id ';
-        $sql .= "WHERE dta.id = '$id' AND proprietaire = '$acronyme' ";
-        $sql .= 'ORDER BY nom, prenom, dateHeure ';
-
-        $resultat = $connexion->query($sql);
-        $liste = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $dateHeure = $ligne['dateHeure'];
-                $dateHeure = explode(' ', $dateHeure);
-                $dateHeure[0] = Application::datePHP($dateHeure[0]);
-                $ligne['dateHeure'] = implode(' ', $dateHeure);
-                $matricule = $ligne['matricule'];
-                $ligne['photo'] = Ecole::photo($matricule);
-                $liste[$matricule] = $ligne;
             }
         }
         Application::deconnexionPDO($connexion);

@@ -737,6 +737,7 @@ class Ades
                 $liste[$idretenue] = $ligne;
             }
         }
+
         $listeIdRetenue = implode(',', array_keys($liste));
 
         $sql = 'SELECT idretenue, COUNT(*) as occupation ';

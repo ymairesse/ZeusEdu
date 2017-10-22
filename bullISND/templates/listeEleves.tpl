@@ -1,5 +1,6 @@
 {if isset($listeEleves)}
-<select name="matricule" id="selectEleve" {if isset($size)}size="{$size}"{/if}{if isset($multiple)} multiple{/if} class="form-control-inline">
+
+<select name="matricule" id="selectEleve" {if isset($size)}size="{$size}"{/if}{if isset($multiple)} multiple{/if} class="form-control input-sm">
 	<option value="">Choisir un élève</option>
 	{if isset($listeEleves)}
 		{foreach from=$listeEleves key=leMatricule item=unEleve}
@@ -7,4 +8,5 @@
 		{/foreach}
 	{/if}
 </select>
+
 {/if}

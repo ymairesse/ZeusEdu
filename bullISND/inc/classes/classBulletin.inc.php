@@ -171,6 +171,42 @@ class Bulletin
         return $listePonderations;
     }
 
+    /**
+     * retourne les pondérations de chaque période pour les cours d'un niveau d'étude
+     *
+     * @param int $niveau
+     *
+     * @return array
+     */
+    public function getPonderationsNiveau($niveau){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT  DISTINCT SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1) AS cours, libelle, coursGrp, periode, form, cert ";
+        $sql .= 'FROM '.PFX.'bullPonderations AS dbp ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON SUBSTR(coursGrp, 1, LOCATE('-', coursGrp)-1) = dc.cours ";
+        $sql .= 'WHERE SUBSTR(coursGrp,1,1) = :niveau ';
+        $sql .= 'ORDER BY cours, periode ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $cours = $ligne['cours'];
+                $periode = $ligne['periode'];
+                if (!(isset($liste[$cours])))
+                    $liste[$cours]['titres'] = array('cours' => $ligne['cours'], 'libelle' => $ligne['libelle']);
+                $liste[$cours]['ponderations'][$periode] = array('form' => $ligne['form'], 'cert' => $ligne['cert']);
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
         /**
          * liste structurée des profs liés à une liste de coursGrp (liste indexée par coursGrp).
          *
@@ -2509,8 +2545,8 @@ class Bulletin
     }
 
     /**
-     * Établissement de la liste des coursGrp des élèves passés en argument
-     * la liste est valable pour le bulletin donné et tient compte de l'historique des mouvements.
+     * Établissement de la liste des coursGrp à un bulletin donné pour les élèves passés en argument
+     * la liste tient compte de l'historique des mouvements
      *
      * @param string|array $listeEleves : liste des élèves concernés
      * @param int          $bulletin    : numéro du bulletin à considérer (important pour l'historique)
@@ -2526,16 +2562,26 @@ class Bulletin
         }
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, libelle, nbheures, ';
-        $sql .= PFX.'statutCours.statut, section, rang, matricule, nom, prenom, '.PFX.'profsCours.acronyme ';
-        $sql .= 'FROM '.PFX.'elevesCours ';
-        $sql .= 'JOIN '.PFX.'cours ON ('.PFX."cours.cours = SUBSTR(coursGrp, 1,LOCATE('-',coursGrp)-1)) ";
-        $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
+        // $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, libelle, nbheures, ';
+        // $sql .= PFX.'statutCours.statut, section, rang, matricule, nom, prenom, '.PFX.'profsCours.acronyme ';
+        // $sql .= 'FROM '.PFX.'elevesCours ';
+        // $sql .= 'JOIN '.PFX.'cours ON ('.PFX."cours.cours = SUBSTR(coursGrp, 1,LOCATE('-',coursGrp)-1)) ";
+        // $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
+        // // LEFT JOIN pour les cas où un élève aurait été affecté à un cours qui n'existe plus dans la table des profs
+        // $sql .= 'LEFT JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
+        // $sql .= 'LEFT JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
+        // $sql .= "WHERE matricule IN ($listeMatricules) ";
+        // $sql .= 'ORDER BY statut DESC, nbheures DESC, rang, libelle';
+
+        $sql = 'SELECT DISTINCT delc.coursGrp, cours, libelle, nbheures, dsc.statut, section, rang, matricule, nom, prenom, dpc.acronyme ';
+        $sql .= 'FROM '.PFX.'elevesCours AS delc ';
+        $sql .= 'JOIN '.PFX.'cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1)) ';
+        $sql .= 'JOIN '.PFX.'statutCours AS dsc ON (dsc.cadre = dc.cadre) ';
         // LEFT JOIN pour les cas où un élève aurait été affecté à un cours qui n'existe plus dans la table des profs
-        $sql .= 'LEFT JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
-        $sql .= 'LEFT JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
+        $sql .= 'LEFT JOIN '.PFX.'profsCours AS dpc ON (dpc.coursGrp = delc.coursGrp) ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON (dp.acronyme = dpc.acronyme) ';
         $sql .= "WHERE matricule IN ($listeMatricules) ";
-        $sql .= 'ORDER BY statut DESC, nbheures DESC, rang, libelle';
+        $sql .= 'ORDER BY rang, nbheures DESC, rang, libelle ';
 
         $resultat = $connexion->query($sql);
         $listeCours = array();
@@ -2548,14 +2594,23 @@ class Bulletin
             }
         }
         // tenir compte de l'historique
-        $sql = 'SELECT matricule, '.PFX.'bullHistoCours.coursGrp, mouvement,  bulletin, '.PFX.'statutCours.statut, ';
-        $sql .= 'cours, libelle, nbheures, rang, section, rang, nom, prenom, '.PFX.'profsCours.acronyme ';
-        $sql .= 'FROM '.PFX.'bullHistoCours ';
-        $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'bullHistoCours.coursGrp) ';
-        $sql .= 'JOIN '.PFX.'cours ON ('.PFX.'cours.cours = SUBSTR('.PFX."profsCours.coursGrp, 1, LOCATE('-',".PFX.'profsCours.coursGrp)-1)) ';
-        $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
-        $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
-        $sql .= "WHERE matricule IN ($listeMatricules)";
+        // $sql = 'SELECT matricule, '.PFX.'bullHistoCours.coursGrp, mouvement,  bulletin, '.PFX.'statutCours.statut, ';
+        // $sql .= 'cours, libelle, nbheures, rang, section, rang, nom, prenom, '.PFX.'profsCours.acronyme ';
+        // $sql .= 'FROM '.PFX.'bullHistoCours ';
+        // $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'bullHistoCours.coursGrp) ';
+        // $sql .= 'JOIN '.PFX.'cours ON ('.PFX.'cours.cours = SUBSTR('.PFX."profsCours.coursGrp, 1, LOCATE('-',".PFX.'profsCours.coursGrp)-1)) ';
+        // $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
+        // $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
+        // $sql .= "WHERE matricule IN ($listeMatricules)";
+
+        $sql = 'SELECT matricule, dbhc.coursGrp, mouvement,  bulletin, dsc.statut, ';
+        $sql .= 'cours, libelle, nbheures, rang, section, rang, nom, prenom, dpc.acronyme ';
+        $sql .= 'FROM '.PFX.'bullHistoCours AS dbhc ';
+        $sql .= 'JOIN '.PFX.'profsCours AS dpc ON (dpc.coursGrp = dbhc.coursGrp) ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(dpc.coursGrp, 1, LOCATE('-', dpc.coursGrp)-1) ";
+        $sql .= 'JOIN '.PFX.'statutCours AS dsc ON (dsc.cadre = dc.cadre) ';
+        $sql .= 'JOIN '.PFX.'profs AS dp ON (dp.acronyme = dpc.acronyme) ';
+        $sql .= "WHERE matricule IN ($listeMatricules) ";
 
         $resultat = $connexion->query($sql);
         if ($resultat) {
@@ -2574,11 +2629,11 @@ class Bulletin
                         // sinon, c'est une suppression qui a été effectuée plus tard, et il faut rétablir ce cours à cet élève
                         else {
                             $listeCours[$matricule][$coursGrp] = array(
-                            'coursGrp' => $coursGrp,                    'cours' => $ligne['cours'],
-                            'libelle' => $ligne['libelle'],            'nbheures' => $ligne['nbheures'],
-                            'statut' => $ligne['statut'],                'section' => $ligne['section'],
-                            'rang' => $ligne['rang'],                'matricule' => $matricule,
-                            'nom' => $ligne['nom'],                    'prenom' => $ligne['prenom'],
+                            'coursGrp' => $coursGrp,            'cours' => $ligne['cours'],
+                            'libelle' => $ligne['libelle'],     'nbheures' => $ligne['nbheures'],
+                            'statut' => $ligne['statut'],       'section' => $ligne['section'],
+                            'rang' => $ligne['rang'],           'matricule' => $matricule,
+                            'nom' => $ligne['nom'],             'prenom' => $ligne['prenom'],
                             'acronyme' => $ligne['acronyme'],
                             );
                         }
@@ -5202,12 +5257,16 @@ class Bulletin
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT lematricule, nomPrenom, classe ';
         $sql .= 'FROM '.PFX.'bullArchives ';
-        $sql .= "WHERE annee = '$annee' AND SUBSTR(classe,1,1) = '$niveau' ";
+        $sql .= 'WHERE annee = :annee AND SUBSTR(classe,1,1) = :niveau ';
         $sql .= 'ORDER BY nomPrenom, classe ';
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':annee', $annee, PDO::PARAM_STR,9);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        $resultat = $requete->execute();
         $listeEleves = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['lematricule'];
                 $nomPrenom = $ligne['nomPrenom'];
                 $listeEleves[$matricule] = $nomPrenom;

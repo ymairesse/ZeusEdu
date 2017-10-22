@@ -11,7 +11,9 @@
 	<div class="table-responsive">
 		<table class="tableauBull table table-striped table-condensed">
 			<tr>
-			<th>Nom de l'élève</th>
+				<th style="vertical-align: bottom;">
+					<p>Nom de l'élève</p>
+				</th>
 			{foreach from=$listeCours key=cours item=detailsCours}
 			<th>
 				<span class="pop"
@@ -21,7 +23,7 @@
 					  data-placement="top"
 					  data-html="true">
 				<img src="imagesCours/{$cours}.png" alt="{$cours}"><br>
-				{$detailsCours.cours.nbheures}h
+				{$detailsCours.cours.statut} {$detailsCours.cours.nbheures}h
 				</span>
 			</th>
 			{/foreach}

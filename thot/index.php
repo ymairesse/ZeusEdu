@@ -37,7 +37,7 @@ switch ($action) {
         include_once 'inc/notif/editNotifications.inc.php';
         break;
     case 'jdc':
-        include_once 'inc/jdc.inc.php';
+        require_once 'inc/jdc.inc.php';
         break;
     case 'connexions':
         if ($userStatus == 'admin') {

@@ -4,14 +4,25 @@ $notification = $Thot->newNotification('ecole',$user->acronyme(),'ecole');
 
 switch ($etape) {
 	case 'enregistrer':
-		// l'$id est celui de la nouvelle notification créée dans la BD
+		// enregistrement de la notification avec retour de la liste des identifiants correspondants
+		// dans le cas d'une notification à l'école entière, la liste ne contient qu'une seule notification
+		// (il n'est pas possible de cibler quelques élèves)
 		$listeId = $Thot->enregistrerNotification($_POST);
+		// enregistrement éventuel des PJ
+		if (isset($_POST['files']) && count($_POST['files']) > 0) {
+			require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+			$Files = new Files();
+			$nb = $Files->linkFilesNotifications($listeId, $_POST);
+			}
+
 		if (count($listeId) > 0) {
 			// liste de tous les élèves du cours
 			$listeEleves = $Ecole->listeElevesEcole();
-			$texte = sprintf("Notification aux %d élèves de l'école enregistrée",count($listeEleves));
+			$texte = sprintf("Notification aux %d élèves de l'école enregistrée", count($listeEleves));
 			$smarty->assign('listeMatricules', Null);
 
+			// le code qui suit a été supprimé: il n'est pas souhaitable d'envoyer tant de mails
+			// ----------------------------------------------------------------------------------
 			// ok pour la notification en BD, passons éventuellement à l'envoi de mail
             // if (isset($_POST['mail']) && $_POST['mail'] == 1) {
             //     if ($type == 'eleves') {
@@ -50,7 +61,6 @@ switch ($etape) {
 
 			$notification = $_POST;
 			$smarty->assign('notification',$notification);
-			// $smarty->assign('corpsPage','notification/formNotification');
 			$smarty->assign('corpsPage', 'notification/syntheseNotification');
 			}
 		break;

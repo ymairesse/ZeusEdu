@@ -1,18 +1,24 @@
 <?php
 
-$unAn = time() + 365 * 24 * 3600;
-
 require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $jdc = new Jdc();
 
-// $smarty->assign('action', $action);
-// $smarty->assign('mode', $mode);
+// type de JDC par classe ou par cours?
+$type = isset($_POST['type']) ? $_POST['type'] : null;
+// pour le jdc par élève
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+// pour le jdc par classe (titulaire)
+$classe = $Application->postOrCookie('classe', $unAn);
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+// pour le jdc par cours
+$coursGrp = $Application->postOrCookie('coursGrp', $unAn);
+// $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 
 $startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
-$viewState = isset($_POST['viewState']) ? $_POST['viewState'] : null;
+
+$listeCours = $user->listeCoursProf();
 
 switch ($mode) {
-
    case 'delete':
         $id = isset($_POST['id']) ? $_POST['id'] : null;
         $verifId = $jdc->verifIdProprio($id, $acronyme);
@@ -21,13 +27,37 @@ switch ($mode) {
         } else {
             die('Ce journal de classe ne vous appartient pas');
         }
-            $message = array(
-                'title' => DELETE,
-                'texte' => sprintf('%d enregistrement supprimé', $nb),
-                'urgence' => $nb = 1 ? 'success' : 'warning',
-                );
-            $smarty->assign('message', $message);
-            $smarty->assign('corpsPage', 'jdc');
+        $message = array(
+            'title' => DELETE,
+            'texte' => sprintf('%d enregistrement supprimé', $nb),
+            'urgence' => $nb = 1 ? 'success' : 'warning',
+            );
+        switch ($type) {
+            case 'classe':
+                $smarty->assign('mode', 'classe');
+                $smarty->assign('editable', true);
+                $smarty->assign('classe', $classe);
+                $listeClasses = $user->listeTitulariats();
+                $smarty->assign('listeClasses', $listeClasses);
+                $smarty->assign('selecteur', 'selecteurs/selectClassePOST');
+                break;
+            case 'cours':
+                $smarty->assign('mode', 'cours');
+                $smarty->assign('coursGrp', $coursGrp);  // pour le sélecteur
+                $smarty->assign('editable', true);
+                $smarty->assign('selecteur', 'selecteurs/selectCoursPOST');
+                break;
+            case 'eleves':
+                $smarty->assign('mode', 'eleves');
+                $smarty->assign('classe', $classe);
+                $smarty->assign('matricule', $matricule);
+                $smarty->assign('listeEleves', $listeEleves);
+                $smarty->assign('selecteur', 'selecteurs/selectClasseElevePOST');
+                break;
+            }
+        $smarty->assign('message', $message);
+        $smarty->assign('type', $type);
+        $smarty->assign('corpsPage', 'jdc');
         break;
 
     case 'save':
@@ -54,105 +84,106 @@ switch ($mode) {
             'urgence' => $nb = 1 ? 'success' : 'warning',
             );
         $smarty->assign('message', $message);
+
         if ($id != null) {
             $smarty->assign('acronyme', $acronyme);
+            $smarty->assign('action', 'jdc');
             $travail = $jdc->getTravail($id);
 
             $smarty->assign('travail', $travail);
+
+            $startDate = $travail['startDate'].' 00:00';
+            $smarty->assign('startDate', $startDate);
             if ($travail['type'] == 'cours') {
+                $smarty->assign('type', 'coursGrp');
                 $coursGrp = $travail['destinataire'];
                 $smarty->assign('coursGrp', $coursGrp);
+
                 $smarty->assign('mode', 'cours');
-                $smarty->assign('selecteur', 'selecteurs/selectCours');
-                $smarty->assign('lblDestinataire', $jdc->denomination($listeCours, 'cours', $coursGrp));
+                $smarty->assign('editable', true);
+
+                $smarty->assign('selecteur', 'selecteurs/selectCoursPOST');
+                $lblDestinataire = $jdc->denomination($listeCours, $travail['type'], $coursGrp);
+                if ($lblDestinataire != Null) {
+                    $smarty->assign('lblDestinataire', $lblDestinataire);
+                    $smarty->assign('corpsPage', 'jdc');
+                    }
             } elseif ($travail['type'] == 'classe') {
+                $smarty->assign('type', 'classe');
                 $classe = $travail['destinataire'];
-                $listeClasses = $user->listeTitulariats("'G','TT','S','C','D'");
+
+                $listeClasses = $user->listeTitulariats();
                 $smarty->assign('listeClasses', $listeClasses);
                 $smarty->assign('classe', $classe);
                 $smarty->assign('mode', 'classe');
-                $smarty->assign('selecteur', 'selecteurs/selectClasse');
-                $smarty->assign('lblDestinataire', $jdc->denomination(null, 'classe', $classe));
+                $smarty->assign('selecteur', 'selecteurs/selectClassePOST');
+                $lblDestinataire = $jdc->denomination(null, $travail['type'], $classe);
+                if ($lblDestinataire != Null)
+                    $smarty->assign('lblDestinataire', $lblDestinataire);
+                    $smarty->assign('corpsPage', 'jdc');
+                    }
             }
-        }
-
-        $smarty->assign('corpsPage', 'jdc');
         break;
 
     case 'cours':
-        // les infos provenant de l'URL ou du formulaire selectCours viennent en GET
-        // priorité au GET
-        setcookie('type', 'coursGrp', $unAn, null, null, false, true);
-        if (isset($_GET['coursGrp'])) {
-            $coursGrp = $_GET['coursGrp'];
-            setcookie('coursGrp', $coursGrp, $unAn, null, null, false, true);
-        }
-            // sinon, on voit s'il y a un Cookie existant
-            else {
-                $coursGrp = (isset($_COOKIE['coursGrp'])) ? $_COOKIE['coursGrp'] : null;
-            }
+        $smarty->assign('type', 'cours');
         $smarty->assign('coursGrp', $coursGrp);  // pour le sélecteur
-        $smarty->assign('selecteur', 'selecteurs/selectCours');
-        $smarty->assign('lblDestinataire', $jdc->denomination($listeCours, $mode, $coursGrp));
-        $smarty->assign('corpsPage', 'jdc');
+        $smarty->assign('editable', true);
+        $smarty->assign('selecteur', 'selecteurs/selectCoursPOST');
+        $lblDestinataire =  $jdc->denomination($listeCours, $mode, $coursGrp);
+        if ($lblDestinataire != Null) {
+          $smarty->assign('lblDestinataire', $lblDestinataire);
+          $smarty->assign('corpsPage', 'jdc');
+        }
         break;
 
     case 'classe':
-        setcookie('type', 'classe', $unAn, null, null, false, true);
-        $listeClasses = $user->listeTitulariats("'G','TT','S','C','D'");
-        $smarty->assign('listeClasses', $listeClasses);
-        // les infos provenant de l'URL ou du formulaire selectCours viennent en GET
-        // priorité au GET
-        if (isset($_GET['classe'])) {
-            $classe = $_GET['classe'];
-
-            setcookie('classe', $classe, $unAn, null, null, false, true);
-        } else {
-            $classe = (isset($_COOKIE['classe'])) ? $_COOKIE['classe'] : null;
-        }
-
+        $smarty->assign('type', 'classe');
+        $listeClasses = $user->listeTitulariats();
+        // le contenu du Cookie doit correspondre à une classe dont le prof est titulaire
+        // sinon, on annule la classe
+        if (!in_array($classe, $listeClasses))
+          $classe = Null;
+        setcookie('classe', $classe, $unAn, '/', null, false, true);
         $smarty->assign('classe', $classe);  // pour le sélecteur
-        $smarty->assign('selecteur', 'selecteurs/selectClasse');
-        $smarty->assign('lblDestinataire', $jdc->denomination($listeCours, $mode, $classe));
-        $smarty->assign('corpsPage', 'jdc');
+        $smarty->assign('listeClasses', $listeClasses);
+        $smarty->assign('editable', true);
+        $smarty->assign('selecteur', 'selecteurs/selectClassePOST');
+
+        $lblDestinataire =  $jdc->denomination($listeCours, $mode, $classe);
+        if ($lblDestinataire != Null) {
+          $smarty->assign('lblDestinataire', $lblDestinataire);
+          $smarty->assign('corpsPage', 'jdc');
+          }
         break;
 
     case 'eleves':
-        setcookie('type', 'eleves', $unAn, null, null, false, true);
-        if (isset($_GET['matricule'])) {
-            $matricule = $_GET['matricule'];
-            setcookie('matricule', $matricule, $unAn, null, null, false, true);
-        }
-        if (isset($_GET['classe'])) {
-            $classe = $_GET['classe'];
-            setcookie('classe', $classe, $unAn, null, null, false, true);
-        } else {
-            $classe = (isset($_COOKIE['classe'])) ? $_COOKIE['classe'] : null;
-        }
-        $smarty->assign('classe', $classe);  // pour le sélecteur
-
+        // **consulter** le jdc d'un élève en particulier
+        $smarty->assign('type', 'eleves');
         if (in_array($userStatus, array('educ', 'admin', 'direction'))) {
             $listeClasses = $Ecole->listeClasses();
         } else {
             $listeClasses = $Ecole->listeClassesProf($acronyme);
         }
-
         $smarty->assign('listeClasses', $listeClasses);
 
         $listeEleves = ($classe != null) ? $Ecole->listeEleves($classe, 'groupe') : null;
-        if (isset($matricule)) {
+
+        if (isset($matricule) && in_array($matricule, array_keys($listeEleves))) {
             $eleve = $listeEleves[$matricule];
             $classeNomPrenom = sprintf('%s %s de %s', $eleve['prenom'], $eleve['nom'], $eleve['classe']);
         } else {
             $classeNomPrenom = null;
+            $matricule = Null;
         }
-        $smarty->assign('lblDestinataire', $classeNomPrenom);
-        $smarty->assign('classe', $classe);
-        $smarty->assign('matricule', $matricule);
-        $smarty->assign('listeEleves', $listeEleves);
-        $smarty->assign('selecteur', 'selecteurs/selectClasseEleve');
-        $smarty->assign('corpsPage', 'jdc');
 
+        $smarty->assign('listeEleves', $listeEleves);
+        $smarty->assign('selecteur', 'selecteurs/selectClasseElevePOST');
+
+        if ($classeNomPrenom != Null) {
+            $smarty->assign('lblDestinataire', $classeNomPrenom);
+            $smarty->assign('corpsPage', 'jdc');
+            }
         break;
 
     default:
@@ -160,6 +191,7 @@ switch ($mode) {
         break;
     }
 
+$smarty->assign('classe', $classe);
+$smarty->assign('matricule', $matricule);
 $smarty->assign('legendeCouleurs', $jdc->categoriesTravaux());
 $smarty->assign('startDate', $startDate);
-$smarty->assign('viewState', $viewState);

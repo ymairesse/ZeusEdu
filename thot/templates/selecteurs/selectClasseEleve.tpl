@@ -3,7 +3,7 @@
 	<form name="selecteur" id="formSelecteur" method="GET" action="index.php" role="form" class="form-inline">
 
 		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
-		<input type="hidden" name="matriculeS" id="matriculeS">
+		<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
 
 		<select name="classe" id="selectClasse">
 			<option value="">Classe</option>

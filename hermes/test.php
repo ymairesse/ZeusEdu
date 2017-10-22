@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title></title>
-    <script type="text/javascript" src='../js/jquery-2.1.3.js'></script>
+    <script type="text/javascript" src='../js/jquery-3.2.1.js'></script>
     <script src="../dropzone/dropzone.js" charset="utf-8"></script>
     <link href="../dropzone/dropzone.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="../bootstrap/js/bootstrap.js"></script>

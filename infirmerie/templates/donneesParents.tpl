@@ -2,8 +2,8 @@
 
 	<div class="col-md-4 col-sm-6">
 		<div class="panel panel-default">
-			<div class="panel-header">
-				<h4>Coordonnées de la personne responsable</h4>
+			<div class="panel-heading">
+				<h3>Personne responsable</h3>
 			</div>
 			<div class="panel-body">
 				<dl>
@@ -22,8 +22,8 @@
 
 	<div class="col-md-3 col-sm-6">
 		<div class="panel panel-default">
-			<div class="panel-header">
-				<h4>Coordonnées du père de l'élève</h4>
+			<div class="panel-heading">
+				<h3>Père de l'élève</h3>
 			</div>
 			<div class="panel-body">
 				<dl>
@@ -38,8 +38,8 @@
 
 	<div class="col-md-3 col-sm-6">
 		<div class="panel panel-default">
-			<div class="panel-header">
-				<h4>Coordonnées de la mère de l'élève</h4>
+			<div class="panel-heading">
+				<h3>Mère de l'élève</h3>
 			</div>
 			<div class="panel-body">
 				<dl>
@@ -51,9 +51,9 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="col-md-2 col-sm-6">
-		
+
 		<img src="../photos/{$eleve.photo}.jpg" alt="{$matricule}" class="draggable photo img-responsive thumbnail" title="{$eleve.prenom} {$eleve.nom}" style="float:right">
 
 	</div>

@@ -1,53 +1,55 @@
+<link href="css/filetree.css" type="text/css" rel="stylesheet">
+
 <div class="container">
 
 	<h2>Édition des notifications</h2>
 
-	<div id="modal">
+	<div id="zoneEdition">
 
-	</div>
+		<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
+			<li class="active">
+				<a href="#tabs-1" data-toggle="tab">À un élève
+				<span class="badge" data-type="eleves">{$listeNotifications.eleves|@count}</span>
+				</a>
+			</li>
+			<li>
+				<a href="#tabs-2" data-toggle="tab">À un cours
+					<span class="badge" data-type="cours">{$listeNotifications.cours|@count}</span>
+				</a>
+			</li>
+			<li>
+				<a href="#tabs-3" data-toggle="tab">À une classe
+					<span class="badge" data-type="classes">{$listeNotifications.classes|@count}</span>
+				</a>
+			</li>
+			{if ($userStatus == 'admin') || ($userStatus == 'direction')}
+			<li>
+				<a href="#tabs-4" data-toggle="tab">À un niveau
+					<span class="badge" data-type="niveau">{$listeNotifications.niveau|@count}</span>
+				</a>
+			</li>
+			<li>
+				<a href="#tabs-5" data-toggle="tab">À l'ensemble des élèves
+					<span class="badge" data-type="ecole">{$listeNotifications.ecole|@count}</span>
+				</a>
+			</li>
+			{/if}
+		</ul>
 
-	<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
-		<li class="active">
-			<a href="#tabs-1" data-toggle="tab">À un élève
-			<span class="badge" data-type="eleves">{$listeNotifications.eleves|count}</span>
-			</a>
-		</li>
-		<li>
-			<a href="#tabs-2" data-toggle="tab">À un cours
-				<span class="badge" data-type="cours">{$listeNotifications.cours|@count}</span>
-			</a>
-		</li>
-		<li>
-			<a href="#tabs-3" data-toggle="tab">À une classe
-				<span class="badge" data-type="classes">{$listeNotifications.classes|@count}</span>
-			</a>
-		</li>
-		{if ($userStatus == 'admin') || ($userStatus == 'direction')}
-		<li>
-			<a href="#tabs-4" data-toggle="tab">À un niveau
-				<span class="badge" data-type="niveau">{$listeNotifications.niveau|@count}</span>
-			</a>
-		</li>
-		<li>
-			<a href="#tabs-5" data-toggle="tab">À l'ensemble des élèves
-				<span class="badge" data-type="ecole">{$listeNotifications.ecole|@count}</span>
-			</a>
-		</li>
-		{/if}
-	</ul>
+		<div id="FicheEleve" class="tab-content">
 
-	<div id="FicheEleve" class="tab-content">
+			{include file="notification/edit/eleve.tpl"}
+			{include file="notification/edit/cours.tpl"}
+			{include file="notification/edit/classe.tpl"}
+			{if ($userStatus == 'admin') || ($userStatus == 'direction')}
+				{include file="notification/edit/niveau.tpl"}
+				{include file="notification/edit/ecole.tpl"}
+			{/if}
 
-		{include file="editNotifications/eleve.tpl"}
-		{include file="editNotifications/cours.tpl"}
-		{include file="editNotifications/classe.tpl"}
-		{if ($userStatus == 'admin') || ($userStatus == 'direction')}
-			{include file="editNotifications/niveau.tpl"}
-			{include file="editNotifications/ecole.tpl"}
-		{/if}
+		</div>
+		<!-- tab-content -->
 
-	</div>
-	<!-- tab-content -->
+	</div>  <!-- zoneEdition -->
 
 </div>
 <!-- container -->
@@ -55,18 +57,21 @@
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour la  suppression multiple de notifications   ..  -->
 <!-- .......................................................................... -->
-{include file="notification/modalBulkDelete.tpl"}
+{include file="notification/modal/modalBulkDelete.tpl"}
 
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour la  suppression d'une notification          ..  -->
 <!-- .......................................................................... -->
-{include file="notification/modalDelete.tpl"}
+{include file="notification/modal/modalDelete.tpl"}
 
 <!-- .......................................................................... -->
-<!-- .....formulaire modal pour l'édition  d'une notificatio                ..  -->
+<!-- .....formulaire modal pour l'édition  d'une notification               ..  -->
 <!-- .......................................................................... -->
-{include file="notification/modalEdit.tpl"}
-
+{include file="notification/modal/modalEdit.tpl"}
+<!-- .......................................................................... -->
+<!-- .....formulaire modal pour l'édition  des PJ (ajout/suppr)             ..  -->
+<!-- .......................................................................... -->
+{include file="modal/modalTreeView.tpl"}
 
 <script type="text/javascript">
 	// quel est l'onglet actif?
@@ -84,6 +89,18 @@
 			$('body').removeClass('wait');
 		});
 
+		$('.btnEdit').click(function(){
+			var notifId = $(this).data('id');
+			var type = $(this).data('type');
+			$.post('inc/notif/editNotification.inc.php', {
+				notifId: notifId,
+				type: type
+				},
+				function(resultat){
+					$('#zoneEdition').html(resultat);
+				})
+		})
+
 		// si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet'
 		$(".nav-tabs li a").click(function() {
 			var ref = $(this).attr("href").split("-")[1];
@@ -94,25 +111,25 @@
 			$(this).closest('table').find('.checkDelete').trigger('click');
 		})
 
-		$(".btnEdit").click(function() {
-			var id = $(this).data('id');
-			$('.tableEdit tr').removeClass('selected');
-			$(this).closest('tr').addClass('selected');
-			$.post('inc/notif/modalEdit.inc.php', {
-					id: id
-				},
-				function(resultat) {
-					var obj = JSON.parse(resultat);
-					$("#objet").val(obj.objet);
-					CKEDITOR.instances['texte'].setData(obj.texte);
-					$("#id").val(obj.id);
-					$("#dateDebut").val(obj.dateDebut);
-					$("#dateFin").val(obj.dateFin);
-					var urgence = obj.urgence;
-					$("#urgence").attr('class', 'form-control').val(urgence).addClass('urgence' + urgence);
-				})
-			$("#modalEdit").modal('show');
-		})
+		// $(".btnEdit").click(function() {
+		// 	var id = $(this).data('id');
+		// 	$('.tableEdit tr').removeClass('selected');
+		// 	$(this).closest('tr').addClass('selected');
+		// 	$.post('inc/notif/modalEdit.inc.php', {
+		// 			id: id
+		// 		},
+		// 		function(resultat) {
+		// 			var obj = JSON.parse(resultat);
+		// 			$("#objet").val(obj.objet);
+		// 			CKEDITOR.instances['texte'].setData(obj.texte);
+		// 			$("#id").val(obj.id);
+		// 			$("#dateDebut").val(obj.dateDebut);
+		// 			$("#dateFin").val(obj.dateFin);
+		// 			var urgence = obj.urgence;
+		// 			$("#urgence").attr('class', 'form-control').val(urgence).addClass('urgence' + urgence);
+		// 		})
+		// 	$("#modalEdit").modal('show');
+		// })
 
 		$("#saveEdited").click(function() {
 			var texte = CKEDITOR.instances['texte'].getData()
@@ -208,8 +225,6 @@
 
 		$(".showAccuse").click(function() {
             var id = $(this).data('id');
-            // $(".trAccuses").removeClass('selected');
-            // $(this).closest('tr').addClass('selected');
             $.post('inc/notif/showAccuses.inc.php', {
                     id: id
                 },

@@ -1,12 +1,13 @@
 <div id="selecteur" class="noprint" style="clear:both">
+
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
-		<select name="classe" id="selectClasse">
+		<select name="classe" id="selectClasse" class="form-control input-sm">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
 			<option value="{$uneClasse}"{if (isset($classe)) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
 		{/foreach}
 		</select>
-		
+
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
@@ -26,7 +27,7 @@ $(document).ready (function() {
 			}
 			else return false;
 	})
-	
+
 	$("#selectClasse").change(function(){
 		if ($(this).val() != '')
 			$("#formSelecteur").submit();

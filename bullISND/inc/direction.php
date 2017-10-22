@@ -50,4 +50,8 @@ switch ($mode) {
     case 'pia':
         require_once 'direction/pia.inc.php';
         break;
+
+    case 'recapDegre':
+		require_once 'direction/gestFinDegre.inc.php';
+		break;
     }

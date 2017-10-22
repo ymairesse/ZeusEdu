@@ -688,7 +688,7 @@ a.fauxBouton:hover {
     color: brown;
 }
 
-#wait, #ajaxLoader {
+#wait {
     position: absolute;
     width: 100px;
     height: 100px;
@@ -701,8 +701,10 @@ a.fauxBouton:hover {
 
 #ajaxLoader {
     position: absolute;
-    top: 50%;
-    left: 20%;
+    width: 100px;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
     z-index: 100;
 }
 

@@ -198,16 +198,16 @@
                 function(resultat) {
                     $("#zoneEdition").html(resultat);
                     // chercher les informations éventuelles sur le travail de l'élève actif
-                    // if ($("#selectEleve").val() != '') {
-                    //     var matricule = $("#selectEleve :selected").val();
-                    //     $.post('inc/casier/getResultatTravail.inc.php', {
-                    //         idTravail: idTravail,
-                    //         matricule: matricule
-                    //         },
-                    //         function(resultat){
-                    //             $("#detailsEvaluation").html(resultat);
-                    //         })
-                    // }
+                    if ($("#selectEleve").val() != '') {
+                        var matricule = $("#selectEleve :selected").val();
+                        $.post('inc/casier/getResultatTravail.inc.php', {
+                            idTravail: idTravail,
+                            matricule: matricule
+                            },
+                            function(resultat){
+                                $("#detailsEvaluation").html(resultat);
+                            })
+                    }
                 })
         })
 

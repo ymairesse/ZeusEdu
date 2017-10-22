@@ -1,16 +1,17 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
+
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
+		Bulletin n° <select name="bulletin" id="bulletin" class="form-control input-sm">
 		{section name=boucleBulletin start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.boucleBulletin.index}" {if $smarty.section.boucleBulletin.index == $bulletin}selected{/if}>{$smarty.section.boucleBulletin.index}</option>
 		{/section}
 	</select>
-	<select name="verrouiller" id="verrouiller">
+	<select name="verrouiller" id="verrouiller" class="form-control input-sm">
 		<option value="1"{if isset($verrouiller) && ($verrouiller == 1)} selected{/if}>Verrouiller</option>
 		<option value="0"{if isset($verrouiller) && ($verrouiller == 0)} selected{/if}>Déverrouiller</option>
 	</select>
 	Année:
-	<select name="niveau" id="niveau">
+	<select name="niveau" id="niveau" class="form-control input-sm">
 		<option value="">Niveau</option>
 		{foreach from=$listeNiveaux item=unNiveau}
 			<option value="{$unNiveau}"{if $unNiveau eq $niveau} selected{/if}>{$unNiveau}</option>
@@ -21,6 +22,7 @@
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showNiveau">
 	</form>
+
 </div>
 
 <script type="text/javascript">
@@ -29,7 +31,6 @@ $(document).ready (function() {
 	$("#formSelecteur").submit(function(){
 		$("#wait").show();
 		$.blockUI();
-		// $("#corpsPage").hide();
 	})
 	})
 

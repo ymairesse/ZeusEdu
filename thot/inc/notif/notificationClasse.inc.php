@@ -10,12 +10,22 @@ switch ($etape) {
             $smarty->assign('listeEleves', $listeEleves);
             $notification = $Thot->newNotification('classes', $user->acronyme(), $classe);
             $smarty->assign('notification', $notification);
+
             $smarty->assign('corpsPage', 'notification/formNotification');
         }
         break;
 
     case 'enregistrer':
+        // enregistrement de la notification avec retour de la liste des identifiants correspondants
+        // il peut y avoir plusieurs identifiants quand plusieurs destinataires "élèves" dans la classe
         $listeId = $Thot->enregistrerNotification($_POST);
+        // enregistrement éventuel des PJ
+        if (isset($_POST['files']) && count($_POST['files']) > 0) {
+            require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+            $Files = new Files();
+            $nbPJ = $Files->linkFilesNotifications($listeId, $_POST);
+            }
+
         // si des notifications ont été enregistrées
         if (count($listeId) > 0) {
             // liste de tous les élèves de la classe indexée sur le matricule
@@ -29,6 +39,7 @@ switch ($etape) {
             $smarty->assign('listeMatricules', $matriculesSelect);
 
             // si pas d'élèves sélectionnés séparément, la notification concerne l'ensemble de la classe.
+            // sinon, on change le type
             $type = (count($matriculesSelect) != 0) ? 'eleves' : 'classes';
 
             $nbEleves = ($type == 'eleves') ? count($matriculesSelect) : count($matriculesTous);

@@ -1,21 +1,21 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
+		Bulletin n° <select name="bulletin" id="bulletin" class="form-control input-sm">
 		{section name=foo start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.foo.index}"{if $smarty.section.foo.index == $bulletin} selected="selected"{/if}>{$smarty.section.foo.index}</option>
 		{/section}
 	</select>
-	<select name="niveau" id="niveau">
+	<select name="niveau" id="niveau" class="form-control input-sm">
 		<option value="">Niveau</option>
 		{foreach from=$listeNiveaux item=unNiveau}
 			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)} selected="selected"{/if}>{$unNiveau}</option>
 		{/foreach}
 	</select>
-	
+
 	<span id="choixEcole">{if isset($listeEcoles)}
 		{include file="listeEcoles.tpl"}
 	{/if}</span>
-	
+
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="etape" value="show">
@@ -51,7 +51,7 @@ $(document).ready (function() {
 			$("#formSelecteur").submit();
 
 		})
-		
+
 	$("#choixEcole").on("change", "#ecole", function() {
 		var ecole = $(this).val();
 		if (ecole != '')

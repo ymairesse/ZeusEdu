@@ -11,7 +11,7 @@
                 <h4 class="modal-title">Modification d'un événement</h4>
             </div>
 
-                <form action="index.php" method="POST" name="modJdc" id="modJdc" role="form" class="form-vertical">
+                <form id="formModJdc" class="form-vertical" action="index.php" method="POST">
 
                 <div class="modal-body">
 
@@ -66,18 +66,31 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6">
-                            <div class="form-group">
-                                <label for="heure" class="sr-only">Heure</label>
-                                <input type="text" name="heure" id="timepicker" value="{$travail.heure}" placeholder="Heure de notification" class="form-control" autocomplete="off"{if isset($travail.allDay) && $travail.allDay == true} disabled{/if}>
-                                <div class="help-block">Heure</div>
+
+                            <div class="input-group">
+                                <input type="text" name="heure" id='heure' value="{$travail.heure|default:''}" class="form-control" autocomplete="off"{if isset($travail.allDay) && $travail.allDay == true} disabled{/if}>
+                                <div class="input-group-btn">
+                                    <button id="listePeriodes" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-hourglass"></i> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" id="choixPeriode">
+                                        {foreach from=$listePeriodes item=unePeriode}
+                                        <li><a href="javascript:void(0)" data-periode="{$unePeriode['debut']}">{$unePeriode['debut']}</a></li>
+                                        {/foreach}
+                                    </ul>
+                                </div>
                             </div>
+
                         </div>
 
                         <div class="col-md-4 col-sm-6">
 
                         <div class="input-group">
-
-                            <input type="text" name="duree" id="duree" class="form-control" value="{$travail.duree}"{if isset($travail.allDay) && $travail.allDay == true} disabled{/if}>
+                            {if $travail.duree == '00:00'}
+                            {assign var=duree value='-'}
+                            {else}
+                            {assign var=duree value=$travail.duree}
+                            {/if}
+                            <input type="text" name="duree" id="duree" class="form-control" value="{$duree}"{if isset($travail.allDay) && $travail.allDay == true} disabled{/if}>
 
                 			<div class="input-group-btn">
                 				<button id="listeDurees" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">(min) <span class="caret"></span>
@@ -124,7 +137,7 @@
 
                     <div class="btn-group pull-right">
                         <button type="reset" class="btn btn-default">Annuler</button>
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Enregistrer</button>
+                        <button type="submit" class="btn btn-primary" id="saveModalMod"><i class="fa fa-floppy-o"></i> Enregistrer</button>
                     </div>
 
                     <div class="clearfix"></div>
@@ -133,8 +146,12 @@
                 <input type="hidden" name="id" value="{$travail.id}">
                 <input type="hidden" name="type" id="type" value="{$travail.type}">
                 <input type="hidden" name="startDate" value="{$startDate|default:''}" id="startDate">
-                <input type="hidden" name="viewState" value="{$viewState}">
-
+                {if $travail.type == 'cours'}
+                <input type="hidden" name="coursGrp" value="{$travail.destinataire|default:''}">
+                {/if}
+                {if $travail.type == 'classe'}
+                <input type="hidden" name="classe" value="{$travail.destinataire|default:''}">
+                {/if}
                 <input type="hidden" name="action" value="jdc">
                 <input type="hidden" name="mode" value="save">
 
@@ -221,9 +238,9 @@ jQuery.validator.addMethod (
                 required: true,
                 time: true
                 },
-            duree: {
-                required: true
-            },
+            // duree: {
+            //     required: true
+            // },
             titre: {
                 required: true
                 },
@@ -232,14 +249,6 @@ jQuery.validator.addMethod (
                 }
         }
     });
-
-    $("#timepicker").timepicker({
-    		defaultTime: 'current',
-    		minuteStep: 5,
-    		showSeconds: false,
-    		showMeridian: false
-    		}
-        );
 
     $("#datepicker").datepicker({
         format: "dd/mm/yyyy",
@@ -254,6 +263,10 @@ jQuery.validator.addMethod (
     $("#choixDuree li a").click(function(){
         $("#duree").val($(this).attr("data-value"))
         })
+
+    $('#choixPeriode li a').click(function(){
+        $('#heure').val($(this).attr('data-periode'));
+    })
 
     $("#datepicker").change(function(){
         var date = $(this).val();

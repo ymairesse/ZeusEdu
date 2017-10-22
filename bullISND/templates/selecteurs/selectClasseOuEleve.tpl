@@ -1,7 +1,7 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		<select name="classe" id="selectClasse">
+		<select name="classe" id="selectClasse" class="form-control input-sm">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 			<option value="{$uneClasse}" {if $uneClasse == $classe} selected="selected"{/if}>{$uneClasse}</option>

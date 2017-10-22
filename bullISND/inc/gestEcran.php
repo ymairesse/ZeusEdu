@@ -12,14 +12,14 @@ $smarty->assign('matricule',$matricule);
 
 switch ($mode) {
 	case 'bulletinIndividuel':
-		$listeClasses = $Ecole->listeGroupes(array('G','TT'));
+		$listeClasses = $Ecole->listeGroupes(array('GT','TT','S'));
 
 		if ($classe != Null)
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe', false);
 			else $listeEleves = Null;
 
 		$smarty->assign('selecteur', 'selectBulletinClasseEleve');
-		$smarty->assign('etape','showEleve');
+		$smarty->assign('etape', 'showEleve');
 		$smarty->assign('listeClasses', $listeClasses);
 		$smarty->assign('listeEleves', $listeEleves);
 		$smarty->assign('nbBulletins', NBPERIODES);
@@ -57,8 +57,8 @@ switch ($mode) {
 				$tableauAttitudes = $Bulletin->tableauxAttitudes($matricule, $bulletin);
 				$noticeDirection = $Bulletin->noteDirection($annee, $bulletin);
 
-				$smarty->assign('annee',$annee);
-				$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
+				$smarty->assign('annee', $annee);
+				$smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
 				$smarty->assign('infoPerso', $infoPersoEleve);
 				$smarty->assign('listeCoursGrp', $listeCoursGrp);
 				$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);
@@ -72,7 +72,7 @@ switch ($mode) {
 				$smarty->assign('attitudes', $tableauAttitudes);
 				$smarty->assign('commentairesEducs', $commentairesEducs);
 				$smarty->assign('remTitu', $remarqueTitulaire);
-				$smarty->assign('mention',$mentions);
+				$smarty->assign('mention', $mentions);
 				$smarty->assign('noticeDirection', $noticeDirection);
 			}
 			$smarty->assign('corpsPage', 'bulletinEcran');

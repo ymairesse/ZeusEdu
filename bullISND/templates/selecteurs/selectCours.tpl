@@ -1,7 +1,7 @@
 <div id="selecteur" class="selecteur noprint" style="clear:both">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
-		<select name="coursGrp" id="coursGrp">
+		<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 			<option value="">Cours</option>
 			{foreach from=$listeCours key=k item=unCours}
 			<option value="{$k}" {if $k == $coursGrp} selected="selected" {/if}>

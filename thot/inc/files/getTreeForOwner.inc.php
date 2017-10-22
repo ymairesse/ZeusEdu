@@ -19,17 +19,19 @@ $acronyme = $User->getAcronyme();
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
+// on récupère l'arborescence à partir du fichier partagé $shareId
 $shareId = isset($_POST['shareId']) ? $_POST['shareId'] : null;
 
 $infos = $Files->getFileInfoByShareId($shareId);
 
 $ds = DIRECTORY_SEPARATOR;
-$proprio = $infos['acronyme'];
+$proprio = $acronyme;
 $path = $infos['path'];
 $fileName = $infos['fileName'];
 $root = INSTALL_DIR.$ds.'upload'.$ds.$proprio;
 $originalPath = $path.$ds.$fileName;
 
+// récupération de l'arborescence à partir des infos précédentes
 $treeview = $Files->treeview($root, $path, $fileName, $originalPath);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
@@ -40,6 +42,6 @@ $smarty->compile_dir = "../../templates_c";
 $smarty->assign('tree', $treeview);
 $smarty->assign('root', $root);
 $smarty->assign('path', $path);
-$smarty->assign('shareId', $shareId);
+// $smarty->assign('shareId', $shareId);
 
 echo $smarty->fetch('files/treeview4Owner.tpl');

@@ -8,14 +8,13 @@
 
 <div class="container">
 
-	<!-- <h2>Journal de classe de {$destinataire}</h2> -->
-
 	<div class="row">
 
 		<div class="col-md-7 col-xs-12">
 			<h2>{$lblDestinataire|default:''}</h2>
 
 			<div id="calendar"></div>
+
 		</div>
 
 		<div class="col-md-5 col-xs-12" style="max-height:50em; overflow: auto">
@@ -27,18 +26,23 @@
 				<input type="hidden" name="acronyme" id="acronyme" value="{$identite.acronyme}">
 				<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire|default:''}">
 				<input type="hidden" name="lblDestinataire" id="lblDestinataire" value="{$lblDestinataire|default:''}">
-				<input type="hidden" name="type" id="tp" value="{$type|default:''}">
-
+				<input type="hidden" name="type" id="type" value="{$type|default:''}">
+				<input type="hidden" name="editable" id="editable" value="{$editable|default:false}">
 				<input type="hidden" name="startDate" id="startDate" value="{$startDate|default:''}">
-				<input type="hidden" name="viewState" id="viewState" value="{$viewState|default:'month'}">
+				<input type="hidden" name="type" id="type" value="{$type}">
+				<input type="hidden" name="coursGrp" id="coursGrp" value="{$coursGrp|default:''}">
+				<input type="hidden" name="classe" id="classe" value="{$classe|default:''}">
+				<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
+				<input type="hidden" name="viewState" id="viewState" value="">
 
 				<div id="unTravail">
-					{if isset($travail)} {include file='jdc/unTravail.tpl'}
+					{if isset($travail)}
+						{include file='jdc/unTravail.tpl'}
 					{else}
-					<strong>Veuillez sélectionner un item dans le calendrier</strong>
-					<br>
-					<strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
-					<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
+						<strong>Veuillez sélectionner un item dans le calendrier</strong>
+						<br>
+						<strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
+						<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
 					{/if}
 				</div>
 			</form>
@@ -61,12 +65,9 @@
 	</div>
 	<!-- row -->
 
-	<div id="zoneDel">
-		<!-- boîte modale d'effacement de note du JDC -->
-	</div>
-
 	<div id="zoneMod">
-		<!-- boîte modale d'ajout de note au JDC -->
+	</div>
+	<div id="zoneDel">
 	</div>
 
 </div>
@@ -96,24 +97,53 @@
 
 	$(document).ready(function() {
 
-		$("#calendar").fullCalendar({
-			events: {
-				url: 'inc/events.json.php'
-			},
+		$('#refetchEvents').click(function(){
+			$('#calendar').fullCalendar('refetchEvents');
+		})
+
+		$('#calendar').fullCalendar({
+			eventSources: [
+				{
+				url: 'inc/events.json.php',
+				type: 'POST',
+				data: {
+					type: $('#type').val(),
+					coursGrp: $('#coursGrp').val(),
+					classe: $('#classe').val(),
+					matricule: $('#matricule').val(),
+					},
+				error: function() {
+					alert('Une erreur s\'est produite. Merci de la signaler à l\'administrateur.');
+					}
+				}
+			],
 			eventLimit: 2,
 			header: {
 				left: 'prev, today, next',
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
+			defaultTimedEventDuration: '00:50',
+			viewRender: function(view, element) {
+				var state = view.name;
+				$("#viewState").val(state);
+			},
+			businessHours: {
+				start: '08:15',
+				end: '19:00',
+				dow: [1, 2, 3, 4, 5]
+				},
+			minTime: "08:00:00",
+			maxTime: "22:00:00",
+			firstDay: 1,
+			// on clique sur un événement
 			eventClick: function(calEvent, jsEvent, view) {
-				var id = calEvent.id; // l'id de l'événement
+				var eventId = calEvent.id; // l'id de l'événement
 				var startDate = moment(calEvent.start).format('YYYY-MM-DD HH:mm'); // la date de début de l'événement
 				// mémoriser la date pour le retour
 				$("#startDate").val(startDate);
-				var viewState = $("#viewState").val();
 				$.post('inc/getTravail.inc.php', {
-						event_id: id
+						event_id: eventId
 					},
 					function(resultat) {
 						$('#unTravail').fadeOut(400, function() {
@@ -121,21 +151,14 @@
 						});
 						$('#unTravail').fadeIn();
 						$('#calendar').fullCalendar('gotoDate', startDate);
-						$('#calendar').fullCalendar('changeView', viewState);
 					}
 				)
 			},
-			eventConstraint: {
-				start: '08:00:00',
-				end: '19:00:00'
-			},
-			defaultTimedEventDuration: '00:50',
 			eventResize: function(event, delta, revertFunc) {
 				var startDate = moment(event.start).format('YYYY-MM-DD HH:mm');
 				var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
 				// mémoriser la date, pour le retour
 				$("#startDate").val(startDate);
-
 				var id = event.id;
 				$.post('inc/getDragDrop.inc.php', {
 						id: id,
@@ -144,8 +167,46 @@
 					},
 					function(resultat) {
 						$("#unTravail").html(resultat);
+						$('#calendar').fullCalendar('refetchEvents');
 					}
 				)
+			},
+			// on clique dans le calendrier (ajout d'événement)
+			dayClick: function(date, event, view) {
+				var editable = $('#editable').val();
+				if (editable == 1) {
+					var startDate = moment(date).format('YYYY-MM-DD HH:mm');
+					if (view.type == 'agendaDay'){
+						var heure = moment(date).format('HH:mm');
+						var dateFr = moment(date).format('DD/MM/YYYY');
+						// mémoriser la date pour le retour
+						$("#startDate").val(startDate);
+						// est-ce une notification par classe ou par cours?
+						var type = ($("#selectClasse").val() == undefined) ? 'cours' : 'classe';
+						if (type == 'cours')
+							var destinataire = $('#coursGrp').val();
+							else var destinataire = $('#selectClasse').val();
+						var lblDestinataire = $("#lblDestinataire").val();
+						$.post('inc/jdc/getAdd.inc.php', {
+							startDate: startDate,
+							heure: heure,
+							type: type,
+							destinataire: destinataire,
+							lblDestinataire: lblDestinataire
+							},
+							function(resultat){
+								$("#zoneMod").html(resultat);
+									$("#modalAdd").modal('show');
+									$('#calendar').fullCalendar('gotoDate', startDate);
+							})
+						}
+					else {
+						$('#calendar').fullCalendar('gotoDate', startDate);
+						// forcer le mode "agendaDay" pour permettre la modification
+						$('#calendar').fullCalendar('changeView', 'agendaDay');
+					}
+				}
+				else bootbox.alert('Dans ce mode, seule la consultation est permise');
 			},
 			eventDrop: function(event, delta, revertFunc) {
 				var startDate = moment(event.start).format('YYYY-MM-DD HH:mm');
@@ -155,9 +216,8 @@
 				if (moment.isMoment(event.end))
 					var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
 				else var endDate = '0000-00-00 00:00';
-
 				var id = event.id;
-				var viewState = $("#viewState").val();
+				// var viewState = $("#viewState").val();
 				$.post('inc/getDragDrop.inc.php', {
 						id: id,
 						startDate: startDate,
@@ -166,79 +226,23 @@
 					function(resultat) {
 						$("#unTravail").html(resultat);
 						$('#calendar').fullCalendar('gotoDate', startDate);
-						$('#calendar').fullCalendar('changeView', viewState);
+						// forcer le mode "agendaDay" pour voir finement la modification
+						$('#calendar').fullCalendar('changeView', 'agendaDay');
 					}
 				)
-			},
-			viewRender: function(event) {
-				var state = event.name;
-				$("#viewState").val(state);
-			},
-			businessHours: {
-				start: '08:15',
-				end: '19:00',
-				dow: [1, 2, 3, 4, 5]
-			},
-			minTime: "08:00:00",
-			maxTime: "22:00:00",
-			firstDay: 1,
-			dayClick: function(date, event, view) {
-				var startDate = moment(date).format('YYYY-MM-DD HH:mm');
-				if (view.type == 'agendaDay') {
-					var heure = moment(date).format('HH:mm');
-					var dateFr = moment(date).format('DD/MM/YYYY');
-					var viewState = $("#viewState").val();
-					// mémoriser la date pour le retour
-					$("#startDate").val(startDate);
-					// est-ce une notification par classe ou par cours?
-					var type = ($("#selectClasse").val() == undefined) ? 'cours' : 'classe';
-					if (type == 'cours')
-						var destinataire = $("#coursGrp").val();
-					else if (type == 'classe')
-						var destinataire = $("#selectClasse").val();
-					var lblDestinataire = $("#lblDestinataire").val();
-					$.post('inc/getAdd.inc.php', {
-							startDate: startDate,
-							viewState: viewState,
-							heure: heure,
-							type: type,
-							destinataire: destinataire,
-							lblDestinataire: lblDestinataire
-						},
-						function(resultat) {
-							$("#zoneMod").html(resultat);
-							$("#modalAdd").modal('show');
-							$('#calendar').fullCalendar('gotoDate', startDate);
-							$('#calendar').fullCalendar('changeView', viewState);
-						}
-					)
-				} else {
-					$('#calendar').fullCalendar('gotoDate', startDate);
-					$('#calendar').fullCalendar('changeView', 'agendaDay');
-				}
 			}
-
-		});
+		})
 
 		// suppression d'une note au JDC
 		$("#unTravail").on('click', '#delete', function() {
 			var id = $(this).data('id');
-			var startDate = $("#startDate").val();
-			var viewState = $("#viewState").val();
-			var destinataire = $("#destinataire").val();
-			var type = $("#type").val();
-			$.post('inc/getDel.inc.php', {
+			$.post('inc/jdc/getDel.inc.php', {
 					id: id,
-					startDate: startDate,
-					viewState: viewState,
-					destinataire: destinataire,
-					type: type
 				},
 				function(resultat) {
 					$("#zoneDel").html(resultat);
 					$("#modalDel").modal('show');
 					$('#calendar').fullCalendar('gotoDate', startDate);
-					$('#calendar').fullCalendar('changeView', viewState);
 				}
 			)
 		})
@@ -246,12 +250,10 @@
 		// modification d'une note au JDC
 		$("#unTravail").on('click', '#modifier', function() {
 			var id = $(this).data('id');
-			var viewState = $("#viewState").val();
 			var startDate = $("#startDate").val();
 			var type = ($("#selectClasse").val() == undefined) ? 'cours' : 'classe';
-			$.post('inc/getMod.inc.php', {
+			$.post('inc/jdc/getMod.inc.php', {
 					id: id,
-					viewState: viewState,
 					startDate: startDate,
 					type: type
 				},
@@ -263,7 +265,7 @@
 					$("#modalMod").modal('show');
 					// mise à jour du calendrier
 					$('#calendar').fullCalendar('gotoDate', startDate);
-					$('#calendar').fullCalendar('changeView', viewState);
+					// $('#calendar').fullCalendar('refetchEvents');
 				}
 			)
 		})
@@ -285,9 +287,17 @@
 			$("#type").val(type);
 		})
 
-		{if isset($startDate) && isset($viewState)}
-		$('#calendar').fullCalendar('gotoDate', moment("{$startDate}"));
-		$('#calendar').fullCalendar('changeView', '{$viewState}');
+		$("#zoneMod").on('change', '#categorie', function(){
+	        if (($('#titre').val() == '') && ($('#categorie').val() != '')) {
+	            var texte = $("#categorie option:selected" ).text();
+	            $('#titre').val(texte);
+	        }
+	    })
+
+		{if isset($startDate)}
+			$('#calendar').fullCalendar('gotoDate', moment("{$startDate}"));
+			// $('#calendar').fullCalendar('refetchEvents');
+			// $('#calendar').fullCalendar('changeView', 'agendaMonth');
 		{/if}
 
 })

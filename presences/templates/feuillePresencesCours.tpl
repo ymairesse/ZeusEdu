@@ -18,7 +18,7 @@
 	<input type="hidden" name="presAuto" id="presAuto" value="true">
 
 	<button type="button" class="btn btn-warning pull-left" id="btnPresAuto">Présence Auto [Activé]</button>
-	
+
 	<div class="btn-group pull-right">
 		<button type="button" class="btn btn-default" id="annuler">Annuler</button>
 		<button type="submit" class="btn btn-primary"><span id="save"></span> Enregistrer</button>
@@ -29,6 +29,7 @@
 		{$listeCoursGrp.$coursGrp.libelle} -> [{$coursGrp}]</strong>
 
 	{include file="feuillePresences.tpl"}
+	
 	</div>
 
 {/if}

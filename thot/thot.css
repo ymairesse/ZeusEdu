@@ -204,7 +204,7 @@ form input:disabled {
     color: #aaa;
 }
 
-.showAccuse {
+.showAccuse, .addPJ {
     cursor: pointer;
 }
 
@@ -326,7 +326,7 @@ fieldset.info legend {
 }
 
 tr.dir {
-    background-color: #ffb;
+    background-color: #eee;
 }
 
 #listeFichiers table {

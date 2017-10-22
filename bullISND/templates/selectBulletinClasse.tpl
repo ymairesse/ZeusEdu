@@ -1,14 +1,15 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		Bulletin n° <select name="bulletin" id="bulletin">
+
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
+		Bulletin n° <select name="bulletin" id="bulletin" class="form-control input-sm">
 		{section name=bidule start=1 loop=$nbBulletins+1}
-			<option value="{$smarty.section.bidule.index}" 
+			<option value="{$smarty.section.bidule.index}"
 			{if $smarty.section.bidule.index == $bulletin} selected="selected"{/if}>{$smarty.section.bidule.index}
 			</option>
 		{/section}
 	</select>
-	
-	<select name="classe" id="classe">
+
+	<select name="classe" id="classe" class="form-control input-sm">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
 			<option value="{$uneClasse}"{if isset($classe) && ($classe == $uneClasse)} selected="selected"{/if}>{$uneClasse}</option>
@@ -23,20 +24,19 @@
 <script type="text/javascript">
 
 $(document).ready (function() {
-	
+
 	$("#formSelecteur").submit(function(){
-		if (($("#classe").val() == '') || ($("#bulletin").val() == '')) 
+		if (($("#classe").val() == '') || ($("#bulletin").val() == ''))
 			return false;
 			else {
 				$("#wait").show();
 				$.blockUI();
 			}
 		})
-	
+
 	$("#classe").change (function(){
 		$("#formSelecteur").submit();
 	})
-	
 
 })
 

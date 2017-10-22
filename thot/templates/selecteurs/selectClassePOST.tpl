@@ -1,5 +1,5 @@
 <div id="selecteur" class="selecteur noprint" style="clear:both">
-
+	
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>

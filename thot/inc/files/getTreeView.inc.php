@@ -18,11 +18,12 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 $ds = DIRECTORY_SEPARATOR;
+
 require_once INSTALL_DIR.'/inc/classes/class.Treeview.php';
-// $tree = new Treeview(INSTALL_DIR.$ds.$module.$ds.'upload'.$ds.$acronyme);
+
 $tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme);
 
-require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
 $smarty->template_dir = "../../templates";
 $smarty->compile_dir = "../../templates_c";

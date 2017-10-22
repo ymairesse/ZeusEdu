@@ -3,20 +3,21 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="titleAccuses">Accusés de lecture [{$listeAccuses|@count}]</h4>
+                <h4 class="modal-title" id="titleAccuses">Accusés de lecture [{$listeAccuses|@count}/{$listeEleves|@count}]</h4>
             </div>
-            <div class="modal-body" id="bodyAccuses" style="height:30em; overflow: auto;">
+            <div class="modal-body" id="bodyAccuses" style="max-height:30em; overflow: auto;">
 
                 {* présentation sous forme de galerie de portraits *}
-                {if ($listeAccuses|@count < 25)}
+                {if ($listeEleves|@count < 30)}
                 {assign var=portrait value=true}
                 <div id="portrait">
-                    {foreach from=$listeAccuses key=matricule item=data}
-                    <div class="ombre {if $data.dateHeure != ''}accuseRecu{else}accuseNonRecu{/if}" style="padding: 0.5em; float:left; width:120px;">
+                    {foreach from=$listeEleves key=matricule item=data}
+                    <div class="ombre {if isset($listeAccuses.$matricule)}accuseRecu {else}accuseNonRecu {/if}"
+                        style="padding: 0.5em; float:left; width:120px;">
                         <img class="img-thumbnail" src="../photos/{$data.photo}.jpg" alt="{$matricule}" style="width: 50px" title="{$data.prenom} {$data.nom}">
                         <br>
                         <span class="discret">
-                            {$data.prenom|truncate:2:'.'} {$data.nom|truncate:12:'...'}<br>{$data.dateHeure|default:'Non reçu'}
+                            {$data.prenom|truncate:2:'.'} {$data.nom|truncate:12:'...'}<br>{$listeAccuses.$matricule|default:'Non reçu'}
                         </span>
                     </div>
                     {/foreach}
@@ -34,11 +35,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach from=$listeAccuses key=matricule item=data}
-                    <tr class="{if $data.dateHeure != ''}accuseRecu{else}accuseNonRecu{/if}">
+                    {foreach from=$listeEleves key=matricule item=data}
+                    <tr class="{if isset($listeAccuses.$matricule)}accuseRecu {else}accuseNonRecu {/if}">
                         <td>{$data.classe}</td>
-                        <td title="{if $data.dateHeure == ''}Non reçu{else}reçu{/if}" data-container="body">{$data.nom} {$data.prenom}</td>
-                        <td>{$data.dateHeure}</td>
+                        <td>{$data.nom} {$data.prenom}</td>
+                        <td>{$listeAccuses.$matricule|default:'&nbsp;'}</td>
                     </tr>
                     {/foreach}
                 </tbody>

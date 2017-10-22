@@ -142,5 +142,3 @@ $smarty->assign('mode','encodage');
 $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('selecteur', 'selectBulletinCours');
 $smarty->assign('action','gestEncodageBulletins');
-
-?>

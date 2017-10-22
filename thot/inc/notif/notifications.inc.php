@@ -1,5 +1,10 @@
 <?php
 
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.'/inc/classes/class.Treeview.php';
+$tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme);
+$smarty->assign('tree', $tree->getTree());
+
 switch ($mode) {
     case 'classes':
         require 'inc/notif/notificationClasse.inc.php';

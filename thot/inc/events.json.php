@@ -1,68 +1,52 @@
 <?php
-require_once("../../config.inc.php");
 
-// définition de la class Application
-require_once (INSTALL_DIR."/inc/classes/classApplication.inc.php");
+require_once '../../config.inc.php';
+
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
+
 $User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
 
-$identite = $User->identite();
-$acronyme = $identite['acronyme'];
+$start = $_POST['start'];
+$end = $_POST['end'];
+$type = $_POST['type'];
+$coursGrp = $_POST['coursGrp'];
+$classe = $_POST['classe'];
+$matricule = $_POST['matricule'];
 
-$start = $_GET['start'];
-$end = $_GET['end'];
+$module = $Application->getModule(2);
+require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+$Jdc = new Jdc();
 
-$type = isset($_COOKIE['type'])?$_COOKIE['type']:Null;
-$coursGrp = isset($_COOKIE['coursGrp'])?$_COOKIE['coursGrp']:Null;
-$classe = isset($_COOKIE['classe'])?$_COOKIE['classe']:Null;
-$matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
+switch ($type) {
+    case 'cours':
+        $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
+        break;
+    case 'eleves':
+        $listeCoursEleve = $Jdc->listeCoursGrpEleves($matricule);
+        $eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursEleve, $acronyme);
+        $eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
+        $eventsList = array_merge($eventsListCours, $eventsListClasse);
+        break;
+    case 'classe':
+        $listeCoursClasse = $Jdc->listeCoursClasse($classe);
+        $eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursClasse, $acronyme);
+        $eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
+        $eventsList = array_merge($eventsListCours, $eventsListClasse);
+        break;
+    default:
+        $eventsList = Null;
+        break;
+    }
 
-$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-if ($type == 'eleves') {
-	require_once(INSTALL_DIR.'/inc/classes/classEleve.inc.php');
-	$Eleve = new Eleve($matricule);
-
-	$listeCours = "'".implode("','", $Eleve->listeCoursGrp())."'";
-	$sql = "SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ";
-	$sql .= "FROM ".PFX."thotJdc ";
-	$sql .= "WHERE startDate BETWEEN '$start' AND '$end' ";
-	$sql .= "AND destinataire IN ($listeCours) OR destinataire = '$classe' OR destinataire = 'ecole' ";
-	}
-	else {
-		$sql = "SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ";
-		$sql .= "FROM ".PFX."thotJdc ";
-		$sql .= "WHERE startDate BETWEEN '$start' AND '$end' ";
-		$sql .= "AND proprietaire = '$acronyme' ";
-		if (($type == 'coursGrp') && ($coursGrp != ''))
-			$sql .= "AND destinataire='$coursGrp' ";
-			else if (($type == 'classe') && ($classe != ''))
-					$sql .= "AND destinataire='$classe' ";
-		}
-
-$resultat = $connexion->query($sql);
-$liste = array();
-if ($resultat) {
-	$resultat->setFetchMode(PDO::FETCH_ASSOC);
-	while ($ligne = $resultat->fetch()){
-		$liste[] = array(
-			'id'=>$ligne['id'],
-			'title'=>$ligne['title'],
-			'url'=>$ligne['url'],
-			'className'=>'cat_'.$ligne['idCategorie'],
-			'start'=> $ligne['startDate'],
-			'end' => $ligne['endDate'],
-			'allDay' => ($ligne['allDay']!=0),
-			'editable' => ($ligne['proprietaire'] == $acronyme)
-			);
-		}
-	}
-Application::DeconnexionPDO($connexion);
-echo json_encode($liste);
+echo json_encode($eventsList);

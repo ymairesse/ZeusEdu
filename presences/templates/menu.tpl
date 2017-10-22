@@ -59,7 +59,7 @@
 			{/if}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Préférences <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=preferences&amp;mode=photos">Photos {if $photosVis == 'visible'}visibles{else}invisibles{/if}</a></li>
+					<li><a href="index.php?action=preferences&amp;mode=photos">Photos {if $photosVis == 'visible'}invisibles{else}visibles{/if}</a></li>
 				</ul>
 			</li>
 		</ul>

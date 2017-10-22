@@ -16,6 +16,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
+$module = $Application->getModule(3);
 
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
@@ -24,7 +25,6 @@ $unAn = time() + 365 * 24 * 3600;
 $matricule = Application::postOrCookie('matricule', $unAn);
 $idTravail = Application::postOrCookie('idTravail', $unAn);
 $coursGrp = Application::postOrCookie('coursGrp', $unAn);
-
 
 $listeCours = $User->listeCoursProf();
 $listeTravaux = $coursGrp != Null ? $Files->listeTravaux($acronyme, $coursGrp) : Null;
@@ -43,8 +43,8 @@ $fileInfos = $Files->getFileInfos($matricule, $idTravail, $acronyme);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
+$smarty->template_dir = INSTALL_DIR."/$module/templates";
+$smarty->compile_dir = INSTALL_DIR."/$module/templates_c";
 
 $smarty->assign('fileInfos', $fileInfos);
 $listeCompetences = $Files->getCompetencesCoursGrp($coursGrp);

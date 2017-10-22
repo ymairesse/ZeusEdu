@@ -15,6 +15,7 @@ if (($etape == 'showCotes') && ($classe != null)) {
         $listeMentions = null;
     }
     $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
+
     $listeCoursListeEleves = $Bulletin->listeCoursSansGrp($listeCoursGrpListeEleves);
     $listeCoursGrp = $Ecole->listeCoursGrpClasse($classe);
     $listeCours = $Ecole->listeCoursClassePourDelibe($classe);

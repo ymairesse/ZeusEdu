@@ -48,58 +48,20 @@ input[type=submit], input[type=reset], input[type=button] {
 }
 
 .absent {
-    background-color: #f77;
+    background-color: #f77 !important;
     color: #fff;
     text-align: center;
-    // border:2px solid black;
 }
 
 .present {
     color: #000;
-    background-color: #7f7;
-    text-align: center;
-    // border:2px solid black;
-}
-
-.signale {
-    background-color: #FEDB68;
-    color: black;
-    text-align: center;
-}
-
-.justifie {
-    background-color: #aaf;
-    color: #333;
-    text-align: center;
-}
-
-.sortie {
-    background-color: #FF00FF !important;
-    color: #000;
+    background-color: #7f7 !important;
     text-align: center;
 }
 
 .indetermine {
     background: #ddd;
     color: #000;
-    text-align: center;
-}
-
-.renvoi {
-    background: #333;
-    color: #fff;
-    text-align: center;
-}
-
-.ecarte {
-    background-color: #55f;
-    color: #ff0;
-    text-align: center;
-}
-
-.suivi {
-    background-color: #f22;
-    color: #fff;
     text-align: center;
 }
 

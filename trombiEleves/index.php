@@ -6,11 +6,12 @@ include(INSTALL_DIR.'/inc/entetes.inc.php');
 // ----------------------------------------------------------------------------
 //
 
-$unAn = time() + 365 * 24 * 3600;
 $classe = Application::postOrCookie('classe', $unAn);
+
 $matricule = isset($_GET['matricule']) ? $_GET['matricule'] : Null;
 if ($matricule == Null)
     $matricule = Application::postOrCookie('matricule', $unAn);
+
 $cours = isset($_GET['cours']) ? $_GET['cours'] : Null;
 if ($cours == Null)
     $cours = Application::postOrCookie('cours', $unAn);

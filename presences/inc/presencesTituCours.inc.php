@@ -6,14 +6,20 @@ $smarty->assign('mode', $mode);
 // prise de présence par cours par le titulaire du cours
 
 $listeCoursGrp = $Ecole->listeCoursProf($acronyme);
-$coursGrp = isset($_GET['coursGrp']) ? $_GET['coursGrp'] : null;
+if (isset($_GET['coursGrp'])) {
+    $coursGrp = $_GET['coursGrp'];
+    }
+    else if (isset($_POST['coursGrp'])) {
+        $coursGrp = $_POST['coursGrp'];
+        }
+        else $coursGrp = Null;
 
 $smarty->assign('listeCoursGrp', $listeCoursGrp);
 $smarty->assign('coursGrp', $coursGrp);
 $smarty->assign('acronyme', $acronyme);
 
 if ($etape == 'enregistrer') {
-    if (isset($coursGrp)) {
+    if ($coursGrp != Null) {
         $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
         $nb = $Presences->savePresences($_POST, $listeEleves, array($periode => $periode));
         $smarty->assign('message', array(

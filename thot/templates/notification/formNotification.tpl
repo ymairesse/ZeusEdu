@@ -1,4 +1,6 @@
+{debug}
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<link href="css/filetree.css" type="text/css" rel="stylesheet">
 
 <div class="container">
 
@@ -18,9 +20,9 @@
 		<input type="hidden" name="etape" value="enregistrer">
 		<input type="hidden" name="id" value="{$notification.id}">
 		<input type="hidden" name="destinataire" id="destinataire" value="{$notification.destinataire}">
-		<input type="hidden" id="classe" name="classe" value="{$classe|default:''}">
-		<input type="hidden" id="coursGrp" name="coursGrp" value="{$coursGrp|default:''}">
-		<input type="hidden" id="niveau" name="niveau" value="{$niveau|default:''}">
+		<input type="hidden" name="classe" id="classe" value="{$classe|default:''}">
+		<input type="hidden" name="coursGrp" id="coursGrp" value="{$coursGrp|default:''}">
+		<input type="hidden" name="niveau" id="niveau" value="{$niveau|default:''}">
 		<input type="hidden" name="proprietaire" value="{$notification.proprietaire}">
 		<input type="hidden" name="type" id="type" value="{$notification.type}">
 		<input type="hidden" name="matricule" value="{$matricule|default:''}">
@@ -33,10 +35,14 @@
 					<div class="panel panel-default">
 
 						<div class="panel-heading">
+							<div class="row">
 
-							<div class="form-group">
-								<label for="objet">Objet</label>
-								<input type="text" maxlength="80" name="objet" id="objet" placeholder="Objet de votre note" class="form-control" value="{$notification.objet|default:''}">
+								<div class="col-xs-10">
+									<input type="text" maxlength="80" name="objet" id="objet" placeholder="Objet de votre note" class="form-control" value="{$notification.objet|default:''}">
+								</div>
+								<div class="col-xs-2">
+									<button type="button" class="btn btn-info pull-right" id="btn-join" data-coursgrp="{$coursGrp|default:''}" data-niveau="{$niveau|default:''}" data-classe="{$classe|default:''}" title="Partager et joindre un document"><i class="fa fa-file-o"></i></button>
+								</div>
 							</div>
 
 						</div>
@@ -90,6 +96,10 @@
 
 							<textarea id="texte" name="texte" rows="25" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true">{$notification.texte|default:''}</textarea>
 
+							<div id="PjFiles">
+								{include file="notification/edit/pjFiles.tpl"}
+							</div>
+
 							<div class="btn-group pull-right">
 								<button type="reset" class="btn btn-default">Annuler</button>
 								<button type="submit" class="btn btn-primary">Envoyer</button>
@@ -119,6 +129,7 @@
 				<div class="col-md-3 col-xs-4">
 					<!-- le choix d'élèves en particulier n'est possible que pour les classes et les cours -->
 					{if ($notification.type != 'niveau') && ($notification.type != 'ecole')}
+					coucou
 					{include file="notification/listeEleves.tpl"}
 					{else}
 					<p class="notice">Il n'est pas possible de ne sélectionner que certains élèves dans ce mode.</p>
@@ -134,10 +145,64 @@
 	</div>
 	<!-- container -->
 
+	<div id="modalTreeView" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTreeViewLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	        <h4 class="modal-title" id="modalTreeViewLabel">Fichiers à joindre</h4>
+	      </div>
+	      <div class="modal-body" style="max-height:20em; overflow: auto">
+			  <form id="treeviewModal">
+				  {include file='notification/treeview4PJ.tpl'}
+			  </form>
+	      </div>
+	      <div class="modal-footer">
+				<button type="button" class="btn btn-primary pull-right" data-dismiss="modal">Terminer</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 
 <script type="text/javascript">
 
 	$(document).ready(function() {
+
+		CKEDITOR.replace('texte');
+
+		$('#btn-join').click(function(){
+			$('#modalTreeView').modal('show');
+		})
+
+		$("#modalTreeView").on('click', '.dirLink', function(event) {
+			$(this).next('.filetree').toggle('slow');
+			$(this).closest('li').toggleClass('expanded');
+			$('.dirLink').removeClass('activeDir');
+			$(this).addClass('activeDir');
+		})
+
+		$('#modalTreeView').on('click', '.selectFile', function(){
+			var fileName = $(this).closest('li').data('filename');
+			var path = $(this).closest('li').data('path');
+			if (path != '/')
+				path = path + '/';
+			if ($(this).prop('checked') == true) {
+				$('#PjFiles').append('<div class="fichiers"><a href="javascript:void(0)" class="delPJ" data-path="'+path + '" data-filename="' + fileName + '"><i class="fa fa-times text-danger" title="Supprimer"></i></a> ' + path + fileName + '<input type="hidden" name="files[]" value="' + path + '|//|' + fileName + '"></div>');
+			}
+			else {
+				$('#PjFiles').find('[data-path="' + path + '"][data-filename="' + fileName + '"]').parent().remove();
+			}
+		})
+
+		$('body').on('click', '.delPJ', function(){
+			var fileName = $(this).data('filename');
+			var path = $(this).data('path');
+			$('.file[data-path="' + path + '"][data-filename="' + fileName + '"]').find('input').prop('checked', false);
+
+			$(this).parent().remove();
+		})
 
 		$("#dateDebut").datepicker({
 				format: "dd/mm/yyyy",

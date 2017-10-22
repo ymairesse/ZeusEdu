@@ -26,10 +26,11 @@
             <div class="modal-footer">
                 <form action="index.php" method="POST" name="delete" id="delete" role="form" class="form-vertical">
                     <input type="hidden" name="id" id="id" value="{$travail.id}">
-                    <input type="hidden" name="viewState" value="{$viewState}">
                     <input type="hidden" name="startDate" value="{$startDate}">
                     <input type="hidden" name="destinataire" value="{$destinataire}">
                     <input type="hidden" name="type" value="{$type}">
+                    <input type="hidden" name="coursGrp" value="{$coursGrp|default:''}">
+                    <input type="hidden" name="classe" value="{$classe|default:''}">
                     <input type="hidden" name="action" value="jdc">
                     <input type="hidden" name="mode" value="delete">
                 <button type="submit" class="btn btn-danger"><i class="fa fa-eraser fa-lg"></i> Supprimer</button>

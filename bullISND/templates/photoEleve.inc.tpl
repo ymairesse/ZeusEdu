@@ -1,5 +1,5 @@
 <!-- photo de l'élève et liens divers -->
-	
+
 	<span id="el{$matricule}"></span>
 	<div class="pull-right">
 		{if isset($listeElevesSuivPrec.$matricule.prev) && ($listeElevesSuivPrec.$matricule.prev != Null)}
@@ -13,7 +13,7 @@
 			</a>
 		{/if}
 	</div>
-	
+
 	<p><strong>{$unEleve.nom} {$unEleve.prenom}</strong></p>
 	<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$matricule}">
 	<p><strong>Classe: {$unEleve.classe}</strong></p>

@@ -1,6 +1,6 @@
 <?php
 
-$listeClasses = $Ecole->listeGroupes(array('G', 'TT', 'TQ'));
+$listeClasses = $Ecole->listeGroupes(array('GT', 'TT', 'TQ'));
 $smarty->assign('listeClasses', $listeClasses);
 if (isset($classe)) {
     $listeEleves = $Ecole->listeEleves($classe, 'groupe');

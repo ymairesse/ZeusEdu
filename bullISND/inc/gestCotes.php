@@ -4,12 +4,7 @@ $unAn = time() + 365 * 24 * 3600;
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $bulletin = isset($_REQUEST['bulletin']) ? $_REQUEST['bulletin'] : PERIODEENCOURS;
 
-if (isset($_POST['coursGrp'])) {
-    $coursGrp = $_POST['coursGrp'];
-    setcookie('coursGrp', $coursGrp, $unAn, null, null, false, true);
-} else {
-        $coursGrp = isset($_COOKIE['coursGrp']) ? $_COOKIE['coursGrp'] : null;
-    }
+$coursGrp = Application::postOrCookie('coursGrp', $unAn);
 $smarty->assign('coursGrp', $coursGrp);
 
 if (isset($_POST['tri'])) {
@@ -19,6 +14,9 @@ if (isset($_POST['tri'])) {
         $tri = isset($_COOKIE['tri']) ? $_COOKIE['tri'] : null;
     }
 $smarty->assign('tri', $tri);
+
+$listeCoursProf = $user->listeCoursProf();
+$smarty->assign('listeCours', $listeCoursProf);
 
 switch ($mode) {
     case 'voir':

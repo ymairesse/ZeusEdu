@@ -27,13 +27,10 @@ switch ($mode) {
             $formProp = $Forms->getFormProp($formId);
 
             $listeQuestions = $Forms->listeQuestions($formId);
-            // Application::afficher($listeQuestions);
             $listeReponses = $Forms->getFormResults($listeQuestions);
-            // Application::afficher($listeReponses);
             $listeRepondants = $Forms->listeRepondants($formId);
-            // Application::afficher($listeRepondants);
             $listeEleves = $Ecole->detailsDeListeEleves($listeRepondants);
-            // Application::afficher($listeEleves);
+
             $smarty->assign('formProp', $formProp);
             $smarty->assign('listeEleves', $listeEleves);
             $smarty->assign('listeQuestions', $listeQuestions);

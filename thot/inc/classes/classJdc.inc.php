@@ -10,42 +10,167 @@ class Jdc
     }
 
     /**
-     * renvoie la liste d'événements entres deux dates start et end.
+     * renvoie la liste d'événements entres deux dates start et end pour une liste de cours donnée
      *
-     * @param int $from : date de début = timestamp Unix en millisecondes
-     * @param int $to   : date de fin = timestamp Unix en millisecondes
+     * @param string $dateFrom : date de début
+     * @param string $dateTo   : date de fin
+     * @param string $listeCoursGrpString : les noms des cours séparés par des virgules et entourés de guillemets
      *
-     * @return string liste json
+     * @return array
      */
-    public function retreiveEvents($from, $to)
+    public function getEvents4Cours($dateFrom, $dateTo, $listeCoursGrp, $acronyme)
+    {
+        if (is_array($listeCoursGrp)) {
+            $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
+        } else {
+            $listeCoursGrpString = "'".$listeCoursGrp."'";
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ';
+    	$sql .= 'FROM '.PFX.'thotJdc ';
+    	$sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+    	$sql .= "AND destinataire IN ($listeCoursGrpString) ";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
+        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $liste[] = array(
+        			'id'=>$ligne['id'],
+        			'title'=>$ligne['title'],
+        			'url'=>$ligne['url'],
+        			'className'=>'cat_'.$ligne['idCategorie'],
+        			'start'=> $ligne['startDate'],
+        			'end' => $ligne['endDate'],
+        			'allDay' => ($ligne['allDay']!=0),
+        			'editable' => ($ligne['proprietaire'] == $acronyme)
+        			);
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste d'événements entres deux dates start et end pour une classe donnée
+     *
+     * @param string $dateFrom : date de début
+     * @param string $dateTo   : date de fin
+     * @param string $classe : la classe concernée
+     *
+     * @return array
+     */
+    public function getEvents4Classe($dateFrom, $dateTo, $classe, $acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $from = $from / 1000;
-        $to = $to / 1000;
-        $sql = 'SELECT id, destinataire, type, proprietaire, title, url, class, start, end ';
-        $sql .= 'FROM '.PFX.'thotJdc ';
-        $sql .= "WHERE start BETWEEN '$from' AND '$to' ";
-        $resulat = $connexion->query($sql);
+
+        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ';
+    	$sql .= 'FROM '.PFX.'thotJdc ';
+    	$sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+    	$sql .= 'AND destinataire= :classe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
+        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 5);
+
+        $resulat = $requete->execute();
         $liste = array();
         if ($resulat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $liste[] = array(
-                    'id' => $ligne['id'],
-                    'title' => $ligne['title'],
-                    'url' => $ligne['url'],
-                    'start' => strtotime($ligne['start']).'000',
-                    'end' => strtotime($ligne['end']).'000',
+                    'id'=>$ligne['id'],
+                    'title'=>$ligne['title'],
+                    'url'=>$ligne['url'],
+                    'className'=>'cat_'.$ligne['idCategorie'],
+                    'start'=> $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => ($ligne['allDay']!=0),
+                    'editable' => ($ligne['proprietaire'] == $acronyme)
                     );
             }
         }
         Application::DeconnexionPDO($connexion);
-        echo json_encode(array('success' => 1, 'result' => $liste));
-        exit;
+
+        return $liste;
     }
 
     /**
-     * retroue une notification dont on fournit l'identifiant.
+     * retourne la liste des cours effectivement suivis par chacun des élèves d'une classe.
+     *
+     * @param $classe string: la classe de ces élèves
+     *
+     * @return array
+     */
+    public function listeCoursClasse($groupe)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = "SELECT coursGrp, SUBSTR(coursGrp,1, LOCATE('-',coursGrp)-1) as cours, ec.matricule ";
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON (de.matricule = ec.matricule) ';
+        $sql .= 'WHERE groupe = :groupe ';
+        $sql .= 'ORDER BY matricule, cours ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 5);
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $liste[$coursGrp] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste de tous les coursGrp d'un élève dont on fournit le matricule
+     *
+     * @param array|string $listeEleves liste des matricules des élèves
+     *
+     * @return array
+     */
+     public function listeCoursGrpEleves($listeEleves)
+     {
+         if (is_array($listeEleves)) {
+             $listeElevesString = implode(',', array_keys($listeEleves));
+         } else {
+             $listeElevesString = $listeEleves;
+         }
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT coursGrp ';
+         $sql .= 'FROM '.PFX.'elevesCours ';
+         $sql .= "WHERE matricule IN ($listeElevesString) ";
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $liste = array();
+         $resultat = $requete->execute();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()){
+                 $coursGrp = $ligne['coursGrp'];
+                 $liste[$coursGrp] = $coursGrp;
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+    /**
+     * retrouve une notification dont on fournit l'identifiant.
      *
      * @param $id : l'identifiant dans la BD
      *
@@ -88,6 +213,7 @@ class Jdc
             }
         }
         Application::DeconnexionPDO($connexion);
+
         return $travail;
     }
 
@@ -176,13 +302,15 @@ class Jdc
             // $duree peut être exprimé en minutes ou en format horaire hh:mm
             $duree = $post['duree'];
             if (!is_numeric($duree)) {
-                // c'est sans doute le format hh::mm
-                $duree = explode(':', $duree);
-                $duree = $duree[0] * 60 + $duree[1];
+                if (strpos($duree,':') > 0) {
+                    // c'est sans doute le format hh::mm
+                    $duree = explode(':', $duree);
+                    $duree = $duree[0] * 60 + $duree[1];
+                }
             }
-            if (($duree <= 20) || ($duree > 400)) {
-                $duree = 20;
-            }  // 20 minutes en cas d'erreur et pour la lisibilité
+            // if (($duree <= 20) || ($duree > 400)) {
+            //     $duree = 0;
+            // }  // 20 minutes en cas d'erreur et pour la lisibilité
 
             $endDate = new DateTime($startDate);
             $endDate->add(new DateInterval('PT'.$duree.'M'));
@@ -280,6 +408,8 @@ class Jdc
     public function denomination($listeCours, $mode, $destinataire)
     {
         $jdc = null;  // par défaut
+        if ($destinataire == Null)
+          return Null;
         switch ($mode) {
             case 'cours':
                 if ($destinataire != null) {
@@ -307,4 +437,60 @@ class Jdc
 
         return $jdc;
     }
+
+    /**
+     * renvoie la liste des heures de cours données dans l'école.
+     *
+     * @param void()
+     *
+     * @return array $listeHeures
+     */
+    public function lirePeriodesCours()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT debut, fin ';
+        $sql = "SELECT DATE_FORMAT(debut,'%H:%i') as debut, DATE_FORMAT(fin,'%H:%i') as fin ";
+        $sql .= 'FROM '.PFX.'presencesHeures ';
+        $sql .= 'ORDER BY debut, fin';
+
+        $resultat = $connexion->query($sql);
+        $listePeriodes = array();
+        $periode = 1;
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $debut = $ligne['debut'];
+                $fin = $ligne['fin'];
+                $listePeriodes[$periode++] = array('debut' => $debut, 'fin' => $fin);
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $listePeriodes;
+    }
+
+    /**
+     * renvoie l'heure de la période de cours la plus proche de l'heure passée en argument
+     *
+     * @param string $heure
+     *
+     * @return string
+     */
+    public function heureLaPlusProche($heure){
+        Application::afficher($heure);
+        $listePeriodes = $this->lirePeriodesCours();
+        $time = explode(':', $heure);
+        $time = mktime($heure[0], $heure[1]);
+
+        $n = 1;
+        while (($listePeriodes[$n]['fin'] < $heure) && ($n < count($listePeriodes))) {
+            $n++;
+        }
+        $timeDebut = explode(':', $listePeriodes[$n]['debut']);
+        $timeFin = explode(':', $listePeriodes[$n]['fin']);
+
+        if (((float) $time - (float) $timeDebut) > ((float) $timeFin - (float) $time))
+            return $listePeriodes[$n]['debut'];
+            else return $listePeriodes[$n]['fin'];
+    }
+
 }

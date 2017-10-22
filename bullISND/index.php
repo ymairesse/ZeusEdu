@@ -12,13 +12,6 @@ $smarty->assign('mode', $mode);
 require_once 'inc/classes/classBulletin.inc.php';
 $Bulletin = new Bulletin();
 
-// les sections sont entrées comme des lettres séparées par des virgules
-$sections = explode(',',SECTIONS);
-// on ajoute les guillemets autour des lettres
-$sections = "'" . implode("','", $sections) . "'";
-$smarty->assign('listeCours', $user->listeCoursProf($sections));
-
-$smarty->assign('sections', SECTIONS);
 $acronyme = $user->getAcronyme();
 
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;

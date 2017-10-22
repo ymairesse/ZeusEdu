@@ -4,36 +4,38 @@ $unAn = time() + 365 * 24 * 3600;
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $bulletin = isset($_REQUEST['bulletin']) ? $_REQUEST['bulletin'] : PERIODEENCOURS;
 
-if (isset($_POST['classe'])) {
-    $classe = $_POST['classe'];
-    setcookie('classe', $classe, $unAn, null, null, false, true);
-} else {
-        $classe = isset($_COOKIE['classe']) ? $_COOKIE['classe'] : null;
-    }
+$classe = $Application->postOrCookie('classe', $unAn);
+// if (isset($_POST['classe'])) {
+//     $classe = $_POST['classe'];
+//     setcookie('classe', $classe, $unAn, null, null, false, true);
+// } else {
+//         $classe = isset($_COOKIE['classe']) ? $_COOKIE['classe'] : null;
+//     }
 $smarty->assign('classe', $classe);
 
-if (isset($_POST['matricule'])) {
-    $matricule = $_POST['matricule'];
-    setcookie('matricule', $matricule, $unAn, null, null, false, true);
-} else {
-        $matricule = isset($_COOKIE['matricule']) ? $_COOKIE['matricule'] : null;
-    }
+$matricule = $Application->postOrCookie('matricule', $unAn);
+// if (isset($_POST['matricule'])) {
+//     $matricule = $_POST['matricule'];
+//     setcookie('matricule', $matricule, $unAn, null, null, false, true);
+// } else {
+//         $matricule = isset($_COOKIE['matricule']) ? $_COOKIE['matricule'] : null;
+//     }
 $smarty->assign('matricule', $matricule);
 
-if (isset($_POST['niveau'])) {
-    $niveau = $_POST['niveau'];
-    setcookie('niveau', $niveau, $unAn, null, null, false, true);
-} else {
-        $niveau = isset($_COOKIE['niveau']) ? $_COOKIE['niveau'] : null;
-    }
+$niveau = $Application::postOrCookie('niveau', $unAn);
+// if (isset($_POST['niveau'])) {
+//     $niveau = $_POST['niveau'];
+//     setcookie('niveau', $niveau, $unAn, null, null, false, true);
+// } else {
+//         $niveau = isset($_COOKIE['niveau']) ? $_COOKIE['niveau'] : null;
+//     }
 $smarty->assign('niveau', $niveau);
 
 $acronyme = $_SESSION[APPLICATION]->getAcronyme();
 
 switch ($mode) {
     case 'archive':
-        $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;
-
+        // $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;
         $smarty->assign('listeAnnees', $Bulletin->anneesArchivesDispo());
         $smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
         $smarty->assign('action', $action);
@@ -55,7 +57,7 @@ switch ($mode) {
         break;
 
     case 'bulletinIndividuel':
-        $listeClasses = $Ecole->listeGroupes(array('G', 'TT', 'S'));
+        $listeClasses = $Ecole->listeGroupes(array('GT', 'TT', 'S'));
         if ($classe != null) {
             $listeEleves = $Ecole->listeEleves($classe, 'groupe');
         } else {
@@ -73,9 +75,6 @@ switch ($mode) {
         if ($etape == 'showEleve') {
             if ($matricule) {
                 $smarty->assign('acronyme', $acronyme);
-                // effacement de tous les fichiers PDF de l'utilisateur sauf pour les admins
-                // if ($user->userStatus($Application->repertoireActuel()) != 'admin')
-                // 	$Application->vider("./pdf/$acronyme");
                 $dataEleve = array(
                         'matricule' => $matricule,
                         'classe' => $classe,
@@ -104,9 +103,6 @@ switch ($mode) {
             if ($classe) {
                 // retourne la liste des élèves pour une classe donnée
                 $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-                // effacement de tous les fichiers PDF de l'utilisateur sauf pour les admins
-                // if ($user->userStatus($Application->repertoireActuel()) != 'admin')
-                // 	$Application->vider ("./pdf/$acronyme");
                 $link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme);
                 $smarty->assign('acronyme', $acronyme);
                 $smarty->assign('link', $link);
@@ -136,7 +132,7 @@ switch ($mode) {
                 if ($listeEleves != null) {
                     $ds = DIRECTORY_SEPARATOR;
                     $module = $Application->getModule(1);
-                    $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
+                    $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin';
                     $zipName = $Bulletin->zipFilesNiveau($chemin, $bulletin, $listeClasses);
                     $smarty->assign('acronyme', $acronyme);
                     $smarty->assign('link', $zipName);
@@ -145,40 +141,5 @@ switch ($mode) {
             }
         }
         break;
-    // case 'delete':
-    //     if ($etape == 'confirmation') {
-    //         $listeFichiers = array();
-    //         foreach ($_POST as $nomChamp => $value) {
-    //             if (preg_match('/^del#/', $nomChamp)) {
-    //                 $listeFichiers[] = $value;
-    //             }
-    //             @unlink("./pdf/$acronyme/$value");
-    //         }
-    //         $nb = count($listeFichiers);
-    //         if ($nb > 0) {
-    //             $listeFichiers = implode(', ', $listeFichiers);
-    //             $smarty->assign('message', array(
-    //                 'title' => 'Confirmation',
-    //                 'texte' => "Le(s) fichier(s) $listeFichiers a/ont été effacé(s)",
-    //                 'urgence' => 'warning',
-    //                 ));
-    //         } else {
-    //             $smarty->assign('message', array(
-    //                 'title' => 'Désolé',
-    //                 'texte' => 'Aucun fichier effacé',
-    //                 'urgence' => 'danger',
-    //                 ));
-    //         }
-    //     }
-    //     // break;  pas de break
-    default:
-        // $listeFichiers = $Application->scanDirectories("./pdf/$acronyme/");
-        // $smarty->assign('action', $action);
-        // $smarty->assign('mode', 'delete');
-        // $smarty->assign('etape', 'confirmation');
-        // $smarty->assign('acronyme', $acronyme);
-        // $smarty->assign('listeFichiers', $listeFichiers);
-        // $smarty->assign('userName', $acronyme);
-        // $smarty->assign('corpsPage', 'tableauFichiersPDF');
-        break;
+
     }

@@ -239,7 +239,7 @@ class Files
      *
      * @param $post : contenu du formulaire
      *
-     * @return int : identifiant de l'enregistrement du ficher partagé
+     * @return array : liste des shareIds du ficher partagé
      */
     public function share($post, $acronyme)
     {
@@ -254,7 +254,33 @@ class Files
         $commentaire = $post['commentaire'];
         $tous = isset($post['TOUS']) ? $post['TOUS'] : null;
         $membres = isset($post['membres']) ? $post['membres'] : null;
+        $shareIds = Null;
+        // si le destinataire est tout le groupe
+        if ($tous != null) {
+            $destinataire = array('all');
+            $shareIds[$destinataire] = $this->getShareIdsForFile($fileId, $type, $groupe, $destinataire, $commentaire);
+        } else {
+            // sinon, indiquer chaque membre du groupe comme destinataire
+            if ($membres != null) {
+                $shareIds[$destinataire] = $this->getShareIdsForFile($fileId, $type, $groupe, $membres, $commentaire);
+                }
+            }
 
+        return $shareIds;
+    }
+
+    /**
+     * note un fichier "partagé" et retourne le shareId correspondant
+     *
+     * @param int $fileId: identifiant du fichier à partager
+     * @param string $type: type de partage (coursGrp, classes, niveau,...)
+     * @param string $groupe: groupe avec lequel le document est partagé (classe 2CA,...)
+     * @param string $destinataire : ficher partagé avec qui?
+     * @param string $commentaire : commentaire du partage
+     *
+     * @return int
+     */
+    public function getShareIdsForFile ($fileId, $type, $groupe, $destinataires, $commentaire){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // enregistrer les partages
         $sql = 'INSERT INTO '.PFX.'thotShares ';
@@ -262,25 +288,21 @@ class Files
         $sql .= 'ON DUPLICATE KEY UPDATE commentaire=:commentaire ';
         $requete = $connexion->prepare($sql);
 
-        $resultat = 0;
-        $data = array(':fileId' => $fileId, ':type' => $type, ':groupe' => $groupe, ':commentaire' => $commentaire);
+        $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
+        $requete->bindParam(':type', $type, PDO::PARAM_STR, 12);
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 15);
 
-        // si le destinataire est tout le groupe
-        if ($tous != null) {
-            $data[':destinataire'] = 'all';
-            $resultat = $requete->execute($data);
-        } else {
-            // sinon, indiquer chaque membre du groupe comme destinataire
-            if ($membres != null) {
-                foreach ($membres as $unMembre) {
-                    $data[':destinataire'] = $unMembre;
-                    $resultat += $requete->execute($data);
-                }
-            }
+        $requete->bindParam(':commentaire', $commentaire, PDO::PARAM_STR, 30);
+        $shareIds = array();
+        foreach ($destinataires as $destinataire) {
+            $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+            $resultat = $requete->execute();
+            $shareIds[$destinataire] = $connexion->lastInsertId();
         }
+
         Application::DeconnexionPDO($connexion);
 
-        return $fileId;
+        return $shareIds;
     }
 
     /**
@@ -616,7 +638,7 @@ class Files
                             $liste[] = sprintf('collègue: %s %s', $ligne['prenomProf'], $ligne['nomProf']);
                         }
                         break;
-                    case 'classe':
+                    case 'classes':
                         if ($ligne['destinataire'] == 'all') {
                             $liste[] = 'Tous les élèves de '.$ligne['groupe'];
                         } else {
@@ -691,7 +713,7 @@ class Files
                             $libelle = sprintf('Collègue: %s %s', $ligne['prenomProf'], $ligne['nomProf']);
                         }
                         break;
-                    case 'classe':
+                    case 'classes':
                         if ($ligne['destinataire'] == 'all') {
                             $libelle = 'Tous les élèves de '.$ligne['groupe'];
                         } else {
@@ -735,7 +757,7 @@ class Files
         return array(
             'ecole' => 'Élèves de l\'école',
             'niveau' => 'Élèves d\'un niveau d\'étude',
-            'classe' => 'Élèves d\'une classe',
+            'classes' => 'Élèves d\'une classe',
             'cours' => 'Élèves d\'un cours',
             'prof' => 'Collègues',
         );
@@ -1105,13 +1127,16 @@ class Files
      */
     public function getSpyList4ShareId ($shareId, $acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT tss.spyId, tss.shareId, tss.isDir, tss.fileId, userName, date, tssu.path, tssu.fileName ';
+        $sql = 'SELECT dp.nom AS nomProf, dp.prenom AS prenomProf, tss.spyId, tss.shareId, tss.isDir, tss.fileId, userName, date, tssu.path, tssu.fileName ';
         $sql .= 'FROM '.PFX.'thotSharesSpy AS tss ';
         $sql .= 'LEFT JOIN '.PFX.'thotSharesSpyUsers AS tssu ON tssu.spyId = tss.spyId ';
         $sql .= 'JOIN '.PFX.'thotShares AS ts ON ts.shareId = tss.shareId ';
         $sql .= 'JOIN '.PFX.'thotFiles AS tf ON tf.fileId = ts.fileId ';
-        $sql .= 'WHERE tss.shareId =:shareId AND acronyme=:acronyme ';
-        $sql .= 'ORDER BY userName ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = userName ';
+        $sql .= 'WHERE tss.shareId =:shareId AND tf.acronyme=:acronyme ';
+        $sql .= 'ORDER BY date, userName ';
+        // Application::afficher(array($shareId, $acronyme));
+        // die($sql);
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
@@ -1282,6 +1307,10 @@ class Files
             if ($resultat) {
                 $requete->setFetchMode(PDO::FETCH_ASSOC);
                 $dataTravail = $requete->fetch();
+                // le $_COOKIE peut éventuellement contenir l'idTravail d'un travail supprimé
+                if (empty($dataTravail)) {
+                    return Null;
+                }
                 $dataTravail['dateDebut'] = Application::datePHP($dataTravail['dateDebut']);
                 $dataTravail['dateFin'] = Application::datePHP($dataTravail['dateFin']);
                 $dataTravail['max'] = null;
@@ -1937,7 +1966,6 @@ class Files
                     continue;
                 }
 
-
                 $fileName = ($unFichier[0] == $ds ? '' : $ds).$root.$path.($path == $ds ? '' : $ds).$dirName.$ds.$unFichier;
                 // rustine
                 // $fileName = preg_replace('~/+~', '/', $fileName);
@@ -2368,5 +2396,88 @@ class Files
         return $listeResultats;
     }
 
+    /**
+     * transformation du chemin contentant "|//|" en array('path'=> ..., 'fileName'=> ...)
+     *
+     * @param string : $fn
+     *
+     * @return array
+     */
+    public function getPathFileName($fn){
+        $pfn = explode('|//|', $fn);
+        return array('path' => $pfn[0], 'fileName' => $pfn[1]);
+        }
+
+    /**
+     * lier les PJ à des notifications
+     *
+     * @param array files[] : la liste des fichiers (path + |//| + fileName)
+     * @param array $listeId : liste des matricules et des id des notifications
+     *
+     * @return void()
+     */
+    public function linkFilesNotifications($listeNotifsIds, $post){
+        $sharesList = array();
+        $files = $post['files'];
+        $fileIds = array();
+        foreach ($files as $pathFileName) {
+            $pathFileName = explode('|//|', $pathFileName);
+            $path = $pathFileName[0];
+            $fileName = $pathFileName[1];
+            $dirOrFile = 'file';
+            $acronyme = $post['proprietaire'];
+            // retrouver le fileId existant ou définir un fileId -paramètre "true"
+            $fileIds[] = $this->findFileId($path, $fileName, $dirOrFile, $acronyme, true);
+            }
+
+        $type = $post['type'];
+        $groupe = $post['destinataire'];
+        $commentaire = 'Document lié à une notification';
+        $tous = isset($post['TOUS']) ? $post['TOUS'] : null;
+        $membres = isset($post['membres']) ? $post['membres'] : null;
+        $commentaire = 'Fichier en PJ d\'une notification';
+        // le destinataire est tout le groupe?
+        $destinataires = ($tous != null) ? array('all') : $membres;
+
+        foreach ($fileIds as $fileId) {
+            $shareIds[$fileId] = $this->getShareIdsForFile ($fileId, $type, $groupe, $destinataires, $commentaire);
+            }
+
+        $nb = $this->linkFilesInBD($listeNotifsIds, $shareIds);
+
+    }
+
+    /**
+     * note les liens entres le fichiers joints et les notifications dans la BD
+     *
+     * @param array $listeNotifsIds : liste des identifiants des notifications
+     * @param array $shareIds : liste des shareIds pour chaque destinataire des fichiers
+     */
+    public function linkFilesInBD($listeNotifsIds, $shareIds){
+        $lesDestinataires = array_keys($listeNotifsIds)[0];
+        Application::afficher($lesDestinataires);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        $sql = 'INSERT INTO '.PFX.'thotNotifPJ ';
+        $sql .= 'SET notifId=:notifId, shareId=:shareId, destinataire=:destinataire ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = 0;
+        foreach ($shareIds AS $fileId => $destinataires) {
+            foreach ($destinataires AS $destinataire => $shareId){
+                if ($destinataire == 'all')
+                    $destinataire = array_keys($listeNotifsIds)[0];
+                $notifId = $listeNotifsIds[$destinataire];
+                $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+                $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+                $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+                $resultat += $requete->execute();
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
 
 }

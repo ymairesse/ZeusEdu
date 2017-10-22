@@ -292,6 +292,7 @@ switch ($mode) {
         $smarty->assign('nbBulletins', NBPERIODES);
         $smarty->assign('selecteur', 'selectBulletin');
         break;
+
     case 'verrouClasseCoursEleve':
         if ($userStatus != 'admin') {
             die('get out of here');
@@ -461,22 +462,26 @@ switch ($mode) {
     case 'titulaires':
         switch ($etape) {
             case 'supprimer':
-                $listeAcronymes = $_POST['listeAcronymes'];
-                $nb = $Ecole->supprTitulariat($classe, $listeAcronymes);
-                $smarty->assign('message', array(
-                            'title' => 'Suppression',
-                            'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),
-                            'urgence' => 'info', )
-                            );
+                if (isset($_POST['listeAcronymes'])) {
+                    $listeAcronymes = $_POST['listeAcronymes'];
+                    $nb = $Ecole->supprTitulariat($classe, $listeAcronymes);
+                    $smarty->assign('message', array(
+                                'title' => 'Suppression',
+                                'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),
+                                'urgence' => 'info', )
+                                );
+                }
                 break;
             case 'ajouter':
-                $listeAcronymes = $_POST['listeAcronymes'];
-                $nb = $Ecole->addTitulariat($classe, $listeAcronymes, 'G');
-                $smarty->assign('message', array(
-                            'title' => 'Ajouts',
-                            'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),
-                            'urgence' => 'info', )
-                            );
+                if (isset($_POST['listeAcronymes'])) {
+                    $listeAcronymes = $_POST['listeAcronymes'];
+                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, 'G');
+                    $smarty->assign('message', array(
+                                'title' => 'Ajouts',
+                                'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),
+                                'urgence' => 'info', )
+                                );
+                    }
                 break;
             }  // switch ($etape)
 
@@ -491,7 +496,7 @@ switch ($mode) {
         }
         // dans tous les cas, on montre le sélecteur de groupe/classe
         $listeTitus = $Ecole->listeTitus();
-        $listeClasses = $Ecole->listeGroupes(array('G', 'TT'));
+        $listeClasses = $Ecole->listeGroupes(array('GT', 'TT', 'S', 'D'));
         $smarty->assign('listeTitus', $listeTitus);
         $smarty->assign('listeClasses', $listeClasses);
 
@@ -516,10 +521,9 @@ switch ($mode) {
         $smarty->assign('corpsPage', 'statutsCadres');
         break;
 
-    case 'decoder':
-        var_dump($Bulletin->decoder());
+    case 'ponderations':
+        require_once 'inc/init/viewPonderations.inc.php';
         break;
-
     default: 'missing mode';
         break;
     }

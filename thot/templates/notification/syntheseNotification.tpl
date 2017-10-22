@@ -81,6 +81,14 @@
 								{$notification.texte|default:''}
 							</div>
 
+							{if (isset($notification.files))}
+							<h4>Fichier(s) joint(s)</h4>
+							{foreach $notification.files as $file}
+								{$file|replace:'|//|':'/'|replace:'//':'/'}
+							{/foreach}
+
+							{/if}
+
 						</div>
 						<!-- panel-body -->
 

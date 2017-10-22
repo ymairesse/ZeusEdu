@@ -1,9 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
-		
+
 		<label for="bulletin">Bulletin n°</label>
-		<select name="bulletin" id="bulletin" class="form-control-inline">
+		<select name="bulletin" id="bulletin" class="form-control input-sm">
 		{section name=bulletins start=1 loop=$nbBulletins+1}
 			<option value="{$smarty.section.bulletins.index}"
 					{if $smarty.section.bulletins.index == $bulletin}selected{/if}>
@@ -12,13 +12,13 @@
 		{/section}
 		</select>
 
-		<select name="classe" id="selectClasse" class="form-control-inline">
+		<select name="classe" id="selectClasse" class="form-control input-sm">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}"{if $uneClasse == $classe} selected="selected"{/if}>{$uneClasse}</option>
 			{/foreach}
 		</select>
-		
+
 		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
 			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
@@ -29,14 +29,14 @@
 		<span id="choixEleve">
 			{include file="listeEleves.tpl"}
 		</span>
-		
+
 		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
 			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 				<span class="glyphicon glyphicon-chevron-right"></span>
-			 </button> 
+			 </button>
 		{/if}
-		
+
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
@@ -52,7 +52,7 @@
 <script type="text/javascript">
 
 $(document).ready (function() {
-	
+
 	if ($("#selectClasse").val() == '') {
 		$("#envoi").hide();
 		}
@@ -62,7 +62,7 @@ $(document).ready (function() {
 		if (($("#selectClasse").val() == '') || ($("#selectEleve").val() == ''))
 			return false;
 		})
-	
+
 	$("#bulletin").change(function(){
 		// $("#envoi").show();
 		})
@@ -89,13 +89,13 @@ $(document).ready (function() {
 			$("#formSelecteur").submit();
 			}
 		})
-	
+
 	$("#prev").click(function(){
 		var matrPrev = $("#matrPrev").val();
 		$("#selectEleve").val(matrPrev);
 		$("#formSelecteur").submit();
 	})
-	
+
 	$("#next").click(function(){
 		var matrNext = $("#matrNext").val();
 		$("#selectEleve").val(matrNext);

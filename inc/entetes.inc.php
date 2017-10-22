@@ -58,7 +58,11 @@ $smarty->assign('identite', $user->identite());
 // toutes les informations d'identification réseau (adresse IP, jour et heure)
 $smarty->assign('identification', $user->identification());
 // liste des classes dont le prof est titulaire (prof principal)
-$smarty->assign('titulaire', $user->listeTitulariats("'G','TT','S','C','D'"));
+
+$sections = explode(',', SECTIONS);
+$sections = "'".implode("','", $sections)."'";
+$smarty->assign('titulaire', $user->listeTitulariats($sections));
+
 $userStatus = $user->userStatus($module);
 $smarty->assign('userStatus', $userStatus);
 
@@ -75,3 +79,6 @@ $smarty->assign('alias', $alias['acronyme']);
 // d'autres paramètres peuvent être récupérés plus loin
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 $mode = isset($_REQUEST['mode']) ? $_REQUEST['mode'] : null;
+
+// durée de validité pour les Cookies
+$unAn = time() + 365 * 24 * 3600;

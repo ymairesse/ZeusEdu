@@ -54,7 +54,7 @@ switch ($mode) {
                     );
                 break;
             case 'delCote':
-                $listeCours = $user->listeCoursProf("'G','TT','S'");
+                $listeCours = $user->listeCoursProf("'GT','TT','S'");
                 $nb = $Bulletin->effacementLiciteCarnet($idCarnet, $listeCours);
                 $smarty->assign('message', array(
                     'title' => 'Effacement',

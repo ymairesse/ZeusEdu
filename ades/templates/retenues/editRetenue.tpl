@@ -52,7 +52,7 @@
 
 				<div class="form-group">
 					<label for="local">Local</label>
-					<input type="text" name="local" value="{$retenue.local}" maxlength="30" id="local" class="autocomplete form-control">
+					<input type="text" name="local" value="{$retenue.local}" maxlength="30" id="local" class="form-control" autocomplete="on">
 					<p class="help-block">Choisissez un local</p>
 				</div>
 

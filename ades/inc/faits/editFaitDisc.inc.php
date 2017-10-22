@@ -66,6 +66,7 @@ $smarty->assign('qui', $acronyme);
 
 // liste des dates de retenues possibles
 $listeRetenues = $Ades->listeRetenues($prototype['structure']['typeRetenue'], true);
+
 $smarty->assign('listeRetenues', $listeRetenues);
 
 // les textes enregistrés pour les textarea
