@@ -307,6 +307,7 @@ class Jdc
                     $duree = explode(':', $duree);
                     $duree = $duree[0] * 60 + $duree[1];
                 }
+                else $duree = 0;
             }
             // if (($duree <= 20) || ($duree > 400)) {
             //     $duree = 0;
@@ -476,7 +477,6 @@ class Jdc
      * @return string
      */
     public function heureLaPlusProche($heure){
-        Application::afficher($heure);
         $listePeriodes = $this->lirePeriodesCours();
         $time = explode(':', $heure);
         $time = mktime($heure[0], $heure[1]);
