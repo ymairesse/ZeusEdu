@@ -17,7 +17,7 @@
 				{foreach from=$listeRetenues key=unidretenue item=uneRetenue}
 					{if $uneRetenue.affiche == 'O'}
 					<option value="{$unidretenue}"
-					{if $uneRetenue.places <= $uneRetenue.occupation} disabled="disabled" {/if}
+					{if ($uneRetenue.places <= $uneRetenue.occupation) && isset($fait.idretenue) && ($fait.idretenue != $unidretenue)} disabled="disabled" {/if}
 					{if isset($fait.idretenue) && ($fait.idretenue == $unidretenue)} selected="selected" {/if}>
 						{$uneRetenue.jourSemaine} {$uneRetenue.dateRetenue} [durée: {$uneRetenue.duree}h à {$uneRetenue.heure}] : {$uneRetenue.occupation}/{$uneRetenue.places}
 					</option>
