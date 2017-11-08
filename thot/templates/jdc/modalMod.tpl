@@ -123,12 +123,12 @@
 
                     <div class="form-group">
                         <label for="titre" class="sr-only">Titre</label>
-                        <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="{$travail.title|default:''}" class="form-control" autocomplete="off">
+                        <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="{$travail.title|escape|default:''}" class="form-control" autocomplete="off">
                     </div>
 
                     <div class="form-group">
                     <label for="enonce" class="sr-only">Texte</label>
-                        <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" placeholder="Votre texte ici">{$travail.enonce|default:''}</textarea>
+                        <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" cols="40" placeholder="Votre texte ici">{$travail.enonce|default:''}</textarea>
                     </div>
 
                 </div>
