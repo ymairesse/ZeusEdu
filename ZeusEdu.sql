@@ -1459,7 +1459,7 @@ MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id du fichier';
 
 CREATE TABLE IF NOT EXISTS `didac_thotShares` (
   `fileId` int(11) NOT NULL COMMENT 'id dans la table des Files',
-  `type` enum('ecole','niveau','classe','cours','eleve','prof') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
+  `type` enum('ecole','niveau','classes','cours','eleve','prof') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
   `groupe` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
   `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `commentaire` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
