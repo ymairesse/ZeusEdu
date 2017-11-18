@@ -15,11 +15,13 @@
                 <input type="checkbox" class="checkDelete" id="check{$nId}" data-id="{$nId}" data-type="ecole">
             </td>
             <td style="width:1em">
-                <button type="button" class="btn btn-default btnEdit btn-xs" data-id="{$nId}">
+                <button type="button" class="btn btn-default btnEdit btn-xs pop" data-id="{$nId}" data-type="ecole" data-content="Modifier cette annonce">
                     <i class="fa fa-pencil-square-o fa-lg text-success"></i>
                 </button>
             </td>
-            <td title="Ajouter / supprimer une PJ" data-container="body">{if isset($listePJ[$id])}<span class="badge addPJ">{$listePJ.$id|count}</span>{else}<span class="badge addPJ">+</span>{/if}</td>
+            <td>
+                <span data-content="Nombre de PJ" class="badge pop">{$listePJ.$id|count|default:0}</span>
+            </td>
             <td style="width:1em">
                 <button type="button" class="btn btn-danger btn-delete btn-xs" data-id="{$nId}" data-type="ecole">
                     <i class="fa fa-times"></i>
@@ -50,7 +52,7 @@
                     <i class="fa fa-times text-danger"></i> Effacer
                 </button>
                 {else}
-                <p class="avertissement">Aucune notification dans cette catégorie</p>
+                <p class="avertissement">Aucune annonce dans cette catégorie</p>
                 {/if}
             </th>
         </tr>

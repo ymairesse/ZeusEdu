@@ -88,7 +88,7 @@ class padEleve
      * $POST provient du $_POST de la fiche et peut contenir diverses données
      * on en extrait:
      *  - le matricule de l'élève concerné
-     *  - le champ texte_ID dont le nom comtien l'ID du texte éventuellement existant.
+     *  - le champ texte_ID dont le nom comtient l'ID du texte éventuellement existant.
      *
      * @param $post
      *

@@ -25,7 +25,7 @@ switch ($etape) {
 			// ----------------------------------------------------------------------------------
 			// ok pour la notification en BD, passons éventuellement à l'envoi de mail
             // if (isset($_POST['mail']) && $_POST['mail'] == 1) {
-            //     if ($type == 'eleves') {
+            //		if (!(isset($_POST['TOUS']))) {
             //         // quelques élèves
             //         // retrouver les détails pour les élèves sélectionnés
             //         $listeElevesSelect = $Ecole->detailsDeListeEleves($matriculesSelect);

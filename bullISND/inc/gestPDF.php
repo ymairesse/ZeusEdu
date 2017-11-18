@@ -5,30 +5,12 @@ $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $bulletin = isset($_REQUEST['bulletin']) ? $_REQUEST['bulletin'] : PERIODEENCOURS;
 
 $classe = $Application->postOrCookie('classe', $unAn);
-// if (isset($_POST['classe'])) {
-//     $classe = $_POST['classe'];
-//     setcookie('classe', $classe, $unAn, null, null, false, true);
-// } else {
-//         $classe = isset($_COOKIE['classe']) ? $_COOKIE['classe'] : null;
-//     }
 $smarty->assign('classe', $classe);
 
 $matricule = $Application->postOrCookie('matricule', $unAn);
-// if (isset($_POST['matricule'])) {
-//     $matricule = $_POST['matricule'];
-//     setcookie('matricule', $matricule, $unAn, null, null, false, true);
-// } else {
-//         $matricule = isset($_COOKIE['matricule']) ? $_COOKIE['matricule'] : null;
-//     }
 $smarty->assign('matricule', $matricule);
 
 $niveau = $Application::postOrCookie('niveau', $unAn);
-// if (isset($_POST['niveau'])) {
-//     $niveau = $_POST['niveau'];
-//     setcookie('niveau', $niveau, $unAn, null, null, false, true);
-// } else {
-//         $niveau = isset($_COOKIE['niveau']) ? $_COOKIE['niveau'] : null;
-//     }
 $smarty->assign('niveau', $niveau);
 
 $acronyme = $_SESSION[APPLICATION]->getAcronyme();
@@ -57,7 +39,7 @@ switch ($mode) {
         break;
 
     case 'bulletinIndividuel':
-        $listeClasses = $Ecole->listeGroupes(array('GT', 'TT', 'S'));
+        $listeClasses = $Ecole->listeGroupes();
         if ($classe != null) {
             $listeEleves = $Ecole->listeEleves($classe, 'groupe');
         } else {
@@ -90,7 +72,7 @@ switch ($mode) {
         break;
     case 'bulletinClasse':
         // liste complète des noms des classes en rapport avec leur classe
-        $listeClasses = $Ecole->listeGroupes(array('G', 'TT', 'S'));
+        $listeClasses = $Ecole->listeGroupes();
         $smarty->assign('selecteur', 'selectBulletinClasse');
         $smarty->assign('listeClasses', $listeClasses);
         $smarty->assign('nbBulletins', NBPERIODES);
@@ -121,7 +103,7 @@ switch ($mode) {
 
         if ($etape == 'showNiveau') {
             if ($niveau) {
-                $listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', array('G', 'TT', 'S'));
+                $listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', array('GT', 'TT', 'S'));
                 // accumuler tous les bulletins dans des fichiers par classe
                 $listeEleves = null;
                 foreach ($listeClasses as $classe) {

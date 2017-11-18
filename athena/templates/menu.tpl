@@ -21,6 +21,14 @@
 
 		</ul>  <!-- nav navbar-nav -->
 
+		<ul class="nav navbar-nav">
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Nouveau RV <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="index.php?action=bib">Sélection d'élèves</a></li>
+				</ul>
+			</li>
+		</ul>
+
 		<ul class="nav navbar-nav pull-right">
 			{if isset($alias)}
 			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>

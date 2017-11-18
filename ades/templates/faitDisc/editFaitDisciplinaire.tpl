@@ -1,4 +1,3 @@
-{debug}
 <h2>{$Eleve.nom} {$Eleve.prenom} | {$Eleve.groupe}</h2>
 
 {assign var=contexte value='formulaire'}

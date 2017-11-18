@@ -1633,4 +1633,34 @@ class Ades
 
         return $echelles;
     }
+
+
+    /**
+     * enregistre le mémo de l'élève dont on fournit le matricule pour un module donné
+     *
+     * @param int $matricule : matricule de l'élève concerné
+     * @param string $memo : texte du mémo
+     * @param string $module : dans quel module enregistre-t-on ce mémo (pas "ades" en dur au cas où le nom du module aurait été changé)
+     *
+     * @return bool enregistrement réussi?
+     */
+    public function saveMemo ($matricule, $memo, $module) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'pad ';
+        $sql .= 'SET matricule=:matricule, proprio= :proprio, texte= :memo ';
+        $sql .= 'ON DUPLICATE KEY UPDATE texte= :memo ';
+
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':memo', $memo, PDO::PARAM_STR);
+        $requete->bindParam(':proprio', $module, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+
+    }
+
 }

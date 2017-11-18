@@ -1,5 +1,7 @@
 <?php
 
+$onglet = isset($_COOKIE['notifications']) ? $_COOKIE['notifications'] : 0;
+
 // lecture de toutes les notifications pour l'utilisateur courant
 // ecole => ... niveau => ... classes => ... cours => ... eleves => ...
 $listeNotifications = $Thot->listeUserNotification($acronyme);
@@ -12,7 +14,7 @@ $smarty->assign('listeAccuses', $listeAccuses);
 $smarty->assign('listePJ', $listePJ);
 
 // pour chaque notification, déterminer le nombre d'accusés attendus
-$listeAttendus = array('ecole' => Null, 'niveau' => Null, 'cours' => Null, 'classes' => Null, 'eleves' => Null);
+$listeAttendus = array('ecole' => Null, 'niveau' => Null, 'coursGrp' => Null, 'classes' => Null, 'eleves' => Null);
 
 foreach ($listeNotifications as $type => $lesNotifications) {
     foreach ($lesNotifications as $id => $uneNotification) {
@@ -20,13 +22,13 @@ foreach ($listeNotifications as $type => $lesNotifications) {
             {
             switch ($type) {
                 case 'ecole':
-                    // wtf : il n'y a pas d'accusé de lecture possible pour l'école
+                    // wtf : il n'y a pas d'accusé de lecture possible pour toute l'école
                     break;
                 case 'niveau':
                     $destinataire = $uneNotification['destinataire'];
                     $listeAttendus[$type][$id] = $Ecole->nbEleves($destinataire);
                     break;
-                case 'cours':
+                case 'coursGrp':
                     $destinataire = $uneNotification['destinataire'];
                     $nb = count($Ecole->listeElevesCours($destinataire));
                     $listeAttendus[$type][$id] = $nb;
@@ -44,14 +46,12 @@ foreach ($listeNotifications as $type => $lesNotifications) {
             if ($type == 'eleves') {
                 $destinataire = $uneNotification['destinataire'];
                 $listeNotifications[$type][$id]['detailsEleve'] = $Ecole->detailsDeListeEleves($destinataire)[$destinataire];
-                // Application::afficher($listeNotifications);
                 }
         }
     }
 
-// $listeAccuses = $Thot->getAccuses4user($id, $acronyme);
-
-// Application::afficher($listeAccuses, true);
 $smarty->assign('listeNotifications', $listeNotifications);
 $smarty->assign('listeAttendus', $listeAttendus);
+$smarty->assign('onglet', $onglet);
+
 $smarty->assign('corpsPage', 'notification/historique');

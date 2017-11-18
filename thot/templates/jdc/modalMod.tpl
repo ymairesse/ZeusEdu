@@ -100,7 +100,7 @@
                                     {foreach from=$heures item=duree}
                                         <li><a href="javascript:void(0)" data-value="{$duree*50}">{$duree}x50'</a></li>
                                     {/foreach}
-                                        <li><a href="javascript:void(0)" data-value="Autre">Autre</a></li>
+                                        <li><a href="javascript:void(0)" data-value="-">Autre</a></li>
                 				</ul>
                             </div>    <!-- input-group-btn -->
 

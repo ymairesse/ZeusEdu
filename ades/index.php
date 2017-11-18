@@ -52,7 +52,7 @@ switch ($action) {
         // enregistrement d'un fait disciplinaire pour un élève donné
         include 'inc/fait.inc.php';
         break;
-    case 'eleve':
+    default:
         // accès à la fiche de comportement d'un élève
         include 'inc/eleve.inc.php';
         break;

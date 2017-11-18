@@ -1,5 +1,5 @@
 <div id="selecteur" class="selecteur noprint" style="clear:both">
-	
+
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 		<select name="classe" id="selectClasse">
 		<option value="">Classe</option>
@@ -10,7 +10,7 @@
 		<button type="submit" class="btn  btn-primary btn-sm">OK</button>
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="action" value="{$action}">
-		<input type="hidden" name="etape" value="showClasse">
+		<input type="hidden" name="etape" value="show">
 	</form>
 
 </div>

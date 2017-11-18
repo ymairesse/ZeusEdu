@@ -28,7 +28,7 @@ switch ($mode) {
         break;
 
     case 'parents':
-        $titulariats = $user->listeTitulariats("'G','TT','S','C','D'");
+        $titulariats = $user->listeTitulariats();
         $smarty->assign('listeClasses', implode(',', array_keys($titulariats)));
         $listesParents = $Thot->listeParents($titulariats);
         $smarty->assign('listesParents', $listesParents);

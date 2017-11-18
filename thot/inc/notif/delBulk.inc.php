@@ -20,10 +20,10 @@ $acronyme = $User->getAcronyme();
 $listeId = isset($_POST['listeId']) ? $_POST['listeId'] : Null;
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$thot = new Thot();
+$Thot = new Thot();
 
 // récupérer la liste des PJ éventuelles pour la liste des notifications
-$listePJ = $Thot->getPj4Notifs(array('typeWTF' => $listeId), $acronyme)
+$listePJ = $Thot->getPj4Notifs(array('typeWTF' => $listeId), $acronyme);
 
 $nb = 0;
 $nbNotifs = 0;
@@ -32,13 +32,13 @@ if (count($listeId) > 0) {
     foreach ($listeId as $id) {
         if ($nb == 0) {
             // compter le nombre de notifications de ce type au départ
-            $nbNotifs = $thot->nbNotifType($id, $acronyme);
+            $nbNotifs = $Thot->nbNotifType($id, $acronyme);
         }
-        $nb += $thot->delNotification($id, $acronyme);
+        $nb += $Thot->delNotification($id, $acronyme);
         // suppression des demandes d'accusés de lecture
-        $nb += $thot->delAccuse($id, $acronyme);
+        $nb += $Thot->delAccuse($id, $acronyme);
         // suppression des shares des PJ
-        // $nbPJ = $thot->unShare4notifId($shareId, $notifId, $acronyme);
+        // $nbPJ = $Thot->unShare4notifId($shareId, $notifId, $acronyme);
         }
     }
 // nombre de notifications de ce type restantes

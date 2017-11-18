@@ -8,11 +8,11 @@ $type = isset($_POST['type']) ? $_POST['type'] : null;
 // pour le jdc par élève
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 // pour le jdc par classe (titulaire)
-$classe = $Application->postOrCookie('classe', $unAn);
+// $classe = $Application->postOrCookie('classe', $unAn);
 $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 // pour le jdc par cours
-$coursGrp = $Application->postOrCookie('coursGrp', $unAn);
-// $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+// $coursGrp = $Application->postOrCookie('coursGrp', $unAn);
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 
 $startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
 

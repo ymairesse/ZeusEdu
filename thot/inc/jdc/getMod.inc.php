@@ -32,7 +32,6 @@ $id = isset($_POST['id']) ? $_POST['id'] : Null;
 
 if ($id != Null) {
     $travail = $Jdc->getTravail($id);
-
     require_once(INSTALL_DIR."/smarty/Smarty.class.php");
     $smarty = new Smarty();
     $smarty->template_dir = "../../templates";

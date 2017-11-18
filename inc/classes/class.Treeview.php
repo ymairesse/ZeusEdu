@@ -126,24 +126,23 @@ class Treeview
                      );
                  } else {
                      // C'est un fichier ordinaire
-                     $path = substr($dir, strlen($this->baseDir) + 1);
+                     $path = ($dir == $this->baseDir) ? '/' : substr($dir, strlen($this->baseDir) + 1);
                      $fileName = $path.'/'.$f;
-                     $fileName = ($fileName[0] != '/')?'/'.$fileName:$fileName;
+                     $fileName = ($fileName[0] != '/') ? '/'.$fileName : $fileName;
 
-                     // echo "$fileName <br>";
                      if (in_array($fileName, $sharedFiles))
                         $shared = true;
                         else $shared = false;
                      $files['files'][] = array(
                          'name' => $f,
                          'type' => 'file',
-                         'path' => substr($dir, strlen($this->baseDir) + 1),
+                         'path' => $path,
                          'shared' => $shared,
                          'size' => $this->unitFilesize(filesize($dir.'/'.$f)),
                          'date' => strftime('%x %X', filemtime($dir.'/'.$f)),
                          'ext' => pathinfo($dir.'/'.$f)['extension'],
                      );
-                     // Application::afficher($files['files']);
+
                  }
              }
              // fusion des deux tableaux, fichiers ordinaires et répetoires (d'abord les répertoires)

@@ -1,24 +1,23 @@
-{debug}
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
 <div class="container">
 
 	{if $notification.type == 'cours'}
-	<h2>Notification pour le cours {$notification.destinataire}</h2> {/if}
+	<h2>Annonce pour le cours {$notification.destinataire}</h2> {/if}
 	{if $notification.type == 'classes'}
-	<h2>Notification pour la classe {$notification.destinataire}</h2> {/if}
+	<h2>Annonce pour la classe {$notification.destinataire}</h2> {/if}
 	{if $notification.type == 'niveau'}
-	<h2>Notification pour tous les élèves de {$notification.destinataire}e</h2> {/if}
+	<h2>Annonce pour tous les élèves de {$notification.destinataire}e</h2> {/if}
 	{if $notification.type == 'ecole'}
-	<h2>Notification pour tous les élèves</h2> {/if}
+	<h2>Annonce pour tous les élèves</h2> {/if}
 
 	<form enctype="multipart/form-data" name="notification" id="notification" method="POST" action="index.php" role="form" class="form-vertical">
 
-		<input type="hidden" name="action" value="{$action}">
+		<input type="hidden" name="action" value="notification">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="enregistrer">
-		<input type="hidden" name="id" value="{$notification.id}">
+		<input type="hidden" name="notifId" value="{$notification.id}">
 		<input type="hidden" name="destinataire" id="destinataire" value="{$notification.destinataire}">
 		<input type="hidden" name="classe" id="classe" value="{$classe|default:''}">
 		<input type="hidden" name="coursGrp" id="coursGrp" value="{$coursGrp|default:''}">
@@ -26,7 +25,7 @@
 		<input type="hidden" name="proprietaire" value="{$notification.proprietaire}">
 		<input type="hidden" name="type" id="type" value="{$notification.type}">
 		<input type="hidden" name="matricule" value="{$matricule|default:''}">
-		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
+		<input type="hidden" name="edition" value="{$edition|default:Null}">
 
 		<div class="row">
 
@@ -96,9 +95,11 @@
 
 							<textarea id="texte" name="texte" rows="25" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true">{$notification.texte|default:''}</textarea>
 
-							<div id="PjFiles">
+							<ul id="PjFiles" class="list-unstyled">
+
 								{include file="notification/edit/pjFiles.tpl"}
-							</div>
+
+							</ul>
 
 							<div class="btn-group pull-right">
 								<button type="reset" class="btn btn-default">Annuler</button>
@@ -129,7 +130,6 @@
 				<div class="col-md-3 col-xs-4">
 					<!-- le choix d'élèves en particulier n'est possible que pour les classes et les cours -->
 					{if ($notification.type != 'niveau') && ($notification.type != 'ecole')}
-					coucou
 					{include file="notification/listeEleves.tpl"}
 					{else}
 					<p class="notice">Il n'est pas possible de ne sélectionner que certains élèves dans ce mode.</p>
@@ -172,6 +172,14 @@
 
 		CKEDITOR.replace('texte');
 
+		//  dans la boîte modale, cocher les cases des fichiers déjà joints à l'annonce
+		$('#PjFiles li').each(function(index){
+			var path = $(this).find('.delPJ').data('path');
+			var fileName = $(this).find('.delPJ').data('filename')
+			// cocher la case si le fichier est lié à cette annonce
+			$('.file[data-filename="' + fileName + '"][data-path="' + path +'"]').find('input').prop('checked', true);
+		})
+
 		$('#btn-join').click(function(){
 			$('#modalTreeView').modal('show');
 		})
@@ -186,10 +194,9 @@
 		$('#modalTreeView').on('click', '.selectFile', function(){
 			var fileName = $(this).closest('li').data('filename');
 			var path = $(this).closest('li').data('path');
-			if (path != '/')
-				path = path + '/';
+
 			if ($(this).prop('checked') == true) {
-				$('#PjFiles').append('<div class="fichiers"><a href="javascript:void(0)" class="delPJ" data-path="'+path + '" data-filename="' + fileName + '"><i class="fa fa-times text-danger" title="Supprimer"></i></a> ' + path + fileName + '<input type="hidden" name="files[]" value="' + path + '|//|' + fileName + '"></div>');
+				$('#PjFiles').append('<li><a href="javascript:void(0)" class="delPJ" data-path="'+ path + '" data-filename="' + fileName + '"><i class="fa fa-times text-danger" title="Supprimer"></i></a> ' + path + fileName + '<input type="hidden" name="files[]" value="' + path + '|//|' + fileName + '"></li>');
 			}
 			else {
 				$('#PjFiles').find('[data-path="' + path + '"][data-filename="' + fileName + '"]').parent().remove();

@@ -20,8 +20,9 @@ $acronyme = $User->getAcronyme();
 
 // durée de validité pour les Cookies
 $unAn = time() + 365 * 24 * 3600;
-$matricule = Application::postOrCookie('matricule', $unAn);
-$classe =  Application::postOrCookie('classe', $unAn);
+
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 
 $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";

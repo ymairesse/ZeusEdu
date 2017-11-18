@@ -21,15 +21,7 @@
 			<li><a href="index.php"><button class="btn btn-primary">THOT <img src="images/thotIco.png" alt="THOT" title="Page d'accueil de THOT"></button></a></li>
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Annonces <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=notification&amp;mode=classes">Sélection par classe</a></li>
-					<li><a href="index.php?action=notification&amp;mode=coursGrp">Sélection par cours</a></li>
-
-					{if ($userStatus == 'admin') || ($userStatus == 'direction')}
-					<li><a href="index.php?action=notification&amp;mode=niveau">À un niveau d'étude</a></li>
-					<li><a href="index.php?action=notification&amp;mode=ecole">À tous les élèves</a></li>
-					{/if}
-					<li role="separator" class="divider"></li>
-					<li><a href="index.php?action=notification&amp;mode=historique">Historique des annonces</a></li>
+						<li><a href="index.php?action=notification&amp;etape=historique">Annonces et historique des annonces</a></li>
 				</ul>
 			</li>
 
@@ -41,7 +33,7 @@
 					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
 					{/if}
-					<li><a href="index.php?action=jdc&amp;mode=eleves">Journal de classe élève</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=eleves">Vue subjective: JDC élève</a></li>
 				</ul>
 			</li>
 
@@ -62,8 +54,8 @@
 				Documents <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=files&amp;mode=mydocs">Mes documents</a></li>
-					<li><a href="index.php?action=files&amp;mode=share">Mes partages</a></li>
-					<li><a href="index.php?action=files&amp;mode=sharedWithMe">Partagés avec moi <i class="fa fa-arrow-left"></i></a></li>
+					<li><a href="index.php?action=files&amp;mode=share">Mes partages <i class="fa fa-share-alt"></i></a></li>
+					<li><a href="index.php?action=files&amp;mode=sharedWithMe">Partagés avec moi <i class="fa fa-share"></i></a></li>
 					<li role="separator" class="divider"></li>
 					<li><a href="index.php?action=files&amp;mode=casier">Mon casier électronique</a></li>
 				</ul>

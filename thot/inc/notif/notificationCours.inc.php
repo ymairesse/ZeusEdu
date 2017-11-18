@@ -27,7 +27,7 @@ switch ($etape) {
 
         // si des notifications ont été enregistrées
         if (count($listeId) > 0) {
-            // liste de tous les élèves du cours
+            // liste de tous les élèves du cours indexée sur le matricule (nom, prénom, classe,...)
             $listeEleves = $Ecole->listeElevesCours($coursGrp);
             $smarty->assign('listeEleves', $listeEleves);
             // seulement la liste des matricules de tous les élèves du cours
@@ -39,12 +39,11 @@ switch ($etape) {
             $type = (count($matriculesSelect) != 0) ? 'eleves' : 'cours';
 
             $nbEleves = ($type == 'eleves') ? count($matriculesSelect) : count($matriculesTous);
-
             $texte = sprintf('Notification aux %d élèves du cours %s enregistrée', $nbEleves, $coursGrp);
 
             // ok pour la notification en BD, passons éventuellement à l'envoi de mail
             if (isset($_POST['mail']) && $_POST['mail'] == 1) {
-                if ($type == 'eleves') {
+                if (!(isset($_POST['TOUS']))) {
                     // quelques élèves
                     // retrouver les détails pour les élèves sélectionnés
                     $listeElevesSelect = $Ecole->detailsDeListeEleves($matriculesSelect);
@@ -52,8 +51,9 @@ switch ($etape) {
                 } else {
                     // tous les élèves du coursGrp
                     // $listeEleves contient les données principales élèves indexées sur le matricule
-                    $listeMailing = $listeEleves;
+                    $listeMailing = $Ecole->detailsDeListeEleves($listeEleves);
                 }
+
                 $smarty->assign('THOTELEVE', THOTELEVE);
                 $smarty->assign('ECOLE', ECOLE);
                 $smarty->assign('VILLE', VILLE);

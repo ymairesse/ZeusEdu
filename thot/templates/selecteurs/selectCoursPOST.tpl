@@ -14,7 +14,7 @@
 	<button type="submit" class="btn btn-primary btn-sm">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode|default:'voir'}">
-	<input type="hidden" name="etape" value="showCours">
+	<input type="hidden" name="etape" value="show">
 
 </form>
 

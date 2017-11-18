@@ -344,3 +344,7 @@ tr.dir {
     font-weight: bold;
     color: #bbb;
 }
+
+a.btnTabAdd {
+    padding: 0.7em 0.3em !important;
+}

@@ -33,9 +33,6 @@ switch ($action) {
     case 'notification':
         include_once 'inc/notif/notifications.inc.php';
         break;
-    case 'editNotification':
-        include_once 'inc/notif/editNotifications.inc.php';
-        break;
     case 'jdc':
         require_once 'inc/jdc.inc.php';
         break;

@@ -6,9 +6,6 @@ require_once '../../../config.inc.php';
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-
-
-
 session_start();
 if (!(isset($_SESSION[APPLICATION]))) {
     echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";

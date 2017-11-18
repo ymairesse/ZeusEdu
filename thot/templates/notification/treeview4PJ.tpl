@@ -17,7 +17,7 @@
         {else}
             <li data-filename="{$file.name|escape:'htmlall'}"
                 data-extension='{$file.ext}'
-                data-path="/{$file.path|escape:'htmlall'}"
+                data-path="{if $file.path[0] != '/'}/{/if}{$file.path|escape:'htmlall'}{if $file.path != '/'}/{/if}"
                 data-size='{$file.size}'
                 data-date='{$file.date}'
                 class='file ext_{$file.ext} level{$level}{if $file.shared == 1} shared{/if}'>

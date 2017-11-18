@@ -74,7 +74,7 @@ switch ($mode) {
 
                 $listeClasses = $user->listeTitulariats();
                 $listeEleves = $Ecole->listeElevesMultiClasses($listeClasses);
-                
+
                 $smarty->assign('listeEleves', $listeEleves);
                 $smarty->assign('corpsPage', 'reunionParents/adminTitu');
             }
@@ -102,6 +102,8 @@ switch ($mode) {
 
     case 'editNew':
         if (isset($date)) {
+            $nbRv = $thot->nbRv($date);
+            $smarty->assign('nbRv', $nbRv);
             $listeProfs = $thot->listeProfsAvecRv($date);
             $smarty->assign('listeProfs', $listeProfs);
             $dateSql = Application::dateMysql($date);

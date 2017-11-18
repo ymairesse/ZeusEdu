@@ -2,44 +2,47 @@
 
 <div class="container">
 
-	<h2>Édition des notifications</h2>
+	<h2>Historique et Annonces</h2>
 
 	<div id="zoneEdition">
 
 		<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
 			<li class="active">
-				<a href="#tabs-1" data-toggle="tab">À un élève
-				<span class="badge" data-type="eleves">{$listeNotifications.eleves|@count}</span>
+				<a href="#tabs-1" data-toggle="tab" class="realTab">À un élève <span class="badge" data-type="eleves">{$listeNotifications.eleves|@count}</span></a>
+			</li>
+			<li><a href="#" class="btn btn-default btnPlusNotif btnTabAdd pop" data-content="Veuillez sélectionner un élève par sa classe ou par un cours">x</a></li>
+			<li>
+				<a href="#tabs-2" data-toggle="tab" class="realTab">À un cours
+					<span class="badge" data-type="coursGrp">{$listeNotifications.coursGrp|@count|default:0}</span>
 				</a>
 			</li>
+			<li><a href="index.php?action=notification&amp;etape=show&amp;mode=coursGrp" class="btn btn-default btnPlusNotif btnTabAdd">+</a></li>
 			<li>
-				<a href="#tabs-2" data-toggle="tab">À un cours
-					<span class="badge" data-type="cours">{$listeNotifications.cours|@count}</span>
-				</a>
-			</li>
-			<li>
-				<a href="#tabs-3" data-toggle="tab">À une classe
+				<a href="#tabs-3" data-toggle="tab" class="realTab">À une classe
 					<span class="badge" data-type="classes">{$listeNotifications.classes|@count}</span>
 				</a>
 			</li>
+			<li><a href="index.php?action=notification&amp;etape=show&amp;mode=classes" class="btn btn-default btnPlusNotif btnTabAdd">+</a></li>
 			{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 			<li>
-				<a href="#tabs-4" data-toggle="tab">À un niveau
+				<a href="#tabs-4" data-toggle="tab" class="realTab">À un niveau
 					<span class="badge" data-type="niveau">{$listeNotifications.niveau|@count}</span>
 				</a>
 			</li>
+			<li><a href="index.php?action=notification&amp;etape=show&amp;mode=niveau" class="btn btn-default btnPlusNotif btnTabAdd">+</a></li>
 			<li>
-				<a href="#tabs-5" data-toggle="tab">À l'ensemble des élèves
+				<a href="#tabs-5" data-toggle="tab" class="realTab">À l'ensemble des élèves
 					<span class="badge" data-type="ecole">{$listeNotifications.ecole|@count}</span>
 				</a>
 			</li>
+			<li><a href="index.php?action=notification&amp;etape=show&amp;mode=ecole" class="btn btn-default btnPlusNotif btnTabAdd">+</a></li>
 			{/if}
 		</ul>
 
 		<div id="FicheEleve" class="tab-content">
 
 			{include file="notification/edit/eleve.tpl"}
-			{include file="notification/edit/cours.tpl"}
+			{include file="notification/edit/coursGrp.tpl"}
 			{include file="notification/edit/classe.tpl"}
 			{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 				{include file="notification/edit/niveau.tpl"}
@@ -72,16 +75,17 @@
 <!-- .....formulaire modal pour l'édition  des PJ (ajout/suppr)             ..  -->
 <!-- .......................................................................... -->
 {include file="modal/modalTreeView.tpl"}
+<!-- .......................................................................... -->
+<!-- .....formulaire modal pour la lecture des accusés de réception          ..  -->
+<!-- .......................................................................... -->
+{include file="notification/modal/modalAccuses.tpl"}
 
 <script type="text/javascript">
-	// quel est l'onglet actif?
-	var onglet = "{$onglet|default:0}";
-
-	// activer l'onglet dont le numéro a été passé
-	$(".nav-tabs li a[href='#tabs-" + onglet + "']").tab('show');
-
 
 	$(document).ready(function() {
+
+		// activer l'onglet dont le numéro a été passé
+		$(".nav-tabs li a.realTab").eq({$onglet}).trigger('click');
 
 		$(document).ajaxStart(function() {
 			$('body').addClass('wait');
@@ -101,35 +105,22 @@
 				})
 		})
 
-		// si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet'
-		$(".nav-tabs li a").click(function() {
-			var ref = $(this).attr("href").split("-")[1];
-			$(".onglet").val(ref);
+		// activation du bouton [+] avec l'onglet correspondant
+		$("li a.realTab").click(function() {
+			$('.btnPlusNotif').removeClass('btn-primary').addClass('btn-default');
+			$(this).closest('li').next('li').find('a').addClass('btn-primary');
+			var onglet = $("li a.realTab").index(this);
+			$.post('inc/setCookie.inc.php', {
+				name: 'notifications',
+				cookie: onglet
+				},
+				function(){
+				})
 		});
 
 		$(".selectAll").click(function() {
 			$(this).closest('table').find('.checkDelete').trigger('click');
 		})
-
-		// $(".btnEdit").click(function() {
-		// 	var id = $(this).data('id');
-		// 	$('.tableEdit tr').removeClass('selected');
-		// 	$(this).closest('tr').addClass('selected');
-		// 	$.post('inc/notif/modalEdit.inc.php', {
-		// 			id: id
-		// 		},
-		// 		function(resultat) {
-		// 			var obj = JSON.parse(resultat);
-		// 			$("#objet").val(obj.objet);
-		// 			CKEDITOR.instances['texte'].setData(obj.texte);
-		// 			$("#id").val(obj.id);
-		// 			$("#dateDebut").val(obj.dateDebut);
-		// 			$("#dateFin").val(obj.dateFin);
-		// 			var urgence = obj.urgence;
-		// 			$("#urgence").attr('class', 'form-control').val(urgence).addClass('urgence' + urgence);
-		// 		})
-		// 	$("#modalEdit").modal('show');
-		// })
 
 		$("#saveEdited").click(function() {
 			var texte = CKEDITOR.instances['texte'].getData()
@@ -160,6 +151,10 @@
 			$("#modalEdit").modal('hide');
 		})
 
+		$('#modalDelete').on('click', '.delPJ', function(){
+			$(this).closest('li').remove();
+		})
+
 		$(".btn-delete").click(function() {
 			var id = $(this).data('id');
 			$("#modalDelIdBtn").data('id', id);
@@ -172,18 +167,26 @@
 			var fin = $(this).closest('tr').find('.fin').text();
 			$("#spanDelDatefin").text(fin);
 			var destinataire = $(this).closest('tr').find('.destinataire').text();
+			$.post('inc/notif/listePjFiles.inc.php', {
+				notifId: id
+				},
+				function(resultat) {
+					$('#modalDelPjFiles').html(resultat);
+				})
 			$("#spanDelDestinataire").text(destinataire);
 			$("#modalDelete").modal('show');
 		})
 
 		$("#modalDelIdBtn").click(function() {
-			var id = $(this).data('id');
+			var notifId = $(this).data('id');
 			var type = $(this).data('type');
+			var form = $('#listePJ').serialize();
 			$.post('inc/notif/delId.inc.php', {
-					id: id
+					notifId: notifId,
+					form: form
 				},
 				function(resultat) {
-					$('#tr_' + id).remove();
+					$('#tr_' + notifId).remove();
 					$("#modalDelete").modal('hide');
 					$(".badge[data-type='"+type+"']").text(resultat);
 				})
@@ -229,7 +232,7 @@
                     id: id
                 },
                 function(resultat) {
-                    $("#modal").html(resultat);
+					$('#modalAccuses .modal-content').html(resultat);
                     $("#modalAccuses").modal('show');
                 });
         })

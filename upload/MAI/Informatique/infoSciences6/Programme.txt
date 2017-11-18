@@ -1,0 +1,79 @@
+print ("                      =============================================")
+print ("                      ༽ᖳ༽ Programme de calculs© par Emre Dalgic ༼ᖰ༼")
+print ("                      =============================================")
+#MRU ou MRUA
+
+
+#Emre c'est un bg absolu
+
+
+situation = int(input("Inserer 1 Pour MRUA ,Inserer 0 pour un jeu ,Inserer 2 pour du café ,Insérer 3 pour calculer la surface d'un triangle  : "))
+#height = input("inserer une hauteur ") 
+
+
+#x = input("inserer une distance au repere")
+g =(9.80665) #Konstante
+#time = input("inserer un temps ")
+import random
+import math
+	
+if situation == (1) :
+	print ("il s'agit donc d'un MRUA")
+	x = (0)
+	heightI = input("insérer une hatueur")
+	speed = (0)
+	for time in range (0,74):
+		x = (g * time**2) /2
+		height = int(heightI) - int(x)
+		print (time , height)
+
+if situation == (0) :
+	print ("Jeu de lancer")
+	DistanceJeu = random.uniform(25, 2000)
+	print ("la cible se trouve à ", DistanceJeu, "m Du repère")
+	speedJeu = input("insérez une vitesse")
+	angleJeu = input("insérez un angle")
+	résultatJeu = (speedJeu * cos(angleJeu) * tempsJeu)
+	if résultatJeu == int(distance) :
+		print ("félicitation vous avez gagné !!!")
+    #else :
+			#print ("c'est faux gros")
+	
+	
+if situation == (3) :
+	print ("Θ Calcul de l'aire d'un triangle Θ")
+	Typedetriangle = input("quel type de triangle est-ce ? , a/o/r")
+	if Typedetriangle == ("o") :
+		Hauteurtriangle = int(input("insérer la hauteur du triangle  :"))
+		Cote1 = int(input("insérer la longeur de la base  :"))
+		Airedutriangle = ((Cote1 * Hauteurtriangle)/2 )
+		print ("l'aire du triangle vaut ",Airedutriangle," !")
+	   
+	if Typedetriangle == ("a") :
+		Cote1 = int(input("insérer la longeur de la base  :"))
+		Hauteurtriangle = int(input("insérer la hauteur du triangle  :"))
+		Airedutriangle = ((Cote1 * Hauteurtriangle)/2 )
+		print ("l'aire du triangle vaut ",Airedutriangle," !")
+		
+	if Typedetriangle == ("r") :
+	   print ("ne pas donner la longeur de l'hypoténuse !")
+	   Cote1 = (int(input("insérer la longeur du coté 1   :")))
+	   Cote2 = (int(input("insérer la longeur du coté 2   :")))
+	   Airedutriangle = ((Cote1 * Cote2)/2 )
+	   print ("l'aire du triangle vaut ",Airedutriangle," !")
+	
+	
+
+	
+
+#pythonfiddle
+
+
+#Boucle for pas idéale
+#formule D = V*t
+		
+#x == int(speed) * int(time) 
+	
+#else :
+#print ("les MRU c'est ez")
+	

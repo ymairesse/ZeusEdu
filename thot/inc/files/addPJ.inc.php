@@ -22,9 +22,6 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-Application::afficher($form, true);
-
-
 
 // $fileInfos = $Files->getFileInfoByShareId($shareId, $acronyme);
 //

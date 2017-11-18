@@ -33,7 +33,7 @@
                                 <input type="radio" name="type" id="classes" value="classes"> Classe</label>
 
                             <label class="radio-inline typePartage" title="Partage avec un cours ou des élèves d'un cours" data-container="body">
-                                <input type="radio" name="type" id="cours" value="cours"> Cours</label>
+                                <input type="radio" name="type" id="cours" value="coursGrp"> Cours</label>
 
                             <label class="radio-inline typePartage" title="Partage avec un niveau d'étude" data-container="body">
                                 <input type="radio" name="type" id="niveau" value="niveau"> Niveau</label>
@@ -180,7 +180,7 @@
                             $("#selection").html(resultat);
                         })
                     break;
-                case 'cours':
+                case 'coursGrp':
                     $.post('inc/files/selectCours.inc.php', {},
                         function(resultat) {
                             $("#selection").html(resultat);

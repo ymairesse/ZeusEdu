@@ -28,7 +28,7 @@ switch ($etape) {
 
         // si des notifications ont été enregistrées
         if (count($listeId) > 0) {
-            // liste de tous les élèves de la classe indexée sur le matricule
+            // liste de tous les élèves de la classe indexée sur le matricule (nom, prénom, classe,...)
             $listeEleves = $Ecole->listeElevesClasse($classe);
             $smarty->assign('listeEleves', $listeEleves);
 
@@ -47,7 +47,7 @@ switch ($etape) {
 
             // ok pour la notification en BD, passons éventuellement à l'envoi de mail
             if (isset($_POST['mail']) && $_POST['mail'] == 1) {
-                if ($_POST['type'] == 'eleves') {
+                if (!(isset($_POST['TOUS']))) {
                     // quelques élèves
                     // retrouver les détails pour les élèves sélectionnés
                     $listeElevesSelect = $Ecole->detailsDeListeEleves($matriculesSelect);

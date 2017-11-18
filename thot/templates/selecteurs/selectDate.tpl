@@ -14,12 +14,17 @@
 		</select>
 
 		<button type="submit" class="btn btn-primary btn-sm">OK</button>
+		{if isset($nbRv)}
+			<strong class="pull-right">À ce moment, {$nbRv} RV pris</strong>
+		{/if}
 
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="show">
 
 	</form>
+
+
 
 </div>
 

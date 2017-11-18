@@ -97,7 +97,7 @@
 
                         </div>
                     {/foreach}
-                    <strong class="pull-right">TOTAL: {$shareData|@count} fichiers ou dossier partagés</strong>
+
                 </div>
 
             </div>

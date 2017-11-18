@@ -28,7 +28,6 @@
     <table class="table table-condensed table-striped">
 
         {foreach from=$listePartages key=shareId item=share}
-
         <tr data-shareid="{$share.shareId}">
             {if $share.type == 'ecole'}
             <td class="shared {$share.type} pop">
@@ -138,7 +137,7 @@
                         </button>
                         </td>
                     {/if}
-                {elseif $share.type == 'cours'}
+                {elseif $share.type == 'coursGrp'}
                     {if $share.destinataire == 'all'}
                         <td class="shared {$share.type} pop">
                             <button

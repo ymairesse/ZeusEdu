@@ -5,7 +5,7 @@
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title">
-					Effacement d'une notification
+					Effacement d'une annonce
 				</h4>
 			</div>
 			<!-- modal-header -->
@@ -15,11 +15,14 @@
 				<p>Date de début: <strong id="spanDelDatedebut"></strong></p>
 				<p>Date de fin: <strong id="spanDelDatefin"></strong></p>
 				<p>Destinataire: <strong id="spanDelDestinataire"></strong></p>
-				<p>Confirmez la suppression définitive de cette notification</p>
+				<div id='modalDelPjFiles'>
+
+				</div>
+				<p>Confirmez la suppression définitive de cette annonce</p>
 
 				<div class="btn-group btn-group-sm pull-right">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-					<button type="button" id="modalDelIdBtn" data-id="" data-type="" class="btn btn-danger">Supprimer cette notification</button>
+					<button type="button" id="modalDelIdBtn" data-id="" data-type="" class="btn btn-danger">Supprimer cette annonce</button>
 				</div>
 				<div class="clearfix"></div>
 

@@ -18,7 +18,7 @@ class presences
      *
      * @param void()
      *
-     * @return array $listeHeures
+     * @return array liste des périodes de cours
      */
     public function lirePeriodesCours()
     {
@@ -678,5 +678,76 @@ class presences
          Application::deconnexionPDO($connexion);
 
          return $resultat;
+     }
+
+     /**
+      * retourne un tableau des nombres de prises de présences par date (mois, année)
+      *
+      * @param void()
+      *
+      * @return array
+      */
+     public function getHistory(){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT count(*) AS nb, YEAR(date) AS annee, MONTH(date) AS mois ';
+         $sql .= 'FROM '.PFX.'presencesEleves ';
+         $sql .= 'GROUP BY annee, mois ';
+         $requete = $connexion->prepare($sql);
+
+         $liste = array();
+         $resultat = $requete->execute();
+         if ($resultat){
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $annee = $ligne['annee'];
+                 $mois = $ligne['mois'];
+                 $liste[$annee][$mois] = $ligne['nb'];
+             }
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+     /**
+      * suppression de toutes les archives de l'année et du mois donné
+      *
+      * @param int $month
+      * @param int $year
+      *
+      * @return int nombre d'effacements dans la BD
+      */
+    public function cleanTables($year, $month) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'presencesEleves ';
+        $sql .= 'WHERE YEAR(date) = :year AND MONTH(date) = :month ';
+        $requete = $connexion->prepare($sql);
+        $nb = 0;
+        $requete->bindParam(':year', $year, PDO::PARAM_INT);
+        $requete->bindParam(':month', $month, PDO::PARAM_INT);
+        $requete->execute();
+        $nb = $requete->rowCount();
+
+        $sql = 'OPTIMIZE TABLE '.PFX.'presencesEleves ';
+        $requete = $connexion->prepare($sql);
+        $requete->execute();
+
+        $sql = 'DELETE FROM '.PFX.'presencesLogs ';
+        $sql .= 'WHERE YEAR(quand) = :year AND MONTH(quand) = :month ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':year', $year, PDO::PARAM_INT);
+        $requete->bindParam(':month', $month, PDO::PARAM_INT);
+        $requete->execute();
+        $nb += $requete->rowCount();
+
+        $sql = 'OPTIMIZE TABLE '.PFX.'presencesLogs ';
+        $requete = $connexion->prepare($sql);
+        $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
      }
 }

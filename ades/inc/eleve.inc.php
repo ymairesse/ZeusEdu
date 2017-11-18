@@ -10,6 +10,7 @@ if ($matricule == Null)
 	$matricule = Application::postOrCookie('matricule', $unAn);
 $smarty->assign('matricule',$matricule);
 
+
 $classe = Application::postOrCookie('classe', $unAn);
 
 $listeClasses = $Ecole->listeGroupes();
@@ -22,7 +23,7 @@ switch ($mode) {
 		$smarty->assign('corpsPage', 'eleve/pageEleve');
 		break;
 
-	case 'classeEleve':
+	default:
 		if ($classe != Null) {
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 		}

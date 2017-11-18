@@ -17,23 +17,35 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$notifId = isset($_POST['id']) ? $_POST['id'] : null;
+$notifId = isset($_POST['notifId']) ? $_POST['notifId'] : null;
+$form = isset($_POST['form']) ? $_POST['form'] : Null;
+$sharesConserves = array();
+parse_str($form, $sharesConserves);
+if ($sharesConserves != Null)
+    $sharesConserves = $sharesConserves['shareId'];
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
 
-// comptage nes notification de ce type
+// comptage des notifications de ce type
 $nbNotifs = $thot->nbNotifType($notifId, $acronyme);
 // suppression de la notification
 $nb = $thot->delNotification($notifId, $acronyme);
 // suppression des demandes d'accusés de lecture
 $nb = $thot->delAccuse($notifId, $acronyme);
-// retirer le partage des PJ
+// suppression des espions sur les fichiers partagés
 $listePJ = $thot->getPj4Notifs($notifId, $acronyme);
-if ($listePJ != Null)
+if ($listePJ != Null) {
+    require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+    $Files = new Files();
     $listePJ = $listePJ[$notifId];
-foreach ($listePJ as $shareId => $data) {
-    $nb = $thot->unShare4notifId($shareId, $notifId, $acronyme);
+    $shares2Delete = array_diff(array_keys($listePJ), $sharesConserves);
+    foreach ($shares2Delete as $shareId) {
+        $nb = $Files->delSpy4ShareId ($shareId, $acronyme);
+        }
     }
+
+// retirer le partage des PJ
+$nb = $thot->delPJ4notif ($notifId, $acronyme, $sharesConserves);
 
 echo $nbNotifs - 1;

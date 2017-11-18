@@ -275,7 +275,7 @@ class Files
      * @param int $fileId: identifiant du fichier à partager
      * @param string $type: type de partage (coursGrp, classes, niveau,...)
      * @param string $groupe: groupe avec lequel le document est partagé (classe 2CA,...)
-     * @param string $destinataire : ficher partagé avec qui?
+     * @param string $destinataire : ficher partagé avec qui, dans le groupe (éventuellement, "all")?
      * @param string $commentaire : commentaire du partage
      *
      * @return int
@@ -645,7 +645,7 @@ class Files
                             $liste[] = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
                         }
                         break;
-                    case 'cours':
+                    case 'coursGrp':
                         if ($ligne['destinataire'] == 'all') {
                             $liste[] = 'Tous les élèves du cours '.$ligne['groupe'];
                         } else {
@@ -720,7 +720,7 @@ class Files
                             $libelle = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
                         }
                         break;
-                    case 'cours':
+                    case 'coursGrp':
                         if ($ligne['destinataire'] == 'all') {
                             $libelle = 'Tous les élèves du cours '.$ligne['groupe'];
                         } else {
@@ -758,7 +758,7 @@ class Files
             'ecole' => 'Élèves de l\'école',
             'niveau' => 'Élèves d\'un niveau d\'étude',
             'classes' => 'Élèves d\'une classe',
-            'cours' => 'Élèves d\'un cours',
+            'coursGrp' => 'Élèves d\'un cours',
             'prof' => 'Collègues',
         );
     }
@@ -831,7 +831,7 @@ class Files
                         $ligne['libelle'] = sprintf('%s: %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
                     }
                     break;
-                case 'cours':
+                case 'coursGrp':
                     if ($ligne['destinataire'] == 'all') {
                         $ligne['libelle'] = 'Tous les élèves du cours '.$ligne['groupe'];
                     } else {
@@ -1135,8 +1135,7 @@ class Files
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = userName ';
         $sql .= 'WHERE tss.shareId =:shareId AND tf.acronyme=:acronyme ';
         $sql .= 'ORDER BY date, userName ';
-        // Application::afficher(array($shareId, $acronyme));
-        // die($sql);
+
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
@@ -1198,14 +1197,14 @@ class Files
         // suppression du partage dans la table thotSharesSpy
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'DELETE FROM '.PFX.'thotSharesSpy ';
-        $sql .= 'WHERE spyId=:spyId ';
+        $sql .= 'WHERE spyId= :spyId ';
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':spyId', $spyId, PDO::PARAM_INT);
         $requete->execute();
 
         // suppression des informations récoltées dans la table thotSharesSpyUser
         $sql = 'DELETE FROM '.PFX.'thotSharesSpyUsers ';
-        $sql .= 'WHERE spyId=:spyId ';
+        $sql .= 'WHERE spyId= :spyId ';
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':spyId', $spyId, PDO::PARAM_INT);
         $resultat = $requete->execute();
@@ -2409,75 +2408,303 @@ class Files
         }
 
     /**
-     * lier les PJ à des notifications
+     * lier les PJ à des annonces
      *
-     * @param array files[] : la liste des fichiers (path + |//| + fileName)
-     * @param array $listeId : liste des matricules et des id des notifications
+     * @param array $listeNotifsIds : liste des notifications ventilées par $matricule des destinataires
+     * ou lié au groupe (cours, classe, niveau,...)
+     * @param array $post : le formulaire de rédaction de la notification
+     *
+     * @return int le nombre d'écritures dans la BD
+     */
+    public function linkFilesNotifications ($listeNotifsIds, $post, $acronyme){
+        // rechercher les fileIds existants ou les créer pour chacun des fichiers joints (dans $post['files'])
+        $fileList = $post['files']; // arrive avec la liste des documents joints (à l'exception de ceux qui ont été dis-joints durant l'édition)
+
+        // recheche la liste des fichiers actuellement liés à cette notification
+        $notifId = current($listeNotifsIds);
+        $linkedFiles = $this->getFileNames4notifId ($notifId, $acronyme);
+
+
+        // lesquels faut-il supprimer car dis-joints ?
+        $toUnShare = array();
+        foreach ($linkedFiles as $shareId => $pathFileName) {
+            if (in_array($pathFileName, $fileList)) {
+                $toUnShare[] = $shareId;
+            }
+        }
+        $this->unlinkSharedFiles($notifId, $toUnShare);  // rupture du lien
+
+        // recherche des fileIds pour les fichiers à lier
+        $fileIds = $this->findFileId4FileList($fileList, $acronyme);
+
+        $type = $post['type']; // coursGrp, classe, niveau, ecole...
+        $groupe = $post['destinataire'];
+        $shareIds = array();
+        foreach ($listeNotifsIds as $destinataire => $notifId) {
+            // établir la liste des shareIds pour les fichiers relatifs à ces notifications $listeNotifsIds
+            $shareIds[$notifId] = $this->setShareIds4FileIds($fileIds, $type, $groupe, $destinataire);
+        }
+
+        $nb = $this->linkFilesInBD($shareIds);
+
+        return $nb;
+    }
+
+    /**
+     * renvoie les path/fileName des fichiers liés à une notification dont on fournit le notifId
+     *
+     * @param int $notifId : identifiant de la notification
+     * @param string $acronyme : identifiant du propriétaire
+     *
+     * @return array
+     */
+    public function getFileNames4notifId ($notifId, $acronyme) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtnp.shareId, dts.fileId, path, fileName, acronyme ';
+        $sql .= 'FROM '.PFX.'thotNotifPJ AS dtnp ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = dtnp.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
+        $sql .= 'WHERE notifId = :notifId AND acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $separator = '|//|';
+            while ($ligne = $requete->fetch()){
+                $shareId = $ligne['shareId'];
+                $liste[$shareId] = $ligne['path'].$separator.$ligne['fileName'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * suppresion des liens entre une notification donnée et les fichiers qui n'y sont plus liés
+     *
+     * @param  int $notifId  la notification impliquée
+     * @param  array $shares tableau des shareIds
      *
      * @return void()
      */
-    public function linkFilesNotifications($listeNotifsIds, $post){
-        $sharesList = array();
-        $files = $post['files'];
+    public function unlinkSharedFiles($notifId, $shares) {
+        $sharesString = implode(',', $shares);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotNotifPJ ';
+        $sql .= "WHERE notifId = :notifId AND shareId NOT IN ($sharesString) ";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+    }
+
+    /**
+     * retourne les fileId's (en les créant éventuellement) pour la liste des fichiers données
+     * Les noms des fichiers sont donnés sous la forme path|//|fileName
+     * Le tableau renvoyé est du type
+     *         [0] => fileId 1
+     *         [1] => fileId 2
+     *         [2] => fileId 3
+     *
+     * @param array $fileList : liste des fichiers
+     * @param string $acronyme : le propriétaire
+     *
+     * @return array liste des fileIds correspondant aux fichiers
+     */
+    public function findFileId4FileList($fileList, $acronyme) {
         $fileIds = array();
-        foreach ($files as $pathFileName) {
+        foreach ($fileList as $pathFileName) {
             $pathFileName = explode('|//|', $pathFileName);
             $path = $pathFileName[0];
             $fileName = $pathFileName[1];
-            $dirOrFile = 'file';
-            $acronyme = $post['proprietaire'];
             // retrouver le fileId existant ou définir un fileId -paramètre "true"
-            $fileIds[] = $this->findFileId($path, $fileName, $dirOrFile, $acronyme, true);
+            $fileIds[] = $this->findFileId($path, $fileName, 'file', $acronyme, true);
             }
 
-        $type = $post['type'];
-        $groupe = $post['destinataire'];
-        $commentaire = 'Document lié à une notification';
-        $tous = isset($post['TOUS']) ? $post['TOUS'] : null;
-        $membres = isset($post['membres']) ? $post['membres'] : null;
-        $commentaire = 'Fichier en PJ d\'une notification';
-        // le destinataire est tout le groupe?
-        $destinataires = ($tous != null) ? array('all') : $membres;
+        return $fileIds;
+    }
 
+    /**
+     * renvoie la liste des shareIds pour la liste des fileIds passée en argument.
+     * le cas échéant, les shareIds sont créés (sauf s'ils existent déjà)
+     * @param array $fileIds      liste des fileIds
+     * @param string $type        type de partage (coursGrp, classe, niveau,...)
+     * @param string $groupe      groupe impliqué dans le partage (2CA, 2C:INFO2-07,...)
+     * @param string $destinataire destinataire précis dans le groupe (son matricule) ou le groupe en entier (all)
+     *
+     * @return array la lsite des shareIds pour chaque $fileId
+     */
+
+    public function setShareIds4FileIds($fileIds, $type, $groupe, $destinataire) {
+        $shareIds = $this->getExistingShares4FileIds($fileIds, $type, $groupe, $destinataire);
+        $shareIds = $this->setNewShares4FilesIds($shareIds, $type, $groupe, $destinataire);
+        return $shareIds;
+    }
+
+    /**
+     * recherche les shareIds déjà existants dans la BD pour le fileIds donnés avec les caractéristiques données
+     * @param  array $fileIds       liste des fileIds
+     * @param  string $type         type de partage de fichiers (coursGrp, classe, niveau,...)
+     * @param  string $groupe       groupe impliqué dans le partage (2CA, 2C:INFO2-07,...)
+     * @param  string $destinataire destinataire précis dans le groupe (son matricule) ou le groupe en entier (2CA, 2C:INFO2-07,...)
+     *
+     * @return array liste des shareIds indexés sur les filesIds
+     */
+    public function getExistingShares4FileIds($fileIds, $type, $groupe, $destinataire) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT fileId, shareId, type, groupe, destinataire ';
+        $sql .= 'FROM '.PFX.'thotShares ';
+        $sql .= 'WHERE fileId = :fileId AND type = :type AND groupe = :groupe AND destinataire = :destinataire ';
+        $requete = $connexion->prepare($sql);
+        $shareIds = array();
+        $requete->bindParam(':type', $type, PDO::PARAM_STR, 15);
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 15);
+        $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
         foreach ($fileIds as $fileId) {
-            $shareIds[$fileId] = $this->getShareIdsForFile ($fileId, $type, $groupe, $destinataires, $commentaire);
+            $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
+            $shareIds[$fileId] = Null;
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $ligne = $requete->fetch();
+                $shareId = $ligne['shareId'];
+                $shareIds[$fileId] = $shareId;
             }
+        }
 
-        $nb = $this->linkFilesInBD($listeNotifsIds, $shareIds);
+        Application::deconnexionPDO($connexion);
 
+        return $shareIds;
+    }
+
+    /**
+     * création de nouveaux shareIds pour les fileIds passés en argument avec les caractéristiques données
+     *
+     * @param array $shareIds     liste des shareIds indexées sur les fileIds déjà construite avec les shareIds déjà en BD
+     * @param  string $type         type de partage de fichiers (coursGrp, classe, niveau,...)
+     * @param  string $groupe       groupe impliqué dans le partage (2CA, 2C:INFO2-07,...)
+     * @param  string $destinataire destinataire précis dans le groupe (son matricule) ou le groupe en entier (all)
+     *
+     * @return array la liste des shareIds indexées sur les fileIds
+     */
+    public function setNewShares4FilesIds($shareIds, $type, $groupe, $destinataire) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'thotShares ';
+        $sql .= 'SET fileId = :fileId, type = :type, groupe = :groupe, destinataire = :destinataire, commentaire = :commentaire ';
+        $requete = $connexion->prepare($sql);
+
+        $commentaire = 'Document lié à une annonce ';
+        $requete->bindParam(':type', $type, PDO::PARAM_STR, 15);
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 15);
+        $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+        $requete->bindParam(':commentaire', $commentaire, PDO::PARAM_STR, 25);
+
+        foreach ($shareIds as $fileId => $data) {
+            // si on n'a pas encore de valeur de shareId (nouveau fichier)
+            if ($data == Null) {
+                $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
+                $resultat = $requete->execute();
+                $shareId = $connexion->lastInsertId();
+                $shareIds[$fileId] = $shareId;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $shareIds;
     }
 
     /**
      * note les liens entres le fichiers joints et les notifications dans la BD
      *
-     * @param array $listeNotifsIds : liste des identifiants des notifications
-     * @param array $shareIds : liste des shareIds pour chaque destinataire des fichiers
+     * @param array $shareIds : liste des $notifIds et des shareIds correspondants
+     *
+     * @return int : nombre d'écritures dans la BD
      */
-    public function linkFilesInBD($listeNotifsIds, $shareIds){
-        $lesDestinataires = array_keys($listeNotifsIds)[0];
-        Application::afficher($lesDestinataires);
+    public function linkFilesInBD($shareIds) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
         $sql = 'INSERT INTO '.PFX.'thotNotifPJ ';
-        $sql .= 'SET notifId=:notifId, shareId=:shareId, destinataire=:destinataire ';
+        $sql .= 'SET notifId= :notifId, shareId= :shareId ';
         $requete = $connexion->prepare($sql);
 
-        $resultat = 0;
-        foreach ($shareIds AS $fileId => $destinataires) {
-            foreach ($destinataires AS $destinataire => $shareId){
-                if ($destinataire == 'all')
-                    $destinataire = array_keys($listeNotifsIds)[0];
-                $notifId = $listeNotifsIds[$destinataire];
-                $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+        $nb = 0;
+        foreach ($shareIds AS $notifId => $listeShares) {
+            $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+            foreach ($listeShares AS $wtf => $shareId) {
                 $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
-                $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
-                $resultat += $requete->execute();
+                $resultat = $requete->execute();
+                if ($resultat == true)
+                    $nb++;
+                }
             }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * suppression de toutes les PJ liées aux annonces dont on fournit la liste des identifiants
+     *
+     * @param array $listeNotifId
+     *
+     * @return bool
+     */
+    public function unlinkAllFiles4Notif($listeNotifId) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotNotifPJ ';
+        $sql .= 'WHERE notifId = :notifId ';
+        $requete = $connexion->prepare($sql);
+        foreach ($listeNotifId as $notifId) {
+            $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+            $resultat = $requete->execute();
         }
 
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
     }
+
+    /**
+     * renvoie la liste des documents déjà liés à une annonce dont on fournit le $notifId
+     *
+     * @param int $notifId
+     *
+     * @return array : liste des fichiers indexée sur le shareId
+     */
+    // public function getNotifLinkedFiles($notifId) {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT notifId, dtnpj.shareId, path, fileName ';
+    //     $sql .= 'FROM '.PFX.'thotNotifPJ AS dtnpj ';
+    //     $sql .= 'JOIN '.PFX.'thotShares AS shares ON shares.shareId = dtnpj.shareId ';
+    //     $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = shares.fileId ';
+    //     $sql .= 'WHERE notifId = :notifId ';
+    //     $requete = $connexion->prepare($sql);
+    //
+    //     $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+    //     $liste = array();
+    //     $resultat = $requete->execute();
+    //     if ($resultat) {
+    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $requete->fetch()){
+    //             $shareId = $ligne['shareId'];
+    //             $liste[$shareId] = $ligne;
+    //         }
+    //     }
+    //
+    //     Application::DeconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
 
 }

@@ -142,7 +142,13 @@ class thot
     }
 
     /**
-     * enregistre une notification à attribuer à un élève ou à une classe.
+     * enregistre une notification à attribuer à un ou plusieurs élèves, classe, cours, niveau, école
+     * et renvoie la liste des identifiants de ces notifications
+     * Array (
+     *      [groupe | matricule] => $notifId 1
+     *      [groupe | matricule] => $notifId 2
+     *      ......
+     *  )
      *
      * @param $post : informations provenant du formulaire ad-hoc
      *
@@ -151,15 +157,17 @@ class thot
     public function enregistrerNotification($post)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+ // Application::afficher($post, true);
+        // if (in_array($post['type'], array('classes', 'coursGrp'))) {
+        //     // reclasser éventuellement dans le type 'eleves' s'il sagit d'un élève isolé dans une classe ou dans un cours
+        //     if (is_numeric($post['destinataire']))
+        //         $post['type'] = 'eleves';
+        //     }
 
-        if (in_array($post['type'], array('classes', 'cours'))) {
-            // reclasser éventuellement dans le type 'eleves' s'il sagit d'un élève isolé dans une classe ou dans un cours
-            if (is_numeric($post['destinataire']))
-                $post['type'] = 'eleves';
-        }
+        $notifId = isset($post['notifId']) ? $post['notifId'] : null;
 
         $data = array(
-            ':id' => $post['id'],
+            ':id' => $notifId,
             ':type' => $post['type'],
             ':destinataire' => $post['destinataire'],
             ':proprietaire' => $post['proprietaire'],
@@ -172,31 +180,30 @@ class thot
             ':freeze' => isset($post['freeze']) ? 1 : 0,
             ':parent' => isset($post['parent']) ? 1 : 0,
         );
-        $id = isset($post['id']) ? $post['id'] : null;
 
-        if ($id == null) {
+        if ($notifId == null) {
             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
             $sql .= 'SET type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
             $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
             $sql .= 'mail=:mail, accuse=:accuse, freeze=:freeze, parent=:parent ';
             unset($data[':id']);
         } else {
-            $sql .= 'UPDATE '.PFX.'thotNotifications ';
-            $sql .= 'type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
+            $sql = 'UPDATE '.PFX.'thotNotifications ';
+            $sql .= 'SET type=:type, destinataire=:destinataire, proprietaire=:proprietaire, objet=:objet, texte=:texte, ';
             $sql .= 'dateDebut=:dateDebut, dateFin=:dateFin, ';
             $sql .= 'mail=:mail, accuse=:accuse, freeze=:freeze, parent=:parent ';
             $sql .= 'WHERE id=:id ';
         }
         $requete = $connexion->prepare($sql);
 
-        $listeId = array();
-        // pour l'ensemble des élèves ou pour un niveau d'étude, ou quand il n'y a pas de sélection d'élèves
-        if (($post['type'] == 'ecole') || ($post['type'] == 'niveau') || (isset($post['TOUS']))) {
+        $listeNotifId = array();
+        // pour l'ensemble des élèves ou pour un niveau d'étude, ou quand il n'y a pas de sélection d'élèves ou quand c'est une édition
+        if (($post['type'] == 'ecole') || ($post['type'] == 'niveau') || (isset($post['TOUS'])) || ($post['edition'] == 1)) {
             // un seul enregistrement pour tout le groupe (classe, cours, niveau, ecole)
             $resultat = $requete->execute($data);
-            $id = $connexion->lastInsertId();
+            $notifId = ($notifId == Null) ? $connexion->lastInsertId() : $notifId;
             $destinataire = $post['destinataire'];
-            $listeId[$destinataire] = $id;
+            $listeNotifId[$destinataire] = $notifId;
             }
             else {
             // pour les classes et les cours, on peut éventuellement sélectionner seulement certains élèves
@@ -204,18 +211,18 @@ class thot
             if (isset($post['membres'])) {
                 // un enregistrement pour chaque élève du groupe sélectionné
                 $listeEleves = $post['membres'];
-                    foreach ($listeEleves as $matricule) {
-                        $data[':destinataire'] = $matricule;
-                        $resultat = $requete->execute($data);
-                        $id = $connexion->lastInsertId();
-                        $listeId[$matricule] = $id;
+                foreach ($listeEleves as $matricule) {
+                    $data[':destinataire'] = $matricule;
+                    $resultat = $requete->execute($data);
+                    $notifId = $connexion->lastInsertId();
+                    $listeNotifId[$matricule] = $notifId;
                     }
                 }
             }
 
         Application::deconnexionPDO($connexion);
 
-        return $listeId;
+        return $listeNotifId;
     }
 
     /**
@@ -318,10 +325,10 @@ class thot
         $sql .= 'ORDER BY dateDebut, destinataire ';
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR,7);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
 
         $resultat = $requete->execute();
-        $liste = array('ecole' => array(), 'niveau' => array(), 'classes' => array(), 'cours' => array(), 'eleves' => array());
+        $liste = array('ecole' => array(), 'niveau' => array(), 'classes' => array(), 'coursGrp' => array(), 'eleves' => array());
         if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
@@ -339,7 +346,7 @@ class thot
 
         // placement en type 'eleves' pour les notifications "cours" ou "classe" à un élève ciblé
         foreach ($liste as $type => $lesNotifications) {
-            if ($type == 'classes' || $type == 'cours'){
+            if ($type == 'classes' || $type == 'coursGrp'){
                 foreach ($lesNotifications as $id => $uneNotification) {
                     // le destinataire est-il un 'matricule' (numérique, donc)?
                     if (is_numeric($uneNotification['destinataire'])) {
@@ -439,6 +446,13 @@ class thot
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        $sql = 'DELETE FROM '.PFX.'thotShares ';
+        $sql .= 'WHERE shareId = :shareId ';
+        $requete = $connexion->prepare($sql);
+
         $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
         $resultat = $requete->execute();
 
@@ -739,6 +753,29 @@ class thot
 
         return $ok;
     }
+
+    /**
+     * suppression des éventuelles PJ à une annonce
+     *
+     * @param int $notifId : identifiant de la notification avec PJ
+     * @param string $acronyme : identifiant de l'utilisateur courant
+     * @param array $sharesConserves : liste des PJ à conserver en partages
+     *
+     * @return bool
+     */
+    public function delPJ4notif ($notifId, $acronyme, $sharesConserves) {
+        $listePJ = $this->getPj4Notifs($notifId, $acronyme);
+        if ($listePJ != Null)
+            $listePJ = $listePJ[$notifId];
+        $shares2Delete = array_diff(array_keys($listePJ), $sharesConserves);
+        $nb = 0;
+        foreach ($shares2Delete as $shareId) {
+            $nb = $this->unShare4notifId($shareId, $notifId, $acronyme);
+            }
+
+        return $nb;
+    }
+
 
     /**
      * observation des logins récents des élèves.
@@ -1146,6 +1183,32 @@ class thot
         Application::deconnexionPDO($connexion);
 
         return $resultat;
+    }
+
+    /**
+     * retourne le nombre de RV déjà pris pour la RP de la date donnée.
+     *
+     * @param $date : la date de la RP
+     *
+     * @return int
+     */
+    public function nbRv($date)
+    {
+        $date = Application::dateMysql($date);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT COUNT(*) AS nb ';
+        $sql .= 'FROM '.PFX."thotRpRv WHERE matricule != '' AND date = :date ";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':date', $date, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $ligne['nb'];
     }
 
     /**
@@ -1806,14 +1869,18 @@ class thot
         $sql .= 'FROM '.PFX.'thotRpAttente AS at ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = at.matricule ';
         $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = at.matricule ';
-        $sql .= "WHERE date = '$date' AND acronyme = '$acronyme' ";
+        $sql .= "WHERE date = :date AND acronyme = :acronyme ";
         $sql .= 'ORDER BY periode ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':date', $date, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
         $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $liste[] = $ligne;
             }
         }
@@ -1965,7 +2032,7 @@ class thot
         $sql = "SELECT dtp.matricule, dtp.acronyme, DATE_FORMAT(heure,'%H:%i') AS heure, sexe, dp.nom, dp.prenom  ";
         $sql .= 'FROM '.PFX.'thotRpRv AS dtp ';
         $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dtp.acronyme ';
-        $sql .= 'WHERE dtp.matricule IS NOT NULL ';
+        $sql .= "WHERE dtp.matricule IS NOT NULL AND date = '$date' ";
         // si l'inscription est faite par les admin, il n'y a pas de userParent indiqué.
         if (!($complet)) {
             $sql .= 'AND userParent IS Null ';
@@ -2001,8 +2068,9 @@ class thot
         $sql = 'SELECT dta.matricule, periode, sexe, nom, prenom ';
         $sql .= 'FROM '.PFX.'thotRpAttente AS dta ';
         $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dta.acronyme ';
+        $sql .= "WHERE date = '$date' ";
         if (!($complet)) {
-            $sql .= 'WHERE userName IS Null ';
+            $sql .= 'AND userName IS Null ';
         }
         $sql .= 'ORDER BY matricule, date, periode ';
         $resultat = $connexion->query($sql);

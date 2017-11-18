@@ -19,11 +19,11 @@ $listeAttente = $thot->getListeAttenteProf($date, $acronyme);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
-$smarty->template_dir = "../templates";
-$smarty->compile_dir = "../templates_c";
+$smarty->template_dir = "../../templates";
+$smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('listeAttente',$listeAttente);
 $smarty->assign('acronyme',$acronyme);
 $smarty->assign('date',$date);
 $smarty->assign('periode',$periode);
-$smarty->display('../../templates/reunionParents/listeAttenteProf.tpl');
+$smarty->display('reunionParents/listeAttenteProf.tpl');

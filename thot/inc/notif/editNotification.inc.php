@@ -37,14 +37,16 @@ $smarty->assign('notification', $notification);
 $smarty->assign('tree', $tree->getTree());
 $smarty->assign('edition', true);
 
-// s'il s'agit d'une notification à une classe ou un cours, on cherche la liste des élèves
+// s'il s'agit d'une notification à une classe, un cours ou un élève isole (!), on cherche la liste des élèves
 $type = $notification['type'];
+// liste des élèves, pour mémoire...
+$listeEleves = Null;
 
-if (in_array($type, array('cours', 'classes', 'eleves'))) {
+if (in_array($type, array('coursGrp', 'classes', 'eleves'))) {
     require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
     $Ecole = new Ecole();
     switch ($type) {
-        case 'cours':
+        case 'coursGrp':
             $listeEleves = $Ecole->listeElevesCours($notification['destinataire']);
             break;
         case 'classes':
@@ -55,7 +57,9 @@ if (in_array($type, array('cours', 'classes', 'eleves'))) {
             break;
     }
 }
+
 $smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('notifId', $notifId);
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new Thot();
@@ -63,4 +67,7 @@ $Thot = new Thot();
 $pjFiles = $Thot->getPj4Notifs($notifId, $acronyme);
 
 $smarty->assign('pjFiles', $pjFiles);
+$smarty->assign('mode', $type);
+$smarty->assign('edition', true);
+
 echo $smarty->display('notification/formNotification.tpl');

@@ -36,7 +36,7 @@ switch ($notification['type']) {
         $niveau = $notification['destinataire'];
         $listeEleves = $Ecole->listeElevesNiveaux($niveau);
         break;
-    case 'cours':
+    case 'coursGrp':
         $destinataire = $notification['destinataire'];
         $listeEleves = $Ecole->listeElevesCours($destinataire);
         break;
@@ -51,6 +51,7 @@ switch ($notification['type']) {
 }
 
 $listeAccuses = $Thot->getAccuses4id($id, $acronyme);
+$mode = count($listeEleves) < 30 ? 'portrait' : 'liste';
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
@@ -59,4 +60,5 @@ $smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('listeAccuses', $listeAccuses);
-echo $smarty->fetch('modal/modalAccuses.tpl');
+$smarty->assign('mode', $mode);
+echo $smarty->fetch('notification/modal/listeAccuses.tpl');

@@ -2,10 +2,10 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
+		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève" class="form-control">
 		<input type="hidden" name="matricule" id="matricule">
 
-		<select name="classe" id="selectClasse">
+		<select name="classe" id="selectClasse" class="form-control">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
@@ -14,7 +14,7 @@
 
 		{if isset($prevNext.prev)}
 			{assign var=matrPrev value=$prevNext.prev}
-			<button class="btn btn-default btn-xs" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
+			<button class="btn btn-default btn-sm" id="prev" title="Précédent: {$listeEleves.$matrPrev.prenom} {$listeEleves.$matrPrev.nom}">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</button>
 		{/if}
@@ -25,7 +25,7 @@
 
 		{if isset($prevNext.next)}
 			{assign var=matrNext value=$prevNext.next}
-			<button class="btn btn-default btn-xs" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
+			<button class="btn btn-default btn-sm" id="next" title="Suivant: {$listeEleves.$matrNext.prenom} {$listeEleves.$matrNext.nom}">
 				<span class="glyphicon glyphicon-chevron-right"></span>
 			 </button>
 		{/if}

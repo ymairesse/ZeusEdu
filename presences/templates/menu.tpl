@@ -54,6 +54,10 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=admin&amp;mode=heures">Liste des périodes de cours</a></li>
 					<li><a href="index.php?action=admin&amp;mode=justifications">Liste des motifs d'absences</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=admin&amp;mode=nettoyer">Nettoyer les archives</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=admin&amp;mode=news">News</a></li>
 				</ul>
 			</li>
 			{/if}

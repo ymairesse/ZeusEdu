@@ -9,12 +9,8 @@
 	<div class="col-md-10 col-sm-12">
 
 		<form name="padEleve" id="padEleve" method="POST" action="index.php" class="form-vertical" role="form">
-			<input type="hidden" name="matricule" value="{$eleve.matricule}">
-			<input type="hidden" name="action" value="{$action}">
-			<input type="hidden" name="mode" value="savePad">
-			<button class="btn btn-primary pull-right hidden-print" type="Submit" name="submit"><span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer</button>
-			{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
-			<input type="hidden" class="onglet" name="onglet" value="{$onglet|default:0}">
+			<input type="hidden" name="matricule" id="matriculeMemo" value="{$eleve.matricule}">
+			<button class="btn btn-primary pull-right hidden-print" type="button" id="saveMemo"><i class="fa fa-save"></i> Enregistrer</button>
 			<hr>
 			<textarea name="texte_{$idProprio}" id="memoAdes" rows="20" class="ckeditor form-control" placeholder="Frappez votre texte ici">{$leMemo.texte}</textarea>
 		</form>
@@ -37,11 +33,20 @@ $(document).ready(function(){
 		}
 	CKEDITOR.replace('memoAdes');
 
-	$("#padEleve").submit(function(){
-		window.onbeforeunload = function(){};
-		$.blockUI();
-		$("#wait").show();
-		})
+	$('#saveMemo').click(function(){
+		var matricule = $('#matriculeMemo').val();
+		// récupérer le contenu du CKEDITOR
+		var memo = CKEDITOR.instances.memoAdes.getData();
+		$.post('inc/eleves/saveMemo.inc.php', {
+			matricule: matricule,
+			memo: memo
+			},
+			function(resultat){
+				bootbox.alert({
+					message: resultat
+				})
+			})
+	})
 
 })
 
