@@ -8,13 +8,12 @@ $smarty->assign('INSTALL_DIR', INSTALL_DIR);
  Dans le template où le widget doit apparaître, insérer le code
 
 ```
-{assign var=module value="nomDuModule"}
+{assign var=module value="flashInfo"}
 {include file=“$INSTALL_DIR/widgets/flashInfo/templates/index.tpl”}
 ```
 à l’endroit où les annonces doivent apparaître.
 
 Dans le fichier qui demande l'affichage de flashInfo, la liste des annonces se trouve dans la variable $listeFlashInfos
-
 ```
 $listeFlashInfos = $FlashInfo->listeFlashInfos($module);
 ```
