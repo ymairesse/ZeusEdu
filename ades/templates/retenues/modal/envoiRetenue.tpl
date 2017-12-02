@@ -33,6 +33,8 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
+        CKEDITOR.replace('texteRetenue');
+
         $("#modalSendRetenue").on('click', '.sendTo', function() {
             if ($('.sendTo:checked').length > 0)
                 $("#btnSendRetenue").attr('disabled', false);
