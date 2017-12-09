@@ -1,17 +1,16 @@
 <?php
 
-$etape = isset($_REQUEST['etape'])?$_REQUEST['etape']:Null;
-$mode = isset($_REQUEST['mode'])?$_REQUEST['mode']:Null;
-$id = isset($_REQUEST['id'])?$_REQUEST['id']:Null;
+$etape = isset($_POST['etape']) ? $_POST['etape'] : Null;
+$id = isset($_POST['id']) ? $_POST['id'] : Null;
 
 $module = $Application->repertoireActuel();
 
-require_once (INSTALL_DIR."/inc/classes/classFlashInfo.inc.php");
-$flashInfo = new flashInfo();
+require_once INSTALL_DIR."/inc/classes/classFlashInfo.inc.php";
+$FlashInfo = new flashInfo();
 
-switch ($mode) {
+switch ($etape) {
 	case 'del':
-		$nb = $flashInfo->delFlashInfo($id,$module);
+		$nb = $flashInfo->delFlashInfo($id, $module);
 		$smarty->assign('message',array(
 			'title' => DELETE,
 			'texte' => sprintf("%d nouvelle(s) supprimée(s)", $nb),
@@ -20,23 +19,21 @@ switch ($mode) {
 		$smarty->assign('flashInfos', $flashInfo->listeFlashInfos($module));
 		$smarty->assign('corpsPage', 'news');
 		break;
+	case 'save':
+		$data = $_POST;
+		$data['application'] = $module;
+		$nb = $FlashInfo->saveFlashInfo($data);
+		$smarty->assign('flashInfos', $FlashInfo->listeFlashInfos($module));
+		$smarty->assign('corpsPage', 'flashInfo/news');
+		break;
 	case 'edit':
-		switch ($etape) {
-			case 'enregistrer':
-				$data = $_POST;
-				$data['application'] = $module;
-				$nb = $flashInfo->saveFlashInfo($data);
-				$smarty->assign('flashInfos', $flashInfo->listeFlashInfos($module));
-				$smarty->assign('corpsPage', 'news');
-				break;
-			default:
-				$lesFlashInfo = $flashInfo->getData($id);
-				$smarty->assign('flashInfo', $lesFlashInfo);
-				$smarty->assign('action', $action);
-				$smarty->assign('mode', $mode);
-				$smarty->assign('etape', 'enregistrer');
-				$smarty->assign('corpsPage','editFlashInfo');
-				break;
-			}
+		$flashInfo = $flashInfo->getData($id);
+		$smarty->assign('flashInfo', $flashInfo);
+		$smarty->assign('corpsPage','flashInfo/editFlashInfo');
+		break;
+	default:
+		// new
+		$smarty->assign('flashInfo', $FlashInfo->getData());
+		$smarty->assign('corpsPage','flashInfo/editFlashInfo');
 		break;
 	}

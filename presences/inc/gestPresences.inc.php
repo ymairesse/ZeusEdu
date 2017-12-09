@@ -6,6 +6,13 @@ $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 // la date postée dans le formulaire ou la date du jour
 $date = isset($_POST['date']) ? $_POST['date'] : strftime('%d/%m/%Y');
 
+require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
+$FlashInfo = new flashInfo();
+
+$module = Application::repertoireActuel();
+$listeFlashInfos = $FlashInfo->listeFlashInfos ($module);
+$smarty->assign('listeFlashInfos', $listeFlashInfos);
+
 $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes', $listePeriodes);
 $lesPeriodes = range(1, count($listePeriodes));
@@ -45,8 +52,9 @@ if (!empty($listePeriodes)) {
                 require 'presencesTituCours.inc.php';
             }
             break;
-            }
-} else {
+        }
+    } 
+    else {
         $smarty->assign('message', array(
             'title' => 'AVERTISSEMENT',
             'texte' => "Les périodes de cours ne sont pas encore définies. Contactez l'administrateur",

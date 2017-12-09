@@ -1,8 +1,5 @@
 <?php
 
-$smarty->assign('action', $action);
-$smarty->assign('mode', $mode);
-
 // prise de présence par cours par le titulaire du cours
 
 $listeCoursGrp = $Ecole->listeCoursProf($acronyme);

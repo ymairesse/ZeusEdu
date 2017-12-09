@@ -40,7 +40,11 @@
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
 {else}
-	{include file="../../templates/corpsPageVide.tpl"}
+	{if isset($listeFlashInfos)}
+		{include file='pageVideNews.tpl'}
+		{else}
+		{include file="../../templates/corpsPageVide.tpl"}
+	{/if}
 {/if}
 </div>
 
