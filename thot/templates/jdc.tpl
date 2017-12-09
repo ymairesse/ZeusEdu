@@ -11,7 +11,21 @@
 	<div class="row">
 
 		<div class="col-md-7 col-xs-12">
-			<h2>{$lblDestinataire|default:''}</h2>
+			<h2 class="{$type}">{if $type == subjectif}Tout le JDC de {else}Mon JDC pour {/if}{$lblDestinataire|default:''}
+				{if $type == 'subjectif'}
+					<span class="pull-right" title="Vue subjective"><i class="fa fa-eye fa-lg"></i></span>
+					{elseif $type == 'eleve'}
+					<span class="pull-right" title="Vue élève"><i class="fa fa-user fa-lg"></i></span>
+					{elseif $type == 'classe'}
+					<span class="pull-right" title="Vue classe"><i class="fa fa-users fa-lg"></i></span>
+					{elseif $type == 'cours'}
+					<span class="pull-right" title="Vue cours"><i class="fa fa-graduation-cap fa-lg"></i></span>
+					{elseif $type == 'niveau'}
+					<span class="pull-right" title="Vue Niveau d'étude"><i class="fa fa-bars fa-lg"></i></span>
+					{elseif $type == 'ecole'}
+					<span class="pull-right" title="Vue école"><i class="fa fa-university fa-lg"></i></span>
+				{/if}
+			</h2>
 
 			<div id="calendar"></div>
 
@@ -19,12 +33,19 @@
 
 		<div class="col-md-5 col-xs-12" style="max-height:50em; overflow: auto">
 
+			{if $editable == 0}
+				<p class="notice">En vue subjective, vous voyez tous les événements dans le JDC d'un élève, quel que soit le propriétaire.<br>
+				<strong>Aucune modification n'est possible</strong>.</p>
+			{else}
+				<p class="notice">Accédez à vos événements pour {$lblDestinataire}</p>
+			{/if}
+
 			<form action="index.php" method="POST" name="detailsJour" id="detailsJour" role="form" class="form-vertical ombre">
 				<!-- champs destinés à être lus pour d'autres formulaires -->
 				<input type="hidden" name="mode" id="mode" value="{$mode}">
 				<input type="hidden" name="action" id="action" value="{$action}">
 				<input type="hidden" name="acronyme" id="acronyme" value="{$identite.acronyme}">
-				<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire|default:''}">
+				<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire}">
 				<input type="hidden" name="lblDestinataire" id="lblDestinataire" value="{$lblDestinataire|default:''}">
 				<input type="hidden" name="type" id="type" value="{$type|default:''}">
 				<input type="hidden" name="editable" id="editable" value="{$editable|default:false}">
@@ -33,6 +54,7 @@
 				<input type="hidden" name="coursGrp" id="coursGrp" value="{$coursGrp|default:''}">
 				<input type="hidden" name="classe" id="classe" value="{$classe|default:''}">
 				<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
+				<input type="hidden" name="niveau" value="{$niveau|default:''}">
 				<input type="hidden" name="viewState" id="viewState" value="">
 
 				<div id="unTravail">
@@ -40,8 +62,10 @@
 						{include file='jdc/unTravail.tpl'}
 					{else}
 						<strong>Veuillez sélectionner un item dans le calendrier</strong>
-						<br>
-						<strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
+						{if $editable == 1}
+						<br><strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
+						{/if}
+
 						<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
 					{/if}
 				</div>
@@ -54,13 +78,12 @@
 	<!-- row -->
 
 	<div class="row">
-
-		{foreach from=$legendeCouleurs key=cat item=travail}
-		<div class="col-md-1 col-sm-6">
-			<div class="cat_{$cat} discret" title="{$travail.categorie}">{$travail.categorie|truncate:10}</div>
+		{* légende et couleurs *}
+		<div class="btn-group" id="legend">
+			{foreach from=$categories key=cat item=travail}
+			<button type="btn btn-default" class="cat_{$cat} voir" data-categorie="{$cat}"title="{$travail.categorie}">{$travail.categorie|truncate:12}</button>
+			{/foreach}
 		</div>
-		<!-- col-md-... -->
-		{/foreach}
 
 	</div>
 	<!-- row -->
@@ -74,6 +97,7 @@
 <!-- container -->
 
 <script type="text/javascript">
+
 	// bootstrap-ckeditor-fix.js
 	// hack to fix ckeditor/bootstrap compatiability bug when ckeditor appears in a bootstrap modal dialog
 	//
@@ -97,9 +121,7 @@
 
 	$(document).ready(function() {
 
-		$('#refetchEvents').click(function(){
-			$('#calendar').fullCalendar('refetchEvents');
-		})
+		var editable = $('#editable').val();
 
 		$('#calendar').fullCalendar({
 			eventSources: [
@@ -111,6 +133,7 @@
 					coursGrp: $('#coursGrp').val(),
 					classe: $('#classe').val(),
 					matricule: $('#matricule').val(),
+					niveau: $('#niveau').val(),
 					},
 				error: function() {
 					alert('Une erreur s\'est produite. Merci de la signaler à l\'administrateur.');
@@ -118,6 +141,9 @@
 				}
 			],
 			eventLimit: 2,
+			// empêcher l'édition en vue subjective
+			eventStartEditable: editable,
+			eventDurationEditable: editable,
 			header: {
 				left: 'prev, today, next',
 				center: 'title',
@@ -137,13 +163,14 @@
 			maxTime: "22:00:00",
 			firstDay: 1,
 			// on clique sur un événement
-			eventClick: function(calEvent, jsEvent, view) {
-				var eventId = calEvent.id; // l'id de l'événement
+			eventClick: function (calEvent, jsEvent, view) {
+				var id = calEvent.id; // l'id de l'événement
 				var startDate = moment(calEvent.start).format('YYYY-MM-DD HH:mm'); // la date de début de l'événement
 				// mémoriser la date pour le retour
 				$("#startDate").val(startDate);
-				$.post('inc/getTravail.inc.php', {
-						event_id: eventId
+				$.post('inc/jdc/getTravail.inc.php', {
+					id: id,
+					editable: editable
 					},
 					function(resultat) {
 						$('#unTravail').fadeOut(400, function() {
@@ -181,11 +208,25 @@
 						var dateFr = moment(date).format('DD/MM/YYYY');
 						// mémoriser la date pour le retour
 						$("#startDate").val(startDate);
-						// est-ce une notification par classe ou par cours?
-						var type = ($("#selectClasse").val() == undefined) ? 'cours' : 'classe';
-						if (type == 'cours')
-							var destinataire = $('#coursGrp').val();
-							else var destinataire = $('#selectClasse').val();
+						// type de la notification: élève, cours, classe, niveau, école?
+						var type = $('#type').val();
+						switch (type) {
+							case 'cours':
+								var destinataire = $('#coursGrp').val();
+								break;
+							case 'classe':
+								var destinataire = $('#selectClasse').val();
+								break;
+							case 'eleve':
+								var destinataire = $('#selectEleve').val();
+								break;
+							case 'niveau':
+								var destinataire = $('#niveau').val();
+								break;
+							case 'ecole':
+								var destinataire = 'all';
+								break;
+						}
 						var lblDestinataire = $("#lblDestinataire").val();
 						$.post('inc/jdc/getAdd.inc.php', {
 							startDate: startDate,
@@ -196,7 +237,7 @@
 							},
 							function(resultat){
 								$("#zoneMod").html(resultat);
-									$("#modalAdd").modal('show');
+									$("#modalEdit").modal('show');
 									$('#calendar').fullCalendar('gotoDate', startDate);
 							})
 						}
@@ -209,40 +250,42 @@
 				else bootbox.alert('Dans ce mode, seule la consultation est permise');
 			},
 			eventDrop: function(event, delta, revertFunc) {
-				var startDate = moment(event.start).format('YYYY-MM-DD HH:mm');
-				// mémoriser la date pour le retour
-				$("#startDate").val(startDate);
-				// si l'événement est draggé sur allDay, la date de fin est incorrecte
-				if (moment.isMoment(event.end))
-					var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
-				else var endDate = '0000-00-00 00:00';
-				var id = event.id;
-				// var viewState = $("#viewState").val();
-				$.post('inc/getDragDrop.inc.php', {
-						id: id,
-						startDate: startDate,
-						endDate: endDate
-					},
-					function(resultat) {
-						$("#unTravail").html(resultat);
-						$('#calendar').fullCalendar('gotoDate', startDate);
-						// forcer le mode "agendaDay" pour voir finement la modification
-						$('#calendar').fullCalendar('changeView', 'agendaDay');
-					}
-				)
+				if (editable == 1){
+					var startDate = moment(event.start).format('YYYY-MM-DD HH:mm');
+					// mémoriser la date pour le retour
+					$("#startDate").val(startDate);
+					// si l'événement est draggé sur allDay, la date de fin est incorrecte
+					if (moment.isMoment(event.end))
+						var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
+					else var endDate = '0000-00-00 00:00';
+					var id = event.id;
+					// var viewState = $("#viewState").val();
+					$.post('inc/getDragDrop.inc.php', {
+							id: id,
+							startDate: startDate,
+							endDate: endDate
+						},
+						function(resultat) {
+							$("#unTravail").html(resultat);
+							$('#calendar').fullCalendar('gotoDate', startDate);
+							// forcer le mode "agendaDay" pour voir finement la modification
+							$('#calendar').fullCalendar('changeView', 'agendaDay');
+						}
+					)
+				}
+				else bootbox.alert('Dans ce mode, seule la consultation est permise');
 			}
 		})
 
 		// suppression d'une note au JDC
 		$("#unTravail").on('click', '#delete', function() {
 			var id = $(this).data('id');
-			$.post('inc/jdc/getDel.inc.php', {
+			$.post('inc/jdc/getModalDel.inc.php', {
 					id: id,
 				},
 				function(resultat) {
 					$("#zoneDel").html(resultat);
 					$("#modalDel").modal('show');
-					$('#calendar').fullCalendar('gotoDate', startDate);
 				}
 			)
 		})
@@ -250,19 +293,20 @@
 		// modification d'une note au JDC
 		$("#unTravail").on('click', '#modifier', function() {
 			var id = $(this).data('id');
+			var destinataire = $(this).data('destinataire');
 			var startDate = $("#startDate").val();
-			var type = ($("#selectClasse").val() == undefined) ? 'cours' : 'classe';
+			var type = $('#type').val();
+			var lblDestinataire = $("#lblDestinataire").val();
 			$.post('inc/jdc/getMod.inc.php', {
 					id: id,
 					startDate: startDate,
-					type: type
+					type: type,
+					destinataire: destinataire,
 				},
 				function(resultat) {
 					// construction de la boîte modale d'édition du JDC
 					$("#zoneMod").html(resultat);
-					// indispensable pour réactiver le CKEDITOR après un "dismiss" de la boîte modale
-					CKEDITOR.replace('enonce');
-					$("#modalMod").modal('show');
+					$("#modalEdit").modal('show');
 					// mise à jour du calendrier
 					$('#calendar').fullCalendar('gotoDate', startDate);
 					// $('#calendar').fullCalendar('refetchEvents');

@@ -3,16 +3,18 @@
 $date = isset($_POST['date']) ? $_POST['date'] : null;
 $smarty->assign('date', $date);
 
-
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
 
 switch ($mode) {
     case 'bulletin':
-        require_once ('inc/gestBulletins.inc.php');
+        require_once 'inc/gestBulletins.inc.php';
         break;
     case 'gestParents':
-        require_once('inc/parents/gestParents.inc.php');
+        require_once 'inc/parents/gestParents.inc.php';
+        break;
+    case 'searchMail':
+        require_once 'inc/parents/searchByMail.inc.php';
         break;
     case 'reunionParents':
         if ($etape == 'enregistrer') {

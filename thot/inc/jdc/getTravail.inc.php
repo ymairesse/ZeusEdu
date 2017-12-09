@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../config.inc.php';
+require_once '../../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
@@ -17,22 +17,24 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$module = $Application->getModule(2);
+$module = $Application->getModule(3);
 
 require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $jdc = new Jdc();
 
-$event_id = isset($_POST['event_id']) ? $_POST['event_id'] : null;
+$id = isset($_POST['id']) ? $_POST['id'] : null;
+$editable = isset($_POST['editable']) ? $_POST['editable'] : null;
 
-if ($event_id != null) {
-    $travail = $jdc->getTravail($event_id);
+if ($id != null) {
+    $travail = $jdc->getTravail($id);
 
     require_once INSTALL_DIR.'/smarty/Smarty.class.php';
     $smarty = new Smarty();
-    $smarty->template_dir = '../templates';
-    $smarty->compile_dir = '../templates_c';
+    $smarty->template_dir = '../../templates';
+    $smarty->compile_dir = '../../templates_c';
 
     $smarty->assign('travail', $travail);
+    $smarty->assign('editable', $editable);
     $smarty->assign('acronyme', $acronyme);
-    echo $smarty->fetch('jdc/unTravail.tpl');
+    $smarty->display('jdc/unTravail.tpl');
 }

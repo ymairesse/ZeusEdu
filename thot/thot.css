@@ -348,3 +348,8 @@ tr.dir {
 a.btnTabAdd {
     padding: 0.7em 0.3em !important;
 }
+
+h2.subjectif {
+    background: red !important;
+    color: white !important;
+}

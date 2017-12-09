@@ -1,6 +1,6 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
-<div id="modalAdd" class="modal fade" aria-hidden="true">
+<div id="modalEdit" class="modal fade" aria-hidden="true">
 
     <div class="modal-dialog">
 
@@ -11,29 +11,31 @@
                 <h4 class="modal-title">Ajout d'un événement</h4>
             </div>
 
-            <form action="index.php" name="addJdc" id="addJdc" class="form-vertical">
+            <form action="index.php" name="editJdc" id="editJdc" class="form-vertical">
 
             <div class="modal-body">
 
                 <div class="row">
 
-                    <div class="col-md-5 col-sm-12">
+                    <div class="col-md-6 col-sm-12">
 
                         <div class="form-group">
                             <label for="categorie" class="sr-only">Catégorie</label>
-                            <select name="categorie" id="categorie" class="form-control">
+                            <select name="categorie" id="categorie" class="form-control input-sm">
                                 <option value="">Veuillez choisir une catégorie</option>
                                 {foreach from=$categories key=id item=cat}
-                                    <option value="{$id}">{$cat.categorie}</option>
+                                    <option value="{$id}"{if isset($travail) && ($travail.idCategorie == $id)} selected{/if}>{$cat.categorie}</option>
                                 {/foreach}
                             </select>
                         </div>
 
                     </div>  <!-- col-md-... -->
 
-                    <div class="col-md-7 col-sm-12">
+                    <div class="col-md-6 col-sm-12">
+                        <input type="hidden" name="destinataire" value="{$destinataire}">
+                        <p>Pour <strong>{$lblDestinataire}</strong></p>
 
-                        <div class="form-group">
+                        {* <div class="form-group">
                             <label for="destinataire" class="sr-only">Destinataire</label>
                             <select name="destinataire" id="destinataire" class="form-control">
                                 <option value="">Destinataire</option>
@@ -49,7 +51,7 @@
                                 </option>
                                 {/foreach}
                             </select>
-                        </div>
+                        </div> *}
 
                     </div>  <!-- col-md-... -->
 
@@ -60,15 +62,15 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             <label for="date" class="sr-only">Date</label>
-                            <input type="text" name="date" id="datepicker" value="{$startDate|date_format:"%d/%m/%Y"}" placeholder="Date de notification" class="ladate form-control" autocomplete="off">
-                            <div class="help-block">Date de notification</div>
+                            <input type="text" name="date" id="datepicker" value="{$startDate|date_format:"%d/%m/%Y"}" placeholder="Date de notification" class="ladate form-control input-sm" autocomplete="off">
+                            <div class="help-block">Date de la note</div>
                         </div>
                     </div>
 
                     <div class="col-md-3 col-sm-6">
 
                         <div class="input-group">
-                            <input type="text" name="heure" id='heure' value="{$heure|default:''}" class="form-control" autocomplete="off">
+                            <input type="text" name="heure" id='heure' value="{$heure|default:''}" class="form-control input-sm" autocomplete="off">
                             <div class="input-group-btn">
                                 <button id="listePeriodes" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-hourglass"></i> <span class="caret"></span>
                                 </button>
@@ -79,6 +81,7 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="help-block">Heure</div>
 
                     </div>
 
@@ -86,10 +89,10 @@
 
                         <div class="input-group">
 
-                            <input type="text" name="duree" id="duree" class="form-control" value="" autocomplete="off">
+                            <input type="text" name="duree" id="duree" class="form-control input-sm" value="{$travail.duree|default:''}" autocomplete="off">
 
                 			<div class="input-group-btn">
-                				<button id="listeDurees" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">(min) <span class="caret"></span>
+                				<button id="listeDurees" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">(min) <span class="caret"></span>
                 				</button>
                                 {assign var=heures value=range(1,8)}
                 				<ul class="dropdown-menu pull-right" id="choixDuree">
@@ -119,12 +122,12 @@
 
                 <div class="form-group">
                     <label for="titre" class="sr-only">Titre</label>
-                    <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="" class="form-control" autocomplete="off">
+                    <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="{$travail.title|default:''}" class="form-control" autocomplete="off">
                 </div>
 
                 <div class="form-group">
                     <label for="enonce" class="sr-only">Texte</label>
-                    <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" cols="40" placeholder="Votre texte ici"></textarea>
+                    <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" cols="40" placeholder="Votre texte ici">{$travail.enonce|default:''}</textarea>
                 </div>
 
             </div>
@@ -141,9 +144,6 @@
             <input type="hidden" name="id" value="{$travail.id|default:''}">
             <input type="hidden" name="type" id="type" value="{$type|default:''}">
             <input type="hidden" name="startDate" value="{$startDate|default:''}" id="startDate">
-
-            {* <input type="hidden" name="action" value="jdc">
-            <input type="hidden" name="mode" value="save"> *}
 
         </form>
 
@@ -211,19 +211,35 @@ jQuery.validator.addMethod(
 
 $(document).ready(function(){
 
+    CKEDITOR.replace('enonce');
+
     $('#saveJDC').click(function(){
-        var formulaire = $('#addJdc').serialize();
+        var formulaire = $('#editJdc').serialize();
+        // récupérer le contenu du CKEDITOR
+        var enonce = CKEDITOR.instances.enonce.getData();
         $.post('inc/jdc/saveModalJdc.inc.php', {
-            formulaire: formulaire
-        }, function(resultat){
-            $('#calendar').html(resultat);
+            formulaire: formulaire,
+            enonce: enonce
+        }, function(id){
+            if (id != 0)
+                bootbox.alert({
+                    message: "Événement enregistré",
+                    size: 'small'
+                });
+            // récupérer le contenu de la zone "travail" à droite
+            $.post('inc/jdc/getTravail.inc.php', {
+                id: id
+                }, function(resultat){
+                    $('#unTravail').html(resultat);
+                })
+            $('#calendar').fullCalendar('refetchEvents');
         });
 
-        $('#modalAdd').modal('hide');
+        $('#modalEdit').modal('hide');
     })
 
 
-    $("#addJdc").validate({
+    $("#editJdc").validate({
         rules: {
             categorie: {
                 required: true

@@ -29,12 +29,9 @@
             {foreach from=$listeSpied key=wtf item=dataSpy}
             <tr>
                 <td>
-                    <span title="{$dataSpy.userName}">
-                    {if $dataSpy.nomProf != ''}<i class="fa fa-graduation-cap"></i> {$dataSpy.prenomProf} {$dataSpy.nomProf}
-                        {elseif $dataSpy.nomParent != ''}<i class="fa fa-user-plus"></i> {$dataSpy.formule} {$dataSpy.prenomParent} {$dataSpy.nomParent}
-                        {elseif $dataSpy.nom != ''}{$dataSpy.groupe} {$dataSpy.prenom} {$dataSpy.nom}
-                    {/if}
-                    </span>
+                    {if $dataSpy.nomParent != Null}<i class="fa fa-user-plus"></i> {$dataSpy.formule} {$dataSpy.prenomParent} {$dataSpy.nomParent}{/if}
+                    {if $dataSpy.nom != Null}{$dataSpy.groupe} {$dataSpy.nom} {$dataSpy.prenom}{/if}
+                    {if $dataSpye.nomProf != Null}<i class="fa fa-graduation-cap"></i> {$dataSpy.prenomProf} {$dataSpy.nomProf}.
                 </td>
                 {if $listeSpied.0.isDir ==1}
                     <td>{$dataSpy.path}</td>

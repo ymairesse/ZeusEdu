@@ -22,8 +22,6 @@ $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-$listeCours = $User->getListeCours();
-$listeClasses = $User->listeTitulariats();
 $categories = $Jdc->categoriesTravaux();
 
 $startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
@@ -43,8 +41,8 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('categories', $categories);
-$smarty->assign('listeCours', $listeCours);
-$smarty->assign('listeClasses', $listeClasses);
+// $smarty->assign('listeCours', $listeCours);
+// $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('listePeriodes', $listePeriodes);
 
 $smarty->assign('startDate', $startDate);
@@ -53,4 +51,4 @@ $smarty->assign('type', $type);
 $smarty->assign('destinataire', $destinataire);
 $smarty->assign('lblDestinataire', $lblDestinataire);
 
-$smarty->display('jdc/modalAdd.tpl');
+$smarty->display('jdc/modalEdit.tpl');

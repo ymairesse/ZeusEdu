@@ -2,7 +2,7 @@
 
 <form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-	<select name="coursGrp" id="coursGrp">
+	<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 		<option value="">Cours</option>
 		{foreach from=$listeCours key=unCoursGrp item=unCours}
 			<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected="selected"{/if}>
@@ -15,6 +15,7 @@
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode|default:'voir'}">
 	<input type="hidden" name="etape" value="show">
+	<input type="hidden" name="type" value="cours">
 
 </form>
 

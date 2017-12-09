@@ -29,6 +29,9 @@ $module = Application::repertoireActuel();
 $listeCours = $user->listeCoursProf();
 $smarty->assign('listeCours', $listeCours);
 
+$titulaire = $user->listeTitulariats();
+$smarty->assign('titulaire', $titulaire);
+
 switch ($action) {
     case 'notification':
         include_once 'inc/notif/notifications.inc.php';
@@ -70,7 +73,17 @@ switch ($action) {
         break;
 }
 
+require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
+$FlashInfo = new FlashInfo();
+
+$listeFlashInfos = $FlashInfo->listeFlashInfos($module);
+$smarty->assign('userStatus', $userStatus);
+$smarty->assign('listeFlashInfos', $listeFlashInfos);
+
 //
 // ----------------------------------------------------------------------------
+
+$smarty->assign('INSTALL_DIR', INSTALL_DIR);
 $smarty->assign('executionTime', round($chrono->stop(), 6));
+
 $smarty->display('index.tpl');

@@ -2,7 +2,7 @@
 
 <form name="selecteur" id="formSelecteur" method="GET" action="index.php" role="form" class="form-inline">
 
-	<select name="coursGrp" id="coursGrp">
+	<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 		<option value="">Cours</option>
 		{foreach from=$listeCours key=unCoursGrp item=unCours}
 			<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected="selected"{/if}>

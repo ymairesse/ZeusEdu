@@ -1,17 +1,17 @@
 <?php
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$mail = isset($_POST['mail']) ? trim($_POST['mail']) : Null;
 
-if ($classe != Null) {
-    $listeParents = $Thot->getMailsParentsClasse($classe);
+if ($mail != Null) {
+    $listeParents = $Thot->getParentsByMail($mail);
 }
 else $listeParents = Null;
+
 $smarty->assign('listeParents', $listeParents);
+$smarty->assign('mail', $mail);
 
 $listeClasses = $Ecole->listeGroupes();
 $smarty->assign('listeClasses', $listeClasses);
 
-
-$smarty->assign('classe', $classe);
 $smarty->assign('selecteur', 'selecteurs/selectClasseMailPOST');
-$smarty->assign('corpsPage', 'parents/gestParents');
+$smarty->assign('corpsPage', 'parents/parentsByMail');

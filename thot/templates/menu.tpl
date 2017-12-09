@@ -21,19 +21,25 @@
 			<li><a href="index.php"><button class="btn btn-primary">THOT <img src="images/thotIco.png" alt="THOT" title="Page d'accueil de THOT"></button></a></li>
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Annonces <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-						<li><a href="index.php?action=notification&amp;etape=historique">Annonces et historique des annonces</a></li>
+					<li><a href="index.php?action=notification&amp;etape=historique">Annonces et historique des annonces</a></li>
+					<li><a href="index.php?action=notification&amp;etape=subjectif">Vue subjective des annonces</a></li>
 				</ul>
 			</li>
 
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					{if !empty($titulaire)}
-					<li><a href="index.php?action=jdc&amp;mode=classe&amp;destinataire={','|implode:$titulaire}">Titulaire de [{','|implode:$titulaire}]</a></li>
-					{/if}
 					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=classe">Journal de classe par classe</a></li>
+					<li role="separator" class="divider"></li>
 					{/if}
-					<li><a href="index.php?action=jdc&amp;mode=eleves">Vue subjective: JDC élève</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=eleve">Journal de classe par élève</a></li>
+					{if $userStatus == 'admin' || $userStatus == 'direction'}
+						<li><a href="index.php?action=jdc&amp;mode=niveau">Journal de classe par niveau d'étude</a></li>
+						<li><a href="index.php?action=jdc&amp;mode=ecole">Journal de classe pour tous les élèves</a></li>
+					{/if}
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=jdc&amp;mode=subjectif">Vue subjective par élève</a></li>
 				</ul>
 			</li>
 

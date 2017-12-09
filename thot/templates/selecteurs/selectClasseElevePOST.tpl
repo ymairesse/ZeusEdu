@@ -4,7 +4,7 @@
 
 		<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
 
-		<select name="classe" id="selectClasse">
+		<select name="classe" id="selectClasse" class="form-control input-sm">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
@@ -38,7 +38,8 @@
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode|default:Null}">
 
-		<input type="hidden" name="etape" value="showEleve">
+		<input type="hidden" name="etape" value="{$etape}">
+		<input type="hidden" name="type" id="eleveSubjectif" value="{$type}">
 		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
 </div>

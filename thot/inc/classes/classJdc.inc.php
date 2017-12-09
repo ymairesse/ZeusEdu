@@ -58,6 +58,138 @@ class Jdc
     }
 
     /**
+     * renvoie la liste des événements entre deux dates start et end pour un niveau d'étude $niveaudonné
+     *
+     * @param string $dateFrom : date de début
+     * @param string $dateTo   : date de fin
+     * @param int $niveau : niveau d'étude
+     * @param string $acronyme : identifiant du propriétaire (sécurité)
+     *
+     * @return array
+     */
+     public function getEvents4Niveau($dateFrom, $dateTo, $niveau, $acronyme){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ';
+         $sql .= 'FROM '.PFX.'thotJdc ';
+         $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+         $sql .= 'AND destinataire = :niveau ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
+         $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
+         $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+         $resultat = $requete->execute();
+         $liste = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $liste[] = array(
+                     'id'=>$ligne['id'],
+                     'title'=>$ligne['title'],
+                     'url'=>$ligne['url'],
+                     'className'=>'cat_'.$ligne['idCategorie'],
+                     'start'=> $ligne['startDate'],
+                     'end' => $ligne['endDate'],
+                     'allDay' => ($ligne['allDay']!=0),
+                     'editable' => ($ligne['proprietaire'] == $acronyme)
+                     );
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+     /**
+      * renvoie la liste des événements entre deux dates start et end pour un niveau d'étude $niveaudonné
+      *
+      * @param string $dateFrom : date de début
+      * @param string $dateTo   : date de fin
+      * @param int $niveau : niveau d'étude
+      * @param string $acronyme : identifiant du propriétaire (sécurité)
+      *
+      * @return array
+      */
+      public function getEvents4Ecole($dateFrom, $dateTo, $acronyme){
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ';
+          $sql .= 'FROM '.PFX.'thotJdc ';
+          $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+          $sql .= "AND destinataire = 'all' ";
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
+          $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
+
+          $resultat = $requete->execute();
+          $liste = array();
+          if ($resultat) {
+              $requete->setFetchMode(PDO::FETCH_ASSOC);
+              while ($ligne = $requete->fetch()) {
+                  $liste[] = array(
+                      'id'=>$ligne['id'],
+                      'title'=>$ligne['title'],
+                      'url'=>$ligne['url'],
+                      'className'=>'cat_'.$ligne['idCategorie'],
+                      'start'=> $ligne['startDate'],
+                      'end' => $ligne['endDate'],
+                      'allDay' => ($ligne['allDay']!=0),
+                      'editable' => ($ligne['proprietaire'] == $acronyme)
+                      );
+              }
+          }
+          Application::DeconnexionPDO($connexion);
+
+          return $liste;
+      }
+
+    /**
+     * renvoie la liste des événements entre deux dates start et end pour un élève de $matricule donné
+     *
+     * @param string $dateFrom : date de début
+     * @param string $dateTo   : date de fin
+     * @param int $matricule : matricule de l'élève
+     * @param string $acronyme : identifiant du propriétaire (sécurité)
+     *
+     * @return array
+     */
+    public function getEvents4Eleve($dateFrom, $dateTo, $matricule, $acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, url, class, allDay, startDate, endDate, allDay ';
+        $sql .= 'FROM '.PFX.'thotJdc ';
+        $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+        $sql .= 'AND destinataire = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
+        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $liste[] = array(
+                    'id'=>$ligne['id'],
+                    'title'=>$ligne['title'],
+                    'url'=>$ligne['url'],
+                    'className'=>'cat_'.$ligne['idCategorie'],
+                    'start'=> $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => ($ligne['allDay']!=0),
+                    'editable' => ($ligne['proprietaire'] == $acronyme)
+                    );
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
      * renvoie la liste d'événements entres deux dates start et end pour une classe donnée
      *
      * @param string $dateFrom : date de début
@@ -100,6 +232,34 @@ class Jdc
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * retourne le niveau d'étude d'un élève dont on fournit le matricule
+     *
+     * @param int $matricule
+     *
+     * @return int : le niveau d'étude
+     */
+    public function getNiveauEleve ($matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT groupe FROM '.PFX.'eleves ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $niveau = Null;
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $groupe = $ligne['groupe'];
+            $niveau = substr($groupe, 0, 1);
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $niveau;
     }
 
     /**
@@ -219,7 +379,7 @@ class Jdc
 
     /**
      * modifie les dates de début et de fin d'un évenement dont on fournit aussi l'id
-     * fonction nécessaire après un drag/drop;.
+     * fonction nécessaveJdcire après un drag/drop;.
      *
      * @param $id : l'identifiant de l'inscription dans le JDC
      * @param $startDate : date et heure de début de l'événement
@@ -332,12 +492,12 @@ class Jdc
             // nouvel enregistrement
             $sql = 'INSERT INTO '.PFX.'thotJdc ';
             $sql .= 'SET destinataire=:destinataire, type=:type, proprietaire=:proprietaire, idCategorie=:categorie, ';
-            $sql .= 'title=:titre, enonce=:enonce, class=:class, startDate=:startDate, endDate=:endDate, allDay=:allDay ';
+            $sql .= 'title=:titre, enonce=:enonce, startDate=:startDate, endDate=:endDate, allDay=:allDay ';
         } else {
             // simple mise à jour
             $sql = 'UPDATE '.PFX.'thotJdc ';
             $sql .= 'SET destinataire=:destinataire, type=:type, proprietaire=:proprietaire, idCategorie=:categorie, ';
-            $sql .= 'title=:titre, enonce=:enonce, class=:class, startDate=:startDate, endDate=:endDate, allDay=:allDay ';
+            $sql .= 'title=:titre, enonce=:enonce, startDate=:startDate, endDate=:endDate, allDay=:allDay ';
             $sql .= "WHERE id='$id' ";
         }
         $requete = $connexion->prepare($sql);
@@ -349,7 +509,7 @@ class Jdc
             ':categorie' => $categorie,
             ':titre' => $titre,
             ':enonce' => $enonce,
-            ':class' => $class,
+            // ':class' => $class,
             ':startDate' => $startDate,
             ':endDate' => $endDate,
             ':allDay' => $allDay,
@@ -373,7 +533,7 @@ class Jdc
     /**
      * retourne les différentes catégories de travaux disponibles (interro, devoir,...).
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */
@@ -398,46 +558,101 @@ class Jdc
     }
 
     /**
-     * renvoie la dénomination précise d'une cible dans le JDC.
+     * renvoie le label utilisable pour le destinataire en fonction du type
      *
-     * @param $listeCours : la liste des cours du prof
-     * @param $mode : 'classe' ou 'cours'
-     * @param $destinataire : la classe ou le coursGrp visé
+     * @param string $type : type de destinataire (ecole, niveau, classe, groupe, eleve)
+     * @param string $destinataire : le nom du destinataire
      *
      * @return string
      */
-    public function denomination($listeCours, $mode, $destinataire)
-    {
-        $jdc = null;  // par défaut
-        if ($destinataire == Null)
-          return Null;
-        switch ($mode) {
+    public function getLabel ($type, $destinataire, $infos=Null) {
+        $lblDestinataire = Null;
+        switch ($type) {
+            case 'eleve':
+                // $infos est un tableau avec les détails de l'élève
+                $lblDestinataire = $this->getLblEleve($infos);
+                break;
             case 'cours':
-                if ($destinataire != null) {
-                    if (isset($listeCours[$destinataire]) && ($listeCours[$destinataire] != '')) {
-                        $detailsCours = $listeCours[$destinataire];
-                        if ($detailsCours['nomCours'] != '') {
-                            $jdc = sprintf('-> %s %dh | %s', $detailsCours['libelle'], $detailsCours['nbheures'], $detailsCours['nomCours']);
-
-                            return $jdc;
-                        } else {
-                            $jdc = sprintf('%s %s %s %dh [%s]', $detailsCours['annee'], $detailsCours['statut'], $detailsCours['libelle'], $detailsCours['nbheures'], $detailsCours['coursGrp']);
-                        }
-                    } else {
-                        $jdc = 'Tous mes cours';
-                    }
-                }
+                // $infos est la liste des cours du prof
+                $lblDestinataire =  $this->getLblCours($destinataire, $infos);
                 break;
             case 'classe':
-                $jdc = sprintf('Classe de %s', $destinataire);
+                $lblDestinataire = $this->getLblClasse($destinataire);
                 break;
-            default:
-                $jdc = null;
+            case 'niveau':
+                $lblDestinataire = $this->getLblNiveau($destinataire);
+                break;
+            case 'ecole':
+                $lblDestinataire = $this->getLblEcole();
                 break;
         }
 
-        return $jdc;
+        return $lblDestinataire;
     }
+
+    	/**
+    	 * renvoie le label utilisable pour un cours si on fournit $coursGrp et $listeCours (avec détails de dénomination) de l'utilisateur
+    	 *
+    	 * @param string $coursGrp
+    	 * @param array $listeCours
+    	 *
+    	 * @return string
+    	 */
+    	public function getLblCours ($coursGrp, $listeCours) {
+			$detailsCours = $listeCours[$coursGrp];
+			if ($detailsCours['nomCours'] != '') {
+				$lbl = sprintf('-> %s %dh | %s',$detailsCours['libelle'], $detailsCours['nbheures'], $detailsCours['nomCours']);
+                }
+			else {
+				$lbl = sprintf('%s %s %s %dh [%s]', $detailsCours['annee'], $detailsCours['statut'], $detailsCours['libelle'], $detailsCours['nbheures'], $detailsCours['coursGrp']);
+			}
+
+    		return $lbl;
+    	}
+
+    	/**
+    	 * renvoie le label utilisable pour une classe si on fournit $classe
+    	 *
+    	 * @param string $classe
+    	 *
+    	 * @return string
+    	 */
+    	public function getLblClasse ($classe) {
+    		return sprintf('la classe de %s', $classe);
+    	}
+
+    	/**
+    	 * renvoie le label utilisable pour un élève dont on fournit les détails
+    	 * @param array $detailsEleve
+    	 *
+    	 * @return string
+    	 */
+    	public function getLblEleve ($detailsEleve) {
+    		return sprintf('%s %s [%s]', $detailsEleve['nom'], $detailsEleve['prenom'], $detailsEleve['groupe']);
+    	}
+
+    	/**
+    	 * renvoie le label utilisable pour le niveau d'étude précisé
+    	 *
+    	 * @param int $niveau
+    	 *
+    	 * @return string
+    	 */
+    	public function getLblNiveau ($niveau) {
+    		$suffixe = ($niveau == 1) ? 'ères' : 'èmes';
+    		return sprintf('les élèves de %d%s', $niveau, $suffixe);
+    	}
+
+    	/**
+    	 * renvoie le label utilisable pour tous les élèves de l'école
+    	 *
+    	 * @param void()
+    	 *
+    	 * @return string
+    	 */
+    	public function getLblEcole () {
+    		return 'tous les élèves';
+    	}
 
     /**
      * renvoie la liste des heures de cours données dans l'école.

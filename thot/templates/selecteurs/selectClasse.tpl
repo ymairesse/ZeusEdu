@@ -11,8 +11,9 @@
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="etape" value="showClasse">
+		<input type="hidden" name="type" value="cours">
 	</form>
-
+xxx
 </div>
 
 <script type="text/javascript">

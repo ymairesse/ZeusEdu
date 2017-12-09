@@ -16,37 +16,51 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
+$unAn = time() + 365 * 24 * 3600;
+
 $start = $_POST['start'];
 $end = $_POST['end'];
 $type = $_POST['type'];
 $coursGrp = $_POST['coursGrp'];
 $classe = $_POST['classe'];
 $matricule = $_POST['matricule'];
+$niveau = $Application->postOrCookie('niveau', $unAn);
+// $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
 
 $module = $Application->getModule(2);
 require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
+$eventsList = array();
 switch ($type) {
     case 'cours':
         $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
         break;
-    case 'eleves':
-        $listeCoursEleve = $Jdc->listeCoursGrpEleves($matricule);
-        $eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursEleve, $acronyme);
-        $eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
-        $eventsList = array_merge($eventsListCours, $eventsListClasse);
+    case 'eleve':
+        $eventsList = $Jdc->getEvents4Eleve($start, $end, $matricule, $acronyme);
         break;
     case 'classe':
-        $listeCoursClasse = $Jdc->listeCoursClasse($classe);
-        $eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursClasse, $acronyme);
+        $eventsList = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
+        break;
+    case 'niveau':
+        $eventsList = $Jdc->getEvents4Niveau($start, $end, $niveau, $acronyme);
+        break;
+    case 'ecole':
+        $eventsList = $Jdc->getEvents4Ecole($start, $end, $acronyme);
+        break;
+    case 'subjectif':
+        require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+        $listeCoursEleve = Eleve::getListeCoursEleve($matricule);
+        $detailsEleve = Eleve::staticGetDetailsEleve($matricule);
+        $classe = $detailsEleve['groupe'];
+        $niveau = substr($classe, 0, 1);
+        $eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursEleve, $acronyme);
+        $eventsListEleve = $Jdc->getEvents4Eleve($start, $end, $matricule, $acronyme);
         $eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
-        $eventsList = array_merge($eventsListCours, $eventsListClasse);
+        $eventsListNiveau = $Jdc->getEvents4Niveau($start, $end, $niveau, $acronyme);;
+        $eventsListEcole = $Jdc->getEvents4Ecole($start, $end, $acronyme);
+        $eventsList = array_merge($eventsListEleve, $eventsListCours, $eventsListClasse, $eventsListNiveau, $eventsListEcole);
         break;
-    default:
-        $eventsList = Null;
-        break;
-    }
-
+}
 
 echo json_encode($eventsList);

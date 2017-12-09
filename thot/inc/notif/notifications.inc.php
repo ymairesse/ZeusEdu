@@ -6,6 +6,9 @@ if ($etape == Null)
 
 
 switch ($etape) {
+    case 'subjectif':
+        require_once 'inc/notif/subjectif.inc.php';
+        break;
     case 'historique':
         require_once 'inc/notif/historique.inc.php';
         break;
