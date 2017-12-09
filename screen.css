@@ -1174,3 +1174,14 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
     float: none;
   }
 }
+
+.discret {
+    padding: 0;
+    font-size: 9pt;
+}
+
+.selecteur {
+    margin:0;
+    padding: 0;
+    background-color: #ccc;
+}
