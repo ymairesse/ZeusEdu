@@ -60,5 +60,8 @@ switch ($action) {
 
 //
 // ----------------------------------------------------------------------------
+
+$smarty->assign('INSTALL_DIR', INSTALL_DIR);
 $smarty->assign('executionTime', round($chrono->stop(), 6));
+
 $smarty->display('index.tpl');
