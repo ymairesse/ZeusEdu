@@ -9,7 +9,7 @@ $smarty->assign('INSTALL_DIR', INSTALL_DIR);
 
 ```
 {assign var=module value="flashInfo"}
-{include file=“$INSTALL_DIR/widgets/flashInfo/templates/index.tpl”}
+{include file="$INSTALL_DIR/widgets/flashInfo/templates/index.tpl"}
 ```
 à l’endroit où les annonces doivent apparaître.
 
