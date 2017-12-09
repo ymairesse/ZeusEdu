@@ -1127,19 +1127,14 @@ class Files
      */
     public function getSpyList4ShareId ($shareId, $acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-
-        $sql = 'SELECT dp.nom AS nomProf, dp.prenom AS prenomProf, de.groupe, de.nom, de.prenom, dtp.formule, ';
-        $sql .= 'dtp.nom AS nomParent, dtp.prenom AS prenomParent, tss.spyId, tss.shareId, tss.isDir, ';
-        $sql .= 'tss.fileId, tssu.userName, date, tssu.path, tssu.fileName ';
+        $sql = 'SELECT dp.nom AS nomProf, dp.prenom AS prenomProf, tss.spyId, tss.shareId, tss.isDir, tss.fileId, userName, date, tssu.path, tssu.fileName ';
         $sql .= 'FROM '.PFX.'thotSharesSpy AS tss ';
         $sql .= 'LEFT JOIN '.PFX.'thotSharesSpyUsers AS tssu ON tssu.spyId = tss.spyId ';
         $sql .= 'JOIN '.PFX.'thotShares AS ts ON ts.shareId = tss.shareId ';
         $sql .= 'JOIN '.PFX.'thotFiles AS tf ON tf.fileId = ts.fileId ';
-        $sql .= 'LEFT JOIN didac_profs AS dp ON dp.acronyme = userName ';
-        $sql .= 'LEFT JOIN didac_passwd AS dpw ON dpw.user = tssu.userName ';
-        $sql .= 'LEFT JOIN didac_eleves AS de ON de.matricule = dpw.matricule ';
-        $sql .= 'LEFT JOIN didac_thotParents AS dtp ON dtp.userName = tssu.userName ';
-        $sql .= 'WHERE tss.shareId = :shareId AND tf.acronyme = :acronyme ORDER BY date, userName ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = userName ';
+        $sql .= 'WHERE tss.shareId =:shareId AND tf.acronyme=:acronyme ';
+        $sql .= 'ORDER BY date, userName ';
 
         $requete = $connexion->prepare($sql);
 

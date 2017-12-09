@@ -3,33 +3,35 @@
 // les flashInfo sont destinés à apparaître sur la page d'accueil d'une application
 
 class flashInfo {
-	private $id;
-	private $data;
+	// private $id;
+	// private $data;
 
 	// --------------------------------------------
 	// fonction constructeur
-	function __construct($id=Null) {
-	if (isset($id)) {
-		$this->id = $id;
-		$this->data = $this->getData();
-		}
+	function __construct() {
+
 	}
 
 	/**
 	 * recherche dans la base de données le FlahsInfo correspondant à l'élément dont l'id est passé en paramètre
-	 * @param $id
+	 * @param $id : si Null, la fonction renvoie un flashInfo vide
+	 *
 	 * @return array
 	 */
-	public function getData ($id=Null) {
-		if ($id) {
+	public function getData ($id = Null) {
+		if ($id != Null) {
 			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-			$sql = "SELECT * FROM ".PFX."flashInfos ";
-			$sql .= "WHERE id='$id'";
-			$resultat = $connexion->query($sql);
+			$sql = 'SELECT id, date, heure, titre, texte, application, developpe ';
+			$sql .= 'FROM '.PFX.'flashInfos ';
+			$sql .= 'WHERE id= :id ';
+			$requete = $connexion->prepare($sql);
+
+			$requete->bindParam(':id', $id, PDO::PARAM_INT);
+			$resultat = $requete->execute();
 			$data = array();
 			if ($resultat) {
-				$resultat->setFetchMode(PDO::FETCH_ASSOC);
-				$ligne = $resultat->fetch();
+				$requete->setFetchMode(PDO::FETCH_ASSOC);
+				$ligne = $requete->fetch();
 				$data = $ligne;
 				$data['date'] = Application::datePHP($data['date']);
 				}
@@ -37,54 +39,69 @@ class flashInfo {
 		}
 		else {
 				$data = array(
-					'id'=>'',
-					'date'=>date("d/m/Y"),
-					'heure'=>'',
-					'titre'=>'',
-					'texte'=>'',
-					'application'=>Application::repertoireActuel());
+					'id' => '',
+					'date' => date("d/m/Y"),
+					'heure' => date("H:i"),
+					'titre' => '',
+					'texte' => '',
+					'application' => Application::repertoireActuel(),
+					'developpe' => 0,
+				);
 				}
 
 		return $data;
 		}
 
+
 	/**
 	 * Supprime de la base de données l'élémnet dont l'id est passé en paramètre
 	 * retourne le nombre de suppressions effectuées (une ou aucune)
 	 * @param $id
-	 * @return integer : nombre de suppression (en principe, une seule)
+	 * @return integer : si tout s'est bien passé, on retourne l'id, sinon -1
 	 */
-	public function delFlashInfo ($id,$module) {
+	public function delFlashInfo ($id, $module) {
+
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "DELETE FROM ".PFX."flashInfos ";
-		$sql .= "WHERE id = '$id' AND application='$module' ";
-		$resultat = $connexion->exec($sql);
+		$sql = 'DELETE FROM '.PFX.'flashInfos ';
+		$sql .= 'WHERE id = :id AND application = :module ';
+		$requete = $connexion->prepare($sql);
+
+		$requete->bindParam(':id', $id, PDO::PARAM_INT);
+		$requete->bindParam(':module', $module, PDO::PARAM_STR, 12);
+
+		$resultat = $requete->execute();
+
 		Application::deconnexionPDO($connexion);
-		return $resultat;
+
+		if ($resultat == true)
+			return $id;
+			else return -1;
 		}
 
 	/**
-	 * Enregistre les données passées dans le tableau $data dans la base de données
+	 * Enregistre les données passées dans le tableau $post dans la base de données
 	 * retourne le nombre d'enregistrements effectués (un ou zéro si erreur ou inchangé)
-	 * @param $data
+	 * @param array $post
 	 *
+	 * @return int
 	 */
-	public function saveFlashInfo ($data) {
-		$id = $data['id'];
-		$date = Application::dateMysql($data['date']);
-		$heure = $data['heure'];
+	public function saveFlashInfo ($post) {
+		$id = $post['id'];
+		$date = Application::dateMysql($post['date']);
+		$heure = $post['heure'];
+		$developpe = isset($post['developpe']) ? 1 : 0;
 
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		if ($id == Null) {
 			$sql = 'INSERT INTO '.PFX.'flashInfos ';
 			$sql .= 'SET date=:date, heure=:heure, application=:application, ';
-			$sql .= 'titre=:titre, texte=:texte ';
+			$sql .= 'titre=:titre, texte=:texte, developpe=:developpe ';
 			$requete = $connexion->prepare($sql);
 		}
 		else {
 			$sql = 'UPDATE '.PFX.'flashInfos ';
 			$sql .= 'SET date=:date, heure=:heure, application=:application, ';
-			$sql .= 'titre=:titre, texte=:texte ';
+			$sql .= 'titre=:titre, texte=:texte, developpe=:developpe ';
 			$sql .= 'WHERE id=:id ';
 			$requete = $connexion->prepare($sql);
 			$requete->bindParam(':id', $id, PDO::PARAM_INT);
@@ -92,9 +109,10 @@ class flashInfo {
 
 		$requete->bindParam(':date', $date, PDO::PARAM_STR, 12);
 		$requete->bindParam(':heure', $heure, PDO::PARAM_STR, 12);
-		$requete->bindParam(':application', $data['application'], PDO::PARAM_STR, 12);
-		$requete->bindParam(':titre', $data['titre'], PDO::PARAM_STR, 60);
-		$requete->bindParam(':texte', $data['texte'], PDO::PARAM_STR);
+		$requete->bindParam(':application', $post['module'], PDO::PARAM_STR, 12);
+		$requete->bindParam(':titre', $post['titre'], PDO::PARAM_STR, 60);
+		$requete->bindParam(':texte', $post['texte'], PDO::PARAM_STR);
+		$requete->bindParam(':developpe', $developpe, PDO::PARAM_INT);
 
 		$nb = $requete->execute();
 
@@ -105,27 +123,33 @@ class flashInfo {
 
 	/**
 	 * retourne la liste des flashInfos pour le module indiqué et par ordre de dates décroissantes
-	 * @param $module
-	 * @return array()
+	 *
+	 * @param string $module
+	 *
+	 * @return array
 	 */
 	public static function listeFlashInfos ($module) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = "SELECT * FROM ".PFX."flashInfos ";
-		$sql .= "WHERE application = '$module' ";
-		$sql .= "ORDER BY date DESC";
-		$resultat = $connexion->query($sql);
+		$sql = 'SELECT id, date, heure, application, titre, texte, developpe ';
+		$sql .= 'FROM '.PFX.'flashInfos ';
+		$sql .= 'WHERE application = :module ';
+		$sql .= 'ORDER BY date DESC, titre ';
+		$requete = $connexion->prepare($sql);
+
+		$requete->bindParam(':module', $module, PDO::PARAM_STR, 12);
+		$resultat = $requete->execute();
 
 		$flashInfos = array();
 		if ($resultat) {
-			$resultat->setFetchMode(PDO::FETCH_ASSOC);
-			while ($ligne = $resultat->fetch()) {
+			$requete->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $requete->fetch()) {
 				$flashInfos[] = $ligne;
 				}
 			}
+
 		Application::DeconnexionPDO($connexion);
+
 		return $flashInfos;
 		}
 
-
 }
-?>

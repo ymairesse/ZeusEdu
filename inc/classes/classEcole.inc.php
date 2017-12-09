@@ -302,10 +302,11 @@ class ecole
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT DISTINCT groupe ';
         $sql .= 'FROM '.PFX.'profsCours AS dpc ';
-        $sql .= 'JOIN '.PFX.'elevesCours AS `dec` ON `dec`.coursGrp = dpc.coursGrp ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = `dec`.matricule ';
+        $sql .= 'JOIN '.PFX.'elevesCours AS delc ON delc.coursGrp = dpc.coursGrp ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = delc.matricule ';
         $sql .= "WHERE acronyme = '$acronyme' ";
         $sql .= 'ORDER BY groupe ';
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {

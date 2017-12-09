@@ -934,6 +934,38 @@ class thot
     }
 
     /**
+     * retourne les informations concernant les parents d'un élève dont on fournit le matricule
+     *
+     * @param int $matricule
+     *
+     * @return array
+     */
+    public function getInfoParents($matricule)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT formule, nom, prenom, userName, mail, lien, confirme, notifications ';
+        $sql .= 'FROM '.PFX.'thotParents ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $infoParents = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $userName = $ligne['userName'];
+                $infoParents[$userName] = $ligne;
+                }
+            }
+
+            Application::deconnexionPDO($connexion);
+
+            return $infoParents;
+    }
+
+    /**
      * retourne la liste des profs auxquels une possibilité de RV est fixée.
      *
      * @param $date : date de la RP
@@ -1389,6 +1421,38 @@ class thot
         Application::deconnexionPDO($connexion);
 
         return $n;
+    }
+
+    /**
+     * renvoie les informations "parents" pour une adresse mail donnée
+     *
+     * @param string $mail
+     *
+     * @return array
+     */
+    public function getParentsByMail($mail) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtp.matricule, formule, dtp.nom AS nomParent, dtp.prenom AS prenomParent, userName, lien, mail, confirme, notifications, ';
+        $sql .= 'de.groupe, de.nom, de.prenom ';
+        $sql .= 'FROM '.PFX.'thotParents AS dtp ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
+        $sql .= 'WHERE mail = :mail ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':mail', $mail, PDO::PARAM_STR, 60);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $userName = $ligne['userName'];
+                $liste[$userName] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
     /**
@@ -1928,7 +1992,7 @@ class thot
      * @param $date
      * @param $periode
      *
-     * @return interger : le nombre d'effacements réalisés (en principe, 1)
+     * @return int : le nombre d'effacements réalisés (en principe, 1)
      */
     public function delListeAttenteProf($matricule, $acronyme, $date, $periode)
     {
