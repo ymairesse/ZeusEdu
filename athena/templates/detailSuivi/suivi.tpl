@@ -34,7 +34,12 @@
             <td>{$listeSuivi.$id.proprietaire}</td>
             <td>{if $unItem.absent == 1}<i class="fa fa-question <fa-lg></fa-lg> text-danger" title="Ne s'est pas présenté"></i>{else}-{/if}</td>
             {assign var=leProf value=$unItem.envoyePar}
-            <td>{if isset($listeProfs.$leProf)}{$listeProfs.$leProf.prenom|truncate:2:'.'} {$listeProfs.$leProf.nom}{else}{$unItem.envoyePar} (?){/if}</td>
+            <td>
+                {if isset($listeProfs.$leProf)}
+                    {$listeProfs.$leProf.prenom|truncate:2:'.'} {$listeProfs.$leProf.nom}
+                {else}
+                    {$leProf} (?)
+                {/if}</td>
             <td data-date="{$unItem.date}">{$unItem.date}</td>
             <td data-heure="{$unItem.heure}">{$unItem.heure}</td>
             <td data-motif="{$unItem.motif}"
@@ -111,7 +116,7 @@
         <form action="index.php" method="POST" role="form" class="form-inline">
             <input type="hidden" name="action" value="{$action}">
             <input type="hidden" name="mode" value="delete">
-            <input type="hidden" name="matricule" value="{$eleve.matricule}">
+            <input type="hidden" name="matricule" id="matriculeSuivi" value="{$eleve.matricule}">
             <input type="hidden" name="id" id="id" value="">
             <div class="btn-group pull-right">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>

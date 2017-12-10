@@ -81,17 +81,32 @@
 
 		<div class="col-md-2 col-sm-2">
 			<img src="../photos/{$eleve.photo}.jpg" class="photo img-responsive" alt="{$eleve.matricule}" title="{$eleve.prenom} {$eleve.nom} {$eleve.matricule}">
-			<div class="btn-group-vertical">
-				<button type="submit" class="btn btn-primary btn-lg" name="submit">Enregistrer</button>
-				<button type="reset" class="btn btn-default btn-lg" name="reset">Annuler</button>
+			<div class="btn-group-vertical btn-block">
+				<button type="submit" class="btn btn-primary btn-block" name="submit">Enregistrer</button>
+				<button type="reset" class="btn btn-default btn-block" name="reset">Annuler</button>
 			</div>
+
 		</div>
 
 	</div> <!-- row -->
+
+	<div class="row">
+
+		<div class="col-xs-offset-5">
+			<h3>Mêmes notes pour les élèves ajoutés <button type="button" id="btn-elevesPlus" class="btn btn-info pull-right">Ajouter des élèves</button></h3>
+			<ul id="elevesPlus" class="list-unstyled">
+
+			</ul>
+
+		</div>
+
+	</div>
+
 	<input type="hidden" name="id" value="{$visite.id|default:''}">
-	<input type="hidden" name="matricule" value="{$eleve.matricule}">
-	<input type="hidden" name="classe" value="{$eleve.classe}">
+	<input type="hidden" name="matricule" id="matriculePlus" value="{$eleve.matricule}">
+	<input type="hidden" name="classe" id="classe" value="{$eleve.classe}">
 	<input type="hidden" name="proprietaire" value="{$proprietaire}">
+	<input type="hidden" name="anneeScolaire" value="{$ANNEESCOLAIRE}">
 	<input type="hidden" name="onglet" id="onglet" value="{$onglet|default:0}">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="enregistrer">
@@ -107,12 +122,76 @@
 	<button type="submit" class="btn btn-default pull-right"><i class="fa fa-arrow-left"></i> Retour sans enregistrer</button>
 </form>
 
+<div id="modalElevesPlus" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalElevesPlusLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modalElevesPlusLabel">Ajouter des élèves pour cette note</h4>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary pull-right" name="button" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </div>  <!-- container -->
+
 
 <script type="text/javascript">
 
 	$("document").ready(function(){
+
+		$('#btn-elevesPlus').click(function(){
+			var classe = $('#classe').val();
+			var matricule = $('#matriculePlus').val();
+			var listePlus = $('#elevesPlus input').serialize();
+			$.post('inc/suivi/modalPlusEleves.inc.php', {
+				classe: classe,
+				matricule: matricule,
+				listePlus: listePlus
+			},
+			function(resultat){
+				$('#modalElevesPlus .modal-body').html(resultat);
+			})
+			$('#modalElevesPlus').modal('show');
+		})
+
+		$('#modalElevesPlus').on('change', '#listeClasses', function(){
+			var classe = $(this).val();
+			var matricule = $('#matriculePlus').val();
+			var listeElevesPlus = $('#elevesPlus input').serialize();
+
+			$.post('inc/suivi/getListeElevesClasse.inc.php', {
+				classe: classe,
+				matricule: matricule,
+				listeElevesPlus: listeElevesPlus
+			}, function (resultat){
+				$('#listeElevesClasse').html(resultat);
+			})
+		})
+
+		$('#modalElevesPlus').on('change', '.cbEleve', function(){
+			var matricule = $(this).val();
+			var nomEleve = $(this).next('span').text();
+			if ($(this).is(':checked')) {
+				$('#elevesPlus').append('<li data-matricule="' + matricule + '"><input type="hidden" name="elevesPlus[]" value="' + matricule +'"> <button type="button" class="btn btn-default btn-xs delElevePlus"><i class="fa fa-times text-danger"></i></button> ' + nomEleve + '</li>');
+				}
+				else {
+					$('#elevesPlus li[data-matricule="' + matricule +'"]').remove();
+				}
+
+		})
+
+		$('body').on('click', '.delElevePlus', function(){
+			$(this).closest('li').remove();
+		})
 
 		$("#modifVisite").validate({
 			rules: {

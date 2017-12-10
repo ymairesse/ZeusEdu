@@ -7,7 +7,7 @@
   }
 </style>
 
-<page backtop="25mm" backbottom="7mm" backleft="7mm" backright="10mm"  footer="page; date">
+<page backtop="25mm" backbottom="7mm" backleft="7mm" backright="20mm"  footer="page; date">
      <page_header>
        <img src="../../images/logoEcole.png" alt="LOGO" style="float:right">
        <p>{$ECOLE}
@@ -23,7 +23,8 @@
 
      <table style="width:100%">
              <tr>
-                 <td style="width: 60%">Nom</td>
+                 <td style="width: 5%">&nbsp;</td>
+                 <td style="width: 60%">Nom de l'élève</td>
                  <td style="width: 40%">Date et heure</td>
              </tr>
 
@@ -31,10 +32,11 @@
                  {assign var=n value=1}
                  {foreach from=$unEleve key=date item=uneVisite}
 
-                 <tr {if $n == 1}style="background:#555; color: #fff"{/if}>
-                     <td>{$n}
-                         {if $n ==1}
-                          - {$uneVisite.prenom} {$uneVisite.nom}
+                 <tr {if $n == 1}style="background:#777; color: #fff"{/if}>
+                     <td>{if $unEleve|@count > 1}{$n}{else}&nbsp;{/if}</td>
+                     <td>
+                         {if $n == 1}
+                           {$uneVisite.prenom} {$uneVisite.nom}
                          {/if}
                      </td>
                      <td>Le {$date} à {$uneVisite.heure}</td>

@@ -51,12 +51,14 @@ switch ($mode) {
         $smarty->assign('visite', null);
         $smarty->assign('listeProfs', $Ecole->listeProfs());
         $smarty->assign('proprietaire', $acronyme);
+        $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
         $smarty->assign('corpsPage', 'modifVisite');
         break;
     case 'edit':
         $id = isset($_POST['id']) ? $_POST['id'] : null;
         $visite = $athena->getDetailsSuivi($id, $acronyme);
         $smarty->assign('visite', $visite);
+        $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
         $smarty->assign('listeProfs', $Ecole->listeProfs());
         $smarty->assign('proprietaire', $acronyme);
         $smarty->assign('corpsPage', 'modifVisite');
@@ -65,7 +67,7 @@ switch ($mode) {
         $nb = $athena->saveSuiviEleve($_POST);
         $smarty->assign('message', array(
             'title' => SAVE,
-            'texte' => "$nb note enregistrée",
+            'texte' => sprintf("%d note(s) enregistrée(s)", $nb),
             'urgence' => 'success',
             ));
         $listeSuivi = $athena->getSuiviEleve($matricule);

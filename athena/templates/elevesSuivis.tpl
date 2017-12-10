@@ -144,6 +144,7 @@
 </div>
 
 <div class="modal fade" id="modalPrint" tabindex="-1" role="dialog" aria-labelledby="titleModalPrint2" aria-hidden="true">
+
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -151,34 +152,37 @@
                 <h4 class="modal-title" id="titleModalPrint2">Imprimer</h4>
             </div>
             <div class="modal-body">
+                <form id="printSuivi">
 
-                <div class="form-group">
-                    <label for="anneeScolaire">Année scolaire</label>
-                    <select class="form-control dates" name="anneeScolaire" id="anneeScolaire">
-                        {foreach from=$elevesSuivis key=anneeScolaire item=wtf}
-                        <option value="{$anneeScolaire}"{if $anneeScolaire == $ANNEESCOLAIRE} selected{/if}>{$anneeScolaire}</option>
-                        {/foreach}
-                    </select>
-                    <p class="help-block">Année scolaire concernée</p>
-                </div>
+                    <div class="form-group">
+                        <label for="anneeScolaire">Année scolaire</label>
+                        <select class="form-control dates" name="anneeScolaire" id="anneeScolaire">
+                            {foreach from=$elevesSuivis key=anneeScolaire item=wtf}
+                            <option value="{$anneeScolaire}"{if $anneeScolaire == $ANNEESCOLAIRE} selected{/if}>{$anneeScolaire}</option>
+                            {/foreach}
+                        </select>
+                        <p class="help-block">Année scolaire concernée</p>
+                    </div>
 
-                <div class="form-group">
-                    <label for="dateDebut">Date de début</label>
-                    <input type="text" class="form-control dates" id="dateDebut" placeholder="Date de début" class="datepicker">
-                    <p class="help-block">Laisser vide si pas de date limite</p>
-                </div>
+                    <div class="form-group">
+                        <label for="dateDebut">Date de début</label>
+                        <input type="text" class="form-control dates" name="debut" id="dateDebut" placeholder="Date de début" class="datepicker">
+                        <p class="help-block">Laisser vide si pas de date limite</p>
+                    </div>
 
-                <div class="form-group">
-                    <label for="dateFin">Date de Fin</label>
-                    <input type="text" class="form-control dates" id="dateFin" placeholder="Date de Fin" class="datepicker">
-                    <p class="help-block">Laisser vide si pas de date limite</p>
-                </div>
+                    <div class="form-group">
+                        <label for="dateFin">Date de Fin</label>
+                        <input type="text" class="form-control dates" name="fin" id="dateFin" placeholder="Date de Fin" class="datepicker">
+                        <p class="help-block">Laisser vide si pas de date limite</p>
+                    </div>
 
+                </form>
             </div>
+
             <div class="modal-footer">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                    <a href="#" class="btn btn-primary" role="button" id="btnPrint">Imprimer</a>
+                    <button type="button" class="btn btn-primary" id="btnPrint">Imprimer</a>
                 </div>
             </div>
         </div>
@@ -190,25 +194,23 @@
 
     $(document).ready(function() {
 
-        var printUrl = 'inc/printListe.php?anneeScolaire={$ANNEESCOLAIRE}';
-
-        $("#btnPrint").attr('href', printUrl);
-
-        $(".dates").change(function() {
-            var dateDebut = $("#dateDebut").val();
-            var dateFin = $("#dateFin").val();
-            var anneeScolaire = $("#anneeScolaire").val();
-            var url = printUrl + '?dateDebut=' + dateDebut + '&amp;dateFin=' + dateFin + '&amp;anneeScolaire=' + anneeScolaire;
-            $("#btnPrint").attr('href', url)
-        })
-
         $("#print").click(function() {
             $("#modalPrint").modal('show');
         })
 
         $("#btnPrint").click(function() {
-            $("#modalPrint").modal('hide');
+            var formulaire = $('#printSuivi').serialize();
+            $.post('inc/printListe.inc.php', {
+                formulaire: formulaire
+                }, function (resultat){
+                    bootbox.alert(resultat);
+                })
+            $('#modalPrint').modal('hide');
         })
+
+        $('body').on('click', '#celien', function(){
+            bootbox.hideAll();
+            })
 
         $("#dateDebut").datepicker({
                 format: "dd/mm/yyyy",

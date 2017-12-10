@@ -60,6 +60,7 @@ class athena
         $aSuivre = $post['aSuivre'];
         $anneeScolaire = $post['anneeScolaire'];
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
         if ($id != null) {
             // c'est une mise à jour d'une visite précédente
             $sql = 'UPDATE '.PFX.'athena ';
@@ -85,12 +86,25 @@ class athena
 
         $resultat = $requete->execute();
 
+        // les ajouts d'élèves sont toujours considérés comme de nouvelles visites
         if (isset($post['elevesPlus'])) {
+            $sql = 'INSERT INTO '.PFX.'athena ';
+            $sql .= "SET matricule=:matricule, proprietaire=:proprietaire, date='$date', heure='$heure', absent='$absent', prive='$prive', ";
+            $sql .= 'envoyePar=:envoyePar, motif=:motif, traitement=:traitement, aSuivre=:aSuivre, anneeScolaire=:anneeScolaire ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':proprietaire', $proprietaire, PDO::PARAM_STR, 7);
+            $requete->bindParam(':envoyePar', $envoyePar, PDO::PARAM_STR, 7);
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $requete->bindParam(':motif', $motif, PDO::PARAM_STR);
+            $requete->bindParam(':traitement', $traitement, PDO::PARAM_STR);
+            $requete->bindParam(':aSuivre', $aSuivre, PDO::PARAM_STR);
+            $requete->bindParam(':anneeScolaire', $anneeScolaire, PDO::PARAM_STR, 9);
+
             foreach ($post['elevesPlus'] as $wtf => $matricule) {
                 $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
                 $resultat += $requete->execute();
             }
-
         }
 
         Application::DeconnexionPDO($connexion);
