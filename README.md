@@ -8,9 +8,15 @@ Avertissement
 Le logiciel est en perpétuelle construction, modification, restructuration, amélioration et parfois... régression.
 En principe, le code présenté sur Github a toujours été testé en vraie grandeur sur une installation réelle utilisée
 au jour le jour.
-Si vous constatez un bug sur votre installation, venez toujours vérifier s'il n'y a pas eu une mise à jour de rectifiction.
+Si vous constatez un bug sur votre installation, venez toujours vérifier s'il n'y a pas eu une mise à jour de rectification.
 Sinon, n'hésitez pas à me contacter pour obtenir la correction.
 Les dates des commits doivent vous indiquer si des mises à jour ont encore lieu régulièrement.
+
+Modifications importantes
+=========================
+Les mises à jour cruciales à réaliser dans la base de données ou dans des fichiers de portée générale
+
+2017-12-20 : mise à jour de /inc/classes/classApplication.inc.php (ajout de la fonction dateTimeFr($dateTime))
 
 Installation
 ============
