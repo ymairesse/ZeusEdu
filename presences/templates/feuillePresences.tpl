@@ -39,7 +39,7 @@
 						{if $photosVis == 'visible'}
 						class="pop"
 						data-toggle="popover"
-						data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$unEleve.matricule}' style='width:100px'>"
+						data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$unEleve.matricule|default:'Pas de photo'}' style='width:100px'>"
 						data-html="true"
 						data-container="body"
 						{/if}>
