@@ -252,7 +252,7 @@ class athena
       *
       * @return array
       */
-     public static function getEleveUser($acronyme, $dateDebut=null, $dateFin=null, $anneeScolaire=null)
+     public static function getEleveUser($acronyme, $dateDebut=null, $dateFin=null, $tri='chrono', $anneeScolaire=null)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          $sql = "SELECT anneeScolaire, da.matricule, DATE_FORMAT(date,'%d/%m/%Y') AS laDate, DATE_FORMAT(heure,'%H:%i') AS heure, ";
@@ -269,7 +269,17 @@ class athena
          if ($anneeScolaire != null) {
              $sql .= "AND anneeScolaire = '$anneeScolaire' ";
          }
-         $sql .= 'ORDER BY date DESC, heure ASC ';
+         switch ($tri) {
+            case 'alpha':
+                $sql .= 'ORDER BY nom, prenom ';
+                break;
+            case 'classeAlpha':
+                $sql .= 'ORDER BY groupe ASC, nom, prenom ';
+                break;
+            case 'chrono':
+               $sql .= 'ORDER BY date DESC, heure ASC ';
+               break;
+         }
 
          $resultat = $connexion->query($sql);
          $liste = array();
