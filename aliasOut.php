@@ -30,8 +30,6 @@ if (isset($_SESSION)) {
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Déconnexion</title>
 	<link type="text/css" media="all" rel="stylesheet" href="screen.css">
-	<link type="text/css" media="screen" rel="stylesheet" href="js/blockUI.css">
-	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 
 </head>
 <body>
