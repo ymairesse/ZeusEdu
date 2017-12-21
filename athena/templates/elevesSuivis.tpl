@@ -175,6 +175,12 @@
                         <input type="text" class="form-control dates" name="fin" id="dateFin" placeholder="Date de Fin" class="datepicker">
                         <p class="help-block">Laisser vide si pas de date limite</p>
                     </div>
+                    <div class="form-group">
+                        <label>Tri</label>
+                        <label class="radio-inline"><input type="radio" name="tri" value="chrono" checked>Chronologique</label>
+                        <label class="radio-inline"><input type="radio" name="tri" value="alpha">Alphabétique</label>
+                        <label class="radio-inline"><input type="radio" name="tri" value="classeAlpha">Par classe + alpha</label>
+                    </div>
 
                 </form>
             </div>
@@ -182,7 +188,7 @@
             <div class="modal-footer">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                    <button type="button" class="btn btn-primary" id="btnPrint">Imprimer</a>
+                    <button type="button" class="btn btn-primary" id="btnPrint">Imprimer</button>
                 </div>
             </div>
         </div>

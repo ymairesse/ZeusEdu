@@ -36,7 +36,7 @@
                      <td>{if $unEleve|@count > 1}{$n}{else}&nbsp;{/if}</td>
                      <td>
                          {if $n == 1}
-                           {$uneVisite.prenom} {$uneVisite.nom}
+                           {$uneVisite.groupe} - {$uneVisite.prenom} {$uneVisite.nom}
                          {/if}
                      </td>
                      <td>Le {$date} à {$uneVisite.heure}</td>

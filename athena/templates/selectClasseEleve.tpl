@@ -48,6 +48,8 @@
 
 $(document).ready (function() {
 
+	$('#nom').focus();
+
 	$('#formSelecteur').submit(function(){
 		if ($("#matricule").val() != '') {
 			$('#wait').show();

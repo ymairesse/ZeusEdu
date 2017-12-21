@@ -26,6 +26,7 @@ parse_str($formulaire, $form);
 $anneeScolaire = isset($form['anneeScolaire']) ? $form['anneeScolaire'] : null;
 $dateDebut = isset($form['debut']) ? $form['debut'] : null;
 $dateFin = isset($form['fin']) ? $form['fin'] : null;
+$tri = isset($form['tri']) ? $form['tri'] : null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -41,8 +42,10 @@ $fin = Application::dateMySQL($dateFin);
 
 require_once INSTALL_DIR.'/inc/classes/class.Athena.php';
 
-$elevesSuivis = Athena::getEleveUser($acronyme, $debut, $fin, $anneeScolaire);
-$elevesSuivis = $elevesSuivis[$anneeScolaire];
+$elevesSuivis = Athena::getEleveUser($acronyme, $debut, $fin, $tri, $anneeScolaire);
+if (isset($elevesSuivis[$anneeScolaire]))
+    $elevesSuivis = $elevesSuivis[$anneeScolaire];
+    else $elevesSuivis = Null;
 
 $smarty->assign('elevesSuivis', $elevesSuivis);
 $smarty->assign('anneeScolaire', $anneeScolaire);
