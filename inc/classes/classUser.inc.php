@@ -96,6 +96,7 @@ class user
         $sql = 'SELECT classe ';
         $sql .= 'FROM '.PFX.'titus ';
         $sql .= "WHERE acronyme='$acronyme' ";
+
         if ($sections != null) {
             $sql .= "AND section IN ($sections) ";
         }
