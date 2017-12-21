@@ -2,7 +2,7 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-		<select name="date" id="date">
+		<select name="date" id="date" class="form-control">
 			<option value="">Sélectionnez une date</option>
 			{if isset($listeDates)}
 				{foreach from=$listeDates item=uneDate}

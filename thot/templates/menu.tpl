@@ -30,11 +30,11 @@
 				<ul class="dropdown-menu">
 					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
-					<li><a href="index.php?action=jdc&amp;mode=classe">Journal de classe par classe</a></li>
 					<li role="separator" class="divider"></li>
 					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=eleve">Journal de classe par élève</a></li>
-					{if $userStatus == 'admin' || $userStatus == 'direction'}
+					{if $userStatus == 'admin' || $userStatus == 'direction' || $userStatus == 'educ'}
+						<li><a href="index.php?action=jdc&amp;mode=classe">Journal de classe par classe</a></li>
 						<li><a href="index.php?action=jdc&amp;mode=niveau">Journal de classe par niveau d'étude</a></li>
 						<li><a href="index.php?action=jdc&amp;mode=ecole">Journal de classe pour tous les élèves</a></li>
 					{/if}

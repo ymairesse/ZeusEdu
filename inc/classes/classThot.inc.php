@@ -157,12 +157,6 @@ class thot
     public function enregistrerNotification($post)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
- // Application::afficher($post, true);
-        // if (in_array($post['type'], array('classes', 'coursGrp'))) {
-        //     // reclasser éventuellement dans le type 'eleves' s'il sagit d'un élève isolé dans une classe ou dans un cours
-        //     if (is_numeric($post['destinataire']))
-        //         $post['type'] = 'eleves';
-        //     }
 
         $notifId = isset($post['notifId']) ? $post['notifId'] : null;
 
@@ -389,6 +383,83 @@ class thot
     }
 
     /**
+     * détermine la nature précise du destinataire d'une annonce
+     *
+     * @param $type : le type général de destinataire (ecole, niveau, classe, cours)
+     * @param $destinataire : précision du destinataire: $niveau, $classe, $cours
+     *
+     * @return string
+     */
+    public function pourQui ($type, $destinataire, $matricule, $nomEleve) {
+        if ($matricule == $destinataire)
+            return $nomEleve;
+            else  {
+                switch ($type) {
+                    case 'ecole':
+                        return 'TOUS';
+                        break;
+                    case 'niveau':
+                        return sprintf('Élèves de %de année', $destinataire);
+                        break;
+                    case ('coursGrp'):
+                        return sprintf('Les élèves du cours %s', self::nomCours($destinataire));
+                        break;
+                    case ('classes'):
+                        return sprintf('Les élèves de %s', $destinataire);
+                        break;
+                    }
+            }
+    }
+
+    /**
+     * retourne la liste structurée des annonces destinées à l'élève dont on donne le matricule, la classe, la liste des cours.
+     *
+     * @param $matricule
+     * @param $classe
+     *
+     * @return array
+     */
+    public function listeAnnonces($matricule, $classe, $listeCours, $nomEleve)
+    {
+        $niveau = substr($classe, 0, 1);
+        $listeCoursString = "'".implode('\',\'', $listeCours)."'";
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtn.id, type, proprietaire, destinataire, objet, texte, dateDebut, dateFin, dtn.mail, accuse, dp.nom, dp.sexe, dateEnvoi ';
+        $sql .= 'FROM '.PFX.'thotNotifications AS dtn ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = dtn.proprietaire ';
+        $sql .= "WHERE destinataire IN ('$matricule', '$classe', '$niveau', 'ecole', $listeCoursString) ";
+        $sql .= 'AND (dateFin > NOW() AND dateDebut <= NOW()) ';
+        $sql .= 'ORDER BY dateEnvoi DESC, dateDebut DESC ';
+
+        $resultat = $connexion->query($sql);
+        $listeAnnonces = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $id = $ligne['id'];
+                $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
+                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
+                $ligne['dateEnvoi'] = Application::dateTimeFr($ligne['dateEnvoi']);
+                $ligne['pourQui'] = $this->pourQui($ligne['type'], $ligne['destinataire'], $matricule, $nomEleve);
+                if ($ligne['nom'] != '') {
+                    switch ($ligne['sexe']) {
+                        case 'M':
+                            $ligne['proprietaire'] = 'M. '.$ligne['nom'];
+                            break;
+                        case 'F':
+                            $ligne['proprietaire'] = 'Mme '.$ligne['nom'];
+                            break;
+                    }
+                }
+                $listeAnnonces[$id] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeAnnonces;
+    }
+
+    /**
      * retourne la liste des PJ pour une liste de notifications donnée
      *
      * @param array $listeNotifications (les notifications groupées par type: 'ecole', 'niveau',...)
@@ -426,6 +497,43 @@ class thot
         }
 
         Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie un tableau des PJ pour la liste des annonces d'un élève donné
+     *
+     * @param array $listeAnnonces : liste des clefs pour les annonces
+     * @param int $matricule : matricule de l'élève
+     *
+     * @return array
+     */
+    public function getPJ4eleve ($listeAnnonces, $matricule) {
+        if (is_array($listeAnnonces))
+            $listeAnnoncesString = implode(', ', array_keys($listeAnnonces));
+            else $listeAnnoncesString = $listeAnnonces;
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT notifId, dtnpj.shareId, dts.fileId, fileName ';
+        $sql .= 'FROM '.PFX.'thotNotifPJ AS dtnpj ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = dtnpj.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
+        $sql .= 'WHERE notifId IN ('.$listeAnnoncesString.')';
+
+        $requete = $connexion->prepare($sql);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $notifId = $ligne['notifId'];
+                $fileId = $ligne['fileId'];
+                $liste[$notifId][$fileId] = $ligne['fileName'];
+                }
+        }
+
+        Application::DeconnexionPDO($connexion);
 
         return $liste;
     }
@@ -494,10 +602,10 @@ class thot
     }
 
     /**
-     * renvoie la liste détaillée des accusés de lecture pour l'élément dont l'id est fourni.
+     * renvoie la liste détaillée des accusés de lecture pour la notification dont l'id est fourni.
      *
-     * @param $id: id d'une notificaiton dans la table des accusés
-     * @param $acronyme: acronyme de l'utilisateur actuel (sécurité)
+     * @param int $id: id d'une notificaiton dans la table des accusés
+     * @param string $acronyme: acronyme de l'utilisateur actuel (sécurité)
      *
      * @return array les enregistrements correspondants indexés sur le matricule
      */
@@ -529,6 +637,61 @@ class thot
 
         return $liste;
         }
+
+    /**
+     * conversion des dateHeures comprenant la date et l'heure au format "classique" pour les dates et
+     * en ajustant aux minutes pour les heures.
+     *
+     * @param $dateHeure : combinaison de date et d'heure au format MySQL Ex: "2015-07-30 11:33:59"
+     *
+     * @return string : la même chose au format "30/07/2015 11:33"
+     */
+    private function dateHeure($dateHeure)
+    {
+        echo "coucou";
+        if($dateHeure != '') {
+            $dateHeure = explode(' ', $dateHeure);
+            $date = $dateHeure[0];
+            $date = self::datePHP($date);
+            $dateHeure = $date.' à '.substr($dateHeure[1], 0, 5);
+        }
+        return $dateHeure;
+    }
+
+    /**
+     * renvoie un tableau de tous les flags existants pour la liste d'annonce passée en paramètre
+     *
+     * @param array $listeAnnonces: liste **des clefs** pour les annonces
+     * @param int $matricule : le matricule de l'élève concerné
+     *
+     * @return array
+     */
+    public function listeFlagsAnnonces($listeAnnonces, $matricule) {
+        $listeAnnoncesString = implode(', ', $listeAnnonces);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, matricule, dateHeure, lu ';
+        $sql .= 'FROM '.PFX.'thotNotifFlags ';
+        $sql .= "WHERE matricule=:matricule AND id IN ($listeAnnoncesString) ";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $id = $ligne['id'];
+                $liste[$id] = array(
+                    'dateHeure' => $this->dateHeure($ligne['dateHeure']),
+                    'lu' => $ligne['lu']
+                    );
+                }
+            }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
 
     /**
      * Ajout des notifications de conseils de classe de fin d'année.
@@ -928,6 +1091,42 @@ class thot
                 }
             }
         }
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des parents non inscrits sur la plate-forme pour la liste des classes donnée
+     *
+     * @param array $listeClasses
+     *
+     * @return array
+     */
+    public function listeNonInscrits ($listeClasses) {
+        if (is_array($listeClasses)) {
+            $listeClassesString = "'".implode("','", array_keys($listeClasses))."'";
+        } else {
+            $listeClassesString = "'".$listeClasses."'";
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, classe, groupe, nom, prenom ';
+        $sql .= 'FROM '.PFX.'eleves AS de ';
+        $sql .= 'WHERE de.matricule NOT IN (SELECT matricule FROM '.PFX.'thotParents) ';
+        $sql .= "AND groupe IN ($listeClassesString) ";
+        $sql .= "ORDER BY groupe, REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
         Application::deconnexionPDO($connexion);
 
         return $liste;

@@ -18,4 +18,4 @@ switch ($etape) {
     case 'enregistrer':
         require_once 'inc/notif/saveNotifications.inc.php';
         break;
-}
+    }

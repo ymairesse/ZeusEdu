@@ -1,5 +1,21 @@
 <div class="container">
 
+{if $listeNonInscrits|@count > 0}
+<h3>Liste des élèves dont les parents n'ont pas été invités</h3>
+<table class="table table-condensed">
+    <tr>
+        <th style="width:6em">Classe</th>
+        <th>Nom</th>
+    </tr>
+    {foreach from=$listeNonInscrits key=matricule item=eleve}
+        <tr>
+            <td>{$eleve.classe}</td>
+            <td>{$eleve.nom} {$eleve.prenom}</td>
+        </tr>
+    {/foreach}
+</table>
+{/if}
+
 <table class="table table-condensed">
     {foreach from=$listeParents key=matricule item=dataParents}
         <tr style="background-color: #ddd">

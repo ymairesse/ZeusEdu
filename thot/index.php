@@ -48,7 +48,7 @@ switch ($action) {
         include_once 'inc/gestFiles.inc.php';
         break;
     case 'gestion':
-        include_once 'inc/gestion.inc.php';
+        include_once 'inc/parents/gestion.inc.php';
         break;
     case 'reunionParents':
         include_once 'inc/gestRP.inc.php';

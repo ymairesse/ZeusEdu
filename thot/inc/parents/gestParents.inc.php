@@ -6,7 +6,11 @@ if ($classe != Null) {
     $listeParents = $Thot->getMailsParentsClasse($classe);
 }
 else $listeParents = Null;
+
+$listeNonInscrits = $Thot->listeNonInscrits($classe);
+
 $smarty->assign('listeParents', $listeParents);
+$smarty->assign('listeNonInscrits', $listeNonInscrits);
 
 $listeClasses = $Ecole->listeGroupes();
 $smarty->assign('listeClasses', $listeClasses);

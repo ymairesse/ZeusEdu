@@ -353,3 +353,24 @@ h2.subjectif {
     background: red !important;
     color: white !important;
 }
+
+.cours {
+    background-color: #fcc !important;
+}
+
+.niveau {
+    background-color: #cff;
+}
+
+.classes {
+    background-color: #cfc !important;
+}
+
+.ecole {
+    background-color: #ffc;
+}
+
+tr.nonLu td{
+    font-weight: bold;
+    color: #55e;
+}

@@ -6,7 +6,6 @@ $smarty->assign('date', $date);
 $showEdition = false;
 
 switch ($mode) {
-
     case 'bulletin':
         require_once 'inc/gestBulletins.inc.php';
         break;
@@ -31,8 +30,10 @@ switch ($mode) {
         $titulariats = $user->listeTitulariats();
         $smarty->assign('listeClasses', implode(',', array_keys($titulariats)));
         $listesParents = $Thot->listeParents($titulariats);
+        $listeNonInscrits = $Thot->listeNonInscrits($titulariats);
         $smarty->assign('listesParents', $listesParents);
-        $smarty->assign('corpsPage', 'listesParents');
+        $smarty->assign('listeNonInscrits', $listeNonInscrits);
+        $smarty->assign('corpsPage', 'parents/listesParents');
         break;
 
     default:
