@@ -647,6 +647,7 @@ class Application
      *
      * @return string l'heure au format usuel
      */
+
     public static function heureMySQL($heure)
     {
         $heureArray = explode(':', $heure);
@@ -700,6 +701,23 @@ class Application
         $timestamp = mktime(0, 0, 0, $month, $day, $year);
 
         return $timestamp;
+    }
+
+    /**
+     * convertir un datetime (date et heure) MySQL en date et heure conventionnels en français
+     *
+     * @param string dateTime : au format YYYY-MM-DD hh:mm
+     *
+     * @return string : DD-MM-YYYY hh:mm
+     */
+    public function dateTimeFr($dateTime) {
+        if ($dateTime != Null) {
+            $dateEnvoi = explode(' ', $dateTime);
+            $date = self::datePHP($dateEnvoi[0]);
+
+            return sprintf('%s %s', $date, $dateEnvoi[1]);
+        }
+        else return Null;
     }
 
     /**
