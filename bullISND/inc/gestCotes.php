@@ -20,7 +20,7 @@ $smarty->assign('listeCours', $listeCoursProf);
 
 switch ($mode) {
     case 'voir':
-        $smarty->assign('selecteur', 'selectBulletinCours');
+        $smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
         $smarty->assign('nbBulletins', NBPERIODES);
         $smarty->assign('bulletin', $bulletin);
         $smarty->assign('action', $action);

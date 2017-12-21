@@ -11,13 +11,15 @@
 			</div>
 
 			<div class="col-md-7 col-sm-12">
-				{include file='news/flashInfo.tpl'}
+				{assign var=module value="bullISND"}
+				{include file="$INSTALL_DIR/widgets/flashInfo/templates/index.tpl"}
 			</div>
 
 		{else}
 
 			<div class="col-md-12 col-sm-12">
-				{include file='news/flashInfo.tpl'}
+				{assign var=module value="bullISND"}
+				{include file="$INSTALL_DIR/widgets/flashInfo/templates/index.tpl"}
 			</div>
 
 		{/if}

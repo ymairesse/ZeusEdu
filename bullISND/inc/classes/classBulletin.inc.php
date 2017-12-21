@@ -685,10 +685,12 @@ class Bulletin
 
         $resultat = $connexion->query($sql);
         $listeLocks = array();
-        while ($ligne = $resultat->fetch()) {
-            $matricule = $ligne['matricule'];
-            $coursGrp = $ligne['coursGrp'];
-            $listeLocks[$matricule][$coursGrp] = $ligne['locked'];
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $matricule = $ligne['matricule'];
+                $coursGrp = $ligne['coursGrp'];
+                $listeLocks[$matricule][$coursGrp] = $ligne['locked'];
+            }
         }
         Application::DeconnexionPDO($connexion);
 
@@ -728,7 +730,7 @@ class Bulletin
     /**
      * retourne la liste de tous les cours suivis par chaque élève.
      *
-     * @param void()
+     * @param void
      *
      * @return array()
      */
@@ -778,8 +780,8 @@ class Bulletin
         $sql = 'SELECT '.PFX."eleves.matricule, coursGrp, classe, CONCAT(nom,' ',prenom) AS nomPrenom ";
         $sql .= 'FROM '.PFX.'bullLockElevesCours ';
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'eleves.matricule = '.PFX.'bullLockElevesCours.matricule) ';
-        $sql .= "WHERE periode = '$periode' AND locked = '$etatVerrou' AND SUBSTR(classe,1,1) = $niveau ";
-        $sql .= 'ORDER BY classe, coursGrp, nomPrenom';
+        $sql .= "WHERE periode = '$periode' AND locked != '$etatVerrou' AND SUBSTR(classe,1,1) = $niveau ";
+        $sql .= 'ORDER BY classe, coursGrp, nomPrenom ';
 
         $resultat = $connexion->query($sql);
         $listeLocks = array();
@@ -801,7 +803,7 @@ class Bulletin
     /**
      * Vidage de la table des verrous.
      *
-     * @param
+     * @param void
      *
      * @return bool : true si l'opération s'est bien passée
      */
@@ -888,57 +890,105 @@ class Bulletin
     /**
      * Enregistrement des positions des verrous depuis le formulaire.
      *
-     * @param $post
-     * @param $periode
+     * @param array $listeEleves : liste des matricules des élèves concernés
+     * @param array $listeCours : liste des coursGrp concernés
+     * @param string $type : coursGrp, eleve, eleveCours ou classe
+     * @param int $action : 0 = déverouiller, 1 = verrou cours, 2 = verrou cours + commentaires
+     * @param int $periode : période à (dé-)verrouiller
      *
-     * @return nombre d'enregistrements réalisés
+     * @return int nombre d'enregistrements réalisés
      */
-    public function saveLocksBulletin($post, $periode)
-    {
+    public function saveLocksBulletin($listeEleves, $listeCours, $type, $action, $periode) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'bullLockElevesCours SET ';
-        $sql .= 'matricule=:matricule, coursGrp=:coursGrp, locked=:locked, periode=:periode ';
-        $sql .= 'ON DUPLICATE KEY UPDATE locked=:locked';
-
+        $sql .= 'matricule= :matricule, coursGrp = :coursGrp, locked = :action, periode = :periode ';
+        $sql .= 'ON DUPLICATE KEY UPDATE locked = :action ';
         $requete = $connexion->prepare($sql);
-        $nbResultats = 0;
-        foreach ($post as $unChamp => $value) {
-            $data = explode('#', $unChamp);
-            if ($data[0] == 'lock') {
-                // dans le coursGrp, un espace éventuel avait été remplacé par un "~" dans le template;
-            // il faut remettre l'espace
-            $coursGrp = str_replace('~', ' ', $data[1]);
-                $matricule = $data[2];
-                $locked = $value;
-                $verrou = array(
-                ':matricule' => $matricule,
-                ':coursGrp' => $coursGrp,
-                ':locked' => $value,
-                ':periode' => $periode,
-                );
 
-                $nbResultats += $requete->execute($verrou);
-            }
+        $requete->bindParam(':action', $action, PDO::PARAM_INT);
+        $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+
+        $resultats = 0;
+        switch ($type) {
+            case 'coursGrp':
+                $requete->bindParam(':coursGrp', $listeCours, PDO::PARAM_STR, 15);
+                foreach ($listeEleves AS $wtf => $matricule) {
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $resultats += $requete->execute();
+                }
+                break;
+            case 'eleve':
+                $requete->bindParam(':matricule', $listeEleves, PDO::PARAM_INT);
+                foreach ($listeCours AS $key => $coursGrp) {
+                    $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+                    $resultats += $requete->execute();
+                }
+                break;
+            case 'eleveCours':
+                $requete->bindParam(':matricule', $listeEleves, PDO::PARAM_INT);
+                $requete->bindParam(':coursGrp', $listeCours, PDO::PARAM_STR, 15);
+                $resultats += $requete->execute();
+                break;
+            case 'classe':
+                foreach ($listeEleves AS $matricule => $wtf) {
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    foreach ($listeCours[$matricule] AS $coursGrp => $wtf) {
+                        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+                        $resultats += $requete->execute();
+                    }
+                }
         }
+
         Application::DeconnexionPDO($connexion);
 
-        return $nbResultats;
+        return $resultats;
     }
+    // public function saveLocksBulletin($post, $periode)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'INSERT INTO '.PFX.'bullLockElevesCours SET ';
+    //     $sql .= 'matricule=:matricule, coursGrp=:coursGrp, locked=:locked, periode=:periode ';
+    //     $sql .= 'ON DUPLICATE KEY UPDATE locked=:locked';
+    //
+    //     $requete = $connexion->prepare($sql);
+    //     $nbResultats = 0;
+    //     foreach ($post as $unChamp => $value) {
+    //         $data = explode('#', $unChamp);
+    //         if ($data[0] == 'lock') {
+    //             // dans le coursGrp, un espace éventuel avait été remplacé par un "~" dans le template;
+    //         // il faut remettre l'espace
+    //         $coursGrp = str_replace('~', ' ', $data[1]);
+    //             $matricule = $data[2];
+    //             $locked = $value;
+    //             $verrou = array(
+    //             ':matricule' => $matricule,
+    //             ':coursGrp' => $coursGrp,
+    //             ':locked' => $value,
+    //             ':periode' => $periode,
+    //             );
+    //
+    //             $nbResultats += $requete->execute($verrou);
+    //         }
+    //     }
+    //     Application::DeconnexionPDO($connexion);
+    //
+    //     return $nbResultats;
+    // }
 
     /**
      * pose les verrous sur tous les cours des classes passées dans $post
      * $post provenant du formulaire de l'administrateur du bulletin.
      *
-     * @param $post
+     * @param array $post
      *
-     * @return nombre de verrous enregistrés
+     * @return int nombre de verrous enregistrés
      */
     public function saveLocksAdmin($post, $bulletin)
     {
         $verrouiller = isset($post['verrou']) ? $post['verrou'] : null;
         $nbResultats = 0;
 
-        if (($verrouiller == 0) || ($verrouiller == 1)) {
+        if (($verrouiller == 0) || ($verrouiller == 1) || ($verrouiller == 2)) {
             $listeEleves = array();
             foreach ($post as $key => $value) {
                 $data = explode('_', $key);
@@ -949,14 +999,17 @@ class Bulletin
             }
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'INSERT INTO '.PFX.'bullLockElevesCours ';
-            $sql .= "SET matricule=:matricule, coursGrp=:coursGrp, locked='$verrouiller', periode='$bulletin' ";
-            $sql .= "ON DUPLICATE KEY UPDATE locked='$verrouiller'";
+            $sql .= "SET matricule=:matricule, coursGrp=:coursGrp, locked=:verrouiller, periode= :bulletin ";
+            $sql .= "ON DUPLICATE KEY UPDATE locked= :verrouiller ";
             $requete = $connexion->prepare($sql);
+            $requete->bindParam(':verrouiller', $verrouiller, PDO::PARAM_INT);
+            $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
             foreach ($listeEleves as $classe => $eleves) {
                 foreach ($eleves as $matricule => $listeCours) {
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
                     foreach ($listeCours as $no => $coursGrp) {
-                        $data = array(':matricule' => $matricule, ':coursGrp' => $coursGrp);
-                        $nbResultats += $requete->execute($data);
+                        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+                        $nbResultats += $requete->execute();
                     }
                 }
             }
@@ -979,7 +1032,7 @@ class Bulletin
     public function saveLocksClasseCoursEleve($post)
     {
         $verrouiller = isset($_POST['verrouiller']) ? $_POST['verrouiller'] : null;
-        if (!(in_array($verrouiller, array('0', '1')))) {
+        if (!(in_array($verrouiller, array('0', '1', '2')))) {
             die('illegal lock');
         }
         $bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : null;
@@ -1713,7 +1766,7 @@ class Bulletin
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = sit.matricule ';
         $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(sit.coursGrp,1,LOCATE('-',sit.coursGrp)-1) ";
         $sql .= "WHERE sit.coursGrp IN ($listeCoursGrpString) ";
-        $sql .= "AND TRIM(sitDelibe) != '' AND sitDelibe < '50' AND sit.bulletin = '$noBulletin' AND trim(commentaire) = '' ";
+        $sql .= "AND TRIM(sitDelibe) != '' AND sitDelibe < 50 AND sit.bulletin = '$noBulletin' AND trim(commentaire) = '' ";
         $sql .= 'ORDER BY coursGrp, nom, prenom ';
 
         $liste = array();
@@ -2442,9 +2495,10 @@ class Bulletin
 
                         $boutSql = "sitDelibe='$sitDelibe', attributDelibe='$attributDelibe' ";
                         $sql = 'INSERT INTO '.PFX.'bullSituations ';
-                        $sql .= "SET matricule='$matricule', coursGrp='$coursGrp', ";
+                        $sql .= "SET matricule='$matricule', coursGrp='$coursGrp', situation='-', maxSituation='-', choixProf='-', ";
                         $sql .= "bulletin='$bulletin', $boutSql ";
                         $sql .= "ON DUPLICATE KEY UPDATE $boutSql ";
+
                         $resultat = $connexion->exec($sql);
 
                         if (($sitDelibe < 0) || ($sitDelibe > 100)) {
@@ -2562,20 +2616,9 @@ class Bulletin
         }
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        // $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, libelle, nbheures, ';
-        // $sql .= PFX.'statutCours.statut, section, rang, matricule, nom, prenom, '.PFX.'profsCours.acronyme ';
-        // $sql .= 'FROM '.PFX.'elevesCours ';
-        // $sql .= 'JOIN '.PFX.'cours ON ('.PFX."cours.cours = SUBSTR(coursGrp, 1,LOCATE('-',coursGrp)-1)) ";
-        // $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
-        // // LEFT JOIN pour les cas où un élève aurait été affecté à un cours qui n'existe plus dans la table des profs
-        // $sql .= 'LEFT JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
-        // $sql .= 'LEFT JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
-        // $sql .= "WHERE matricule IN ($listeMatricules) ";
-        // $sql .= 'ORDER BY statut DESC, nbheures DESC, rang, libelle';
-
         $sql = 'SELECT DISTINCT delc.coursGrp, cours, libelle, nbheures, dsc.statut, section, rang, matricule, nom, prenom, dpc.acronyme ';
         $sql .= 'FROM '.PFX.'elevesCours AS delc ';
-        $sql .= 'JOIN '.PFX.'cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1)) ';
+        $sql .= 'JOIN '.PFX."cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1)) ";
         $sql .= 'JOIN '.PFX.'statutCours AS dsc ON (dsc.cadre = dc.cadre) ';
         // LEFT JOIN pour les cas où un élève aurait été affecté à un cours qui n'existe plus dans la table des profs
         $sql .= 'LEFT JOIN '.PFX.'profsCours AS dpc ON (dpc.coursGrp = delc.coursGrp) ';
@@ -2593,16 +2636,6 @@ class Bulletin
                 $listeCours[$matricule][$coursGrp] = $ligne;
             }
         }
-        // tenir compte de l'historique
-        // $sql = 'SELECT matricule, '.PFX.'bullHistoCours.coursGrp, mouvement,  bulletin, '.PFX.'statutCours.statut, ';
-        // $sql .= 'cours, libelle, nbheures, rang, section, rang, nom, prenom, '.PFX.'profsCours.acronyme ';
-        // $sql .= 'FROM '.PFX.'bullHistoCours ';
-        // $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'bullHistoCours.coursGrp) ';
-        // $sql .= 'JOIN '.PFX.'cours ON ('.PFX.'cours.cours = SUBSTR('.PFX."profsCours.coursGrp, 1, LOCATE('-',".PFX.'profsCours.coursGrp)-1)) ';
-        // $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
-        // $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
-        // $sql .= "WHERE matricule IN ($listeMatricules)";
-
         $sql = 'SELECT matricule, dbhc.coursGrp, mouvement,  bulletin, dsc.statut, ';
         $sql .= 'cours, libelle, nbheures, rang, section, rang, nom, prenom, dpc.acronyme ';
         $sql .= 'FROM '.PFX.'bullHistoCours AS dbhc ';

@@ -18,19 +18,19 @@
 	<tr>
 		<td>Respect des autres</td>
 		<td class="att{if $attitudes[1] == 'N'} NA{/if}">
-		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att1"
 			value="NE" {if $attitudes[1] == 'NE'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+1}">
 		</td>
 		<td class="att{if $attitudes[1] == 'N'} NA{/if}">
-		<span class="acquis">A</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="acquis">A</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att1"
 			value="A" {if $attitudes[1] == 'A'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+1}">
 		</td>
 		<td class="att{if $attitudes[1] == 'N'} NA{/if}">
-		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att1"
 			value="N" {if $attitudes[1] == 'N'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+1}">
@@ -39,19 +39,19 @@
 	<tr>
 		<td>Respect des consignes</td>
 		<td class="att{if $attitudes[2] == 'N'} NA{/if}">
-		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att2"
 			value="NE" {if $attitudes[2] == 'NE'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+2}">
 		</td>
 		<td class="att{if $attitudes[2] == 'N'} NA{/if}">
-		<span class="acquis">A</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="acquis">A</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att2"
 			value="A" {if $attitudes[2] == 'A'}checked="checked"{/if} class="radioAcquis"
-			tabIndex="{$tabIndexAutres+2}"> 
+			tabIndex="{$tabIndexAutres+2}">
 		</td>
 		<td class="att{if $attitudes[2] == 'N'} NA{/if}">
-		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att2"
 			value="N" {if $attitudes[2] == 'N'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+2}">
@@ -60,19 +60,19 @@
 	<tr>
 		<td>Volonté de progresser</td>
 		<td class="att{if $attitudes[3] == 'N'} NA{/if}">
-		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att3"
 			value="NE" {if $attitudes[3] == 'NE'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+3}">
 		</td>
 		<td class="att{if $attitudes[3] == 'N'} NA{/if}">
-		<span class="acquis">A</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="acquis">A</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att3"
 			value="A" {if $attitudes[3] == 'A'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+3}">
 		</td>
 		<td class="att{if $attitudes[3] == 'N'} NA{/if}">
-		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att3"
 			value="N" {if $attitudes[3] == 'N'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+3}">
@@ -81,19 +81,19 @@
 	<tr>
 		<td>Ordre et soin</td>
 		<td class="att{if $attitudes[4] == 'N'} NA{/if}">
-		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonEvalue">NE</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att4"
 			value="NE" {if $attitudes[4] == 'NE'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+4}">
 		</td>
 		<td class="att{if $attitudes[4] == 'N'} NA{/if}">
-		<span class="acquis">A</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="acquis">A</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att4"
 			value="A" {if $attitudes[4] == 'A'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+4}">
 		</td>
 		<td class="att{if $attitudes[4] == 'N'} NA{/if}">
-		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 0}disabled="disabled"{/if}
+		<span class="nonAcquis">NA</span> <input type="radio" {if $blocage > 1}disabled{/if}
 			name="attitudes-eleve_{$matricule}-att4"
 			value="N" {if $attitudes[4] == 'N'}checked="checked"{/if} class="radioAcquis"
 			tabIndex="{$tabIndexAutres+4}">

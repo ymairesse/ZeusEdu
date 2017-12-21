@@ -1,6 +1,6 @@
 <!-- introduction des cotes -->
 
-	{if isset($listeVerrous.$matricule.$coursGrp) && ($listeVerrous.$matricule.$coursGrp == 1)}
+	{if isset($listeVerrous.$matricule.$coursGrp) && ($listeVerrous.$matricule.$coursGrp >= 1)}
 	<div class="alert alert-danger" role="alert">
 		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 		Les cotes et mentions de la période <strong>{$bulletin}</strong> de <strong>{$unEleve.prenom} {$unEleve.nom}</strong> ne sont plus modifiables. Contactez le titulaire ou le coordinateur.

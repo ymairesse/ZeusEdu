@@ -64,6 +64,7 @@
 		<li class="divider"></li>
 		<li><a href="index.php?action=admin&amp;mode=poserVerrous">Ouvrir/fermer des verrous niveau/classe</a></li>
 		<li><a href="index.php?action=admin&amp;mode=verrouClasseCoursEleve">Ouvrir/fermer des Verrous classe/cours/élève</a></li>
+		<li><a href="index.php?action=admin&amp;mode=verrouTabs">Verrous par classe</a></li>
 		<li><a href="index.php?action=admin&amp;mode=situations">Modifier les situations</a></li>
 		<li><a href="index.php?action=admin&amp;mode=eprExternes">Init. Épreuves externes</a></li>
 		<li><a href="index.php?action=admin&amp;mode=ponderations">Voir les pondérations</a></li>

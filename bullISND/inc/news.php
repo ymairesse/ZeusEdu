@@ -30,8 +30,16 @@ $smarty->assign('listeDelibeVide', $listeDelibeVide);
 $listeEchecNonCommentes = $Bulletin->listeEchecNonCommentes(array_keys($listeCoursGrpProf), PERIODEENCOURS);
 $smarty->assign('listeEchecNonCommentes', $listeEchecNonCommentes);
 
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
 require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
-$application = Application::repertoireActuel();
-$smarty->assign('application', $application);
-$smarty->assign('flashInfos', flashInfo::listeFlashInfos($application));
+$FlashInfo = new FlashInfo();
+
+$listeFlashInfos = $FlashInfo->listeFlashInfos($module);
+
+$userStatus = $User->userStatus($module);
+$smarty->assign('userStatus', $userStatus);
+$smarty->assign('listeFlashInfos', $listeFlashInfos);
+
 $smarty->assign('corpsPage', 'news/news');

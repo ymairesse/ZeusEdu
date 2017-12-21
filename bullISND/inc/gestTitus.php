@@ -51,32 +51,19 @@ $smarty->assign('mode',$mode);
 
 switch ($mode) {
 	case 'verrous':
+		$smarty->assign ('selecteur', 'selecteurs/selectBulletinClasse');
+		$smarty->assign('etape', 'showVerrous');
+		if ($classe && $bulletin) {
+			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
+			$listeCoursGrpClasse = $Ecole->listeCoursGrpClasse($classe);
+			$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
+			$listeVerrous = $Bulletin->listeLocksBulletin($listeEleves, $listeCoursGrpClasse, $bulletin);
 
-		$smarty->assign ('selecteur','selectBulletinClasse');
-		$smarty->assign('etape','showVerrous');
-		switch ($etape) {
-			case 'enregistrer':
-				$nbEnregistrements = $Bulletin->saveLocksBulletin($_POST, $bulletin);
-				$smarty->assign('message', array(
-									'title'=>"Enregistrement des verrous",
-									'texte'=>"$nbEnregistrements verrous activés",
-									'urgence'=>'info')
-									);
-				// pas de break;
-			default:
-				if ($classe && $bulletin) {
-					$listeEleves = $Ecole->listeEleves($classe,'groupe');
-					$listeCoursGrpClasse = $Ecole->listeCoursGrpClasse($classe);
-					$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
-					$listeVerrous = $Bulletin->listeLocksBulletin($listeEleves, $listeCoursGrpClasse, $bulletin);
-
-					$smarty->assign('listeEleves',$listeEleves);
-					$smarty->assign('listeCoursGrpEleves',$listeCoursGrpEleves);
-					$smarty->assign('listeCoursGrpClasse',$listeCoursGrpClasse);
-					$smarty->assign('listeVerrous',$listeVerrous);
-					$smarty->assign('corpsPage','feuilleVerrous');
-					}
-				break;
+			$smarty->assign('listeEleves', $listeEleves);
+			$smarty->assign('listeCoursGrpEleves', $listeCoursGrpEleves);
+			$smarty->assign('listeCoursGrpClasse', $listeCoursGrpClasse);
+			$smarty->assign('listeVerrous', $listeVerrous);
+			$smarty->assign('corpsPage', 'titu/feuilleVerrous');
 			}
 		break;
 	case 'remarques':
@@ -226,4 +213,3 @@ switch ($mode) {
 		echo "bad mode $mode";
 		break;
 	}
-?>

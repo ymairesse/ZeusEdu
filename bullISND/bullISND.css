@@ -707,3 +707,24 @@ td.externe {
   border-right: 2px solid green;
   border-bottom: 2px solid green;
 }
+
+.coteCarnet {
+width: 100%;
+// padding: 10px;
+margin: 0px;
+box-sizing: border-box;
+-moz-box-sizing: border-box;
+-webkit-box-sizing: border-box;
+}
+
+.lockCotes {
+    color: #8f66ff !important;
+}
+
+.lockCotesComs {
+    color: #f00 !important;
+}
+
+.unlocked {
+    color: #bbb !important;
+}

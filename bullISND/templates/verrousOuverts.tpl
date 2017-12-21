@@ -18,11 +18,11 @@
 	{foreach from=$listeVerrous key=niveau item=verrousClasse}
 		<ul>
 			<li>
-				<span class="collapisble">Tout le niveau {$niveau}:</span> {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
+				<span class="collapisble">Tout le niveau {$niveau}:</span> {if $verrouiller >= 1}Verrouiller{else}Déverrouiller{/if}
 				<input class="check" type="checkbox" name="niveau%{$niveau}" value="{$verrouiller}">
 				{foreach from=$verrousClasse key=classe item=listeCours}
 					<ul>
-						<li><span class="collapsible">{$classe}</span> {if $verrouiller == 1}Verrouiller{else}Déverrouiller{/if}
+						<li><span class="collapsible">{$classe}</span> {if $verrouiller >= 1}Verrouiller{else}Déverrouiller{/if}
 							<input class="check" type="checkbox" name="classe%{$classe}" value="{$verrouiller}">
 							<ul>
 							{foreach from=$listeCours key=coursGrp item=listeEleves}

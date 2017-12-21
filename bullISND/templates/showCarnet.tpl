@@ -135,10 +135,10 @@
 					data-container="body">
 					<input type="text" name="cote-{$idCarnet}_eleve-{$matricule}"
 						tabIndex="{$tabIndex}"
-						class="coteCarnet"
+						class="coteCarnet form-control-sm"
 						value="{$listeCotes.$matricule.$idCarnet.cote|default:''}"
 						disabled="disabled"
-						style="font-size:8pt; display:none; width:4em">
+						style="display:none;">
 
 					<span class="{if (isset($listeCotes.$matricule.$idCarnet)) && $listeCotes.$matricule.$idCarnet.erreurEncodage} erreurEncodage{/if}">
 						{$listeCotes.$matricule.$idCarnet.cote|default:'&nbsp;'}
@@ -398,7 +398,6 @@
 
 					</div>  <!-- row -->
 
-
 					<div class="row">
 
 						<div class="col-md-4 col-sm-6">
@@ -447,25 +446,6 @@
 				<p>{$listeCours.$coursGrp.libelle} -> {$listeCours.$coursGrp.nomCours} [{$coursGrp}] / Bulletin n° {$bulletin}</p>
 			</div>
 
-		</div>
-	</div>
-</div>
-
-<!-- .......................................................................... -->
-<!-- .....fenêtre modale pour la réception du fichier PDF du carnet de cotes    -->
-<!-- .......................................................................... -->
-<div class="modal fade noprint" id="modalCarnetPDF" tabindex="-1" role="dialog" aria-labelled-by="labelModal" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">
-					Votre carnet de cotes est prêt
-				</h4>
-			</div>  <!-- modal-header -->
-			<div class="modal-body">
-				<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="../{$module}/carnet/{$acronyme}/{$coursGrp}_{$bulletin}.pdf">sur ce lien</a></p>
-			</div>
 		</div>
 	</div>
 </div>
@@ -692,32 +672,27 @@ $(document).ready(function(){
 		});
 
 	$("#pdf").click(function(){
-		var page = $("#page").html();
 		var coursGrp = $("#coursGrp").val();
 		var tri = $("#tri").val();
 		var bulletin = $("#bulletin").val();
 		$("#wait").show();
 		$.blockUI();
 		$.post("inc/carnet/carnet2PDF.inc.php", {
-			page: page,
 			coursGrp: coursGrp,
 			bulletin: bulletin,
-			acronyme: '{$acronyme}',
 			titre: coursGrp,
 			nomProf: nomProf,
-			module: '{$module}'
 			},
 			function(resultat){
 				$("#wait").hide();
 				$.unblockUI();
-				$("#modalCarnetPDF").modal('show');
+				bootbox.alert(resultat);
 			});
 		})
 
-	$("#celien").click(function(){
-		$("#modalCarnetPDF").modal('hide');
+	$('body').on('click', '#celien', function(){
+		bootbox.hideAll();
 		})
-
 
 	})
 

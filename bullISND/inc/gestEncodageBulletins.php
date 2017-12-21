@@ -42,6 +42,7 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 	$isDelibe = in_array($bulletin, explode(',', PERIODESDELIBES));
 
 	if ($mode == 'enregistrer') {
+
 		// organiser les données: cotes, attitudes, commentaires dans des tableaux séparés
 		$dataFromBulletin = $Bulletin->organiserData($_POST);
 
@@ -140,5 +141,5 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 // par défaut
 $smarty->assign('mode','encodage');
 $smarty->assign('nbBulletins', NBPERIODES);
-$smarty->assign('selecteur', 'selectBulletinCours');
+$smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
 $smarty->assign('action','gestEncodageBulletins');

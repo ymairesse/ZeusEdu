@@ -7,8 +7,9 @@
 		{/section}
 	</select>
 	<select name="verrouiller" id="verrouiller" class="form-control input-sm">
-		<option value="1"{if isset($verrouiller) && ($verrouiller == 1)} selected{/if}>Verrouiller</option>
 		<option value="0"{if isset($verrouiller) && ($verrouiller == 0)} selected{/if}>Déverrouiller</option>
+		<option value="1"{if isset($verrouiller) && ($verrouiller == 1)} selected{/if}>Verrouiller les cotes</option>
+		<option value="2"{if isset($verrouiller) && ($verrouiller == 2)} selected{/if}>Verrouiller cotes et commentaires</option>
 	</select>
 	Année:
 	<select name="niveau" id="niveau" class="form-control input-sm">

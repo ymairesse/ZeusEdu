@@ -12,8 +12,36 @@
 {/if}
 
 <form name="encodage" id="encodage" action="index.php" method="POST" autocomplete="off" role="form" class="form-vertical">
-	<button class="btn btn-primary pull-right noprint enregistrer" type="submit" id="enregistrer">Enregistrer tout</button>
-	<button class="btn btn-default pull-right noprint" type="reset" id="annuler">Annuler</button>
+
+	{assign var="tabIndexForm" value="1" scope="global"}
+	{assign var="tabIndexCert" value="500" scope="global"}
+	{assign var="tabIndexAutres" value="1000" scope="global"}
+
+	<div class="row">
+
+		<div class="col-md-5 col-xs-12">
+			<button type="button" class="btn btn-primary btn-block noprint" id="ouvrirTout" style="float:left">Déplier ou replier les remarques et situations</button>
+		</div>
+
+		<div class="col-md-4 col-xs-12">
+			{* un sélecteur d'élèves placé en haut de la page *}
+			<select name="selectEleve" id="selectEleve" class="form-control">
+				<option value=''>Sélectionner un élève</option>
+				{foreach from=$listeEleves key=matricule item=unEleve}
+				<option value="{$matricule}" id="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
+				{/foreach}
+			</select>
+		</div>
+
+		<div class="col-md-3 col-xs-12">
+			<div class="btn-group">
+				<button class="btn btn-primary pull-right noprint enregistrer" type="submit" id="enregistrer">Enregistrer tout</button>
+				<button class="btn btn-default pull-right noprint" type="reset" id="annuler">Annuler</button>
+			</div>
+		</div>
+
+	</div>
+
 
 	<input type="hidden" name="action" value="gestEncodageBulletins">
 	<input type="hidden" name="mode" value="enregistrer">
@@ -22,19 +50,7 @@
 	<input type="hidden" name="matricule" id="matricule" value="{$matricule}">
 	<input type="hidden" name="tri" value="{$tri}">
 
-	<p class="btn btn-primary noprint" id="ouvrirTout">Déplier ou replier les remarques et situations</p>
 
-	{assign var="tabIndexForm" value="1" scope="global"}
-	{assign var="tabIndexCert" value="500" scope="global"}
-	{assign var="tabIndexAutres" value="1000" scope="global"}
-
-	{* un sélecteur d'élèves placé en haut de la page *}
-	<select name="selectEleve" id="selectEleve">
-		<option value=''>Sélectionner un élève</option>
-		{foreach from=$listeEleves key=matricule item=unEleve}
-		<option value="{$matricule}" id="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
-		{/foreach}
-	</select>
 
 	{* une ligne pour chaque élève qui suit le cours *}
 	{foreach from=$listeEleves key=matricule item=unEleve}

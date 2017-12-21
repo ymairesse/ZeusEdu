@@ -108,7 +108,7 @@
                     data-placement="top"
                     data-html="true"
                     value="{$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent}"
-                    {if $blocage > 0}disable="disabled"{/if}
+                    {if $blocage > 0} disabled{/if}
                     >
                     {$sitDeuxiemes.$coursGrp.$matricule.sit2.pourcent}²
                 </button>
@@ -206,7 +206,7 @@
             title="Effacer la cote de délibération"
             data-container="body"
             data-placement="top"
-            {if $blocage > 0} disable="disabled"{/if}>
+            {if $blocage > 0} disabled{/if}>
             <i class="fa fa-recycle"></i>
         </button>
         </div>

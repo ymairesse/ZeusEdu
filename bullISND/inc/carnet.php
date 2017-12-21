@@ -63,7 +63,7 @@ switch ($mode) {
                     );
                 break;
             }
-        $smarty->assign('selecteur', 'selectBulletinCours');
+        $smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
         if (isset($coursGrp) && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
             $identite = $user->identite();
             $listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);

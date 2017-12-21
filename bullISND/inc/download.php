@@ -77,7 +77,7 @@ switch ($type) {
         }
         break;
     default:
-        // wtf
+        die('wrong type');
         break;
 }
 
