@@ -1,6 +1,6 @@
 <div id="selecteur" class="noprint">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
-	<select name="acronyme" id="selectUser">
+	<select name="acronyme" id="selectUser" class="form-control">
 		<option value="">Sélectionner un utilisateur</option>
 		{foreach from=$listeProfs key=abreviation item=prof}
 			<option value="{$abreviation}"{if isset($acronyme) && ($acronyme == $abreviation)} selected="selected"{/if}>
