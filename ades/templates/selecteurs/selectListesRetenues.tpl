@@ -1,4 +1,4 @@
-<select name="idretenue" class="selecteur form-control input-sm" id="selectRetenue">
+<select name="idretenue" class="form-control input-sm" id="selectRetenue">
 
 	<option value="">Choisir une retenue</option>
 	{if isset($listeRetenues)}
