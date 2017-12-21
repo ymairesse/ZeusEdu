@@ -1185,3 +1185,11 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
     padding: 0;
     background-color: #ccc;
 }
+
+.avertissement {
+    padding-top: 1.5em;
+    text-align: center;
+    font-size: 64px;
+    font-weight: bold;
+    color: #bbb;
+}
