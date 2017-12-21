@@ -1147,14 +1147,14 @@ class ecole
      * ne tient pas compte de l'historique. Devrait disparaître au profit de
      * $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin).
      *
-     * @param $classe
+     * @param string $classe
      *
      * @return array
      */
     public function listeCoursGrpClasse($classe)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, libelle, nbheures, '.PFX.'statutCours.statut, ';
+        $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, rang, libelle, nbheures, '.PFX.'statutCours.statut, ';
         $sql .= PFX.'profs.acronyme, '.PFX.'profs.nom, '.PFX.'profs.prenom ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'elevesCours.matricule = '.PFX.'eleves.matricule) ';
@@ -1162,13 +1162,17 @@ class ecole
         $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
-        $sql .= "WHERE classe = '$classe' ";
+        $sql .= 'WHERE classe = :classe ';
         $sql .= 'ORDER BY rang, nbheures DESC, libelle';
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+
+        $resultat = $requete->execute();
         $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $coursGrp = $ligne['coursGrp'];
                 $liste[$coursGrp] = $ligne;
             }
