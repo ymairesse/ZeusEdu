@@ -29,11 +29,11 @@ class Ades
     public function adesUsersList($module)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT '.PFX."profs.acronyme, CONCAT(prenom,' ',nom) as nomPrenom, userStatus ";
+        $sql = 'SELECT '.PFX."profs.acronyme, CONCAT(nom,' ',prenom) as nomPrenom, userStatus ";
         $sql .= 'FROM '.PFX.'profs ';
         $sql .= 'JOIN '.PFX.'profsApplications ON ('.PFX.'profsApplications.acronyme = '.PFX.'profs.acronyme) ';
         $sql .= 'WHERE '.PFX."profsApplications.application = '$module' AND userStatus != 'none' ";
-        $sql .= 'ORDER BY userStatus, nom, prenom ';
+        $sql .= 'ORDER BY nom, prenom, userStatus ';
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
