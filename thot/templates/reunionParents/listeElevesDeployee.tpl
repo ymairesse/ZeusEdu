@@ -24,7 +24,7 @@
             data-toggle="popover"
             data-content="{$popup}"
             data-html="true"
-            data-placement="left"
+            data-placement="bottom"
             data-container="body"
             data-title="RV pour {$eleve.prenom} {$eleve.nom} <a href='#' class='close' data-dismiss='alert'>&times;</a>"
             data-matricule="{$matricule}">

@@ -68,25 +68,33 @@ class thot
      * renvoie les détails d'une notification dont on fournit l'id dans la base de données
      * les détails sont renvoyés si l'utilisateur $acronyme est bien propriétaire de la notification.
      *
-     * @param $id : l'id dans la BD
-     * @param $acronyme: l'acronyme de l'utilisateur courant
+     * @param int $id : l'id dans la BD
+     * @param string $acronyme: l'acronyme de l'utilisateur courant
      *
      * @return array
      */
     public function getNotification($id, $acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, type, proprietaire, objet, texte, dateDebut, dateFin, destinataire, mail, accuse, freeze ';
+        $sql = 'SELECT de.matricule, id, type, proprietaire, objet, texte, dateDebut, dateFin, destinataire, mail, accuse, freeze ';
         $sql .= 'FROM '.PFX.'thotNotifications ';
-        $sql .= "WHERE id='$id' AND proprietaire = '$acronyme' ";
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = destinataire ';
+        $sql .= 'WHERE id= :id AND proprietaire = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
 
         $notification = array();
-        $resultat = $connexion->query($sql);
+        $resultat = $requete->execute();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $notification = $resultat->fetch();
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $notification = $requete->fetch();
             $notification['dateDebut'] = Application::datePHP($notification['dateDebut']);
             $notification['dateFin'] = Application::datePHP($notification['dateFin']);
+            // est-ce une notification à un élève particulier d'une classe ou d'un cours?
+            if ($notification['matricule'] != Null)
+                $notification['type'] = 'eleves'; // alors, on change le type
         }
         Application::deconnexionPDO($connexion);
 
