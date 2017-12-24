@@ -3,7 +3,7 @@
     <ul class="filetree level{$level}" {if ($level > 0)}style="display:none"{/if}>
 
         {foreach $data as $file}
-            {if $file.type == 'folder'}
+            {if isset($file.type) && ($file.type == 'folder')}
                 <li class="folder expanded">
                     <a href="javascript:void(0)"
                         class="dirLink"
@@ -16,21 +16,26 @@
 
                 </li>
             {else}
-                <li data-filename="{$file.name|escape:'htmlall'}"
-                    data-extension='{$file.ext}'
-                    data-path="/{$file.path|escape:'htmlall'}"
-                    data-size='{$file.size}'
-                    data-date='{$file.date}'
-                    class='file ext_{$file.ext} level{$level}'>
-                    <a href="inc/download.php?type=pfN&amp;f={$file.orig}{$file.path|escape:'htmlall'}/{$file.name|escape:'htmlall'}">
-                        {$file.name|escape:'htmlall'}
-                    </a>
+                {if isset($file.name)}
+                    <li data-filename="{$file.name|escape:'htmlall'}"
+                        data-extension='{$file.ext}'
+                        data-path="/{$file.path|escape:'htmlall'}"
+                        data-size='{$file.size}'
+                        data-date='{$file.date}'
+                        class='file ext_{$file.ext} level{$level}'>
+                        <a href="inc/download.php?type=pfN&amp;f={$file.orig}{$file.path|escape:'htmlall'}/{$file.name|escape:'htmlall'}">
+                            {$file.name|escape:'htmlall'|truncate:40:'...'} <span class="pull-right">{substr($file.date,0,10)} - <strong>{$file.size}</strong></span>
+                        </a>
 
-                </li>
+                    </li>
+                {/if}
             {/if}
         {/foreach}
     </ul>
 
 {/function}
 
+{* <pre>
+{$tree|print_r}
+</pre> *}
 {repertoire data=$tree}

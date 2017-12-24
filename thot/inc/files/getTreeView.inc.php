@@ -25,8 +25,8 @@ $tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme);
 
 require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
-$smarty->template_dir = "../../templates";
-$smarty->compile_dir = "../../templates_c";
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
 $smarty->assign('tree', $tree->getTree());
 

@@ -24,7 +24,7 @@
                 class='file ext_{$file.ext} level{$level}{if $file.shared == 1} shared{/if}'>
                 <span class="delFile pull-right">&nbsp;<i class="fa fa-times text-danger"></i></span>
                 <a href="inc/download.php?type=pfN&amp;f={if $level > 0}/{/if}{$file.path|escape:'htmlall'}/{$file.name|escape:'htmlall'}">
-                    {$file.name|escape:'htmlall'}
+                    {$file.name|escape:'htmlall'} {$file.date} {$file.size}
                 </a>
 
             </li>

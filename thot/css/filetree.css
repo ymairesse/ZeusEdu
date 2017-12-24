@@ -30,7 +30,6 @@ ul.filetree li {
     list-style: none;
     padding: 0px 0px 0px 20px;
     margin: 0px 0px 0px 10px;
-    white-space: nowrap;
 }
 
 ul.filetree a {

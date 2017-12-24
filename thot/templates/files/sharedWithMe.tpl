@@ -53,7 +53,6 @@
 $(document).ready(function(){
 
     $(".btnFolder").click(function(){
-        // var fileId = $(this).data('fileid');
         var shareId = $(this).data('shareid');
         var modalTitre = $(this).data('commentaire');
         $.post('inc/files/getTreeForId.inc.php',{

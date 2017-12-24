@@ -14,7 +14,7 @@
         {/if}
         {if $notification.type == 'niveau'}
         <div class="geant">{$notification.destinataire}<sup>e</sup></div>
-        {/if} 
+        {/if}
         {if $notification.type == 'ecole'}
         <div class="geant">Tous</div>
         {/if}
@@ -59,7 +59,7 @@
             <p>La demande d'accusé de lecture est désactivée pour les notifications à l'ensemble de l'école</p>
         {/if}
         {if isset($edition)}
-            Certaines options ne sont pas modifiables lors d'une modification
+            Certaines options ne sont pas modifiables
         {/if}
 
     </div>
