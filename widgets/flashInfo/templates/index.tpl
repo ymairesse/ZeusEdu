@@ -5,17 +5,15 @@
 {/if}
 <div class="clearfix"></div>
 
-{if isset($listeFlashInfos) && $listeFlashInfos|@count > 0}
+<div id="listeAnnonces">
+	{if isset($listeFlashInfos) && $listeFlashInfos|@count > 0}
 
-	<h3>Annonces</h3>
-	<div id="listeAnnonces">
-		{include file="./listeAnnonces.tpl"}
-	</div>
-
+	{include file="./listeAnnonces.tpl"}
 	{include file="./modal/modalLecture.tpl"}
 	{include file="./modal/modalDelNews.tpl"}
 
-{/if}  {* flashinfo count > 0 *}
+	{/if}  {* flashinfo count > 0 *}
+</div>
 
 {include file="./modal/modalEditNews.tpl"}
 

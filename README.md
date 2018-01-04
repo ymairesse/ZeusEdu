@@ -17,6 +17,10 @@ Modifications importantes
 Les mises à jour cruciales à réaliser dans la base de données ou dans des fichiers de portée générale
 
 2017-12-20 : mise à jour de /inc/classes/classApplication.inc.php (ajout de la fonction dateTimeFr($dateTime))
+2017-12-27 : ajout du champ "rédacteur" dans la table didac_thotJdc pour permettre la rédaction par les élèves
+2017-12-28 : ajout de la table didac_thotJdcLike
+2017-12-30 : mise à jour /screen.css
+2017-12-31 : modification de la classe Ecole
 
 Installation
 ============

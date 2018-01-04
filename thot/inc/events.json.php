@@ -20,12 +20,12 @@ $unAn = time() + 365 * 24 * 3600;
 
 $start = $_POST['start'];
 $end = $_POST['end'];
-$type = $_POST['type'];
-$coursGrp = $_POST['coursGrp'];
-$classe = $_POST['classe'];
-$matricule = $_POST['matricule'];
-$niveau = $Application->postOrCookie('niveau', $unAn);
-// $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
+$type = isset($_POST['type']) ? $_POST['type'] : Null;
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
+// $niveau = $Application->postOrCookie('niveau', $unAn);
 
 $module = $Application->getModule(2);
 require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";

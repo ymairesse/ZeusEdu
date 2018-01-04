@@ -23,22 +23,49 @@
             <p>{$travail.libelle} {$travail.nbheures}h {if isset($travail.nomCours)}> {$travail.nomCours} {/if} [{$travail.destinataire}]</p>
         {/if}
         <p>Professeur <strong>{$travail.nom}</strong></p>
-        <p>{$travail.title}</p>
+        {if $nomEleve != Null}
+            <p>
+                <i>Rédaction: {$nomEleve}</i>
+                <span class="btn-group pull-right">
+                    <button type="button" class="btn btn-success btn-xs">
+                        <span class="badge">{$statistiques.like|default:0}</span> <i class="fa fa-thumbs-up"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-xs">
+                        <span class="badge">{$statistiques.dislike|default:0}</span> <i class="fa fa-thumbs-down"></i>
+                    </button>
+                    <button type="button" data-id="{$id}" class="btn btn-info btn-xs" name="button" id="infoLikes">&nbsp;<i class="fa fa-info"></i>&nbsp;</button>
+                </span>
+            </p>
+        {/if}
+        <h4>{$travail.title}</h4>
         <div id="unEnonce">{$travail.enonce}</div>
     </div>
 
-    {if $acronyme == $travail.proprietaire && ($editable|default:0 == 1)}
     <div class="panel-footer">
-        <button type="button" class="btn btn-danger pull-left" data-id="{$travail.id}" id="delete"><i class="fa fa-eraser fa-lg"></i> Supprimer</button>
-        <button type="button"
-            class="btn btn-primary pull-right"
-            data-id="{$travail.id}"
-            data-destinataire="{$travail.destinataire}"
-            id="modifier">
-            <i class="fa fa-edit fa-lg"></i> Modifier
-        </button>
-        <div class="clearfix"></div>
-    </div>
-    {/if}
+        {if ($acronyme == $travail.proprietaire) && ($editable == true)}
 
+            <button type="button"
+                class="btn btn-danger pull-left"
+                data-id="{$travail.id}"
+                id="delete">
+                <i class="fa fa-eraser fa-lg"></i> Supprimer
+            </button>
+            <button type="button"
+                class="btn btn-primary pull-right"
+                data-id="{$travail.id}"
+                data-destinataire="{$travail.destinataire}"
+                id="modifier">
+                <i class="fa fa-edit fa-lg"></i> Modifier
+            </button>
+            <div class="clearfix"></div>
+
+        {elseif $editable == true}
+            <button type="button"
+                class="btn btn-success pull-right"
+                data-id="{$travail.id}"
+                id="approprier">
+                <i class="fa fa-hand-stop-o"></i> S'approprier
+             </button>
+        {/if}
+    </div>
 </div>

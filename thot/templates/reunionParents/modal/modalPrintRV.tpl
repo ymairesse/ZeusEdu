@@ -11,7 +11,7 @@
 				</h4>
 			</div>  <!-- modal-header -->
 			<div class="modal-body">
-				<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="../{$module}/PDF/{$acronyme}/{$acronyme}.pdf">sur ce lien</a></p>
+				<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="../{$module}/{$acronyme}/{$acronyme}.pdf">sur ce lien</a></p>
 			</div>
 		</div>
 	</div>

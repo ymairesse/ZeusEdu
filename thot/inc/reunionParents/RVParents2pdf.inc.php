@@ -1,23 +1,32 @@
 <?php
 
-session_start();
-require_once('../../../config.inc.php');
+require_once '../../../config.inc.php';
 
-$date = isset($_POST['date'])?$_POST['date']:Null;
-$mode = isset($_POST['mode'])?$_POST['mode']:Null;
-$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
-$module = isset($_POST['module'])?$_POST['module']:Null;
-
-require_once(INSTALL_DIR.'/inc/classes/classApplication.inc.php');
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
+
+// définition de la class USER utilisée en variable de SESSION
+require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+session_start();
+
+if (!(isset($_SESSION[APPLICATION]))) {
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
+}
+
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
+$module = $Application->getModule(3);
 
 require_once(INSTALL_DIR."/inc/classes/classThot.inc.php");
 $thot = new Thot();
 
+$ds = DIRECTORY_SEPARATOR;
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
-$smarty->template_dir = "../../templates";
-$smarty->compile_dir = "../../templates_c";
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
 $listeRV = $thot->listeRVParents($date, $mode=='complet');
 $listeLocaux = $thot->getLocauxRp($date);
@@ -46,8 +55,11 @@ $html2pdf->WriteHTML($rv4PDF);
 $nomFichier = sprintf('%s.pdf', $acronyme);
 
 // création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR."/$module/PDF/$acronyme/";
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
+
 if (!(file_exists($chemin)))
-    mkdir (INSTALL_DIR."/$module/PDF/$acronyme/", 0700, true);
+    mkdir ($chemin, 0700, true);
 
 $html2pdf->Output($chemin.$nomFichier, 'F');
+
+echo sprintf('<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="inc/download.php?type=pfN&amp;f=/%s/%s">sur ce lien</a></p>', $module, $nomFichier);

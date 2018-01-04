@@ -1,6 +1,6 @@
 <div class="container hidden-print">
 
-	<nav class="navbar navbar-default" role="navigation">
+	<nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0">
 
 	<div class="navbar-header">
 
@@ -26,10 +26,16 @@
 				</ul>
 			</li>
 
-			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe <b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe 
+			{if $nbApprobations > 0}<span class="badge badge-danger">{$nbApprobations|default:0}</span>{/if}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
+					{if !empty($titulaire)}
+					<li><a href="index.php?action=jdc&amp;mode=titu">Journal de classe titulaire de [{','|implode:$titulaire}]</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=attribJdcEleve">Attributions de la charge JDC [{','|implode:$titulaire}]</a></li>
+					{/if}
+					<li><a href="index.php?action=jdc&amp;mode=approbations">Approbations en attente <span class="badge badge-danger">{$nbApprobations|default:0}</span></a></li>
 					<li role="separator" class="divider"></li>
 					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=eleve">Journal de classe par élève</a></li>
@@ -39,7 +45,7 @@
 						<li><a href="index.php?action=jdc&amp;mode=ecole">Journal de classe pour tous les élèves</a></li>
 					{/if}
 					<li role="separator" class="divider"></li>
-					<li><a href="index.php?action=jdc&amp;mode=subjectif">Vue subjective par élève</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
 				</ul>
 			</li>
 

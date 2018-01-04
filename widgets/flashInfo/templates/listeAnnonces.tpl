@@ -1,3 +1,6 @@
+{if $listeFlashInfos|@count > 0}
+
+<h3>Annonces</h3>
 
 <ul class="list-unstyled">
 
@@ -28,3 +31,4 @@
 {/foreach}
 
 </ul>
+{/if}

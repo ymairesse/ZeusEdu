@@ -32,26 +32,9 @@
                     </div>  <!-- col-md-... -->
 
                     <div class="col-md-6 col-sm-12">
+
                         <input type="hidden" name="destinataire" value="{$destinataire}">
                         <p>Pour <strong>{$lblDestinataire}</strong></p>
-
-                        {* <div class="form-group">
-                            <label for="destinataire" class="sr-only">Destinataire</label>
-                            <select name="destinataire" id="destinataire" class="form-control">
-                                <option value="">Destinataire</option>
-                                {foreach from=$listeClasses item=uneClasse}
-                                <option data-type="classe" value="{$uneClasse}"{if isset($destinataire) && ($destinataire == $uneClasse)} selected='selected'{/if}>
-                                    {$uneClasse}
-                                </option>
-                                {/foreach}
-
-                                {foreach from=$listeCours key=leCoursGrp item=unCours}
-                                <option data-type="cours" value="{$leCoursGrp}"{if isset($destinataire) && ($destinataire == $leCoursGrp)} selected='selected'{/if}>
-                                    {$unCours.libelle} {$unCours.nomCours|default:''} {$leCoursGrp}
-                                </option>
-                                {/foreach}
-                            </select>
-                        </div> *}
 
                     </div>  <!-- col-md-... -->
 
@@ -94,7 +77,7 @@
                 			<div class="input-group-btn">
                 				<button id="listeDurees" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">(min) <span class="caret"></span>
                 				</button>
-                                {assign var=heures value=range(1,8)}
+                                {assign var=heures value=range(0,8)}
                 				<ul class="dropdown-menu pull-right" id="choixDuree">
                                     {foreach from=$heures item=duree}
                                         <li><a href="javascript:void(0)" data-value="{$duree*50}">{$duree}x50'</a></li>
@@ -214,28 +197,31 @@ $(document).ready(function(){
     CKEDITOR.replace('enonce');
 
     $('#saveJDC').click(function(){
-        var formulaire = $('#editJdc').serialize();
-        // récupérer le contenu du CKEDITOR
-        var enonce = CKEDITOR.instances.enonce.getData();
-        $.post('inc/jdc/saveModalJdc.inc.php', {
-            formulaire: formulaire,
-            enonce: enonce
-        }, function(id){
-            if (id != 0)
-                bootbox.alert({
-                    message: "Événement enregistré",
-                    size: 'small'
-                });
-            // récupérer le contenu de la zone "travail" à droite
-            $.post('inc/jdc/getTravail.inc.php', {
-                id: id
-                }, function(resultat){
-                    $('#unTravail').html(resultat);
-                })
-            $('#calendar').fullCalendar('refetchEvents');
-        });
-
+        if ($('#editJdc').valid()) {
+            var formulaire = $('#editJdc').serialize();
+            // récupérer le contenu du CKEDITOR
+            var enonce = CKEDITOR.instances.enonce.getData();
+            $.post('inc/jdc/saveModalJdc.inc.php', {
+                formulaire: formulaire,
+                enonce: enonce
+            }, function(id) {
+                console.log(id);
+                if (id != 0)
+                    bootbox.alert({
+                        message: "Événement enregistré",
+                        size: 'small'
+                    });
+                // récupérer le contenu de la zone "travail" à droite
+                $.post('inc/jdc/getTravail.inc.php', {
+                    id: id,
+                    editable: true
+                    }, function(resultat){
+                        $('#unTravail').html(resultat);
+                    })
+                $('#calendar').fullCalendar('refetchEvents');
+            });
         $('#modalEdit').modal('hide');
+        }
     })
 
 
@@ -252,12 +238,16 @@ $(document).ready(function(){
                 uneDate: true
                 },
             heure: {
-                required: true,
+                required: function(element) {
+                    return (!$('#journee').is(':checked'))
+                },
                 time: true
                 },
-            // duree: {
-            //     required: true
-            // },
+            duree: {
+                required: function(element) {
+                    return (!$('#journee').is(':checked'))
+                    }
+                },
             titre: {
                 required: true
                 },

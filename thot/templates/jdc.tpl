@@ -11,21 +11,35 @@
 	<div class="row">
 
 		<div class="col-md-7 col-xs-12">
-			<h2 class="{$type}">{if $type == subjectif}Tout le JDC de {else}Mon JDC pour {/if}{$lblDestinataire|default:''}
-				{if $type == 'subjectif'}
-					<span class="pull-right" title="Vue subjective"><i class="fa fa-eye fa-lg"></i></span>
-					{elseif $type == 'eleve'}
-					<span class="pull-right" title="Vue élève"><i class="fa fa-user fa-lg"></i></span>
-					{elseif $type == 'classe'}
-					<span class="pull-right" title="Vue classe"><i class="fa fa-users fa-lg"></i></span>
-					{elseif $type == 'cours'}
-					<span class="pull-right" title="Vue cours"><i class="fa fa-graduation-cap fa-lg"></i></span>
-					{elseif $type == 'niveau'}
-					<span class="pull-right" title="Vue Niveau d'étude"><i class="fa fa-bars fa-lg"></i></span>
-					{elseif $type == 'ecole'}
-					<span class="pull-right" title="Vue école"><i class="fa fa-university fa-lg"></i></span>
-				{/if}
-			</h2>
+
+			<div class="row">
+
+				<div class="col-md-10 col-xs-10">
+					<h2>
+					{if $type == 'subjectif'}
+						<span title="Vue subjective"><i class="fa fa-eye fa-lg"></i></span>
+						{elseif $type == 'eleve'}
+						<span title="Vue élève"><i class="fa fa-user fa-lg"></i></span>
+						{elseif $type == 'classe'}
+						<span title="Vue classe"><i class="fa fa-users fa-lg"></i></span>
+						{elseif $type == 'cours'}
+						<span title="Vue cours"><i class="fa fa-graduation-cap fa-lg"></i></span>
+						{elseif $type == 'niveau'}
+						<span title="Vue Niveau d'étude"><i class="fa fa-bars fa-lg"></i></span>
+						{elseif $type == 'ecole'}
+						<span title="Vue école"><i class="fa fa-university fa-lg"></i></span>
+					{/if}
+					{$lblDestinataire|default:''}
+					</h2>
+				</div>
+
+				<div class="col-md-2 col-xs-2">
+					{if $type == 'cours'}
+						<button type="button" class="btn btn-lightBlue btn-block" style="margin-top:10px;" id="printJDC" title="Impression PDF du JDC"><i class="fa fa-print fa-lg"></i></button>
+					{/if}
+				</div>
+
+			</div>
 
 			<div id="calendar"></div>
 
@@ -42,19 +56,11 @@
 
 			<form action="index.php" method="POST" name="detailsJour" id="detailsJour" role="form" class="form-vertical ombre">
 				<!-- champs destinés à être lus pour d'autres formulaires -->
-				<input type="hidden" name="mode" id="mode" value="{$mode}">
-				<input type="hidden" name="action" id="action" value="{$action}">
-				<input type="hidden" name="acronyme" id="acronyme" value="{$identite.acronyme}">
 				<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire}">
 				<input type="hidden" name="lblDestinataire" id="lblDestinataire" value="{$lblDestinataire|default:''}">
 				<input type="hidden" name="type" id="type" value="{$type|default:''}">
 				<input type="hidden" name="editable" id="editable" value="{$editable|default:false}">
 				<input type="hidden" name="startDate" id="startDate" value="{$startDate|default:''}">
-				<input type="hidden" name="type" id="type" value="{$type}">
-				<input type="hidden" name="coursGrp" id="coursGrp" value="{$coursGrp|default:''}">
-				<input type="hidden" name="classe" id="classe" value="{$classe|default:''}">
-				<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
-				<input type="hidden" name="niveau" value="{$niveau|default:''}">
 				<input type="hidden" name="viewState" id="viewState" value="">
 
 				<div id="unTravail">
@@ -81,7 +87,7 @@
 		{* légende et couleurs *}
 		<div class="btn-group" id="legend">
 			{foreach from=$categories key=cat item=travail}
-			<button type="btn btn-default" class="cat_{$cat} voir" data-categorie="{$cat}"title="{$travail.categorie}">{$travail.categorie|truncate:12}</button>
+			<button type="btn btn-default" class="cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie|truncate:12}</button>
 			{/foreach}
 		</div>
 
@@ -95,6 +101,71 @@
 
 </div>
 <!-- container -->
+
+<div id="modalPrintJDC" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalPrintJDCLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+				<h4 class="modal-title" id="modalPrintJDCLabel">Impression du JDC</h4>
+			</div>
+			<div class="modal-body row">
+
+				<form id="printForm">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label for="modalDepuis">Depuis</label>
+							<input type="text" name="from" class="datepicker form-control" value="">
+							<div class="helpBlock">
+								Date de début d'impression
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label for="modalDepuis">Jusqu'à</label>
+							<input type="text" name="to" class="datepicker form-control" value="">
+							<div class="helpBlock">
+								Date de fin d'impression
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-12" id="listeCours">
+
+					</div>
+
+
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label for="printOptions">Sélection des catégories</label>
+							<select class="form-control" name="printOptions[]" id="printOptions" multiple>
+								{foreach from=$categories key=idCategorie item=data}
+									<option value="{$data.idCategorie}" selected>{$data.categorie}</option>
+								{/foreach}
+							</select>
+							<div class="helpBlock">Maintenir une touche CTRL enfoncée pour choisir plusieurs catégories</div>
+						</div>
+					</div>
+
+					<div class="clearfix"></div>
+				</form>
+
+			</div>
+			<div class="modal-footer">
+				<div class="btn-group">
+					<button type="button" class="btn btn-default"data-dismiss="modal">Annuler</button>
+					<button type="button" class="btn btn-primary" id="btnModalPrintJDC">Générer le PDF <i class="fa fa-file-pdf-o fa-lg text-danger"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{include file="jdc/modal/modalDislikes.tpl"}
+
 
 <script type="text/javascript">
 
@@ -121,7 +192,78 @@
 
 	$(document).ready(function() {
 
+		$('#printJDC').click(function(){
+			var coursGrp = $('#coursGrp').val();
+			$.post('inc/jdc/listeCoursProfs.inc.php', {
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#listeCours').html(resultat);
+			})
+			$('#modalPrintJDC').modal('show');
+		})
+
+		$('#printForm').validate({
+			rules: {
+				from: {
+					required: true
+				},
+				to: {
+					required: true
+				}
+			}
+		})
+
+		$('#btnModalPrintJDC').click(function(){
+			var formulaire = $('#printForm').serialize();
+			if ($('#printForm').valid()) {
+				$.post('inc/jdc/printJdc.inc.php', {
+					formulaire: formulaire
+				}, function(resultat){
+					$('#modalPrintJDC').modal('hide');
+					bootbox.alert(resultat);
+				})
+			}
+
+		})
+
+		$('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            clearBtn: true,
+            language: "fr",
+            calendarWeeks: true,
+            autoclose: true,
+            todayHighlight: true
+            });
+
 		var editable = $('#editable').val();
+
+		$('#unTravail').on('click', '#infoLikes', function(){
+			var id = $(this).data('id');
+			$.post('inc/jdc/getDislikes.inc.php', {
+				id: id
+			}, function(resultat){
+				$('#modalDislikes .modal-body').html(resultat);
+				$('#modalDislikes').modal('show');
+			})
+		})
+
+		$('#unTravail').on('click', '#approprier', function(){
+			var id = $(this).data('id');
+			$.post('inc/jdc/setProprioJdc.inc.php', {
+				id: id
+			}, function (resultat){
+				if (resultat == 1) {
+					$.post('inc/jdc/getTravail.inc.php', {
+						id: id,
+						editable: editable
+						},
+						function(resultat) {
+							$('#unTravail').html(resultat);
+						}
+					)
+				}
+			})
+		})
 
 		$('#calendar').fullCalendar({
 			eventSources: [
@@ -131,8 +273,8 @@
 				data: {
 					type: $('#type').val(),
 					coursGrp: $('#coursGrp').val(),
-					classe: $('#classe').val(),
-					matricule: $('#matricule').val(),
+					classe: $('#selectClasse').val(),
+					matricule: $('#selectEleve').val(),
 					niveau: $('#niveau').val(),
 					},
 				error: function() {
@@ -184,13 +326,16 @@
 			eventResize: function(event, delta, revertFunc) {
 				var startDate = moment(event.start).format('YYYY-MM-DD HH:mm');
 				var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
+				var editable = $('#editable').val();
 				// mémoriser la date, pour le retour
 				$("#startDate").val(startDate);
 				var id = event.id;
-				$.post('inc/getDragDrop.inc.php', {
+				$.post('inc/jdc/getDragDrop.inc.php', {
 						id: id,
 						startDate: startDate,
-						endDate: endDate
+						endDate: endDate,
+						editable: editable,
+						allDay: false
 					},
 					function(resultat) {
 						$("#unTravail").html(resultat);
@@ -250,20 +395,23 @@
 				else bootbox.alert('Dans ce mode, seule la consultation est permise');
 			},
 			eventDrop: function(event, delta, revertFunc) {
+				var editable = $('#editable').val();
 				if (editable == 1){
 					var startDate = moment(event.start).format('YYYY-MM-DD HH:mm');
 					// mémoriser la date pour le retour
 					$("#startDate").val(startDate);
 					// si l'événement est draggé sur allDay, la date de fin est incorrecte
-					if (moment.isMoment(event.end))
-						var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
-					else var endDate = '0000-00-00 00:00';
+					if (event.allDay == true) {
+						var endDate = startDate;
+						}
+						else var endDate = moment(event.end).format('YYYY-MM-DD HH:mm');
 					var id = event.id;
-					// var viewState = $("#viewState").val();
-					$.post('inc/getDragDrop.inc.php', {
+					$.post('inc/jdc/getDragDrop.inc.php', {
 							id: id,
 							startDate: startDate,
-							endDate: endDate
+							endDate: endDate,
+							editable: editable,
+							allDay: event.allDay
 						},
 						function(resultat) {
 							$("#unTravail").html(resultat);
@@ -317,10 +465,12 @@
 		$("#zoneMod").on('click', '#journee', function() {
 			if ($(this).prop('checked') == true) {
 				$("#duree").prop('disabled', true);
+				$('#heure').prop('disabled', true).val('');
 				$("#timepicker").prop('disabled', true);
 				$("#listeDurees").addClass('disabled');
 			} else {
 				$("#duree").prop('disabled', false);
+				$('#heure').prop('disabled', false);
 				$("#timepicker").prop('disabled', false);
 				$("#listeDurees").removeClass('disabled');
 			}

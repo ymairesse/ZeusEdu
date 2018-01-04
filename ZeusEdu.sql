@@ -1238,12 +1238,12 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
-
-CREATE TABLE `didac_thotJdc` (
-  `id` int(6) NOT NULL,
+CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
   `destinataire` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matricule ou coursGrp ou classe ou...',
   `type` enum('cours','classe','eleve','niveau','ecole') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type du destinataire',
-  `proprietaire` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
+  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
+  `redacteur` int(11) DEFAULT NULL COMMENT 'matricule de l''élève rédacteur',
   `idCategorie` tinyint(4) NOT NULL,
   `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `enonce` mediumblob COMMENT 'Énoncé du travail à effectuer',
@@ -1253,8 +1253,12 @@ CREATE TABLE `didac_thotJdc` (
   `startDate` datetime NOT NULL,
   `end` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'time() de PHP avec 3 zéros pour les ms',
   `endDate` datetime NOT NULL,
-  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
+  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée',
+  PRIMARY KEY (`id`),
+  KEY `proprietaire` (`proprietaire`),
+  KEY `destinataire` (`destinataire`),
+  KEY `endDate` (`endDate`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
 
 --
 ALTER TABLE `didac_thotJdc`
@@ -1289,6 +1293,17 @@ ALTER TABLE `didac_thotJdcCategories`
 
 ALTER TABLE `didac_thotJdcCategories`
 MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
+
+
+CREATE TABLE `didac_thotJdcLike` (
+  `id` int(11) NOT NULL COMMENT 'id de la note au JDC',
+  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève qui like/dislike',
+  `jeLike` tinyint(1) NOT NULL COMMENT 'like ou dislike',
+  `commentaire` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'raison du dislike'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Like et dislike des notes "élèves" au JDC';
+
+ALTER TABLE `didac_thotJdcLike`
+  ADD PRIMARY KEY (`id`,`matricule`);
 
 
 CREATE TABLE `didac_thotParents` (

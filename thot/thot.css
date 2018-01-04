@@ -374,3 +374,8 @@ tr.nonLu td{
     font-weight: bold;
     color: #55e;
 }
+
+.erreurInput {
+    background-color: red !important;
+    color: #fff;
+}

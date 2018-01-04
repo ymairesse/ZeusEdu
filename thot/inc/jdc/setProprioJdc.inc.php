@@ -14,13 +14,14 @@ if (!(isset($_SESSION[APPLICATION]))) {
     exit;
 }
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
 
-require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
-$FlashInfo = new FlashInfo;
+$module = $Application->getModule(3);
 
-$nb = $FlashInfo->saveFlashInfo($form);
+require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+$Jdc = new Jdc();
 
-echo $nb;
+$id = isset($_POST['id']) ? $_POST['id'] : null;
+
+echo $Jdc->setProprioJdc($id, $acronyme);

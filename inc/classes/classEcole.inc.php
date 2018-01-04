@@ -135,9 +135,11 @@ class ecole
         return $liste;
     }
 
-    /*
+    /**
      * retourne un tableau de la liste des profs titulaires d'un groupe donné
-     * @param $groupe
+     *
+     * @param string $groupe
+     *
      * @return array
      */
     public static function titusDeGroupe($groupe)
@@ -863,7 +865,7 @@ class ecole
         $sql .= 'FROM '.PFX.'profsCours ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profsCours.acronyme = '.PFX.'profs.acronyme) ';
         $sql .= "WHERE coursGrp IN ($listeCoursGrpString) ";
-        $sql .= 'ORDER BY nom';
+        $sql .= 'ORDER BY nom, prenom ';
 
         $resultat = $connexion->query($sql);
         $liste = array();
@@ -900,7 +902,7 @@ class ecole
     }
 
     /**
-     * retourne la liste de tous les cours qui se donnent dans une classe
+     * retourne la liste de tous les cours qui se donnent dans une coursGrp
      * chaque ligne contient
      *  - le cours
      *  - le coursGrp
@@ -2030,7 +2032,7 @@ class ecole
     public function listeProfsCoursGrp($coursGrp)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT '.PFX.'profsCours.acronyme, nom, prenom ';
+        $sql = 'SELECT '.PFX.'profsCours.acronyme, nom, prenom, sexe ';
         $sql .= 'FROM '.PFX.'profsCours ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= "WHERE coursGrp = '$coursGrp' ";
@@ -2040,7 +2042,9 @@ class ecole
         if ($resultat) {
             while ($ligne = $resultat->fetch()) {
                 $acronyme = $ligne['acronyme'];
-                $listeProfs[$acronyme] = $ligne['nom'].' '.$ligne['prenom'];
+                $sexe = $ligne['sexe'];
+                $adresse = ($sexe == 'F') ? 'Mme' : 'M.';
+                $listeProfs[$acronyme] = sprintf('%s %s. %s', $adresse, mb_substr($ligne['prenom'], 0, 1, 'UTF-8'), $ligne['nom']);
             }
         }
         Application::DeconnexionPDO($connexion);

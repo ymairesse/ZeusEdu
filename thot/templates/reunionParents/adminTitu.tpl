@@ -223,7 +223,7 @@ var typeRP="{$typeRP}"
                 module: 'thot'
             },
         function(resultat){
-            $("#modalPrintRV").modal('show');
+            bootbox.alert(resultat);
             })
 
         })

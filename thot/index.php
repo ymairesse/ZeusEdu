@@ -24,13 +24,19 @@ $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 
-$module = Application::repertoireActuel();
+$module = $Application->getModule(1);
 
 $listeCours = $user->listeCoursProf();
 $smarty->assign('listeCours', $listeCours);
 
 $titulaire = $user->listeTitulariats();
 $smarty->assign('titulaire', $titulaire);
+
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.'thot'.$ds.'inc/classes/classJdc.inc.php';
+$Jdc = new Jdc();
+$approbationsJDC = $Jdc->getApprobations($listeCours, $titulaire);
+$smarty->assign('nbApprobations', count($approbationsJDC));
 
 switch ($action) {
     case 'notification':
@@ -76,6 +82,7 @@ switch ($action) {
 require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
 $FlashInfo = new FlashInfo();
 
+$smarty->assign('module', $module);
 $listeFlashInfos = $FlashInfo->listeFlashInfos($module);
 $smarty->assign('userStatus', $userStatus);
 $smarty->assign('listeFlashInfos', $listeFlashInfos);

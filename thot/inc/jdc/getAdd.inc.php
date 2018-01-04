@@ -41,8 +41,6 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('categories', $categories);
-// $smarty->assign('listeCours', $listeCours);
-// $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('listePeriodes', $listePeriodes);
 
 $smarty->assign('startDate', $startDate);

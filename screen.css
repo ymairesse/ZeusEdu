@@ -1193,3 +1193,28 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
     font-weight: bold;
     color: #bbb;
 }
+
+.badge.badge-danger {
+    background-color: #D9534F;
+    color: #ffffff;
+}
+
+.badge.badge-info {
+    background-color: #5BC0DE;
+    color: #ffffff;
+}
+
+.badge.badge-warning {
+    background-color: #F0AD4E;
+    color: #ffffff;
+}
+
+.badge.badge-success {
+    background-color: #5CB85C;
+    color: #ffffff;
+}
+
+.badge.badge-primary {
+    background-color: #286090;
+    color: #ffffff;
+}

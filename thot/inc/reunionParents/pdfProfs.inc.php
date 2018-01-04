@@ -5,14 +5,19 @@ require_once '../../../config.inc.php';
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-// $module = $Application->getModule(2);
-
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
+
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>".RECONNECT.'</div>');
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
+
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
+$module = $Application->getModule(3);
 
 $post = isset($_POST['post']) ? $_POST['post'] : null;
 // retour du contenu du formulaire qui a été serializé
@@ -27,7 +32,6 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$module = Application::getModule(3);
 $rv4PDF =  $smarty->fetch('reunionParents/RVParents2pdf.tpl');
 
 require_once(INSTALL_DIR."/html2pdf/html2pdf.class.php");
@@ -35,9 +39,13 @@ $html2pdf = new HTML2PDF('P','A4','fr');
 $html2pdf->WriteHTML($rv4PDF);
 $nomFichier = sprintf('%s.pdf', $acronyme);
 
+$ds = DIRECTORY_SEPARATOR;
 // création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR."/$module/PDF/$acronyme/";
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
+die($chemin);
 if (!(file_exists($chemin)))
-    mkdir (INSTALL_DIR."/$module/PDF/$acronyme");
+    mkdir($chemin, 0700, true);
 
 $html2pdf->Output($chemin.$nomFichier,'F');
+
+echo sprintf('<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="inc/download.php?type=pfN&amp;f=/%s/%s">sur ce lien</a></p>', $module, $nomFichier);

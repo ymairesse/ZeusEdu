@@ -149,8 +149,6 @@ $args = array(
         'referrer_check' => false,
         'referrer' => null,
         );
-// echo "args";
-// Application::afficher($args);
 
 $download = new chip_download($args);
 

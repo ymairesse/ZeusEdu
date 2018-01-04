@@ -33,7 +33,6 @@
             queuecomplete: function() {
                 // raffraichissement de la liste des fichiers
                 //
-                alert('test');
 
 
                 // raffraîchissement du treeview

@@ -13,7 +13,7 @@ $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
 
-// le sélecteur éventuel revient avec un $type
+// le sélecteur éventuel revient avec un $type qui va permettre de définir un "destinataire"
 switch ($type) {
     case 'eleve':
         $destinataire = $matricule;
@@ -40,6 +40,14 @@ $categories = $Jdc->categoriesTravaux();
 $smarty->assign('categories', $categories);
 
 switch ($mode) {
+    case 'attribJdcEleve':
+        require_once 'inc/jdc/attribJdcEleve.inc.php';
+        break;
+
+    case 'approbations':
+        require_once 'inc/jdc/pageApprobationsJdc.inc.php';
+        break;
+
    case 'delete':
         require_once 'inc/jdc/delJdc.inc.php';
         break;
@@ -70,9 +78,17 @@ switch ($mode) {
         require_once 'inc/jdc/jdcEcole.inc.php';
         break;
 
+    case 'titu':
+        require_once 'inc/jdc/jdcTitu.inc.php';
+        break;
+
+    case 'cible':
+        require_once 'inc/jdc/jdcCible.inc.php';
+        break;
+
     case 'subjectif':
         $smarty->assign('type', 'subjectif');
-        require_once 'inc/jdc/jdcEleve.inc.php';
+        require_once 'inc/jdc/subjectifEleve.inc.php';
         break;
 
     default:
