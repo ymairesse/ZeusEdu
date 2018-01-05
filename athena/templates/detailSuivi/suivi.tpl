@@ -26,7 +26,7 @@
                     <input type="hidden" name="classe" value="{$eleve.classe}">
                     <input type="hidden" name="action" value="{$action}">
                     <input type="hidden" name="mode" value="edit">
-                    <button class="btn btn-link" type="submit" title="Modifier cette ligne"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-default btn-sm" type="submit" title="Modifier cette ligne"><i class="fa fa-pencil"></i></button>
                 </form>
                 {/if}
             </td>
@@ -81,7 +81,7 @@
                 </td>
             <td>
                 {if $unItem.proprietaire == $acronyme}
-                <button title="Supprimer cette ligne" class="btn btn-link btn-delete" type="button"><i class="fa fa-times text-danger delete" data-id="{$unItem.id}"></i></button>
+                <button title="Supprimer cette ligne" class="btn btn-default btn-sm btn-delete" type="button"><i class="fa fa-times text-danger delete" data-id="{$unItem.id}"></i></button>
                 {/if}
             </td>
         </tr>

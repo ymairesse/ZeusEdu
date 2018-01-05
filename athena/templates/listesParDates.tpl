@@ -70,16 +70,16 @@
 
 
 <script type="text/javascript">
-	
+
 	$(document).ready(function(){
-		
+
 	$(".popover-eleve").mouseover(function(){
 		$(this).popover('show');
 		})
 	$(".popover-eleve").mouseout(function(){
 		$(this).popover('hide');
 		})
-		
+
 	})
-	
+
 </script>

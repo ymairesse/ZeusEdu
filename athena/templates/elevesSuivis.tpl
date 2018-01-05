@@ -29,6 +29,29 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {if isset($elevesSansRV.$anneeScolaire)}
+                                {* traitement des élèves sans RV s'il y en a pour cette année scolaire *}
+                                {foreach from=$elevesSansRV.$anneeScolaire key=matricule item=unEleve}
+                                    {foreach from=$unEleve key=wtf item=unRV}
+                                        <tr class="selected">
+                                            <td class="hidden-print">
+                                                <form action="index.php" method="POST" role="form" class="form-inline microform">
+                                                    <input type="hidden" name="matricule" value="{$unRV.matricule}">
+                                                    <input type="hidden" name="action" value="ficheEleve">
+                                                    <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i></button>
+                                                </form>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                            <td>{$unRV.groupe}</td>
+                                            <td class="pop" data-toggle="popover" data-content="<img src='../photos/{$unRV.photo}.jpg' alt='{$unRV.matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$unRV.photo}">
+                                                {$unRV.prenom} {$unRV.nom}
+                                            </td>
+                                            <td>RV à fixer</td>
+                                        </tr>
+                                    {/foreach}
+                                {/foreach}
+                            {/if}
+
                             {foreach from=$mesEleves key=matricule item=unEleve}
                                 {assign var=n value=0}
                                 {foreach from=$unEleve key=date item=uneVisite}

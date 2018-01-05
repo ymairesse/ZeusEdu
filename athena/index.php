@@ -27,6 +27,9 @@ $smarty->assign('onglet', $onglet);
 $noBulletin = isset($_POST['noBulletin']) ? $_POST['noBulletin'] : PERIODEENCOURS;
 
 require_once INSTALL_DIR."/inc/classes/class.Athena.php";
+$Athena = new Athena();
+$listeDemandes = $Athena->getDemandesSuivi();
+$smarty->assign('listeDemandes', $listeDemandes);
 
 switch ($action) {
     case 'ficheEleve':
@@ -51,27 +54,15 @@ switch ($action) {
         require 'inc/synthese.inc.php';
         break;
 
+    case 'eleves':
+        require 'inc/eleves/eleves.inc.php';
+        break;
+
+    default:
+        require 'inc/coaching.inc.php';
+        break;
+
     }
-
-// si rien n'a encore été assigné au sélecteur, on présente le sélecteur par défaut.
-if ($smarty->getTemplateVars('corpsPage') == null) {
-    $smarty->assign('classe', $classe);
-    $listeEleves = ($classe != null) ? $Ecole->listeEleves($classe, 'groupe') : null;
-    $smarty->assign('action', 'ficheEleve');
-    $smarty->assign('mode', 'wtf');
-    $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
-    $elevesSuivis = Athena::getEleveUser($acronyme);
-    $smarty->assign('elevesSuivis', $elevesSuivis);
-    $clients = Athena::clientCoaching();
-    $smarty->assign('clients', $clients);
-
-    $listeNiveaux = Ecole::listeNiveaux();
-    $smarty->assign('listeNiveaux', $listeNiveaux);
-
-    $smarty->assign('corpsPage', 'elevesSuivis');
-    $smarty->assign('listeEleves', $listeEleves);
-    $smarty->assign('selecteur', 'selectClasseEleve');
-}
 
 //
 // ----------------------------------------------------------------------------

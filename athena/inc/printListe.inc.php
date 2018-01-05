@@ -60,8 +60,6 @@ $smarty->assign('COMMUNE', COMMUNE);
 $smarty->assign('DATE', $DATE);
 
 
-
-
 $listeEleves4PDF = $smarty->fetch('listeEleves4PDF.tpl');
 
 require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';

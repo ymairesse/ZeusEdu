@@ -7,6 +7,7 @@ if ($etape == 'showliste') {
     $dateFinSQL = implode('-', array_reverse(explode('/', $dateFin)));
     $smarty->assign('dateDebut', $dateDebut);
     $smarty->assign('dateFin', $dateFin);
+
     if ($dateDebut && $dateFin && ($dateDebutSQL <= $dateFinSQL)) {
         $listeVisites = visiteInfirmerie::listeVisitesParDate($dateDebutSQL, $dateFinSQL);
         $smarty->assign('listevisites', $listeVisites);

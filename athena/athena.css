@@ -137,3 +137,11 @@ th.rotate > div > span {
 .mentionE {
     background-color: #D2AAE6;
 }
+
+.urgence1 {
+    background: #faa;
+}
+
+.selected {
+    background: #F8DCA4;
+}
