@@ -358,17 +358,13 @@ class Jdc
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             $travail = $requete->fetch();
 
-            if ($travail['sexe'] == 'F') {
-                $nom = 'Mme ';
-            } else {
-                $nom = 'M. ';
-            }
+            $adresse = ($travail['sexe'] == 'F') ? 'Mme' : 'M.';
             if ($travail['prenom'] != '') {
-                $nom .= mb_substr($travail['prenom'], 0, 1, 'UTF-8').'.';
+                $nom = sprintf('%s %s. %s', $adresse, mb_substr($travail['prenom'], 0, 1, 'UTF-8'), $travail['nom']);
             }
+            else $nom = '';
 
-            $travail['nom'] = $nom.' '.$travail['nom'];
-
+            $travail['profs'] = $nom;
             $travail['heure'] = date('H:i', strtotime($travail['heure']));
             $travail['duree'] = date('H:i', strtotime($travail['duree']));
             if ($travail['allDay'] == 0) {

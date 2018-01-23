@@ -79,6 +79,7 @@ switch ($mode) {
         break;
 
     case 'titu':
+        $destinataire = $classe;
         require_once 'inc/jdc/jdcTitu.inc.php';
         break;
 

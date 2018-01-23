@@ -16,6 +16,8 @@ $smarty->assign('editable', true);
 $smarty->assign('selecteur', 'selecteurs/selectClassePOST');
 
 if ($classe != Null) {
+    $smarty->assign('type', 'classe');
+    $smarty->assign('destinataire', $classe);
     $lblDestinataire =  $Jdc->getLabel('classe', $classe);
     $smarty->assign('lblDestinataire', $lblDestinataire);
     $smarty->assign('corpsPage', 'jdc');

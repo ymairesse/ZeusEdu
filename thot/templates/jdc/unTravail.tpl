@@ -20,9 +20,17 @@
     <div class="panel-body">
         <p><strong>Le {$travail.startDate|date_Format:'%A %d/%m/%Y'} à {$travail.heure} ({$travail.duree}) </strong></p>
         {if $travail.libelle != ''}
-            <p>{$travail.libelle} {$travail.nbheures}h {if isset($travail.nomCours)}> {$travail.nomCours} {/if} [{$travail.destinataire}]</p>
+            <p><strong>{$travail.libelle} {$travail.nbheures}h {if isset($travail.nomCours)}</strong> > {$travail.nomCours} {/if} [{$travail.destinataire}]</p>
+            {elseif $travail.type == 'ecole'}
+                <p><strong>À tous les élèves de l'école</strong></p>
+            {elseif $travail.type == 'niveau'}
+                <p><strong>À tous les élèves de {$travail.destinataire}e</strong></p>
+            {elseif $travail.type == 'classe'}
+                <p><strong>À tous les élèves de {$travail.destinataire}</strong></p>
+            {elseif $travail.type == 'eleve'}
+                <p><strong>À l'intention de cet élève</strong></p>
         {/if}
-        <p>Professeur <strong>{$travail.nom}</strong></p>
+        <p>Professeur <strong>{$travail.profs}</strong></p>
         {if $nomEleve != Null}
             <p>
                 <i>Rédaction: {$nomEleve}</i>

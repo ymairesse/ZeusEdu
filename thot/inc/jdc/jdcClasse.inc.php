@@ -1,7 +1,7 @@
 <?php
 
 if (in_array($userStatus, array('educ', 'admin', 'direction'))) {
-    $listeClasses = $Ecole->listeClasses();
+    $listeClasses = $Ecole->listeGroupes();
     }
     else {
     $listeClasses = $Ecole->listeClassesProf($acronyme);

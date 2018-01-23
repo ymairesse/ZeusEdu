@@ -19,7 +19,8 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
 $id = isset($_POST['id']) ? $_POST['id'] : null;
@@ -29,21 +30,26 @@ $statistiques = Null;
 
 if ($id != null) {
     $travail = $Jdc->getTravail($id);
-
     if ($travail['proprietaire'] == '') {
+        // un jDC sans propriétaire n'a pu être rédigé que par un élève
+        // les élèves ne peuvent rédiger un JDC que pour un de leurs cours ou pour leur classe
+        // la note a été rédigée par un élève; on recherche donc le/les propriétaires possibles
         require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
         $Ecole = new Ecole();
 
+        // si le destinataire figure dans la liste des classes, alors le type de destinataire est "classe"
+        // sinon, c'est à destination d'un cours
         $listeClasses = $Ecole->listeClasses();
         $type = (in_array($travail['destinataire'], $listeClasses)) ? 'classe' : 'cours';
-
+        // si c'est pour un "cours", alors on cherche la liste des profs qui donnent ce cours
+        // sinon on cherche la liste des titulaires de la classe en question
         if ($type == 'cours')
             $listeProfs = $Ecole->listeProfsCoursGrp($travail['destinataire']);
             else $listeProfs = $Ecole->titusDeGroupe($travail['destinataire']);
         foreach ($listeProfs as $acronyme => $prof) {
             $nomProfs [] = $prof;
-        }
-        $travail['nom'] = implode(', ', $nomProfs);
+            }
+        $travail['profs'] = implode(', ', $nomProfs);
 
         $matricule = $travail['redacteur'];
         require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
@@ -52,16 +58,11 @@ if ($id != null) {
 
         $statistiques = $Jdc->countLikes($id);
         }
-        else {
-            $prof = $User->identite();
-            $adresse = ($prof['sexe'] == 'F') ? 'Mme' : 'M.';
-            $travail['nom'] = sprintf('%s %s. %s', $adresse, mb_substr($prof['prenom'], 0, 1, 'UTF-8'), $prof['nom']);
-        }
 
     require_once INSTALL_DIR.'/smarty/Smarty.class.php';
     $smarty = new Smarty();
-    $smarty->template_dir = '../../templates';
-    $smarty->compile_dir = '../../templates_c';
+    $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+    $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
     $smarty->assign('id', $id);
     $smarty->assign('nomEleve', $nomEleve);

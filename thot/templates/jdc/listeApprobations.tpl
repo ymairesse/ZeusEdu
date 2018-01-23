@@ -163,7 +163,8 @@
             $('#waitApprove tr').removeClass('selected');
             $(this).closest('tr').addClass('selected');
             $.post('inc/jdc/getTravail.inc.php', {
-                id: id
+                id: id,
+                editable: true
             }, function(resultat){
                 $('#unTravail').html(resultat);
             })
