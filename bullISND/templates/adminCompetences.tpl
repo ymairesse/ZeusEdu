@@ -85,7 +85,7 @@
 		})
 
 		$("#ajouter").click(function() {
-			$('<div class="blockNewComp">' + nbNewComp + '. <input type="text" class="newComp form-control" name="newComp[]" value=""></div>').fadeIn('slow').appendTo('#newComp');
+			$('<div class="blockNewComp"> <input type="text" class="newComp form-control" name="newComp[]" style="width:100%" value=""></div>').fadeIn('slow').appendTo('#newComp');
 			$(".newComp").last().focus();
 			nbNewComp++;
 

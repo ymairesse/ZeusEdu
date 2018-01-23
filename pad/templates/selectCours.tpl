@@ -1,9 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both" class="form-inline">
-	
+
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
-		<div class="input-group">
+		<div class="form-group">
 			<label for="coursGrp">Cours</label>
-			<select name="coursGrp" id="coursGrp" class="form-control-inline">
+			<select name="coursGrp" id="coursGrp" class="form-control">
 			<option value="">Cours</option>
 			{foreach from=$listeCours key=k item=unCours}
 				<option value="{$k}"{if isset($coursGrp) && ($k == $coursGrp)} selected="selected"{/if}>
@@ -19,7 +19,7 @@
 		{if isset($etape)}<input type="hidden" name="etape" value="{$etape}">{/if}
 		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
-	
+
 </div>
 
 <script type="text/javascript">

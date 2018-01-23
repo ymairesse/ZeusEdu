@@ -1,9 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	
+
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
-		<div class="input-group">
+		<div class="form-group">
 			<label for="selectClasse">Classe</label>
-			<select name="classe" id="selectClasse" class="form-control-inline">
+			<select name="classe" id="selectClasse" class="form-control">
 			<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}"{if (isset($classe)) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>
@@ -29,7 +29,7 @@ $(document).ready (function() {
 			}
 			else return false;
 	})
-	
+
 	$("#selectClasse").change(function(){
 		if ($(this).val() != '')
 			$("#formSelecteur").submit();

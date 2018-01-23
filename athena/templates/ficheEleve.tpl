@@ -75,7 +75,7 @@
 
 		<div id="tabs-7" class="tab-pane fade in">
 
-			 <iframe src="http://isnd.be/peda/edt" style="width:100%; height:600px"></iframe>
+			 <iframe src="https://isnd.be/peda/edt/index.html" style="width:100%; height:600px"></iframe>
 
 		</div>
 
@@ -107,7 +107,7 @@ $(document).ready(function(){
 		$(".onglet").val(n);
 		})
 
-	// si l'on clique sur un onglet, son numéro est retenu dans un des inputs cachés dont la class est 'onglet' 
+	// si l'on clique sur un onglet, son numéro est retenu dans un des inputs cachés dont la class est 'onglet'
 	$("#tabs ul li a").click(function(){
 		var no = $(this).attr("href").substr(6,1);
 		$(".onglet").val(no-1);

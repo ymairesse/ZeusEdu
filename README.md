@@ -21,6 +21,10 @@ Les mises à jour cruciales à réaliser dans la base de données ou dans des fi
 2017-12-28 : ajout de la table didac_thotJdcLike
 2017-12-30 : mise à jour /screen.css
 2017-12-31 : modification de la classe Ecole
+2018-01-04: modification de la classe Athena
+2018-01-04 : ajout de la table didac_athenaDemandes
+2018-01-06 : modification de la table didac_adesFaits (valeurs NULL pour certains champs)
+2018-01-07- ajoute de la table didac_thotJdcEleves
 
 Installation
 ============

@@ -84,3 +84,20 @@
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.39);
     -webkit-font-smoothing: antialiased;
 }
+
+.btn-green {
+    background-color: hsl(77, 79%, 45%) !important;
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#c4ec5f", endColorstr="#9acd18");
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#c4ec5f), to(#9acd18));
+    background-image: -moz-linear-gradient(top, #c4ec5f, #9acd18);
+    background-image: -ms-linear-gradient(top, #c4ec5f, #9acd18);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #c4ec5f), color-stop(100%, #9acd18));
+    background-image: -webkit-linear-gradient(top, #c4ec5f, #9acd18);
+    background-image: -o-linear-gradient(top, #c4ec5f, #9acd18);
+    background-image: linear-gradient(#c4ec5f, #9acd18);
+    border-color: #9acd18 #9acd18 hsl(77, 79%, 40%);
+    color: #333 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.33);
+    -webkit-font-smoothing: antialiased;
+}

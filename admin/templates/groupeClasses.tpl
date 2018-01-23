@@ -1,9 +1,9 @@
 <div class="container">
 
 	<div class="row">
-		
+
 		<div class="col-md-6 col-sm-12">
-			
+
 			<fieldset>
 				<legend>Grouper des classes</legend>
 				{if $listeGroupes|@count > 0}
@@ -32,18 +32,18 @@
 					<input type="hidden" name="action" value="{$action}">
 					<input type="hidden" name="mode" value="unGroup">
 					</form>
-				{/if} 
+				{/if}
 			</fieldset>
 
 		</div>  <!-- col-md... -->
-		
+
 		<div class="col-md-6 col-sm-12">
 			<fieldset>
 				<legend>DEgrouper des classes</legend>
 				<form name="form" action="index.php" method="POST" role="form" class="form-vertical">
-					
+
 					<h3>Formation de nouveaux groupes de classes</h3>
-					<div class="input-group">
+					<div class="form-group">
 						<label for="classes">Choisir une ou plusieurs classes</label>
 						<select name="classes[]" size="10" multiple="multiple" id="classes" class="form-control">
 							{foreach from=$listeClasses item=classe}
@@ -56,8 +56,8 @@
 						</select>
 						<div class="help-block">Maintenir une touche Ctrl enfoncée pour une sélection multiple</div>
 					</div>
-					
-					<div class="input-group">
+
+					<div class="form-group">
 						<label for="groupe">Nom du groupe à former</label>
 						<input type="text" name="groupe" id="groupe" value="{$groupe|default:Null}" maxlength="5" class="form-control">
 					</div>
@@ -65,7 +65,7 @@
 					<input type="hidden" name="mode" value="groupEleve">
 					<div class="btn-group pull-right">
 						<button class="btn btn-default" type="reset" name="reset" id="reset">Annuler</button>
-						<button class="btn btn-primary" type="submit" name="OK">Grouper</button>						
+						<button class="btn btn-primary" type="submit" name="OK">Grouper</button>
 					</div>
 
 				</form>

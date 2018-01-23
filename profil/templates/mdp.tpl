@@ -116,6 +116,7 @@
 								$("#mdp1, #mdp2").val('');
 								alert('Votre mot de passe a été changé')
 							}
+							else alert(resultat);
 						})
 				}
 				event.preventDefault();

@@ -556,4 +556,31 @@ class athena
         return $resultat;
     }
 
+    /**
+     * retourne la liste des années scolaires disponibles dans les fiches d'élèves
+     *
+     * @param void
+     *
+     * @return array
+     */
+    public function getListeAnneesScolaires(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT anneeScolaire ';
+        $sql .= 'FROM '.PFX.'athena ';
+        $sql .= 'ORDER BY anneeScolaire ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = $ligne['anneeScolaire'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
 }

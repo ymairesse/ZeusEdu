@@ -1,9 +1,9 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	
+
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
-		<div class="input-group">
+		<div class="form-group">
 			<label for="selectClasse">Classe</label>
-				<select name="classe" id="selectClasse" class="form-control-inline">
+				<select name="classe" id="selectClasse" class="form-control">
 				<option value="">Classe</option>
 				{foreach from=$listeClasses item=uneClasse}
 					<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected{/if}>{$uneClasse}</option>
@@ -11,11 +11,11 @@
 				</select>
 		</div>
 		<span id="choixEleve">
-			
+
 		{include file='listeEleves.tpl'}
-	
+
 		</span>
-				
+
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	</form>
@@ -32,7 +32,7 @@ $(document).ready (function() {
 			}
 			else return false;
 		})
-	
+
 
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
@@ -56,13 +56,13 @@ $(document).ready (function() {
 			}
 			else $("#envoi").hide();
 		})
-		
+
 	$("#prev").click(function(){
 		var matrPrev = $("#matrPrev").val();
 		$("#selectEleve").val(matrPrev);
 		$("#formSelecteur").submit();
 		})
-	
+
 	$("#next").click(function(){
 		var matrNext = $("#matrNext").val();
 		$("#selectEleve").val(matrNext);

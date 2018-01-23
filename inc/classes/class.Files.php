@@ -1961,7 +1961,7 @@ class Files
         // stockage séparé des fichiers ordinaires et des répertoires, chacun par ordre alphabétique
         $files = array('files' => array(), 'dir' => array());
 
-        if (file_exists($root.$path.$ds.$dirName)) {
+        if (file_exists($root.$path.$dirName)) {
             $listeFichiers = scandir($root.$ds.$path.$ds.$dirName);
 
             foreach ($listeFichiers as $unFichier) {

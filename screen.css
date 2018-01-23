@@ -1214,6 +1214,10 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
     color: #ffffff;
 }
 
+.badge.badge-error {
+    background-color: #b94a48;
+}
+
 .badge.badge-primary {
     background-color: #286090;
     color: #ffffff;
