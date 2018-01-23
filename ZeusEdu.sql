@@ -163,29 +163,29 @@ ALTER TABLE `didac_adesChamps`
   ALTER TABLE `didac_adesChampsFaits`
    ADD PRIMARY KEY (`typeFait`,`champ`);
 
+CREATE TABLE `didac_adesFaits` (
+    `idfait` int(11) NOT NULL,
+    `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+    `type` smallint(6) NOT NULL DEFAULT '0',
+    `matricule` int(11) NOT NULL DEFAULT '0',
+    `ladate` date DEFAULT NULL,
+    `motif` text COLLATE utf8_unicode_ci NOT NULL,
+    `professeur` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `idretenue` smallint(4) DEFAULT NULL,
+    `present` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève était-il présent à la retenue',
+    `signe` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève a-t-il présenté un billet de retenue signé',
+    `travail` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `materiel` varchar(120) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `sanction` varchar(80) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `nopv` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+    `qui` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+    `supprime` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N'
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-   CREATE TABLE IF NOT EXISTS `didac_adesFaits` (
-   `idfait` int(11) NOT NULL,
-     `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
-     `type` smallint(6) NOT NULL DEFAULT '0',
-     `matricule` int(11) NOT NULL DEFAULT '0',
-     `ladate` date NOT NULL DEFAULT '0000-00-00',
-     `motif` text COLLATE utf8_unicode_ci NOT NULL,
-     `professeur` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-     `idretenue` smallint(4) NOT NULL,
-     `present` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève était-il présent à la retenue',
-     `signe` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève a-t-il présenté un billet de retenue signé',
-     `travail` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
-     `materiel` varchar(120) COLLATE utf8_unicode_ci NOT NULL,
-     `sanction` varchar(80) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-     `nopv` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-     `qui` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-     `supprime` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N'
-   ) ENGINE=MyISAM AUTO_INCREMENT=25407 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-
-   ALTER TABLE `didac_adesFaits`
-    ADD PRIMARY KEY (`idfait`), ADD KEY `ideleve` (`matricule`), ADD KEY `date` (`ladate`);
+ALTER TABLE `didac_adesFaits`
+    ADD PRIMARY KEY (`idfait`),
+    ADD KEY `ideleve` (`matricule`),
+    ADD KEY `date` (`ladate`);
 
 ALTER TABLE `didac_adesFaits`
     MODIFY `idfait` int(11) NOT NULL AUTO_INCREMENT;
@@ -273,6 +273,16 @@ ALTER TABLE `didac_adesTypesFaits`
 
  ALTER TABLE `didac_athena`
    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+   CREATE TABLE `didac_athenaDemandes` (
+     `id` int(11) NOT NULL COMMENT 'Identifiant dans la table didac_athena',
+     `date` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'date de la demande',
+     `urgence` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Niveau d''urgence de la demande'
+   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des demandes de suivi d''élève';
+
+   ALTER TABLE `didac_athenaDemandes`
+     ADD PRIMARY KEY (`id`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_applications` (
@@ -1304,6 +1314,16 @@ CREATE TABLE `didac_thotJdcLike` (
 
 ALTER TABLE `didac_thotJdcLike`
   ADD PRIMARY KEY (`id`,`matricule`);
+
+
+CREATE TABLE `didac_thotJdcEleves` (
+    `matricule` int(11) NOT NULL COMMENT 'Matricule de l''élève',
+    `dateDebut` date DEFAULT NULL COMMENT 'Date de début de la charge',
+    `dateFin` date DEFAULT NULL COMMENT 'Date de fin de la charge'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Charge du journal de classe';
+
+ALTER TABLE `didac_thotJdcEleves`
+    ADD PRIMARY KEY (`matricule`);
 
 
 CREATE TABLE `didac_thotParents` (
