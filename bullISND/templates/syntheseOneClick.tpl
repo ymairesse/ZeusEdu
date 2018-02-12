@@ -32,13 +32,15 @@
 
 <form name="formTransfert" id="formTransfert" action="index.php" method="POST" role="form" class="form-vertical">
 
+	<a type="button" class="btn btn-primary" href="index.php?action=carnet&mode=gererCotes"><i class="fa fa-reply" style="color:blue;"></i> Retour Gestion des cotes</a>
+
 	<div style="float:right">
 		Effacer le contenu existant du bulletin (conseillé)
 		<input type="checkbox" name="effaceDetails" value="1"{if ($effaceDetails == true)} checked="checked"{/if}>
 
 		<div class="btn-group">
-			<button type="reset" class="btn btn-default">Annuler <span class="glyphicon glyphicon-remove" style="color:red"></span></button>
-			<button class="btn btn-primary">Vers le bulletin <span class="glyphicon glyphicon-share-alt" style="color:green"></span></button>
+			<button type="reset" class="btn btn-default">Annuler <i class="fa fa-times" style="color:red"></i> </button>
+			<button class="btn btn-primary">Vers le bulletin <i class="fa fa-share" style="color:green;"></i></button>
 		</div>
 
 	</div>

@@ -19,17 +19,13 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$titre = isset($_POST['titre'])?$_POST['titre']:'';
-$coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
-$tri = isset($_POST['tri'])?$_POST['tri']:Null;
-$bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:Null;
-$nomProf =  isset($_POST['nomProf'])?$_POST['nomProf']:Null;
+$identite = $User->identite();
+$civ = ($identite['sexe'] == 'F') ? 'Mme ' : 'M. ';
+$nomProf = sprintf('%s %s %s', $civ, $identite['prenom'], $identite['nom']);
 
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty;
-$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
-$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+$tri = isset($_POST['tri']) ? $_POST['tri'] : 'alpha';
+$bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : Null;
 
 require_once INSTALL_DIR."/inc/classes/classEcole.inc.php";
 $Ecole = new Ecole();
@@ -43,6 +39,12 @@ $listeCotes = ($listeTravaux != Null) ? $Bulletin->listeCotesCarnet($listeTravau
 $listeMoyennes = $Bulletin->listeMoyennesCarnet($listeCotes);
 $listeCompetences = current($Bulletin->listeCompetences($coursGrp));
 
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty;
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
+
 $smarty->assign('listeCotes', $listeCotes);
 $smarty->assign('listeMoyennes', $listeMoyennes);
 $smarty->assign('listeCompetences', $listeCompetences);
@@ -50,6 +52,9 @@ $smarty->assign('coursGrp',$coursGrp);
 $smarty->assign('listeTravaux',$listeTravaux);
 $smarty->assign('listeEleves',$listeEleves);
 $smarty->assign('nomProf',$nomProf);
+$smarty->assign('date', Application::dateNow());
+$smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
+$smarty->assign('bulletin', $bulletin);
 
 $carnet4PDF =  $smarty->fetch('simpleShowCarnet.tpl');
 
@@ -67,4 +72,6 @@ if (!(file_exists($chemin))) {
 
 $html2pdf->Output($chemin.$nomFichier, 'F');
 
-echo sprintf('<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="inc/download.php?type=pfN&amp;f=%s/%s">sur ce lien</a></p>', $module, $nomFichier);
+$smarty->assign('nomFichier', $nomFichier);
+$smarty->assign('module', $module);
+$smarty->display('carnet/download.tpl');

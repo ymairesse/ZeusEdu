@@ -8,7 +8,7 @@
 					{if isset($bulletin) && $smarty.section.boucleBulletin.index == $bulletin} selected="selected"{/if}>
 				{$smarty.section.boucleBulletin.index}</option>
 		{/section}
-	</select> 
+	</select>
 
 	<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 		<option value="">Cours</option>
@@ -32,7 +32,12 @@
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showCotes">
+	<span id="ajaxLoader" class="hidden">
+		<img src="../images/ajax-loader.gif" alt="Patience">
+	</span>
 	</form>
+
+
 </div>
 
 <script type="text/javascript">
@@ -42,11 +47,6 @@ $(document).ready (function() {
 	$("#formSelecteur").submit(function(){
 		if ($("#coursGrp").val() == '')
 			return false;
-		else {
-			$("#wait").show();
-			$.blockUI();
-			$("#corpsPage").hide();
-			}
 		})
 
 	$("#coursGrp").change(function(){

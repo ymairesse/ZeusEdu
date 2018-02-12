@@ -3877,12 +3877,12 @@ class Bulletin
      * @param $bulletin : numéro du bulletin
      *
      * @return array
-     * */
+     */
     public function listeTravaux($coursGrp, $bulletin)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idCarnet, coursGrp, cc.libelle, date, max, idComp, formCert, bulletin, ';
-        $sql .= 'remarque, neutralise, ordre ';
+        $sql .= 'remarque, neutralise, ordre, publie ';
         $sql .= 'FROM '.PFX.'bullCarnetCotes as cc ';
         $sql .= 'JOIN '.PFX.'bullCompetences as c ON (c.id = cc.idComp) ';
         $sql .= "WHERE coursGrp = '$coursGrp' AND bulletin = '$bulletin' ";
@@ -3966,7 +3966,9 @@ class Bulletin
             if (is_numeric($this->sansVirg($trimCote))) {
                 $erreur = (($max < $trimCote) || ($trimCote < 0));
             } else {
-                $erreur = false;
+                if (in_array($cote, explode(',', COTEABS)) || in_array($cote, explode(',', COTENULLE)))
+                    $erreur = false;
+                    else $erreur = true;
             }
             if (($max > 0) && ($cote != '') && (!in_array($cote, explode(',', COTEABS)))) {
                 $echec = ($cote / $max) < 0.5;
@@ -4029,41 +4031,116 @@ class Bulletin
          return $moyennes;
      }
 
+     /**
+      * retourne les caractéristiques d'une évaluation dont on fournit le $idCarnet
+      *
+      * @param int $idCarnet
+      *
+      * @return array
+      */
+     public function getEnteteCote($idCarnet) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idCarnet, coursGrp, dbcc.libelle, date, bulletin, max, dbcc.idComp, dbc.libelle AS competence, formCert, bulletin, remarque, neutralise, publie ';
+        $sql .= 'FROM '.PFX.'bullCarnetCotes AS dbcc ';
+        $sql .= 'JOIN '.PFX.'bullCompetences AS dbc ON dbc.id = dbcc.idComp ';
+        $sql .= 'WHERE idCarnet = :idCarnet ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+
+        $entete = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $entete = $requete->fetch();
+            $entete['date'] = Application::datePHP($entete['date']);
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $entete;
+     }
+
+     /**
+      * crée une nouvelle entête de cote vide pour un cours $coursGrp donné et un $bulletin donné
+      *
+      * @param string $coursGrp
+      * @param int $bulletin: période en coursgrp
+      *
+      * @return array
+      */
+     public function getNewEnteteCote($coursGrp, $bulletin) {
+         $entete = array(
+             'idCarnet' => Null,
+             'coursGrp' => $coursGrp,
+             'libelle' => Null,
+             'date' => Application::dateNow(),
+             'bulletin' => $bulletin,
+             'max' => Null,
+             'idComp' => Null,
+             'competence' => Null,
+             'formCert' => 'form',
+             'remarque' => Null,
+             'neutralise' => 0,
+             'publie' => 0
+         );
+         return $entete;
+     }
+
     /**
      * enregistrement des caractéristiques d'un travail dans le carnet de cotes
-     * si pas de idCarnet dans $post, c'est un nouveau travail.
+     * si $idCarnet dans $post est Null, c'est un nouveau travail.
      *
-     * @param $post
+     * @param array $post : le formulaire de création d'une nouvelle évaluation
      *
      * @return int : nombre d'enregistrements
      * */
     public function recordEnteteCote($post)
     {
-        $idCarnet = isset($post['idCarnet']) ? $post['idCarnet'] : null;
+        $idCarnet = $post['idCarnet'];
+        if (!(is_numeric($idCarnet)))
+            $idCarnet = Null;
         $idComp = isset($post['idComp']) ? $post['idComp'] : null;
         $coursGrp = isset($post['coursGrp']) ? $post['coursGrp'] : null;
         $bulletin = isset($post['bulletin']) ? $post['bulletin'] : null;
         $date = isset($post['date']) ? Application::dateMysql($post['date']) : null;
         $formCert = isset($post['formCert']) ? $post['formCert'] : null;
-        $neutralise = isset($post['neutralise']) ? $post['neutralise'] : null;
-        $libelle = addslashes(htmlspecialchars($post['libelle']));
+        $neutralise = isset($post['neutralise']) ? 1 : 0;
         $remarque = addslashes(htmlspecialchars($post['remarque']));
+        $libelle = addslashes(htmlspecialchars($post['libelle']));
         $max = isset($post['max']) ? $post['max'] : null;
         $max = $this->sansVirg($max);
+        $publie = isset($post['publie']) ? 1 : 0;
 
         if (($coursGrp == null) || ($bulletin == null) || ($max == null) || ($idComp == null) || !(is_numeric($max))) {
             die("Erreur d'encodage");
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'bullCarnetCotes ';
-        $sql .= "SET idCarnet = '$idCarnet', coursGrp = '$coursGrp', bulletin= '$bulletin', date = '$date', ";
-        $sql .= "idComp = '$idComp', formCert = '$formCert', neutralise = '$neutralise', ";
-        $sql .= "max= '$max', libelle = '$libelle', remarque = '$remarque' ";
+        $sql .= 'SET idCarnet = :idCarnet, ';
+        $sql .= 'coursGrp = :coursGrp, bulletin = :bulletin, date = :date, ';
+        $sql .= 'idComp = :idComp, formCert = :formCert, neutralise = :neutralise, ';
+        $sql .= 'max= :max, libelle = :libelle, remarque = :remarque, publie = :publie ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= "coursGrp = '$coursGrp', bulletin= '$bulletin', date = '$date', ";
-        $sql .= "idComp = '$idComp', formCert = '$formCert', neutralise = '$neutralise', ";
-        $sql .= "max= '$max', libelle = '$libelle', remarque = '$remarque' ";
-        $resultat = $connexion->exec($sql);
+        $sql .= 'coursGrp = :coursGrp, bulletin = :bulletin, date = :date, ';
+        $sql .= 'idComp = :idComp, formCert = :formCert, neutralise = :neutralise, ';
+        $sql .= 'max= :max, libelle = :libelle, remarque = :remarque, publie = :publie ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 20);
+        $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+        $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+        $requete->bindParam(':idComp', $idComp, PDO::PARAM_INT);
+        $requete->bindParam(':formCert', $formCert, PDO::PARAM_STR, 4);
+        $requete->bindParam(':neutralise', $neutralise, PDO::PARAM_INT);
+        $requete->bindParam(':max', $max, PDO::PARAM_STR, 20);
+        $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 50);
+        $requete->bindParam(':remarque', $remarque, PDO::PARAM_STR, 50);
+        $requete->bindParam(':publie', $publie, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
@@ -4110,16 +4187,12 @@ class Bulletin
                     // est-ce numérique?
                     elseif (is_numeric($value)) {
                         // si le max est inférieur à la cote => erreur
-                            if ($post['max'.$idCarnet] < $value) {
-                                $erreur = true;
-                            } else {
-                                $erreur = false;
-                            }
-                    }
-                            // si ce n'est pas numérique => erreur
-                            else {
-                                $erreur = true;
-                            }
+                        $erreur = ($post['max'.$idCarnet] < $value);
+                        }
+                        // si ce n'est pas numérique => erreur
+                        else {
+                            $erreur = true;
+                        }
 
                 if ($erreur) {
                     // ajout d'un point d'exclamation pour signaler une erreur
@@ -4170,6 +4243,35 @@ class Bulletin
             $sql .= "WHERE idCarnet = '$idCarnet'";
             $nbResultats = $connexion->exec($sql);
         }
+        Application::DeconnexionPDO($connexion);
+
+        return $nbResultats;
+    }
+
+    /**
+     * effacement de la cote $idCarnet du carnet de cotes
+     *
+     * @param int $idCarnet
+     *
+     * @return int : nombre d'effacements
+     */
+    public function deleteCote($idCarnet){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'bullCarnetCotes ';
+        $sql .= 'WHERE idCarnet = :idCarnet ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+
+        if ($resultat) {
+            $sql = 'DELETE FROM '.PFX.'bullCarnetEleves ';
+            $sql .= 'WHERE idCarnet = :idCarnet ';
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+            $nbResultats = $requete->execute();
+        }
+
         Application::DeconnexionPDO($connexion);
 
         return $nbResultats;

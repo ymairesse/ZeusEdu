@@ -163,7 +163,7 @@ select[disabled] {
 
 .erreurEncodage {
     background-color: red;
-    // color:white;
+    color:white;
 }
 
 .echecEncodage {
@@ -727,4 +727,21 @@ box-sizing: border-box;
 
 .unlocked {
     color: #bbb !important;
+}
+
+#formCotes td {
+    padding: 0;
+    border: 1px solid;
+}
+
+#formCotes input {
+    width: 100%;
+    height: 2.2em;
+    background: #afa;
+}
+
+#formCotes td span {
+    height: 2.2em;
+    padding-top: 0.2em;
+    display: block;
 }

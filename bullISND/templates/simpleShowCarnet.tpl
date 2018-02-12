@@ -1,9 +1,21 @@
 <page backtop="10mm" backbottom="7mm" backleft="10mm" backright="10mm">
     <page_header>
-    Carnet de cotes {$coursGrp}: {$nomProf}
+        <table style="width:100%">
+            <tr>
+                <td style="width:70%">Carnet de cotes {$coursGrp}: {$nomProf}</td>
+                <td style="width:30%; text-align:right">
+                    <strong style="float:right">Année scolaire {$ANNEESCOLAIRE} Période {$bulletin}</strong>
+                </td>
+            </tr>
+        </table>
+
     </page_header>
 
-	<table id="carnet">
+    <page_footer style="text-align:right">
+        Généré le {$date}
+    </page_footer>
+
+	<table id="carnet" style="border-collapse:collapse">
 		<thead>
 		<tr>
 			<th width="20">&nbsp;</th>
@@ -41,7 +53,7 @@
 
 		{foreach from=$listeTravaux key=idCarnet item=travail}
 			{assign var=couleur value=$travail.idComp|substr:-1}
-			<td style="border: solid 1px black;" class="{$travail.formCert} couleur{$couleur} idCarnet{$idCarnet}
+			<td style="border: solid 1px black; text-align:right;" class="{$travail.formCert} couleur{$couleur} idCarnet{$idCarnet}
 				{if (isset($listeCotes.$matricule.$idCarnet)) && $listeCotes.$matricule.$idCarnet.echec} echec{/if} cote">
 
 				<span class="{if (isset($listeCotes.$matricule.$idCarnet)) && $listeCotes.$matricule.$idCarnet.erreurEncodage} erreurEncodage{/if}">

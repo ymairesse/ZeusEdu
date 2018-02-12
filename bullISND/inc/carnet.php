@@ -35,34 +35,6 @@ $smarty->assign('listeCours', $listeCours);
 
 switch ($mode) {
     case 'gererCotes':
-        switch ($etape) {
-            case 'recordEnteteCote':
-                $nb = $Bulletin->recordEnteteCote($_POST);
-                $smarty->assign('message', array(
-                    'title' => 'Enregistrement',
-                    'texte' => "$nb modification(s) enregistrée(s)",
-                    'urgence' => 'success', )
-                    );
-                break;
-            case 'recordCotes':
-                $listeErreurs = $Bulletin->recordCotes($_POST);
-                $smarty->assign('listeErreurs', $listeErreurs);
-                $smarty->assign('message', array(
-                    'title' => 'Enregistrement',
-                    'texte' => count($listeErreurs).' erreur(s)',
-                    'urgence' => 'success', )
-                    );
-                break;
-            case 'delCote':
-                $listeCours = $user->listeCoursProf("'GT','TT','S'");
-                $nb = $Bulletin->effacementLiciteCarnet($idCarnet, $listeCours);
-                $smarty->assign('message', array(
-                    'title' => 'Effacement',
-                    'texte' => 'Cette cote a été effacée',
-                    'urgence' => 'warning', )
-                    );
-                break;
-            }
         $smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
         if (isset($coursGrp) && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
             $identite = $user->identite();
