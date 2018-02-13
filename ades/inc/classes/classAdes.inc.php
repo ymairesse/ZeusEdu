@@ -220,6 +220,38 @@ class Ades
     }
 
     /**
+     * enregistre les informations de publication ou non des différents types de faits
+     * depuis le formulaire de sélection
+     *
+     * @param array $listeTypesFaits : tous les types de faits existants
+     * @param array $toPublish : les types de faits qui doivent être publiés
+     *
+     * @return int : nombre d'enregistrements
+     */
+    public function savePublish($listeTypesFaits, $toPublish){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'adesTypesFaits ';
+        $sql .= 'SET print = :published ';
+        $sql .= 'WHERE type = :type ';
+        $requete = $connexion->prepare($sql);
+
+        $nb = 0;
+        foreach ($listeTypesFaits AS $type => $data) {
+            $requete->bindParam(':type', $type, PDO::PARAM_INT);
+
+            $true = 1; $false = 0;
+            if (isset($toPublish[$type]))
+                $requete->bindParam(':published', $true, PDO::PARAM_INT);
+                else $requete->bindParam(':published', $false, PDO::PARAM_INT);
+            $nb += $requete->execute();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
      * Enregistre les différents champs associés à un fait disciplinaire à partir du formulaire d'édition
      *
      * @param array : $form (formulaire templates/fait/formEditTypeFAit.tpl)
@@ -1166,37 +1198,6 @@ class Ades
 
         return $n;
     }
-
-
-    // /**
-    //  * recherche les caractéristiques d'un fait disciplinaire dont on fournit le $idfait.
-    //  *
-    //  * @param $idfait
-    //  *
-    //  * @return array
-    //  */
-    // public function infosFait($idfait)
-    // {
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //     $sql = 'SELECT '.PFX.'adesFaits.type, matricule, ladate, motif, professeur, idretenue, travail, materiel, ';
-    //     $sql .= 'sanction, nopv, qui, typeRetenue, titreFait ';
-    //     $sql .= 'FROM '.PFX.'adesFaits ';
-    //     $sql .= 'JOIN '.PFX.'adesTypesFaits	ON ('.PFX.'adesTypesFaits.type = '.PFX.'adesFaits.type) ';
-    //     $sql .= 'WHERE idfait =:idfait ';
-    //
-    //     $requete = $connexion->prepare($sql);
-    //     $requete->bindParam(':idfait', $idfait, PDO::PARAM_INT);
-    //
-    //     $resultat = $requete->execute();
-    //     $infoFaits = array();
-    //     if ($resultat) {
-    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
-    //         $infosFait = $requete->fetchAll();
-    //     }
-    //     Application::DeconnexionPDO($connexion);
-    //
-    //     return $infosFait[0];
-    // }
 
     /**
      * caractéristiques de la retenue dont on fournit le idretenue.

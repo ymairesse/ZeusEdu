@@ -50,6 +50,7 @@
 					<li><a href="index.php?action=admin&amp;mode=editSignature">Édition de la signature des mails</a></li>
 					<li><a href="index.php?action=admin&amp;mode=editMailRetenue">Édition du texte type des mails</a></li>
 					<li><a href="index.php?action=admin&amp;mode=users">Utilisateurs</a></li>
+					<li><a href="index.php?action=admin&amp;mode=printPublish">Gestion des publications</a></li>
 					<li class="divider"></li>
 					<li><a href="index.php?action=admin&amp;mode=editTypesFaits">Construction des faits disciplinaires</a></li>
 					{/if}

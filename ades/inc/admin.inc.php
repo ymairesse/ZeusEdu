@@ -17,6 +17,11 @@ switch ($mode) {
         require_once 'inc/faits/editeTypesFaits.inc.php';
         break;
 
+    // sélection des faits disciplinaires imprimés et publiés
+    case 'printPublish':
+        require_once 'inc/faits/printPublish.inc.php';
+        break;
+
     case 'users':
         if ($userStatus == 'admin') {
             $module = $Application->getModule(1);
