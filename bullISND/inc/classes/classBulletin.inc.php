@@ -5781,6 +5781,7 @@ class Bulletin
 
         // tous les cours donnés dans la classe (certains élèves ne suivent pas certains cours; tenir compte de l'historique)
         $listeTousCoursGrp = $this->listeCoursGrpEleves($listeEleves, $bulletin);
+        $module = Application::getModule(1);
 
         foreach ($listeEleves as $matricule => $dataEleve) {
             $listeCoursGrpUnEleve = isset($listeTousCoursGrp[$matricule]) ? $listeTousCoursGrp[$matricule] : null;
@@ -5823,14 +5824,14 @@ class Bulletin
         }
         $ds = DIRECTORY_SEPARATOR;
         // création éventuelle du répertoire au nom de l'utlilisateur
-        if (!(file_exists(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin/'))) {
-            mkdir(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin', 0700, true);
+        if (!(file_exists(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds))) {
+            mkdir(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module, 0700, true);
         }
 
         // s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
-        $pdf->Output(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin'.$ds.$classe.'-'.$bulletin.'.pdf');
+        $pdf->Output(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds.$classe.'-'.$bulletin.'.pdf');
         if ($parNiveau == false) {
-            return 'bulletin'.$ds.$classe.'-'.$bulletin.'.pdf';
+            return $module.$ds.$classe.'-'.$bulletin.'.pdf';
         } else {
             return;
         }

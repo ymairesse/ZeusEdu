@@ -729,15 +729,16 @@ box-sizing: border-box;
     color: #bbb !important;
 }
 
-#formCotes td {
+#formCotes td, #formTransfert td {
     padding: 0;
     border: 1px solid;
 }
 
-#formCotes input {
+#formCotes input, #formTransfert input.coteBulletin {
     width: 100%;
     height: 2.2em;
     background: #afa;
+    text-align: center;
 }
 
 #formCotes td span {

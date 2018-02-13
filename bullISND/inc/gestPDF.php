@@ -13,7 +13,11 @@ $smarty->assign('matricule', $matricule);
 $niveau = $Application::postOrCookie('niveau', $unAn);
 $smarty->assign('niveau', $niveau);
 
-$acronyme = $_SESSION[APPLICATION]->getAcronyme();
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
+$module = Application::getModule(1);
+
 
 switch ($mode) {
     case 'archive':
@@ -65,8 +69,9 @@ switch ($mode) {
                         'titulaires' => $Ecole->titusDeGroupe($classe),
                         );
                 $link = $Bulletin->createPDFeleve($dataEleve, $bulletin, $acronyme);
-                $smarty->assign('link', $link);
-                $smarty->assign('corpsPage', 'pdfLink');
+                // $smarty->assign('module', $module);
+                // $smarty->assign('link', $link);
+                // $smarty->assign('corpsPage', 'pdfLink');
             }
         }
         break;
@@ -87,6 +92,7 @@ switch ($mode) {
                 $listeEleves = $Ecole->listeEleves($classe, 'groupe');
                 $link = $Bulletin->createPDFclasse($listeEleves, $classe, $bulletin, $acronyme);
                 $smarty->assign('acronyme', $acronyme);
+                $smarty->assign('module', $module);
                 $smarty->assign('link', $link);
                 $smarty->assign('corpsPage', 'pdfLink');
             }

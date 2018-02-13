@@ -1,8 +1,8 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	
-	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
+
+	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 		<label for="niveau">Niveau</label>
-		<select name="niveau" id="niveau">
+		<select name="niveau" id="niveau" class="form-control">
 			<option value=''>Niveau</option>
 			{foreach from=$listeNiveaux key=clef item=leNiveau}
 			<option value="{$leNiveau}"	{if $leNiveau == $niveau}selected{/if}>
@@ -10,7 +10,7 @@
 			</option>
 			{/foreach}
 		</select>
-		
+
 		<span id="choixMatiere">
 		{include file='listeMatieres.tpl'}
 		</span>
@@ -25,7 +25,7 @@
 <script type="text/javascript">
 
 $(document).ready (function() {
-	
+
 	$("#choixMatiere").on("change", "#matiere", function(){
 		if ($(this).val() != '') {
 			$("#wait").show();
@@ -33,7 +33,7 @@ $(document).ready (function() {
 			}
 			else return false;
 		})
-	
+
 	$("#niveau").change(function(){
 		var niveau = $(this).val();
 		if (niveau != '') {
@@ -48,13 +48,13 @@ $(document).ready (function() {
 			else $("#choixMatiere").html('');
 
 	})
-	
+
 	$("#formSelecteur").submit(function(){
 		if (($("#niveau").val() == '') || ($("#matiere").val() == '')) {
 			return false
 		}
 		})
-	
+
 })
 
 </script>

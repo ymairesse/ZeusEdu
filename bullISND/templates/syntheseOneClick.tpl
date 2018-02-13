@@ -52,14 +52,14 @@
 		<th style="text-align:center" colspan={$nbCol}>À transférer au bulletin</th>
 	</tr>
 	<tr>
-		<th>Classe</th>
-		<th>Nom</th>
+		<th style="vertical-align:bottom;">Classe</th>
+		<th style="vertical-align:bottom;">Nom</th>
 
 		{foreach from=$listeCompetences key=idComp item=dataCompetence}
 			{foreach $dataCompetence key=type item=data}
-			<th style="text-align:center" data-container="body" title="{$data.libelle}<br>{$idComp}" data-html="true">
+			<th style="text-align:center; width: 6em; vertical-align:bottom;" data-container="body" title="{$data.libelle}<br>{$idComp}" data-html="true">
 				{$type}<br>
-				{$data.libelle|truncate:6}<br>
+				{$data.libelle|truncate:12}<br>
 			</th>
 			{/foreach}
 		{/foreach}
@@ -67,7 +67,7 @@
 		<!-- entête des colonnes de transfert -->
 		{foreach from=$listeCompetences key=idComp item=dataCompetence}
 			{foreach $dataCompetence key=type item=data}
-			<th style="border:2px solid black;text-align:center"
+			<th style="border:2px solid black;text-align:center; width: 6em;"
 				title="{$data.libelle}"
 				data-container="body"
 				data-html="true"
@@ -92,7 +92,7 @@
 
 	{foreach from=$listeEleves key=matricule item=dataEleve}
 	<tr>
-		<td>
+		<td style="width: 6em;">
 			{$dataEleve.classe}
 		</td>
 		{assign var=nomPrenom value=$dataEleve.nom|cat:' '|cat:$dataEleve.prenom}
@@ -110,10 +110,10 @@
 		{foreach from=$listeCompetences key=idComp item=dataCompetence}
 			{assign var=couleur value=$idComp|substr:-1}
 			{foreach $dataCompetence key=type item=data}
-			<td title="{$data.libelle}" data-container="body" class="couleur{$couleur} cote micro">
+			<td title="{$data.libelle}" data-container="body" class="couleur{$couleur} cote">
 
 				{if isset($sommesCotes.$matricule.$type.$idComp.cote) && ($sommesCotes.$matricule.$type.$idComp.cote >=0)}
-				{$sommesCotes.$matricule.$type.$idComp.cote} / {$sommesCotes.$matricule.$type.$idComp.max}
+				<span>{$sommesCotes.$matricule.$type.$idComp.cote} / {$sommesCotes.$matricule.$type.$idComp.max}</span>
 				{else}&nbsp;
 				{/if}
 			</td>
@@ -124,14 +124,16 @@
 		{foreach from=$listeCompetences key=idComp item=dataCompetence}
 			{assign var=couleur value=$idComp|substr:-1}
 			{foreach $dataCompetence key=type item=data}
-				<td title="{$data.libelle}" data-container="body" class="couleur{$couleur} cote" style="border:2px solid black">
+				<td title="{$data.libelle}" data-container="body" class="couleur{$couleur} cote" style="border:2px solid black" style="width: 6em;">
 					{if isset($poidsCompetences.$idComp)}
 						{if ($poidsCompetences.$idComp.$type != '') && isset($sommesCotes.$matricule.$type.$idComp.cote) &&($sommesCotes.$matricule.$type.$idComp.cote >= 0)}
 						{assign var=validCoursGrp value=$coursGrp|replace:' ':'$'|replace:'-':'#'}
 						<input type="text"
 						name="bull-matr_{$matricule}-coursGrp_{$validCoursGrp}-type_{$type}-comp_{$idComp}-bulletin_{$bulletin}"
 						value="{$tableauBulletin.$matricule.$type.$idComp|default:''}"
-						size="3" maxlength="5" tabindex="{$tabIndex}">
+						size="3" maxlength="5"
+						tabindex="{$tabIndex}"
+						class="coteBulletin">
 						{assign var=tabIndex value=$tabIndex+1}
 						{else}
 						&nbsp;
