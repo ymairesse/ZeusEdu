@@ -3936,10 +3936,9 @@ class Bulletin
     }
 
     /**
-     * retourne les listes de cotes correspondant à
-     * la liste des travaux passée en argument.
+     * retourne les listes de cotes correspondant à la liste des travaux passée en argument.
      *
-     * @param $listeTravaux
+     * @param array $listeTravaux
      *
      * @return array
      */
@@ -3947,43 +3946,50 @@ class Bulletin
     {
         $listeTravauxString = implode(',', array_keys($listeTravaux));
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT '.PFX.'bullCarnetCotes.idCarnet, matricule, ';
-        $sql .= 'cote, '.PFX.'bullCarnetCotes.remarque, '.PFX.'bullCarnetCotes.neutralise, max ';
-        $sql .= 'FROM '.PFX.'bullCarnetEleves ';
-        $sql .= 'JOIN '.PFX.'bullCarnetCotes ON ('.PFX.'bullCarnetCotes.idCarnet = '.PFX.'bullCarnetEleves.idCarnet) ';
-        $sql .= 'WHERE '.PFX."bullCarnetCotes.idCarnet in ($listeTravauxString) ";
-        $sql .= 'ORDER BY '.PFX.'bullCarnetCotes.idCarnet';
-        $resultat = $connexion->query($sql);
+        $sql = 'SELECT ccotes.idCarnet, matricule, ';
+        $sql .= 'cote, ccotes.remarque, ccotes.neutralise, max ';
+        $sql .= 'FROM '.PFX.'bullCarnetEleves AS celeves ';
+        $sql .= 'JOIN '.PFX.'bullCarnetCotes AS ccotes ON ccotes.idCarnet = celeves.idCarnet ';
+        $sql .= 'WHERE ccotes.idCarnet in ('.$listeTravauxString.') ';
+        $sql .= 'ORDER BY ccotes.idCarnet ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
         $listeCotes = array();
-        while ($ligne = $resultat->fetch()) {
-            $matricule = $ligne['matricule'];
-            $idCarnet = $ligne['idCarnet'];
-            $cote = $ligne['cote'];
-            $trimCote = trim($cote, '!');
-            $remarque = $ligne['remarque'];
-            $neutralise = $ligne['neutralise'];
-            $max = $ligne['max'];
-            if (is_numeric($this->sansVirg($trimCote))) {
-                $erreur = (($max < $trimCote) || ($trimCote < 0));
-            } else {
-                if (in_array($cote, explode(',', COTEABS)) || in_array($cote, explode(',', COTENULLE)))
-                    $erreur = false;
-                    else $erreur = true;
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $idCarnet = $ligne['idCarnet'];
+                $cote = $ligne['cote'];
+                $trimCote = trim($cote, '!');
+                $remarque = $ligne['remarque'];
+                $neutralise = $ligne['neutralise'];
+                $max = $ligne['max'];
+
+                if (is_numeric($this->sansVirg($trimCote))) {
+                    $erreur = (($max < $trimCote) || ($trimCote < 0));
+                } else {
+                    if (in_array($cote, explode(',', COTEABS)) || in_array($cote, explode(',', COTENULLE)) || $trimCote == '')
+                        $erreur = false;
+                        else $erreur = true;
+                }
+                if (($max > 0) && ($cote != '') && (!in_array($cote, explode(',', COTEABS)))) {
+                    $echec = ($cote / $max) < 0.5;
+                } else {
+                    $echec = false;
+                }
+                $listeCotes[$matricule][$idCarnet] = array(
+                                    'cote' => $cote,
+                                    'remarque' => $remarque,
+                                    'neutralise' => $ligne['neutralise'],
+                                    'erreurEncodage' => $erreur,
+                                    'max' => $max,
+                                    'echec' => $echec,
+                                    );
             }
-            if (($max > 0) && ($cote != '') && (!in_array($cote, explode(',', COTEABS)))) {
-                $echec = ($cote / $max) < 0.5;
-            } else {
-                $echec = false;
-            }
-            $listeCotes[$matricule][$idCarnet] = array(
-                                'cote' => $cote,
-                                'remarque' => $remarque,
-                                'neutralise' => $ligne['neutralise'],
-                                'erreurEncodage' => $erreur,
-                                'max' => $max,
-                                'echec' => $echec,
-                                );
         }
+
         Application::DeconnexionPDO($connexion);
 
         return $listeCotes;
