@@ -5,7 +5,7 @@
 	[<span class="glyphicon glyphicon-user" style="color:green"></span> <span style="color:green" id="nbPres"></span>]
 	[<span class="glyphicon glyphicon-user" style="color:red"></span> <span style="color:red" id="nbAbs"></span> ]
 </div>
-
+	{assign var=noOrdre value=1}
 	{* répartition des élèves dans deux colonnes sur les écrans larges; sinon, les deux tableaux seront superposés *}
 	{assign var=nbCol1 value=round($listeEleves|count / 2)}
 	{assign var=listeDouble value=array($listeEleves|array_slice:0:$nbCol1:true, $listeEleves|array_slice:$nbCol1:Null:true)}
@@ -20,7 +20,7 @@
 
 			<thead {if $i == 1}class="hidden-sm hidden-xs"{/if}>
 				<tr>
-					<th style="width:30px" class="hidden-sm hidden-xs">&nbsp;</th>
+					<th style="width:5em" class="hidden-sm hidden-xs">&nbsp;</th>
 					<th style="width:230px">&nbsp;</th>
 					{foreach from=$lesPeriodes item=noPeriode}
 					<th class="horloge {if $noPeriode==$periode}ouvert{else}ferme{/if}"
@@ -34,7 +34,8 @@
 			{foreach from=$liste key=matricule item=unEleve}
 				{assign var=listePr value=$listePresences.$matricule}
 				<tr>
-					<th style="width:30px" class="hidden-sm hidden-xs">{$unEleve.classe|default:'&nbsp;'}</th>
+					<th style="width:30px" class="hidden-sm hidden-xs"><strong class="ordre">{$noOrdre}</strong> {$unEleve.classe|default:'&nbsp;'}</th>
+					{assign var=noOrdre value=$noOrdre+1}
 					<td style="width:230px"
 						{if $photosVis == 'visible'}
 						class="pop"
