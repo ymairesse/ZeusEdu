@@ -1,11 +1,11 @@
 <?php
-require(INSTALL_DIR."/fpdf17/fpdf.php");
+require(INSTALL_DIR."/fpdf181/fpdf.php");
 
 class PDF extends FPDF {
 	public $groupe;
 
 	function setGroupe ($groupe) {
-		$this->groupe = $groupe;	
+		$this->groupe = $groupe;
 	}
 	//Page header
 	function Header() {
@@ -18,7 +18,7 @@ class PDF extends FPDF {
 		//Line break
 		$this->Ln(20);
 	}
-	
+
 	//Page footer
 	function Footer() {
 		//Position at 1.5 cm from bottom

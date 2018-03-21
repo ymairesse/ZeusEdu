@@ -1,8 +1,9 @@
 <?php
 
-require INSTALL_DIR.'/fpdf17/fpdf.php';
+require INSTALL_DIR.'/fpdf181/fpdf.php';
 require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
 require INSTALL_DIR.'/inc/classes/class.pdf.php';
+require INSTALL_DIR.'/inc/classes/class.pdfHTML.php';
 
 class Bulletin
 {
@@ -4220,34 +4221,43 @@ class Bulletin
      * dont on veut provoquer l'effacement d'une cote
      * efface la cote, le cas échéant. Sinon, die().
      *
-     * @param $idCarnet
-     * @param $listeCours
+     * @param int $idCarnet
+     * @param array $listeCours
      *
-     * @return integer: nombre de cotes effacées
+     * @return int: nombre de cotes effacées
      */
     public function effacementLiciteCarnet($idCarnet, $listeCours)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT coursGrp FROM '.PFX.'bullCarnetCotes ';
-        $sql .= "WHERE idCarnet = '$idCarnet'";
+        $sql .= 'WHERE idCarnet = :idCarnet ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
-        $ligne = $resultat->fetch();
-        if ($ligne == null) {
-            die('invalid note');
+        $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            if ($ligne == null) {
+                die('invalid note');
+            }
         }
+
         $coursGrp = $ligne['coursGrp'];
         if (!(in_array($coursGrp, array_keys($listeCours)))) {
             die('invalid user');
         }
         $sql = 'DELETE FROM '.PFX.'bullCarnetCotes ';
-        $sql .= "WHERE idCarnet = '$idCarnet' ";
+        $sql .= 'WHERE idCarnet = :idCarnet ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
 
-        $nbResultats = $connexion->exec($sql);
+        $nbResultats = $requete->execute();
         if ($nbResultats > 0) {
             $sql = 'DELETE FROM '.PFX.'bullCarnetEleves ';
-            $sql .= "WHERE idCarnet = '$idCarnet'";
-            $nbResultats = $connexion->exec($sql);
+            $sql .= 'WHERE idCarnet = :idCarnet ';
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+            $nbResultats = $requete->execute();
         }
         Application::DeconnexionPDO($connexion);
 
@@ -5748,7 +5758,7 @@ class Bulletin
                 'noticeDirection' => $noticeDirection,
                 );
 
-            $pdf = new PDF('P', 'mm', 'A4');
+            $pdf = new PDF_HTML('P', 'mm', 'A4');
             $pdf->SetFillColor(230);
 
             $this->createBulletinEleve($pdf, $detailsBulletin, $bulletin);
@@ -5770,7 +5780,7 @@ class Bulletin
      */
     public function createPDFclasse($listeEleves, $classe, $bulletin, $acronyme, $parNiveau = false)
     {
-        $pdf = new PDF('P', 'mm', 'A4');
+        $pdf = new PDF_HTML('P', 'mm', 'A4');
         // page de garde
         $pdf->AddPage('P');
         $pdf->SetFont('Arial', 'B', 72);
@@ -6139,14 +6149,24 @@ class Bulletin
             $pdf->SetY($pdf->GetY() + 5);
             $nota = $this->corrigeWord($nota);
             $nota = str_replace('<br />', '', $this->utf8(html_entity_decode($nota)));
+
             $pdf->SetLineWidth(0.2);
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->SetX(5);
             $pdf->MultiCell(194, 5, 'Informations de la direction et/ou du coordinateur', 1, 'C', true);
             $pdf->SetX(5);
             $pdf->SetFont('Arial', '', 9);
-            $pdf->MultiCell(194, 4, $nota, 1);
+            $yOrg = $pdf->GetY();
+            $xOrg = 5;
+            $pdf->WriteHTML($nota);
             $pdf->Ln();
+            $yFinal = $pdf->GetY();
+            $xFinal = $pdf->GetPageWidth()-16;
+            $deltaY = $yFinal - $yOrg;
+            $pdf->rect($xOrg, $yOrg, $xFinal, $deltaY, 'D');
+
+            // $pdf->MultiCell(194, 4, $nota, 1);
+
         }
     }
 
@@ -6158,9 +6178,9 @@ class Bulletin
         $remarqueTitulaire = str_replace('<br />', '', $this->utf8($remarqueTitulaire));
         $pdf->SetLineWidth(0.2);
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->SetX(5);
-        $pdf->MultiCell(194, 5, 'Avis du titulaire ou du Conseil de Classe', 1, 'C', 1);
-        $pdf->SetX(5);
+        $pdf->SetX(6);
+        $pdf->MultiCell(194, 6, 'Avis du titulaire ou du Conseil de Classe', 1, 'C', 1);
+        $pdf->SetX(6);
         $pdf->SetFont('Arial', '', 9);
         $pdf->MultiCell(194, 4, $remarqueTitulaire, 1);
         $pdf->Ln();
@@ -6545,7 +6565,9 @@ class Bulletin
         }
 
         if (isset($noticeDirection)) {
+
             $this->notaBulletin($pdf, $noticeDirection);
+
         }
 
         $this->signatures($pdf);
