@@ -1,10 +1,10 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
 
-        <div class="col-md-4 col-sm-12">
+        <div class="col-md-3 col-sm-12">
 
             <div id="ajaxLoader" class="hidden">
                 <img src="images/ajax-loader.gif" alt="loading" class="center-block">
@@ -32,7 +32,7 @@
 
         </div>
 
-        <div class="col-md-8 col-sm-12">
+        <div class="col-md-9 col-sm-12">
 
             <div id="zoneEdition">
                 {include file='casier/evalTravaux.tpl'}

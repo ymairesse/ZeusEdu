@@ -1,8 +1,8 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
-<div id="modalAdd" class="modal fade" aria-hidden="true">
+<div id="modalEdit" class="modal fade" aria-hidden="true">
 
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
 
         <div class="modal-content">
 
@@ -11,7 +11,7 @@
                 <h4 class="modal-title">Ajout d'un événement</h4>
             </div>
 
-            <form action="index.php" name="addJdc" id="addJdc" class="form-vertical">
+            <form action="index.php" name="editJdc" id="editJdc" class="form-vertical">
 
             <div class="modal-body">
 
@@ -21,54 +21,52 @@
 
                         <div class="form-group">
                             <label for="categorie" class="sr-only">Catégorie</label>
-                            <select name="categorie" id="categorie" class="form-control">
+                            <select name="categorie" id="categorie" class="form-control input-sm">
                                 <option value="">Veuillez choisir une catégorie</option>
                                 {foreach from=$categories key=id item=cat}
-                                    <option value="{$id}">{$cat.categorie}</option>
+                                    <option value="{$id}"{if isset($travail) && ($travail.idCategorie == $id)} selected{/if}>{$cat.categorie}</option>
                                 {/foreach}
                             </select>
                         </div>
 
                     </div>  <!-- col-md-... -->
 
-                    <div class="col-md-7 col-sm-12">
+                    <div class="col-md-5 col-sm-8">
 
-                        <div class="form-group">
-                            <label for="destinataire" class="sr-only">Destinataire</label>
-                            <select name="destinataire" id="destinataire" class="form-control">
-                                <option value="">Destinataire</option>
-                                {foreach from=$listeClasses item=uneClasse}
-                                <option data-type="classe" value="{$uneClasse}"{if isset($destinataire) && ($destinataire == $uneClasse)} selected='selected'{/if}>
-                                    {$uneClasse}
-                                </option>
-                                {/foreach}
-
-                                {foreach from=$listeCours key=leCoursGrp item=unCours}
-                                <option data-type="cours" value="{$leCoursGrp}"{if isset($destinataire) && ($destinataire == $leCoursGrp)} selected='selected'{/if}>
-                                    {$unCours.libelle} {$unCours.nomCours|default:''} {$leCoursGrp}
-                                </option>
-                                {/foreach}
-                            </select>
-                        </div>
+                        <input type="hidden" name="destinataire" value="{$travail.destinataire}">
+                        <p>Pour <strong>{$lblDestinataire}</strong></p>
 
                     </div>  <!-- col-md-... -->
+
+                    <div class="col-md-2 col-sm-4">
+
+                        <button type="button" class="btn btn-info btn-block" id="btn-addPJ">
+                            <i class="fa fa-plus"></i> <i class="fa fa-file-o"></i>
+                            PJ
+                        </button>
+
+                    </div>
 
                 </div>  <!-- row -->
 
                 <div class="row">
 
+                    <div class="col-xs-12 hidden" id="tree" style="max-height: 15em; overflow: auto">
+
+                    </div>
+
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             <label for="date" class="sr-only">Date</label>
-                            <input type="text" name="date" id="datepicker" value="{$startDate|date_format:"%d/%m/%Y"}" placeholder="Date de notification" class="ladate form-control" autocomplete="off">
-                            <div class="help-block">Date de notification</div>
+                            <input type="text" name="date" id="datepicker" value="{$travail.startDate|date_format:"%d/%m/%Y"}" placeholder="Date de notification" class="ladate form-control input-sm" autocomplete="off">
+                            <div class="help-block">Date de la note</div>
                         </div>
                     </div>
 
                     <div class="col-md-3 col-sm-6">
 
                         <div class="input-group">
-                            <input type="text" name="heure" id='heure' value="{$heure|default:''}" class="form-control" autocomplete="off">
+                            <input type="text" name="heure" id='heure' value="{$travail.heure|default:''}" class="form-control input-sm" autocomplete="off" {if isset($travail.allDay) && $travail.allDay == true}disabled{/if}>
                             <div class="input-group-btn">
                                 <button id="listePeriodes" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-hourglass"></i> <span class="caret"></span>
                                 </button>
@@ -79,6 +77,7 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="help-block">Heure</div>
 
                     </div>
 
@@ -86,12 +85,12 @@
 
                         <div class="input-group">
 
-                            <input type="text" name="duree" id="duree" class="form-control" value="" autocomplete="off">
+                            <input type="text" name="duree" id="duree" class="form-control input-sm" value="{$travail.duree|default:''}" autocomplete="off" {if isset($travail.allDay) && $travail.allDay == true}disabled{/if}>
 
                 			<div class="input-group-btn">
-                				<button id="listeDurees" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">(min) <span class="caret"></span>
+                				<button id="listeDurees" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">(min) <span class="caret"></span>
                 				</button>
-                                {assign var=heures value=range(1,8)}
+                                {assign var=heures value=range(0,8)}
                 				<ul class="dropdown-menu pull-right" id="choixDuree">
                                     {foreach from=$heures item=duree}
                                         <li><a href="javascript:void(0)" data-value="{$duree*50}">{$duree}x50'</a></li>
@@ -109,7 +108,7 @@
 
                         <div class="form-group">
                             <label for="journee" class="sr-only">Journée</label>
-                            <input type="checkbox" name="journee" id='journee' value='allDay'{if isset($travail.allDay) && $travail.allDay == true} checked='checked'{/if}>
+                            <input type="checkbox" name="journee" id='journee' value='1'{if isset($travail.allDay) && $travail.allDay == true} checked='checked'{/if}>
                             <div class="help-block">Journée entière</div>
                         </div>
 
@@ -119,12 +118,12 @@
 
                 <div class="form-group">
                     <label for="titre" class="sr-only">Titre</label>
-                    <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="" class="form-control" autocomplete="off">
+                    <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="{$travail.title|default:''}" class="form-control" autocomplete="off">
                 </div>
 
                 <div class="form-group">
                     <label for="enonce" class="sr-only">Texte</label>
-                    <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" cols="40" placeholder="Votre texte ici"></textarea>
+                    <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" cols="40" placeholder="Votre texte ici">{$travail.enonce|default:''}</textarea>
                 </div>
 
             </div>
@@ -132,18 +131,15 @@
             <div class="modal-footer">
 
                 <div class="btn-group pull-right">
-                    <button type="reset" class="btn btn-default">Annuler</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-primary" id="saveJDC"><i class="fa fa-floppy-o"></i> Enregistrer</button>
                 </div>
 
                 <div class="clearfix"></div>
             </div>
             <input type="hidden" name="id" value="{$travail.id|default:''}">
-            <input type="hidden" name="type" id="type" value="{$type|default:''}">
-            <input type="hidden" name="startDate" value="{$startDate|default:''}" id="startDate">
-
-            {* <input type="hidden" name="action" value="jdc">
-            <input type="hidden" name="mode" value="save"> *}
+            <input type="hidden" name="type" id="type" value="{$travail.type|default:''}">
+            <input type="hidden" name="startDate" value="{$travail.startDate|default:''}" id="startDate">
 
         </form>
 
@@ -211,19 +207,45 @@ jQuery.validator.addMethod(
 
 $(document).ready(function(){
 
-    $('#saveJDC').click(function(){
-        var formulaire = $('#addJdc').serialize();
-        $.post('inc/jdc/saveModalJdc.inc.php', {
-            formulaire: formulaire
-        }, function(resultat){
-            $('#calendar').html(resultat);
-        });
+    CKEDITOR.replace('enonce');
 
-        $('#modalAdd').modal('hide');
+    $('#saveJDC').click(function(){
+        if ($('#editJdc').valid()) {
+            var formulaire = $('#editJdc').serialize();
+            // récupérer le contenu du CKEDITOR
+            var enonce = CKEDITOR.instances.enonce.getData();
+            $.post('inc/jdc/saveModalJdc.inc.php', {
+                formulaire: formulaire,
+                enonce: enonce
+            }, function(id) {
+                if (id != 0)
+                    bootbox.alert({
+                        message: "Événement enregistré",
+                        size: 'small'
+                    });
+                // récupérer le contenu de la zone "travail" à droite
+                $.post('inc/jdc/getTravail.inc.php', {
+                    id: id,
+                    editable: true
+                    }, function(resultat){
+                        $('#unTravail').html(resultat);
+                    })
+                $('#calendar').fullCalendar('refetchEvents');
+            });
+        $('#modalEdit').modal('hide');
+        }
     })
 
+    $('#btn-addPJ').click(function(){
+        $.post('inc/jdc/getTreeView4PJ.inc.php', {},
+        function(resultat){
+            $('#tree').html(resultat);
+            $('#tree').removeClass('hidden');
+        })
+        alert('test2');
+    })
 
-    $("#addJdc").validate({
+    $("#editJdc").validate({
         rules: {
             categorie: {
                 required: true
@@ -239,9 +261,9 @@ $(document).ready(function(){
                 required: true,
                 time: true
                 },
-            // duree: {
-            //     required: true
-            // },
+            duree: {
+                required: true
+                },
             titre: {
                 required: true
                 },
@@ -255,9 +277,15 @@ $(document).ready(function(){
     		defaultTime: 'current',
     		minuteStep: 5,
     		showSeconds: false,
-    		showMeridian: false
+    		showMeridian: false,
     		}
         );
+
+    $('#journee').change(function(){
+        var isChecked =  ($(this).is(':checked'));
+        $('#heure').prop('disabled', isChecked);
+        $('#duree').prop('disabled', isChecked);
+    })
 
     $("#datepicker").datepicker({
         format: "dd/mm/yyyy",
@@ -265,7 +293,8 @@ $(document).ready(function(){
         language: "fr",
         calendarWeeks: true,
         autoclose: true,
-        todayHighlight: true
+        todayHighlight: true,
+        daysOfWeekDisabled: [0,6],
         }
     );
 
@@ -281,6 +310,13 @@ $(document).ready(function(){
         var date = $(this).val();
         $("#startDate").val(moment(dateMysql(date)).format('YYYY-MM-DD HH:mm'));
         })
+
+    $('#categorie').change(function(){
+        if (($('#titre').val() == '') && ($('#categorie').val() != '')) {
+            var texte = $("#categorie option:selected" ).text();
+            $('#titre').val(texte);
+        }
+    })
 
 })
 

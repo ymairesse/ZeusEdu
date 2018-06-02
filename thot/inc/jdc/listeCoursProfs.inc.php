@@ -34,4 +34,4 @@ $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
 $smarty->assign('coursGrp', $coursGrp);
 $smarty->assign('listeCoursProf', $listeCoursProf);
-$smarty->display('jdc/selectCours.tpl');
+$smarty->display('jdc/selectCoursProf.tpl');

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 	{if $notification.type == 'cours'}
 	<h2>Notification pour le cours {$notification.destinataire}</h2> {/if}

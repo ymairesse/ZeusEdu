@@ -2,7 +2,7 @@
 <button data-statut="" data-nomprof="" data-abreviation="{$acronyme}" class="btn btn-sm btn-block btn-prof btn-primary hidden" type="button">
 </button>
 
-<div class="container">
+<div class="container-fluid">
 
 
     <div class="row">

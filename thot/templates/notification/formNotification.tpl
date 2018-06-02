@@ -1,7 +1,7 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
 	{if $notification.type == 'cours'}
 	<h2>Annonce pour le cours {$notification.destinataire}</h2> {/if}
@@ -35,7 +35,6 @@
 
 						<div class="panel-heading">
 							<div class="row">
-
 								<div class="col-xs-10">
 									<input type="text" maxlength="80" name="objet" id="objet" placeholder="Objet de votre note" class="form-control" value="{$notification.objet|default:''}">
 								</div>
@@ -43,7 +42,6 @@
 									<button type="button" class="btn btn-info pull-right" id="btn-join" data-coursgrp="{$coursGrp|default:''}" data-niveau="{$niveau|default:''}" data-classe="{$classe|default:''}" title="Partager et joindre un document"><i class="fa fa-file-o"></i></button>
 								</div>
 							</div>
-
 						</div>
 						<!-- panel-heading -->
 

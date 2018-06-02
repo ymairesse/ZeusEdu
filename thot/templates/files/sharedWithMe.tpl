@@ -1,6 +1,6 @@
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
     <h2>Documents partagés avec moi</h2>
     <table class="table table-condensed">
@@ -46,7 +46,7 @@
 
 </div>
 
-{include file='modal/modalTreeView.tpl'}
+{include file='files/modal/modalTreeView.tpl'}
 
 <script type="text/javascript">
 

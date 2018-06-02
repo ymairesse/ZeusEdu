@@ -8,11 +8,14 @@
   p {
       margin: 3px;
   }
+  h1, h2, h3 {
+      font-size: 12pt;
+  }
 </style>
 
 <page backtop="25mm" backbottom="10mm" backleft="7mm" backright="45mm"  footer="page; date">
      <page_header>
-       <img src="../../../images/logoEcole.png" alt="LOGO" style="float:right">
+       <img src="../../images/logoEcole.png" alt="LOGO" style="float:right">
        <p>{$ECOLE}
          <br> {$ADRESSE} {$COMMUNE}
          <br>Téléphone: {$TELEPHONE}</p>

@@ -51,20 +51,35 @@
 
     <div class="panel-footer">
         {if ($acronyme == $travail.proprietaire) && ($editable == true)}
-
-            <button type="button"
-                class="btn btn-danger pull-left"
-                data-id="{$travail.id}"
-                id="delete">
-                <i class="fa fa-eraser fa-lg"></i> Supprimer
-            </button>
-            <button type="button"
-                class="btn btn-primary pull-right"
-                data-id="{$travail.id}"
-                data-destinataire="{$travail.destinataire}"
-                id="modifier">
-                <i class="fa fa-edit fa-lg"></i> Modifier
-            </button>
+            <div class="btn-group" {if ($locked == "true")}title="Déverrouiller pour permettre les modifications"{/if}>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    data-id="{$travail.id}"
+                    {if $locked == "true"} disabled{/if}
+                    id="delete">
+                    <i class="fa fa-eraser fa-lg"></i>
+                        Supprimer
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-info"
+                    data-id="{$travail.id}"
+                    id="btn-clone">
+                    <i class="fa fa-copy"></i>
+                        Cloner
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-id="{$travail.id}"
+                    data-destinataire="{$travail.destinataire}"
+                    {if $locked == "true"} disabled{/if}
+                    id="modifier">
+                    <i class="fa fa-edit fa-lg"></i>
+                        Modifier
+                </button>
+            </div>
             <div class="clearfix"></div>
 
         {elseif $editable == true}

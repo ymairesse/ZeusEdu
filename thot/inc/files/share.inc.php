@@ -17,6 +17,7 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 $post = isset($_POST['post']) ? $_POST['post'] : null;
+
 // retour du contenu du formulaire qui a été serializé
 $formulaire = array();
 parse_str($post, $formulaire);

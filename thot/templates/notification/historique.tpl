@@ -1,6 +1,6 @@
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
 	<h2>Historique et Annonces</h2>
 
@@ -74,7 +74,7 @@
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour l'édition  des PJ (ajout/suppr)             ..  -->
 <!-- .......................................................................... -->
-{include file="modal/modalTreeView.tpl"}
+{include file="files/modal/modalTreeView.tpl"}
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour la lecture des accusés de réception          ..  -->
 <!-- .......................................................................... -->

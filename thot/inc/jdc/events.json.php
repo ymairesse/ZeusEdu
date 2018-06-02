@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../config.inc.php';
+require_once '../../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
@@ -20,14 +20,14 @@ $unAn = time() + 365 * 24 * 3600;
 
 $start = $_POST['start'];
 $end = $_POST['end'];
+
 $type = isset($_POST['type']) ? $_POST['type'] : Null;
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
-// $niveau = $Application->postOrCookie('niveau', $unAn);
 
-$module = $Application->getModule(2);
+$module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 

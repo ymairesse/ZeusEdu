@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
     {if $bookList|count == 0}
     <div class="alert alert-danger" role="alert">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>

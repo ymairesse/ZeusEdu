@@ -35,12 +35,16 @@ $smarty->assign('titulaire', $titulaire);
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'thot'.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
+
 $approbationsJDC = $Jdc->getApprobations($listeCours, $titulaire);
 $smarty->assign('nbApprobations', count($approbationsJDC));
 
 switch ($action) {
     case 'notification':
         include_once 'inc/notif/notifications.inc.php';
+        break;
+    case 'remediation':
+        require_once 'inc/remediation/remediation.inc.php';
         break;
     case 'jdc':
         require_once 'inc/jdc.inc.php';

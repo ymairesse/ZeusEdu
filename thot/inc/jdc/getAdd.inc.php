@@ -19,34 +19,43 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
 $categories = $Jdc->categoriesTravaux();
 
-$startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
+$date = isset($_POST['date']) ? $_POST['date'] : null;
 $heure = isset($_POST['heure']) ? $_POST['heure'] : null;
+
 if ($heure != Null) {
     $heure = $Jdc->heureLaPlusProche($heure);
 }
+$type = isset($_POST['type']) ? $_POST['type'] : null;
+$cible = isset($_POST['cible']) ? $_POST['cible'] : null;
+$lblDestinataire = isset($_POST['lblDestinataire']) ? $_POST['lblDestinataire'] : null;
+
 $listePeriodes = $Jdc->lirePeriodesCours();
 
-$type = isset($_POST['type']) ? $_POST['type'] : null;
-$destinataire = isset($_POST['destinataire']) ? $_POST['destinataire'] : null;
-$lblDestinataire = isset($_POST['lblDestinataire']) ? $_POST['lblDestinataire'] : null;
+$travail = array(
+    'idCategorie' => Null,
+    'destinataire' => $cible,
+    'proprietaire' => $acronyme,
+    'idCategorie' => $type,
+    'startDate' => $date,
+    'heure' => $heure,
+    'type' => $type
+    );
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $smarty->assign('categories', $categories);
 $smarty->assign('listePeriodes', $listePeriodes);
 
-$smarty->assign('startDate', $startDate);
-$smarty->assign('heure', $heure);
-$smarty->assign('type', $type);
-$smarty->assign('destinataire', $destinataire);
+$smarty->assign('travail', $travail);
 $smarty->assign('lblDestinataire', $lblDestinataire);
 
-$smarty->display('jdc/modalEdit.tpl');
+$smarty->display('jdc/modal/modalEdit.tpl');

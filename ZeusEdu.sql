@@ -1326,6 +1326,20 @@ ALTER TABLE `didac_thotJdcEleves`
     ADD PRIMARY KEY (`matricule`);
 
 
+CREATE TABLE `didac_thotJdcTypes` (
+  `id` tinyint(4) NOT NULL,
+  `type` enum('ecole','niveau','classe','cours','eleve','') COLLATE utf8_unicode_ci NOT NULL,
+  `libelle` varchar(60) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Niveaux d''accès au JDC';
+
+INSERT INTO `didac_thotJdcTypes` (`id`, `type`, `libelle`) VALUES
+(1, 'eleve', 'Mentions à des élèves en particulier'),
+(2, 'cours', 'Mentions à des cours'),
+(3, 'classe', 'Mentions à des classes'),
+(4, 'niveau', 'Mentions à un niveau d\'étude'),
+(5, 'ecole', 'Mentions à tous les élèves de l\'école');
+
+
 CREATE TABLE `didac_thotParents` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
   `formule` enum('M.','Mme') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Formule pour l''envoi de mails',
@@ -1461,7 +1475,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotTravauxRemis` (
     `cote` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
     `max` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
     `remarque` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `evaluation` blob,
+    `evaluation` mediumblob,
     `remis` tinyint(1) NOT NULL DEFAULT '0',
     `statutEleve` enum('ouvert','ferme','evalue') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ouvert'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des travaux rendus par les élèves';

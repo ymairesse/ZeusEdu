@@ -2,7 +2,7 @@
 <link href="../dropzone/dropzone.css" type="text/css" rel="stylesheet">
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
 
@@ -29,12 +29,12 @@
 
 </div>
 
-{include file='modal/modalNewDir.tpl'}
-{include file="modal/modalShare.tpl"}
-{include file="modal/modalEditShare.tpl"}
-{include file="modal/modalUnshareFile.tpl"}
-{include file="modal/modalDelFile.tpl"}
-{include file="modal/modalDelDir.tpl"}
+{include file='files/modal/modalNewDir.tpl'}
+{include file="files/modal/modalShare.tpl"}
+{include file="files/modal/modalEditShare.tpl"}
+{include file="files/modal/modalUnshareFile.tpl"}
+{include file="files/modal/modalDelFile.tpl"}
+{include file="files/modal/modalDelDir.tpl"}
 
 
 <script type="text/javascript">
@@ -45,7 +45,7 @@ var maxFileSize = 25;
 Dropzone.options.myDropZone = {
     maxFilesize: maxFileSize,
     maxFiles: nbFichiersMax,
-    acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf",
+    acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.mp3",
     url: "inc/files/upload.inc.php",
     queuecomplete: function() {
         // raffraichissement de la liste des fichiers

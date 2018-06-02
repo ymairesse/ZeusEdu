@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <div id="selecteur" class="noprint">
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 {if $listeNonInscrits|@count > 0}
 <h3>Liste des élèves dont les parents n'ont pas été invités</h3>

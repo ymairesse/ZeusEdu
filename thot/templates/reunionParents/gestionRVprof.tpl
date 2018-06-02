@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
 
@@ -77,7 +77,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-        $("#printProf").click(function() {
+        $('#printProf').click(function() {
             var date = $(this).data('date');
             var acronyme = $(this).data('acronyme');
             $.post('inc/reunionParents/RV2pdf.inc.php',{
@@ -86,7 +86,10 @@
                 module: 'thot'
             },
         function(resultat){
-            $("#modalPrintRV").modal('show');
+            bootbox.alert({
+                title: 'Votre document est prêt',
+                message: resultat
+                });
             })
 
         })

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" data-onglet="0" href="#page0">Page 1</a></li>

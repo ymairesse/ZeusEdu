@@ -35,7 +35,4 @@
 
 {/function}
 
-{* <pre>
-{$tree|print_r}
-</pre> *}
 {repertoire data=$tree}

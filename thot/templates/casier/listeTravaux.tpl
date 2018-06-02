@@ -19,14 +19,13 @@
                         type="button"
                         class="btn btn-default btn-block btnShowTravail{if $id == $idTravail} active{/if}"
                         title="{$unTravail.titre}"
-                        style="width: 20em; overflow: hidden; text-overflow: ellipsis"
+                        style="overflow: hidden; text-overflow: ellipsis"
                         data-idtravail="{$id}">
                     {if $unTravail.statut == 'termine'}<i class="fa fa-star text-danger"></i>
                         {elseif $unTravail.statut == 'readwrite'}<i class="fa fa-star text-success"></i>
                         {elseif $unTravail.statut == 'readonly'}<i class="fa fa-star-half-empty text-warning"></i>
                         {elseif $unTravail.statut == 'hidden'}<i class="fa fa-star-o"></i>
                     {/if}
-
 
                     {$unTravail.dateDebut|truncate:5:''} - {$unTravail.titre}
                 </button>

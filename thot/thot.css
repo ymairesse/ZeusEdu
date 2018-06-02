@@ -69,8 +69,39 @@ p.event-inverse, a.event-inverse {
     color: #fff !important;
 }
 
-#calendar {
-    cursor: pointer;
+.fc-week-number a, .fc-day-header a {
+    display: block;
+    max-width:7em;
+    text-align: center;
+    background-color: hsla(41.1, 100%, 55.3%, 0.8) !important
+}
+
+.fc-week-number a, .fc-day-header a, .fc-day-number {
+    display: block;
+    max-width:7em;
+    text-align: center;
+    background-color: hsla(41, 98.6%, 71.8%, 0.8) !important;
+}
+
+.fc-day-number {
+    width: 1.5em;
+}
+
+.fc-unthemed td, .fc-unthemed thead, .fc-unthemed .fc-row, .fc-unthemed .fc-list-heading td {
+	border-color: #aaa !important;
+}
+
+#calendar.subjectif, p.jdcInfo.subjectif {
+    background-color: #ebd8ff !important;
+    border-radius: 10px;
+}
+#calendar.jdcAny, p.jdcInfo.jdcAny {
+    background-color: #D9EDF7 !important;
+    border-radius: 10px;
+}
+#calendar.cours, p.jdcInfo.cours {
+    background-color: #ffe6b5 !important;
+    border-radius: 10px;
 }
 
 #duree:disabled, #timepicker:disabled {
@@ -116,6 +147,11 @@ p.event-inverse, a.event-inverse {
 .cat_7 {
     background: #fff !important;
     color: #000 !important;
+}
+
+.cat_8 {
+    background: #bbf !important;
+    color: #f22 !important;
 }
 
 .discret {
@@ -378,4 +414,144 @@ tr.nonLu td{
 .erreurInput {
     background-color: red !important;
     color: #fff;
+}
+
+body.wait *, body.wait {
+    cursor: wait !important;
+}
+
+.calendrier {
+    font-size: 0.9rem;
+    float: left;
+    padding: 0 0.3rem;
+    border: 1px solid #001eff;
+    margin-right: 0.4rem;
+    background-color: rgba(255, 255, 255, 0.6);
+    color: #f00;
+}
+
+.jour {
+    border-bottom: 1px solid black
+}
+
+#detailsOffre .form-control-static {
+    border: 1px solid #999;
+    padding: 0.3em;
+    border-radius: 4px;
+    }
+
+.indetermine {
+    background-color: #ccc;
+}
+
+.present {
+    background-color: #afa;
+}
+
+.absent {
+    background-color: #faa;
+}
+
+.red {
+    background: red !important;
+}
+
+.proprio {
+    color: red !important;
+    background-color: yellow !important;;
+}
+
+.proprio .past-event {
+    background-color: #dd7;
+    color: #777;
+}
+
+.past-event {
+    background-color: #999;
+    color: #fff
+}
+
+.panelDisable * {
+    background-color: #aaa;
+}
+
+.offre {
+    background-color: #d1d1e6;
+}
+
+.cible {
+    background-color: #aaf;
+}
+
+.presence {
+    padding: 0.3em;
+    border: 1px solid black;
+    font-size: 1rem;
+    display: inline-block;
+}
+
+.uneCible {
+    padding: 0;
+    border: 1px solid #888;
+    border-radius: 4px;
+    margin: 0.5em;
+    color: #333;
+    display: inline-block;
+}
+
+.uneCible.niveau {
+    background-color: #FFAEDB;
+}
+.uneCible.tous {
+    background-color: #60E9FF;
+}
+.uneCible.classe {
+    background-color: #9dff7c;
+}
+.uneCible.coursGrp {
+    background-color: #FFD20F;
+}
+.uneCible.matiere {
+    background-color: #F3FF35;
+}
+
+
+button.cache {
+    border: 2px solid grey !important;
+    font-weight: bolder;
+}
+button.cache span.titreOffre {
+
+    color: #aaa;
+}
+
+.cache span.titreOffre:before{
+   font-family: FontAwesome;
+   font-size: 12pt;
+   display: inline-block;
+   padding-right: 6px;
+   vertical-align: middle;
+}
+
+.cache span.titreOffre:before {
+   content: "\f070";
+}
+
+p.jdcInfo {
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 7px;
+}
+p.jdcInfo:before {
+    font-family: FontAwesome;
+    font-size: 12pt;
+    color: blue;
+  content: "\f05a   ";
+}
+
+.demiOmbre {
+	border: 5px solid #fff;
+	-moz-box-shadow: 8px 8px 12px #adadad;
+	-webkit-box-shadow: 8px 8px 12px #adadad;
+	box-shadow: 4px 4px 6px #adadad;
 }

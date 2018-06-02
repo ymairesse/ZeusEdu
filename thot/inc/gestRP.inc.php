@@ -243,6 +243,7 @@ switch ($mode) {
 
     case 'printEleves':
         if (isset($date) && ($date != '')) {
+            $smarty->assign('listeNiveaux', Ecole::listeNiveaux());
             $smarty->assign('acronyme', $acronyme);
             $smarty->assign('date', $date);
 

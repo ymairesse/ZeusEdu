@@ -40,14 +40,14 @@ if ($id != Null) {
             $coursGrp = $travail['destinataire'];
             $infos = $User->listeCoursProf();
             break;
-        case 'eleve':
-            $matricule = $travail['destinataire'];
-            require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-            $infos = Eleve::staticGetDetailsEleve($matricule);
-            break;
-        default:
-            $infos = Null;
-            break;
+        // case 'eleve':
+        //     $matricule = $travail['destinataire'];
+        //     require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+        //     $infos = Eleve::staticGetDetailsEleve($matricule);
+        //     break;
+        // default:
+        //     $infos = Null;
+        //     break;
     }
     $lblDestinataire = $Jdc->getLabel($type, $destinataire, $infos);
 
@@ -67,5 +67,5 @@ if ($id != Null) {
     $smarty->assign('lblDestinataire', $lblDestinataire);
 
     $smarty->assign('travail',$travail);
-    $smarty->display('jdc/modalEdit.tpl');
+    $smarty->display('jdc/modal/modalEdit.tpl');
     }

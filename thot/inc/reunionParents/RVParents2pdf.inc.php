@@ -19,6 +19,10 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
+$date = isset($_POST['date']) ? $_POST['date'] : Null;
+$mode = isset($_POST['mode']) ? $_POST['mode'] : Null;
+$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
+
 require_once(INSTALL_DIR."/inc/classes/classThot.inc.php");
 $thot = new Thot();
 
@@ -28,9 +32,9 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
-$listeRV = $thot->listeRVParents($date, $mode=='complet');
+$listeRV = $thot->listeRVParents($date, $mode, $niveau);
+$listeAttente = $thot->listeAttenteParents($date, $mode, $niveau);
 $listeLocaux = $thot->getLocauxRp($date);
-$listeAttente = $thot->listeAttenteParents($date, $mode=='complet');
 
 // établir une liste complete de tous les élèves qui figurent dans l'une ou dans l'autre liste
 $fullListe = array_unique(array_merge(array_keys($listeRV), array_keys($listeAttente)));
@@ -51,8 +55,11 @@ $rv4PDF =  $smarty->fetch('reunionParents/RVParents2pdf.tpl');
 
 require_once(INSTALL_DIR."/html2pdf/html2pdf.class.php");
 $html2pdf = new HTML2PDF('P','A4','fr');
+
 $html2pdf->WriteHTML($rv4PDF);
-$nomFichier = sprintf('%s.pdf', $acronyme);
+
+$f_date = str_replace('/', '-', $date);
+$nomFichier = sprintf('rp_%s_%s.pdf', $f_date, $niveau);
 
 // création éventuelle du répertoire au nom de l'utlilisateur
 $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
@@ -62,4 +69,4 @@ if (!(file_exists($chemin)))
 
 $html2pdf->Output($chemin.$nomFichier, 'F');
 
-echo sprintf('<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="inc/download.php?type=pfN&amp;f=/%s/%s">sur ce lien</a></p>', $module, $nomFichier);
+echo sprintf('<a target="_blank" id="celien" href="inc/download.php?type=pfN&amp;f=/%s/%s">sur ce lien</a>', $module, $nomFichier);

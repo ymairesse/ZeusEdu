@@ -25,6 +25,8 @@ $Jdc = new Jdc();
 
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $editable = isset($_POST['editable']) ? $_POST['editable'] : null;
+$locked = isset($_POST['locked']) ? $_POST['locked'] : null;
+
 $nomEleve = Null;
 $statistiques = Null;
 
@@ -69,6 +71,7 @@ if ($id != null) {
     $smarty->assign('statistiques', $statistiques);
     $smarty->assign('travail', $travail);
     $smarty->assign('editable', $editable);
+    $smarty->assign('locked', $locked);
     $smarty->assign('acronyme', $acronyme);
     $smarty->display('jdc/unTravail.tpl');
 }

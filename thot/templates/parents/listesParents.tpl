@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 {if $listeClasses|@count > 1}
     <h3>Liste des parents de {$listeClasses}</h3>
 {/if}

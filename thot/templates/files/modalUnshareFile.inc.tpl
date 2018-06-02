@@ -1,4 +1,3 @@
-{$shareDetails|print_r}
 <div class="alert alert-warning">
     <p>
         <i class="fa fa-share-alt-square fa-2x"></i> Veuillez confirmer l'arrêt du partage du <strong id="modalFileType"></strong>

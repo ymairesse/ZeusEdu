@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 	<h2>Gestion de l'accès aux bulletins</h2>
 	<div class="row">
 

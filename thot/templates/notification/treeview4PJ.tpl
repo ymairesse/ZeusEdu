@@ -1,3 +1,5 @@
+<link href="css/filetree.css" type="text/css" rel="stylesheet">
+
 {function name=repertoire level=0}
 <ul class="filetree level{$level}" {if ($level > 0)}style="display:none"{/if}>
 

@@ -23,7 +23,7 @@ require_once(INSTALL_DIR."/html2pdf/html2pdf.class.php");
 
 $date = isset($_POST['date'])?$_POST['date']:Null;
 $acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:'';
-$module = isset($_POST['module'])?$_POST['module']:'';
+// $module = isset($_POST['module'])?$_POST['module']:'';
 
 $nomProf = User::identiteProf($acronyme);
 

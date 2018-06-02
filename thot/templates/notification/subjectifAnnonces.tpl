@@ -1,9 +1,8 @@
-<div class="container">
+<div class="container-fluid">
 
-        <div class="row">
+    <div class="row">
 
-
-        <div id="listeAnnonces" style="max-height: 35em; overflow: auto">
+        <div id="listeAnnonces" style="max-height: 35em; overflow: auto" class="col-xs-12">
 
         	<table class="table table-condensed table-hover table-responsive">
         		<tr>
@@ -62,26 +61,28 @@
 
         </div>
 
-        <p class="help-block pull-right">Total: {$listeAnnonces|@count} annonces.</p>
+        <div class="col-xs-12">
 
-        <table class="table table-condensed">
-            <tr>
-                <td class="notification">Annonce lue</td>
-            </tr>
-            <tr class="nonLu">
-                <td class="notification">Annonce non lue</td>
-            </tr>
-        </table>
+            <p class="help-block pull-right">Total: {$listeAnnonces|@count} annonces.</p>
 
+            <table class="table table-condensed">
+                <tr>
+                    <td class="notification">Annonce lue</td>
+                </tr>
+                <tr class="nonLu">
+                    <td class="notification">Annonce non lue</td>
+                </tr>
+            </table>
 
+            <h4>Code des couleurs</h4>
+            <ul class="list-inline">
+            	<li class="ecole">Pour tous les élèves</li>
+            	<li class="niveau">Pour tous les élèves d'un niveau</li>
+            	<li class="cours">Pour un ou plusieurs élèves d'un cours</li>
+            	<li class="classes">Pour un ou plusieurs élèves de la classe</li>
+            </ul>
 
-        <h4>Code des couleurs</h4>
-        <ul class="list-inline">
-        	<li class="ecole">Pour tous les élèves</li>
-        	<li class="niveau">Pour tous les élèves d'un niveau</li>
-        	<li class="cours">Pour un ou plusieurs élèves d'un cours</li>
-        	<li class="classes">Pour un ou plusieurs élèves de la classe</li>
-        </ul>
+        </div>
 
     </div>
 

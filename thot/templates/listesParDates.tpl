@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 <h2>Connexion entre {$dateDebut} et le {$dateFin} [ {$listeConnexions|@count} ]</h2>
 
 {if $listeConnexions|@count > 0}

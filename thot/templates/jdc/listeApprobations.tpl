@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
 
@@ -28,7 +28,7 @@
                             {if isset($data.libelle)} [{$data.libelle}]{/if}
                         </td>
                         <td><span class="badge badge-success">{$appreciations.$id.1|@count|default:0}</span></td>
-                        <td><span class="badge badge-danger">{$appreciations.$id.0|@count|default:0}</span></td>
+                        <td><span class="badge badge-menu">{$appreciations.$id.0|@count|default:0}</span></td>
                         </td>
                     </tr>
                 {/foreach}

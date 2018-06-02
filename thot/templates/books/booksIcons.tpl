@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <div class="btn-group" style="padding: 5px 0; width:100%" id="formSelecteur">
 

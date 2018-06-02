@@ -2,7 +2,7 @@
 <link href="../dropzone/dropzone.css" type="text/css" rel="stylesheet">
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
 
@@ -86,14 +86,14 @@
 
 </div>
 
-{include file='modal/modalNewDir.tpl'}
-{include file='modal/modalDelDir.tpl'}
-{include file='modal/modalDelFile.tpl'}
-{include file='modal/modalShare.tpl'}
-{include file='modal/modalUpload.tpl'}
-{include file='modal/modalUnshareFile.tpl'}
-{include file='modal/modalEditShare.tpl'}
-{include file='modal/modalMemoShare.tpl'}
+{include file='files/modal/modalNewDir.tpl'}
+{include file='files/modal/modalDelDir.tpl'}
+{include file='files/modal/modalDelFile.tpl'}
+{include file='files/modal/modalShare.tpl'}
+{include file='files/modal/modalUpload.tpl'}
+{include file='files/modal/modalUnshareFile.tpl'}
+{include file='files/modal/modalEditShare.tpl'}
+{include file='files/modal/modalMemoShare.tpl'}
 
 <script type="text/javascript">
     $(document).ready(function() {

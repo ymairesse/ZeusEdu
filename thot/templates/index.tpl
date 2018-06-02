@@ -15,7 +15,7 @@
 
 {include file="menu.tpl"}
 
-<div class="container">
+<div class="container-fluid">
 
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}

@@ -1,6 +1,6 @@
 <link href="css/filetree.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
     <h2>Les documents et dossiers que je partage</h2>
 
@@ -109,10 +109,10 @@
 
 </div>
 
-{include file="modal/modalEditShare.tpl"}
-{include file="modal/modalUnshareFile.tpl"}
-{include file="modal/modalShowSpied.tpl"}
-{include file='modal/modalTreeView.tpl'}
+{include file="files/modal/modalEditShare.tpl"}
+{include file="files/modal/modalUnshareFile.tpl"}
+{include file="files/modal/modalShowSpied.tpl"}
+{include file='files/modal/modalTreeView.tpl'}
 
 <script type="text/javascript">
 

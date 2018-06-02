@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <table class="table table-condensed table-bordered">
         <thead>

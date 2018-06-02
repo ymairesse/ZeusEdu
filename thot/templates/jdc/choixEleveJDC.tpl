@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <div class="row">
 
@@ -9,7 +9,7 @@
         <div class="col-md-8 col-sm-12" style="max-height: 35em; overflow: auto">
 
             <h3>Charge du journal de classe </h3>
-            
+
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -85,7 +85,8 @@
             language: "fr",
             calendarWeeks: true,
             autoclose: true,
-            todayHighlight: true
+            todayHighlight: true,
+            daysOfWeekDisabled: [0,6],
             });
 
         $('.dateDebut, .dateFin').on('changeDate', function(){

@@ -9,7 +9,7 @@
 
                 <p>Nom du fichier: <strong id="shareEditFileName"></strong></p>
                 <p>Répertoire: <strong id="shareEditPath"></strong></p>
-                <p>Partagé avec: <strong id="shareEditSharedWith"></strong></p>
+                <p>Commentaire: <strong id="shareEditSharedWith"></strong></p>
 
                 <input type="text" name="commentaire" value="" class="form-control" id="shareEditCommentaire">
                 <input type="hidden" name="shareId" id="shareEditId" value="">

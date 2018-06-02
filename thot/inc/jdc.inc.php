@@ -40,51 +40,20 @@ $categories = $Jdc->categoriesTravaux();
 $smarty->assign('categories', $categories);
 
 switch ($mode) {
+    case 'cours':
+        require_once 'inc/jdc/jdcCours.inc.php';
+        break;
+
+    case 'jdcAny':
+        require_once 'inc/jdc/jdcAny.inc.php';
+        break;
+
     case 'attribJdcEleve':
         require_once 'inc/jdc/attribJdcEleve.inc.php';
         break;
 
     case 'approbations':
         require_once 'inc/jdc/pageApprobationsJdc.inc.php';
-        break;
-
-   case 'delete':
-        require_once 'inc/jdc/delJdc.inc.php';
-        break;
-
-    case 'save':
-        require_once 'inc/jdc/saveJdc.inc.php';
-        break;
-
-    case 'cours':
-        require_once 'inc/jdc/jdcCours.inc.php';
-        break;
-
-    case 'classe':
-        require_once 'inc/jdc/jdcClasse.inc.php';
-        break;
-
-    case 'eleve':
-        $smarty->assign('type', 'eleve');
-        require_once 'inc/jdc/jdcEleve.inc.php';
-        break;
-
-    case 'niveau':
-        require_once 'inc/jdc/jdcNiveau.inc.php';
-        break;
-
-    case 'ecole':
-        $destinataire = 'all';
-        require_once 'inc/jdc/jdcEcole.inc.php';
-        break;
-
-    case 'titu':
-        $destinataire = $classe;
-        require_once 'inc/jdc/jdcTitu.inc.php';
-        break;
-
-    case 'cible':
-        require_once 'inc/jdc/jdcCible.inc.php';
         break;
 
     case 'subjectif':

@@ -1,4 +1,4 @@
-<div class="container hidden-print">
+<div class="container-fluid hidden-print">
 
 	<nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0">
 
@@ -26,26 +26,27 @@
 				</ul>
 			</li>
 
-			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe 
-			{if $nbApprobations > 0}<span class="badge badge-danger">{$nbApprobations|default:0}</span>{/if}<b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe
+			{if $nbApprobations > 0}<span class="badge badge-menu">{$nbApprobations|default:0}</span>{/if}<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $listeCours != Null}
-					<li><a href="index.php?action=jdc&amp;mode=cours">Journal de classe par cours</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=cours"><i class="fa fa-mortar-board"></i> Journal de classe par cours</a></li>
+					{/if}
+					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Journal de classe global</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
+
+					<li role="separator" class="divider"></li>
+					{if $nbApprobations > 0}
+					<li><a href="index.php?action=jdc&amp;mode=approbations">Approbations en attente <span class="badge badge-menu">{$nbApprobations|default:0}</span></a></li>
+					{/if}
+					
+					<li><a href="index.php?action=remediation"><i class="fa fa-question-circle"></i> Offres de remédiation</a></li>
+					<li role="separator" class="divider"></li>
+
 					{if !empty($titulaire)}
-					<li><a href="index.php?action=jdc&amp;mode=titu">Journal de classe titulaire de [{','|implode:$titulaire}]</a></li>
 					<li><a href="index.php?action=jdc&amp;mode=attribJdcEleve">Attributions de la charge JDC [{','|implode:$titulaire}]</a></li>
 					{/if}
-					<li><a href="index.php?action=jdc&amp;mode=approbations">Approbations en attente <span class="badge badge-danger">{$nbApprobations|default:0}</span></a></li>
-					<li role="separator" class="divider"></li>
-					{/if}
-					<li><a href="index.php?action=jdc&amp;mode=eleve">Journal de classe par élève</a></li>
-					{if $userStatus == 'admin' || $userStatus == 'direction' || $userStatus == 'educ'}
-						<li><a href="index.php?action=jdc&amp;mode=classe">Journal de classe par classe</a></li>
-						<li><a href="index.php?action=jdc&amp;mode=niveau">Journal de classe par niveau d'étude</a></li>
-						<li><a href="index.php?action=jdc&amp;mode=ecole">Journal de classe pour tous les élèves</a></li>
-					{/if}
-					<li role="separator" class="divider"></li>
-					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
+
 				</ul>
 			</li>
 
@@ -82,6 +83,7 @@
 					<li><a href="index.php?action=reunionParents&amp;mode=periodesProfs">Gestion des périodes de rendez-vous</a></li>
 					{/if}
 
+
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=reunionParents&amp;mode=printEleves">Imprimer les fiches "parents"</a></li>
 					{/if}
@@ -98,14 +100,14 @@
 				</ul>
 			</li>
 
-			{if ($userStatus == 'admin')}
+			{* if ($userStatus == 'admin')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Formulaires <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=formulaires&amp;mode=edit">Création/modification d'un formulaire</a></li>
 					<li><a href="index.php?action=formulaires&amp;mode=voir">Consulter mes formulaires</a></li>
 				</ul>
 			</li>
-			{/if}
+			{/if*}
 
 			{if ($userStatus == 'admin')}
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Admin <b class="caret"></b></a>
