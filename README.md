@@ -24,7 +24,11 @@ Les mises à jour cruciales à réaliser dans la base de données ou dans des fi
 2018-01-04: modification de la classe Athena
 2018-01-04 : ajout de la table didac_athenaDemandes
 2018-01-06 : modification de la table didac_adesFaits (valeurs NULL pour certains champs)
-2018-01-07- ajoute de la table didac_thotJdcEleves
+2018-01-07 : ajout de la table didac_thotJdcEleves
+2018-02-15 : valeur par défaut du champ PJ de hermesArchives = Null, modification de la table didac_hermesArchives (ajout de deux champs: publie, dateFin)
+2018-02-25 : modification de la longueur du champ "acroDest" dans la table didac_hermesArchives (4 acronymes x 7 signes + les virgules)
+2018-03-04 : modification du type de champ pour le texte des messages Hermes => mediumBlob au lieu de Blob
+2018-05-23 : ajout de la table didac_thotJDCTypes
 
 Installation
 ============
@@ -42,3 +46,12 @@ Installation
  Des fichiers .csv d'exemples se trouvent dans le répertoire /admin/exemples
 
  Informations plus détaillées sur le wiki http://sio2.be/wiki/doku.php
+
+ Création d'une application
+ ==========================
+
+ - Cloner le répertoire nouvelleApplication avec le nom qui convient
+ - Créer une icone .png 80x80px à mettre dans le répertoire /images avec le nom qui convient
+ - Ajouter l'application dans l'admin générale
+ - Activer l'application pour les utilisateurs dans l'admin générale
+ - Créer l'application ;o)
