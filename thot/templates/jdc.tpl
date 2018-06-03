@@ -136,7 +136,6 @@
 			$.post('inc/jdc/listeCoursProfs.inc.php', {
 				coursGrp: coursGrp
 			}, function(resultat){
-				alert(resultat);
 				$('#listeCours').html(resultat);
 			})
 			$('#modalPrintJDC').modal('show');
