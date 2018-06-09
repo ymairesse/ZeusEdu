@@ -53,6 +53,8 @@ $smarty = new Smarty();
 $smarty->assign('titre', TITREGENERAL);
 $smarty->assign('module', $module);
 
+$smarty->assign('INSTALL_DIR', INSTALL_DIR);
+
 // toutes les informations d'identité, y compris nom, prénom,,...
 $smarty->assign('identite', $user->identite());
 // toutes les informations d'identification réseau (adresse IP, jour et heure)
