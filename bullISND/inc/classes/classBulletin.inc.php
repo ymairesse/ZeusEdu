@@ -1,8 +1,8 @@
 <?php
 
 require INSTALL_DIR.'/fpdf181/fpdf.php';
-require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
 require INSTALL_DIR.'/inc/classes/class.pdf.php';
+require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
 require INSTALL_DIR.'/inc/classes/class.pdfHTML.php';
 
 class Bulletin
@@ -3805,20 +3805,20 @@ class Bulletin
                 case 10: $mention = 'E'; break;
                 case 9: $mention = 'E'; break;
                 case 8: if ($moyenne >= 85) {
-     $mention = 'TB+';
- } else {
-     $mention = 'TB';
- } break;
+                     $mention = 'TB+';
+                     } else {
+                         $mention = 'TB';
+                     } break;
                 case 7: if ($moyenne >= 75) {
-     $mention = 'B+';
- } else {
-     $mention = 'B';
- } break;
+                     $mention = 'B+';
+                     } else {
+                         $mention = 'B';
+                     } break;
                 case 6: if ($moyenne >= 65) {
-     $mention = 'AB';
- } else {
-     $mention = 'S';
- } break;
+                     $mention = 'AB';
+                     } else {
+                         $mention = 'S';
+                     } break;
                 case 5: $mention = 'F'; break;
                 default: $mention = 'I';
                 }
@@ -3994,6 +3994,24 @@ class Bulletin
         Application::DeconnexionPDO($connexion);
 
         return $listeCotes;
+    }
+
+    /**
+     * retourne la liste des erreurs trouvées dans la le carnet de cotes passé en paramètre
+     *
+     * @param $listeCotes
+     *
+     * @return array
+     */
+    public function listeErreursCarnet($listeCotes){
+        $listeErreurs = array();
+        foreach ($listeCotes as $idEleve => $dataCotes) {
+            foreach ($dataCotes as $idCarnet => $data) {
+                if ($data['erreurEncodage'] == true)
+                    $listeErreurs[] = array('idEleve' => $idEleve, 'idCarnet' => $idCarnet);
+            }
+        }
+        return $listeErreurs;
     }
 
      /**
@@ -5845,7 +5863,7 @@ class Bulletin
         }
 
         // s'il s'agit d'une classe isolée, envoyer le PDF, sinon (bulletins par niveau)
-        $pdf->Output(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds.$classe.'-'.$bulletin.'.pdf');
+        $pdf->Output('F', INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds.$classe.'-'.$bulletin.'.pdf');
         if ($parNiveau == false) {
             return $module.$ds.$classe.'-'.$bulletin.'.pdf';
         } else {
@@ -6364,7 +6382,7 @@ class Bulletin
      * @param $bulletin : numéro du bulletin concerné
      * @param $listeClasses : liste des classes à ce niveu d'études
      */
-    public function zipFilesNiveau($dir, $bulletin, $listeClasses)
+    public function zipFilesNiveau($dir, $bulletin, $listeClasses, $module)
     {
         $memDir = getcwd();
         $niveau = substr($listeClasses[0], 0, 1);
@@ -6379,7 +6397,7 @@ class Bulletin
         }
         $zip->close();
         chdir($memDir);
-        return "bulletin/niveau_$niveau-Bulletin_$bulletin.zip";
+        return "$module/niveau_$niveau-Bulletin_$bulletin.zip";
     }
 
     /**
@@ -6933,7 +6951,7 @@ class Bulletin
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = ext.matricule ';
         $sql .= 'JOIN '.PFX."cours AS cours ON cours.cours = SUBSTR(coursGrp,1, LOCATE('-', coursGrp)-1) ";
         $sql .= "WHERE anscol = '$anneeScolaire' ";
-        $sql .= 'AND de.matricule IN (SELECT matricule FROM '.PFX."eleves WHERE groupe = '$classe') ";
+        $sql .= "AND de.matricule IN (SELECT matricule FROM ".PFX."eleves WHERE groupe = '$classe') ";
         $sql .= 'ORDER BY nom, prenom ';
         $resultat = $connexion->query($sql);
         $liste = array();
@@ -7053,55 +7071,58 @@ class Bulletin
      *
      * @return int nombre d'enregistrements modifiés
      */
-    public function enregistrerEprExternes($post, $anscol)
-    {
-        $coursGrp = $post['coursGrp'];
-        $sql = 'UPDATE '.PFX.'bullEprExterne ';
-        $sql .= "SET coteExterne=:cote, anscol='$anscol' ";
-        $sql .= 'WHERE matricule=:matricule AND coursGrp=:coursGrp ';
+     public function enregistrerEprExternes($post, $anscol)
+ {
+     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+     $sql = 'UPDATE '.PFX.'bullEprExterne ';
+     $sql .= "SET coteExterne=:cote, anscol= :anscol ";
+     $sql .= 'WHERE matricule=:matricule AND coursGrp=:coursGrp ';
+     $requete = $connexion->prepare($sql);
 
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $requete = $connexion->prepare($sql);
-        $coteabs = explode(',', COTEABS);
-        $nb = 0;
-        $tableErreurs = array();
-        foreach ($post as $field => $value) {
-            $fieldCote = explode('_', $field);
+     $coursGrp = $post['coursGrp'];
 
-            // le nom du champ contenant la cote de l'épreuve externe commence par "cote" suivi de "_xxxxx" où xxxxx est le matricule
-            if ($fieldCote[0] == 'cote') {
-                $matricule = $fieldCote[1];
-                $pattern = '!\d+(?:\.\d+)?!';
-                preg_match($pattern, $value, $matches);
-                if (isset($matches[0])) {
-                    $cote = ltrim(strtoupper(sansVirg($matches[0])), '0');
-                } else {
-                    $cote = '';
-                }
+     $requete->bindParam(':anscol', $anscol, PDO::PARAM_INT);
+     $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+     $coteabs = explode(',', COTEABS);
+     $nb = 0;
+     $tableErreurs = array();
 
-                $erreur = false;
+     foreach ($post as $field => $value) {
+         $fieldCote = explode('_', $field);
+         // le nom du champ contenant la cote de l'épreuve externe commence par "cote" suivi de "_xxxxx" où xxxxx est le matricule
+         if ($fieldCote[0] == 'cote') {
+             $matricule = $fieldCote[1];
+             $pattern = '!\d+(?:\.\d+)?!';
+             preg_match($pattern, $value, $matches);
+             if (isset($matches[0])) {
+                 $cote = ltrim(strtoupper($this->sansVirg($matches[0])), '0');
+             } else {
+                 $cote = '';
+             }
 
-                // la cote externe doit être numérique et comprise entre 0 et 100
-                if (is_numeric($cote) && (($cote > 100) || ($cote < 0))) {
-                    $erreur = true;
-                }
-                // une éventuelle mention textuelle illicite (pas dans les cotes d'absence)
-                if ((!(is_numeric($cote))) && (!(in_array($cote, $coteabs))) && (trim($cote) != '')) {
-                    $erreur = true;
-                }
+             $erreur = false;
+             // la cote externe doit être numérique et comprise entre 0 et 100
+             if (is_numeric($cote) && (($cote > 100) || ($cote < 0))) {
+                 $erreur = true;
+             }
+             // une éventuelle mention textuelle illicite (pas dans les cotes d'absence)
+             if ((!(is_numeric($cote))) && (!(in_array($cote, $coteabs))) && (trim($cote) != '')) {
+                 $erreur = true;
+             }
 
-                if ($erreur == true) {
-                    $tableErreurs[$matricule] = $cote;
-                } else {
-                    $data = array(':cote' => $cote, ':matricule' => $matricule, ':coursGrp' => $coursGrp);
-                    $nb += $requete->execute($data);
-                }
-            }
-        }
-        Application::DeconnexionPDO($connexion);
+             if ($erreur == true) {
+                 $tableErreurs[$matricule] = $cote;
+             } else {
+                 $requete->bindParam(':cote', $cote, PDO::PARAM_STR, 5);
+                 $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                 $nb += $requete->execute();
+             }
+         }
+     }
+     Application::DeconnexionPDO($connexion);
 
-        return array('nb' => $nb, 'erreurs' => $tableErreurs);
-    }
+     return array('nb' => $nb, 'erreurs' => $tableErreurs);
+ }
 
     /**
      * retourne les cotes de situation en tenant compte des épreuves externes pour un élève donné
