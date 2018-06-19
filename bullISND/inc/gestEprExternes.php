@@ -13,7 +13,7 @@ if (isset($_POST['tri'])) {
 $smarty->assign('tri', $tri);
 
 // la liste de tous les cours du prof
-$listeCoursProf = $user->listeCoursProf("'G','S','TT'");
+$listeCoursProf = $user->listeCoursProf();
 // on ne retient que les cours qui se trouvent aussi dans la table des épreuves externes
 $listeCours = $Bulletin->listeCoursEprExterne($listeCoursProf, ANNEESCOLAIRE);
 $smarty->assign('listeCours', $listeCours);

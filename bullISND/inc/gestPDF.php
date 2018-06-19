@@ -120,8 +120,9 @@ switch ($mode) {
                 if ($listeEleves != null) {
                     $ds = DIRECTORY_SEPARATOR;
                     $module = $Application->getModule(1);
-                    $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin';
-                    $zipName = $Bulletin->zipFilesNiveau($chemin, $bulletin, $listeClasses);
+                    // $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'bulletin';
+                    $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
+                    $zipName = $Bulletin->zipFilesNiveau($chemin, $bulletin, $listeClasses, $module);
                     $smarty->assign('acronyme', $acronyme);
                     $smarty->assign('link', $zipName);
                     $smarty->assign('corpsPage', 'pdfLink');

@@ -14,6 +14,7 @@
 				<li><a href="#tabs-3" data-toggle="tab">Données personnelles</a></li>
 				<li><a href="#tabs-4" data-toggle="tab">Parents et responsable</a></li>
 				<li><a href="#tabs-5" data-toggle="tab">Athena {if $listeSuivi|@count > 0}<span class="badge" style="color:red; background: white;">{$listeSuivi|count}</span>{/if}</a></li>
+				<li><a href="#tabs-6" data-toggle="tab">Ades {if $nbFaits > 0}<span class="badge" style="color:red; background-color: white">{$nbFaits}</span>{/if}</a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -42,6 +43,11 @@
 					{include file="direction/pad/tabEleve5.inc.tpl"}
 				</div>
 				<!-- tabs-5 -->
+
+				<div class="tab-pane" id="tabs-6">
+					{include file="direction/pad/tabEleve6.inc.tpl"}
+				</div>
+				<!-- tabs-6 -->
 
 			</div>
 			<!-- my-tab-content -->

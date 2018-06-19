@@ -1,7 +1,7 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
 	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
-		<label for="niveau">Niveau</label>
+		<label for="niveau" class="sr-only">Niveau</label>
 		<select name="niveau" id="niveau" class="form-control">
 			<option value=''>Niveau</option>
 			{foreach from=$listeNiveaux key=clef item=leNiveau}

@@ -18,16 +18,6 @@ var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annu
 var modifie = false;
 var nomProf = "{$identite.prenom} {$identite.nom}"
 
-function alertErreursEncodage (){
-	var nbErreurs = $('.erreurEncodage').length;
-	if (nbErreurs > 0) {
-		bootbox.alert({
-			title: 'Erreur(s)',
-			message: 'Votre carnet de cotes contient <span class="erreurEncodage">'+nbErreurs+' erreur(s) d\'encodage</span>',
-		})
-	}
-}
-
 $.validator.addMethod(
     "dateFr",
     function(value, element) {
@@ -73,8 +63,6 @@ $.validator.addMethod(
 {/literal}
 
 $(document).ready(function(){
-
-	alertErreursEncodage();
 
 	var modifie=false;
 
@@ -150,46 +138,7 @@ $(document).ready(function(){
 			formulaire: formulaire
 		}, function(resultat){
 			$('#tableauCotes').html(resultat);
-			alertErreursEncodage();
 		})
-	})
-
-	$('#tableauCotes').on('click', '.enteteCote', function(){
-		var idCarnet = $(this).data('idcarnet');
-		$.post('inc/carnet/getModalChoixAction.inc.php', {
-			idCarnet: idCarnet
-		}, function(resultat){
-			$('#choixAction').html(resultat);
-			$('#modalChoixAction').modal('show');
-		})
-	});
-
-	$('#choixAction').on('click', '.boutonSuppr', function(){
-		var idCarnet = $(this).data('idcarnet');
-		$.post('inc/carnet/getModalDel.inc.php', {
-			idCarnet: idCarnet
-		}, function(resultat){
-			$('#editCote').html(resultat);
-			$('#modalChoixAction').modal('hide');
-			$('#modalSuppr').modal('show');
-		})
-	})
-
-	$('#choixAction').on('click', '.boutonEdit', function(){
-		var idCarnet = $(this).data('idcarnet');
-		$.post('inc/carnet/getModalEdit.inc.php', {
-			idCarnet: idCarnet
-		}, function(resultat){
-			$('#editCote').html(resultat);
-			$('#modalChoixAction').modal('hide');
-			$('#modalEditCote').modal('show');
-		})
-	})
-
-	$('#choixAction').on('click', '.boutonEncoder', function(){
-		var idCarnet = $(this).data('idcarnet');
-		$('td[data-idcarnet="' + idCarnet + '"]').find('input').attr('disabled', false).removeClass('hidden').next('span').addClass('hidden');
-		$('#modalChoixAction').modal('hide');
 	})
 
 	$('#tableauCotes').on('click', '#boutonPlus', function(){
@@ -216,6 +165,7 @@ $(document).ready(function(){
 				coursGrp: coursGrp,
 				bulletin: bulletin
 			}, function(resultat){
+				console.log(resultat);
 				$('#tableauCotes').html(resultat);
 				$('#modalEditCote').modal('hide');
 			})

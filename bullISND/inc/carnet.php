@@ -43,12 +43,18 @@ switch ($mode) {
             $module = Application::repertoireActuel();
             $listeCompetences = current($Bulletin->listeCompetences($coursGrp));
             $listeCotes = ($listeTravaux != null) ? $Bulletin->listeCotesCarnet($listeTravaux) : null;
+
+            $listeErreursEncodage = $Bulletin->listeErreursCarnet($listeCotes);
+
             $listeMoyennes = $Bulletin->listeMoyennesCarnet($listeCotes);
             $smarty->assign('identite', $identite);
             $smarty->assign('acronyme', $acronyme);
             $smarty->assign('listeEleves', $listeEleves);
             $smarty->assign('listeTravaux', $listeTravaux);
             $smarty->assign('listeCotes', $listeCotes);
+
+            $smarty->assign('listeErreursEncodage', $listeErreursEncodage);
+
             $smarty->assign('listeMoyennes', $listeMoyennes);
             $smarty->assign('listeCompetences', $listeCompetences);
             $smarty->assign('module', $module);
@@ -95,6 +101,7 @@ switch ($mode) {
                     // dans le bulletion indiqué
                     $ponderations = $Bulletin->getPonderations($coursGrp, $bulletin);
                     $listeCotes = $Bulletin->listeCotes($listeEleves, $coursGrp, $listeCompetences, $bulletin);
+
                     // recherche de la liste des cotes globales pour la période, en tenant compte de la pondération
                     $listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
                     // recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD

@@ -4,7 +4,7 @@
 	<select name="niveau" id="niveauCours">
 		<option value="">Niveau</option>
 		{foreach from=$listeNiveaux key=k item=unNiveau}
-			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)} selected{/if} title="{$unNiveau}e année">{$unNiveau}</option>
+			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)} selected{/if} title="{$unNiveau}e année">{$unNiveau}e annee</option>
 		{/foreach}
 	</select>
 
@@ -18,12 +18,12 @@
 		</select>
 	{/if}
 	</span>
-	
+
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="show"><br>
-	
+
 	</form>
 </div>
 
@@ -53,11 +53,11 @@ $(document).ready (function() {
 				)
 		$("#wait").hide();
 	});
-	
+
 	$("#choixCours").on("change", "#coursGrp", function(){
 		$("#formSelecteur").submit();
 		})
-	
+
 })
 
 </script>

@@ -1,4 +1,4 @@
-{* <script type="text/javascript" src="../ckeditor/ckeditor.js"></script> *}
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
 <div class="container">
 
@@ -11,7 +11,7 @@
 			<p>Année d'étude <strong>{$niveau}</strong></p>
 			<form method="POST" action="index.php" name="notas" class="form-vertical" role="form">
 				<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>
-				<textarea name="notice" rows="6" class="ckeditor form-control">{$notice}</textarea><br>
+				<textarea name="notice" id="notice" class="ckeditor form-control">{$notice}</textarea><br>
 				<input type="hidden" name="action" value="nota">
 				<input type="hidden" name="etape" value="enregistrer">
 				<input type="hidden" name="bulletin" value="{$bulletin}">
@@ -29,3 +29,13 @@
 	</div>  <!-- row -->
 
 </div>  <!-- container -->
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		CKEDITOR.replace('notice');
+		
+	})
+
+</script>

@@ -7,7 +7,8 @@ session_start();
 require_once(INSTALL_DIR.'/inc/classes/classApplication.inc.php');
 $Application = new Application();
 
-require_once(INSTALL_DIR.'/thot/inc/classes/classJdc.inc.php');
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.'/thot/inc/classes/classJdc.inc.php');
 $jdc = new Jdc();
 
 $user = @$_SESSION[APPLICATION];

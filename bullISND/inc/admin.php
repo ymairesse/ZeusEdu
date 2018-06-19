@@ -29,6 +29,7 @@ switch ($mode) {
         $smarty->assign('selecteur', 'selecteurs/selectNiveauPeriode');
         $smarty->assign('corpsPage', 'admin/verrouTabs');
         break;
+
     case 'eprExternes':
         if ($userStatus != 'admin') {
             die('get out of here');
@@ -64,6 +65,7 @@ switch ($mode) {
             $smarty->assign('corpsPage', 'initEprExternes');
         }
         break;
+
     case 'remplacants':
         if ($userStatus != 'admin') {
             die('get out of here');
@@ -145,7 +147,7 @@ switch ($mode) {
 
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
-        $smarty->assign('selecteur', 'selectNiveauCoursGrp');
+        $smarty->assign('selecteur', 'selecteurs/selectNiveauCoursGrp');
         $smarty->assign('corpsPage', 'showProfsCours');
         break;
 
@@ -215,7 +217,7 @@ switch ($mode) {
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
         $smarty->assign('classe', $classe);
-        $smarty->assign('selecteur', 'selectClasseEleve');
+        $smarty->assign('selecteur', 'selecteurs/selectClasseEleve');
         if (isset($classe)) {
             $listeEleves = $Ecole->listeEleves($classe, 'groupe');
             $smarty->assign('listeEleves', $listeEleves);
@@ -308,7 +310,7 @@ switch ($mode) {
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
         $smarty->assign('nbBulletins', NBPERIODES);
-        $smarty->assign('selecteur', 'selectBulletin');
+        $smarty->assign('selecteur', 'selecteurs/selectBulletin');
         break;
 
     case 'verrouClasseCoursEleve':
@@ -371,7 +373,7 @@ switch ($mode) {
         }
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
-        $smarty->assign('selecteur', 'selectNiveauCours');
+        $smarty->assign('selecteur', 'selecteurs/selectNiveauCours');
         break;
 
     case 'situations':
@@ -459,6 +461,7 @@ switch ($mode) {
                 break;
             }
         break;
+
     case 'nommerCours':
         $acronyme = $user->getAcronyme();
         if ($etape == 'enregistrer') {
@@ -477,6 +480,7 @@ switch ($mode) {
         $smarty->assign('listeCours', $listeCours);
         $smarty->assign('corpsPage', 'nomCours');
         break;
+
     case 'titulaires':
         switch ($etape) {
             case 'supprimer':

@@ -13,26 +13,33 @@ class EleveAdes
      * renvoie la liste structurée des faits disciplinaires d'un élève donné.
      *
      * @param int : $matricule
+     * @param string : année scolaire (sous la forme "2017-2018")
      *
      * @return array
      */
-    public function getListeFaits($matricule)
+    public function getListeFaits($matricule, $anneeScolaire=Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT af.*, nom, prenom, sexe ';
         $sql .= 'FROM '.PFX.'adesFaits AS af ';
         $sql .= 'JOIN '.PFX.'adesTypesFaits AS atf ON (af.type = atf.type) ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS ap ON (ap.acronyme = af.professeur) ';
-        $sql .= 'WHERE matricule =:matricule ';
+        $sql .= 'WHERE matricule = :matricule ';
+        if ($anneeScolaire != Null)
+            $sql .= 'AND anneeScolaire = :anneeScolaire ';
         $sql .= 'ORDER BY anneeScolaire DESC, atf.ordre, ladate, idFait ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        if ($anneeScolaire != Null)
+            $requete->bindParam(':anneeScolaire', $anneeScolaire, PDO::PARAM_INT);
+
         $resultat = $requete->execute();
-        $listeFaits = array(ANNEESCOLAIRE => null);
+        $listeFaits = ($anneeScolaire == Null) ? array(ANNEESCOLAIRE => null) : array();
         if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
+
                 $anneeScolaire = $ligne['anneeScolaire'];
                 $idfait = $ligne['idfait'];
                 $type = $ligne['type'];

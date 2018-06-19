@@ -1,6 +1,6 @@
 <?php
 
-$listeClasses = $Ecole->listeGroupes(array('GT', 'TT', 'TQ'));
+$listeClasses = $Ecole->listeGroupes();
 $smarty->assign('listeClasses', $listeClasses);
 if (isset($classe)) {
     $listeEleves = $Ecole->listeEleves($classe, 'groupe');
@@ -15,6 +15,31 @@ if (isset($matricule) && ($matricule != '')
 
     require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
     $padEleve = new padEleve($matricule, $acronyme);
+
+    require_once INSTALL_DIR.'/inc/classes/class.Athena.php';
+    $Athena = new Athena();
+    $listeSuivi = $Athena->getSuiviEleve($matricule);
+    $smarty->assign('listeSuivi', $listeSuivi);
+
+    require_once INSTALL_DIR.'/ades/inc/classes/classEleveAdes.inc.php';
+    $EleveAdes = new EleveAdes();
+    $listeTousFaits = $EleveAdes->getListeFaits($matricule, ANNEESCOLAIRE);
+    $smarty->assign('listeTousFaits', $listeTousFaits);
+
+    require_once INSTALL_DIR."/ades/inc/classes/classAdes.inc.php";
+    $Ades = new Ades();
+    $listeTypesFaits = $Ades->getTypesFaits();
+    $smarty->assign('listeTypesFaits', $listeTypesFaits);
+
+    $listeChamps = $Ades->listeChamps();
+    $smarty->assign('descriptionChamps', $listeChamps);
+
+    $listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
+    $smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
+
+    $nbFaits = $EleveAdes->nbFaits($matricule, ANNEESCOLAIRE);
+    $smarty->assign('nbFaits', $nbFaits);
+
     if (isset($etape) && ($etape == 'enregistrer')) {
         $nb = $padEleve->savePadEleve($_POST);
         $texte = ($nb > 0) ? "$nb enregistrement(s) réussi(s)" : 'Pas de modification';
@@ -59,6 +84,7 @@ if (isset($matricule) && ($matricule != '')
     $smarty->assign('etape', 'enregistrer');
     $smarty->assign('corpsPage', 'direction/ficheEleve');
 }
+
 $smarty->assign('selecteur', 'selecteurs/selectClasseEleve');
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
