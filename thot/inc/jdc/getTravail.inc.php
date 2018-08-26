@@ -32,6 +32,8 @@ $statistiques = Null;
 
 if ($id != null) {
     $travail = $Jdc->getTravail($id);
+    $travail['listePJ'] = $Jdc->getPJ($id);
+
     if ($travail['proprietaire'] == '') {
         // un jDC sans propriétaire n'a pu être rédigé que par un élève
         // les élèves ne peuvent rédiger un JDC que pour un de leurs cours ou pour leur classe
@@ -42,10 +44,10 @@ if ($id != null) {
         // si le destinataire figure dans la liste des classes, alors le type de destinataire est "classe"
         // sinon, c'est à destination d'un cours
         $listeClasses = $Ecole->listeClasses();
-        $type = (in_array($travail['destinataire'], $listeClasses)) ? 'classe' : 'cours';
+        $type = (in_array($travail['destinataire'], $listeClasses)) ? 'classe' : 'coursGrp';
         // si c'est pour un "cours", alors on cherche la liste des profs qui donnent ce cours
         // sinon on cherche la liste des titulaires de la classe en question
-        if ($type == 'cours')
+        if ($type == 'coursGrp')
             $listeProfs = $Ecole->listeProfsCoursGrp($travail['destinataire']);
             else $listeProfs = $Ecole->titusDeGroupe($travail['destinataire']);
         foreach ($listeProfs as $acronyme => $prof) {

@@ -12,7 +12,6 @@
         </div>
 
         <div class="col-sm-9">
-
             <select class="form-control" id="selectEleve">
                 <option value="">Sélectionnez un élève</option>
                 {foreach from=$listeTravauxRemis key=leMatricule item=dataTravail}
@@ -25,9 +24,7 @@
                     {if isset($listeEvaluations.$leMatricule)}[{$listeEvaluations.$leMatricule.total.cote} / {$listeEvaluations.$leMatricule.total.max}]{/if}
                 </option>
                 {/foreach}
-
             </select>
-
         </div>
 
     </div>
@@ -43,15 +40,3 @@
     </div>
 
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-
-        // remplacer la virgule par un point dans la cote
-        $("#cote").blur(function(e) {
-            laCote = $(this).val().replace(',', '.');
-            $(this).val(laCote);
-        })
-
-    })
-</script>

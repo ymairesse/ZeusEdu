@@ -19,9 +19,6 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
-$Jdc = new Jdc();
-
 // récupérer le formulaire d'encodage du JDC
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
@@ -31,6 +28,13 @@ $enonce = isset($_POST['enonce']) ? $_POST['enonce'] : null;
 $form['enonce'] = $enonce;
 
 $id = isset($form['id']) ? $form['id'] : Null;
+
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
+$Jdc = new Jdc();
+
+
+$texte = array();
 
 // est-ce une mise à jour d'un enregistrement existant?
 if ($id != null) {
@@ -47,5 +51,29 @@ if ($id != null) {
         $id = $Jdc->saveJdc($form, $acronyme);
         $nb = ($id != null) ? 1 : 0;
     }
+    if ($nb == 1)
+        $texte[] = "Événement enregistré";
+        else $texte[] = "Enregistrement impossible";
 
-echo $id;
+// traitement des pièces jointes éventuelles
+$listePJ = isset($form['files']) ? $form['files'] : Null;
+
+// ------------------------------------------------------------------------------
+// enregistrement et suppression éventuelles des PJ
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
+
+if (isset($form['files']) && count($form['files']) > 0) {
+    // liaison des PJ existantes et suppression des PJ supprimées
+    $nb = $Files->linkFilesJdc($id, $form, $acronyme);
+    $texte[] = sprintf('%d pièce(s) jointe(s)', count($form['files']));
+    }
+    else {
+        // suppression des PJ encore existantes si plus de PJ à l'annonce
+        $nb = $Files->unlinkAllFiles4Jdc($id);
+        $texte[] = sprintf('%d pièce(s) jointe(s) supprimées', $nb);
+    }
+
+echo json_encode(
+    array('idJdc' => $id, 'texte' => implode('<br>', $texte))
+);

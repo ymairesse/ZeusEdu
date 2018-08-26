@@ -1,5 +1,5 @@
 {if ($userStatus == admin) || ($userStatus == 'direction')}
-<div class="tab-pane table-responsive" id="tabs-5">
+
     {assign var=liste value=$listeNotifications.ecole}
     <table class="table table-condensed tableEdit">
         <thead>
@@ -31,7 +31,7 @@
 			<td><span class="fin">{$uneNote.dateFin}</span></td>
 			<td><span class="objet">{$uneNote.objet}</span></td>
             <td style="width:20%;">
-                <span class="destinataire">Tous</span> <i class="fa fa-circle-thin pull-right urgence{$uneNote.urgence}" title="Niveau d'urgence {$uneNote.urgence}"></i>
+                <span class="destinataire">Tous</span> <i class="fa fa-circle-thin pull-right"></i>
             </td>
             <td>
                 {if $uneNote.accuse == 1}
@@ -57,5 +57,5 @@
             </th>
         </tr>
     </table>
-</div>
+
 {/if}

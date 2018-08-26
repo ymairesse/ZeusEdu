@@ -17,7 +17,7 @@
 
                 <div class="row">
 
-                    <div class="col-md-5 col-sm-12">
+                    <div class="col-md-6 col-sm-12">
 
                         <div class="form-group">
                             <label for="categorie" class="sr-only">Catégorie</label>
@@ -31,29 +31,16 @@
 
                     </div>  <!-- col-md-... -->
 
-                    <div class="col-md-5 col-sm-8">
+                    <div class="col-md-6 col-sm-12">
 
                         <input type="hidden" name="destinataire" value="{$travail.destinataire}">
                         <p>Pour <strong>{$lblDestinataire}</strong></p>
 
                     </div>  <!-- col-md-... -->
 
-                    <div class="col-md-2 col-sm-4">
-
-                        <button type="button" class="btn btn-info btn-block" id="btn-addPJ">
-                            <i class="fa fa-plus"></i> <i class="fa fa-file-o"></i>
-                            PJ
-                        </button>
-
-                    </div>
-
                 </div>  <!-- row -->
 
                 <div class="row">
-
-                    <div class="col-xs-12 hidden" id="tree" style="max-height: 15em; overflow: auto">
-
-                    </div>
 
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
@@ -119,6 +106,12 @@
                 <div class="form-group">
                     <label for="titre" class="sr-only">Titre</label>
                     <input type="text" name="titre" id="titre" placeholder="Titre de la note" value="{$travail.title|default:''}" class="form-control" autocomplete="off">
+                </div>
+
+                <div class="col-xs-12" id="tree">
+
+                    {* include file="$INSTALL_DIR/widgets/fileTree/templates/treeview4PJ.tpl" *}
+
                 </div>
 
                 <div class="form-group">
@@ -209,40 +202,8 @@ $(document).ready(function(){
 
     CKEDITOR.replace('enonce');
 
-    $('#saveJDC').click(function(){
-        if ($('#editJdc').valid()) {
-            var formulaire = $('#editJdc').serialize();
-            // récupérer le contenu du CKEDITOR
-            var enonce = CKEDITOR.instances.enonce.getData();
-            $.post('inc/jdc/saveModalJdc.inc.php', {
-                formulaire: formulaire,
-                enonce: enonce
-            }, function(id) {
-                if (id != 0)
-                    bootbox.alert({
-                        message: "Événement enregistré",
-                        size: 'small'
-                    });
-                // récupérer le contenu de la zone "travail" à droite
-                $.post('inc/jdc/getTravail.inc.php', {
-                    id: id,
-                    editable: true
-                    }, function(resultat){
-                        $('#unTravail').html(resultat);
-                    })
-                $('#calendar').fullCalendar('refetchEvents');
-            });
-        $('#modalEdit').modal('hide');
-        }
-    })
-
     $('#btn-addPJ').click(function(){
-        $.post('inc/jdc/getTreeView4PJ.inc.php', {},
-        function(resultat){
-            $('#tree').html(resultat);
-            $('#tree').removeClass('hidden');
-        })
-        alert('test2');
+        $('#repertoire').toggleClass('hidden');
     })
 
     $("#editJdc").validate({

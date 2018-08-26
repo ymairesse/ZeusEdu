@@ -32,6 +32,8 @@ $startDate = Application::datePHP($form['startDate']);
 $heure = isset($form['heure']) ? $form['heure'] : '00:00';
 
 $travail = $Jdc->getTravail($idTravail, $acronyme);
+// liste des PJ de la note originale
+$listePJ = $Jdc->getPJ($idTravail);
 
 switch ($type) {
     case 'ecole':
@@ -48,7 +50,6 @@ switch ($type) {
         break;
     case 'coursGrp':
         $cible = $form['coursGrp'];
-        $type = 'cours';
         break;
     default:
         $cible = Null;
@@ -63,9 +64,11 @@ $travail['heure'] = $heure;
 $travail['titre'] = $travail['title'];
 $travail['categorie'] = $travail['idCategorie'];
 $travail['journee'] = isset($travail['allDay']) ? 1 : 0;
-// Application::afficher($travail, true);
 $idTravail = $Jdc->saveJdc($travail, $acronyme);
-// Application::afficher($travail, true);
+
+foreach ($listePJ as $shareId => $wtf) {
+    $Jdc->setPJ($idTravail, $shareId);
+}
 $lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, $type, $cible);
 
 echo json_encode(array(

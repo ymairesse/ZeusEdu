@@ -49,5 +49,7 @@ $smarty->assign('fileInfos', $fileInfos);
 $smarty->assign('photo', $photo);
 $smarty->assign('matricule', $matricule);
 $smarty->assign('BASEDIR', BASEDIR);
+$smarty->assign('COTEABS', COTEABS);
+$smarty->assign('COTENULLE', COTENULLE);
 
 $smarty->display('casier/detailsEvaluation.tpl');

@@ -10,6 +10,7 @@
             <li>
                 <a href="javascript:void(0)"
                     class="delPJ"
+                    data-notifId="{$notifId}"
                     data-shareid="{$shareId}"
                     data-path="{$file.path}"
                     data-filename="{$file.fileName}">

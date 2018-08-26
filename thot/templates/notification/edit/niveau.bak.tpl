@@ -1,6 +1,6 @@
 {if ($userStatus == admin) || ($userStatus == 'direction')}
 <!-- Notifications à un niveau d'études -->
-<div class="tab-pane hidden-print" id="tabs-4">
+
 	{assign var=liste value=$listeNotifications.niveau}
 	<table class="table table-condensed tableEdit">
 		<thead>
@@ -58,5 +58,5 @@
 			</th>
 		</tr>
 	</table>
-</div>
+
 {/if}

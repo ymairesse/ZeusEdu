@@ -15,7 +15,7 @@
 
         </div>
 
-        <div class="col-md-9 col-sm-12">
+        <div class="col-md-9 col-sm-12" id="calendrier">
 
             <p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
 
@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 col-sm-12" style="max-height:50em; overflow:auto;">
+        <div class="col-md-3 col-sm-12" style="max-height:50em; overflow:auto;" id="editeur">
 
             <div id="unTravail">
                 {if isset($travail)}
@@ -91,6 +91,45 @@
         }).ajaxComplete(function() {
             $('body').removeClass('wait');
         });
+
+        // calendrier plus étroit, zone d'édition plus grande
+    	function modeEdition(){
+    		$('#calendrier').removeClass('col-md-9').addClass('col-md-6');
+    		$('#editeur').removeClass('col-md-3').addClass('col-md-6');
+    	}
+    	// calendrier plus large, zone d'édition plus étroite
+    	function modeConsultation(){
+    		$('#calendrier').addClass('col-md-9').removeClass('col-md-6');
+    		$('#editeur').addClass('col-md-3').removeClass('col-md-6');
+    	}
+
+        $('#editeur').on('click', '#saveJDC', function(){
+			if ($('#editJdc').valid()) {
+				var formulaire = $('#editJdc').serialize();
+				// récupérer le contenu du CKEDITOR
+				var enonce = CKEDITOR.instances.enonce.getData();
+                $.post('inc/jdc/saveJdc.inc.php', {
+                    formulaire: formulaire,
+                    enonce: enonce
+                }, function(resultat) {
+                    var resultJSON = JSON.parse(resultat);
+                    var idJdc = resultJSON.idJdc;
+                    bootbox.alert({
+                        message: resultJSON.texte,
+                        size: 'small'
+                    });
+                    // récupérer le contenu de la zone "travail" à droite
+                    $.post('inc/jdc/getTravail.inc.php', {
+                        id: idJdc,
+                        editable: true
+                        }, function(resultat){
+                            $('#unTravail').html(resultat);
+                        })
+                    $('#calendar').fullCalendar('refetchEvents');
+                });
+                modeConsultation();
+			}
+		})
 
         $('#confirmFiltre').click(function(){
             var formulaire = $('#formTypes').serialize();
@@ -192,16 +231,18 @@
             	})
 			})
 
-        function lockUnlock(){
-            var lockState = $('#unlocked').val();
-            if (lockState == "true") {
-                $('#unlocked').val('false');
-                $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>')
-                }
-                else {
-                    $('#unlocked').val('true');
-                    $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
-                }
+            function lockUnlock(){
+                var lockState = $('#unlocked').val();
+                if (lockState == "true") {
+                    $('#unlocked').val('false');
+                    $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
+    				$('#unTravail .btn-edit').prop('disabled', true);
+                    }
+                    else {
+                        $('#unlocked').val('true');
+    					$('#unTravail .btn-edit').prop('disabled', false);
+                        $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
+                    }
             }
 
         $('#calendar').fullCalendar({
@@ -286,6 +327,7 @@
                     function(resultat) {
                         $('#unTravail').fadeOut(400, function() {
                             $('#unTravail').html(resultat).fadeIn();
+                            modeConsultation();
                         });
                     }
                 )
@@ -311,8 +353,8 @@
                             type: type,
                             cible: cible
                         }, function(resultat) {
-                            $('#zoneEdit').html(resultat);
-                            $('#modalEdit').modal('show');
+                            modeEdition();
+                            $('#unTravail').html(resultat);
                         })
                     }
                     else {
@@ -330,11 +372,13 @@
                     var endDate = moment(calEvent.end).format('YYYY-MM-DD HH:mm');
                     var id = calEvent.id;
                     var editable = $('#calendar').data('editable');
+                    var locked = $('#unlocked').val();
                     $.post('inc/jdc/getDragDrop.inc.php', {
                             id: id,
                             startDate: startDate,
                             endDate: endDate,
                             editable: editable,
+                            locked: locked,
                             allDay: false
                         },
                         function(resultat) {
@@ -402,23 +446,15 @@
 			)
 		})
 
-		// modification d'une note au JDC
+        // modification d'une note au JDC
 		$("#unTravail").on('click', '#modifier', function() {
 			var id = $(this).data('id');
-			var destinataire = $(this).data('destinataire');
-			var startDate = $("#startDate").val();
-			var type = $('#type').val();
-			var lblDestinataire = $("#calendar").data('lbldestinataire');
 			$.post('inc/jdc/getMod.inc.php', {
-					id: id,
-					startDate: startDate,
-					type: type,
-					destinataire: destinataire,
+					id: id
 				},
 				function(resultat) {
-					// construction de la boîte modale d'édition du JDC
-					$("#zoneEdit").html(resultat);
-					$("#modalEdit").modal('show');
+					modeEdition();
+					$('#unTravail').html(resultat);
 				}
 			)
 		})

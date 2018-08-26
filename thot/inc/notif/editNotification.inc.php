@@ -19,55 +19,124 @@ $acronyme = $User->getAcronyme();
 
 $notifId = isset($_POST['notifId']) ? $_POST['notifId'] : Null;
 
-require_once (INSTALL_DIR."/inc/classes/classThot.inc.php");
-$thot = new Thot();
+require_once INSTALL_DIR."/inc/classes/classThot.inc.php";
+$Thot = new Thot();
+$notification = $Thot->getNotification($notifId, $acronyme);
 
-$notification = $thot->getNotification($notifId, $acronyme);
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
 
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.'/inc/classes/class.Treeview.php';
-$tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme);
+$module = $Application->getModule(3);
 
+// s'il s'agit d'une notification à une classe, un cours ou un élève isole (!), on cherche la liste des élèves
+$type = $notification['type'];
+
+$listeTypes = $Thot->getTypes();
+// tous les types de destinataires sauf les élèves isolés
+$selectTypes = $Thot->getTypes(true);
+
+$listeNiveaux = $Ecole->listeNiveaux();
+$listeClasses = $Ecole->listeClasses();
+$listeCours = $User->getListeCours();
+
+$userStatus = $User->userStatus($module);
+
+// liste des élèves, pour mémoire...
+$listeEleves = Null;
+
+// est-ce une notification destinée à l'élève dont le matricule est le destinataire?
+// if (preg_match('/^[\d\s]*$/', $notification['destinataire'])) {
+if ($notification['matricule'] != '') {
+    $listeEleves = $Ecole->detailsDeListeEleves($notification['matricule']);
+    }
+    else {
+        // pour les entités 'coursGrp', 'classes' et 'eleves', on a besoin des élèves qui figurent dans ces groupes
+        if (in_array($type, array('coursGrp', 'classes', 'groupe'))) {
+            require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+            $Ecole = new Ecole();
+            switch ($type) {
+                case 'coursGrp':
+                    $listeEleves = $Ecole->listeElevesCours($notification['destinataire']);
+                    break;
+                case 'classes':
+                    $listeEleves = $Ecole->listeElevesClasse($notification['destinataire']);
+                    break;
+                case 'groupe':
+                    // prévoir la liste des élèves du groupe
+                    break;
+            }
+        }
+    }
+
+$stringDestinataire = Null;
+switch ($type) {
+    case 'ecole':
+        $stringDestinataire = 'Tous';
+        break;
+    case 'niveau':
+        $stringDestinataire = sprintf('%de année', $notification['destinataire']);
+        break;
+    case 'cours':
+        $stringDestinataire = $notification['destinataire'];
+        break;
+    case 'coursGrp':
+        // le destinataire est-il un matricule (numérique entier, donc) ?
+        if (preg_match('#^[\d\s]*$#', $notification['destinataire'])){
+            $stringDestinataire = sprintf('%s %s', current($listeEleves)['prenom'], current($listeEleves)['nom']);
+            }
+            else $stringDestinataire = $notification['destinataire'];
+        break;
+    case 'groupe':
+        // le destinataire est-il un matricule (numérique entier, donc) ?
+        if (preg_match('#^[\d\s]*$#', $notification['destinataire'])){
+            $stringDestinataire = sprintf('%s %s', current($listeEleves)['prenom'], current($listeEleves)['nom']);
+            }
+            else $stringDestinataire = $notification['destinataire'];
+        break;
+    case 'classes':
+        // le destinataire est-il un matricule (numérique entier, donc) ?
+        if (preg_match('#^[\d\s]*$#', $notification['destinataire'])){
+            $stringDestinataire = sprintf('%s %s', current($listeEleves)['prenom'], current($listeEleves)['nom']);
+            }
+            else $stringDestinataire = $notification['destinataire'];
+        break;
+    default:
+        $stringDestinataire = 'wtf';
+        break;
+    }
+
+// pièces jointes à la notification $notifId
+$pjFiles = $Thot->getPj4Notifs($notifId, $acronyme);
+// il suffit de prendre les PJ de la première notification (les autres sont les mêmes)
+if ($pjFiles != Null)
+    $pjFiles = current($pjFiles);
+
+$selectedFiles = array();
+foreach ($pjFiles as $oneFile) {
+    $selectedFiles[] = $oneFile['path'].$oneFile['fileName'];
+}
+
+// ------------------------------------------------------------------------------
 require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
 $smarty->template_dir = "../../templates";
 $smarty->compile_dir = "../../templates_c";
 
-$smarty->assign('notification', $notification);
-$smarty->assign('tree', $tree->getTree());
+$smarty->assign('type', $type);
 $smarty->assign('edition', true);
-
-// s'il s'agit d'une notification à une classe, un cours ou un élève isole (!), on cherche la liste des élèves
-$type = $notification['type'];
-// liste des élèves, pour mémoire...
-$listeEleves = Null;
-
-if (in_array($type, array('coursGrp', 'classes', 'eleves'))) {
-    require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-    $Ecole = new Ecole();
-    switch ($type) {
-        case 'coursGrp':
-            $listeEleves = $Ecole->listeElevesCours($notification['destinataire']);
-            break;
-        case 'classes':
-            $listeEleves = $Ecole->listeElevesClasse($notification['destinataire']);
-            break;
-        case 'eleves':
-            $listeEleves = $Ecole->detailsDeListeEleves($notification['destinataire']);
-            break;
-    }
-}
-
+$smarty->assign('destinataire', $notification['destinataire']);
+$smarty->assign('stringDestinataire', $stringDestinataire);
+$smarty->assign('niveau', $notification['niveau']);
+$smarty->assign('notification', $notification);
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('notifId', $notifId);
-
-require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$Thot = new Thot();
-
-$pjFiles = $Thot->getPj4Notifs($notifId, $acronyme);
-
+// à destination du widget fileTree
 $smarty->assign('pjFiles', $pjFiles);
-$smarty->assign('mode', $type);
-$smarty->assign('edition', true);
 
-echo $smarty->display('notification/formNotification.tpl');
+$smarty->assign('selectedFiles', $selectedFiles);
+$smarty->assign('selectTypes', $selectTypes);
+$smarty->assign('listeNiveaux', $listeNiveaux);
+$smarty->assign('listeCours', $listeCours);
+$smarty->assign('userStatus', $userStatus);
+
+echo $smarty->display('notification/edit/tabEdit.tpl');

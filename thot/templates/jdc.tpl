@@ -10,7 +10,7 @@
 				<span title="Vue élève"><i class="fa fa-user fa-lg"></i></span>
 				{elseif $type == 'classe'}
 				<span title="Vue classe"><i class="fa fa-user-plus fa-lg"></i></span>
-				{elseif $type == 'cours'}
+				{elseif $type == 'coursGrp'}
 				<span title="Vue cours"><i class="fa fa-graduation-cap fa-lg"></i></span>
 				{elseif $type == 'niveau'}
 				<span title="Vue Niveau d'étude"><i class="fa fa-users fa-lg"></i></span>
@@ -22,12 +22,12 @@
 		</div>
 
 		<div class="col-md-2 col-xs-2">
-			{if $type == 'cours'}
-				<button type="button" class="btn btn-lightBlue btn-block" style="margin-top:10px;" id="printJDC" title="Impression PDF du JDC"><i class="fa fa-print fa-lg"></i></button>
+			{if $type == 'coursGrp'}
+				<button type="button" class="btn btn-lightBlue btn-block" id="printJDC" style="margin-top:10px;" title="" data-original-title="Impression PDF du JDC">PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i></button>
 			{/if}
 		</div>
 
-		<div class="col-md-9 col-sm-12">
+		<div class="col-md-9 col-sm-12" id="calendrier">
 			<p class="jdcInfo {$mode} demiOmbre">{$jdcInfo|default:''}</p>
 			<input type="hidden" name="unlocked" id="unlocked" value="false">
 			<div id="calendar"
@@ -42,38 +42,25 @@
 
 		</div>
 
-		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto">
+		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto" id="editeur">
 
 			{if $editable == 0}
 				<p class="notice">En vue subjective, vous voyez tous les événements dans le JDC d'un élève, quel que soit le propriétaire.<br>
 				<strong>Aucune modification n'est possible</strong>.</p>
-			{else}
-				<p class="notice">Accédez à vos événements pour {$lblDestinataire}</p>
 			{/if}
 
-			<form action="index.php" method="POST" name="detailsJour" id="detailsJour" role="form" class="form-vertical ombre">
-
-				<!-- champs destinés à être lus pour d'autres formulaires -->
-				<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire}">
-				<input type="hidden" name="lblDestinataire" id="lblDestinataire" value="{$lblDestinataire|default:''}">
-				<input type="hidden" name="type" id="type" value="{$type|default:''}">
-				<input type="hidden" name="editable" id="editable" value="{$editable|default:false}">
-				<input type="hidden" name="startDate" id="startDate" value="{$startDate|default:''}">
-				<input type="hidden" name="viewState" id="viewState" value="">
-
-				<div id="unTravail">
-					{if isset($travail)}
-						{include file='jdc/unTravail.tpl'}
-					{else}
-						<strong>Veuillez sélectionner un item dans le calendrier</strong>
-						{if $editable == 1}
-						<br><strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
-						{/if}
-
-						<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
+			<div id="unTravail">
+				{if isset($travail)}
+					{include file='jdc/unTravail.tpl'}
+				{else}
+					<strong>Veuillez sélectionner un item dans le calendrier</strong>
+					{if $editable == 1}
+					<br><strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
 					{/if}
-				</div>
-			</form>
+
+					<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
+				{/if}
+			</div>
 
 		</div>
 		<!-- col-md-... -->
@@ -82,7 +69,7 @@
 			{* légende et couleurs *}
 			<div class="btn-group" id="legend">
 				{foreach from=$categories key=cat item=travail}
-				<button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie|truncate:12}</button>
+				<button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
 				{/foreach}
 			</div>
 		</div>
@@ -92,7 +79,7 @@
 
 </div>
 
-<div id="zoneEdit"></div>
+{* <div id="zoneEdit"></div> *}
 <div id="zoneDel"></div>
 <div id="zoneClone"></div>
 
@@ -108,28 +95,73 @@
 
 <script type="text/javascript">
 
-	// bootstrap-ckeditor-fix.js
-	// hack to fix ckeditor/bootstrap compatiability bug when ckeditor appears in a bootstrap modal dialog
-	//
-	// Include this file AFTER both jQuery and bootstrap are loaded.
-	// http://ckeditor.com/comment/127719#comment-127719
-	$.fn.modal.Constructor.prototype.enforceFocus = function() {
-		modal_this = this
-		$(document).on('focusin.modal', function(e) {
-			if (modal_this.$element[0] !== e.target && !modal_this.$element.has(e.target).length &&
-				!$(e.target.parentNode).hasClass('cke_dialog_ui_input_select') &&
-				!$(e.target.parentNode).hasClass('cke_dialog_ui_input_text')) {
-				modal_this.$element.focus()
-			}
-		})
-	};
+	// // bootstrap-ckeditor-fix.js
+	// // hack to fix ckeditor/bootstrap compatiability bug when ckeditor appears in a bootstrap modal dialog
+	// //
+	// // Include this file AFTER both jQuery and bootstrap are loaded.
+	// // http://ckeditor.com/comment/127719#comment-127719
+	// $.fn.modal.Constructor.prototype.enforceFocus = function() {
+	// 	modal_this = this
+	// 	$(document).on('focusin.modal', function(e) {
+	// 		if (modal_this.$element[0] !== e.target && !modal_this.$element.has(e.target).length &&
+	// 			!$(e.target.parentNode).hasClass('cke_dialog_ui_input_select') &&
+	// 			!$(e.target.parentNode).hasClass('cke_dialog_ui_input_text')) {
+	// 			modal_this.$element.focus()
+	// 		}
+	// 	})
+	// };
 
 	function dateFromFr(uneDate) {
 		var laDate = uneDate.split('/');
 		return laDate[2] + '-' + laDate[1] + '-' + laDate[0];
 	}
 
+	// calendrier plus étroit, zone d'édition plus grande
+	function modeEdition(){
+		$('#calendrier').removeClass('col-md-9').addClass('col-md-6');
+		$('#editeur').removeClass('col-md-3').addClass('col-md-6');
+	}
+	// calendrier plus large, zone d'édition plus étroite
+	function modeConsultation(){
+		$('#calendrier').addClass('col-md-9').removeClass('col-md-6');
+		$('#editeur').addClass('col-md-3').removeClass('col-md-6');
+	}
+
 	$(document).ready(function() {
+
+		$(document).ajaxStart(function() {
+			$('body').addClass('wait');
+		}).ajaxComplete(function() {
+			$('body').removeClass('wait');
+		});
+
+		$('#editeur').on('click', '#saveJDC', function(){
+	        if ($('#editJdc').valid()) {
+	            var formulaire = $('#editJdc').serialize();
+	            // récupérer le contenu du CKEDITOR
+	            var enonce = CKEDITOR.instances.enonce.getData();
+	            $.post('inc/jdc/saveJdc.inc.php', {
+	                formulaire: formulaire,
+	                enonce: enonce
+	            }, function(resultat) {
+					var resultJSON = JSON.parse(resultat);
+					var idJdc = resultJSON.idJdc;
+                    bootbox.alert({
+                        message: resultJSON.texte,
+                        size: 'small'
+                    });
+                    // récupérer le contenu de la zone "travail" à droite
+                    $.post('inc/jdc/getTravail.inc.php', {
+                        id: idJdc,
+                        editable: true
+                        }, function(resultat){
+                            $('#unTravail').html(resultat);
+                        })
+                    $('#calendar').fullCalendar('refetchEvents');
+	            });
+				modeConsultation();
+	        }
+	    })
 
 		$('#printJDC').click(function(){
 			var coursGrp = $('#coursGrp').val();
@@ -220,10 +252,12 @@
             var lockState = $('#unlocked').val();
             if (lockState == "true") {
                 $('#unlocked').val('false');
-                $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>')
+                $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
+				$('#unTravail .btn-edit').prop('disabled', true);
                 }
                 else {
                     $('#unlocked').val('true');
+					$('#unTravail .btn-edit').prop('disabled', false);
                     $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
                 }
         }
@@ -314,6 +348,7 @@
 					function(resultat) {
 						$('#unTravail').fadeOut(400, function() {
 							$('#unTravail').html(resultat).fadeIn();
+							modeConsultation();
 						});
 					}
 				)
@@ -335,23 +370,7 @@
 						var heure = moment(calEvent).format('HH:mm');
 						var date = moment(calEvent).format('MM/DD/YYYY');
 						var type = $('#calendar').data('type');
-						switch (type) {
-							case 'cours':
-								var cible = $('#coursGrp').val();
-								break;
-							case 'classe':
-								var cible = $('#selectClasse').val();
-								break;
-							case 'eleve':
-								var cible = $('#selectEleve').val();
-								break;
-							case 'niveau':
-								var cible = $('#niveau').val();
-								break;
-							case 'ecole':
-								var cible = 'all';
-								break;
-						}
+						var cible = $('#coursGrp').val();
 						var lblDestinataire = $("#calendar").data('lbldestinataire');
 						$.post('inc/jdc/getAdd.inc.php', {
 							date: date,
@@ -361,8 +380,8 @@
 							lblDestinataire: lblDestinataire
 							},
 							function(resultat){
-								$("#zoneEdit").html(resultat);
-								$("#modalEdit").modal('show');
+								modeEdition();
+								$('#unTravail').html(resultat);
 							})
 						}
 					else {
@@ -448,20 +467,12 @@
 		// modification d'une note au JDC
 		$("#unTravail").on('click', '#modifier', function() {
 			var id = $(this).data('id');
-			var destinataire = $(this).data('destinataire');
-			var startDate = $("#startDate").val();
-			var type = $('#type').val();
-			var lblDestinataire = $("#calendar").data('lbldestinataire');
 			$.post('inc/jdc/getMod.inc.php', {
-					id: id,
-					startDate: startDate,
-					type: type,
-					destinataire: destinataire,
+					id: id
 				},
 				function(resultat) {
-					// construction de la boîte modale d'édition du JDC
-					$("#zoneEdit").html(resultat);
-					$("#modalEdit").modal('show');
+					modeEdition();
+					$('#unTravail').html(resultat);
 				}
 			)
 		})

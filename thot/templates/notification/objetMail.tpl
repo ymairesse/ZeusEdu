@@ -1,1 +1,1 @@
-Notification de {$ECOLE}
+{$ECOLE}: {$objet}

@@ -85,7 +85,7 @@ class Jdc
             case 'classe':
                 $destinataire = sprintf('Élèves de la classe %s', $destinataire);
                 break;
-            case 'cours':
+            case 'coursGrp':
                 $sql = 'SELECT nomCours FROM '.PFX.'profsCours ';
                 $sql .= 'WHERE acronyme = :acronyme AND coursGrp = :destinataire ';
                 $requete = $connexion->prepare($sql);
@@ -132,7 +132,7 @@ class Jdc
             case 'classe':
                 $cible = sprintf('Tous les élèves de la classe %s', $destinataire);
                 break;
-            case 'cours':
+            case 'coursGrp':
                 $sql = 'SELECT nomCours FROM '.PFX.'profsCours ';
                 $sql .= 'WHERE coursGrp = :destinataire AND acronyme = :acronyme ';
                 $requete = $connexion->prepare($sql);
@@ -504,52 +504,134 @@ class Jdc
     /**
      * retrouve une notification dont on fournit l'identifiant.
      *
-     * @param int $item_id : l'identifiant dans la BD
+     * @param int $id : l'identifiant dans la BD
      *
      * @return array
      */
-    public function getTravail($item_id, $acronyme = Null)
+    public function getTravail($id, $acronyme = Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT destinataire, type, proprietaire, redacteur, title, enonce, class, jdc.idCategorie, id, DATE(startDate) AS startDate, ';
+        $sql = 'SELECT jdc.id, destinataire, type, proprietaire, redacteur, title, enonce, class, jdc.id, DATE(startDate) AS startDate, ';
         $sql .= 'TIME(startDate) AS heure, endDate, TIMEDIFF(endDate, startDate) AS duree, allDay, ';
-        $sql .= 'jdc.idCategorie, categorie, sexe, nom, prenom, libelle, nbheures, nomCours ';
+        $sql .= 'jdc.idCategorie, categorie, sexe, nom, prenom, dpc.acronyme, libelle, nbheures, nomCours ';
         $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = jdc.proprietaire ';
         $sql .= 'JOIN '.PFX.'thotJdcCategories AS cat ON cat.idCategorie = jdc.idCategorie ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = jdc.proprietaire ';
         $sql .= 'LEFT JOIN '.PFX.'cours AS dc ON cours = SUBSTR(jdc.destinataire,1,LOCATE("-",jdc.destinataire)-1) ';
         $sql .= 'LEFT JOIN '.PFX.'profsCours AS dpc ON dpc.coursGrp = destinataire ';
-        $sql .= 'WHERE id= :item_id ';
+        $sql .= 'WHERE jdc.id = :id ';
+
         if ($acronyme != Null)
             $sql .= 'AND proprietaire = :acronyme ';
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':item_id', $item_id, PDO::PARAM_INT);
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
         if ($acronyme != Null)
             $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_INT);
 
-        $travail = array();
+        $travail = Null;
         $resultat = $requete->execute();
         if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
-            $travail = $requete->fetch();
+            $ligne = $requete->fetch();
 
-            $adresse = ($travail['sexe'] == 'F') ? 'Mme' : 'M.';
-            if ($travail['prenom'] != '') {
-                $nom = sprintf('%s %s. %s', $adresse, mb_substr($travail['prenom'], 0, 1, 'UTF-8'), $travail['nom']);
+            $adresse = ($ligne['sexe'] == 'F') ? 'Mme' : 'M.';
+            if ($ligne['prenom'] != '') {
+                $nom = sprintf('%s %s. %s', $adresse, mb_substr($ligne['prenom'], 0, 1, 'UTF-8'), $ligne['nom']);
+                }
+                else $nom = '';
+                $ligne['profs'] = $nom;
+                $ligne['heure'] = date('H:i', strtotime($ligne['heure']));
+                $ligne['duree'] = date('H:i', strtotime($ligne['duree']));
+                if ($ligne['allDay'] == 0)
+                    unset($ligne['allDay']);
+                $travail = $ligne;
             }
-            else $nom = '';
 
-            $travail['profs'] = $nom;
-            $travail['heure'] = date('H:i', strtotime($travail['heure']));
-            $travail['duree'] = date('H:i', strtotime($travail['duree']));
-            if ($travail['allDay'] == 0) {
-                unset($travail['allDay']);
-            }
-        }
         Application::DeconnexionPDO($connexion);
 
         return $travail;
+    }
+
+    /**
+     * lie un document partagé par son $shareId avec un JDC dont on fournit l'id
+     *
+     * @param int $id : identifiant du Jdc
+     * @param int $shareId : identifiant du document partagé
+     *
+     * @return int : le nombre d'insertion (une)
+     */
+    public function setPJ($idJdc, $shareId) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcPJ ';
+        $sql .= 'SET idJdc = :idJdc, shareId = :shareId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idJdc', $idJdc, PDO::PARAM_INT);
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * recherche les PJ liées à un JDC dont on fournit l'id
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public function getPJ($id) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idJdc, pj.shareId,  dts.fileId, path, fileName ';
+        $sql .= 'FROM '.PFX.'thotJdcPJ AS pj ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = pj.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = dts.fileId ';
+        $sql .= 'WHERE idJdc = :id AND dirOrFile = "file" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $shareId = $ligne['shareId'];
+                $liste[$shareId] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * supprime la PJ $shareId de la note $id du JDC
+     *
+     * @param int $shareId
+     * @param int $id
+     *
+     * @return int : nombre de suppressions
+     */
+    public function delPJ($id, $shareId) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
+        $sql .= 'WHERE id = :id AND shareId = :shareId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
     }
 
     /**
@@ -623,6 +705,12 @@ class Jdc
 
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
         $resultat = $requete->execute();
+
+        // suppression des PJ
+        $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
+        $sql .= 'WHERE idJdc = '.$id.' ';
+
+        $resultat = $connexion->exec($sql);
 
         Application::DeconnexionPDO($connexion);
 
@@ -787,7 +875,7 @@ class Jdc
                 // $infos est un tableau avec les détails de l'élève
                 $lblDestinataire = $this->getLblEleve($infos);
                 break;
-            case 'cours':
+            case 'coursGrp':
                 // $infos est la liste des cours du prof
                 $lblDestinataire =  $this->getLblCours($destinataire, $infos);
                 break;

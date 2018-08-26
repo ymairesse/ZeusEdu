@@ -20,7 +20,7 @@
 
            <div class="form-group">
              <label for="remarque">Remarque de l'élève</label>
-             <p id="remarque">{$evaluationsTravail.data.remarque|default:'-'}</p>
+             <p id="remarque">{$evaluationsTravail.remarque|default:'-'}</p>
            </div>
 
         </div>
@@ -32,25 +32,39 @@
                 <tr>
                     <th style="width:70%">Compétences</th>
                     <th style="width:10%">Form/Cert</th>
-                    <th style="width:10%">Cote</th>
+                    <th style="width:10%">
+                        Cote
+                        <span
+                            class="pull-right smallNotice pop"
+                            data-content="Mentions admises: <strong>{$COTEABS}</strong> <br>Toutes ces mentions sont neutres <br><strong>{$COTENULLE}</strong><br>La cote est nulle"
+                            data-html="true"
+                            data-container="body"
+                            data-placement="left">
+                        </span>
+                    </th>
                     <th style="width:10%">Max</th>
                 </tr>
             </thead>
             <tbody>
                 {if count($competencesTravail) > 0}
-                    {assign var=n value=2}
-                    {foreach from=$competencesTravail key=idCompetence item=data}
+                    {foreach from=$competencesTravail key=idCompetence item=data name=boucle}
                     <tr>
                         <td>{$data.libelle}</td>
                         <td>{if $data.formCert == 'form'}Formatif{else}Certificatif{/if}</td>
-                        <td><input type="text" name="cote_{$idCompetence}" class="form-control input-sm" value="{$evaluationsTravail.cotes.$idCompetence.cote|default:''}"
-                            tabindex="{$n}"></td>
+                        <td>
+                            <input
+                                type="text"
+                                name="cote_{$idCompetence}"
+                                class="form-control input-sm cote"
+                                value="{$evaluationsTravail.cotes.$idCompetence.cote|default:''}"
+                                tabindex="{$smarty.foreach.boucle.iteration}">
+                        </td>
                         <td>
                             <strong>/ {$data.max}</strong>
                             <input type="hidden" name="max_{$idCompetence}" class="maxCompetence" value="{$data.max|default:''}">
                         </td>
                     </tr>
-                    {assign var=n value=$n+1}
+                    {assign var=n value=$smarty.foreach.boucle.iteration}
                     {/foreach}
                 {else}
                     <tr>
@@ -61,9 +75,9 @@
                 {/if}
             </tbody>
         </table>
-
-    <button type="button" tabindex="1" class="btn btn-primary btn-block" id="saveEval">Enregistrer</button>
-
+    {assign var=n value=$n+1}
+    <button type="button" tabindex="{$n}" class="btn btn-primary btn-block" id="saveEval">Enregistrer</button>
+    {assign var=n value=$n+1}
     <div class="form-group">
         <label for="evaluation">Évaluation du professeur</label>
         <textarea name="evaluation" class="form-control" id="editeurEvaluation" tabindex="{$n}">{$evaluationsTravail.commentaire|default:''}</textarea>
@@ -81,6 +95,18 @@
         CKEDITOR.replace('editeurEvaluation');
 
         $("input").tabEnter();
+
+        $('input.cote').first().focus();
+
+        $(".pop").popover({
+            trigger:'hover'
+            });
+
+        // remplacer la virgule par un point dans la cote
+        $(".cote").blur(function(e) {
+            laCote = $(this).val().replace(',', '.');
+            $(this).val(laCote);
+        })
 
     })
 

@@ -228,16 +228,23 @@ Dropzone.options.myDropZone = {
             var type = $(this).data('type');
             var arborescence = $(this).data('arborescence');
             var fileName = $(this).data('filename');
-
-            $('#inputFileName').val(fileName).removeClass('hidden');
-            $('#inputPath').val(arborescence);
-            $('#shareDirName').text(arborescence);
-            $('#shareFileName').text(fileName).removeClass('hidden').closest('p').removeClass('hidden');
-            $('#dirOrFile').val(type);
-            if (type == 'file')
-                $('#forDirOnly').addClass('hidden');
-                else $('#forDirOnly').removeClass('hidden');
-            $('#modalShare').modal('show');
+            if (arborescence == ''){
+                bootbox.alert({
+                    title: 'Avertissement',
+                    message: 'Le partage de la racine de votre répertoire n\'est pas autorisé.<br>Veuillez choisir un sous-répertoire.'
+                })
+                }
+                else {
+                    $('#inputFileName').val(fileName).removeClass('hidden');
+                    $('#inputPath').val(arborescence);
+                    $('#shareDirName').text(arborescence);
+                    $('#shareFileName').text(fileName).removeClass('hidden').closest('p').removeClass('hidden');
+                    $('#dirOrFile').val(type);
+                    if (type == 'file')
+                        $('#forDirOnly').addClass('hidden');
+                        else $('#forDirOnly').removeClass('hidden');
+                    $('#modalShare').modal('show');
+                }
         })
 
         $('#modalShare, #modalShareEdit').on('shown.bs.modal', function () {
@@ -291,7 +298,6 @@ Dropzone.options.myDropZone = {
                     $("#partages").html(resultat);
                 })
             })
-
 
         })
 

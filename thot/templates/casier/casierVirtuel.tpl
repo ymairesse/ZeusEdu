@@ -189,7 +189,7 @@
             $(this).addClass('active');
             var idTravail = $(this).data('idtravail');
             var coursGrp = $("#selectCours :selected").val();
-
+            
             // cadre d'évaluation du travail
             $.post('inc/casier/listeElevesEvalues.inc.php', {
                     idTravail: idTravail,

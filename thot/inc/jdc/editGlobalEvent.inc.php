@@ -32,17 +32,12 @@ $date = isset($_POST['date']) ? $_POST['date'] : null;
 $type = isset($_POST['type']) ? $_POST['type'] : null;
 $cible = isset($_POST['cible']) ? $_POST['cible'] : null;
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
-$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
-$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
-
 if ($id != null) {
     $travail = $Jdc->getTravail($id);
     $cible = $travail['destinataire'];
     $type = $travail['type'];
     switch ($type) {
-        case 'cours':
+        case 'coursGrp':
             $info = $User->listeCoursProf();
             break;
         case 'eleve':
@@ -56,12 +51,12 @@ if ($id != null) {
 }
 else {
     switch ($type) {
-        case 'cours':
+        case 'coursGrp':
             $info = $User->listeCoursProf();
             break;
         case 'eleve':
             require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-            $info = Eleve::staticGetDetailsEleve($cible );
+            $info = Eleve::staticGetDetailsEleve($cible);
             break;
         default:
             $info = Null;
@@ -78,7 +73,12 @@ else {
         );
     }
 
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty();
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
+$smarty->assign('INSTALL_DIR', INSTALL_DIR);
 $smarty->assign('categories', $categories);
 
 $listePeriodes = $Jdc->lirePeriodesCours();
@@ -87,9 +87,7 @@ $smarty->assign('listePeriodes', $listePeriodes);
 $lblDestinataire = $Jdc->getLabel($type, $cible, $info);
 $smarty->assign('lblDestinataire', $lblDestinataire);
 
-$smarty->assign('id', $id);
 $smarty->assign('travail', $travail);
 $smarty->assign('editable', $editable);
-$smarty->assign('acronyme', $acronyme);
 
-$smarty->display('jdc/modal/modalEdit.tpl');
+$smarty->display('jdc/jdcEdit.tpl');

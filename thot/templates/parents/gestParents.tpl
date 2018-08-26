@@ -15,36 +15,38 @@
     {/foreach}
 </table>
 {/if}
-
-<table class="table table-condensed">
-    {foreach from=$listeParents key=matricule item=dataParents}
-        <tr style="background-color: #ddd">
-            <td colspan="8">
-            <strong>{$dataParents[0].nomEleve} {$dataParents[0].prenomEleve}</strong>
-            </td>
-        </tr>
-        {foreach from=$dataParents key=n item=unParent}
-        <tr>
-            <td>&nbsp;</td>
-            <td>{$unParent.formule} {$unParent.nom} {$unParent.prenom}</td>
-            <td>{$unParent.userName}</td>
-            <td>{$unParent.lien}</td>
-            <td><a href="mailto:{$unParent.mail}">{$unParent.mail}</a></td>
-            <td><button type="button"
-                title="Renvoyer le mail de confirmation d'inscription"
-                data-username="{$unParent.userName}"
-                class="btn btn-success btn-xs btn-mailConfirm" {if $unParent.confirme == 1}disabled{/if}>Mail confirmation</button></td>
-            <td><button type="button" class="btn btn-danger btn-xs btn-delUser" data-username="{$unParent.userName}" name="button" title="Supprimer"><i class="fa fa-times"></i></button></td>
-            <td>{if $unParent.confirme == 1}
-                <i class="fa fa-check" style="color:green" title="Mail Confirmé"></i>
-                {else}
-                <i class="fa fa-minus" style="color:red" title="Mail Non Confirmé"></i>
-                {/if}
-            </td>
-        </tr>
+{if count($listeParents) > 0}
+    <h3>Références des parents <button type="button" class="btn btn-lightBlue pull-right" id="printParents"><i style="color:red" class="fa fa-file-pdf-o fa-lg"></i> Impression fiches</button> </h3>
+    <table class="table table-condensed">
+        {foreach from=$listeParents key=matricule item=dataParents}
+            <tr style="background-color: #ddd">
+                <td colspan="8">
+                <strong>{$dataParents[0].nomEleve} {$dataParents[0].prenomEleve}</strong>
+                </td>
+            </tr>
+            {foreach from=$dataParents key=n item=unParent}
+            <tr>
+                <td>&nbsp;</td>
+                <td>{$unParent.formule} {$unParent.nom} {$unParent.prenom}</td>
+                <td>{$unParent.userName}</td>
+                <td>{$unParent.lien}</td>
+                <td><a href="mailto:{$unParent.mail}">{$unParent.mail}</a></td>
+                <td><button type="button"
+                    title="Renvoyer le mail de confirmation d'inscription"
+                    data-username="{$unParent.userName}"
+                    class="btn btn-success btn-xs btn-mailConfirm" {if $unParent.confirme == 1}disabled{/if}>Mail confirmation</button></td>
+                <td><button type="button" class="btn btn-danger btn-xs btn-delUser" data-username="{$unParent.userName}" name="button" title="Supprimer"><i class="fa fa-times"></i></button></td>
+                <td>{if $unParent.confirme == 1}
+                    <i class="fa fa-check" style="color:green" title="Mail Confirmé"></i>
+                    {else}
+                    <i class="fa fa-minus" style="color:red" title="Mail Non Confirmé"></i>
+                    {/if}
+                </td>
+            </tr>
+            {/foreach}
         {/foreach}
-    {/foreach}
-</table>
+    </table>
+{/if}
 
 </div>
 
@@ -80,6 +82,18 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
+
+        $('#printParents').click(function(){
+            var groupe = $('#selectClasse').val();
+            $.post('inc/parents/printParents.inc.php', {
+                groupe: groupe
+            }, function(resultat){
+                bootbox.alert({
+                    'title': 'Fiches "parents"',
+                    'message': resultat
+                })
+            })
+        })
 
         $('.btn-mailConfirm').click(function(){
             var userName = $(this).data('username');

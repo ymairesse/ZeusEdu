@@ -76,6 +76,8 @@ switch ($mode) {
         $smarty->assign('idTravail', $idTravail);
         $smarty->assign('matricule', $matricule);
         $smarty->assign('BASEDIR', BASEDIR);
+        $smarty->assign('COTEABS', COTEABS);
+        $smarty->assign('COTENULLE', COTENULLE);
         $smarty->assign('photo', $photo);
         $smarty->assign('listeCours', $listeCours);
         $smarty->assign('listeTravauxCours', $listeTravaux);

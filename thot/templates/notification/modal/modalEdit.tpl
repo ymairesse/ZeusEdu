@@ -80,11 +80,5 @@
             todayHighlight: true
         });
 
-        $("#notification").validate({
-            rules: {
-                'objet': 'required'
-            }
-        });
-
     })
 </script>

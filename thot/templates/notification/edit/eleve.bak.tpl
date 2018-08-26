@@ -1,5 +1,4 @@
 <!-- Notifications à un élève -->
-<div class="tab-pane active hidden-print" id="tabs-1">
 	{assign var=liste value=$listeNotifications.eleves}
 	<table class="table table-condensed tableEdit">
 		<thead>
@@ -8,7 +7,7 @@
 
 		</thead>
 		{foreach from=$liste item=uneNote}
-		{assign var=matricule value=$uneNote.destinataire}
+
 		{assign var=nId value=$uneNote.id}
 		<tr id="tr_{$nId}" data-id="{$nId}">
 			<td style="width:1em">
@@ -32,7 +31,8 @@
 			<td><span class="objet">{$uneNote.objet}</span></td>
 			<td style="width:20%;">
 				<span class="destinataire">
-					{$uneNote.detailsEleve.prenom} {$uneNote.detailsEleve.nom}: {$uneNote.detailsEleve.classe}
+					{$uneNote.destinataire.nom} {$uneNote.destinataire.prenom} {$uneNote.destinataire.groupe}
+
 				</span>
 			</td>
 			<td>
@@ -60,4 +60,3 @@
 			</th>
 		</tr>
 	</table>
-</div>

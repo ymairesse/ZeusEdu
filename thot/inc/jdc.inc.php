@@ -1,8 +1,5 @@
 <?php
 
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
-$Jdc = new Jdc();
-
 // informations provenant du sélecteur
 // type de JDC: défini dans le sélecteur classe, élève,...
 $type = isset($_POST['type']) ? $_POST['type'] : null;
@@ -24,7 +21,7 @@ switch ($type) {
     case 'niveau':
         $destinataire = $niveau;
         break;
-    case 'cours':
+    case 'coursGrp':
         $destinataire = $coursGrp;
         break;
     case 'ecole':
@@ -40,16 +37,12 @@ $categories = $Jdc->categoriesTravaux();
 $smarty->assign('categories', $categories);
 
 switch ($mode) {
-    case 'cours':
+    case 'coursGrp':
         require_once 'inc/jdc/jdcCours.inc.php';
         break;
 
     case 'jdcAny':
         require_once 'inc/jdc/jdcAny.inc.php';
-        break;
-
-    case 'attribJdcEleve':
-        require_once 'inc/jdc/attribJdcEleve.inc.php';
         break;
 
     case 'approbations':

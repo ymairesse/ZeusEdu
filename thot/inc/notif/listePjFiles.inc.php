@@ -24,7 +24,6 @@ $Thot = new Thot();
 
 $pjFiles = $Thot->getPj4Notifs($notifId, $acronyme);
 
-
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
 $smarty->template_dir = "../../templates";

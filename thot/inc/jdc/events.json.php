@@ -33,7 +33,7 @@ $Jdc = new Jdc();
 
 $eventsList = array();
 switch ($type) {
-    case 'cours':
+    case 'coursGrp':
         $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
         break;
     case 'eleve':

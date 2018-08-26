@@ -15,7 +15,7 @@
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode|default:'voir'}">
 	<input type="hidden" name="etape" value="show">
-	<input type="hidden" name="type" value="cours">
+	<input type="hidden" name="type" value="coursGrp">
 
 </form>
 

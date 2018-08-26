@@ -92,7 +92,7 @@ p.event-inverse, a.event-inverse {
 }
 
 #calendar.subjectif, p.jdcInfo.subjectif {
-    background-color: #ebd8ff !important;
+    background-image: repeating-linear-gradient(315deg, #ccc, #ccc 20px, #ebd8ff 20px, #ebd8ff 40px);
     border-radius: 10px;
 }
 #calendar.jdcAny, p.jdcInfo.jdcAny {
@@ -554,4 +554,23 @@ p.jdcInfo:before {
 	-moz-box-shadow: 8px 8px 12px #adadad;
 	-webkit-box-shadow: 8px 8px 12px #adadad;
 	box-shadow: 4px 4px 6px #adadad;
+}
+
+.PjFiles {
+    background-color: #fce6aa;
+}
+
+.PjFiles  li {
+    display: inline-block;
+    padding: 0 0.5em;
+    border: 1px solid #555;
+    border-radius: 3px;
+    margin: 3px;
+    background-color: #eee
+}
+
+.PjFiles li a {
+    font-size: 8pt;
+    font-weight: normal;
+    color: blue;
 }

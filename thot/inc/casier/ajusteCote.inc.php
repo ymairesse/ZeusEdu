@@ -22,17 +22,39 @@ parse_str($formulaire, $form);
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 $elv = Eleve::staticGetDetailsEleve($matricule);
 
-$somme = '';
-$max = '';
+$coteAbs = explode(',', COTEABS);
+$coteNulle = explode(',', COTENULLE);
+
+// création d'un tableau de la liste des cotes pour le travail
+$listeCotes = array();
 foreach ($form as $field => $value) {
     $champ = explode('_',$field);
-    $value = Application::sansVirg($value);
-    if (($champ[0] == 'cote') && ($value != '')) {
-        $somme += $value;
+    if ($champ[0] == 'cote') {
+        $id = $champ[1];
+        $listeCotes[$id]['cote'] = Application::sansVirg($value);
     }
-    if (($champ[0] == 'max') && ($value != '')) {
-        $max += $value;
+    if ($champ[0] == 'max') {
+        $id = $champ[1];
+        $listeCotes[$id]['max'] = Application::sansVirg($value);
     }
 }
 
-echo sprintf("%s - %s %s [%s / %s]", $elv['classe'], $elv['nom'], $elv['prenom'], $somme, $max);
+// totalisation des cotes par compétence pour le travail
+$total = array('cote'=> '', 'max' => '');
+foreach ($listeCotes as $id => $evaluation) {
+    if (is_numeric($evaluation['max'])) {
+        if (is_numeric($evaluation['cote'])) {
+            $total['cote'] += $evaluation['cote'];
+            $total['max'] += $evaluation['max'];
+        }
+        else if (in_array($evaluation['cote'], $coteNulle)){
+            // juste pour ne plus avoir une chaîne vide dans $total['cote']
+            $total['cote'] += 0;
+            $total['max'] += $evaluation['max'];
+        }
+    }
+}
+
+if ($total['max'] != '')
+    echo sprintf("%s - %s %s [%s / %s]", $elv['classe'], $elv['nom'], $elv['prenom'], $total['cote'], $total['max']);
+    else echo sprintf("%s - %s %s", $elv['classe'], $elv['nom'], $elv['prenom']);

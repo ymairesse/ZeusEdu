@@ -32,40 +32,32 @@ if ($id != Null) {
         die('Cette note au JDC ne vous appartient pas');
 
     $travail = $Jdc->getTravail($id);
+    // $travail['listePJ'] = $Jdc->getPJ($id);
+    $pjFiles = $Jdc->getPJ($id);
+
     $destinataire = $travail['destinataire'];
     $type = $travail['type'];
-    // deux cas particuliers de destinataires
-    switch ($type) {
-        case 'cours':
-            $coursGrp = $travail['destinataire'];
-            $infos = $User->listeCoursProf();
-            break;
-        // case 'eleve':
-        //     $matricule = $travail['destinataire'];
-        //     require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-        //     $infos = Eleve::staticGetDetailsEleve($matricule);
-        //     break;
-        // default:
-        //     $infos = Null;
-        //     break;
-    }
+    if ($type == 'coursGrp')
+        $infos = $User->listeCoursProf();
+        else $infos = Null;
     $lblDestinataire = $Jdc->getLabel($type, $destinataire, $infos);
+
+    $ds = DIRECTORY_SEPARATOR;
+    require_once INSTALL_DIR.$ds.'widgets/fileTree/inc/classes/class.Treeview.php';
 
     require_once(INSTALL_DIR."/smarty/Smarty.class.php");
     $smarty = new Smarty();
-    $smarty->template_dir = "../../templates";
-    $smarty->compile_dir = "../../templates_c";
+    $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
+    $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
-    $smarty->assign('categories',$categories);
+    $smarty->assign('INSTALL_DIR', INSTALL_DIR);
+
+    $smarty->assign('categories', $categories);
     $smarty->assign('listePeriodes', $listePeriodes);
-
-    $smarty->assign('startDate', $travail['startDate']);
-    $smarty->assign('heure', $travail['heure']);
-    $smarty->assign('type', $travail['type']);
-    $smarty->assign('destinataire', $travail['destinataire']);
-
     $smarty->assign('lblDestinataire', $lblDestinataire);
 
+    $smarty->assign('pjFiles', $pjFiles);
+
     $smarty->assign('travail',$travail);
-    $smarty->display('jdc/modal/modalEdit.tpl');
+    $smarty->display('jdc/jdcEdit.tpl');
     }

@@ -25,14 +25,13 @@ $form = array();
 parse_str($formulaire, $form);
 
 $evaluation = isset($_POST['evaluation']) ? $_POST['evaluation'] : null;
-$idTravail = isset($_POST['idTravail']) ? $_POST['idTravail'] : null;
+$idTravail = isset($form['idTravail']) ? $form['idTravail'] : Null;
 
 // la fonction verifProprietaireTravail renvoie l'id du travail s'il est bien attribué à $acronyme
 $id = $Files->verifProprietaireTravail($acronyme, $idTravail);
 if ($id == $idTravail) {
     $dateSave = $Files->saveEvaluation($form, $evaluation);
-    // le temps de voir l'ajaxLoader
-    sleep(1);
+
     require_once INSTALL_DIR.'/smarty/Smarty.class.php';
     $smarty = new Smarty();
     $smarty->template_dir = '../../templates';
@@ -40,7 +39,7 @@ if ($id == $idTravail) {
 
     $smarty->assign('dateSave', $dateSave);
     echo $dateSave;
-    // echo $smarty->fetch('alertDateHeure.tpl');
+    
 } else {
     die('Ce travail ne vous appartient pas');
 }

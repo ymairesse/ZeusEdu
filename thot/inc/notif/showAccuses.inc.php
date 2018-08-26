@@ -36,6 +36,10 @@ switch ($notification['type']) {
         $niveau = $notification['destinataire'];
         $listeEleves = $Ecole->listeElevesNiveaux($niveau);
         break;
+    case 'cours':
+        $matiere = $notification['destinataire'];
+        $listeEleves = $Ecole->listeElevesMatiere($matiere);
+        break;
     case 'coursGrp':
         $destinataire = $notification['destinataire'];
         $listeEleves = $Ecole->listeElevesCours($destinataire);

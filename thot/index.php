@@ -33,7 +33,7 @@ $titulaire = $user->listeTitulariats();
 $smarty->assign('titulaire', $titulaire);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.'thot'.$ds.'inc/classes/classJdc.inc.php';
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
 
 $approbationsJDC = $Jdc->getApprobations($listeCours, $titulaire);

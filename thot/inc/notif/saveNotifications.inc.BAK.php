@@ -17,7 +17,7 @@ if (isset($_POST['files']) && count($_POST['files']) > 0) {
     $nb = $Files->linkFilesNotifications($listeNotifId, $_POST, $acronyme);
     }
     else {
-        // suppression des PJ encore existantes même si plus de PJ à l'annonce
+        // suppression des PJ encore existantes si plus de PJ à l'annonce
         $nb = $Files->unlinkAllFiles4Notif($listeNotifId);
     }
 
@@ -87,9 +87,11 @@ if (isset($_POST['mail']) && $_POST['mail'] == 1) {
 
 // voyons si un accusé de lecture est souhaité
 if (isset($_POST['accuse']) && $_POST['accuse'] == 1) {
-    if ($_POST['type'] == 'eleves') {
+    if ($_POST['type'] == 'classes' || $_POST['type'] == 'coursGrp') {
+        // si la sélection a été faite par classe ou par cours, on compte le nombre d'élèves sélectionnés
         $nbAccuses = $Thot->setAccuse($listeNotifId, $matriculesSelect, 'eleves');
     } else {
+        // pour les autres types (niveau d'étude)
         $nbAccuses = $Thot->setAccuse($listeNotifId, $matriculesTous,'groupe');
     }
     $texte .= sprintf("<br>%d demande(s) d'accusé de lecture envoyée(s)", $nbAccuses);
