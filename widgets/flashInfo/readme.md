@@ -13,7 +13,7 @@ $smarty->assign('INSTALL_DIR', INSTALL_DIR);
 ```
 à l’endroit où les annonces doivent apparaître.
 
-Dans le fichier qui demande l'affichage de flashInfo, la liste des annonces se trouve dans la variable $listeFlashInfos
+Dans le fichier PHP qui demande l'affichage de flashInfo, la liste des annonces se trouve dans la variable $listeFlashInfos
 ```
 $listeFlashInfos = $FlashInfo->listeFlashInfos($module);
 ```
