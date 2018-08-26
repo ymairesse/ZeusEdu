@@ -2045,6 +2045,87 @@ class Application
     }
 
     /**
+     * recherche les messages en attente de lecture pour chaque appli disponible
+     *
+     * @param string $acronyme : l'utilisateur concerné
+     *
+     * @return array
+     */
+    public function listeMessages($user) {
+        // liste des messages par application
+        $listeApplis = array_keys($this->listeApplis());
+
+        foreach ($listeApplis as $uneAppli) {
+            // recherche des applications pour lesquelles un fichier "funcNotifs.inc.php" a été créé
+            // on y trouve une fonction de comptage des notifications en attente
+            if (file_exists($uneAppli.'/inc/funcMessages.inc.php')) {
+                require_once $uneAppli.'/inc/funcMessages.inc.php';
+                // définition et appel de la fonction de comptage des notifications spécifique au module
+                $function = $uneAppli."_messages";
+                $notifications[$uneAppli] = $function($user);
+            }
+        }
+
+        return $notifications;
+    }
+
+
+    /**
+     * renvoie la liste des heures de cours données dans l'école.
+     *
+     * @param void
+     *
+     * @return array
+     */
+    public function lirePeriodesCours()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT debut, fin ';
+        $sql = "SELECT DATE_FORMAT(debut,'%H:%i') as debut, DATE_FORMAT(fin,'%H:%i') as fin ";
+        $sql .= 'FROM '.PFX.'presencesHeures ';
+        $sql .= 'ORDER BY debut, fin';
+
+        $resultat = $connexion->query($sql);
+        $listePeriodes = array();
+        $periode = 1;
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $debut = $ligne['debut'];
+                $fin = $ligne['fin'];
+                $listePeriodes[$periode++] = array('debut' => $debut, 'fin' => $fin);
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $listePeriodes;
+    }
+
+    /**
+     * renvoie l'heure de la période de cours la plus proche de l'heure passée en argument
+     *
+     * @param string $heure
+     *
+     * @return string
+     */
+    public function heureLaPlusProche($heure){
+        $listePeriodes = $this->lirePeriodesCours();
+        $time = explode(':', $heure);
+        $time = mktime($heure[0], $heure[1]);
+
+        $n = 1;
+        while (($listePeriodes[$n]['fin'] < $heure) && ($n < count($listePeriodes))) {
+            $n++;
+        }
+        $timeDebut = explode(':', $listePeriodes[$n]['debut']);
+        $timeFin = explode(':', $listePeriodes[$n]['fin']);
+
+        if (((float) $time - (float) $timeDebut) > ((float) $timeFin - (float) $time))
+            return $listePeriodes[$n]['debut'];
+            else return $listePeriodes[$n]['fin'];
+    }
+
+
+    /**
     * mode debug de php
     *
     */
@@ -2063,7 +2144,9 @@ class Application
      *
      * @return string
      */
-    public static function postOrCookie ($name, $duree) {
+    public static function postOrCookie ($name, $duree = Null) {
+        if ($duree == Null)
+            $duree = time() + 365 * 24 * 3600;
         if (isset($_POST[$name])) {
             $value = $_POST[$name];
             setcookie($name, $value, $duree, '/', null, false, true);
@@ -2072,5 +2155,6 @@ class Application
             }
         return $value;
     }
+
 
 }

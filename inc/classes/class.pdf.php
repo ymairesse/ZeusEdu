@@ -1,7 +1,7 @@
 <?php
 
-class PDF extends PDF_Rotate {
-	
+class PDF extends FPDF {
+
 	function RotatedText($x,$y,$txt,$angle) {
 		//Rotation du texte autour de son origine
 		$this->Rotate($angle,$x,$y);
@@ -10,10 +10,9 @@ class PDF extends PDF_Rotate {
 	}
 
 	function RotatedImage($file,$x,$y,$w,$h,$angle) {
-		//Rotation de l'image autour du coin supérieur gauche
+		//Rotation de l'image autour du coin supï¿½rieur gauche
 		$this->Rotate($angle,$x,$y);
 		$this->Image($file,$x,$y,$w,$h);
 		$this->Rotate(0);
 	}
 }
-?>

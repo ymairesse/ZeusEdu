@@ -173,24 +173,25 @@ class user
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $acronyme = $this->getAcronyme();
-        $sql = 'SELECT a.*, pa.userStatus ';
+        $sql = 'SELECT nom, nomLong, URL, icone, active, ordre, pa.userStatus ';
         $sql .= 'FROM '.PFX.'applications AS a ';
-        $sql .= 'JOIN '.PFX.'profsApplications AS pa ON ';
-        $sql .= '(a.nom = pa.application) ';
-        $sql .= "WHERE acronyme = '$acronyme' AND userStatus != 'none' ";
+        $sql .= 'JOIN '.PFX.'profsApplications AS pa ON a.nom = pa.application ';
+        $sql .= 'WHERE acronyme = :acronyme AND userStatus != "none" ';
         if ($actives) {
             $sql .= 'AND active = 1 ';
         }
         $sql .= 'ORDER BY ordre, lower(nom), userStatus ';
-        $resultat = $connexion->query($sql);
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $resultat = $requete->execute();
         $applis = array();
         if ($resultat) {
-            while ($uneApplication = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($uneApplication = $requete->fetch()) {
                 $nom = $uneApplication['nom'];
-                $applis[$nom]['nomLong'] = $uneApplication['nomLong'];
-                $applis[$nom]['URL'] = $uneApplication['URL'];
-                $applis[$nom]['icone'] = $uneApplication['icone'];
-                $applis[$nom]['userStatus'] = $uneApplication['userStatus'];
+                $applis[$nom] = $uneApplication;
             }
         }
         Application::DeconnexionPDO($connexion);

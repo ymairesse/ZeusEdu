@@ -257,9 +257,9 @@ class eleve
      * fonction utilisée par jquery pour rechercher les élèves qui correspondent à un critère donné
      * on cherche un élève par son nom ou par son prénom.
      *
-     * @param $fragment
+     * @param string $fragment
      *
-     * @return array : liste des élèves qui correspondent au critère
+     * @return array : liste de 10 élèves qui correspondent au critère
      */
     public static function searchEleve2($fragment, $partis = false)
     {
@@ -269,20 +269,25 @@ class eleve
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = "SELECT matricule, nom, prenom, classe, CONCAT(nom,' ',prenom, ' : ',classe) AS nomPrenom ";
         $sql .= 'FROM '.PFX.'eleves ';
-        $sql .= "WHERE (CONCAT(nom,' ',prenom) LIKE '%$fragment%') ";
+        $sql .= "WHERE CONCAT(nom,' ',prenom) LIKE :fragment ";
         if ($partis == false) {
             $sql .= "AND section != 'PARTI' ";
         }
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
         $sql .= 'LIMIT 0,10 ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $fragment = '%'.$fragment.'%';
+        $requete->bindParam(':fragment', $fragment, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
         $listeEleves = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            while ($ligne = $requete->fetch()) {
                 $listeEleves[] = $ligne['nomPrenom'];
             }
         }
+        
         Application::DeconnexionPDO($connexion);
 
         return $listeEleves;
@@ -301,15 +306,48 @@ class eleve
         if (!($nomPrenomClasse)) {
             die();
         }
-        $nomPrenomClasse = addslashes($nomPrenomClasse);
+        // $nomPrenomClasse = addslashes($nomPrenomClasse);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT matricule ';
         $sql .= 'FROM '.PFX.'eleves ';
-        $sql .= "WHERE CONCAT(nom,' ',prenom, ' : ',classe) = '$nomPrenomClasse' ";
-        $resultat = $connexion->query($sql);
+        $sql .= "WHERE CONCAT(nom,' ',prenom, ' : ',classe) = :nomPrenomClasse ";
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomPrenomClasse', $nomPrenomClasse, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
         $matricule = null;
         if ($resultat) {
-            $ligne = $resultat->fetch();
+            $ligne = $requete->fetch();
+            $matricule = $ligne['matricule'];
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $matricule;
+    }
+
+    /**
+     * recherche le matricule de l'élève dont la combinaison nom, prenom, classe
+     * est environ nom + prenom + classe
+     *
+     * @param string $nomPrenomClasse
+     *
+     * @return int
+     */
+    public static function searchFuzzyMatricule($nomPrenomClasse){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $sql .= "WHERE CONCAT(nom,' ',prenom, ' : ',classe) LIKE :nomPrenomClasse ";
+        $requete = $connexion->prepare($sql);
+
+        $nomPrenomClasse = '%'.$nomPrenomClasse.'%';
+        $requete->bindParam(':nomPrenomClasse', $nomPrenomClasse, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
+        $matricule = null;
+        if ($resultat) {
+            $ligne = $requete->fetch();
             $matricule = $ligne['matricule'];
         }
         Application::DeconnexionPDO($connexion);

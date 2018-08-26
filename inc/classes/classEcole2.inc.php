@@ -237,7 +237,7 @@ class ecole
         if ($sections != null) {
             $sql .= "AND section IN ($sections) ";
         }
-        $sql .= "ORDER BY $entite ";
+        $sql .= "ORDER BY $entite";
         $resultat = $connexion->query($sql);
         $lesClasses = array();
         if ($resultat) {
@@ -576,7 +576,6 @@ class ecole
         $sql .= 'LEFT JOIN '.PFX.'passwd AS dp ON (de.matricule = dp.matricule) ';
         $sql .= "WHERE de.matricule IN ($listeElevesString) ";
         $sql .= "ORDER BY classe, REPLACE(REPLACE (nom, ' ', ''),'''',''), prenom ";
-
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -824,44 +823,10 @@ class ecole
          return $listesEleves;
      }
 
-     /**
-      * recherche la liste des élèves qui suivent une matière donnée
-      * Ex: "3 GT:ANG2" (SANS MENTION DU GROUPE)
-      *
-      * @param string $matiere
-      *
-      * @return array
-      */
-     public function listeElevesMatiere ($matiere) {
-         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT deCours.matricule, groupe AS classe, nom, prenom, coursGrp ';
-         $sql .= 'FROM '.PFX.'elevesCours AS deCours ';
-         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = deCours.matricule ';
-         $sql .= 'WHERE SUBSTR(coursGrp, 1, LOCATE("-", coursGrp)-1) = :matiere ';
-         $sql .= "ORDER BY groupe, REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
-         $requete = $connexion->prepare($sql);
-
-         $requete->bindParam(':matiere', $matiere, PDO::PARAM_STR, 15);
-
-         $liste = array();
-         $resultat = $requete->execute();
-         if ($resultat) {
-             $requete->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $requete->fetch()){
-                 $matricule = $ligne['matricule'];
-                 $liste[$matricule] = $ligne;
-             }
-         }
-
-         Application::DeconnexionPDO($connexion);
-
-         return $liste;
-     }
-
     /**
      * renvoie le degré dans lequel se trouve une classe donnée.
      *
-     * @param string $classe
+     * @param $classe
      *
      * @return int
      */
@@ -960,7 +925,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre ) ';
-        $sql .= "WHERE groupe LIKE '$classe' ";
+        $sql .= "WHERE classe LIKE '$classe' ";
         $sql .= 'ORDER BY nbheures DESC, libelle';
 
         $resultat = $connexion->query($sql);
@@ -1040,7 +1005,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ( '.PFX.'statutCours.cadre = '.PFX.'cours.cadre ) ';
-        $sql .= "WHERE groupe LIKE '$classe' ";
+        $sql .= "WHERE classe LIKE '$classe' ";
         $sql .= 'ORDER BY statut DESC, nbheures DESC, libelle';
         $resultat = $connexion->query($sql);
         $liste = array();
@@ -1199,7 +1164,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
-        $sql .= 'WHERE groupe = :classe ';
+        $sql .= 'WHERE classe = :classe ';
         $sql .= 'ORDER BY rang, nbheures DESC, libelle';
         $requete = $connexion->prepare($sql);
 
@@ -1231,7 +1196,7 @@ class ecole
            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
            $sql = 'SELECT matricule, nom, prenom, groupe ';
            $sql .= 'FROM '.PFX.'eleves ';
-           $sql .= 'WHERE matricule NOT IN (SELECT matricule FROM '.PFX.'elevesCours) ';
+           $sql .= 'WHERE matricule NOT IN (SELECT matricule FROM '.PFX.'elevesCours)';
            $sql .= 'ORDER BY groupe, nom, prenom ';
            $resultat = $connexion->query($sql);
            $eleves = array();
@@ -1258,8 +1223,8 @@ class ecole
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT cours ';
         $sql .= 'FROM '.PFX.'cours ';
-        $sql .= 'WHERE (cours NOT IN (SELECT SUBSTR(coursGrp, 1, LOCATE("-",coursGrp)-1) FROM '.PFX.'elevesCours) ';
-        $sql .= 'AND (cours NOT IN (SELECT SUBSTR(coursGrp, 1, LOCATE("-",coursGrp)-1) FROM '.PFX.'profsCours))) ';
+        $sql .= "WHERE (cours NOT IN (SELECT SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1) FROM ".PFX.'elevesCours) ';
+        $sql .= "AND   (cours NOT IN (SELECT SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1) FROM ".PFX.'profsCours))) ';
         $resultat = $connexion->query($sql);
         $listeCours = array();
         if ($resultat) {
@@ -1720,30 +1685,24 @@ class ecole
     public function listeCoursProf($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT DISTINCT classe, pc.coursGrp, libelle, nbheures, statut, SUBSTR(pc.coursGrp, 1, LOCATE(':', pc.coursGrp)-1) as niveau, nomCours, nbheures ";
-        $sql .= 'FROM '.PFX.'profsCours AS pc ';
-        $sql .= 'JOIN '.PFX."cours AS cours ON cours.cours = SUBSTR(pc.coursGrp,1,LOCATE('-', pc.coursGrp)-1) ";
-        $sql .= 'JOIN '.PFX.'elevesCours AS ec on (ec.coursGrp = pc.coursGrp) ';
-        $sql .= 'JOIN '.PFX.'eleves AS el ON el.matricule = ec.matricule ';
-        $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
-        $sql .= 'WHERE acronyme = :acronyme ';
-        $sql .= ' ORDER BY coursGrp, libelle ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $resultat = $requete->execute();
+        $sql = 'SELECT DISTINCT classe, '.PFX.'profsCours.coursGrp, libelle, ';
+        $sql .= 'SUBSTR('.PFX."profsCours.coursGrp,1,LOCATE(':', ".PFX.'profsCours.coursGrp)-1) as niveau, nomCours ';
+        $sql .= 'FROM '.PFX.'profsCours ';
+        $sql .= 'JOIN '.PFX.'cours ON ('.PFX.'cours.cours = SUBSTR('.PFX."profsCours.coursGrp,1,LOCATE('-', ".PFX.'profsCours.coursGrp)-1)) ';
+        $sql .= 'JOIN '.PFX.'elevesCours on ('.PFX.'elevesCours.coursGrp = '.PFX.'profsCours.coursGrp) ';
+        $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'eleves.matricule = '.PFX.'elevesCours.matricule) ';
+        $sql .= "WHERE acronyme = '$acronyme' ";
+        $sql .= 'ORDER BY coursGrp, libelle ';
+        $resultat = $connexion->query($sql);
         $listeCoursGrp = array();
         if ($resultat) {
-            while ($ligne = $requete->fetch()) {
+            while ($ligne = $resultat->fetch()) {
                 $libelle = $ligne['libelle'];
                 $coursGrp = $ligne['coursGrp'];
                 $classe = $ligne['classe'];
                 $nomCours = $ligne['nomCours'];
-                $statut = $ligne['statut'];
-                $nbheures = $ligne['nbheures'];
                 if (!(isset($listeCoursGrp[$coursGrp]))) {
-                    $listeCoursGrp[$coursGrp] = array('libelle' => $libelle, 'nomCours' => $nomCours, 'classes' => $classe, 'statut' => $statut, 'nbHeures' => $nbheures);
+                    $listeCoursGrp[$coursGrp] = array('libelle' => $libelle, 'nomCours' => $nomCours, 'classes' => $classe);
                 } else {
                     $listeCoursGrp[$coursGrp]['classes'] .= ",$classe";
                 }
@@ -1842,7 +1801,7 @@ class ecole
 
         return $listeCours;
     }
-
+    
     /**
      * retourne la liste des matières données à des élèves à un niveau d'étude donné
      * // ne pas confondre avec la fonction listeCoursNiveau qui donne aussi les cours attribués aux profs
@@ -1878,6 +1837,7 @@ class ecole
 
         return $listeCours;
     }
+
 
     /**
      * fournit la liste des coursGrp donnés aux différentes niveaux passés en paramètre
