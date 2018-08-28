@@ -61,6 +61,7 @@
 		            <input type="checkbox" name="freeze" id="freeze" class="form-control-inline cb" value="1"
 		            {if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
 					{if isset($edition)} disabled{/if}>
+					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 		        </div>
 
 				<div class="form-group col-md-2 col-xs-4">
@@ -68,6 +69,7 @@
 					<input type="checkbox" name="parent" id="parent" class="form-control-inline cb" value="1"
 					{if (isset($notification.parents)) && ($notification.parents==1 )} checked{/if}
 					 {if isset($edition)} disabled{/if}>
+					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
 
 				<div class="clearfix">

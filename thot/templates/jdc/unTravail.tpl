@@ -108,5 +108,8 @@
                 <i class="fa fa-hand-stop-o"></i> S'approprier
              </button>
         {/if}
+        {if $locked == "true"}
+            <p class="discret">Veuillez déverrouiller les périodes passées pour accéder à cet événement (bouton <i class="fa fa-lock"></i> du calendrier)</p>
+        {/if}
     </div>
 </div>

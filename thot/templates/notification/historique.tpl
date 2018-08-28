@@ -6,7 +6,7 @@
 			{foreach from=$listeTypes key=type item=data}
 				{if $data.droits == Null || in_array($userStatus, $data.droits)}
 				<li>
-					<a data-toggle="tab" href="#tabs-{$type}">{$data.texte}
+					<a data-toggle="tab" data-type="{$type}" href="#tabs-{$type}" class="onglet">{$data.texte}
 						<span class="badge" data-type="{$type}">{$listeNotifications.$type|@count|default:0}</span></a>
 				</li>
 				{/if}
@@ -24,7 +24,7 @@
 				{if $data.droits == Null || in_array($userStatus, $data.droits)}
 					{if isset($listeNotifications.$type)}
 						{assign var=liste value=$listeNotifications.$type}
-						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 1} in active{/if}">
+						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 0} in active{/if}">
 						{include file="notification/edit/notification4Type.tpl"}
 						</div>
 					{/if}
@@ -90,8 +90,16 @@
 
 	$(document).ready(function() {
 
-		// activer l'onglet dont le numéro a été passé
-		$(".nav-tabs li a.realTab").eq({$onglet}).trigger('click');
+		// activer l'onglet dont le type a été passé
+		var ongletNotif = Cookies.get('ongletNotif');
+		if ((ongletNotif != undefined)) {
+			$('.onglet[data-type="' + ongletNotif + '"]').trigger('click');
+		}
+		// enregistrer l'onglet sélectionné dans un Cookie
+		$('.onglet').click(function(){
+			var type = $(this).data('type');
+			Cookies.set('ongletNotif', type, { expires: 365 });
+		})
 
 		$(document).ajaxStart(function() {
 			$('body').addClass('wait');
@@ -99,7 +107,7 @@
 			$('body').removeClass('wait');
 		});
 
-		{* enregistrement et envoi d une annonce *}
+		// enregistrement et envoi d'une annonce
 		$('#ficheEleve').on('click', '#submitNotif', function(){
 			var sent = $(this).attr('data-sent');
 			if (sent == 'true') {
