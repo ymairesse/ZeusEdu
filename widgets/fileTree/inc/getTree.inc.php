@@ -35,7 +35,13 @@ if ($selectedFiles != Null) {
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'widgets/fileTree/inc/classes/class.Treeview.php';
-$Tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme, $listePJ);
+
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme;
+// créer le répetoire s'il n'existe pas encore
+if (!(file_exists($chemin))) {
+    mkdir($chemin, 0700, true);
+    }
+$Tree = new Treeview($chemin, $listePJ);
 
 $tree = $Tree->getTree();
 
