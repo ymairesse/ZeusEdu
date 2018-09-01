@@ -88,10 +88,13 @@ class eleve
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             $detailsEleve = $resultat->fetch();
-            $dateNaissance = $detailsEleve['DateNaiss'];
-            $detailsEleve['age'] = self::calculeAge($dateNaissance);
-            $detailsEleve['photo'] = Ecole::photo($detailsEleve['matricule']);
-            $detailsEleve['DateNaiss'] = Application::datePHP($detailsEleve['DateNaiss']);
+
+            if ($detailsEleve != Null) {
+                $dateNaissance = $detailsEleve['DateNaiss'];
+                $detailsEleve['age'] = self::calculeAge($dateNaissance);
+                $detailsEleve['photo'] = Ecole::photo($detailsEleve['matricule']);
+                $detailsEleve['DateNaiss'] = Application::datePHP($detailsEleve['DateNaiss']);
+            }
         }
         Application::DeconnexionPDO($connexion);
 
@@ -287,7 +290,7 @@ class eleve
                 $listeEleves[] = $ligne['nomPrenom'];
             }
         }
-        
+
         Application::DeconnexionPDO($connexion);
 
         return $listeEleves;
