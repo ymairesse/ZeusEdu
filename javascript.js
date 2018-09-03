@@ -14,12 +14,15 @@
 <script type="text/javascript" src="../js/bootstrapDatepicker/js/locales/bootstrap-datepicker.fr.js"></script>
 <script type="text/javascript" src="../js/boostrapTimepicker/js/bootstrap-timepicker.min.js"></script>
 
-<script	type="text/javascript" src="../fc/fullcalendar.js"></script>
-<script type="text/javascript" src="../fc/lang/fr.js"></script>
+<script	type="text/javascript" src="../fc2/fullcalendar.js"></script>
+<script type="text/javascript" src="../fc2/locale/fr.js"></script>
 
 <script type="text/javascript" src="../bootstrap/typeahead/bootstrap3-typeahead.js"></script>
 
 <script type="text/javascript" src="../js/bootbox/bootbox.min.js"></script>
+
+<script type="text/javascript" src="../js/jsCookie/src/js.cookie.js"></script>
+
 <script type="text/javascript">
 bootbox.setDefaults({
   locale: "fr",
