@@ -276,7 +276,7 @@
         <p><button type="button" class="btn btn-sm pull-right btn-primary" title="Nouveau partage"><i class="fa fa-plus"></i> <i class="fa fa-share-alt"></i></button> Pour partager l'élément (document ou dossier) sélectionné à gauche avec d'autres utilisateurs.</p>
 
         <p><button type="button" class="btn btn-success btn-xs" title="Édition" ><i class="fa fa-edit"></i></button> Pour modifier le commentaire lié à un fichier ou un dossier partagé.</p>
-        <p><button type="button" class="btn btn-danger btn-xs" title="Arrêter le partage"><i class="fa fa-share-alt"></i></button> Interrompre le partage du document ou du dossier. L'élément dé-partagé n'est pas effacé.</p>
+        <p><button type="button" class="btn btn-danger btn-xs" title="Arrêter le partage"><i class="fa fa-share-alt"></i></button> Interrompre le partage du document ou du dossier. L'élément dé-partagé n'est pas effacé; <strong>il devient totalement inaccessible aux anciens bénéficiaires</strong> (même s'ils ont noté l'adresse du document).</p>
     </div>
 
 </div>

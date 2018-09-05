@@ -29,6 +29,13 @@ Les mises à jour cruciales à réaliser dans la base de données ou dans des fi
 2018-02-25 : modification de la longueur du champ "acroDest" dans la table didac_hermesArchives (4 acronymes x 7 signes + les virgules)
 2018-03-04 : modification du type de champ pour le texte des messages Hermes => mediumBlob au lieu de Blob
 2018-05-23 : ajout de la table didac_thotJDCTypes
+2018-06-02 : ajout de la table didac_thotJdcPJ : pièces jointes au JDC
+2018-08-07 : ajout du type "groupe" dans didac_thotNotifications (champ "type")
+2018-08-23 : suppression des champs "url", "start" et "end" de la table didac_thotJdc
+2018-08-23 : ajout du type "coursGrp" dans didac_thotJdc (le type "cours" peut être gardé temporairement)
+2018-09-01 : ajout de deux fonctions dans la class classEcole.inc.php
+2018-09-01 : ajout de la table didac_adesRetards dans la BD
+2018-09-01 : mise à jour de la class Eleve (inc/classes/classEleve.inc.php)
 
 Installation
 ============

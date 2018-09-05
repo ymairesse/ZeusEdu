@@ -118,6 +118,7 @@
 
     <input type="hidden" name="id" value="{$travail.id|default:''}">
     <input type="hidden" name="type" value="{$travail.type|default:''}">
+    <input type="hidden" name="edition" id="edition" value="false">
 
 </form>
 

@@ -250,21 +250,37 @@ INSERT INTO `didac_adesTypesFaits` (`type`, `titreFait`, `couleurFond`, `couleur
 ALTER TABLE `didac_adesTypesFaits`
  ADD PRIMARY KEY (`type`);
 
+CREATE TABLE `didac_adesRetards` (
+    `idRetard` int(11) NOT NULL COMMENT 'Identifiant du retard',
+    `matricule` int(11) NOT NULL COMMENT 'Matricule de l''élève',
+    `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme du responsable de la note',
+    `date` date NOT NULL COMMENT 'Date du retard',
+    `heure` time NOT NULL COMMENT 'Heure d''arrivée',
+    `periode` int(11) NOT NULL COMMENT 'Période d''arrivée normale au cours',
+    `traite` tinyint(1) DEFAULT '0' COMMENT 'Sanction appliquée'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
- CREATE TABLE `didac_athena` (
-   `id` int(11) NOT NULL,
-   `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
-   `matricule` int(11) NOT NULL,
-   `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
-   `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire au format XXXX-XXXX',
-   `date` date NOT NULL,
-   `heure` time NOT NULL,
-   `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
-   `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
-   `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
-   `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
-   `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
- ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+ALTER TABLE `didac_adesRetards`
+ADD PRIMARY KEY (`idRetard`),
+ADD KEY `matricule` (`matricule`);
+
+ALTER TABLE `didac_adesRetards`
+MODIFY `idRetard` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du retard';
+
+CREATE TABLE `didac_athena` (
+    `id` int(11) NOT NULL,
+    `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
+    `matricule` int(11) NOT NULL,
+    `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
+    `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire au format XXXX-XXXX',
+    `date` date NOT NULL,
+    `heure` time NOT NULL,
+    `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
+    `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
+    `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
+    `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
+    `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
  ALTER TABLE `didac_athena`
    ADD PRIMARY KEY (`id`),

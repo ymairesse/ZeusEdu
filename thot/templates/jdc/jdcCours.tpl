@@ -1,4 +1,3 @@
-{debug}
 <div class="container-fluid">
 
 	<div class="row">
@@ -35,12 +34,9 @@
 			<input type="hidden" name="unlocked" id="unlocked" value="false">
 			<div id="calendar"
 				class="{$mode} demiOmbre"
-				data-type="{$type|default:'bidouille'}"
+				data-type="{$type|default:''}"
 				data-lbldestinataire="{$lblDestinataire|default:''}"
 				data-coursgrp="{$coursGrp|default:''}"
-				data-niveau="{$niveau|default:''}"
-				data-classe="{$classe|default:''}"
-				data-matricule="{$matricule|default:''}"
 				data-editable="{$editable|default:false}"
 				data-viewstate="">
 			</div>
@@ -151,6 +147,39 @@
 	        }
 	    })
 
+		$('#printJDC').click(function(){
+			var coursGrp = $('#coursGrp').val();
+			$.post('inc/jdc/listeCoursProfs.inc.php', {
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#listeCours').html(resultat);
+			})
+			$('#modalPrintJDC').modal('show');
+		})
+
+		$('#printForm').validate({
+			rules: {
+				from: {
+					required: true
+				},
+				to: {
+					required: true
+				}
+			}
+		})
+
+		$('#btnModalPrintJDC').click(function(){
+			var formulaire = $('#printForm').serialize();
+			if ($('#printForm').valid()) {
+				$.post('inc/jdc/printJdc.inc.php', {
+					formulaire: formulaire
+				}, function(resultat){
+					$('#modalPrintJDC').modal('hide');
+					bootbox.alert(resultat);
+				})
+			}
+		})
+
 		$('.datepicker').datepicker({
             format: "dd/mm/yyyy",
             clearBtn: true,
@@ -256,14 +285,14 @@
 			firstDay: 1,
 			eventSources: [
 				{
-				url: 'inc/jdc/myGlobalEvents.json.php',
+				url: 'inc/jdc/events.json.php',
 				type: 'POST',
 				data: {
 					type: $('#calendar').data('type'),
 					coursGrp: $('#calendar').data('coursgrp'),
-					niveau: $('#calendar').data('niveau'),
-					classe: $('#calendar').data('classe'),
-					matricule: $('#calendar').data('matricule'),
+					// classe: $('#selectClasse').val(),
+					// matricule: $('#selectEleve').val(),
+					// niveau: $('#niveau').val(),
 					},
 				error: function() {
 					alert('Attention, vous semblez avoir perdu la connexion à l\'Internet');

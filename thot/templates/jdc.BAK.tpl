@@ -3,6 +3,7 @@
 	<div class="row">
 
 		<div class="col-md-10 col-xs-10">
+
 			<h2>
 			{if $type == 'subjectif'}
 				<span title="Vue subjective"><i class="fa fa-eye fa-lg"></i></span>
@@ -28,6 +29,7 @@
 		</div>
 
 		<div class="col-md-9 col-sm-12" id="calendrier">
+
 			<p class="jdcInfo {$mode} demiOmbre">{$jdcInfo|default:''}</p>
 			<input type="hidden" name="unlocked" id="unlocked" value="false">
 			<div id="calendar"
@@ -36,7 +38,6 @@
 				data-lbldestinataire="{$lblDestinataire|default:''}"
 				data-coursgrp="{$coursGrp|default:''}"
 				data-editable="{$editable|default:false}"
-				data-startdate="{$startDate|default:''}"
 				data-viewstate="">
 			</div>
 
@@ -79,7 +80,6 @@
 
 </div>
 
-{* <div id="zoneEdit"></div> *}
 <div id="zoneDel"></div>
 <div id="zoneClone"></div>
 
@@ -94,22 +94,6 @@
 {include file="jdc/modal/modalDislikes.tpl"}
 
 <script type="text/javascript">
-
-	// // bootstrap-ckeditor-fix.js
-	// // hack to fix ckeditor/bootstrap compatiability bug when ckeditor appears in a bootstrap modal dialog
-	// //
-	// // Include this file AFTER both jQuery and bootstrap are loaded.
-	// // http://ckeditor.com/comment/127719#comment-127719
-	// $.fn.modal.Constructor.prototype.enforceFocus = function() {
-	// 	modal_this = this
-	// 	$(document).on('focusin.modal', function(e) {
-	// 		if (modal_this.$element[0] !== e.target && !modal_this.$element.has(e.target).length &&
-	// 			!$(e.target.parentNode).hasClass('cke_dialog_ui_input_select') &&
-	// 			!$(e.target.parentNode).hasClass('cke_dialog_ui_input_text')) {
-	// 			modal_this.$element.focus()
-	// 		}
-	// 	})
-	// };
 
 	function dateFromFr(uneDate) {
 		var laDate = uneDate.split('/');
@@ -306,9 +290,10 @@
 				data: {
 					type: $('#calendar').data('type'),
 					coursGrp: $('#calendar').data('coursgrp'),
-					classe: $('#selectClasse').val(),
-					matricule: $('#selectEleve').val(),
-					niveau: $('#niveau').val(),
+					bidouille: $('#bidouille').val(),
+					// classe: $('#selectClasse').val(),
+					// matricule: $('#selectEleve').val(),
+					// niveau: $('#niveau').val(),
 					},
 				error: function() {
 					alert('Attention, vous semblez avoir perdu la connexion à l\'Internet');

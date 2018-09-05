@@ -11,6 +11,7 @@
 			</option>
 		{/foreach}
 	</select>
+
 	<button type="submit" class="btn btn-primary btn-sm">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode|default:'voir'}">

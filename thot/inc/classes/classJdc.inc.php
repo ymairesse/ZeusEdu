@@ -172,18 +172,50 @@ class Jdc
      *
      * @return array
      */
-    public function getMyGlobalEvents($start, $end, $acronyme, $lesTypes) {
+    public function getMyGlobalEvents($post, $acronyme=Null, $lesTypes) {
+
+        $type = isset($post['type']) ? $post['type'] : Null;
+        $niveau = isset($post['niveau']) ? $post['niveau'] : Null;
+        $classe = isset($post['classe']) ? $post['classe'] : Null;
+        $matricule = isset($post['matricule']) ? $post['matricule'] : Null;
+
         $lesTypes = "'".implode("','", $lesTypes)."'";
+        $acronyme = isset($post['acronyme']) ? $post['acronyme'] : Null;
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, proprietaire, idCategorie, type, destinataire, title, enonce, ';
         $sql .= 'allDay, startDate, endDate, DATE_FORMAT(NOW(),"%Y-%m-%d") AS ajd ';
         $sql .= 'FROM '.PFX.'thotJdc ';
-        $sql .= 'WHERE startDate BETWEEN :start AND :end AND proprietaire = :acronyme AND type IN ('.$lesTypes.') ';
+        $sql .= 'WHERE startDate BETWEEN :start AND :end AND type IN ('.$lesTypes.') ';
+        $sql .= 'AND type = :type AND destinataire = :destinataire ';
+        if ($acronyme != Null)
+            $sql .= 'AND proprietaire = :acronyme ';
+
+        switch ($type){
+            case 'ecole':
+                $destinataire = 'all';
+                break;
+            case 'niveau':
+                $destinataire = $niveau;
+                break;
+            case 'classe':
+                $destinataire = $classe;
+                break;
+            case 'eleve':
+                $destinataire = $matricule;
+                break;
+            }
+
+
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
         $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+
+        if ($acronyme != Null)
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
 
         $liste = array();
         $resultat = $requete->execute();

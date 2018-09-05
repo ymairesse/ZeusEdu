@@ -25,5 +25,5 @@ if ($matricule != Null) {
     $lblDestinataire = $Jdc->getLabel('eleve', $matricule, $detailsEleve);
     $smarty->assign('jdcInfo', 'Pour consulter le JDC d\'un élève à sélectionner ci-dessus (Vue subjective)');
     $smarty->assign('lblDestinataire', $lblDestinataire);
-    $smarty->assign('corpsPage', 'jdc');
+    $smarty->assign('corpsPage', 'jdc/jdcCours');
 }

@@ -112,7 +112,7 @@
                                     type="text"
                                     name="heure"
                                     id="heureCC"
-                                    value="{if isset($travail.allDay) && $travail.allDay == true}Journée entière{else}{$travail.heure}{/if}" 
+                                    value="{if isset($travail.allDay) && $travail.allDay == true}Journée entière{else}{$travail.heure}{/if}"
                                     class="form-control input-sm"
                                     autocomplete="off"
                                     required

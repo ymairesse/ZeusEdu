@@ -34,11 +34,9 @@ if ($types != Null) {
         }
     }
 
-
 $start = $_POST['start'];
 $end = $_POST['end'];
 
-
-$eventsList = $Jdc->getMyGlobalEvents($start, $end, $acronyme, $lesTypes);
+$eventsList = $Jdc->getMyGlobalEvents($_POST, $acronyme, $lesTypes);
 
 echo json_encode($eventsList);
