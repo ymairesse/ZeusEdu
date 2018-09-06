@@ -50,7 +50,7 @@ class ecole
      * tableau à éventuellement deux dimensions si plusieurs titulaires
      * dans la même classe.
      *
-     * @param
+     * @param void
      *
      * @return array
      */
@@ -80,7 +80,7 @@ class ecole
      * retourne la liste des profs titulaires avec la classe correspondante
      * par rapport à la fonction précédente, on retourne ici une liste des profs et non une liste des classes.
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */
@@ -120,7 +120,7 @@ class ecole
     /**
      * retourne une liste des profs groupés sur base de l'initiale de leur nom de famille.
      *
-     * @param $listeProfs array
+     * @param array $listeProfs
      *
      * @return array
      */
@@ -136,7 +136,7 @@ class ecole
     }
 
     /**
-     * retourne un tableau de la liste des profs titulaires d'un groupe donné
+     * retourne un tableau de la liste des profs titulaires d'un groupe classe donné
      *
      * @param string $groupe
      *
@@ -169,8 +169,8 @@ class ecole
     /**
      * supprime la fonction de titulaire d'une classe $groupe aux profs de la liste passée en paramètre.
      *
-     * @param $groupe
-     * @param $listeAcronymes
+     * @param string $groupe
+     * @param array $listeAcronymes
      *
      * @return nombre de suppressions
      */
@@ -1023,7 +1023,7 @@ class ecole
      *  - les différents coursGrp
      *  - les références complètes du prof pour chaque coursGrp.
      *
-     * @param $classe
+     * @param string $classe
      *
      * @return array
      */
@@ -1062,7 +1062,7 @@ class ecole
     /**
      * renvoie la liste des cours suivis par la liste des élèves donnée.
      *
-     * @param $listeEleves
+     * @param  array|string $listeEleves
      *
      * @return array : liste des cours suivis par chacun des élèves
      */
@@ -1550,7 +1550,7 @@ class ecole
      * retourne le nom d'utilisateur et le mot de passe d'un élève
      * dont on fournit le matricule.
      *
-     * @param $matriucle string
+     * @param string $matricule
      *
      * @return array
      */
@@ -2652,5 +2652,55 @@ class ecole
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * renvoie la liste des heures de cours données dans l'école.
+     *
+     * @param void
+     *
+     * @return array liste des périodes de cours
+     */
+    public function lirePeriodesCours()
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT debut, fin ';
+        $sql = "SELECT DATE_FORMAT(debut,'%H:%i') as debut, DATE_FORMAT(fin,'%H:%i') as fin ";
+        $sql .= 'FROM '.PFX.'presencesHeures ';
+        $sql .= 'ORDER BY debut, fin ';
+
+        $resultat = $connexion->query($sql);
+        $listePeriodes = array();
+        $periode = 1;
+        if ($resultat) {
+            while ($ligne = $resultat->fetch()) {
+                $debut = $ligne['debut'];
+                $fin = $ligne['fin'];
+                $listePeriodes[$periode++] = array('debut' => $debut, 'fin' => $fin);
+            }
+        }
+        Application::deconnexionPDO($connexion);
+
+        return $listePeriodes;
+    }
+
+    /**
+     * retourne le numéro de la période actuelle.
+     *
+     * @param array $listePeriodes : liste des périodes de cours, y compris les heures de début et de fin
+     *
+     * @return int => numéro de la période en cours
+     */
+    public function periodeActuelle($listePeriodes)
+    {
+        $heureActuelle = date('H:i');
+        $trouve = false;
+        $periode = 0;
+        while (!($trouve) && ($periode < count($listePeriodes))) {
+            ++$periode;
+            $trouve = ($heureActuelle < $listePeriodes[$periode]['fin']);
+        }
+
+        return $periode;
     }
 }
