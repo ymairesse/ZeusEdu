@@ -18,7 +18,7 @@ $smarty->assign('acronyme', $acronyme);
 if ($etape == 'enregistrer') {
     if ($coursGrp != Null) {
         $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
-        $nb = $Presences->savePresences($_POST, $listeEleves, array($periode => $periode));
+        $nb = $Presences->savePresences($_POST, $acronyme);
         $smarty->assign('message', array(
                 'title' => SAVE,
                 'texte' => sprintf(NBSAVE, $nb),
