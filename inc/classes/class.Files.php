@@ -231,7 +231,6 @@ class Files
         Application::deconnexionPDO($connexion);
 
         return $liste;
-
         }
     }
 
@@ -277,7 +276,7 @@ class Files
      * @param int $fileId: identifiant du fichier à partager
      * @param string $type: type de partage (coursGrp, classes, niveau,...)
      * @param string $groupe: groupe avec lequel le document est partagé (classe 2CA,...)
-     * @param string $destinataires : ficher partagé avec qui, dans le groupe (éventuellement, "all")?
+     * @param array $destinataires : fichier partagé avec qui, dans le groupe (éventuellement, "all")?
      * @param string $commentaire : commentaire du partage
      *
      * @return int
@@ -286,15 +285,15 @@ class Files
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // enregistrer les partages
         $sql = 'INSERT INTO '.PFX.'thotShares ';
-        $sql .= 'SET fileId=:fileId, type=:type, groupe=:groupe, destinataire=:destinataire, commentaire=:commentaire ';
-        $sql .= 'ON DUPLICATE KEY UPDATE commentaire=:commentaire ';
+        $sql .= 'SET fileId = :fileId, type = :type, groupe = :groupe, destinataire = :destinataire, commentaire = :commentaire ';
+        $sql .= 'ON DUPLICATE KEY UPDATE commentaire = :commentaire ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
         $requete->bindParam(':type', $type, PDO::PARAM_STR, 12);
         $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 15);
-
         $requete->bindParam(':commentaire', $commentaire, PDO::PARAM_STR, 30);
+
         $shareIds = array();
         foreach ($destinataires as $destinataire) {
             $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
@@ -321,8 +320,8 @@ class Files
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // enregistrer les partages
         $sql = 'INSERT INTO '.PFX.'thotShares ';
-        $sql .= 'SET fileId=:fileId, type=:type, groupe=:groupe, destinataire=:destinataire, commentaire=:commentaire ';
-        $sql .= 'ON DUPLICATE KEY UPDATE commentaire=:commentaire ';
+        $sql .= 'SET fileId = :fileId, type = :type, groupe = :groupe, destinataire = :destinataire, commentaire = :commentaire ';
+
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
@@ -423,8 +422,8 @@ class Files
     /**
      * Enregistrement d'une édition d'un commentaire de fichier dont on fournit le shareId.
      *
-     * @param $commentaire : stringType
-     * @param $shareId : l'identifiant du partage
+     * @param string $commentaire
+     * @param int $shareId : l'identifiant du partage
      *
      * @return string : le commentaire enregistré
      */
@@ -435,8 +434,11 @@ class Files
         $sql .= 'SET commentaire=:commentaire ';
         $sql .= 'WHERE shareId=:shareId ';
         $requete = $connexion->prepare($sql);
-        $data = array(':commentaire' => $commentaire, ':shareId' => $shareId);
-        $resultat = $requete->execute($data);
+
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+        $requete->bindParam(':commentaire', $commentaire, PDO::PARAM_STR, 100);
+        //  $data = array(':commentaire' => $commentaire, ':shareId' => $shareId);
+        $resultat = $requete->execute();
         Application::DeconnexionPDO($connexion);
         if ($resultat == 1) {
             return $commentaire;

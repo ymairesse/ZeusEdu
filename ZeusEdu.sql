@@ -1414,7 +1414,7 @@ ALTER TABLE `didac_thotRp`
 CREATE TABLE IF NOT EXISTS didac_titus (
   acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   classe varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  section enum('TQ','G','TT','S') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'G' COMMENT 'Section pour la classe: ''TQ'', ''G'', ''TT'' ou ''S''',
+  section enum('TQ','GT','TT','S') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'GT' COMMENT 'Section pour la classe: ''TQ'', ''GT'', ''TT'' ou ''S''',
   PRIMARY KEY (acronyme,classe)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1530,10 +1530,9 @@ ALTER TABLE `didac_thotFiles`
 ALTER TABLE `didac_thotFiles`
 MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id du fichier';
 
-
-CREATE TABLE IF NOT EXISTS `didac_thotShares` (
+CREATE TABLE `didac_thotShares` (
   `fileId` int(11) NOT NULL COMMENT 'id dans la table des Files',
-  `type` enum('ecole','niveau','classes','cours','eleve','prof') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
+  `type` enum('ecole','niveau','classes','eleve','prof','coursGrp') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
   `groupe` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
   `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `commentaire` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
@@ -1541,7 +1540,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotShares` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des partages de fichiers';
 
 ALTER TABLE `didac_thotShares`
-  ADD PRIMARY KEY (`fileId`,`type`,`destinataire`,`groupe`),
+  ADD PRIMARY KEY (`shareId`),
   ADD KEY `destinataire` (`destinataire`),
   ADD KEY `shareId` (`shareId`);
 
