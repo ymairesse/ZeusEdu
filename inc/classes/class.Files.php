@@ -2853,10 +2853,10 @@ class Files
         $requete = $connexion->prepare($sql);
         switch ($appli) {
             case 'jdc':
-                $commentaire = sprintf('Document lié au JDC du %s', $date);
+                $commentaire = sprintf('Document lié au JDC du %s de %s', $date, $groupe);
                 break;
             case 'annonce':
-                $commentaire = sprintf('Document lié à une annonce du %s', $date);
+                $commentaire = sprintf('Document lié à une annonce du %s de %s', $date, $groupe);
                 break;
             default:  // ne devrait jamais se produire
                 $commentaire = Null;
