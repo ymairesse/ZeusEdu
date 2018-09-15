@@ -22,11 +22,12 @@
 		{/if}
 	</select>
 
-	<button type="submit" class="btn btn-primary btn-sm">OK</button>
+	<button type="submit" id="submit" class="btn btn-primary btn-sm">OK</button>
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode|default:'voir'}">
 	<input type="hidden" name="etape" value="show">
-	<input type="hidden" name="type" id="type" value="{$type}">
+	<input type="hidden" name="type" id="type" value="{$type|default:'ecole'}">
+	<input type="hidden" name="cible" id="cible" value="{$cible|default:'all'}">
 
 </form>
 
@@ -39,6 +40,7 @@ $(document).ready(function(){
 	$('#selectNiveau').change(function(){
 		var niveau = $(this).val();
 		if (niveau != '') {
+			$('#cible').val(niveau);
 			$('#type').val('niveau');
 			$.post('inc/jdc/listeClassesNiveau.inc.php', {
 				niveau: niveau
@@ -49,6 +51,7 @@ $(document).ready(function(){
 		}
 		else {
 			$('#type').val('ecole');
+			$('#cible').val('all');
 			$('#selectClasse').html('').addClass('hidden');
 			$('#selectEleve').html('').addClass('hidden');
 		}
@@ -57,6 +60,7 @@ $(document).ready(function(){
 	$('#selectClasse').change(function(){
 		var classe = $(this).val();
 		if (classe != '') {
+			$('#cible').val(classe);
 			$('#type').val('classe');
 			$.post('inc/jdc/listeEleves.inc.php', {
 				classe: classe
@@ -65,7 +69,9 @@ $(document).ready(function(){
 			})
 		}
 		else {
-			$('#type').val('niveau')
+			var niveau = $('#selectNiveau').val();
+			$('#type').val('niveau');
+			$('#cible').val(niveau);
 			$('#selectEleve').html('').addClass('hidden');
 		}
 	})
@@ -73,9 +79,12 @@ $(document).ready(function(){
 	$('#selectEleve').change(function(){
 		var matricule = $(this).val();
 		if (matricule != '') {
+			$('#cible').val(matricule);
 			$('#type').val('eleve');
 		}
 		else {
+			var classe = $('#selectClasse').val();
+			$('#cible').val(classe);
 			$('#type').val('classe');
 		}
 	})

@@ -2,26 +2,37 @@
 
 	<div class="row">
 
+		<div class="col-md-10 col-xs-10">
+
+			<h2><span title="Vue subjective"><i class="fa fa-eye fa-lg"></i></span>
+			<span id="cible">{$lblDestinataire|default:''}</span>
+			</h2>
+		</div>
+
+		<div class="col-md-2 col-xs-2">
+			&nbsp;
+		</div>
+
 		<div class="col-md-9 col-sm-12" id="calendrier">
 
-			<p class="jdcInfo {$mode} demiOmbre">Voir tous les événements de <strong>{$lblDestinataire}</strong> et écrire dans ce JDC</p>
+			<p class="jdcInfo {$mode} demiOmbre">{$jdcInfo|default:''}</p>
 			<input type="hidden" name="unlocked" id="unlocked" value="false">
+
 			<div id="calendar"
 				class="{$mode} demiOmbre"
-				data-type="{$type|default:'ecole'}"
+				data-type="{$type|default:''}"
 				data-lbldestinataire="{$lblDestinataire|default:''}"
-				data-cible="{$destinataire}"
-				data-coursgrp="{$coursGrp|default:''}"
-				data-niveau="{$niveau|default:''}"
-				data-classe="{$classe|default:''}"
 				data-matricule="{$matricule|default:''}"
-				data-editable="{$editable|default:false}"
+				data-editable="false"
 				data-viewstate="">
 			</div>
 
 		</div>
 
 		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto" id="editeur">
+
+			<p class="notice">En vue subjective, vous voyez tous les événements dans le JDC d'un élève, quel que soit le propriétaire.<br>
+			<strong>Aucune modification n'est possible</strong>.</p>
 
 			<div id="unTravail">
 				{if isset($travail)}
@@ -120,6 +131,39 @@
 	        }
 	    })
 
+		$('#printJDC').click(function(){
+			var coursGrp = $('#coursGrp').val();
+			$.post('inc/jdc/listeCoursProfs.inc.php', {
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#listeCours').html(resultat);
+			})
+			$('#modalPrintJDC').modal('show');
+		})
+
+		$('#printForm').validate({
+			rules: {
+				from: {
+					required: true
+				},
+				to: {
+					required: true
+				}
+			}
+		})
+
+		$('#btnModalPrintJDC').click(function(){
+			var formulaire = $('#printForm').serialize();
+			if ($('#printForm').valid()) {
+				$.post('inc/jdc/printJdc.inc.php', {
+					formulaire: formulaire
+				}, function(resultat){
+					$('#modalPrintJDC').modal('hide');
+					bootbox.alert(resultat);
+				})
+			}
+		})
+
 		$('.datepicker').datepicker({
             format: "dd/mm/yyyy",
             clearBtn: true,
@@ -154,23 +198,6 @@
 			})
 		})
 
-		$('#unTravail').on('click', '#approprier', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/setProprioJdc.inc.php', {
-				id: id
-			}, function (resultat){
-				if (resultat == 1) {
-					$.post('inc/jdc/getTravail.inc.php', {
-						id: id,
-						editable: editable
-						},
-						function(resultat) {
-							$('#unTravail').html(resultat);
-						}
-					)
-				}
-			})
-		})
 
 		function lockUnlock(){
             var lockState = $('#unlocked').val();
@@ -225,14 +252,10 @@
 			firstDay: 1,
 			eventSources: [
 				{
-				url: 'inc/jdc/myGlobalEvents.json.php',
+				url: 'inc/jdc/events4eleve.json.php',
 				type: 'POST',
 				data: {
 					type: $('#calendar').data('type'),
-					destinataire: $('#calendar').data('cible'),
-					coursGrp: $('#calendar').data('coursgrp'),
-					niveau: $('#calendar').data('niveau'),
-					classe: $('#calendar').data('classe'),
 					matricule: $('#calendar').data('matricule'),
 					},
 				error: function() {
@@ -295,8 +318,7 @@
 						var heure = moment(calEvent).format('HH:mm');
 						var date = moment(calEvent).format('MM/DD/YYYY');
 						var type = $('#calendar').data('type');
-						var cible = $('#calendar').data('cible');
-
+						var cible = $('#coursGrp').val();
 						var lblDestinataire = $("#calendar").data('lbldestinataire');
 						$.post('inc/jdc/getAdd.inc.php', {
 							date: date,

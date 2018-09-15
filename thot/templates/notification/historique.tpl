@@ -143,8 +143,8 @@
 						// réinitialisation de l'éditeur et des satellites
 						$('#notification input[type=checkbox], #notification input[type=text]').prop('readOnly', true);
 						CKEDITOR.instances.texte.setReadOnly(true);
-						$('#submitNotif').removeClass('btn-primary').addClass('btn-lightBlue').attr('data-sent', 'true');
-						$('#submitNotif').html('<i class="fa fa-paper-plane"></i> Nouvelle annonce');
+						// $('#submitNotif').removeClass('btn-primary').addClass('btn-lightBlue').attr('data-sent', 'true');
+						// $('#submitNotif').html('<i class="fa fa-paper-plane"></i> Nouvelle annonce');
 					})
 				}
 			}

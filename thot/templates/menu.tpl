@@ -32,7 +32,9 @@
 					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=coursGrp"><i class="fa fa-mortar-board"></i> Journal de classe par cours</a></li>
 					{/if}
+					{if ($userStatus == 'educ') || ($userStatus == 'dierction') || ($userStatus == 'admin')}
 					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Journal de classe global</a></li>
+					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
 
 					<li role="separator" class="divider"></li>
