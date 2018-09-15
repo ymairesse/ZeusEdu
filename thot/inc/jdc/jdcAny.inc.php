@@ -1,14 +1,10 @@
 <?php
 
-Application::afficher($_POST);
-
-$type = isset($_POST['type']) ? $_POST['type'] : 'eleve';
+$type = isset($_POST['type']) ? $_POST['type'] : Null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
-
-
 
 
 // pour le sélecteur
@@ -21,45 +17,40 @@ $smarty->assign('coursGrp', $coursGrp);
 
 $smarty->assign('editable', true);
 
-if (isset($niveau)) {
+if ($niveau != '') {
     $listeClasses = $Ecole->listeClassesNiveau($niveau);
     $smarty->assign('listeClasses', $listeClasses);
 }
 
-if (isset($classe)) {
+if ($classe != '') {
     $listeEleves = $Ecole->listeEleves($classe,'groupe');
     $smarty->assign('listeEleves', $listeEleves);
 }
 
-$smarty->assign('selecteur', 'selecteurs/selectCoursPOSTetc');
-
-
-
-// quels sont les types d'événements à afficher (format JSON)?
-// permet de sélectionner les types d'événements à présenter
-$typesJDC = isset($_COOKIE['typesJDC']) ? $_COOKIE['typesJDC'] : Null;
-$typesJDC = (array) json_decode($typesJDC);
-$smarty->assign('typesJDC', $typesJDC);
-$listeTypes = $Jdc->getListeTypes();
-$smarty->assign('listeTypes', $listeTypes);
-
 switch ($type) {
     case 'niveau':
         $lblDestinataire =  $Jdc->getLabel('niveau', $niveau);
+        $destinataire = $niveau;
         break;
     case 'classe':
         $lblDestinataire =  $Jdc->getLabel('classe', $classe);
+        $destinataire = $classe;
         break;
     case 'eleve':
         $infos = Eleve::staticGetDetailsEleve($matricule);
         $lblDestinataire =  $Jdc->getLabel('eleve', $matricule, $infos);
+        $destinataire = $matricule;
         break;
     default:
         $lblDestinataire =  $Jdc->getLabel('ecole','');
+        $destinataire = 'all';
         break;
-}
+    }
 
+$smarty->assign('destinataire', $destinataire);
 $smarty->assign('lblDestinataire', $lblDestinataire);
-$smarty->assign('jdcInfo', 'Pour voir tous vos événements et pour écrire dans le JDC sélectionné ci-dessus (Tous, niveau, classe, élève)');
 
-$smarty->assign('corpsPage', 'jdc/jdcAny');
+$smarty->assign('selecteur', 'selecteurs/selectCoursPOSTetc');
+
+if ($type != '')
+    $smarty->assign('corpsPage', 'jdc/jdcAny');

@@ -21,22 +21,17 @@ $module = $Application->getModule(3);
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
-// types d'événements à présenter
-
-$types = isset($_COOKIE['typesJDC']) ? $_COOKIE['typesJDC'] : Null;
-$types = json_decode($types);
-
-$lesTypes = array();
-if ($types != Null) {
-    foreach ($types as $unType => $value) {
-        if ($value == 1)
-            array_push($lesTypes, $unType);
-        }
-    }
-
 $start = $_POST['start'];
 $end = $_POST['end'];
 
-$eventsList = $Jdc->getMyGlobalEvents($_POST, $acronyme, $lesTypes);
+$type = isset($_POST['type']) ? $_POST['type'] : Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$destinataire = isset($_POST['destinataire']) ? $_POST['destinataire'] : Null;
+
+// $lesTypes sont les types d'événements visibles par le $destinataire
+$eventsList = $Jdc->getMyGlobalEvents($type, $destinataire, $start, $end, Null);
 
 echo json_encode($eventsList);
