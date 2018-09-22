@@ -71,7 +71,8 @@ if (isset($form['files']) && count($form['files']) > 0) {
     else {
         // suppression des PJ encore existantes si plus de PJ à l'annonce
         $nb = $Files->unlinkAllFiles4Jdc($id);
-        $texte[] = sprintf('%d pièce(s) jointe(s) supprimées', $nb);
+        if ($nb > 0)
+            $texte[] = sprintf('%d pièce(s) jointe(s) supprimées', $nb);
     }
 
 echo json_encode(

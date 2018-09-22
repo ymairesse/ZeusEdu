@@ -32,6 +32,7 @@
             <table class="table table-condensed table-striped">
 
                 {foreach from=$listePartages key=shareId item=share}
+
                 <tr data-shareid="{$share.shareId}">
                     {if $share.type == 'ecole'}
                     <td class="shared {$share.type} pop">
@@ -56,7 +57,9 @@
                         <i class="fa fa-share-alt"></i>
                     </button>
                     </td>
+
                         {elseif $share.type == 'niveau'}
+
                         <td class="shared {$share.type} pop">
                             <button type="button"
                                 class="btn btn-success btn-xs shareEdit"
@@ -83,8 +86,10 @@
                             <i class="fa fa-share-alt"></i>
                         </button>
                         </td>
+
                         {elseif $share.type == 'classes'}
-                            {if $share.destinataire == 'all'}
+
+                            {if $share.destinataire == $share.groupe}
                                 <td class="shared {$share.type} pop">
                                     <button
                                         type="button"
@@ -112,7 +117,9 @@
                                     <i class="fa fa-share-alt"></i>
                                 </button>
                                 </td>
+
                             {else}
+
                                 <td class="shared {$share.type} pop">
                                     <button
                                         type="button"
@@ -178,7 +185,7 @@
                                         title="Édition"
                                         data-fileId="{$share.fileId}"
                                         data-shareid = "{$share.shareId}"
-                                        data-libelle="{$share.nomEleve|escape:'htmlall'} {$share.prenomEleve|escape:'htmlall'} du cours  {$share.libelle|escape:'htmlall'}"
+                                        data-libelle="{$share.nomEleve|escape:'htmlall'} {$share.prenomEleve|escape:'htmlall'} du cours  {$share.groupe|escape:'htmlall'}"
                                         data-commentaire="{$share.commentaire}">
                                         <i class="fa fa-edit"></i>
                                     </button>
@@ -188,7 +195,7 @@
                                     {if $share.nomCours != ''}
                                         {$share.nomCours|escape:'htmlall'}
                                         {else}
-                                        {$share.libelle|escape:'htmlall'}
+                                        {$share.groupe|escape:'htmlall'}
                                     {/if}
                                     <br>
                                     <span class="help-block pull-right">{$share.commentaire}</span>
@@ -199,7 +206,7 @@
                                         class="btn btn-danger btn-xs unShare"
                                         data-fileId="{$share.fileId}"
                                         data-shareid = "{$share.shareId}"
-                                        data-libelle="{$share.nomEleve|escape:'htmlall'} {$share.prenomEleve|escape:'htmlall'} du cours  {$share.libelle|escape:'htmlall'}"
+                                        data-libelle="{$share.nomEleve|escape:'htmlall'} {$share.prenomEleve|escape:'htmlall'} du cours  {$share.groupe|escape:'htmlall'}"
                                         title="Arrêter le partage">
                                         <i class="fa fa-share-alt"></i>
                                     </button>

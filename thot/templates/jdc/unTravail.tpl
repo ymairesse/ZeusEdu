@@ -68,6 +68,7 @@
     </div>
 
     <div class="panel-footer">
+        <p class="discret">Dernière modification {$travail.lastModif}</p>
         {if ($acronyme == $travail.proprietaire) && ($editable == true)}
             <div class="btn-group" {if ($locked == "true")}title="Déverrouiller pour permettre les modifications"{/if}>
                 <button
@@ -100,13 +101,13 @@
             </div>
             <div class="clearfix"></div>
 
-        {elseif $editable == true}
+        {* {elseif $editable == true}
             <button type="button"
                 class="btn btn-success pull-right"
                 data-id="{$travail.id}"
                 id="approprier">
                 <i class="fa fa-hand-stop-o"></i> S'approprier
-             </button>
+             </button> *}
         {/if}
         {if $locked == "true"}
             <p class="discret">Veuillez déverrouiller les périodes passées pour accéder à cet événement (bouton <i class="fa fa-lock"></i> du calendrier)</p>

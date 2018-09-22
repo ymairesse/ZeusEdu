@@ -4,6 +4,7 @@
 
 	<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 		<option value="">Cours</option>
+		<option value="synoptique"{if isset($coursGrp) && $coursGrp == 'synoptique'} selected{/if}>Vue synoptique (tous les cours)</option>
 		{foreach from=$listeCours key=unCoursGrp item=unCours}
 			<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected="selected"{/if}>
 				{if isset($unCours.nomCours) && ($unCours.nomCours != '')} [{$unCours.nomCours}] {/if}

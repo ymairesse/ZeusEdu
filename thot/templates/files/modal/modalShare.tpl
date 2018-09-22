@@ -101,16 +101,11 @@
                 $.post('inc/files/share.inc.php', {
                         post: post
                     },
-                    function(resultat) {
+                    function(fileId) {
                         $("#modalShare").modal('hide');
-                        var fileName = $("#inputFileName").val();
-                        var arborescence = $("#inputPath").val();
-                        var type = $('#dirOrFile').val();
-
-                        $.post('inc/files/getSharesForFile.inc.php', {
-                            fileName: fileName,
-                            arborescence: arborescence,
-                            type: type
+                        // mise à jour de la liste des partages
+                        $.post('inc/files/getSharesForFileId.inc.php', {
+                            fileId: fileId
                         },
                         function(resultat){
                             $("#partages").html(resultat);

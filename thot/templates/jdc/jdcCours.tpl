@@ -44,8 +44,9 @@
 		</div>
 
 		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto" id="editeur">
-
-			{if $editable == 0}
+			{if $coursGrp == 'synoptique'}
+				<p class="notice">En vue synoptique, vous voyez tous les événements liés à l'ensemble de vos cours.<br></p>
+				{elseif $editable == 0}
 				<p class="notice">En vue subjective, vous voyez tous les événements dans le JDC d'un élève, quel que soit le propriétaire.<br>
 				<strong>Aucune modification n'est possible</strong>.</p>
 			{/if}
@@ -278,7 +279,7 @@
 			maxTime: "22:00:00",
 			weekNumbers: true,
 			navLinks: true,
-			// empêcher l'édition en vue subjective
+			// empêcher/autoriser l'édition
 			eventStartEditable: editable,
 			eventDurationEditable: editable,
 			defaultTimedEventDuration: '00:50',
@@ -290,9 +291,6 @@
 				data: {
 					type: $('#calendar').data('type'),
 					coursGrp: $('#calendar').data('coursgrp'),
-					// classe: $('#selectClasse').val(),
-					// matricule: $('#selectEleve').val(),
-					// niveau: $('#niveau').val(),
 					},
 				error: function() {
 					alert('Attention, vous semblez avoir perdu la connexion à l\'Internet');
@@ -300,6 +298,7 @@
 				}
 			],
 			eventRender: function(event, element, view) {
+				element.html( event.destinataire + ' ' + event.title),
 				element.popover({
 					title: event.destinataire,
 					content: event.enonce,
