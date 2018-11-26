@@ -62,7 +62,7 @@ $userName = implode(' ', $User->getNom());
 $smarty->assign('userName', $userName);
 
 $smarty->assign('jdcExtract', $jdcExtract);
-// Application::afficher($jdcExtract, true);
+
 $jdc4PDF = $smarty->fetch('jdc/jdc4PDF.tpl');
 
 require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';

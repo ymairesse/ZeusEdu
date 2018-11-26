@@ -1,6 +1,6 @@
 <?php
 
-class Jdc
+class Diary
 {
     /**
      * constructeur de l'objet jdc.
@@ -9,105 +9,17 @@ class Jdc
     {
     }
 
-    public function getConges($dateFrom, $dateTo, $acronyme){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate ';
-    	$sql .= 'FROM '.PFX.'thotJdc ';
-    	$sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo AND idCategorie = -1 ';
-    	$sql .= 'AND destinataire ="ecole" ';
-
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
-        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
-
-        $resultat = $requete->execute();
-        $liste = array();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $type = $ligne['type'];
-                $destinataire = $ligne['destinataire'];
-                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
-                $liste[] = array(
-        			'id' => $ligne['id'],
-        			'title' => $ligne['title'],
-        			'enonce' => mb_strimwidth (strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
-                    'destinataire' => $destin,
-        			'className'=>'cat_'.$ligne['idCategorie'],
-        			'start'=> $ligne['startDate'],
-        			'end' => $ligne['endDate'],
-        			'allDay' => ($ligne['allDay']!=0),
-                    'type' => $ligne['type'],
-        			'editable' => ($ligne['proprietaire'] == $acronyme)
-        			);
-            }
-        }
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * renvoie la liste d'événements entres deux dates start et end pour une liste de cours donnée
-     *
-     * @param string $dateFrom : date de début
-     * @param string $dateTo   : date de fin
-     * @param string $listeCoursGrpString : les noms des cours séparés par des virgules et entourés de guillemets
-     *
-     * @return array
-     */
-    public function getEvents4Cours($dateFrom, $dateTo, $listeCoursGrp, $acronyme)
-    {
-        if (is_array($listeCoursGrp)) {
-            $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
-        } else {
-            $listeCoursGrpString = "'".$listeCoursGrp."'";
-        }
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate ';
-    	$sql .= 'FROM '.PFX.'thotJdc ';
-    	$sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
-    	$sql .= 'AND destinataire IN ('.$listeCoursGrpString.') ';
-
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
-        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
-
-        $resultat = $requete->execute();
-        $liste = array();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $type = $ligne['type'];
-                $destinataire = $ligne['destinataire'];
-                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
-                $liste[] = array(
-        			'id' => $ligne['id'],
-        			'title' => $ligne['title'],
-        			'enonce' => mb_strimwidth (strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
-                    'destinataire' => $destin,
-        			'className'=>'cat_'.$ligne['idCategorie'],
-        			'start'=> $ligne['startDate'],
-        			'end' => $ligne['endDate'],
-        			'allDay' => ($ligne['allDay']!=0),
-                    'type' => $ligne['type'],
-        			'editable' => ($ligne['proprietaire'] == $acronyme)
-        			);
-            }
-        }
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
 
     /**
      * renvoie la liste d'événements entres deux dates start et end pour un élève donné
      * y compris son tmatricule, son niveau d'étude, sa classe et sa liste de cours
      *
-     * @param int $from : date de début = timestamp Unix en millisecondes
-     * @param int $to   : date de fin = timestamp Unix en millisecondes
+     * @param dateTime $start : date de début = timestamp Unix en millisecondes
+     * @param dateTime $end   : date de fin = timestamp Unix en millisecondes
+     * @param int $niveau
+     * @param string $classe
+     * @param int $matricule
+     * @param string $listeCoursString
      *
      * @return string liste json
      */
@@ -115,8 +27,8 @@ class Jdc
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, redacteur, title, enonce, class, allDay, startDate, endDate ';
-        $sql .= 'FROM '.PFX.'thotJdc ';
-        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
+        $sql .= 'FROM '.PFX.'thotAgenda ';
+        $agenda .= 'WHERE startDate BETWEEN :start AND :end ';
         $sql .= 'AND destinataire in ('.$listeCoursString.') OR destinataire = :classe ';
         $sql .= 'OR destinataire = :matricule OR destinataire = "all" OR destinataire = :niveau ';
         $requete = $connexion->prepare($sql);
@@ -140,53 +52,6 @@ class Jdc
                     'start' => $ligne['startDate'],
                     'end' => $ligne['endDate'],
                     'allDay' => ($ligne['allDay'] != 0)
-                    );
-            }
-        }
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retrouve la liste des remédiations entre deux dates destinées à un élève dont on fournit le matricule
-     *
-     * @param $start date de début
-     * @param $end date de fin
-     * @param int $matricule
-     *
-     * @return array
-     */
-    public function retreiveRemediations ($start, $end, $matricule) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT eleves.idOffre, eleves.matricule, acronyme, title, contenu AS enonce, startDate, endDate, CONCAT(prenom," ", nom) AS destinataire, ';
-        $sql .= 'nom, prenom ';
-        $sql .= 'FROM '.PFX.'remediationEleves AS eleves ';
-        $sql .= 'JOIN '.PFX.'remediationOffre AS offres ON offres.idOffre = eleves.idOffre ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = eleves.matricule ';
-        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
-        $sql .= 'AND eleves.matricule = :matricule ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
-        $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
-        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat){
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()){
-                $liste[] = array(
-                    'id' => 'Rem_'.$ligne['idOffre'],
-                    'title' => '[Remédiation] '.$ligne['title'],
-                    'enonce' => mb_strimwidth(strip_tags(html_entity_decode($ligne['enonce'])), 0, 200,'...'),
-                    'className' => 'remediation',
-                    'start' => $ligne['startDate'],
-                    'end' => $ligne['endDate'],
-                    'allDay' => 0,
-                    'destinataire' => $ligne['destinataire'],
-                    'cours' => $ligne['acronyme'],
                     );
             }
         }
@@ -305,7 +170,7 @@ class Jdc
      */
     public function getSynoptiqueCours($start, $end, $acronyme){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT  * FROM '.PFX.'thotJdc AS jdc ';
+        $sql = 'SELECT  * FROM '.PFX.'thotAgenda AS agenda ';
         $sql .= 'WHERE proprietaire = :acronyme ';
         $sql .= 'AND destinataire IN (SELECT DISTINCT coursGrp FROM '.PFX.'profsCours WHERE acronyme = :acronyme) ';
         $sql .= 'AND startDate BETWEEN :start AND :end ';
@@ -328,7 +193,7 @@ class Jdc
                     'title' => $ligne['title'],
                     'enonce' => mb_strimwidth(strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
                     'destinataire' => $destin,
-                    'className' => 'cat_'.$ligne['idCategorie'],
+                    'className' => $ligne['classe'],
                     'start' => $ligne['startDate'],
                     'end' => $ligne['endDate'],
                     'allDay' => ($ligne['allDay']!=0),
@@ -360,8 +225,8 @@ class Jdc
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, proprietaire, idCategorie, type, destinataire, title, enonce, ';
         $sql .= 'allDay, startDate, endDate, DATE_FORMAT(NOW(),"%Y-%m-%d") AS ajd ';
-        $sql .= 'FROM '.PFX.'thotJdc ';
-        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
+        $sql .= 'FROM '.PFX.'thotAgenda ';
+        $agenda .= 'WHERE startDate BETWEEN :start AND :end ';
         $sql .= 'AND type = :type AND destinataire = :destinataire ';
         if ($acronyme != Null)
             $sql .= 'AND proprietaire = :acronyme ';
@@ -417,8 +282,8 @@ class Jdc
      public function getEvents4Niveau($dateFrom, $dateTo, $niveau, $acronyme){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate, allDay ';
-         $sql .= 'FROM '.PFX.'thotJdc ';
-         $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+         $sql .= 'FROM '.PFX.'thotAgenda ';
+         $agenda .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
          $sql .= 'AND destinataire = :niveau ';
          $requete = $connexion->prepare($sql);
 
@@ -465,8 +330,8 @@ class Jdc
       public function getEvents4Ecole($dateFrom, $dateTo, $acronyme){
           $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
           $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate, allDay ';
-          $sql .= 'FROM '.PFX.'thotJdc ';
-          $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+          $sql .= 'FROM '.PFX.'thotAgenda ';
+          $agenda .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
           $sql .= "AND destinataire = 'all' ";
           $requete = $connexion->prepare($sql);
 
@@ -513,8 +378,8 @@ class Jdc
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate, allDay ';
-        $sql .= 'FROM '.PFX.'thotJdc ';
-        $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+        $sql .= 'FROM '.PFX.'thotAgenda ';
+        $agenda .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
         $sql .= 'AND destinataire = :matricule ';
         $requete = $connexion->prepare($sql);
 
@@ -562,8 +427,8 @@ class Jdc
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
         $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate, allDay ';
-    	$sql .= 'FROM '.PFX.'thotJdc ';
-    	$sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+    	$sql .= 'FROM '.PFX.'thotAgenda ';
+    	$agenda .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
     	$sql .= 'AND destinataire= :classe ';
         $requete = $connexion->prepare($sql);
 
@@ -705,8 +570,8 @@ class Jdc
         $sql = 'SELECT jdc.id, destinataire, type, proprietaire, redacteur, title, enonce, class, jdc.id, DATE(startDate) AS startDate, ';
         $sql .= 'TIME(startDate) AS heure, endDate, TIMEDIFF(endDate, startDate) AS duree, allDay, DATE_FORMAT(lastModif, "%d/%m/%Y %H:%i") AS lastModif, ';
         $sql .= 'jdc.idCategorie, categorie, sexe, nom, prenom, dpc.acronyme, libelle, nbheures, nomCours ';
-        $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
-        $sql .= 'JOIN '.PFX.'thotJdcCategories AS cat ON cat.idCategorie = jdc.idCategorie ';
+        $sql .= 'FROM '.PFX.'thotAgenda AS agenda ';
+        $sql .= 'JOIN '.PFX.'thotAgendaCategoriesagenda cat ON cat.idCategorie = jdc.idCategorie ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = jdc.proprietaire ';
         $sql .= 'LEFT JOIN '.PFX.'cours AS dc ON cours = SUBSTR(jdc.destinataire,1,LOCATE("-",jdc.destinataire)-1) ';
         $sql .= 'LEFT JOIN '.PFX.'profsCours AS dpc ON dpc.coursGrp = destinataire ';
@@ -789,7 +654,7 @@ class Jdc
      */
     public function setPJ($idJdc, $shareId) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcPJ ';
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotAgendaPJagenda
         $sql .= 'SET idJdc = :idJdc, shareId = :shareId ';
         $requete = $connexion->prepare($sql);
 
@@ -813,7 +678,7 @@ class Jdc
     public function getPJ($id) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idJdc, pj.shareId,  dts.fileId, path, fileName ';
-        $sql .= 'FROM '.PFX.'thotJdcPJ AS pj ';
+        $sql .= 'FROM '.PFX.'thotAgendaPJagenda pj ';
         $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = pj.shareId ';
         $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = dts.fileId ';
         $sql .= 'WHERE idJdc = :id AND dirOrFile = "file" ';
@@ -846,7 +711,7 @@ class Jdc
      */
     public function delPJ($id, $shareId) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
+        $sql = 'DELETE FROM '.PFX.'thotAgendaPJagenda
         $sql .= 'WHERE id = :id AND shareId = :shareId ';
         $requete = $connexion->prepare($sql);
 
@@ -873,8 +738,8 @@ class Jdc
     public function modifEvent($id, $startDate, $endDate, $allDay)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'UPDATE '.PFX.'thotJdc ';
-        $sql .= "SET startDate = '$startDate', endDate = '$endDate', allDay = $allDay ";
+        $sql = 'UPDATE '.PFX.'thotAgenda ';
+        $agenda .= "SET startDate = '$startDate', endDate = '$endDate', allDay = $allDay ";
         $sql .= "WHERE id='$id' ";
         $resultat = $connexion->exec($sql);
 
@@ -894,8 +759,8 @@ class Jdc
     public function verifIdProprio($id, $proprio)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id FROM '.PFX.'thotJdc ';
-        $sql .= "WHERE id ='$id' AND proprietaire = '$proprio' ";
+        $sql = 'SELECT id FROM '.PFX.'thotAgenda ';
+        $agenda .= "WHERE id ='$id' AND proprietaire = '$proprio' ";
         $resultat = $connexion->query($sql);
         if ($resultat) {
             $ligne = $resultat->fetch();
@@ -918,14 +783,14 @@ class Jdc
     public function deleteJdc($id)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'DELETE FROM '.PFX.'thotJdc ';
-        $sql .= 'WHERE id = :id ';
+        $sql = 'DELETE FROM '.PFX.'thotAgenda ';
+        $agenda .= 'WHERE id = :id ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
         $resultat = $requete->execute();
 
-        $sql = 'DELETE FROM '.PFX.'thotJdcLike ';
+        $sql = 'DELETE FROM '.PFX.'thotAgendaLikeagenda
         $sql .= 'WHERE id = :id ';
         $requete = $connexion->prepare($sql);
 
@@ -933,7 +798,7 @@ class Jdc
         $resultat = $requete->execute();
 
         // suppression des PJ
-        $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
+        $sql = 'DELETE FROM '.PFX.'thotAgendaPJagenda
         $sql .= 'WHERE idJdc = '.$id.' ';
 
         $resultat = $connexion->exec($sql);
@@ -992,13 +857,13 @@ class Jdc
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($id == null) {
             // nouvel enregistrement
-            $sql = 'INSERT INTO '.PFX.'thotJdc ';
-            $sql .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
+            $sql = 'INSERT INTO '.PFX.'thotAgenda ';
+            $agenda .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
             $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay, lastModif = NOW() ';
         } else {
             // simple mise à jour
-            $sql = 'UPDATE '.PFX.'thotJdc ';
-            $sql .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
+            $sql = 'UPDATE '.PFX.'thotAgenda ';
+            $agenda .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
             $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay, lastModif = NOW() ';
             $sql .= 'WHERE id = :id ';
         }
@@ -1043,7 +908,7 @@ class Jdc
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idCategorie, categorie ';
-        $sql .= 'FROM '.PFX.'thotJdcCategories ';
+        $sql .= 'FROM '.PFX.'thotAgendaCategoriesagenda
         $sql .= 'ORDER BY ordre ';
         $resultat = $connexion->query($sql);
         $liste = array();
@@ -1069,7 +934,7 @@ class Jdc
     public function getListeTypes(){
       $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
       $sql = 'SELECT type, libelle ';
-      $sql .= 'FROM '.PFX.'thotJdcTypes ';
+      $sql .= 'FROM '.PFX.'thotAgendaTypesagenda
       $requete = $connexion->prepare($sql);
 
       $resulat = $requete->execute();
@@ -1238,78 +1103,78 @@ class Jdc
             else return $listePeriodes[$n]['fin'];
     }
 
-    // /**
-    //  * retourne la liste des charges JDC pour la classe indiqué
-    //  *
-    //  * @param string $classe
-    //  *
-    //  * @return array
-    //  */
-    // public function getChargesJDC($classe) {
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //     $sql = 'SELECT dtj.matricule, nom, prenom, dateDebut, dateFin, SUBSTR(NOW(), 1, 10) AS today ';
-    //     $sql .= 'FROM '.PFX.'thotJdcEleves AS dtj ';
-    //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtj.matricule ';
-    //     $sql .= 'WHERE dtj.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe = :classe) ';
-    //     $sql .= 'ORDER BY nom, prenom ';
-    //
-    //     $requete = $connexion->prepare($sql);
-    //
-    //     $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
-    //     $liste = array();
-    //     $resultat = $requete->execute();
-    //     if ($resultat) {
-    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
-    //         while ($ligne = $requete->fetch()) {
-    //             $matricule = $ligne['matricule'];
-    //             // cet élève est-il en charge du JDC durant la période?
-    //             if (($ligne['dateDebut'] <= $ligne['today']) && ($ligne['dateFin'] >= $ligne['today']))
-    //                 $ligne['selected'] = 'selected';
-    //
-    //             $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
-    //             $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-    //             $liste[$matricule] = $ligne;
-    //         }
-    //
-    //     Application::deconnexionPDO($connexion);
-    //
-    //     return $liste;
-    //     }
-    // }
-    //
-    // /**
-    //  * fixe la date de debut et de fin de charge pour l'élève dont on fournit le matricule
-    //  *
-    //  * @param int $matricule
-    //  * @param string $dateDebut
-    //  * @param string $dateFin
-    //  *
-    //  * @return int le nombre d'insertion en BD
-    //  */
-    // public function setDateCharge ($matricule, $dateDebut, $dateFin) {
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //     $sql = 'INSERT INTO '.PFX.'thotJdcEleves ';
-    //     $sql .= 'SET matricule = :matricule, dateDebut = :dateDebut, dateFin = :dateFin ';
-    //     $sql .= 'ON DUPLICATE KEY UPDATE ';
-    //     $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin ';
-    //     $requete = $connexion->prepare($sql);
-    //
-    //     $dateDebut = ($dateDebut != '') ? Application::dateMysql($dateDebut) : Null;
-    //     $dateFin = ($dateFin != '') ? Application::dateMysql($dateFin) : Null;
-    //     if (($dateDebut > $dateFin) && ($dateFin != ''))
-    //         $resultat = -1;
-    //         else {
-    //             $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 20);
-    //             $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 20);
-    //             $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-    //
-    //             $resultat = $requete->execute();
-    //         }
-    //
-    //     Application::deconnexionPDO($connexion);
-    //
-    //     return $resultat;
-    // }
+    /**
+     * retourne la liste des charges JDC pour la classe indiqué
+     *
+     * @param string $classe
+     *
+     * @return array
+     */
+    public function getChargesJDC($classe) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtj.matricule, nom, prenom, dateDebut, dateFin, SUBSTR(NOW(), 1, 10) AS today ';
+        $sql .= 'FROM '.PFX.'thotAgendaElevesagenda dtj ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtj.matricule ';
+        $sql .= 'WHERE dtj.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe = :classe) ';
+        $sql .= 'ORDER BY nom, prenom ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                // cet élève est-il en charge du JDC durant la période?
+                if (($ligne['dateDebut'] <= $ligne['today']) && ($ligne['dateFin'] >= $ligne['today']))
+                    $ligne['selected'] = 'selected';
+
+                $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
+                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
+                $liste[$matricule] = $ligne;
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+        }
+    }
+
+    /**
+     * fixe la date de debut et de fin de charge pour l'élève dont on fournit le matricule
+     *
+     * @param int $matricule
+     * @param string $dateDebut
+     * @param string $dateFin
+     *
+     * @return int le nombre d'insertion en BD
+     */
+    public function setDateCharge ($matricule, $dateDebut, $dateFin) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'thotAgendaElevesagenda
+        $sql .= 'SET matricule = :matricule, dateDebut = :dateDebut, dateFin = :dateFin ';
+        $sql .= 'ON DUPLICATE KEY UPDATE ';
+        $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin ';
+        $requete = $connexion->prepare($sql);
+
+        $dateDebut = ($dateDebut != '') ? Application::dateMysql($dateDebut) : Null;
+        $dateFin = ($dateFin != '') ? Application::dateMysql($dateFin) : Null;
+        if (($dateDebut > $dateFin) && ($dateFin != ''))
+            $resultat = -1;
+            else {
+                $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 20);
+                $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 20);
+                $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+                $resultat = $requete->execute();
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
 
     /**
      * attribue une note $id rédigée par un élève à l'utilisateur $acronyme
@@ -1321,8 +1186,8 @@ class Jdc
      */
     public function setProprioJdc ($id, $acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'UPDATE '.PFX.'thotJdc ';
-        $sql .= 'SET proprietaire = :acronyme ';
+        $sql = 'UPDATE '.PFX.'thotAgenda ';
+        $agenda .= 'SET proprietaire = :acronyme ';
         $sql .= 'WHERE id = :id ';
         $requete = $connexion->prepare($sql);
 
@@ -1346,7 +1211,7 @@ class Jdc
     public function countLikes ($id) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT matricule, jeLike, commentaire ';
-        $sql .= 'FROM '.PFX.'thotJdcLike ';
+        $sql .= 'FROM '.PFX.'thotAgendaLikeagenda
         $sql .= 'WHERE  id = :id ';
         $requete = $connexion->prepare($sql);
 
@@ -1377,7 +1242,7 @@ class Jdc
     public function listeDislikes ($id) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT likeTbl.matricule, commentaire, nom, prenom, groupe ';
-        $sql .= 'FROM '.PFX.'thotJdcLike AS likeTbl ';
+        $sql .= 'FROM '.PFX.'thotAgendaLikeagenda likeTbl ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON likeTbl.matricule = de.matricule ';
         $sql .= 'WHERE id = :id AND jeLike = 0 ';
         $requete = $connexion->prepare($sql);
@@ -1412,7 +1277,7 @@ class Jdc
             else $listeIdsString = $listeIds;
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, likeTbl.matricule, jeLike, commentaire, nom, prenom, groupe ';
-        $sql .= 'FROM '.PFX.'thotJdcLike AS likeTbl ';
+        $sql .= 'FROM '.PFX.'thotAgendaLikeagenda likeTbl ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON likeTbl.matricule = de.matricule ';
         $sql .= "WHERE id IN ($listeIdsString) ";
         $requete = $connexion->prepare($sql);
@@ -1448,7 +1313,7 @@ class Jdc
         $liste = $listeCoursString.','.$listeTitulariatsString;
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, destinataire, type, title, enonce, redacteur, startDate, nom, prenom, groupe, libelle ';
-        $sql .= 'FROM '.PFX.'thotJdc AS dtjdc ';
+        $sql .= 'FROM '.PFX.'thotAgenda AS dtagenda ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dtjdc.redacteur ';
         $sql .= 'LEFT JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(destinataire, 1, LOCATE('-', destinataire)-1) ";
         $sql .= 'LEFT JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = destinataire ';
@@ -1491,8 +1356,8 @@ class Jdc
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, categorie, libelle, nomCours, destinataire, title, enonce, startDate, endDate, dtjdc.idCategorie ';
-        $sql .= 'FROM '.PFX.'thotJdc AS dtjdc ';
-        $sql .= 'JOIN '.PFX.'thotJdcCategories AS cate ON cate.idCategorie = dtjdc.idCategorie ';
+        $sql .= 'FROM '.PFX.'thotAgenda AS dtagenda ';
+        $sql .= 'JOIN '.PFX.'thotAgendaCategoriesagenda cate ON cate.idCategorie = dtjdc.idCategorie ';
         $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(destinataire, 1, LOCATE('-', destinataire)-1) ";
         $sql .= 'LEFT JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = destinataire ';
         $sql .= 'WHERE proprietaire = :acronyme AND startDate >= :startDate AND endDate <= :endDate ';
@@ -1547,8 +1412,8 @@ class Jdc
      */
     public function changeEventTime($id, $startTime, $endTime){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'UPDATE '.PFX.'thotJdc ';
-        $sql .= 'SET startDate = :startTime, endDate = :endTime ';
+        $sql = 'UPDATE '.PFX.'thotAgenda ';
+        $agenda .= 'SET startDate = :startTime, endDate = :endTime ';
         $sql .= 'WHERE id = :id ';
         $requete = $connexion->prepare($sql);
 

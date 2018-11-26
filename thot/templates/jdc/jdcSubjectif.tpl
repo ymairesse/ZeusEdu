@@ -292,7 +292,8 @@
 				$.post('inc/jdc/getTravail.inc.php', {
 					id: id,
 					editable: editable,
-					locked: locked
+					locked: locked,
+					subjectif: true
 					},
 					function(resultat) {
 						$('#unTravail').fadeOut(400, function() {

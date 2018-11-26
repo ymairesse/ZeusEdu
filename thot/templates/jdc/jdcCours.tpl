@@ -295,10 +295,10 @@
 				error: function() {
 					alert('Attention, vous semblez avoir perdu la connexion à l\'Internet');
 					}
-				}
+				},
 			],
 			eventRender: function(event, element, view) {
-				element.html( event.destinataire + ' ' + event.title),
+				element.html(event.destinataire + ' ' + event.title),
 				element.popover({
 					title: event.destinataire,
 					content: event.enonce,

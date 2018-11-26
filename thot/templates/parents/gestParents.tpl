@@ -133,7 +133,7 @@
                 userName: userName
                 },
                 function(resultat){
-                    resultat = JSON.parse(resultat)
+                    resultat = JSON.parse(resultat);
                     var formule = resultat.formule;
                     var nom = resultat.nom;
                     var prenom = resultat.prenom;

@@ -1,14 +1,14 @@
 <form id="formPresences" style="max-height:35em; overflow: auto;">
 
-    <h4>{$listeEleves|@count} élèves inscrits</h4>
+    <h4>{$listeEleves|@count} élève(s) inscrit(s)</h4>
     <table class="table table-condensed">
         <thead>
             <tr>
                 <th>Classe</th>
                 <th>Nom</th>
-                <th title="Présent">P</th>
-                <th title="Absent">A</th>
-                <th title="Indéterminé">I</th>
+                <th title="Présent">Présent</th>
+                <th title="Absent">Absent</th>
+                <th title="Indéterminé">Indéterminé</th>
             </tr>
         </thead>
         {foreach from=$listeEleves key=matricule item=data}

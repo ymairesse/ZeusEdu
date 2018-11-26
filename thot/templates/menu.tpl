@@ -33,7 +33,7 @@
 					<li><a href="index.php?action=jdc&amp;mode=coursGrp"><i class="fa fa-mortar-board"></i> Journal de classe par cours</a></li>
 					{/if}
 					{if ($userStatus == 'educ') || ($userStatus == 'dierction') || ($userStatus == 'admin')}
-					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Journal de classe global</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Notes au Journal de classe (éducs/direction)</a></li>
 					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
 
@@ -43,9 +43,10 @@
 					{/if}
 
 					<li><a href="index.php?action=remediation"><i class="fa fa-question-circle"></i> Offres de remédiation</a></li>
-					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=agenda"><i class="fa fa-calendar-times-o"></i> Agenda (para)-scolaire</a> </li>
 
 					{if !empty($titulaire)}
+					<li role="separator" class="divider"></li>
 					<li><a href="index.php?action=jdc&amp;mode=attribJdcEleve">Attributions de la charge JDC [{','|implode:$titulaire}]</a></li>
 					{/if}
 

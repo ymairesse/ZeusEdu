@@ -3,7 +3,7 @@
     <span id="delClass"></span>
     <div class="panel-heading">
         <h3 class="panel-title cat_{$travail.idCategorie}">{$travail.categorie} <span class="pull-right">
-            {if $travail.type == 'cours'}
+            {if $travail.type == 'coursGrp'}
                 <i class="fa fa-graduation-cap" title="Un cours"></i>
                 {elseif $travail.type == 'classe'}
                 <i class="fa fa-users" title="Une classe"></i>
@@ -50,18 +50,28 @@
         <ul class="PjFiles list-unstyled">
             {foreach from=$travail.listePJ key=shareId item=dataPJ}
             <li>
-                <a href="inc/download.php?type=pfN&f={$dataPJ.path}{if $dataPJ.path != '/'}/{/if}{$dataPJ.fileName}"
-                    class="delPJ"
-                    data-path="{$dataPJ.path}"
-                    data-filename="{$dataPJ.fileName}"
-                    data-shareId="{$dataPJ.shareId}"
-                    title="{$dataPJ.path}{$dataPJ.fileName}">
-                    {if $dataPJ.path != '/'}
-                    {$dataPJ.path|cat:'/'|cat:$dataPJ.fileName|truncate:20:'...'}
+                {if $subjectif == true}
+                    <span title="{$dataPJ.path}{$dataPJ.fileName}">
+                        {if $dataPJ.path != '/'}
+                        {$dataPJ.path|cat:'/'|cat:$dataPJ.fileName|truncate:20:'...'}
+                        {else}
+                        {$dataPJ.path|cat:$dataPJ.fileName|truncate:20:'...'}
+                        {/if}
+                    </span>
                     {else}
-                    {$dataPJ.path|cat:$dataPJ.fileName|truncate:20:'...'}
-                    {/if}
-                </a>
+                    <a href="inc/download.php?type=pfN&f={$dataPJ.path}{if $dataPJ.path != '/'}/{/if}{$dataPJ.fileName}"
+                        class="delPJ"
+                        data-path="{$dataPJ.path}"
+                        data-filename="{$dataPJ.fileName}"
+                        data-shareId="{$dataPJ.shareId}"
+                        title="{$dataPJ.path}{$dataPJ.fileName}">
+                        {if $dataPJ.path != '/'}
+                        {$dataPJ.path|cat:'/'|cat:$dataPJ.fileName|truncate:20:'...'}
+                        {else}
+                        {$dataPJ.path|cat:$dataPJ.fileName|truncate:20:'...'}
+                        {/if}
+                    </a>
+                {/if}
             </li>
             {/foreach}
         </ul>
@@ -93,6 +103,7 @@
                     class="btn btn-primary btn-edit"
                     data-id="{$travail.id}"
                     data-destinataire="{$travail.destinataire}"
+                    data-type="{$travail.type}"
                     {if $locked == "true"} disabled{/if}
                     id="modifier">
                     <i class="fa fa-edit fa-lg"></i>

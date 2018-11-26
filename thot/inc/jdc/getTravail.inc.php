@@ -26,12 +26,27 @@ $Jdc = new Jdc();
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $editable = isset($_POST['editable']) ? $_POST['editable'] : null;
 $locked = isset($_POST['locked']) ? $_POST['locked'] : null;
+$subjectif = isset($_POST['subjectif']) ? $_POST['subjectif'] : null;
 
 $nomEleve = Null;
 $statistiques = Null;
 
 if ($id != null) {
-    $travail = $Jdc->getTravail($id);
+    $arrayId = explode('_', $id);
+    $id = (isset($arrayId[1])) ? $arrayId[1] : $id;
+    $type = (isset($arrayId[1])) ? $arrayId[0] : Null;
+
+    switch ($type) {
+    case 'Rem':
+        $travail = $Jdc->getRemediation($id);
+        $pj = Null;
+        break;
+    default:
+        $travail = $Jdc->getTravail($id);
+        $pj = $Jdc->getPj($id);
+        break;
+    }
+
     $travail['listePJ'] = $Jdc->getPJ($id);
 
     if ($travail['proprietaire'] == '') {
@@ -68,12 +83,21 @@ if ($id != null) {
     $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
     $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-    $smarty->assign('id', $id);
-    $smarty->assign('nomEleve', $nomEleve);
-    $smarty->assign('statistiques', $statistiques);
     $smarty->assign('travail', $travail);
-    $smarty->assign('editable', $editable);
-    $smarty->assign('locked', $locked);
-    $smarty->assign('acronyme', $acronyme);
-    $smarty->display('jdc/unTravail.tpl');
+
+    switch ($type) {
+        case 'Rem':
+            $smarty->display('jdc/uneRemediation.tpl');
+            break;
+        default:
+            $smarty->assign('id', $id);
+            $smarty->assign('nomEleve', $nomEleve);
+            $smarty->assign('statistiques', $statistiques);
+            $smarty->assign('editable', $editable);
+            $smarty->assign('subjectif', $subjectif);
+            $smarty->assign('locked', $locked);
+            $smarty->assign('acronyme', $acronyme);
+            $smarty->display('jdc/unTravail.tpl');
+    }
+
 }

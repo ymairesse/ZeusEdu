@@ -16,27 +16,22 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$unAn = time() + 365 * 24 * 3600;
+$module = $Application->getModule(3);
 
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
+$Jdc = new Jdc();
 $start = $_POST['start'];
 $end = $_POST['end'];
 
+$type = isset($_POST['type']) ? $_POST['type'] : Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$destinataire = isset($_POST['destinataire']) ? $_POST['destinataire'] : Null;
 
-$ds = DIRECTORY_SEPARATOR;
-$module = $Application->getModule(3);
-require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
-$Jdc = new Jdc();
-
-$listeConges = $Jdc->getConges($start, $end, $acronyme);
-
-if ($coursGrp == 'synoptique')
-    $eventsList = $Jdc->getSynoptiqueCours($start, $end, $acronyme);
-    else $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
-
-$eventsList = array_merge(
-    $eventsList,
-    $listeConges
-);
+// $lesTypes sont les types d'événements visibles par le $destinataire
+$eventsList = $Jdc->getMyGlobalEvents($type, $destinataire, $start, $end, Null);
 
 echo json_encode($eventsList);

@@ -3,6 +3,7 @@
 	<h2>Historique et Annonces</h2>
 		{* les différents onglets pour les différents destinataires possibles *}
 		<ul class="nav nav-tabs">
+
 			{foreach from=$listeTypes key=type item=data}
 				{if $data.droits == Null || in_array($userStatus, $data.droits)}
 				<li>
@@ -11,6 +12,7 @@
 				</li>
 				{/if}
 			{/foreach}
+
 			{* un onglet supplémentaire pour l'éditeur d'annonces *}
 			<li class="pull-right">
 				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-bullhorn fa-lg"></i> Nouvelle annonce</a>
@@ -32,7 +34,9 @@
 			{/foreach}
 			{* l'éditeur d'annonces *}
 			<div id="tabs-edit" class="tab-pane fade">
+
 				{include file="notification/edit/tabEdit.tpl"}
+
 			</div>
 
 		</div>
@@ -143,8 +147,8 @@
 						// réinitialisation de l'éditeur et des satellites
 						$('#notification input[type=checkbox], #notification input[type=text]').prop('readOnly', true);
 						CKEDITOR.instances.texte.setReadOnly(true);
-						// $('#submitNotif').removeClass('btn-primary').addClass('btn-lightBlue').attr('data-sent', 'true');
-						// $('#submitNotif').html('<i class="fa fa-paper-plane"></i> Nouvelle annonce');
+						$('#submitNotif').removeClass('btn-primary').addClass('btn-lightBlue').attr('data-sent', 'true');
+						$('#submitNotif').html('<i class="fa fa-paper-plane"></i> Nouvelle annonce');
 					})
 				}
 			}
@@ -185,6 +189,7 @@
 						$('.cb').prop('checked', false);
 						$('#destinataire').val($('#tous').val());
 						$('#choixEleves').html(resultat).removeClass('hidden');
+						$('#tous').removeClass('hidden');
 						$('#notification input[type!="hidden"]').prop('disabled', false);
 						$('#mail, #accuse, #parent').prop('disabled', true);
 						$('#editorPanel').removeClass('hidden');

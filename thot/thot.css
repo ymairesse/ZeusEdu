@@ -579,3 +579,9 @@ p.jdcInfo:before {
     font-weight: normal;
     color: blue;
 }
+
+.remediation {
+    background-image: linear-gradient(45deg, #eebaf5 25%, #F6F0CF 25%, #F6F0CF 50%, #eebaf5 50%, #eebaf5 75%, #F6F0CF 75%, #F6F0CF 100%);
+    background-size: 19.80px 19.80px;
+    color: black !important;
+}

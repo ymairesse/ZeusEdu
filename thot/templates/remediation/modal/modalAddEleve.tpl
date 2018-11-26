@@ -35,7 +35,7 @@
 
             switch (critere) {
                 case 'classe':
-                    $.post('inc/remediation/selectNiveau.inc.php', {},
+                    $.post('inc/selecteurs/selectNiveau.inc.php', {},
                     function(resultat){
                         $('#selectNiveauEleve').html(resultat);
                         $('#selectByCours').addClass('hidden');
@@ -45,7 +45,7 @@
 
                     break;
                 case 'cours':
-                    $.post('inc/remediation/selectCoursProf.inc.php', {},
+                    $.post('inc/selecteurs/selectCoursProf.inc.php', {},
                         function(resultat){
                             $('#coursGrp').html(resultat);
                             $('#classe').html('<option value="">Choisir la classe</option>');
@@ -59,7 +59,7 @@
         $('#modalFormEleve').on('change', '#selectNiveauEleve', function(){
             var niveau = $(this).val();
             if (niveau != '') {
-                $.post('inc/remediation/selectClasse.inc.php', {
+                $.post('inc/selecteurs/selectClasse.inc.php', {
                     niveau: niveau
                 }, function(resultat){
                     $('#classeEleve').html(resultat);
@@ -75,7 +75,7 @@
         $('#modalFormEleve').on('change', '#classeEleve', function(){
             var classe = $(this).val();
             if (classe != '') {
-                $.post('inc/remediation/listeElevesClasse.inc.php', {
+                $.post('inc/selecteurs/listeElevesClasse.inc.php', {
                     classe: classe
                 }, function(resultat){
                     $('#listeEleves').html(resultat);
