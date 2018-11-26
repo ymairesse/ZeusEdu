@@ -2,18 +2,38 @@
 <link rel="stylesheet" href="../dropzone/dropzone.css">
 <link rel="stylesheet" href="../widgets/fileTree/css/filetree.css">
 
-<div class="row hidden" style="height: 15em; overflow: auto;" id="repertoire" data-shown="false">
 
-    <div class="col-md-9 col-xs-12" style="max-height:15em; overflow: auto;" id="tree">
-        {* emplacement pour l'arborescence des fichiers *}
+<div id="modalAddPj" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddPjLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modalAddPjLabel">Joindre des fichiers</h4>
+      </div>
+      <div class="modal-body">
+          <div class="row" style="height: 20em; overflow: auto;" id="repertoire">
+
+              <div class="col-md-9 col-xs-12" style="max-height:20em; overflow: auto;" id="tree">
+                  {* emplacement pour l'arborescence des fichiers *}
+              </div>
+
+              <div class="col-md-3 col-xs-12" style="height:15em;">
+                  <div class="micro" id="activeDir" data-path="/">/</div>
+                  <div class="dropzone" id="myDropZone" style="height: 100%"></div>
+              </div>
+
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Terminer</button>
+      </div>
     </div>
-
-    <div class="col-md-3 col-xs-12" style="height:15em;">
-        <div class="micro" id="activeDir" data-path="/">/</div>
-        <div class="dropzone" id="myDropZone" style="height: 100%"></div>
-    </div>
-
+  </div>
 </div>
+
+
 
 <div class="row">
     <div class="col-sm-9 col-xs-12">
@@ -55,7 +75,7 @@
             maxFilesize: maxFileSize,
             maxFiles: nbFichiersMax,
             url: "../widgets/fileTree/inc/upload.inc.php",
-            acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.bz2,.mp3",
+            acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.bz2,.mp3,.svg",
             queuecomplete: function() {
                 var activeDir = $('#activeDir').data('path');
                 activeDir = (activeDir == undefined) ? '/' : activeDir;
@@ -71,8 +91,8 @@
         			if (level > 0)
                     	$('.activeDir').next('ul').replaceWith(resultat);
         				else {
-        					$('.folder').last().nextAll('li').remove();
-        					$('.folder').last().after(resultat);
+        					$('.file.level0').remove();
+        					$('.filetree').eq(0).append(resultat);
         				}
                     // remise en ordre des fichiers sélectionnés
                     $('#PjFiles li a').each(function(){
@@ -92,11 +112,11 @@
                 var fileName = file.name;
             },
             init: function() {
-                this.on("maxfilesexceeded", function(file) {
+                    this.on("maxfilesexceeded", function(file) {
                         alert("Pas plus de " + nbFichiersMax + " fichiers à la fois svp!\nAttendez quelques secondes.");
                     }),
-                    this.on("sending", function(file, xhr, formData) {
-                        formData.append("activeDir", $("#activeDir").data('path'));
+                    this.on('sending', function(file, xhr, formData) {
+                        formData.append('activeDir', $('#activeDir').data('path'));
                     }),
                     this.on('queuecomplete', function() {
                         var dz = this;
@@ -110,7 +130,7 @@
         $('#myDropZone').dropzone();
 
         $('#btn-addPJ').click(function(){
-            if ($('#repertoire').data('shown') == false) {
+            $('#modalAddPj').modal('show');
                 var rep = ($('#tree').find('.filetree').html());
                 // ne pas recharger le répertoire s'il a déjà été exposé
                 if (rep == undefined) {
@@ -122,14 +142,9 @@
                         $('#tree').html(resultat);
                     })
                 }
-                $('#repertoire').data('shown', true).show(500).removeClass('hidden');
-            }
-            else {
-                $('#repertoire').data('shown', false).hide(500);
-            }
         })
 
-        $('#editeur').on('click', '.dirLink', function() {
+        $('#modalAddPj').on('click', '.dirLink', function() {
             var activeDir = $(this).data('path');
             $('#activeDir').html(activeDir);
             $('#activeDir').data('path', activeDir);
