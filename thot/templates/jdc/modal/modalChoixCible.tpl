@@ -112,7 +112,7 @@
                                     type="text"
                                     name="heure"
                                     id="heureCC"
-                                    value="{if isset($travail.allDay) && $travail.allDay == true}Journée entière{else}{$travail.heure}{/if}"
+                                    value="{if isset($travail.allDay) && $travail.allDay == true}Journée entière{else}{$travail.heure}{/if}" 
                                     class="form-control input-sm"
                                     autocomplete="off"
                                     required
@@ -218,7 +218,7 @@
                     break;
                 case 'niveau':
                     $('.selecteurRem').addClass('hidden');
-                    $.post('inc/selecteurs/selectNiveau.inc.php', {},
+                    $.post('inc/remediation/selectNiveau.inc.php', {},
                         function(resultat) {
                             $('#selectNiveauGroupe').html(resultat);
                             $('#selectNiveauGroupe').closest('.selecteurRem').removeClass('hidden');
@@ -227,7 +227,7 @@
                 case 'classe':
                     $('.selecteurRem').addClass('hidden');
                     reset();
-                    $.post('inc/selecteurs/selectNiveauClasse.inc.php', {},
+                    $.post('inc/remediation/selectNiveauClasse.inc.php', {},
                         function(resultat) {
                             $('#niveauClasse').html(resultat);
                             $('#niveauClasse').closest('.selecteurRem').removeClass('hidden');
@@ -236,7 +236,7 @@
                 case 'matiere':
                     $('.selecteurRem').addClass('hidden');
                     reset();
-                    $.post('inc/selecteurs/selectNiveauMatiere.inc.php', {},
+                    $.post('inc/remediation/selectNiveauMatiere.inc.php', {},
                         function(resultat) {
                             $('#niveauMatiere').html(resultat);
                         })
@@ -245,7 +245,7 @@
                 case 'coursGrp':
                     $('.selecteurRem').addClass('hidden');
                     reset();
-                    $.post('inc/selecteurs/selectCoursProf.inc.php', {},
+                    $.post('inc/remediation/selectCoursProf.inc.php', {},
                         function(resultat) {
                             $('#modalCoursGrp').html(resultat);
                         })
@@ -257,7 +257,7 @@
         $('#detailsCible').on('change', '#niveauMatiere', function() {
             var niveau = $(this).val();
             if (niveau != '') {
-                $.post('inc/selecteurs/selectMatiere.inc.php', {
+                $.post('inc/remediation/selectMatiere.inc.php', {
                     niveau: niveau
                 }, function(resultat) {
                     $('#matiere').html(resultat);
@@ -268,7 +268,7 @@
         $('#detailsCible').on('change', '#niveauClasse', function() {
             var niveau = $(this).val();
             if (niveau != '') {
-                $.post('inc/selecteurs/selectClasse.inc.php', {
+                $.post('inc/remediation/selectClasse.inc.php', {
                     niveau: niveau
                 }, function(resultat) {
                     $('#classe').html(resultat);

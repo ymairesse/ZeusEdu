@@ -27,9 +27,7 @@ $id = isset($_POST['id']) ? $_POST['id'] : null;
 $startDate = isset($_POST['startDate']) ? $_POST['startDate'] : null;
 $endDate = isset($_POST['endDate']) ? $_POST['endDate'] : null;
 $editable = isset($_POST['editable']) ? $_POST['editable'] : null;
-$locked = isset($_POST['locked']) ? $_POST['locked'] : null;
 $allDay = isset($_POST['allDay']) ? $_POST['allDay'] : false;
-
 
 // après un retour de position 'allDay', la date de fin est invalide
 if ($endDate == 'Invalid date')
@@ -54,9 +52,8 @@ if ($id != null) {
 
     $resultat = $Jdc->modifEvent($id, $startDate, $endDate, $allDay);
 
-    if ($resultat != 0) {
+    if ($resultat != null) {
         $travail = $Jdc->getTravail($id);
-        $travail['listePJ'] = $Jdc->getPJ($id);
         $categories = $Jdc->categoriesTravaux();
 
         $matricule = $travail['redacteur'];
@@ -69,8 +66,6 @@ if ($id != null) {
         else $nomEleve = '';
         $statistiques = $Jdc->countLikes($id);
 
-
-
         require_once INSTALL_DIR.'/smarty/Smarty.class.php';
         $smarty = new Smarty();
         $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
@@ -81,7 +76,6 @@ if ($id != null) {
         $smarty->assign('statistiques', $statistiques);
         $smarty->assign('travail', $travail);
         $smarty->assign('editable', $editable);
-        $smarty->assign('locked', $locked);
         $smarty->assign('acronyme', $acronyme);
         $smarty->display('jdc/unTravail.tpl');
     }

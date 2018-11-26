@@ -105,9 +105,7 @@ switch ($type) {
         break;
     }
 
-// pièces jointes à la notification $notifId
 $pjFiles = $Thot->getPj4Notifs($notifId, $acronyme);
-// il suffit de prendre les PJ de la première notification (les autres sont les mêmes)
 if ($pjFiles != Null)
     $pjFiles = current($pjFiles);
 
@@ -130,9 +128,7 @@ $smarty->assign('niveau', $notification['niveau']);
 $smarty->assign('notification', $notification);
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('notifId', $notifId);
-// à destination du widget fileTree
 $smarty->assign('pjFiles', $pjFiles);
-
 $smarty->assign('selectedFiles', $selectedFiles);
 $smarty->assign('selectTypes', $selectTypes);
 $smarty->assign('listeNiveaux', $listeNiveaux);

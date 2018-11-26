@@ -16,11 +16,11 @@
 
         <div class="tab-content">
             <div id="consignes" class="tab-pane fade in active">
-
+                {$formProp|print_r}
             </div>
             {foreach from=$listeQuestions item=uneQuestion}
             <div id="Q{$uneQuestion.numQuestion}" class="tab-pane fade">
-                
+                <pre>{$uneQuestion|print_r}</pre>
             </div>
             {/foreach}
 

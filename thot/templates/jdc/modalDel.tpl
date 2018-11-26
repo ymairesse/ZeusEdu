@@ -22,14 +22,18 @@
                     <p>Professeur <strong>{$travail.nom}</strong></p>
                     <p><strong>{$travail.title}</strong></p>
                     <div>{$travail.enonce}</div>
-                    {if $pjFiles|@count > 0}
-                    <p><strong>{$pjFiles|@count} pièces jointes</strong> deviendront inaccessibles aux élèves (mais ne seront pas effacées)</p>
-                    {/if}
                 </div>
 
                 <div class="modal-footer">
 
-                    <input type="hidden" name="id" id="id" value="{$travail.id}">
+                        <input type="hidden" name="id" id="id" value="{$travail.id}">
+                        <input type="hidden" name="startDate" value="{$startDate}">
+                        <input type="hidden" name="destinataire" value="{$destinataire}">
+                        <input type="hidden" name="type" value="{$type}">
+                        <input type="hidden" name="coursGrp" value="{$coursGrp|default:''}">
+                        <input type="hidden" name="classe" value="{$classe|default:''}">
+                        <input type="hidden" name="action" value="jdc">
+                        <input type="hidden" name="mode" value="delete">
                     <button type="button" class="btn btn-danger" id="btn-modalDel"><i class="fa fa-eraser fa-lg"></i> Supprimer</button>
 
                 </div>  <!-- modal-footer -->
@@ -50,7 +54,7 @@
             $.post('inc/jdc/delJdc.inc.php', {
                 id: id
             }, function(resultat){
-                if (resultat > 0) {
+                if (resultat == 1) {
                     bootbox.alert({
                         message: "Événement supprimé",
                         size: 'small'

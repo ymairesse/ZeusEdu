@@ -134,7 +134,6 @@
         }
 
         $("#treeView").on('click', '.file', function() {
-            alert('test file');
             $('#treeView *').removeClass('activeFile');
             $(this).addClass('activeFile');
             var details = $(this).closest('li');
@@ -151,7 +150,6 @@
         })
 
         $("#treeView").on('click', '.dirLink', function(event) {
-            alert('test');
             $(this).next('.filetree').toggle('slow');
             $(this).closest('li').toggleClass('expanded');
             $('.dirLink').removeClass('activeDir');

@@ -25,5 +25,5 @@ parse_str($post, $formulaire);
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-// retourne le $fileId du fichier partagé
-echo  $Files->shareFile($formulaire, $acronyme);
+// retourne le shareId du fichier partagé
+echo  $Files->share($formulaire, $acronyme);

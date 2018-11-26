@@ -18,6 +18,7 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
+Application::afficher($module);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";

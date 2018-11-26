@@ -40,11 +40,8 @@ $approbationsJDC = $Jdc->getApprobations($listeCours, $titulaire);
 $smarty->assign('nbApprobations', count($approbationsJDC));
 
 switch ($action) {
-    case 'agenda':
-        require_once 'inc/diary/agenda.inc.php';
-        break;
     case 'notification':
-        require_once 'inc/notif/notifications.inc.php';
+        include_once 'inc/notif/notifications.inc.php';
         break;
     case 'remediation':
         require_once 'inc/remediation/remediation.inc.php';

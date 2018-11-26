@@ -17,20 +17,18 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
-
 $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-$listeClasses = $Ecole->listeClassesNiveau($niveau);
+$listeCours = $Ecole->listeCoursProf($acronyme);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-$smarty->assign('listeClasses', $listeClasses);
-$smarty->display('remediation/selecteurs/optionsClasse.tpl');
+$smarty->assign('listeCours', $listeCours);
+$smarty->display('remediation/selecteurs/optionsCours.tpl');

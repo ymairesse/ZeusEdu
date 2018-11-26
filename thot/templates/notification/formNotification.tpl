@@ -3,7 +3,6 @@
 <div class="container-fluid">
 
 		<input type="hidden" name="id" id="id" value="{$notification.id}">
-		<input type="hidden" name="edition" id="edition" value="{if $notification.id != ''}true{/if}">
 		<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire|default:''}">
 		<input type="hidden" name="matricule" id="matricule" value="{$notification.matricule|default:''}">
 		<input type="hidden" name="leType" id="leType" value="{$type|default:''}">
@@ -61,7 +60,6 @@
 		            <input type="checkbox" name="freeze" id="freeze" class="form-control-inline cb" value="1"
 		            {if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
 					{if isset($edition)} disabled{/if}>
-					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 		        </div>
 
 				<div class="form-group col-md-2 col-xs-4">
@@ -69,7 +67,6 @@
 					<input type="checkbox" name="parent" id="parent" class="form-control-inline cb" value="1"
 					{if (isset($notification.parents)) && ($notification.parents==1 )} checked{/if}
 					 {if isset($edition)} disabled{/if}>
-					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
 
 				<div class="clearfix">
@@ -79,9 +76,7 @@
 				<textarea id="texte" name="texte" rows="25" class="ckeditor form-control hidden" placeholder="Frappez votre texte ici" autofocus="true" required>{$notification.texte|default:''}</textarea>
 				{* emplacement du textarea -> CKEDITOR *}
 
-				{*------------------------------------------------------------------------------*}
 				{include file="../../../widgets/fileTree/templates/treeview4PJ.tpl"}
-				{*------------------------------------------------------------------------------*}
 
 			</div>
 			<!-- panel-body -->

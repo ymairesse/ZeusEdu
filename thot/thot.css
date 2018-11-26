@@ -96,11 +96,7 @@ p.event-inverse, a.event-inverse {
     border-radius: 10px;
 }
 #calendar.jdcAny, p.jdcInfo.jdcAny {
-    border-radius: 10px;
-    background: -webkit-repeating-linear-gradient(45deg, rgb(219, 218, 212) 0%, rgb(159, 217, 169) 40px);
-    background: -o-repeating-linear-gradient(45deg, rgb(219, 218, 212) 0%, rgb(159, 217, 169) 40px);
-    background: -moz-repeating-linear-gradient(45deg, rgb(219, 218, 212) 0%, rgb(159, 217, 169) 40px);
-    background: repeating-linear-gradient(45deg, rgb(219, 218, 212) 0%, rgb(189, 204, 207) 40px);
+    background-color: #D9EDF7 !important;
     border-radius: 10px;
 }
 #calendar.cours, p.jdcInfo.cours {
@@ -545,7 +541,6 @@ p.jdcInfo {
     border: 1px solid #555;
     padding: 5px;
     border-radius: 7px;
-    font-size: 15pt;
 }
 p.jdcInfo:before {
     font-family: FontAwesome;
@@ -578,10 +573,4 @@ p.jdcInfo:before {
     font-size: 8pt;
     font-weight: normal;
     color: blue;
-}
-
-.remediation {
-    background-image: linear-gradient(45deg, #eebaf5 25%, #F6F0CF 25%, #F6F0CF 50%, #eebaf5 50%, #eebaf5 75%, #F6F0CF 75%, #F6F0CF 100%);
-    background-size: 19.80px 19.80px;
-    color: black !important;
 }

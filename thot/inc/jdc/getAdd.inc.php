@@ -45,6 +45,13 @@ $travail = array(
     'listePJ' => Null,
     );
 
+$selectedFiles = Null;
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.'widgets/fileTree/inc/classes/class.Treeview.php';
+
+$Tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme, $selectedFiles);
+$baobab = $Tree->getTree();
+
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
@@ -55,7 +62,8 @@ $smarty->assign('categories', $categories);
 $listePeriodes = $Jdc->lirePeriodesCours();
 $smarty->assign('listePeriodes', $listePeriodes);
 
+$smarty->assign('tree', $baobab);
 $smarty->assign('lblDestinataire', $lblDestinataire);
 
 $smarty->assign('travail', $travail);
-$smarty->display('jdc/jdcEdit.tpl');
+$smarty->display('jdc/modal/modalEdit.tpl');

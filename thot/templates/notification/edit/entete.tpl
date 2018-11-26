@@ -1,7 +1,6 @@
 <tr>
     <th colspan="2">&nbsp;</th>
     <th style="width:3em" title="Pièces jointes" data-container="body"><i class="fa fa-paperclip"></i> </th>
-    <th>&nbsp;</th>
     <th>Début</th>
     <th>Fin</th>
     <th>Objet</th>
