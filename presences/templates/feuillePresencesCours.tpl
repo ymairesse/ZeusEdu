@@ -1,9 +1,8 @@
 {if isset($acronyme)}
 
-	<div class="container">
+	<div class="container-fluid">
 	<form name="listeEleves" id="presencesEleves" action="index.php" method="POST" style="padding:0; margin:0">
 
-	<input type="hidden" name="educ" value="{$identite.acronyme}">
 	<input type="hidden" name="date" value="{$date}">
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
@@ -18,18 +17,19 @@
 	<input type="hidden" name="presAuto" id="presAuto" value="true">
 
 	<button type="button" class="btn btn-warning pull-left" id="btnPresAuto">Présence Auto [Activé]</button>
+	<button type="button" class="btn btn-pink" id="btnRetard"><i class="fa fa-moon-o"></i> Retard au cours [Désactivé]</button>
 
 	<div class="btn-group pull-right">
 		<button type="button" class="btn btn-default" id="annuler">Annuler</button>
 		<button type="submit" class="btn btn-primary"><span id="save"></span> Enregistrer</button>
 	</div>
-<div class="clearfix"></div>
+	<div class="clearfix"></div>
+
 	<strong><span class="hidden-xs">{$listeProfs.$acronyme.prenom} {$listeProfs.$acronyme.nom|truncate:20} | </span>
 		<span class="hidden-sm">{$acronyme} | </span>
 		{$listeCoursGrp.$coursGrp.libelle} -> [{$coursGrp}]</strong>
 
 	{include file="feuillePresences.tpl"}
-	
 	</div>
 
 {/if}

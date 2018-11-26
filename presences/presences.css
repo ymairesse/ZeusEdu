@@ -60,8 +60,14 @@ input[type=submit], input[type=reset], input[type=button] {
 }
 
 .indetermine {
-    background: #ddd;
+    background: #ddd !important;
     color: #000;
+    text-align: center;
+}
+
+.retard {
+    background: #B947A3 !important;
+    color: #fff;
     text-align: center;
 }
 

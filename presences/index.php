@@ -9,13 +9,17 @@ require_once 'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 $acronyme = $user->getAcronyme();
 
-$smarty->assign('lesCours', $user->listeCoursProf());
-
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 
 // les photos sont-elles visibles?
 $photosVis = isset($_COOKIE['photosVis']) ? $_COOKIE['photosVis'] : null;
 $smarty->assign('photosVis', $photosVis);
+
+$appli = $Application->getModule(1);
+
+// prise de présence par cours par le titulaire du cours
+$listeCoursGrp = $Ecole->listeCoursProf($acronyme, true);
+$smarty->assign('listeCoursGrp', $listeCoursGrp);
 
 switch ($action) {
     case 'admin':
@@ -33,8 +37,18 @@ switch ($action) {
     case 'preferences':
         include 'inc/preferences.inc.php';
         break;
+    case 'scan':
+        if (in_array($user->userStatus($appli), array('educ', 'accueil', 'admin'))) {
+            include('inc/retards/scanRetards.inc.php');
+        }
+        break;
     default:
-        include 'inc/gestPresences.inc.php';
+        if (in_array($user->userStatus($appli), array('educ', 'accueil'))) {
+            include('inc/retards/scanRetards.inc.php');
+        }
+        else {
+            include 'inc/gestPresences.inc.php';
+        }
         break;
     }
 

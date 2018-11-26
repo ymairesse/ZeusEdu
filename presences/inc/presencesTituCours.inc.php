@@ -1,8 +1,5 @@
 <?php
 
-// prise de présence par cours par le titulaire du cours
-
-$listeCoursGrp = $Ecole->listeCoursProf($acronyme);
 if (isset($_GET['coursGrp'])) {
     $coursGrp = $_GET['coursGrp'];
     }

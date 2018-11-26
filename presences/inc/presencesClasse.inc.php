@@ -1,9 +1,12 @@
 <?php
+
+$acronyme = $user->getAcronyme();
+
 // prise de présence par classe
 if ($etape == 'enregistrer') {
     if (isset($classe)) {
         $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-        $nb = $Presences->savePresences($_POST, $listeEleves, array($periode => $periode));
+        $nb = $Presences->savePresences($_POST, $acronyme);
         $smarty->assign('message', array(
                 'title' => SAVE,
                 'texte' => sprintf(NBSAVE, $nb),
@@ -12,7 +15,7 @@ if ($etape == 'enregistrer') {
     }
 }
 
-// une classe a été sélectionnée 
+// une classe a été sélectionnée
 if (isset($classe)) {
     $smarty->assign('classe', $classe);
     if (!(isset($listeEleves))) {

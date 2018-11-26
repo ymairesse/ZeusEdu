@@ -4,7 +4,7 @@
 if ($etape == 'enregistrer') {
     if (isset($coursGrp)) {
         $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
-        $nb = $Presences->savePresences($_POST, $listeEleves, array($periode => $periode));
+        $nb = $Presences->savePresences($_POST, $acronyme);
         $smarty->assign('message', array(
                 'title' => SAVE,
                 'texte' => sprintf(NBSAVE, $nb),

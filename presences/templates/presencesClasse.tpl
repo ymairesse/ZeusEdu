@@ -1,5 +1,5 @@
 {if $classe != Null && $date != Null}
-<div class="container">
+<div class="container-fluid">
 
 <h3>Feuille de présences pour la classe de <strong>{$classe}</strong> le <strong>{$date}</strong></h3>
 <div class="table-responsive">

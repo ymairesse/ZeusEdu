@@ -16,7 +16,7 @@ class presences
     /**
      * renvoie la liste des heures de cours données dans l'école.
      *
-     * @param void()
+     * @param void
      *
      * @return array liste des périodes de cours
      */
@@ -26,7 +26,7 @@ class presences
         $sql = 'SELECT debut, fin ';
         $sql = "SELECT DATE_FORMAT(debut,'%H:%i') as debut, DATE_FORMAT(fin,'%H:%i') as fin ";
         $sql .= 'FROM '.PFX.'presencesHeures ';
-        $sql .= 'ORDER BY debut, fin';
+        $sql .= 'ORDER BY debut, fin ';
 
         $resultat = $connexion->query($sql);
         $listePeriodes = array();
@@ -75,7 +75,7 @@ class presences
          }
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // vider toute la table pour la ré-enregistrer de zéro
-        $sql = 'TRUNCATE TABLE '.PFX.'presencesHeures';
+        $sql = 'TRUNCATE TABLE '.PFX.'presencesHeures ';
          $resultat = $connexion->exec($sql);
 
          $ok = 0;
@@ -365,43 +365,94 @@ class presences
     }
 
     /**
+     * enregistre les informations de retard provenant du scan
+     *
+     * @param string $acronyme : qui a scanné
+     * @param int $matricule
+     * @param string $date
+     * @param int $periode: période de cours pour arrivée
+     * @param string $heure : heure de scan de l'élève
+     *
+     * @return int : nombre d'enregistrements (normalement 1)
+     */
+    public function saveScanRetard($acronyme, $matricule, $date, $periode, $heure){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // introduction dans la table des logs et récupération de l'id autoIncrementé
+        $sql = 'INSERT INTO '.PFX.'presencesLogs ';
+        $sql .= 'SET educ = :educ, parent = "scan", media = "scan", quand = :quand, heure = :heure ';
+        $requete = $connexion->prepare($sql);
+
+        $dateMysql = Application::dateMysql($date);
+        $requete->bindParam(':educ', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':quand', $dateMysql, PDO::PARAM_STR, 10);
+        $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
+
+        $resultat = $requete->execute();
+        $id = $connexion->lastInsertId();
+
+        $sql = 'INSERT INTO '.PFX.'presencesEleves ';
+        $sql .= 'SET id = :id, matricule = :matricule, date = :date, periode = :periode, statut = "retard" ';
+        $sql .= 'ON DUPLICATE KEY UPDATE id = :id, periode = :periode, statut = "retard" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':date', $dateMysql, PDO::PARAM_STR, 10);
+        $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return 1;
+    }
+
+
+    /**
      * fonction générale d'enregistrement des présences et des absences, quel que soit le statut.
      *
      * @param array $post : données sortant d'un formulaire écran
      *
      * @return $nb : nombre de modifications dans la BD
      */
-    public function savePresences($post, $listeEleves, $listePeriodes)
+    public function savePresences($post, $acronyme)
     {
-        $educ = isset($post['educ']) ? $post['educ'] : null;
-        $matricule = isset($post['matricule']) ? $post['matricule'] : null;
         $parent = isset($post['parent']) ? $post['parent'] : null;
+        $noPeriode = isset($post['periode']) ? $post['periode'] : null;
         $media = isset($post['media']) ? $post['media'] : null;
         $date = isset($post['date']) ? Application::dateMysql($post['date']) : null;
         $oups = ($post['oups'] == '') ? false : true;
         $presAuto = isset($post['presAuto']) ? $post['presAuto'] : null;
         $heure = date('H:i');
         $quand = date('Y-m-d');
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // introduction dans la table des logs et récupération de l'id autoIncrementé
         $sql = 'INSERT INTO '.PFX.'presencesLogs ';
-        $sql .= 'SET educ=:educ, parent=:parent, media=:media, quand=:quand, heure=:heure ';
+        $sql .= 'SET educ = :educ, parent = :parent, media = :media, quand = :quand, heure = :heure ';
         $requete = $connexion->prepare($sql);
-        $data = array(':educ' => $educ, ':parent' => $parent, ':media' => $media, ':quand' => $quand, ':heure' => $heure);
-        $resultat = $requete->execute($data);
+
+        $requete->bindParam(':educ', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':parent', $parent, PDO::PARAM_STR, 40);
+        $requete->bindParam(':media', $media, PDO::PARAM_STR, 30);
+        $requete->bindParam(':quand', $quand, PDO::PARAM_STR, 10);
+        $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
+
+        $resultat = $requete->execute();
         $id = $connexion->lastInsertId();
 
         $sql = 'INSERT INTO '.PFX.'presencesEleves ';
-        $sql .= 'SET id=:id, matricule=:matricule, date=:date, periode=:noPeriode, statut=:statut ';
-        $sql .= 'ON DUPLICATE KEY UPDATE id=:id, periode=:noPeriode, statut=:statut ';
+        $sql .= 'SET id = :id, matricule = :matricule, date = :date, periode = :noPeriode, statut = :statut ';
+        $sql .= 'ON DUPLICATE KEY UPDATE id = :id, periode = :noPeriode, statut = :statut ';
         $requete = $connexion->prepare($sql);
 
         $nb = 0;
-        foreach ($listePeriodes as $noPeriode => $wtf) {
-            foreach ($listeEleves as $matricule => $wtf) {
-                // si pas de statut dans le formulaire, l'élève est marqué présent. Permet la prise de présence absent/présent en classe
-                $statut = (isset($post['matr-'.$matricule.'_periode-'.$noPeriode])) ? $post['matr-'.$matricule.'_periode-'.$noPeriode] : null;
+        $listeJustificationsAbs = array_keys($this->listeJustificationsAbsences(false));
+
+        foreach ($post as $field => $statut) {
+            if (substr($field, 0, 5) == 'matr-') {
+                $champ = explode('-', $field);
+                $matricule = $champ[1];
 
                 // on n'enregistre que s'il s'agit d'une absence ou d'une présence ou d'un indéterminé (s'il s'agit d'une réinitialisation après erreur d'encodage)
                 // les statuts "indéterminé" sont des présences (sauf si $oups.....) ou si la prise de "présences" automatique est désactivée
@@ -414,13 +465,18 @@ class presences
                 }
 
                 // si le statut est autorisé à un prof
-                if (in_array($statut, array_keys($this->listeJustificationsAbsences(false)))) {
-                    $data = array(':id' => $id, ':matricule' => $matricule, ':date' => $date, ':noPeriode' => $noPeriode, ':statut' => $statut);
-                    $resultat += $requete->execute($data);
-                    ++$nb;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
+                if (in_array($statut, $listeJustificationsAbs)) {
+                    $requete->bindParam(':id', $id, PDO::PARAM_INT);
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requete->bindParam(':date', $date, PDO::PARAM_STR, 12);
+                    $requete->bindParam(':noPeriode', $noPeriode, PDO::PARAM_INT);
+                    $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 12);
+                    $resultat += $requete->execute();
+                    $nb++;  // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
                 }
             }
         }
+
         Application::deconnexionPDO($connexion);
 
         return $nb;
@@ -750,4 +806,141 @@ class presences
 
         return $nb;
      }
+
+     /**
+      * enregistrement d'un retard AM ou PM
+      *
+      * @param array $post : contenu du formulaire d'encodage du retard
+      *
+      * @return int nombre d'enregistrements (0 -échec- ou 1 -réussite)
+      */
+     public function saveRetard ($post, $acronyme) {
+
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         if ($post['idRetard'] == '') {
+             $sql = 'INSERT INTO '.PFX.'adesRetards ';
+             $sql .= 'SET matricule = :matricule, acronyme = :acronyme, date = :date, ';
+             $sql .= 'heure = :heure, periode = :periode ';
+             }
+             else {
+                 $sql = 'UPDATE '.PFX.'adesRetards ';
+                 $sql .= 'SET date = :date, heure = :heure, periode = :periode ';
+                 $sql .= 'WHERE idRetard = :idRetard AND acronyme = :acronyme AND matricule = :matricule ';
+             }
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':heure', $post['heure'], PDO::PARAM_STR, 5);
+         $requete->bindParam(':periode', $post['periode'], PDO::PARAM_INT);
+         $date = Application::dateMysql($post['date']);
+         $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+         $requete->bindParam(':matricule', $post['matricule'], PDO::PARAM_INT);
+         if ($post['idRetard'] != '') {
+             $requete->bindParam(':idRetard', $post['idRetard'], PDO::PARAM_INT);
+         }
+
+         $resultat = $requete->execute();
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+     /**
+      * effacement de la notification de retard dont on fournit l'idRetard
+      *
+      * @param int $idRetard
+      * @param string $acronyme (pour la sécurité)
+      *
+      * @return int : nombre d'effacements
+      */
+     public function delRetard ($idRetard, $acronyme){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'DELETE FROM '.PFX.'adesRetards ';
+         $sql .= 'WHERE idRetard = :idRetard AND acronyme = :acronyme ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':idRetard', $idRetard, PDO::PARAM_INT);
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+         $resultat = $requete->execute();
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+     /**
+      * Lecture des derniers enregistrements dans la table des retards
+      *
+      * @param int $limite : le nombre d'enregistrements à lire
+      * @param string : $acronyme
+      *
+      * @return array
+      */
+     public function getLastRetards($limite, $acronyme) {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT idRetard, retards.matricule, acronyme, date, heure, periode, groupe, nom, prenom ';
+         $sql .= 'FROM '.PFX.'adesRetards AS retards ';
+         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = retards.matricule ';
+         $sql .= 'WHERE acronyme = :acronyme ';
+         $sql .= 'ORDER BY idRetard DESC limit :limite ';
+         $requete = $connexion->prepare($sql);
+
+         $limite = (int) $limite;
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':limite', $limite, PDO::PARAM_INT);
+
+         $liste = array();
+         $resultat = $requete->execute();
+
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $idRetard = $ligne['idRetard'];
+                 $liste[$idRetard] = $ligne;
+             }
+         }
+
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+     /**
+      * renvoie les détails du retard $idRetard afin d'édition
+      *
+      * @param int $idRetard
+      * @param string $acronyme
+      *
+      * @return json
+      */
+     public function getRetard($idRetard, $acronyme){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT idRetard, retards.matricule, acronyme, date, heure, periode, groupe, nom, prenom ';
+         $sql .= 'FROM '.PFX.'adesRetards AS retards ';
+         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = retards.matricule ';
+         $sql .= 'WHERE acronyme = :acronyme AND idRetard = :idRetard ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':idRetard', $idRetard, PDO::PARAM_INT);
+
+         $resultat = $requete->execute();
+
+         $retard = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             $retard = $requete->fetch();
+             $retard['date'] = Application::datePHP($retard['date']);
+             $retard['heure'] = substr($retard['heure'], 0, 5);
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $retard;
+     }
+
 }

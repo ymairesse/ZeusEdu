@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 	{if $mode == 'speed'}
 	{* on traite une simple autorisation de sortie rapide *}
 	<h2>Signalement rapide pour <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
@@ -35,9 +35,15 @@
 						</button>
 						<ul class="dropdown-menu pull-right" id="choixCorrespondant">
 							<li><a href="javascript:void(0)" data-value="Parents">Parents</a></li>
-							<li><a href="javascript:void(0)" data-value="{$eleve.nomResp}"><strong>Responsable:</strong> {$eleve.nomResp|truncate:40}</a></li>
-							<li><a href="javascript:void(0)" data-value="{$eleve.nomMere}"><strong>Mère:</strong> {$eleve.nomMere|truncate:40}</a></li>
-							<li><a href="javascript:void(0)" data-value="{$eleve.nomPere}"><strong>Père:</strong> {$eleve.nomPere|truncate:40}</a></li>
+							<li><a href="javascript:void(0)" data-value="{$eleve.nomResp}"><strong>Responsable:</strong>
+								{$eleve.nomResp|truncate:40}
+							</a></li>
+							<li><a href="javascript:void(0)" data-value="{$eleve.nomMere}"><strong>Mère:</strong>
+								{$eleve.nomMere|truncate:40}
+							</a></li>
+							<li><a href="javascript:void(0)" data-value="{$eleve.nomPere}"><strong>Père:</strong>
+								{$eleve.nomPere|truncate:40}
+							</a></li>
 							<li><a href="javascript:void(0)" data-value="Autre">Autre</a></li>
 						</ul>
 					</div>

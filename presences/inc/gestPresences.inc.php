@@ -46,14 +46,17 @@ if (!empty($listePeriodes)) {
         case 'classe':
             require 'presencesClasse.inc.php';
             break;
+        // case 'retards':
+        //     require_once 'retards/retards.inc.php';
+        //     break;
         default:
-            $listeCoursGrp = $Ecole->listeCoursProf($acronyme);
+            $listeCoursGrp = $Ecole->listeCoursProf($acronyme, true);
             if (count($listeCoursGrp) > 0) {
                 require 'presencesTituCours.inc.php';
             }
             break;
         }
-    } 
+    }
     else {
         $smarty->assign('message', array(
             'title' => 'AVERTISSEMENT',

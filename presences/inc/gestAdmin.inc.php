@@ -10,9 +10,6 @@ case 'justifications':
 case 'nettoyer':
     require_once 'getArchives.inc.php';
     break;
-case 'news':
-    require_once 'delEditNews.inc.php';
-    break;
 default:
     // wtf
     break;

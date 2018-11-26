@@ -2,18 +2,21 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 		{if $userStatus == 'admin'}
-			<div class="input-group">
-				<label for="freeDate" title="{if $freeDate}{$date} {else}Aujourd'hui{/if}">Date</label>
-				<input type="checkbox" value="1" id="freeDate" name="freeDate"{if $freeDate} checked="checked"{/if} class="form-control-inline">
-			</div>
-			<input type="text" name="date" id="datepicker" maxlength="10" value="{$date}"{if !($freeDate)} style="display:none"{/if} class="form-control-inline">
+			<label for="freeDate" title="{if $freeDate}{$date} {else}Aujourd'hui{/if}">
+				<input type="checkbox" value="1" id="freeDate" name="freeDate"{if $freeDate} checked="checked"{/if} class="form-control">
+			Date
+			</label>
+			<input type="text" name="date" id="datepicker" maxlength="10" value="{$date}"{if !($freeDate)} style="display:none"{/if} class="form-control">
 		{/if}
 
 
 		<select name="selectProf" id="selectProf" class="form-control">
 		<option value="">Professeur</option>
 			{foreach from=$listeProfs item=unProf}
-				<option value="{$unProf.acronyme}" {if isset($acronyme) && ($unProf.acronyme == $acronyme)}selected{/if}>{$unProf.nom|truncate:15} {$unProf.prenom}</option>
+				<option value="{$unProf.acronyme}"
+					{if isset($acronyme) && ($unProf.acronyme == $acronyme)}selected{/if}>
+					{$unProf.nom|truncate:15} {$unProf.prenom}
+				</option>
 			{/foreach}
 		</select>
 
@@ -23,7 +26,9 @@
 		<select name="coursGrp" id="coursGrp" class="form-control input-sm">
 			<option value="">Sélectionnez un cours</option>
 		{foreach from=$listeCoursGrp key=cours item=data}
-			<option value="{$cours}"{if $cours == $coursGrp} selected="selected"{/if}>{$data.libelle|truncate:25} ({$data.classes})</option>
+			<option value="{$cours}"{if $cours == $coursGrp} selected="selected"{/if}>
+				{$data.libelle|truncate:25} ({$data.classes})
+			</option>
 		{/foreach}
 		</select>
 		{else}

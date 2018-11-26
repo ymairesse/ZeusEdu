@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 <h3>Liste des absences du {$date}</h3>
 <h4>Liste 1
 {foreach from=$statutsAbs.liste1 item=item key=statut}

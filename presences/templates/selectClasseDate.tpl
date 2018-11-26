@@ -2,7 +2,7 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
 		
-		<select name="classe" id="selectClasse" class="form-control-inline">
+		<select name="classe" id="selectClasse" class="form-control">
 		<option value="">Classe</option>
 			{foreach from=$listeClasses item=uneClasse}
 				<option value="{$uneClasse}" {if isset($classe) && ($uneClasse == $classe)}selected{/if}>{$uneClasse}</option>

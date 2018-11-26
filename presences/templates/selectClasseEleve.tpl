@@ -2,10 +2,10 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève">
+		<input type="text" name="nom" id="nom" placeholder="Nom / prénom de l'élève" class="form-control">
 		<input type="hidden" name="matricule" id="matricule" value="{$matricule|default:''}">
 
-		<select name="classe" id="selectClasse">
+		<select name="classe" id="selectClasse" class="form-control">
 		<option value="">Classe</option>
 		{foreach from=$listeClasses item=uneClasse}
 			<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected="selected"{/if}>{$uneClasse}</option>

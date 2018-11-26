@@ -1,4 +1,5 @@
 <strong>{$jourSemaine|ucwords} {$date}</strong>
+
 <div style="float:right; font-size:110%;">
 	[<span>{$nbEleves}</span> <span class="glyphicon glyphicon-user"></span> ]
 	[<i class="fa fa-clock-o"></i> {$periode} <span style="font-size:10pt"><span class="glyphicon glyphicon-arrow-right"></span> {$listePeriodes.$periode.debut}-{$listePeriodes.$periode.fin}</span> ]
@@ -60,7 +61,7 @@
 						{assign var=statut value=$listePr.$noPeriode.statut|default:''}
 						{assign var=color value=$listeJustifications.$statut.color|default:'#000'}
 						{assign var=background value=$listeJustifications.$statut.background|default:'#fff'}
-						<td class="{if $noPeriode==$periode} now{else} notNow{/if}
+						<td class="{if $noPeriode==$periode} now{else} notNow{/if} {$statut}
 							{if (!in_array($statut, array_keys($justifications)))} lock{/if}"
 							id="lock-{$matricule}_periode-{$noPeriode}"
 							style="color:{$color}; background:{$background}"
@@ -79,9 +80,9 @@
 							{if ($noPeriode == $periode)}
 								<input type="hidden"
 									value="{$statut}"
-									name="matr-{$matricule}_periode-{$noPeriode}"
+									name="matr-{$matricule}"
 									class="cb"
-									id="matr-{$matricule}_periode-{$noPeriode}"
+									id="matr-{$matricule}"
 									{if (!in_array($statut, array_keys($justifications)))}
 										disabled
 									{/if}>
@@ -116,7 +117,7 @@
 	</form>
 </div>  <!-- container -->
 
-<div class="container visible-md visible-lg">
+<div class="container-fluid visible-md visible-lg">
 
 	<div class="table-responsive">
 
@@ -141,50 +142,13 @@
 
 </div>  <!-- container -->
 
-
-<!-- boîte modale pour confirmation de déverrouillage -->
-
-<div class="modal fade" id="confirmeVerrou" tabindex="-1" role="dialog" aria-labelled-by="labelModal" aria-hidden="true">
-
-	<div class="modal-dialog">
-
-		<div class="modal-content">
-
-			<div class="modal-header">
-				<h4 class="modal-title" id="labelModal">ATTENTION!!!</h4>
-			</div>  <!-- modal-header -->
-
-			<div class="modal-body">
-				<p>Souhaitez-vous vraiment déverrouiller cette période? <span id="verrou" style="display:none"></span></p>
-				<p>Notez que l'absence de cet-te élève est déjà connue. Il n'est pas souhaitable de la re-signaler.</p>
-				<p>Cette possibilité ne devrait être utilisée que pour noter une présence inattendue: malgré l'absence signalée, l'élève se trouve quand même devant vous.</p>
-			</div>  <!-- modal-body -->
-
-			<div class="modal-footer">
-				 <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                <button type="button" id="unlock" class="btn btn-primary">Déverrouiler malgré tout</button>
-			</div>  <!-- modal-footer -->
-
-		</div>  <!-- modal-content -->
-
-	</div>  <!-- modal-dialog -->
-
-</div>  <!-- modal -->
+{include file="modal/confirmUnlock.tpl"}
 
 <script type="text/javascript">
 
 	var modifie = false;
 	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
 	var confirmationVerrou = "Souhaitez-vous vraiment déverrouiller cette période?\nÀ n'utiliser que pour noter une présence inattendue."
-
-$(document).ready(function(){
-
-	var nbAbs = $(".now.absent").length+$(".now.signale").length+$(".now.sortie").length+$(".now.justifie").length+$(".now.renvoi").length;
-	var nbPres = $("input.cb").length - nbAbs;
-	var modifie = false;
-
-	$("#nbAbs").text(nbAbs);
-	$("#nbPres").text(nbPres);
 
 	function modification () {
 		$("#save").html("<i class='fa fa-floppy-o'></i>");
@@ -205,6 +169,11 @@ $(document).ready(function(){
 		$("#nbPres").text(nbPres);
 		}
 
+$(document).ready(function(){
+
+	notificationNombres();
+	modifie = false;
+
 	$("#presencesEleves").submit(function(){
 		$.blockUI();
 		$("#wait").show();
@@ -221,20 +190,45 @@ $(document).ready(function(){
 		var cb = ligne.find('input:hidden');
 		// input 'disabled' si l'absence est connue
 		if (cb.attr('disabled') != 'disabled') {
-			var statut = cb.val();
-			if (statut == 'absent')
-				cb.val('present');
-				else cb.val('absent');
+			if ($('#btnRetard').hasClass('active')) {
+				var statut = cb.val();
+				switch (statut) {
+					case 'retard':
+						cb.val('indetermine');
+						break;
+					default:
+						cb.val('retard');
+						break;
+					}
+				}
+				else {
+					var statut = cb.val();
+					switch (statut) {
+						case 'absent':
+							cb.val('present');
+							break;
+						case 'indetermine':
+							cb.val('absent');
+							break;
+						case 'present':
+							cb.val('indetermine');
+							break;
+						case 'retard':
+							cb.val('absent');
+							break;
+						}
+					}
+				var newStatut = cb.val();
+			}
 
-			var newStatut = cb.val();
 			ligne.find('button').removeClass().addClass('btn btn-large btn-block nomEleve clip').addClass(newStatut);
 			var periode = $("#periode").val()
-			ligne.find('td').eq(periode).removeClass().addClass(newStatut+' now');
+			ligne.find('td[data-periode="' + periode +'"]').removeClass().addClass(newStatut+' now');
 
 			// notification du nombre d'absents et de présents
 			notificationNombres();
 			}
-		})
+		)
 
 	$(".lock").click(function(event){
 		var periodeActuelle = $("#periode").val();
@@ -319,7 +313,7 @@ $(document).ready(function(){
 				var html = '';
 				if ($(this).hasClass('lock'))
 					html = "<span class='glyphicon glyphicon-lock' title='absence déjà signalée'></span>";
-				html += "<input type='hidden' value='"+statut+"' name='matr-"+matricule+"_periode-"+nouvellePeriode+"' class='cb' id='matr-"+matricule+"_periode-"+nouvellePeriode+"'";
+				html += "<input type='hidden' value='"+statut+"' name='matr-" + matricule + "' class='cb' id='matr-" + matricule + "'";
 				if ($(this).hasClass('lock'))
 					html += " disabled";
 				html += ">";
@@ -330,6 +324,8 @@ $(document).ready(function(){
 			// déplacer le trash actif vers la nouvelle période
 			$(".trash[data-periode='"+periodeActuelle+"']").addClass('disabled');
 			$(".trash[data-periode='"+nouvellePeriode+"']").removeClass('disabled');
+
+			notificationNombres();
 			}
 		})
 
@@ -366,6 +362,19 @@ $(document).ready(function(){
 				$("#presAuto").val(true);
 				}
 		})
+
+	// bouton pour activer la prise en compte des retards
+	$('#btnRetard').click(function(){
+		$(this).toggleClass('btn-pink btn-green');
+		if ($(this).hasClass('btn-green')){
+			$('#btnRetard').toggleClass('active');
+			$(this).html('<i class="fa fa-clock-o"></i> Retard au cours [Activé]');
+			}
+			else {
+				$('#btnRetard').toggleClass('active');
+				$(this).html('<i class="fa fa-clock-o"></i> Retard au cours [Désactivé]');
+			}
+	})
 
 })
 

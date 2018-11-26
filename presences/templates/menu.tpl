@@ -1,4 +1,4 @@
-<div class="container hidden-print">
+<div class="container-fluid hidden-print">
 
 <nav class="navbar navbar-default" role="navigation">
 
@@ -17,18 +17,21 @@
 	<div class="collapse navbar-collapse" id="barreNavigation">
 		<ul class="nav navbar-nav">
 			<li><a href="index.php"><button type="button" class="btn btn-primary">Présences <img src="images/presencesIco.png" alt="P"></button></a></li>
-			{if isset($lesCours) && ($lesCours != Null)}
+			{if isset($listeCoursGrp) && ($listeCoursGrp != Null)}
 				<li><a href="index.php?action=presences&amp;mode=tituCours">Profs</a></li>
 			{/if}
 
-			{if ($userStatus == 'educ') || ($userStatus == 'admin') || ($userStatus == 'coordinateur')}
+
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Educs<b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="index.php?action=presences&amp;mode=cours">Présences par cours</a></li>
 						<li><a href="index.php?action=presences&amp;mode=classe">Présences par classe</a></li>
+						{if ($userStatus == 'educ') || ($userStatus == 'admin') || ($userStatus == 'coordinateur')}
+							<li><a href="index.php?action=scan">Scan des retards</a></li>
+							<li><a href="index.php?action=presences&amp;mode=retards">Gestion des retards</a></li>
+						{/if}
 					</ul>
 				</li>
-			{/if}
 
 			{if ($userStatus != 'accueil')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Listes<b class="caret"></b></a>
@@ -56,8 +59,6 @@
 					<li><a href="index.php?action=admin&amp;mode=justifications">Liste des motifs d'absences</a></li>
 					<li role="separator" class="divider"></li>
 					<li><a href="index.php?action=admin&amp;mode=nettoyer">Nettoyer les archives</a></li>
-					<li role="separator" class="divider"></li>
-					<li><a href="index.php?action=admin&amp;mode=news">News</a></li>
 				</ul>
 			</li>
 			{/if}
