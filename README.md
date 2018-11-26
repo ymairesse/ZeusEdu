@@ -39,6 +39,8 @@ Les mises à jour cruciales à réaliser dans la base de données ou dans des fi
 2018-09-08 : ajustement des sections possibles dans la table didac_titus (changement de "G" -> "GT")
 2018-09-09 : suppresion de la clef primaire multiple sur didac_thotShares et ajout de la clef primaire sur shareId
 2018-09-22 : ajout du champ "lastModif" à la table didac_thotJdc
+2018-11-12 : ajout de la table didac_thotFratrie pour permettre un seul login par famille
+2018-11-23 : ajout de la table didac_thotJdcEleve et suppression de didac_thotJdcEleves
 
 Installation
 ============
