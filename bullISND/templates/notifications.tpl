@@ -70,6 +70,7 @@
 {/foreach}
 </table>
 
+<input type="hidden" name="classe" value="{$classe}">
 <input type="hidden" name="action" value="{$action}">
 <input type="hidden" name="mode" value="{$mode}">
 <input type="hidden" name="etape" value="envoyer">

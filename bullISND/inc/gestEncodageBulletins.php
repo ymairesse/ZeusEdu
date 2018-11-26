@@ -27,7 +27,9 @@ $smarty->assign('tableErreurs',Null);
 $smarty->assign('COTEABS',COTEABS);
 $smarty->assign('COTENULLE',COTENULLE);
 
-$listeCours = $user->listeCoursProf();
+$sections = "'G', 'GT', 'TT'";
+
+$listeCours = $user->listeCoursProf($sections, true);
 $smarty->assign('listeCours',$listeCours);
 
 // le cours actif appartient-il bien à l'utilisateur actif?

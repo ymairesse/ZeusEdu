@@ -18,7 +18,6 @@ $acronyme = $User->getAcronyme();
 
 $module = Application::getModule(1);
 
-
 switch ($mode) {
     case 'archive':
         // $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;

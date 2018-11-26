@@ -30,13 +30,14 @@ $smarty->assign('COTEABS', COTEABS);
 $smarty->assign('COTENULLE', COTENULLE);
 $smarty->assign('NOMSPERIODES', explode(',', NOMSPERIODES));
 
-$listeCours = $user->listeCoursProf();
+$sections = "'G', 'GT', 'TT'";
+$listeCours = $user->listeCoursProf($sections, true);
 $smarty->assign('listeCours', $listeCours);
 
 switch ($mode) {
     case 'gererCotes':
         $smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
-        if (isset($coursGrp) && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
+        if (isset($coursGrp) && in_array($coursGrp, array_keys($listeCours))) {
             $identite = $user->identite();
             $listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
             $listeTravaux = $Bulletin->listeTravaux($coursGrp, $bulletin);

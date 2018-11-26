@@ -48,6 +48,9 @@ $listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
 
 $listeTravaux = $Bulletin->listeTravaux($coursGrp, $bulletin);
 $listeCotes = ($listeTravaux != null) ? $Bulletin->listeCotesCarnet($listeTravaux) : null;
+
+$listeErreursEncodage = $Bulletin->listeErreursCarnet($listeCotes);
+
 $listeMoyennes = $Bulletin->listeMoyennesCarnet($listeCotes);
 $listeCompetences = current($Bulletin->listeCompetences($coursGrp));
 
@@ -64,6 +67,7 @@ $smarty->assign('bulletin', $bulletin);
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('listeTravaux', $listeTravaux);
 $smarty->assign('listeCotes', $listeCotes);
+$smarty->assign('listeErreursEncodage', $listeErreursEncodage);
 $smarty->assign('listeMoyennes', $listeMoyennes);
 $smarty->assign('listeCompetences', $listeCompetences);
 

@@ -1,4 +1,5 @@
 <?php
+
 $smarty->assign('action','delibes');
 $smarty->assign('mode','synthese');
 $smarty->assign('etape','showCotes');
@@ -7,6 +8,7 @@ $smarty->assign('selecteur', 'selectBulletin0Classe');
 if (($etape == 'showCotes') && ($classe)) {
     $listeEleves = $Ecole->listeEleves($classe, 'groupe');
     $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
+
     $listeSituations100 = $Bulletin->getSituations100($bulletin, $listeEleves);
     $listeCours = $Ecole->listeCoursClassePourDelibe($classe);
 

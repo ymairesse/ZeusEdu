@@ -23,7 +23,8 @@ $idCarnet = isset($_POST['idCarnet'])?$_POST['idCarnet']:Null;
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 $bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:Null;
 
-require_once INSTALL_DIR."/bullISND/inc/classes/classBulletin.inc.php";
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classBulletin.inc.php";
 $Bulletin = new Bulletin();
 
 // soit on fait un nouvel entête pour une nouvelle cote

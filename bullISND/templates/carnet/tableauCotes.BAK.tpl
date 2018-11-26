@@ -6,7 +6,7 @@
 
 	<a type="button" class="btn btn-primary pull-left" href="index.php?action=carnet&amp;mode=oneClick">Bulletin one click <i class="fa fa-thumbs-o-up fa-lg"></i></a>
 
-	<button type="button" class="btn btn-lightBlue" id="pdf" title="Enregistrer en PDF">PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i></button>
+	<button type="button" class="btn btn-primary" id="pdf" title="Enregistrer en PDF">PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i></button>
 
 	<div class="btn-group pull-right">
 		<button class="btn btn-primary" id="boutonPlus"><i class="fa fa-plus fa-lg"></i> Ajouter une cote</button>
@@ -34,7 +34,7 @@
 					{assign var=idComp value=$travail.idComp}
 				<th id="idCarnet{$idCarnet}"
 					data-idcarnet = "{$idCarnet}"
-					style="width:4em cursor:pointer"
+					style="width:4em; cursor:pointer"
 					class="enteteCote {$travail.formCert}"
 					data-toggle="popover"
 					data-original-title="Choisir une action"
@@ -63,9 +63,7 @@
 					{assign var=idComp value=$travail.idComp}
 				<th data-idcarnet="{$idCarnet}"
 					style="width:4em"
-					data-toggle="popover"
-					data-trigger="hover"
-					class="detailsCote {$travail.formCert}"
+					class="pop detailsCote {$travail.formCert}"
 					data-content="Libellé: {$travail.libelle}<br>
 								Remarque: {$travail.remarque}<br>
 								Neutralisé: <strong>{if $travail.neutralise == 1}Oui{else}Non{/if}</strong><br>
@@ -78,7 +76,7 @@
 					data-original-title="C{$travail.ordre} {$listeCompetences.$idComp.libelle}">
 					{$travail.date|substr:0:5}<br>
 					<span class="micro">C{$travail.ordre}</span> / <strong>{$travail.max}</strong>
-					{if $travail.publie == 1}<img src="images/thotIco.png">{/if}
+					{if $travail.publie == 1}<img src="images/thotIco.png" alt="Thot">{/if}
                     <input type="hidden" name="max{$idCarnet}" value="{$travail.max}">
 				</th>
 				{/foreach}
@@ -95,8 +93,6 @@
 			{assign var=nomPrenom value=$unEleve.nom|cat:' '|cat:$unEleve.prenom}
 			<td	style="cursor:pointer"
 				class="pop"
-				data-toggle="popover"
-				data-trigger="hover"
 				data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$matricule}' style='width:100px'><br><span class='micro'>{$matricule}</span>"
 				data-html="true"
 				data-placement="top"
@@ -109,10 +105,9 @@
 				{assign var=couleur value=$travail.idComp|substr:-1}
 				<td class="{$travail.formCert} couleur{$couleur}
 					{if (isset($listeCotes.$matricule.$idCarnet)) && $listeCotes.$matricule.$idCarnet.echec} echec{/if} cote"
-					data-content="{$nomPrenom}"
-					data-placement="left"
-					data-toggle="popover"
-					data-trigger="focus"
+					title="{$nomPrenom}"
+					data-original-title="{$nomPrenom}"
+					data-placement="right"
 					data-container="body"
                     data-idcarnet="{$idCarnet}">
 					<input type="text" name="cote-{$idCarnet}_eleve-{$matricule}"
@@ -173,7 +168,7 @@
 
 <script type="text/javascript">
 
-	{if isset($listeErreursEncodage) && $listeErreursEncodage|@count > 0}
+	{if $listeErreursEncodage|@count > 0}
 	bootbox.alert({
 		title: 'Erreur(s)',
 		message: 'Votre carnet de cotes contient <span class="erreurEncodage">' + {$listeErreursEncodage|@count} + ' erreur(s)</span> d\'encodage',
@@ -185,10 +180,11 @@
 		$('[data-toggle="popover"]').popover();
 
 		$('body').on('click', function (e) {
-		    $('[data-toggle="popover"]').each(function () {
-		        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-		            $(this).popover('hide');
-		        }
+
+	    $('[data-toggle="popover"]').each(function () {
+	        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+	            $(this).popover('hide');
+	        }
 	    	});
 		});
 
@@ -203,6 +199,7 @@
 				idCarnet: idCarnet
 			}, function(resultat){
 				$('#editCote').html(resultat);
+				// $('#modalChoixAction').modal('hide');
 				$('#modalSuppr').modal('show');
 			})
 		})

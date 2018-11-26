@@ -79,7 +79,6 @@ $smarty->assign('anneeScolaire', $anneeScolaire);
 
 foreach ($listeEleves as $matricule => $dataEleve) {
     $smarty->assign('dataEleve', $dataEleve);
-
     // passer les informations si on les connaît (nouveaux élèves?)
     if (isset($anneesScolairesPrecedentes[$matricule])) {
         $smarty->assign('anneeScolairePrecedente', $anneesScolairesPrecedentes[$matricule]);
@@ -88,6 +87,8 @@ foreach ($listeEleves as $matricule => $dataEleve) {
         $smarty->assign('tdWidthPrec', $tdWidthPrec);
         $smarty->assign('infoAnneePrecedente', $infoAnneePrecedente);
     }
+    else $smarty->assign('anneeScolairePrecedente', Null);
+
     $tdWidthAct = (int) (100 / count($infoAnneeScolaire[$matricule]));
     $smarty->assign('tdWidthAct', $tdWidthAct);
     $smarty->assign('infoAnneeScolaire', $infoAnneeScolaire[$matricule]);

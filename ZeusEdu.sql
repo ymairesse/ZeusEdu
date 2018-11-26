@@ -1264,8 +1264,8 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
-CREATE TABLE `didac_thotJdc` (
-  `id` int(6) NOT NULL,
+CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
   `destinataire` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matricule ou coursGrp ou classe ou...',
   `type` enum('cours','coursGrp','classe','eleve','niveau','ecole') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type du destinataire',
   `proprietaire` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1276,8 +1276,13 @@ CREATE TABLE `didac_thotJdc` (
   `class` enum('event-warning','event-success','event-info','event-inverse','event-special','event-important') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'event-info',
   `startDate` datetime NOT NULL,
   `endDate` datetime NOT NULL,
-  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
+  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée',
+  `lastModif` datetime DEFAULT NULL COMMENT 'Date de dernière modification',
+  PRIMARY KEY (`id`),
+  KEY `proprietaire` (`proprietaire`),
+  KEY `destinataire` (`destinataire`),
+  KEY `endDate` (`endDate`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
 
 ALTER TABLE `didac_thotJdc`
   ADD PRIMARY KEY (`id`),

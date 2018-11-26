@@ -1,4 +1,4 @@
-<page backtop="18mm" backbottom="18mm" backleft="15mm" backright="15mm">
+<page backtop="9mm" backbottom="18mm" backleft="15mm" backright="15mm">
 	{if $typeDoc == 'pia'} {include file="../direction/entetePIA.tpl"} {/if}
 	{if $typeDoc == 'competences'}{include file="../direction/enteteCompetences.tpl"} {/if}
 

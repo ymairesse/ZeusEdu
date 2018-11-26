@@ -10,6 +10,9 @@
 <div id="editCote">
 </div>
 
+<div id="savePDF">
+
+</div>
 
 <script type="text/javascript">
 
@@ -165,7 +168,6 @@ $(document).ready(function(){
 				coursGrp: coursGrp,
 				bulletin: bulletin
 			}, function(resultat){
-				console.log(resultat);
 				$('#tableauCotes').html(resultat);
 				$('#modalEditCote').modal('hide');
 			})
@@ -190,18 +192,50 @@ $(document).ready(function(){
 		var coursGrp = $("#coursGrp").val();
 		var tri = $("#tri").val();
 		var bulletin = $("#bulletin").val();
-		$.post("inc/carnet/carnet2PDF.inc.php", {
+		$.post("inc/carnet/carnet4PDF.inc.php", {
 			coursGrp: coursGrp,
 			bulletin: bulletin,
 			tri: tri
 			},
 			function(resultat){
-				bootbox.alert({
-					title: 'Sauvegarde de votre carnet de cotes',
-					message: resultat
-				});
+				$('#savePDF').html(resultat);
+				$('#modalSavePDF').modal('show');
 			});
 		})
+
+	$('#savePDF').on('click', '#goSavePDF', function(){
+		var formulaire = $('#formSavePDF').serialize();
+		var coursGrp = $("#coursGrp").val();
+		var tri = $("#tri").val();
+		$.post('inc/carnet/printCarnet.inc.php', {
+			formulaire: formulaire,
+			coursGrp: coursGrp,
+			tri: tri
+		}, function(resultat){
+			bootbox.alert({
+				title: 'Sauvegarde PDF de vos carnets de cotes',
+				message: resultat
+			});
+			$('#modalSavePDF').modal('hide');
+		})
+	})
+
+	// $('#tableauCotes').on('click', '#pdf', function(){
+	// 	var coursGrp = $("#coursGrp").val();
+	// 	var tri = $("#tri").val();
+	// 	var bulletin = $("#bulletin").val();
+	// 	$.post("inc/carnet/carnet2PDF.inc.php", {
+	// 		coursGrp: coursGrp,
+	// 		bulletin: bulletin,
+	// 		tri: tri
+	// 		},
+	// 		function(resultat){
+	// 			bootbox.alert({
+	// 				title: 'Sauvegarde de votre carnet de cotes',
+	// 				message: resultat
+	// 			});
+	// 		});
+	// 	})
 
 	$('body').on('click', '#celien', function(){
 		bootbox.hideAll();

@@ -31,7 +31,7 @@ switch ($mode) {
 			$eleve = new Eleve($matricule);
 			$infoPersoEleve = $eleve->getDetailsEleve();
 			// liste de tous les cours suivis par cet élève durant la période $bulletin (historique pris en compte)
-			$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin);
+			$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin, true);
 			// il n'y a qu'un élève, il n'y aura donc qu'une seule liste de pondérations
 			if ($listeCoursGrp) {
 				$listeCoursGrp = $listeCoursGrp[$matricule];

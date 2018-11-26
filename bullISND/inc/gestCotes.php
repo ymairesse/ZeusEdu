@@ -15,7 +15,10 @@ if (isset($_POST['tri'])) {
     }
 $smarty->assign('tri', $tri);
 
-$listeCoursProf = $user->listeCoursProf();
+$sections = "'G', 'GT', 'TT'";
+
+$listeCoursProf = $user->listeCoursProf(Null, true);
+
 $smarty->assign('listeCours', $listeCoursProf);
 
 switch ($mode) {
@@ -25,7 +28,7 @@ switch ($mode) {
         $smarty->assign('bulletin', $bulletin);
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
-        if ($etape == 'showCotes' && in_array($coursGrp, array_keys($user->listeCoursProf()))) {
+        if ($etape == 'showCotes' && in_array($coursGrp, array_keys($listeCoursProf))) {
             $listeEleves = $Ecole->listeElevesCours($coursGrp, $tri);
             $ponderations = $Bulletin->getPonderations($coursGrp, $bulletin);
             $listeCompetences = $Bulletin->listeCompetences($coursGrp);

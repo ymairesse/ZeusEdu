@@ -28,7 +28,7 @@
 
     {if isset($sitEleve.pourcent)}
 
-        <button class="btn btn-default btn-sm pop hook disabled"
+        <button class="btn btn-default btn-sm pop hook {if $coteExterne != ''} disabled{/if}"
             type="button"
             name="btnHook-eleve_{$matricule}"
             tabIndex="{$tabIndexAutres+1}"

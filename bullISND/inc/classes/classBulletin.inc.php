@@ -306,7 +306,8 @@ class Bulletin
         $sql = 'SELECT DISTINCT groupe ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'eleves.matricule = '.PFX.'elevesCours.matricule) ';
-        $sql .= 'WHERE '.PFX."elevesCours.coursGrp = '$coursGrp'";
+        $sql .= 'WHERE '.PFX."elevesCours.coursGrp = '$coursGrp' ";
+
         $resultat = $connexion->query($sql);
         $listeClasses = array();
         while ($ligne = $resultat->fetch()) {
@@ -1610,7 +1611,7 @@ class Bulletin
             if ($situation != '') {
                 $situation = ($situation > 50) ? round($situation, 0) : round($situation, 1);
             }
-            $situationPourCent = (($situation === '') || ($maxSituation === '')) ? null : round(100 * $situation / $maxSituation, 0);
+            $situationPourCent = (!is_numeric($maxSituation) || ($situation === '') || ($maxSituation === '')) ? null : round(100 * $situation / $maxSituation, 0);
 
             // sommes-nous dans une période avec délibé?
             if ($isDelibe) {
@@ -1830,7 +1831,9 @@ class Bulletin
                 $echec = (($sitDelibe < 50) && ($sitDelibe != '') && ($attributDelibe != 'hook')) ? 'echec' : '';
                 $situation = $ligne['situation'];
                 $maxSituation = $ligne['maxSituation'];
-                $situationPourCent = (($situation === '') || ($maxSituation === '')) ? null : round(100 * $situation / $maxSituation, 0);
+                if (is_numeric($maxSituation))
+                    $situationPourCent = (($situation === '') || ($maxSituation === '')) ? null : round(100 * $situation / $maxSituation, 0);
+                    else $situationPourCent = '-';
                 $ligne['situationPourcent'] = $situationPourCent;
                 $ligne['echec'] = $echec;
                 $liste[$matricule][$cours] = $ligne;
@@ -2605,10 +2608,11 @@ class Bulletin
      *
      * @param string|array $listeEleves : liste des élèves concernés
      * @param int          $bulletin    : numéro du bulletin à considérer (important pour l'historique)
+     * @param boolean $virtuel : veut-on les bulletins virtuels aussi?
      *
      * @return array : liste des cours suivis par la liste des élèves à la période $bulletin
      */
-    public function listeCoursGrpEleves($listeEleves, $bulletin)
+    public function listeCoursGrpEleves($listeEleves, $bulletin, $virtuel=false)
     {
         if (is_array($listeEleves)) {
             $listeMatricules = implode(',', array_keys($listeEleves));
@@ -2625,6 +2629,9 @@ class Bulletin
         $sql .= 'LEFT JOIN '.PFX.'profsCours AS dpc ON (dpc.coursGrp = delc.coursGrp) ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON (dp.acronyme = dpc.acronyme) ';
         $sql .= "WHERE matricule IN ($listeMatricules) ";
+        if ($virtuel == true) {
+            $sql .= 'AND virtuel = false ';
+            }
         $sql .= 'ORDER BY rang, nbheures DESC, rang, libelle ';
 
         $resultat = $connexion->query($sql);
@@ -2644,7 +2651,10 @@ class Bulletin
         $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(dpc.coursGrp, 1, LOCATE('-', dpc.coursGrp)-1) ";
         $sql .= 'JOIN '.PFX.'statutCours AS dsc ON (dsc.cadre = dc.cadre) ';
         $sql .= 'JOIN '.PFX.'profs AS dp ON (dp.acronyme = dpc.acronyme) ';
-        $sql .= "WHERE matricule IN ($listeMatricules) ";
+        $sql .= 'WHERE matricule IN ('.$listeMatricules.') ';
+        if ($virtuel == true) {
+            $sql .= 'AND virtuel = false ';
+            }
 
         $resultat = $connexion->query($sql);
         if ($resultat) {
@@ -2996,7 +3006,7 @@ class Bulletin
             $listeElevesString = $listeEleves;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT bd.matricule, periode, decision, restriction, mail, notification, adresseMail, quand, ';
+        $sql = 'SELECT bd.matricule, periode, decision, restriction, mail, notification, adresseMail, DATE_FORMAT(quand, "%d/%m %H:%i") AS quand, ';
         $sql .= 'nom, prenom, user, mailDomain ';
         $sql .= 'FROM '.PFX.'bullDecisions AS bd ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = bd.matricule ';
@@ -4005,12 +4015,13 @@ class Bulletin
      */
     public function listeErreursCarnet($listeCotes){
         $listeErreurs = array();
-        foreach ($listeCotes as $idEleve => $dataCotes) {
-            foreach ($dataCotes as $idCarnet => $data) {
-                if ($data['erreurEncodage'] == true)
-                    $listeErreurs[] = array('idEleve' => $idEleve, 'idCarnet' => $idCarnet);
+        if (count($listeCotes) > 0)
+            foreach ($listeCotes as $idEleve => $dataCotes) {
+                foreach ($dataCotes as $idCarnet => $data) {
+                    if ($data['erreurEncodage'] == true)
+                        $listeErreurs[] = array('idEleve' => $idEleve, 'idCarnet' => $idCarnet);
+                }
             }
-        }
         return $listeErreurs;
     }
 
@@ -5741,7 +5752,7 @@ class Bulletin
         $Ecole = new Ecole();
 
         // liste des coursGrp tenant compte de l'historique
-        $listeCoursGrp = $this->listeCoursGrpEleves($matricule, $bulletin);
+        $listeCoursGrp = $this->listeCoursGrpEleves($matricule, $bulletin, true);
         if ($listeCoursGrp) {
             // il n'y a qu'un élève, il n'y aura donc qu'une seule liste de pondérations
             $listeCoursGrp = $listeCoursGrp[$matricule];
@@ -5814,7 +5825,7 @@ class Bulletin
         $noticeDirection = $this->noteDirection($annee, $bulletin);
 
         // tous les cours donnés dans la classe (certains élèves ne suivent pas certains cours; tenir compte de l'historique)
-        $listeTousCoursGrp = $this->listeCoursGrpEleves($listeEleves, $bulletin);
+        $listeTousCoursGrp = $this->listeCoursGrpEleves($listeEleves, $bulletin, true);
         $module = Application::getModule(1);
 
         foreach ($listeEleves as $matricule => $dataEleve) {
@@ -7092,13 +7103,8 @@ class Bulletin
          // le nom du champ contenant la cote de l'épreuve externe commence par "cote" suivi de "_xxxxx" où xxxxx est le matricule
          if ($fieldCote[0] == 'cote') {
              $matricule = $fieldCote[1];
-             $pattern = '!\d+(?:\.\d+)?!';
-             preg_match($pattern, $value, $matches);
-             if (isset($matches[0])) {
-                 $cote = ltrim(strtoupper($this->sansVirg($matches[0])), '0');
-             } else {
-                 $cote = '';
-             }
+             $value = str_replace(',', '.', $value);
+             $cote = ltrim(strtoupper($value), '0');
 
              $erreur = false;
              // la cote externe doit être numérique et comprise entre 0 et 100

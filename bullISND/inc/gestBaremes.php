@@ -12,7 +12,7 @@ $smarty->assign('matricule', $matricule);
 $sections = SECTIONS;
 $sections = "'".implode("','", explode(',', $sections))."'";
 
-$listeCours = $user->listeCoursProf($sections);
+$listeCours = $Ecole->listeCoursProf($acronyme, false);
 $smarty->assign('listeCours', $listeCours);
 
 $smarty->assign('action', $action);
@@ -69,7 +69,8 @@ switch ($mode) {
     default:
         $smarty->assign('selecteur', 'selecteurs/selectCours');
         // on revient avec un cours à traiter...
-        $listeCoursProf = array_keys($Ecole->listeCoursProf($acronyme));
+        $listeCoursProf = array_keys($listeCours);
+
         if (($coursGrp != null) && in_array($coursGrp, $listeCoursProf)) {
             $ponderations = $Bulletin->getPonderations($coursGrp);
             if ($ponderations == null) {

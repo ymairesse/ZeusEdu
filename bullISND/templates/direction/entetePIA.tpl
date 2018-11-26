@@ -1,8 +1,10 @@
 <h3 style="text-align:center">PLAN INDIVIDUEL D'APPRENTISSAGE</h3>
-<p style="text-decoration: underline;">Dénomination et siège de l'établissement</p>
-<p><strong>{$ECOLE}</strong><br>
+
+<p><span style="text-decoration: underline;">Dénomination et siège de l'établissement</span><br>
+<strong>{$ECOLE}</strong><br>
 {$ADRESSE}</p>
-<p>Le/la soussigné-e, <strong>{$DIRECTION}</strong>,<br>
+
+<p style="padding-top:0.5em;">Le/la soussigné-e, <strong>{$DIRECTION}</strong>,<br>
 chef de l'établissement susmentionné, certifie que</p>
 
 <table style="width:100%;">

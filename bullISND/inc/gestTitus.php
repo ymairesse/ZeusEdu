@@ -56,7 +56,7 @@ switch ($mode) {
 		if ($classe && $bulletin) {
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 			$listeCoursGrpClasse = $Ecole->listeCoursGrpClasse($classe);
-			$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
+			$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin, true);
 			$listeVerrous = $Bulletin->listeLocksBulletin($listeEleves, $listeCoursGrpClasse, $bulletin);
 
 			$smarty->assign('listeEleves', $listeEleves);

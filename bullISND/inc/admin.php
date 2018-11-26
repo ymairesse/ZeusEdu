@@ -107,7 +107,8 @@ switch ($mode) {
         switch ($etape) {
             case 'addProfs':
                 $addProf = isset($_POST['addProf']) ? $_POST['addProf'] : null;
-                $nbInsert = $Ecole->ajouterProfsCoursGrp($addProf, $coursGrp);
+                $virtuel = $Ecole->isVirtuel($coursGrp);
+                $nbInsert = $Ecole->ajouterProfsCoursGrp($addProf, $coursGrp, $virtuel);
                 $smarty->assign('message', array(
                                     'title' => 'Enregistrement',
                                     'texte' => "$nbInsert modification(s)",
@@ -473,7 +474,7 @@ switch ($mode) {
                         );
         }
 
-        $listeCours = $Ecole->listeCoursProf($acronyme);
+        $listeCours = $Ecole->listeCoursProf($acronyme, true);
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
         $smarty->assign('etape', 'enregistrer');

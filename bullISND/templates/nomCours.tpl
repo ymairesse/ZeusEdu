@@ -22,7 +22,9 @@
 			<div class="col-md-6 col-sm-12">
 
 				<div class="form-group">
-					<label for="field_{$coursGrpPROT}">{$data.libelle} {$data.classes} {$coursGrp}</label>
+					<label for="field_{$coursGrpPROT}" {if ($data.virtuel == 1)}style="color:green" title="Cours virtuel"{/if}>
+						{$data.libelle} {$data.classes} {$coursGrp}
+					</label>
 					<input tabIndex="{$tabIndex}" type="text" maxlength="40" name="field_{$coursGrpPROT}" id="field_{$coursGrpPROT}" value="{$data.nomCours}" class="form-control">
 					<div class="help-block">Dénomination personnelle pour le cours {$coursGrp}</div>
 				</div>

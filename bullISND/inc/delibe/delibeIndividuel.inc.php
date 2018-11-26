@@ -17,7 +17,7 @@ switch ($etape) {
                             );
         // pas de break;
     case 'showEleve':
-        $listeCoursEleve = current($Bulletin->listeCoursGrpEleves($matricule, $bulletin));
+        $listeCoursEleve = current($Bulletin->listeCoursGrpEleves($matricule, $bulletin, true));
 
         // recension des situations dans les différents cours pour l'élève concerné
         $listeSituations = current($Bulletin->listeSituationsCours($matricule, array_keys($listeCoursEleve), null, true));

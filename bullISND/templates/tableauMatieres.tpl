@@ -4,12 +4,8 @@
 
 <form name="creationCours" id="creationCours" action="index.php" method="POST" role="form" class="form-vertical">
 
-	<div class="row panel panel-default">
+	<div class="row">
 
-		<div class="panel-heading">
-			<h4>Matière</h4>
-		</div>
-		<div class="panel-body">
 		<div class="col-md-2 col-sm-6">
 			<div class="form-group">
 				<label>Matière</label>
@@ -46,7 +42,6 @@
 			</div>
 		</div>  <!-- col-md-... -->
 
-		</div>  <!-- panel-body -->
 
 	</div>  <!-- row -->
 
@@ -75,6 +70,16 @@
 						<label for="groupe">Groupe [(0)n(x)]</label>
 						<input type="text" name="groupe" id="groupe" maxlength="3" class="form-control">
 						<div class="help-block">1 ou 2 chiffres puis 0 ou 1 lettre (a, b ou c)</div>
+					</div>
+
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="virtuel" id="cbVirtuel" value="1">
+							Cours Virtuel
+						</label>
+						<div class="help-block">
+							Les cours "virtuels" n'apparaissent pas au  bulletin
+						</div>
 					</div>
 
 				</div>  <!-- col-md-... -->
@@ -119,6 +124,7 @@
 		<th>Libellé</th>
 		<th>Statut</th>
 		<th>Cadre</th>
+		<th>Virtuel</th>
 		<th>Professeur</th>
 		<th>Nombre d'élèves</th>
 	</tr>
@@ -128,6 +134,7 @@
 		<td>{$data.libelle}</td>
 		<td>{$data.statut}</td>
 		<td>{$data.cadre}</td>
+		<td><input type="checkbox" data-coursgrp="{$coursGrp}" class="virtuel" name="virtuel_{$coursGrp}" value="1" {if $data.virtuel == 1}checked{/if}></td>
 		<td><form name="modProfs_{$coursGrp}" action="index.php" method="POST" class="microForm">
 		{if $data.acronyme != ''}
 			{$data.nomProf} ({$data.acronyme})
@@ -174,6 +181,18 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
+
+		$('.virtuel').change(function(){
+			var coursGrp = $(this).data('coursgrp');
+			var virtuel = ($(this).prop('checked') == true) ? 1 : 0;
+			$.post('inc/admin/saveVirtuel.inc.php', {
+				coursGrp: coursGrp,
+				virtuel: virtuel
+			}, function(nb){
+				bootbox.alert(nb + ' modification(s) enregistrée(s)');
+			})
+		})
+
 		$("#groupe").keyup(function(){
 			var groupe = $(this).val();
 			var matiere = $("#matiere").val();

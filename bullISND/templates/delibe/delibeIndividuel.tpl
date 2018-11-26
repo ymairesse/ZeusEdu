@@ -33,7 +33,7 @@
 
 						{foreach from=$listeCours key=coursGrp item=unCours}
 						<tr class="{$unCours.statut}">
-							<td style="width:30%" class="pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$unCours.libelle}" data-html="true">
+							<td style="width:30%" class="pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$unCours.libelle}<br><span class='discret'>{$coursGrp}</span>" data-html="true">
 								{$unCours.statut}: {$unCours.libelle}
 							</td>
 
@@ -159,6 +159,7 @@
 										<option value="Échec" {if isset($decision.decision) && $decision.decision=='Échec' } selected{/if}>Échec</option>
 										<option value="Ajournement" {if isset($decision.decision) && $decision.decision=='Ajournement' } selected{/if}>Ajournement</option>
 										<option value="Restriction" {if isset($decision.decision) && $decision.decision=='Restriction' } selected{/if}>Restriction avec accès en</option>
+										<option value="TEST">TEST TEST TEST</option>
 									</select>
 								</div>
 							</td>

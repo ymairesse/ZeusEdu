@@ -18,7 +18,6 @@
 		</thead>
 
 		{foreach from=$listeSynthDecisions key=matricule item=decision}
-		<hr>
 		<tr>
 			<td class="pop"
 				data-html="true"

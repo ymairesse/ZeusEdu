@@ -100,7 +100,13 @@
 						<div class="col-xs-4">
 							<div class="checkbox-inline">
 								<label for="publie">
-									<input type="checkbox" name="publie" id="publie" value="1" class="form-control {if $entete.neutralise == 1}disabled{/if}" {if ($entete.publie == 1)}checked{/if}>
+									<input type="checkbox"
+										name="publie"
+										id="publie"
+										value="1"
+										class="{if $entete.neutralise == 1}disabled{/if}" 
+										{if ($entete.publie == 1)}checked{/if}
+										>
 									Publié</label>
 								<div class="help-block">
 									Visible sur Thot

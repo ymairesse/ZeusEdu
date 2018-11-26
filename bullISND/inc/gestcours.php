@@ -1,4 +1,5 @@
 <?php
+
 $smarty->assign('action',$action);
 $smarty->assign('mode', $mode);
 
@@ -35,9 +36,8 @@ switch ($mode) {
 		$smarty->assign('selecteur', 'selectNiveauMatiere');
 		$smarty->assign('corpsPage','editMatiere');
 		break;
-	
+
 	case 'deleteCours':
-		echo "delete";
 		$nb = $Bulletin->deleteOrphanCours($cours);
 		$smarty->assign('message',
 				array(
@@ -48,15 +48,16 @@ switch ($mode) {
 		$cours = Null;
 		$smarty->assign('mode','editCours');
 		// break;  pas de break, on continue sur l'édition
-		
+
 	case 'editCours':
 		if ($etape == 'enregistrer') {
-			$groupe = isset($_POST['groupe'])?$_POST['groupe']:Null;
-			$profs = isset($_POST['profs'])?$_POST['profs']:Null;
+			$groupe = isset($_POST['groupe']) ? $_POST['groupe'] : Null;
+			$profs = isset($_POST['profs']) ? $_POST['profs'] : Null;
+			$virtuel = isset($_POST['virtuel']) ? 1 : 0;
 			if ($profs && $groupe) {
 				$coursGrp = $cours.'-'.$groupe;
 				$nbInsert = 0;
-				$nbInsert = $Ecole->ajouterProfsCoursGrp($profs, $coursGrp);
+				$nbInsert = $Ecole->ajouterProfsCoursGrp($profs, $coursGrp, $virtuel);
 				$smarty->assign("message",
 								array(
 									'title'=>SAVE,
@@ -83,10 +84,6 @@ switch ($mode) {
 		$smarty->assign('listeNiveaux', $Ecole::listeNiveaux());
 		$smarty->assign('selecteur', 'selectNiveauMatiere');
 
-		break;	
+		break;
 
 	}
-
-?>
-
-
