@@ -1258,6 +1258,15 @@ CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des accusés de lecture des notifications';
 
 
+CREATE TABLE IF NOT EXISTS `didac_thotFratrie` (
+  `parent` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur du parent',
+  `fratrie` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Frère ou sœur'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des fratries';
+
+ALTER TABLE `didac_thotFratrie`
+  ADD PRIMARY KEY (`parent`,`fratrie`);
+
+
 CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
   `user` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
   `ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
@@ -1338,15 +1347,22 @@ ALTER TABLE `didac_thotJdcLike`
   ADD PRIMARY KEY (`id`,`matricule`);
 
 
-CREATE TABLE `didac_thotJdcEleves` (
+CREATE TABLE `didac_thotJdcEleve` (
+    `id` int(6) NOT NULL,
     `matricule` int(11) NOT NULL COMMENT 'Matricule de l''élève',
-    `dateDebut` date DEFAULT NULL COMMENT 'Date de début de la charge',
-    `dateFin` date DEFAULT NULL COMMENT 'Date de fin de la charge'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Charge du journal de classe';
+    `idCategorie` smallint(6) DEFAULT NULL,
+    `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+    `enonce` varchar(400) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Énoncé du travail à effectuer',
+    `startDate` datetime NOT NULL,
+    `endDate` datetime NOT NULL,
+    `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée',
+    `lastModif` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
 
-ALTER TABLE `didac_thotJdcEleves`
-    ADD PRIMARY KEY (`matricule`);
-
+ALTER TABLE `didac_thotJdcEleve`
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `proprietaire` (`idCategorie`),
+    ADD KEY `destinataire` (`matricule`);
 
 CREATE TABLE `didac_thotJdcTypes` (
   `id` tinyint(4) NOT NULL,
