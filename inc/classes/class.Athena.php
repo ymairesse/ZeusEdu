@@ -148,8 +148,8 @@ class athena
     /**
      * retourne les détails du contenu d'une visite d'élève à un suivi.
      *
-     * @param $id : l'identifiant de la visite
-     * @param $proprietaire : identifiant de l'utlisateur actuel (petite précaution de sécurité)
+     * @param int $id : l'identifiant de la visite
+     * @param string $proprietaire : identifiant de l'utlisateur actuel (petite précaution de sécurité)
      *
      * @return array
      */
@@ -231,6 +231,277 @@ class athena
      }
 
      /**
+      * recherche les infos EBS pour un élève dont on fournit le matricule
+      *
+      * @param int $matricule
+      *
+      * @return array
+      */
+     public function getEBSeleve($matricule){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT matricule, etr.idTrouble ';
+         $sql .= 'FROM '.PFX.'EBSelevesTroubles AS etr ';
+         $sql .= 'JOIN '.PFX.'EBStroubles AS tr ON etr.idTrouble = tr.idTrouble ';
+         $sql .= 'WHERE matricule = :matricule ';
+         $requete = $connexion->prepare($sql);
+
+         $listeTroubles = array('troubles' => array(), 'amenagements' => array(), 'memo' => '');
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $resultat = $requete->execute();
+
+         if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['idTrouble'];
+                array_push($listeTroubles['troubles'], $id);
+            }
+         }
+
+         $sql = 'SELECT matricule, eam.idAmenagement ';
+         $sql .= 'FROM '.PFX.'EBSelevesAmenagements AS eam ';
+         $sql .= 'JOIN '.PFX.'EBSamenagements AS am ON eam.idAmenagement = am.idAmenagement ';
+         $sql .= 'WHERE matricule = :matricule ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $resultat = $requete->execute();
+
+         if ($resultat){
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()){
+                 $id = $ligne['idAmenagement'];
+                 array_push($listeTroubles['amenagements'], $id);
+             }
+         }
+
+         $sql = 'SELECT matricule, memo ';
+         $sql .= 'FROM '.PFX.'EBSdata ';
+         $sql .= "WHERE matricule = :matricule ";
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $resultat = $requete->execute();
+
+         if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+             $listeTroubles['memo'] = $ligne['memo'];
+            };
+
+         Application::deconnexionPDO($connexion);
+
+         return $listeTroubles;
+     }
+
+     /**
+      * renvoie la liste de tous les troubles EBS recensés
+      *
+      * @param void
+      *
+      * @return array
+      */
+     public function getTroublesEBS(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idTrouble, trouble ';
+        $sql .= 'FROM '.PFX.'EBStroubles ';
+        $sql .= 'ORDER BY trouble ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['idTrouble'];
+                $liste[$id] = $ligne['trouble'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+     }
+
+     /**
+      * ajoute un nouveau item dans la table des troubles EBS
+      *
+      * @param string $trouble
+      *
+      * @return int : nombre d'insertion dans la BD (0 ou 1)
+      */
+     public function addTrouble($trouble){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'INSERT IGNORE INTO '.PFX.'EBStroubles ';
+         $sql .= 'SET trouble = :trouble ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':trouble', $trouble, PDO::PARAM_STR, 50);
+
+         $resultat = $requete->execute();
+
+         Application::deconnexionPDO($connexion);
+
+         return $resultat;
+     }
+
+     /**
+      * ajoute un nouvel item dans la liste des aménagements EBS
+      *
+      * @param string $amenagement
+      *
+      * @return int : nombre d'insertions (0 ou 1)
+      */
+     public function addAmenagement($amenagement) {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'INSERT IGNORE INTO '.PFX.'EBSamenagements ';
+         $sql .= 'SET amenagement = :amenagement ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':amenagement', $amenagement, PDO::PARAM_STR, 50);
+
+         $resultat = $requete->execute();
+
+         Application::deconnexionPDO($connexion);
+
+         return $resultat;
+     }
+
+     /**
+      * renvoie la liste de tous les aménagements EBS recensés
+      *
+      * @param void
+      *
+      * @return array
+      */
+     public function getAmenagementsEBS(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idAmenagement, amenagement ';
+        $sql .= 'FROM '.PFX.'EBSamenagements ';
+        $sql .= 'ORDER BY amenagement ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['idAmenagement'];
+                $liste[$id] = $ligne['amenagement'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+     }
+
+     /**
+      * Enregistre le contenu du mémo EBS
+      *
+      * @param int $matricule
+      * @param string $memo
+      *
+      * @return int
+      */
+     public function saveMemo($matricule, $memo){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'INSERT INTO '.PFX.'EBSdata ';
+         $sql .= 'SET matricule = :matricule, memo = :memo ';
+         $sql .= 'ON DUPLICATE KEY UPDATE memo = :memo ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $requete->bindParam(':memo', $memo, PDO::PARAM_STR);
+
+         $resultat = $requete->execute();
+
+         Application::deconnexionPDO($connexion);
+
+         return $resultat;
+     }
+
+     /**
+      * Enregistre les troubles présentés par un élève dont on fournit le matricule
+      *
+      * @param int $matricule
+      * @param $listeTroubles : tous les troubles existants
+      * @param $troubles : les troubles présents chez l'élève
+      *
+      * @return int : le nombre d'enregistrements
+      */
+     public function saveTroubles($matricule, $listeTroubles, $troubles){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sqlAdd = 'INSERT IGNORE INTO '.PFX.'EBSelevesTroubles ';
+         $sqlAdd .= 'SET matricule = :matricule, idTrouble = :idTrouble ';
+         $requeteAdd = $connexion->prepare($sqlAdd);
+         $requeteAdd->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $sqlRemove = 'DELETE FROM '.PFX.'EBSelevesTroubles ';
+         $sqlRemove .= 'WHERE matricule = :matricule AND idTrouble = :idTrouble ';
+         $requeteRemove = $connexion->prepare($sqlRemove);
+         $requeteRemove->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $nb = 0;
+         foreach ($listeTroubles as $idTrouble => $denomination) {
+             if (in_array($idTrouble, $troubles)) {
+                 $requeteAdd->bindParam(':idTrouble', $idTrouble, PDO::PARAM_INT);
+                 $resultat = $requeteAdd->execute();
+             }
+             else {
+                 $requeteRemove->bindParam(':idTrouble', $idTrouble, PDO::PARAM_INT);
+                 $resultat = $requeteRemove->execute();
+             }
+             $nb += $resultat;
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+     /**
+      * Enregistre les aménagements pour un élève dont on fournit le matricule
+      *
+      * @param int $matricule
+      * @param $listeAmenagements : tous les aménagements existants
+      * @param $amenagements : les amenagements réalisés chez l'élève
+      *
+      * @return int : le nombre d'enregistrements
+      */
+     public function saveAmenagements($matricule, $listeAmenagements, $amenagements){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sqlAdd = 'INSERT IGNORE INTO '.PFX.'EBSelevesAmenagements ';
+         $sqlAdd .= 'SET matricule = :matricule, idAmenagement = :idAmenagement ';
+         $requeteAdd = $connexion->prepare($sqlAdd);
+         $requeteAdd->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $sqlRemove = 'DELETE FROM '.PFX.'EBSelevesAmenagements ';
+         $sqlRemove .= 'WHERE matricule = :matricule AND idAmenagement = :idAmenagement ';
+         $requeteRemove = $connexion->prepare($sqlRemove);
+         $requeteRemove->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $nb = 0;
+         foreach ($listeAmenagements as $idAmenagement => $denomination) {
+             if (in_array($idAmenagement, $amenagements)) {
+                 $requeteAdd->bindParam(':idAmenagement', $idAmenagement, PDO::PARAM_INT);
+                 $resultat = $requeteAdd->execute();
+             }
+             else {
+                 $requeteRemove->bindParam(':idAmenagement', $idAmenagement, PDO::PARAM_INT);
+                 $resultat = $requeteRemove->execute();
+             }
+             $nb += $resultat;
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+
+     /**
       * si une photo est présente, retourne le matricule de l'élève; sinon, retourne la chaîne 'nophoto'.
       *
       * @param $acronyme
@@ -249,7 +520,7 @@ class athena
      /**
       * recherche la liste des élèves suivis par l'utlisateur $acronyme.
       *
-      * @param $acronyme
+      * @param string $acronyme
       *
       * @return array
       */

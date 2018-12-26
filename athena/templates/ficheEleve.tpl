@@ -9,12 +9,13 @@
 			<li><a data-toggle="tab" href="#tabs-0">Suivi</a></li>
 			<li><a data-toggle="tab" href="#tabs-1">Personnel</a></li>
 			<li><a data-toggle="tab" href="#tabs-2">Responsables</a></li>
-			<li><a data-toggle="tab" href="#tabs-3">Médical {if $medicEleve.info != ''}<i class="fa fa-heartbeat faa-pulse animated" style="font-size:1.2em; color: red"></i>{/if}</a></li>
-			<li><a data-toggle="tab" href="#tabs-4">Infirmerie <span class="badge" style="color:red; background: white">{$consultEleve|@count}</span></a></li>
+			<li><a data-toggle="tab" href="#tabs-3" title="Médical">{if $medicEleve.info != ''}<i class="fa fa-heartbeat faa-pulse animated" style="font-size:1.2em; color: red"></i>{else}<i class="fa fa-heart" style="color:red"></i> {/if}</a></li>
+			<li><a data-toggle="tab" href="#tabs-4" title="Infirmerie"><i style="color: red;" class="fa fa-medkit fa-lg"></i>  <span class="badge" style="color:red; background: white">{$consultEleve|@count}</span></a></li>
 			<li><a data-toggle="tab" href="#tabs-5">Bulletin</a></li>
 			<li><a data-toggle="tab" href="#tabs-6">Scolaire</a></li>
 			<li><a data-toggle="tab" href="#tabs-7">EDT</a></li>
 			<li><a data-toggle="tab" href="#tabs-8">ADES <span class="badge" style="color:red; background: white;">{$nbFaits}</span></a></li>
+			<li><a data-toggle="tab" href="#tabs-9">EBS {if $infoEBS != ''}<i class="fa fa-user-circle-o"></i> {/if}</a> </li>
 		</ul>
 	</div>
 
@@ -83,6 +84,12 @@
 		<div id="tabs-8" class="tab-pane fade in">
 
 			{include file="detailSuivi/infoDisciplinaires.tpl"}
+
+		</div>
+
+		<div id="tabs-9" class="tab-pane fade in">
+
+			{include file="detailSuivi/infoEBS.tpl"}
 
 		</div>
 

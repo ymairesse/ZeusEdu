@@ -14,6 +14,7 @@
 <body>
 
 {include file="menu.tpl"}
+{include file="../../templates/faust.tpl"}
 
 <div class="container">
 

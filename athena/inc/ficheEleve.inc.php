@@ -4,8 +4,8 @@ $eleve = new Eleve($matricule);
 $dataEleve = $eleve->getDetailsEleve();
 $smarty->assign('eleve', $dataEleve);
 
-$classe = $dataEleve['groupe'];
-$smarty->assign('classe', $classe);
+// $classe = $dataEleve['groupe'];
+// $smarty->assign('classe', $classe);
 
 $listeEleves = $Ecole->listeEleves($classe, 'groupe');
 $smarty->assign('listeEleves', $listeEleves);
@@ -16,6 +16,7 @@ $smarty->assign('prevNext', $prevNext);
 $titulaires = $eleve->titulaires($matricule);
 $smarty->assign('titulaires', $titulaires);
 
+// informations médicales
 require_once INSTALL_DIR.'/infirmerie/inc/classes/classInfirmerie.inc.php';
 $infirmerie = new eleveInfirmerie($matricule);
 
@@ -25,6 +26,8 @@ $smarty->assign('consultEleve', $infirmerie->getVisitesEleve($matricule));
 $smarty->assign('noBulletin', PERIODEENCOURS);
 $smarty->assign('listeBulletins', range(0, PERIODEENCOURS));
 
+
+// informations disciplinaires
 require_once INSTALL_DIR.'/ades/inc/classes/classEleveAdes.inc.php';
 $EleveAdes = new EleveAdes();
 $ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
@@ -32,15 +35,14 @@ $listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
 
 $smarty->assign('listeTousFaits', $ficheDisciplinaire);
 $smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
-
 $smarty->assign('nbFaits', $EleveAdes->nbFaits($matricule, ANNEESCOLAIRE));
 
 require_once INSTALL_DIR.'/ades/inc/classes/classAdes.inc.php';
 $Ades = new Ades();
-
 $smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
 $smarty->assign('descriptionChamps', $Ades->listeChamps());
 
+// le bulletin
 require_once INSTALL_DIR.'/bullISND/inc/classes/classBulletin.inc.php';
 $Bulletin = new Bulletin();
 
@@ -92,6 +94,16 @@ switch ($mode) {
 
         $listeSuivi = $athena->getSuiviEleve($matricule);
         $smarty->assign('listeSuivi', $listeSuivi);
+
+        // Élèves à besoins spécifiques
+        $infoEBS = $athena->getEBSeleve($matricule);
+
+        $listeTroubles = $athena->getTroublesEBS();
+        $listeAmenagements = $athena->getAmenagementsEBS();
+        $smarty->assign('infoEBS', $infoEBS);
+        $smarty->assign('listeTroubles', $listeTroubles);
+        $smarty->assign('listeAmenagements', $listeAmenagements);
+
         if ($Bulletin->listeFullCoursGrpActuel($matricule) != Null) {
             $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule)[$matricule];
             $smarty->assign('listeCoursGrp', $listeCoursActuelle);

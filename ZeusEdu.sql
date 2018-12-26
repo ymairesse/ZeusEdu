@@ -1031,20 +1031,16 @@ CREATE TABLE IF NOT EXISTS `didac_passwd` (
   PRIMARY KEY (`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-
-CREATE TABLE `didac_presencesEleves` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `didac_presencesEleves` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricule` int(6) NOT NULL,
   `date` date NOT NULL,
   `periode` tinyint(1) NOT NULL,
-  `statut` varchar(12) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
-
-ALTER TABLE `didac_presencesEleves`
-  ADD PRIMARY KEY (`matricule`,`date`,`periode`),
-  ADD KEY `matricule` (`matricule`),
-  ADD KEY `id` (`id`);
-
+  `statut` enum('indetermine','present','absent','signale','justifie','sortie','renvoi','ecarte','suivi','stage','retard') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève',
+  PRIMARY KEY (`matricule`,`date`,`periode`),
+  KEY `matricule` (`matricule`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
 
 CREATE TABLE IF NOT EXISTS didac_presencesHeures (
   debut time NOT NULL COMMENT 'Début de l''heure de cours',
@@ -1171,30 +1167,71 @@ CREATE TABLE IF NOT EXISTS didac_sessions (
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
+--
+-- Gestion des élèves à besoins spécifiques (EBS)
+--
 
-CREATE TABLE IF NOT EXISTS didac_statutCours (
-  cadre tinyint(4) NOT NULL,
-  statut varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'statut du cours',
-  rang tinyint(4) NOT NULL DEFAULT '0' COMMENT 'rang d''affichage du cours pour le classement dans la feuille de délibé (0 > 9)',
-  PRIMARY KEY (cadre)
+CREATE TABLE IF NOT EXISTS `didac_EBSamenagements` (
+  `idAmenagement` smallint(6) NOT NULL AUTO_INCREMENT,
+  `amenagement` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Aménagements raisonnables demandés',
+  PRIMARY KEY (`idAmenagement`,`amenagement`),
+  UNIQUE KEY `amenagement` (`amenagement`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Tables des aménagements EBS';
+
+CREATE TABLE IF NOT EXISTS `didac_EBSdata` (
+  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
+  `memo` blob COMMENT 'Mémo EBS',
+  PRIMARY KEY (`matricule`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Info EBS diverses (memo)';
+
+CREATE TABLE IF NOT EXISTS `didac_EBSelevesAmenagements` (
+  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
+  `idAmenagement` smallint(6) NOT NULL COMMENT 'Identifiant de l''aménagement',
+  PRIMARY KEY (`matricule`,`idAmenagement`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des aménagements pour les élèves';
+
+CREATE TABLE IF NOT EXISTS `didac_EBSelevesTroubles` (
+  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
+  `idTrouble` smallint(6) NOT NULL COMMENT 'Identifiant du trouble',
+  PRIMARY KEY (`matricule`,`idTrouble`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `didac_EBStroubles` (
+  `idTrouble` smallint(6) NOT NULL AUTO_INCREMENT,
+  `trouble` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Trouble EBS constaté',
+  PRIMARY KEY (`idTrouble`,`trouble`),
+  UNIQUE KEY `trouble` (`trouble`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des troubles EBS';
+
+
+CREATE TABLE IF NOT EXISTS `didac_statutCours` (
+  `cadre` tinyint(4) NOT NULL,
+  `statut` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'statut du cours',
+  `rang` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'rang d''affichage du cours pour le classement dans la feuille de délibé (0 > 9)',
+  `echec` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le cours compte-t-il comme un échec en délibé?',
+  `total` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le cours doit-il être totalisé aux autres pour la délibé?',
+  PRIMARY KEY (`cadre`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`) VALUES
-(11, 'FC', 2),
-(13, 'Rem', 10),
-(18, 'FC', 2),
-(28, 'FC', 2),
-(34, 'OB', 3),
-(35, 'OG', 4),
-(38, 'OB', 3),
-(51, 'AC', 9),
-(55, 'AC', 9),
-(58, 'AC', 9),
-(75, 'Renf.', 8),
-(81, 'Rem', 10),
-(24, 'OG', 5),
-(40, 'STAGE', 20);
+--
+-- Contenu de la table `didac_statutCours`
+--
 
+INSERT INTO `didac_statutCours` (`cadre`, `statut`, `rang`, `echec`, `total`) VALUES
+(11, 'FC', 2, 0, 0),
+(13, 'Rem', 10, 1, 0),
+(18, 'FC', 2, 0, 0),
+(28, 'FC', 2, 0, 0),
+(34, 'OB', 3, 0, 0),
+(35, 'OG', 4, 0, 0),
+(38, 'OB', 3, 0, 0),
+(51, 'AC', 9, 1, 0),
+(55, 'AC', 9, 1, 0),
+(58, 'AC', 9, 1, 0),
+(75, 'Renf.', 8, 1, 0),
+(81, 'Rem', 10, 1, 0),
+(24, 'OG', 5, 0, 0),
+(40, 'STAGE', 20, 0, 0);
 
 CREATE TABLE IF NOT EXISTS `didac_thotBulletin` (
   `bulletin` tinyint(4) NOT NULL COMMENT 'numéro du dernier bulletin ouvert',
