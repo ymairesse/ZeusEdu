@@ -32,9 +32,12 @@
 		{if $type == 'resetHistorique'}
 		<p>{$debut} <strong>tous les historiques des changements de cours</strong>.</p>
 		{/if}
-	
+		{if $type == 'resetEduc'}
+		<p>{$debut} <strong>tous les commentaires des éducateurs entrés aux bulletins</strong>.</p>
+		{/if}
+
 		<p>Attention, la décision est irrévocable. Il ne faut plus utiliser cette fonction après le début de l'année scolaire!!!</p>
-	
+
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="{$etape}">
 		<input type="hidden" name="action" value="{$action}">

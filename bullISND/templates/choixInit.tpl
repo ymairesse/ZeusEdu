@@ -24,7 +24,7 @@
 			</li>
 			<li class="danger">
 				<input type="radio" name="mode" value="resetCommentProfs"{if (isset($mode) && ($mode == 'resetCommentProfs'))} checked="checked"{/if}>
-					<span>Effacement des commentaires aux bulletins</span>
+					<span>Effacement des commentaires des profs aux bulletins</span>
 			</li>
 			<li class="danger">
 				<input type="radio" name="mode" value="resetCommentTitus"{if (isset($mode) && ($mode == 'resetCommentTitus'))} checked="checked"{/if}>
@@ -53,6 +53,10 @@
 			<li class="danger">
 				<input type="radio" name="mode" value="resetNotifications"{if (isset($mode)) && ($mode == 'resetNotifications')} checked="checked"{/if}>
 				<span>Effacement des notifications de décisions Thot</span>
+			</li>
+			<li class="danger">
+				<input type="radio" name="mode" value="resetEduc"{if isset($mode) && ($mode == 'resetEduc')} checked{/if}>
+				<span>Effacement des remarques des éducateurs</span>
 			</li>
 			<li>
 				<input type="radio" name="mode" value="initBulletinThot" {if (isset($mode)) && ($mode == 'initBulletinThot')} checked="checked"{/if}>

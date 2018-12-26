@@ -4524,6 +4524,27 @@ class Bulletin
     }
 
     /**
+     * Suppression de toutes les remarques des éducateurs aux bulletins
+     *
+     * @param void
+     *
+     * @return boolean : true si tout s'est bien passé
+     */
+    public function resetEduc(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'TRUNCATE TABLE '.PFX.'bullEducs ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        if ($resultat) {
+            return true;
+        }
+    }
+
+    /**
      * Archivage des matricules et classes des élèves pour l'année scolaire indiquée.
      *
      * @param $annee
@@ -5296,50 +5317,50 @@ class Bulletin
         return $resultat;
     }
 
-        /**
-         * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle.
-         *
-         * @param $post
-         *
-         * @return int : normalement, 1
-         */
-        public function enregistrerDecision($post)
-        {
-            $matricule = $post['matricule'];
-            $decision = $post['decision'];
-            $periode = $post['bulletin'];
-            if ($decision == 'Restriction') {
-                $restriction = $post['restriction'];
-            } else {
-                $restriction = '';
-            }
-            $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
-            $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
-            $mailEleve = $post['mailEleve'];
-            // il se peut que l'adresse mail d'envoi soit différente de l'adresse mail élève
-            $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'INSERT INTO '.PFX.'bullDecisions ';
-            $sql .= 'SET matricule=:matricule, decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
-            $sql .= 'adresseMail=:adresseMail, periode=:periode ';
-            $sql .= 'ON DUPLICATE KEY UPDATE ';
-            $sql .= 'decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
-            $sql .= 'adresseMail=:adresseMail, periode=:periode ';
-
-            $requete = $connexion->prepare($sql);
-            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-            $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 30);
-            $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
-            $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
-            $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
-            $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
-            $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
-
-            $resultat = $requete->execute();
-            Application::DeconnexionPDO($connexion);
-
-            return $resultat;
+    /**
+     * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle.
+     *
+     * @param $post
+     *
+     * @return int : normalement, 1
+     */
+    public function enregistrerDecision($post)
+    {
+        $matricule = $post['matricule'];
+        $decision = $post['decision'];
+        $periode = $post['bulletin'];
+        if ($decision == 'Restriction') {
+            $restriction = $post['restriction'];
+        } else {
+            $restriction = '';
         }
+        $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
+        $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
+        $mailEleve = $post['mailEleve'];
+        // il se peut que l'adresse mail d'envoi soit différente de l'adresse mail élève
+        $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'bullDecisions ';
+        $sql .= 'SET matricule=:matricule, decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
+        $sql .= 'adresseMail=:adresseMail, periode=:periode ';
+        $sql .= 'ON DUPLICATE KEY UPDATE ';
+        $sql .= 'decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
+        $sql .= 'adresseMail=:adresseMail, periode=:periode ';
+
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 30);
+        $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
+        $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
+        $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
+        $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
+        $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
 
     /**
      * retourne la notice "coordinateurs" pour le bulletin donné au niveau donné.

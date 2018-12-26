@@ -136,6 +136,22 @@ switch ($mode) {
                 break;
         }
         break;
+    case 'resetEduc':
+        if ($etape == 'confirmer') {
+            $Bulletin->resetEduc();
+            $smarty->assign('message', array(
+                                'title' => 'Réinitialisation',
+                                'texte' => 'Tous les commentaires des éducateurs sont effacés',
+                                'urgence' => $urgence, )
+                                );
+            }
+            else {
+                $smarty->assign('etape', 'confirmer');
+                $smarty->assign('type', 'resetEduc');
+                $smarty->assign('corpsPage', 'confirmReset');
+                $ok = 'ok';
+            }
+        break;
     case 'resetCoordin':
         switch ($etape) {
             case 'confirmer':
