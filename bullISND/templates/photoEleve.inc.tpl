@@ -15,7 +15,17 @@
 	</div>
 
 	<p><strong>{$unEleve.nom} {$unEleve.prenom}</strong></p>
-	<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$matricule}">
+	<figure class="EBS">
+		<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$matricule}">
+		{if isset($listeEBS[$matricule])}
+		<figcaption class="EBS" title="Élève à besoin spécifique">
+			<a href="../trombiEleves/index.php?action=parEleve&matricule={$matricule}" target="_blank">
+				<i class="fa fa-user-circle-o"></i>
+			</a>
+		</figcaption>
+		{/if}
+	</figure>
+
 	<p><strong>Classe: {$unEleve.classe}</strong></p>
 
 	<button type="submit" class="btn btn-primary noprint enregistrer" id="{$matricule}"	title="Enregistre l'ensemble des modifications de la page" >Enregistrer tout</button>

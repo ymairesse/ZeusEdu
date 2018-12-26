@@ -102,6 +102,11 @@
 				data-placement="top"
 				data-container="body"
 				data-original-title="{$nomPrenom|truncate:15}">
+			{if isset($listeEBS.$matricule)}
+			<a href="../trombiEleves/index.php?action=parEleve&matricule={$matricule}" target="_blank">
+				<i class="fa fa-user-circle-o EBSi"></i>
+			</a>
+			{/if}
 			{$nomPrenom}
 			</td>
 

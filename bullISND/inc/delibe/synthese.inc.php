@@ -7,7 +7,7 @@ $smarty->assign('etape','showCotes');
 $smarty->assign('selecteur', 'selectBulletin0Classe');
 if (($etape == 'showCotes') && ($classe)) {
     $listeEleves = $Ecole->listeEleves($classe, 'groupe');
-    $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
+    $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin, true);
 
     $listeSituations100 = $Bulletin->getSituations100($bulletin, $listeEleves);
     $listeCours = $Ecole->listeCoursClassePourDelibe($classe);

@@ -3,7 +3,7 @@
 $smarty->assign('PERIODESDELIBES', explode(',', PERIODESDELIBES));
 $smarty->assign('PERIODEENCOURS', PERIODEENCOURS);
 
-$listeCoursGrpProf = $user->listeCoursProf();
+$listeCoursGrpProf = $user->listeCoursProf(Null, true);
 
 // liste de tous les élèves avec leurs cours
 $listeCoursGrpEleves = $Ecole->listeElevesDeListeCoursGrp($listeCoursGrpProf);

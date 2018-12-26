@@ -6,19 +6,25 @@
 
             <form action="index.php" method="POST" role="form" class="form-vertical" id="statutsCadres" name="statutsCadres">
 
-                <table class="table table-condensed">
+                <table class="table table-condensed" style="text-align:center">
                     <thead>
                         <tr>
-                            <th>
+                            <th style="text-align:center !important">
                                 Cadre du cours<br>
                                 (officiel)
                             </th>
-                            <th>
+                            <th style="text-align:center !important">
                                 Ordre
                             </th>
-                            <th>
+                            <th style="text-align:center !important">
                                 Statut du cours<br>
                                 (dans l'application)
+                            </th>
+                            <th style="text-align:center !important">
+                                Pas d'échec
+                            </th>
+                            <th style="text-align:center !important">
+                                Pas de totalisation
                             </th>
                         </tr>
                     </thead>
@@ -27,15 +33,20 @@
                         {foreach from=$statutsCadres key=cadre item=data}
                         <tr>
                             <td>
-                                <p class="form-control-static">
+                                <input type="hidden" name="cadre[]" value="{$cadre}">
                                 {$cadre}
-                                </p>
                             </td>
                             <td>
-                                <input type="text" name="ordre_{$cadre}" value="{$data.rang}" class="form-control rang" required number="true" max="100">
+                                <input type="text" name="rang_{$cadre}" value="{$data.rang}" class="form-control" required number="true" max="100">
                             </td>
                             <td>
-                                <input type="text" name="statut_{$cadre}" value="{$data.statut}" class="form-control statut" required maxlength="6">
+                                <input type="text" name="statut_{$cadre}" value="{$data.statut}" class="form-control" required maxlength="6">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="echec_{$cadre}" value="1" {if $data.echec == 1}checked{/if}>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="total_{$cadre}" value="1" {if $data.total == 1}checked{/if}>
                             </td>
                         </tr>
                         {/foreach}
@@ -58,6 +69,8 @@
         </div>
 
         <div class="col-md-3 col-sm-12">
+
+            {include file="admin/manuel_cadre.html"}
 
         </div>
 

@@ -140,8 +140,13 @@
 
 							<td colspan="2">
 								{if $estTitulaire}
-								<div class="pull-right pop" data-container="body" data-content="Dé/verrouiller" data-placement="top" style="font-size:2em">
+								<button type="button" class="btn btn-primary pop" data-container="body" data-content="Dé/verrouiller" data-placement="top"  id="lock">&nbsp;<i class="fa fa-lock"></i>&nbsp;</button>
+								{* <div class="pop" data-container="body" data-content="Dé/verrouiller" data-placement="top" style="font-size:2em; float:left;">
 									<i class="fa fa-lock" id="lock"></i>
+								</div> *}
+								<div class='btn-group' id='submitGroup'>
+									<button type='reset' class='btn btn-default' id='annuler'>Annuler</button>
+									<button type='submit' class='btn btn-primary' id='submit'>Enregistrer</button>
 								</div>
 								{else} &nbsp; {/if}
 							</td>
@@ -220,11 +225,6 @@
 
 				{/if}  {* $bulletin == $NBPERIODES*}
 
-				<div class='btn-group pull-right' id='submitGroup'>
-					<button type='reset' class='btn btn-default' id='annuler'>Annuler</button>
-					<button type='submit' class='btn btn-primary' id='submit'>Enregistrer</button>
-				</div>
-
 				<div class='clearfix'></div>
 
 				{/if}  {* $esttitulaire *}
@@ -281,6 +281,18 @@ $(document).ready(function(){
 			$(this).val($(this).val().toUpperCase());
 			}
 		})
+
+		$("#lock2").click(function(){
+			if (locked) {
+				$('#submitGroup button').attr('disabled',false).fadeIn();
+				$('.decisionDelibe input, .decisionDelibe select').attr('disabled',false);
+				}
+				else {
+				$('#submitGroup button').attr('disabled',false).fadeOut();
+				$('.decisionDelibe input, .decisionDelibe select').attr('disabled',true);
+				};
+			locked = !(locked);
+			})
 
 	$("#lock").click(function(){
 		if (locked) {

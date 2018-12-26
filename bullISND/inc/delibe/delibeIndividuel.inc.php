@@ -18,13 +18,15 @@ switch ($etape) {
         // pas de break;
     case 'showEleve':
         $listeCoursEleve = current($Bulletin->listeCoursGrpEleves($matricule, $bulletin, true));
-
         // recension des situations dans les différents cours pour l'élève concerné
         $listeSituations = current($Bulletin->listeSituationsCours($matricule, array_keys($listeCoursEleve), null, true));
-
+// Application::afficher($listeSituations);
         // calcul de la moyenne des cotes de situation pour l'élève concerné pour les périodes avec délibération
         $listePeriodesDelibe = explode(',',str_replace(' ','',PERIODESDELIBES));
-        $moyenneSituations = $Bulletin->moyennesSituations($listeSituations, $listePeriodesDelibe);
+        // statuts des cours en fonction de leur cadre légal (pour les cours non comptabilisés en echec etc...)
+        $statutsCadres = $Bulletin->getStatutsCadres();
+// Application::afficher($statutsCadres);
+        $moyenneSituations = $Bulletin->moyennesSituations($listeSituations, $listePeriodesDelibe, $statutsCadres);
 
         // sur la base de la moyenne des situations, détermination de la mention (grade) méritée avant délibération
         $mentionsJuinDec = $Bulletin->calculeMentionsDecJuin($moyenneSituations);

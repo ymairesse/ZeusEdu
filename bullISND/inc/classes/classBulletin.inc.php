@@ -1159,8 +1159,8 @@ class Bulletin
      *
      * Typiquement pour la génération d'un bulletin d'élève
      *
-     * @param $listeEleves
-     * @param $bulletin
+     * @param array|string $listeEleves : liste des matricules ou matricule
+     * @param integer $bulletin : numéro du bulletin
      *
      * @return array
      */
@@ -1177,15 +1177,19 @@ class Bulletin
             $listeBulletinsString = $bulletin;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, coursGrp, commentaire, bulletin ';
-        $sql .= 'FROM '.PFX.'bullCommentProfs ';
-        $sql .= "WHERE matricule IN ($listeElevesString) ";
+        $sql = 'SELECT matricule, com.coursGrp, commentaire, bulletin ';
+        $sql .= 'FROM '.PFX.'bullCommentProfs AS com ';
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = com.coursGrp ';
+        $sql .= 'WHERE matricule IN ('.$listeElevesString.') ';
+        $sql .= 'AND virtuel = 0 ';
         if ($bulletin != null) {
-            $sql .= "AND bulletin IN ($listeBulletinsString) ";
+            $sql .= 'AND bulletin IN ('.$listeBulletinsString.') ';
         }
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
         $listeCommentaires = array();
-        while ($ligne = $resultat->fetch()) {
+        while ($ligne = $requete->fetch()) {
             $commentaire = $ligne['commentaire'];
             $matricule = $ligne['matricule'];
             $coursGrp = $ligne['coursGrp'];
@@ -1202,8 +1206,8 @@ class Bulletin
      * pour une liste d'élèves donnés et pour un bulletin donné
      * la liste est indexée sur les matricules et les cours concernés.
      *
-     * @param $listeEleves
-     * @param $bulletin
+     * @param array|string $listeEleves : liste des matricules ou matricule
+     * @param integer $bulletin : numéro du bulletin
      *
      * @return array
      */
@@ -1215,21 +1219,25 @@ class Bulletin
             $listeElevesString = $listeEleves;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, coursGrp, idComp, form, maxForm, cert, maxCert ';
-        $sql .= 'FROM '.PFX.'bullDetailsCotes ';
-        $sql .= "WHERE (matricule IN ($listeElevesString)) ";
-        $sql .= "AND (bulletin = '$bulletin') ";
+        $sql = 'SELECT matricule, cotes.coursGrp, idComp, form, maxForm, cert, maxCert ';
+        $sql .= 'FROM '.PFX.'bullDetailsCotes AS cotes ';
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = cotes.coursGrp ';
+        $sql .= 'WHERE (matricule IN ('.$listeElevesString.')) ';
+        $sql .= 'AND (bulletin = :bulletin) AND (virtuel = 0) ';
         $sql .= 'ORDER BY matricule, coursGrp, idComp';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
 
         $cotesVides = array(
                     'form' => array('cote' => '', 'max' => ''),
                     'cert' => array('cote' => '', 'max' => ''),
                     );
         $listeCotes = array();
-        $resultat = $connexion->query($sql);
+        $resultat = $requete->execute();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $coursGrp = $ligne['coursGrp'];
                 $idComp = $ligne['idComp'];
@@ -1576,7 +1584,7 @@ class Bulletin
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // recherche y compris l'épreuve externe
         $sql = 'SELECT bs.coursGrp, bs.matricule, bulletin, situation, maxSituation, nbheures, libelle, ';
-        $sql .= 'choixProf, sitDelibe, cours, statut, attributProf, attributDelibe ';
+        $sql .= 'choixProf, sitDelibe, cours, statut, dc.cadre, attributProf, attributDelibe ';
         $sql .= 'FROM '.PFX.'bullSituations AS bs ';
         // tous les niveaux n'ont pas d'épreuv externe => LEFT JOIN
         $sql .= 'JOIN '.PFX."cours AS dc ON (dc.cours = SUBSTR(bs.coursGrp,1,LOCATE('-',bs.coursGrp)-1)) ";
@@ -1597,6 +1605,7 @@ class Bulletin
             $bulletin = $ligne['bulletin'];
             $coursGrp = $ligne['coursGrp'];
             $statut = $ligne['statut'];
+            $cadre = $ligne['cadre'];
             $cours = $ligne['cours'];
             $nbheures = $ligne['nbheures'];
             $libelle = $ligne['libelle'];
@@ -1635,6 +1644,7 @@ class Bulletin
                     'attributDelibe' => $attributDelibe,
                     'symbole' => self::attribut2Symbole($attributDelibe),
                     'statut' => $statut,
+                    'cadre' => $cadre,
                     'cours' => $cours,
                     'nbheures' => $nbheures,
                     'libelle' => $libelle,
@@ -1810,19 +1820,22 @@ class Bulletin
         }
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT bs.coursGrp, bs.matricule, nbheures, libelle, sitDelibe, choixProf, situation, maxSituation, cours, statut, attributProf, attributDelibe ';
+        $sql = 'SELECT bs.coursGrp, bs.matricule, nbheures, libelle, sitDelibe, choixProf, situation, maxSituation, cours, statut, dc.cadre, attributProf, attributDelibe ';
         $sql .= 'FROM '.PFX.'bullSituations AS bs ';
-        $sql .= 'JOIN '.PFX."cours ON (cours = SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1)) ";
-        $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'cours.cadre = '.PFX.'statutCours.cadre) ';
-        $sql .= "WHERE bs.matricule in ($listeElevesString) AND (bs.coursGrp IN ($listeCoursGrpString)) ";
-        $sql .= "AND bulletin='$bulletin' ";
+        $sql .= 'JOIN '.PFX."cours AS dc ON (cours = SUBSTR(coursGrp,1,LOCATE('-',coursGrp)-1)) ";
+        $sql .= 'JOIN '.PFX.'statutCours AS dsc ON (dc.cadre = dsc.cadre) ';
+        $sql .= 'WHERE bs.matricule in ('.$listeElevesString.') AND (bs.coursGrp IN ('.$listeCoursGrpString.')) ';
+        $sql .= 'AND bulletin = :bulletin ';
         $sql .= 'ORDER BY bulletin, bs.matricule ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
         $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $cours = $ligne['cours'];
                 $sitDelibe = trim($ligne['sitDelibe']);
@@ -2608,7 +2621,7 @@ class Bulletin
      *
      * @param string|array $listeEleves : liste des élèves concernés
      * @param int          $bulletin    : numéro du bulletin à considérer (important pour l'historique)
-     * @param boolean $virtuel : veut-on les bulletins virtuels aussi?
+     * @param boolean $virtuel : veut-on les cours virtuels aussi?
      *
      * @return array : liste des cours suivis par la liste des élèves à la période $bulletin
      */
@@ -2621,7 +2634,7 @@ class Bulletin
         }
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT delc.coursGrp, cours, libelle, nbheures, dsc.statut, section, rang, matricule, nom, prenom, dpc.acronyme ';
+        $sql = 'SELECT DISTINCT delc.coursGrp, cours, libelle, nbheures, dsc.statut, dc.cadre, section, rang, matricule, nom, prenom, dpc.acronyme, dpc.virtuel  ';
         $sql .= 'FROM '.PFX.'elevesCours AS delc ';
         $sql .= 'JOIN '.PFX."cours AS dc ON (dc.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1)) ";
         $sql .= 'JOIN '.PFX.'statutCours AS dsc ON (dsc.cadre = dc.cadre) ';
@@ -2675,7 +2688,8 @@ class Bulletin
                             $listeCours[$matricule][$coursGrp] = array(
                             'coursGrp' => $coursGrp,            'cours' => $ligne['cours'],
                             'libelle' => $ligne['libelle'],     'nbheures' => $ligne['nbheures'],
-                            'statut' => $ligne['statut'],       'section' => $ligne['section'],
+                            'statut' => $ligne['statut'],       'cadre' => $ligne['cadre'],
+                            'section' => $ligne['section'],
                             'rang' => $ligne['rang'],           'matricule' => $matricule,
                             'nom' => $ligne['nom'],             'prenom' => $ligne['prenom'],
                             'acronyme' => $ligne['acronyme'],
@@ -2694,7 +2708,7 @@ class Bulletin
      * cette liste peut servir pour établir une liste cohérente des situations tout au long de l'année
      * une case est prévue pour tous les cours pour toutes les périodes, même si l'élève n'a pas/plus ce cours.
      *
-     * @param $listeEleves : liste des élèves concernés
+     * @param array|integer $listeEleves : liste des matricules des élèves concernés
      *
      * @return array
      */
@@ -2713,14 +2727,15 @@ class Bulletin
         $sql .= 'JOIN '.PFX.'statutCours AS sc ON (sc.cadre = c.cadre) ';
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON (pc.coursGrp = ec.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs AS p ON (p.acronyme = pc.acronyme) ';
-        $sql .= "WHERE matricule IN ($listeMatricules) ";
-        $sql .= 'ORDER BY statut DESC, nbheures DESC, rang, libelle';
+        $sql .= 'WHERE matricule IN ('.$listeMatricules.') AND (virtuel = 0) ';
+        $sql .= 'ORDER BY statut DESC, nbheures DESC, rang, libelle ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $resultat = $requete->execute();
         $listeCours = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $coursGrp = $ligne['coursGrp'];
                 $listeCours[$matricule][$coursGrp] = $ligne;
@@ -2729,16 +2744,18 @@ class Bulletin
 
         // on ajoute tous les cours qui ont été ajoutés un jour... (même s'ils ont été supprimés ensuite)
         $sql = 'SELECT '.PFX.'bullHistoCours.coursGrp, acronyme, nom, prenom, cours, libelle, nbheures, statut, section, rang ';
-        $sql .= 'FROM '.PFX.'bullHistoCours ';
-        $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'bullHistoCours.coursGrp) ';
-        $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profsCours.acronyme = '.PFX.'profs.acronyme) ';
-        $sql .= 'JOIN '.PFX.'cours ON ('.PFX.'cours.cours = SUBSTR('.PFX."bullHistoCours.coursGrp, 1, LOCATE('-',".PFX.'bullHistoCours.coursGrp)-1)) ';
-        $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
-        $sql .= "WHERE matricule IN ($listeMatricules) AND mouvement = 'ajout' ";
-        $resultat = $connexion->query($sql);
+        $sql .= 'FROM '.PFX.'bullHistoCours AS histo';
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON (pc.coursGrp = histo.coursGrp) ';
+        $sql .= 'JOIN '.PFX.'profs AS profs ON (pc.acronyme = profs.acronyme) ';
+        $sql .= 'JOIN '.PFX.'cours AS cours ON (cours.cours = SUBSTR(histo.coursGrp, 1, LOCATE('-',histo.coursGrp)-1)) ';
+        $sql .= 'JOIN '.PFX.'statutCours AS statut ON (statut.cadre = cours.cadre) ';
+        $sql .= 'WHERE matricule IN ('.$listeMatricules.') AND mouvement = "ajout" ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $coursGrp = $ligne['coursGrp'];
                 $listeCours[$matricule][$coursGrp] = array(
@@ -2802,9 +2819,12 @@ class Bulletin
         return $situations;
     }
 
-    /***
+    /**
      * retourne le cours correspondant au coursGrp passé en argument
-     * @param $coursGrp
+     *
+     * @param string $coursGrp
+     *
+     * @return string
      */
     public function coursDeCoursGrp($coursGrp)
     {
@@ -2858,48 +2878,13 @@ class Bulletin
         return $listeMentions;
     }
 
-/**
- * renvoie les décisions de délibération pour la liste d'élèves indiqués.
- *
- * @param $matricule / liste de matricules
- *
- * @return array
- */
-    // public function listeDecisions($listeEleves)
-    // {
-    //     if (is_array($listeEleves)) {
-    //         $listeElevesString = implode(',', array_keys($listeEleves));
-    //     } else {
-    //         $listeElevesString = $listeEleves;
-    //     }
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //
-    //     $sql = 'SELECT dp.matricule, periode, user, mailDomain, decision, restriction, notification, mail, adresseMail, ';
-    //     $sql .= "DATE_FORMAT(quand, '%d/%m %H:%i') AS quand, prenom, nom ";
-    //     $sql .= 'FROM '.PFX.'passwd AS dp ';
-    //     $sql .= 'LEFT JOIN '.PFX.'bullDecisions AS dbd ON dbd.matricule = dp.matricule ';
-    //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dp.matricule ';
-    //     $sql .= "WHERE dp.matricule IN ($listeElevesString) ";
-    //     $resultat = $connexion->query($sql);
-    //     $listeDecisions = array();
-    //     if ($resultat) {
-    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
-    //         while ($ligne = $resultat->fetch()) {
-    //             $matricule = $ligne['matricule'];
-    //             // vérifier si l'on peut encore envoyer la décision ou si c'est déjà fait
-    //             $ligne['okEnvoi'] = ($ligne['quand'] == '') ? true : false;
-    //             // l'adresse d'envoi est-elle définie (cas où les parents ont demandé le mail à la place de l'enfant)
-    //             // sinon, l'adresse d'envoi est celle de l'élève
-    //             if ($ligne['mail'] == '') {
-    //                 $ligne['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
-    //             }
-    //             $listeDecisions[$matricule] = $ligne;
-    //         }
-    //     }
-    //     Application::DeconnexionPDO($connexion);
-    //
-    //     return $listeDecisions;
-    // }
+    /**
+    * renvoie les décisions de délibération pour la liste d'élèves indiqués.
+    *
+    * @param $matricule / liste de matricules
+    *
+    * @return array
+    */
     public function listeDecisions($listeEleves)
     {
         if (is_array($listeEleves)) {
@@ -5152,11 +5137,12 @@ class Bulletin
      * calculs des cotes moyennes, des nombres d'heures d'échec, des nombres d'échecs, de la mention
      * pour chaque élève d'une classe.
      *
-     * @param $listeSituations
+     * @param  array $listeSituations
+     * @param array $statutsCadres : statuts des cours en fonction de leur cadre
      *
      * @return array
      */
-    public function echecMoyennesDecisions($listeSituations)
+    public function echecMoyennesDecisions($listeSituations, $statutsCadres)
     {
         $texteLicite = explode(',', COTEABS);
         $liste = array();
@@ -5175,10 +5161,13 @@ class Bulletin
                 $sitDelibe = trim($infos['sitDelibe']);
                 $attributDelibe = $infos['attributDelibe'];
                 $echec = $infos['echec'];
+                $cadre = $infos['cadre'];
                 if (($attributDelibe != 'hook') && ($sitDelibe != '') && !(in_array($sitDelibe, $texteLicite))) {
-                    $total += $sitDelibe;
-                    ++$nbCours;
-                    if (($echec == 'echec') && ($infos['statut'] != 'AC')) {
+                    if ($statutsCadres[$cadre]['total'] == false) {
+                        $total += $sitDelibe;
+                        ++$nbCours;
+                    }
+                    if (($statutsCadres[$cadre]['echec'] == false) && ($echec == 'echec')) {
                         $libelle = $infos['libelle'];
                         $nbHeuresEchec += $infos['nbheures'];
                         ++$nbEchecs;
@@ -5205,10 +5194,11 @@ class Bulletin
      *
      * @param array $listeSituations
      * @param array $listePeriodes
+     * @param array $statutsCadres : cadre des cours et statut intene à l'école + traitement
      *
      * @return array
      */
-    public function moyennesSituations($listeSituations, $listePeriodes)
+    public function moyennesSituations($listeSituations, $listePeriodes, $statutsCadres)
     {
         foreach ($listePeriodes as $periode) {
             $data[$periode] = array('somme' => 0, 'nbCours' => 0, 'nbEchecs' => 0, 'nbHeuresEchec' => 0, 'cours' => array(), 'moyenne' => '', 'attribut' => '');
@@ -5226,10 +5216,14 @@ class Bulletin
                         if (is_numeric($sit)) {
                             // les cotes entre crochets sont négligées
                             if ($lesSituations[$periode]['attributDelibe'] != 'hook') {
-                                $data[$periode]['somme'] += $sit;
-                                ++$data[$periode]['nbCours'];
-                                // les AC ne comptent pas comme échec
-                                if (($sit < 50) && (($lesSituations[$periode]['statut'] != 'AC'))) {
+                                $cadre = $lesSituations[$periode]['cadre'];
+                                // certains cours ne doivent pas être totalisés en fonction de leur "cadre"
+                                if ($statutsCadres[$cadre]['total'] == false){
+                                    $data[$periode]['somme'] += $sit;
+                                    ++$data[$periode]['nbCours'];
+                                }
+                                // certains cours (en fonction de leur cadre) ne comptent pas comme échec
+                                if (($sit < 50) && ($statutsCadres[$cadre]['echec'] == false)) {
                                     ++$data[$periode]['nbEchecs'];
                                     $data[$periode]['nbHeuresEchec'] += $lesSituations[$periode]['nbheures'];
                                     $data[$periode]['cours'][] = $lesSituations[$periode]['libelle'];
@@ -7287,21 +7281,22 @@ class Bulletin
      * Dans l'application de bulletins, les cours de statut moindre (AC, OC) sont traités différemment des
      * cours à "statut" fort.
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */
     public function getStatutsCadres()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT cadre, statut, rang ';
+        $sql = 'SELECT cadre, statut, rang, echec, total ';
         $sql .= 'FROM '.PFX.'statutCours ';
         $sql .= 'ORDER BY rang, cadre ';
+        $requete = $connexion->prepare($sql);
         $liste = array();
-        $resultat = $connexion->query($sql);
+        $resultat = $requete->execute();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $cadre = $ligne['cadre'];
                 $liste[$cadre] = $ligne;
             }
@@ -7323,25 +7318,29 @@ class Bulletin
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'statutCours ';
-        $sql .= 'SET cadre=:cadre, statut=:statut, ordre=:ordre ';
+        $sql .= 'SET cadre = :cadre, statut = :statut, rang = :rang, echec = :echec, total = :total ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'statut=:statut, ordre=:ordre ';
+        $sql .= 'statut = :statut, rang = :rang, echec = :echec, total = :total ';
         $requete = $connexion->prepare($sql);
         $resultat = 0;
-        foreach ($post as $fieldName => $value) {
-            $fieldName = explode('_', $fieldName);
-            if ($fieldName[0] == 'ordre') {
-                $cadre = $fieldName[1];
-                $statut = $post['statut_'.$cadre];
-                $data = array(
-                    ':cadre' => $cadre,
-                    ':ordre' => $value,
-                    ':statut' => $statut,
-                );
-                echo $requete->execute($data);
-                ++$resultat;
-            }
+        $lesCadres = $post['cadre'];
+
+        foreach ($lesCadres as $cadre) {
+            $statut = $post['statut_'.$cadre];
+            $rang = $post['rang_'.$cadre];
+            $echec = isset($post['echec_'.$cadre]) ? 1 : 0;
+            $total = isset($post['total_'.$cadre]) ? 1 : 0;
+
+            $requete->bindParam(':cadre', $cadre, PDO::PARAM_INT);
+            $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 6);
+            $requete->bindParam(':rang', $rang, PDO::PARAM_INT);
+            $requete->bindParam(':echec', $echec, PDO::PARAM_INT);
+            $requete->bindParam(':total', $total, PDO::PARAM_INT);
+
+            $requete->execute();
+            $resultat ++;
         }
+
         Application::DeconnexionPDO($connexion);
 
         return $resultat;

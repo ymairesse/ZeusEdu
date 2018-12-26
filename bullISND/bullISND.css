@@ -746,3 +746,20 @@ box-sizing: border-box;
     padding-top: 0.2em;
     display: block;
 }
+
+i.EBSi {
+  color: #f00;
+}
+
+figure.EBS {
+  position: relative;
+  display: inline-block;
+}
+
+figcaption.EBS a {
+  position: absolute;
+  top: -15px;
+  right: -10px;
+  font-size: 1.5em;
+  color: #f00;
+}

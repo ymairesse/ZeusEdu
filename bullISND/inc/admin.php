@@ -498,7 +498,7 @@ switch ($mode) {
             case 'ajouter':
                 if (isset($_POST['listeAcronymes'])) {
                     $listeAcronymes = $_POST['listeAcronymes'];
-                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, 'G');
+                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, 'GT');
                     $smarty->assign('message', array(
                                 'title' => 'Ajouts',
                                 'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),
@@ -541,7 +541,7 @@ switch ($mode) {
         }
         $statutsCadres = $Bulletin->getStatutsCadres();
         $smarty->assign('statutsCadres', $statutsCadres);
-        $smarty->assign('corpsPage', 'statutsCadres');
+        $smarty->assign('corpsPage', 'admin/statutsCadres');
         break;
 
     case 'ponderations':

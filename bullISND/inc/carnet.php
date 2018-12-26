@@ -47,6 +47,9 @@ switch ($mode) {
 
             $listeErreursEncodage = $Bulletin->listeErreursCarnet($listeCotes);
 
+            $listeEBS = $Ecole->getEBS($coursGrp, 'coursGrp');
+            $smarty->assign('listeEBS', $listeEBS);
+
             $listeMoyennes = $Bulletin->listeMoyennesCarnet($listeCotes);
             $smarty->assign('identite', $identite);
             $smarty->assign('acronyme', $acronyme);

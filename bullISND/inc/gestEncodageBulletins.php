@@ -65,6 +65,10 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 		$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 		}
 
+	// liste des élèves EBS
+	$listeEBS = $Ecole->getEBS($coursGrp, 'coursGrp');
+	$smarty->assign('listeEBS', $listeEBS);
+
 	// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 	// cette liste doit être re-générée après l'enregistrement qui vient (éventuellement) d'avoir lieu
 	$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);

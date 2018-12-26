@@ -11,9 +11,11 @@ if (isset($_POST['matricule'])) {
 	else $matricule = isset($_COOKIE['matricule'])?$_COOKIE['matricule']:Null;
 $smarty->assign('matricule', $matricule);
 
+$classe = $Application->postOrCookie('classe', $unAn);
+
 // liste des classes dont le prof utilisateur est titulaire
 $listeTitus = $user->listeTitulariats();
-$classe = Null;
+
 // s'il n'y a qu'une classe dans la liste
 if (count($listeTitus) == 1) {
 	// alors, on prend le premier élément de la liste des classes
@@ -25,21 +27,27 @@ if (count($listeTitus) == 1) {
 $tituFinDegre = false;
 $arrayAnneeDegre = explode(',', ANNEEDEGRE);
 if (count($listeTitus > 0)) {
-	foreach ($listeTitus as $classe){
+	foreach ($listeTitus as $uneClasse){
 		// on extrait l'année d'étude, le premier caractère de la classe
-		$annee = substr($classe, 0, 1);
+		$annee = substr($uneClasse, 0, 1);
 		if (in_array($annee, $arrayAnneeDegre))
 			$tituFinDegre = true;
 	}
 }
+
+if ($classe != Null) {
+	$listeEleves = $Ecole->listeEleves($classe, 'groupe');
+}
+else $listeEleves = Null;
+$smarty->assign('listeEleves', $listeEleves);
 
 $annee = ($classe != Null) ? SUBSTR($classe,0,1) : Null;
 // récupérer l'onglet actif
 $onglet = isset($_POST['onglet']) ? $_POST['onglet']: 0;
 
 $smarty->assign('listeClasses', $listeTitus);
-$smarty->assign('annee',$annee);
-$smarty->assign('classe',$classe);
+$smarty->assign('annee', $annee);
+$smarty->assign('classe', $classe);
 $smarty->assign('bulletin', $bulletin);
 $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
@@ -54,12 +62,12 @@ switch ($mode) {
 		$smarty->assign ('selecteur', 'selecteurs/selectBulletinClasse');
 		$smarty->assign('etape', 'showVerrous');
 		if ($classe && $bulletin) {
-			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
+			// $listeEleves = $Ecole->listeEleves($classe, 'groupe');
 			$listeCoursGrpClasse = $Ecole->listeCoursGrpClasse($classe);
-			$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin, true);
+			$listeCoursGrpEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
 			$listeVerrous = $Bulletin->listeLocksBulletin($listeEleves, $listeCoursGrpClasse, $bulletin);
 
-			$smarty->assign('listeEleves', $listeEleves);
+			// $smarty->assign('listeEleves', $listeEleves);
 			$smarty->assign('listeCoursGrpEleves', $listeCoursGrpEleves);
 			$smarty->assign('listeCoursGrpClasse', $listeCoursGrpClasse);
 			$smarty->assign('listeVerrous', $listeVerrous);
@@ -69,11 +77,10 @@ switch ($mode) {
 	case 'remarques':
 		$smarty->assign ('selecteur','selectBulletinClasseEleve');
 		$smarty->assign('etape','showEleve');
+
 		// si une classe a déjà été choisie -présente éventuellement dans un Cookie- ET que le prof est titulaire de cette classe
 		if (isset($classe) && in_array($classe, $listeTitus)) {
-			$smarty->assign('classe',$classe);
-			$listeEleves = $Ecole->listeEleves($classe,'groupe');
-			$smarty->assign('listeEleves', $listeEleves);
+			$smarty->assign('classe', $classe);
 			$prevNext = $Ecole->prevNext($matricule, $listeEleves);
 			$smarty->assign('prevNext',$prevNext);
 			}
@@ -94,13 +101,15 @@ switch ($mode) {
 				$infoPersoEleve = $eleve->getDetailsEleve();
 
 				// liste de tous les cours suivis par l'élève, y compris ceux qu'il ne suit plus (pas d'historique)
-				$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin);
+				$listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin, true);
 				$listeCoursGrp = $listeCoursGrp[$matricule];
 
 				$listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 
 				// pas d'indication de numéro de période, afin de les avoir toutes
+
 				$commentairesProfs = $Bulletin->listeCommentairesTousCours($matricule, Null);
+
 				// liste des mentions (grades) attribués durant cette année d'étude à l'élève dont on fournit le matricule
 				$mentions = $Bulletin->listeMentions($matricule, Null, $annee);
 
@@ -110,6 +119,7 @@ switch ($mode) {
 
 				// cotes de gobal période pour le bulletin $bulletin
 				$sommesTjCert = $Bulletin->sommesTJCertEleves($matricule, $bulletin);
+
 				$ponderations = $Bulletin->getPonderationsBulletin($listeCoursGrp, $bulletin);
 				$cotesPeriode = $Bulletin->cotesPeriodePonderees($sommesTjCert, $ponderations);
 
@@ -202,7 +212,7 @@ switch ($mode) {
 
 					$smarty->assign('prevNext', $prevNext);
 					$smarty->assign('etape','enregistrer');
-					$smarty->assign('corpsPage', 'direction/ficheEleve');
+					$smarty->assign('corpsPage', 'titu/ficheEleve');
 				}
 			}
 		$smarty->assign('selecteur','selectClasseEleve');

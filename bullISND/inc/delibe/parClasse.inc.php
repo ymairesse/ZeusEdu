@@ -14,15 +14,22 @@ if (($etape == 'showCotes') && ($classe != null)) {
     } else {
         $listeMentions = null;
     }
-    $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin);
 
+
+    // liste des coursGrp de chaque élève, sans coursGrp virtuel
+    $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin, true);
+    // liste des cours (sans groupe) dans la classe
     $listeCoursListeEleves = $Bulletin->listeCoursSansGrp($listeCoursGrpListeEleves);
-    $listeCoursGrp = $Ecole->listeCoursGrpClasse($classe);
+    // liste des coursGrp dans la classe (y compris prof, libelle, statut,...), sans coursGrp virtuel
+    $listeCoursGrp = $Ecole->listeCoursGrpClasse($classe, false);
+    // statuts des cours en fonction de leur cadre légal (pour les cours non comptabilisés en echec etc...)
+    $statutsCadres = $Bulletin->getStatutsCadres();
+
     $listeCours = $Ecole->listeCoursClassePourDelibe($classe);
 
     $listeSituations = $Bulletin->listeSituationsDelibe($listeEleves, array_keys($listeCoursGrp), $bulletin);
 
-    $delibe = $Bulletin->echecMoyennesDecisions($listeSituations);
+    $delibe = $Bulletin->echecMoyennesDecisions($listeSituations, $statutsCadres);
 
     $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
     $smarty->assign('delibe', $delibe);
