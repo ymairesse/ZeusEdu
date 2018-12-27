@@ -81,6 +81,8 @@
 				<li><a href="index.php?action=gestUsers&amp;mode=modifUser">Modifier un utilisateur</a></li>
 				<li><a href="index.php?action=gestUsers&amp;mode=delUser">Supprimer un utilisateur</a></li>
 				<li><a href="index.php?action=gestUsers&amp;mode=affectation">Affectation en masse</a></li>
+				<li class="divider"></li>
+				<li><a href="index.php?action=gestUsers&amp;mode=educsClasses">Gestion des éducateurs</a></li>
 			</ul>
 		</li>
 

@@ -99,6 +99,28 @@ switch ($mode) {
         $smarty->assign('bilan', $bilan);
         $smarty->assign('corpsPage', 'users/bilanDroits');
         break;
+
+    case 'educsClasses':
+        if (isset($acronyme)) {
+            $User = new User($acronyme);
+            $identite =  $User->identite();
+            $smarty->assign('identite', $identite);
+            $smarty->assign('acronyme', $acronyme);
+
+            $listeClasses = $Ecole->listeClasses();
+            $smarty->assign('listeClasses', $listeClasses);
+            $groupes = $User->getClassesEduc($acronyme);
+            $smarty->assign('classes', $groupes);
+
+            $smarty->assign('corpsPage', 'users/educsClasses');
+        }
+
+        $smarty->assign('action', $action);
+        $smarty->assign('mode', $mode);
+        $smarty->assign('etape', 'showUsers');
+        $smarty->assign('listeProfs', $Ecole->listeProfs());
+        $smarty->assign('selecteur', 'selecteurs/selectNomProf');
+        break;
     default:
         die();
 }

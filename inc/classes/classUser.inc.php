@@ -9,7 +9,7 @@ class user
     private $applications;        // les applications accessibles par l'utilisateur
     private $listeCours;        // les cours de ce prof
     private $titulaire;            // la ou les classes dont il/elle est titulaire
-    private $aliase;
+    private $alias;
 
     // --------------------------------------------
     // fonction constructeur
@@ -274,31 +274,37 @@ class user
      * renvoie la liste des cours donnés par l'utilisateur courant; possibilité de demander les cours par section (GT, TQ, ...).
      *
      * @param string sections : liste des sections, chacune étant entourée de guillemets simples
+     * @param boolean $virtuel: les cours virtuels (hors bulletin) doivent-ils être compris?
      *
      * @return array : liste de tous les cours données par le prof utilisateur actuel
      */
-    public function listeCoursProf($sections = null)
+    public function listeCoursProf($sections = null, $virtuel = false)
     {
         $acronyme = $this->getAcronyme();
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = "SELECT DISTINCT pc.coursGrp, nbheures, SUBSTR(pc.coursGrp,1,LOCATE(':',pc.coursGrp)-1) as annee, ";
-        $sql .= 'nomCours, libelle, statut ';
+        $sql .= 'nomCours, libelle, statut, virtuel ';
         $sql .= 'FROM '.PFX.'profsCours AS pc ';
         $sql .= 'JOIN '.PFX.'elevesCours AS ec ON (ec.coursGrp = pc.coursGrp) ';
         $sql .= 'JOIN '.PFX.'eleves AS e ON (e.matricule = ec.matricule) ';
         $sql .= 'JOIN '.PFX."cours AS c ON (SUBSTR(pc.coursGrp,1,LOCATE('-', pc.coursGrp)-1) = c.cours) ";
-        $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = c.cadre) ';
-        $sql .= "WHERE acronyme = '$acronyme' ";
-
+        $sql .= 'JOIN '.PFX.'statutCours AS sc ON (sc.cadre = c.cadre) ';
+        $sql .= 'WHERE acronyme = :acronyme ';
+        if ($virtuel == true) {
+            $sql .= 'AND virtuel = false ';
+            }
         if ($sections) {
             $sql .= "AND c.section IN ($sections) ";
         }
-        $sql .= 'ORDER BY annee, libelle, nbheures, pc.coursGrp';
+        $sql .= 'ORDER BY annee, libelle, nbheures, pc.coursGrp ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
         $listeCours = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            while ($ligne = $requete->fetch()) {
                 $coursGrp = $ligne['coursGrp'];
                 $listeCours[$coursGrp] = array(
                         'libelle' => $ligne['libelle'],
@@ -314,6 +320,94 @@ class user
         $this->listeCours = $listeCours;
 
         return $this->listeCours;
+    }
+
+    /**
+     * retourne la liste des classes affectées à un éducateur
+     *
+     * @param string $acronyme
+     *
+     * @return array
+     */
+    public function getClassesEduc($acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT acronyme, groupe ';
+        $sql .= 'FROM '.PFX.'educsClasses ';
+        $sql .= 'WHERE acronyme = :acronyme ';
+        $sql .= 'ORDER BY groupe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = $ligne['groupe'];
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * supprime les affectations de classes à l'éducateur indiqué
+     *
+     * @param string $acronyme
+     * @param array $listeClasses : liste des classes à supprimer des affectation de l'éducateur
+     *
+     * @return int : nombre de suppressions
+     */
+    public function delClassesEduc($acronyme, $listeClasses) {
+        $listeClassesString = "'".implode("','", $listeClasses)."'";
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'educsClasses ';
+        $sql .= 'WHERE acronyme = :acronyme AND groupe IN ('.$listeClassesString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        if ($resultat != false)
+            return count($listeClasses);
+            else return 0;
+    }
+
+    /**
+     * enregistre les affectations de classes pour l'éducateur donné
+     *
+     * @param string $acronyme
+     * @param array $listeClasses
+     *
+     * @return int
+     */
+    public function saveClassesEduc($acronyme, $listeClasses){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'educsClasses ';
+        $sql .= 'SET acronyme = :acronyme, groupe = :groupe';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $nb = 0;
+        foreach ($listeClasses AS $groupe) {
+            if ($groupe != '') {
+                $groupe = strtoupper($groupe);
+                $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 5);
+                $resultat = $requete->execute();
+                if ($requete->rowCount() != 0)
+                    $nb++;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
     }
 
     ### --------------------------------------------------------------------###
