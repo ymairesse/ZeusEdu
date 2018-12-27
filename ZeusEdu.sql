@@ -267,6 +267,12 @@ ADD KEY `matricule` (`matricule`);
 ALTER TABLE `didac_adesRetards`
 MODIFY `idRetard` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du retard';
 
+CREATE TABLE IF NOT EXISTS `didac_educsClasses` (
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme de l''éducateur',
+  `groupe` varchar(5) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Classe en charge pour cet éduc',
+  PRIMARY KEY (`acronyme`,`groupe`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Classes en charge des éducateurs';
+
 CREATE TABLE `didac_athena` (
     `id` int(11) NOT NULL,
     `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',

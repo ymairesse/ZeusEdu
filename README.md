@@ -43,6 +43,7 @@ Les mises à jour cruciales à réaliser dans la base de données ou dans des fi
 2018-11-23 : ajout de la table didac_thotJdcEleve et suppression de didac_thotJdcEleves
 2018-12-25 : ajout des champs "echec" et "total" à la table didac_statutCours
 2018-12-26 : ajout des tables nécessaires à la gestion des EBS, gestion des EBS dans Athena
+2018-12-27 : ajout de la table educsClasses pour les éducateurs référents
 
 Installation
 ============
