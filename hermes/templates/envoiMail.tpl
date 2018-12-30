@@ -1,5 +1,6 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-<div class="container">
+
+<div class="container-fluid">
 
 	<form enctype="multipart/form-data" name="mailing" id="mailing" method="POST" action="index.php" role="form" class="form-vertical">
 

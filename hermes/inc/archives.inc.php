@@ -1,16 +1,17 @@
 <?php
 
 $listeArchives = $hermes->listeArchives($acronyme);
+
 if (count($listeArchives) > 0) {
-    $firstKey = array_keys($listeArchives)[0];
-    // l'archive la plus récente²
-    $lastArchive = $listeArchives[$firstKey];
+    $firstKey = current($listeArchives)['id'];
+    // l'archive la plus récente
+    $recentArchive = $listeArchives[$firstKey];
 }
-else $lastArchive = Null;
+else $recentArchive = Null;
 
 $smarty->assign('acronyme',$acronyme);
 $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 $smarty->assign('listeArchives',$listeArchives);
-$smarty->assign('mail',$lastArchive);
+$smarty->assign('recentArchive', $recentArchive);
 $smarty->assign('corpsPage','archives');

@@ -22,12 +22,13 @@ $hermes = new hermes();
 
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 
-$mail = $hermes->getMailById($id, $acronyme);
+$recentArchive = $hermes->getMailById($id, $acronyme);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 
 $smarty->assign('acronyme', $acronyme);
-$smarty->assign('mail', $mail);
-$texte = $smarty->fetch('../templates/inc/texteMail.tpl');
-echo $texte;
+$smarty->assign('recentArchive', $recentArchive);
+
+$smarty->display('../templates/inc/texteMail.tpl');
+

@@ -130,9 +130,21 @@ class hermes
             }
         }
         $pj = implode(',', $pj);
+
         $sql = 'INSERT INTO '.PFX.'hermesArchives ';
-        $sql .= "SET acronyme='$acronyme', mailExp='$mailExpediteur', objet='$objet', texte='$texte', destinataires='$destinataires', PJ='$pj', date=NOW(), heure=NOW() ";
-        $resultat = $connexion->exec($sql);
+        $sql .= 'SET acronyme = :acronyme, mailExp = :mailExpediteur, objet = :objet, texte = :texte, ';
+        $sql .= 'destinataires = :destinataires, PJ = :pj, date=NOW(), heure=NOW() ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':texte', $texte, PDO::PARAM_STR);
+        $requete->bindParam(':mailExpediteur', $mailExpediteur, PDO::PARAM_STR, 30);
+        $requete->bindParam(':objet', $objet, PDO::PARAM_STR, 100);
+        $requete->bindParam(':destinataires', $destinataires, PDO::PARAM_STR);
+        $requete->bindParam(':pj', $pj, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
+
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
@@ -160,6 +172,7 @@ class hermes
             $mail = $resultat->fetch();
             $mail['date'] = Application::datePHP($mail['date']);
             $mail['texte'] = html_entity_decode($mail['texte']);
+            $mail['PJ'] = explode(',', $mail['PJ']);
         }
         Application::DeconnexionPDO($connexion);
 

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 	<div style="height:20em; overflow: auto">
 
