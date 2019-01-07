@@ -1701,8 +1701,6 @@ class Application
          return $np;
      }
 
-
-
     /**
      * suppression de quelques caractères ennuyeux (espace, tiret, apostrohpe): utile pour créer des noms d'utilisateurs.
      *
