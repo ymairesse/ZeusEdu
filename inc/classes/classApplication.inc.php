@@ -1080,6 +1080,7 @@ class Application
         $alias = new user($acronyme);
         // mise en mémoire de l'administrateur
         $alias->setAlias($admin);
+        $this->alias = $admin;
 
         $_SESSION[APPLICATION] = $alias;
         $qui = $_SESSION[APPLICATION]->identite();
@@ -1683,6 +1684,24 @@ class Application
         return strtr($string, 'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ',
         'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
     }
+
+    /**
+     * simplification des noms (suppression des accents et autres caractères indésirables)
+     *
+     * @param string $nomPrenom
+     *
+     * @return string
+     */
+     public static function simplifieNom($nomPrenom) {
+         $np = strtolower(self::stripAccents($nomPrenom));
+         $np = str_replace(' ', '_', $np);
+         $np = str_replace('-', '', $np);
+         $np = str_replace('\'', '', $np);
+
+         return $np;
+     }
+
+
 
     /**
      * suppression de quelques caractères ennuyeux (espace, tiret, apostrohpe): utile pour créer des noms d'utilisateurs.
