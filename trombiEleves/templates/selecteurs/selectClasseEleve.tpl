@@ -40,7 +40,7 @@
 		<input type="hidden" placeholder="mode" name="mode" value="{$mode|default:Null}">
 
 		<input type="hidden" name="etape" value="showEleve">
-		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
+		<input type="hidden" name="onglet" id="onglet" value="{$onglet|default:0}">
 	</form>
 </div>
 

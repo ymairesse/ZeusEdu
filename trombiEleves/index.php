@@ -21,6 +21,9 @@ if ($classe != Null) {
     $smarty->assign('listeEleves',$listeElevesClasse);
     }
 
+
+$onglet = isset($_POST['onglet']) ? $_POST['onglet'] : Null;
+
 switch ($action) {
     case 'parClasses':
         if ($classe != Null) {
@@ -68,6 +71,7 @@ switch ($action) {
             $smarty->assign('listeEleves',$listeElevesClasse);
             $smarty->assign('action','parEleve');
 			$smarty->assign('titulaires', $eleve->titulaires());
+            $smarty->assign('onglet', $onglet);
 			$smarty->assign('corpsPage', 'infoEleves');
 		}
 		break;

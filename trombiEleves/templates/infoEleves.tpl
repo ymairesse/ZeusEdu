@@ -7,18 +7,18 @@
 	<div class="col-md-10 col-sm-9">
 
 		<ul id="tabs" class="nav nav-pills" data-tabs="tabs">
-			<li class="active"><a href="#tabs-1" data-toggle="tab">Coordonnées de l'élève</a></li>
-			<li><a href="#tabs-2" data-toggle="tab">Responsable</a></li>
-			<li><a href="#tabs-3" data-toggle="tab">Père</a></li>
-			<li><a href="#tabs-4" data-toggle="tab">Mère</a></li>
-			<li><a href="#tabs-5" data-toggle="tab">Cours</a></li>
-			<li><a href="#tabs-6" data-toggle="tab">EDT</a> </li>
-			<li><a href="#tabs-7" data-toggle="tab">EBS{if $eleveEBS|count > 0} <i class="fa fa-user-circle-o" style="color:#f00"></i>{/if}</a> </li>
+			<li><a href="#tabs-0" data-toggle="tab" data-tab="0" class="tabulation">Coordonnées de l'élève</a></li>
+			<li><a href="#tabs-1" data-toggle="tab" data-tab="1" class="tabulation">Responsable</a></li>
+			<li><a href="#tabs-2" data-toggle="tab" data-tab="2" class="tabulation">Père</a></li>
+			<li><a href="#tabs-3" data-toggle="tab" data-tab="3" class="tabulation">Mère</a></li>
+			<li><a href="#tabs-4" data-toggle="tab" data-tab="4" class="tabulation">Cours</a></li>
+			<li><a href="#tabs-5" data-toggle="tab" data-tab="5" class="tabulation">EDT</a> </li>
+			<li><a href="#tabs-6" data-toggle="tab" data-tab="6" class="tabulation">EBS{if $eleveEBS|count > 0} <i class="fa fa-user-circle-o" style="color:#f00"></i>{/if}</a> </li>
 		</ul>
 
 		<div id="my-tab-content" class="tab-content">
 
-			<div class="tab-pane active" id="tabs-1">
+			<div class="tab-pane active" id="tabs-0">
 
 				<h3>Coordonnées de l'élève</h3>
 
@@ -88,7 +88,7 @@
 
 			</div>  <!-- tabs-1 -->
 
-			<div class="tab-pane" id="tabs-2">
+			<div class="tab-pane" id="tabs-1">
 
 				<h3>Coordonnées de la personne responsable</h3>
 
@@ -151,7 +151,7 @@
 					</div>  <!-- row -->
 			</div>
 
-			<div class="tab-pane" id="tabs-3">
+			<div class="tab-pane" id="tabs-2">
 
 				<h3>Coordonnées du père de l'élève</h3>
 
@@ -202,7 +202,7 @@
 
 			</div>
 
-			<div class="tab-pane" id="tabs-4">
+			<div class="tab-pane" id="tabs-3">
 
 				<h3>Coordonnées de la mère de l'élève</h3>
 
@@ -254,7 +254,7 @@
 
 			</div>
 
-			<div class="tab-pane" id="tabs-5">
+			<div class="tab-pane" id="tabs-4">
 
 				<div class="panel panel-default">
 
@@ -288,7 +288,7 @@
 				</div>
 			</div>
 
-			<div class="tab-pane" id="tabs-6">
+			<div class="tab-pane" id="tabs-5">
 
 				<div class="panel panel-default">
 
@@ -305,7 +305,7 @@
 				</div>
 			</div>
 
-			<div class="tab-pane" id="tabs-7">
+			<div class="tab-pane" id="tabs-6">
 
 				<div class="panel panel-default">
 
@@ -331,3 +331,20 @@
 </div>  <!-- row -->
 
 </div>  <!-- container -->
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		var onglet = {$onglet};
+		if (onglet == '')
+			onglet = 0;
+		$('.tabulation[data-tab="' + onglet +'"]').trigger('click');
+
+		$('.tabulation').click(function(){
+			var onglet = $(this).data('tab');
+			$('#onglet').val(onglet);
+		})
+	})
+
+</script>
