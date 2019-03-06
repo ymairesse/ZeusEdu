@@ -36,7 +36,7 @@
 		{/if}
 
 		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
-		<input type="hidden" placeholder="action" name="action" id="action" value="{$action|default:'parClasse'}">
+		<input type="hidden" placeholder="action" name="action" id="action" value="{$action|default:'parClasses'}">
 		<input type="hidden" placeholder="mode" name="mode" value="{$mode|default:Null}">
 
 		<input type="hidden" name="etape" value="showEleve">
