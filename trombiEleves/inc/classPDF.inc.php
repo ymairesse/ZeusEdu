@@ -1,4 +1,5 @@
 <?php
+
 require(INSTALL_DIR."/fpdf181/fpdf.php");
 
 class PDF extends FPDF {
@@ -7,6 +8,7 @@ class PDF extends FPDF {
 	function setGroupe ($groupe) {
 		$this->groupe = $groupe;
 	}
+
 	//Page header
 	function Header() {
 		//Arial bold 15
@@ -30,4 +32,3 @@ class PDF extends FPDF {
 		$this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
 	}
 }
-?>

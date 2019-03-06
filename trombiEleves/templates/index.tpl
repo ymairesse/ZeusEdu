@@ -15,8 +15,8 @@
 
 {include file="menu.tpl"}
 
-<div class="container">
-	
+<div class="container-fluid">
+
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
@@ -57,16 +57,16 @@ $(document).ready (function() {
 		$("form input:visible:enabled").not('.datepicker,.timepicker').first().focus();
 
 	$("*[title]").tooltip();
-	
+
 	$(".pop").popover({
 		trigger:'hover'
 		});
 	$(".pop").click(function(){
 		$(".pop").not(this).popover("hide");
-		})		
-		
+		})
+
 	$("input").not(".autocomplete").attr("autocomplete","off");
-	
+
 })
 
 </script>

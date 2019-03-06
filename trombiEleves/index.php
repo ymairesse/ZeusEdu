@@ -25,29 +25,29 @@ switch ($action) {
     case 'parClasses':
         if ($classe != Null) {
             $tituClasse = $Ecole->titusDeGroupe($classe);
-            $fichierPDF = pagePDF($listeElevesClasse, $classe);
-            $fichierCSV = fichierCSV($listeElevesClasse, $classe);
-            $smarty->assign('fichierPDF', $fichierPDF);
-            $smarty->assign('fichierCSV', $fichierCSV);
+            $listeEBS = $Ecole->getEBS($classe, 'groupe');
+
+            $smarty->assign('nomFichier', $classe);
+            $smarty->assign('cible', 'classe');
             $smarty->assign('classe', $classe);
 			$smarty->assign('action','parClasses');
             $smarty->assign('tableauEleves', $listeElevesClasse);
             $smarty->assign('titulaires', $tituClasse);
+            $smarty->assign('listeEBS', $listeEBS);
             $smarty->assign('corpsPage', 'trombinoscope');
         }
         break;
     case 'parCours':
         if ($cours != Null) {
 			$listeElevesCours = $Ecole->listeElevesCours($cours);
+            $listeEBS = $Ecole->getEBS($cours, 'coursGrp');
 
-			$fichierPDF = pagePDF($listeElevesCours, $cours);
-			$fichierCSV = fichierCSV($listeElevesCours, $cours);
-
-			$smarty->assign('fichierPDF', $fichierPDF);
-			$smarty->assign('fichierCSV', $fichierCSV);
-			$smarty->assign('cours', $cours);
+			$smarty->assign('cible', 'coursGrp');
+			$smarty->assign('coursGrp', $cours);
+            $smarty->assign('nomFichier', $cours);
             $smarty->assign('action','parCours');
 			$smarty->assign('tableauEleves', $listeElevesCours);
+            $smarty->assign('listeEBS', $listeEBS);
 			$smarty->assign('corpsPage', 'trombinoscope');
 		}
         break;
@@ -58,6 +58,12 @@ switch ($action) {
             $smarty->assign('listeCours', $eleve->listeCoursEleve());
             $classe = $eleve->classe();
 			$smarty->assign('classe', $classe);
+            require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
+            $Edt = new Edt();
+            $imageEDT = $Edt->getEdtEleve($matricule);
+            $smarty->assign('imageEDT', $imageEDT);
+            $eleveEBS = $Ecole->getEBS($matricule, 'eleve');
+            $smarty->assign('eleveEBS', $eleveEBS);
             $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
             $smarty->assign('listeEleves',$listeElevesClasse);
             $smarty->assign('action','parEleve');
@@ -91,4 +97,3 @@ $smarty->assign('lesCours', $user->listeCoursProf());
 // ----------------------------------------------------------------------------
 $smarty->assign('executionTime', round($chrono->stop(),6));
 $smarty->display ('index.tpl');
-?>

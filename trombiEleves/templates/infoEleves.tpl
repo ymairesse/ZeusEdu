@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2 title="{$eleve.matricule}">{$eleve.nom} {$eleve.prenom}: {$eleve.groupe}</h2>
 
@@ -8,10 +8,12 @@
 
 		<ul id="tabs" class="nav nav-pills" data-tabs="tabs">
 			<li class="active"><a href="#tabs-1" data-toggle="tab">Coordonnées de l'élève</a></li>
-			<li><a href="#tabs-2" data-toggle="tab">Personne responsable</a></li>
-			<li><a href="#tabs-3" data-toggle="tab">Père de l'élève</a></li>
-			<li><a href="#tabs-4" data-toggle="tab">Mère de l'élève</a></li>
-			<li><a href="#tabs-5" data-toggle="tab">Cours de l'élève</a></li>
+			<li><a href="#tabs-2" data-toggle="tab">Responsable</a></li>
+			<li><a href="#tabs-3" data-toggle="tab">Père</a></li>
+			<li><a href="#tabs-4" data-toggle="tab">Mère</a></li>
+			<li><a href="#tabs-5" data-toggle="tab">Cours</a></li>
+			<li><a href="#tabs-6" data-toggle="tab">EDT</a> </li>
+			<li><a href="#tabs-7" data-toggle="tab">EBS{if $eleveEBS|count > 0} <i class="fa fa-user-circle-o" style="color:#f00"></i>{/if}</a> </li>
 		</ul>
 
 		<div id="my-tab-content" class="tab-content">
@@ -280,6 +282,36 @@
 							{{/foreach}}
 
 						</table>
+
+					</div>
+
+				</div>
+			</div>
+
+			<div class="tab-pane" id="tabs-6">
+
+				<div class="panel panel-default">
+
+					<div class="panel-body">
+
+						{if isset($imageEDT) && ($imageEDT != '')}
+							<img src="../edt/eleves/{$imageEDT}" alt="{$imageEDT}" class="img img-responsive">
+							{else}
+							<p>Image non disponible</p>
+							{/if}
+
+					</div>
+
+				</div>
+			</div>
+
+			<div class="tab-pane" id="tabs-7">
+
+				<div class="panel panel-default">
+
+					<div class="panel-body">
+
+						{include file="infoEBS.tpl"}
 
 					</div>
 

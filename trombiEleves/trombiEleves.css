@@ -19,9 +19,9 @@
     -moz-border-radius-bottomright: 20px;
     -moz-border-radius-bottomleft: 20px;
   }
-  
+
 .legendePhoto {
-	background-color: #aaa; 
+	background-color: #aaa;
 	color:white;
 	padding: 5px 2px 5px 2px;
 	display: block;
@@ -45,3 +45,16 @@
 
 .inputDefault {font-style: italic; color: grey;}
 .inputNormal {font-style: normal; color: black;}
+
+figure.EBS {
+  position: relative;
+  display: inline-block;
+}
+
+figcaption.EBS {
+  position: absolute;
+  top: -15px;
+  right: -10px;
+  font-size: 1.5em;
+  color: #f00;
+}

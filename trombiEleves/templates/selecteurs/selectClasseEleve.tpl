@@ -36,7 +36,7 @@
 		{/if}
 
 		<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
-		<input type="hidden" placeholder="action" name="action" id="action" value="{$action}">
+		<input type="hidden" placeholder="action" name="action" id="action" value="{$action|default:'parClasse'}">
 		<input type="hidden" placeholder="mode" name="mode" value="{$mode|default:Null}">
 
 		<input type="hidden" name="etape" value="showEleve">
@@ -62,16 +62,17 @@ $(document).ready (function() {
 			}
 		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
 		$.post('inc/listeEleves.inc.php',{
-			'classe': classe},
-				function (resultat){
-					$("#choixEleve").html(resultat)
-				}
+			classe: classe
+			},
+			function (resultat){
+				$("#choixEleve").html(resultat)
+			}
 			)
 	});
 
 	$('#choixEleve').on('change','#selectEleve', function(){
 		var matricule = $(this).val();
-		if (matricule > 0) {
+		if (matricule != '') {
 			$("#action").val('parEleve');
 			$("#matricule").val(matricule);
 			$('#formSelecteur').submit();
@@ -87,6 +88,7 @@ $(document).ready (function() {
 		var matrPrev = $("#matrPrev").val();
 		$('#matricule').val(matrPrev);
 		$("#selectEleve").val(matrPrev);
+		$("#action").val('parEleve');
 		$('#formSelecteur').submit();
 	})
 
@@ -94,6 +96,7 @@ $(document).ready (function() {
 		var matrNext = $("#matrNext").val();
 		$('#matricule').val(matrNext);
 		$("#selectEleve").val(matrNext);
+		$("#action").val('parEleve');
 		$('#formSelecteur').submit();
 	})
 
@@ -120,6 +123,7 @@ $(document).ready (function() {
 				success: function(data){
 					if (data != '') {
 						$("#matricule").val(data);
+						$('#action').val('parEleve');
 						$("#formSelecteur").submit();
 						}
 					}
