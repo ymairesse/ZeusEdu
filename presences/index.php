@@ -17,9 +17,7 @@ $smarty->assign('photosVis', $photosVis);
 
 $appli = $Application->getModule(1);
 
-// prise de présence par cours par le titulaire du cours
-$listeCoursGrp = $Ecole->listeCoursProf($acronyme, true);
-$smarty->assign('listeCoursGrp', $listeCoursGrp);
+
 
 switch ($action) {
     case 'admin':
@@ -27,6 +25,9 @@ switch ($action) {
         break;
     case 'presences':
         include 'inc/gestPresences.inc.php';
+        break;
+    case 'retard':
+        include 'inc/gestRetards.inc.php';
         break;
     case 'listes':
         include 'inc/gestListes.inc.php';
@@ -43,7 +44,7 @@ switch ($action) {
         }
         break;
     default:
-        if (in_array($user->userStatus($appli), array('educ', 'accueil'))) {
+        if (in_array($user->userStatus($appli), array('accueil'))) {
             include('inc/retards/scanRetards.inc.php');
         }
         else {

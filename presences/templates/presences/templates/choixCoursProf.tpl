@@ -6,7 +6,7 @@
 
 			<ul class="nav nav-tabs">
   				<li class="active"><a data-toggle="tab" href="#selection">Sélection</a></li>
-  				<li><a data-toggle="tab" href="#presences" class="btn disabled">Présences {if $photosVis == 'visible'}<i class="fa fa-address-book-o"></i> {/if}</a></li>
+  				<li><a data-toggle="tab" href="#presences" class="btn disabled">Présences</a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -21,15 +21,12 @@
 					<div class="col-md-3">
 
 						<div id="listeProfs">
-							<div class="form-group">
-								<label for="tituCours">Sélectionner un professeur</label>
-								<select class="form-control" name="tituCours" id="tituCours">
-									<option value="">Veuillez sélectionner un professeur</option>
-									{foreach from=$listeProfs key=unAcronyme item=data}
-										<option value="{$unAcronyme}"{if $acronyme == $unAcronyme} selected{/if}>{$data.nom} {$data.prenom}</option>
-									{/foreach}
-								</select>
-								</div>
+							<select class="form-control" name="tituCours" id="tituCours">
+								<option value="">Veuillez sélectionner un professeur</option>
+								{foreach from=$listeProfs key=unAcronyme item=data}
+									<option value="{$unAcronyme}"{if $acronyme == $unAcronyme} selected{/if}>{$data.nom} {$data.prenom}</option>
+								{/foreach}
+							</select>
 						</div>
 
 						<div class="btn-group btn-group-vertical btn-block" id="listeCours">
@@ -52,11 +49,20 @@
 
 
 		<div class="col-md-2">
-
+			bla bla bal
 			{include file="$INSTALL_DIR/widgets/flashInfo/templates/index.tpl"}
 		</div>
 
 	</div>  <!-- row -->
+
+
+
+
+		<div class="col-md-3 col-xs-6">
+
+		</div>  <!-- col-md-... -->
+
+	</div>   <!-- row -->
 
 </div>
 
@@ -77,11 +83,11 @@
 			};
 			$('#weekCalendar').fullCalendar('removeEventSources');
 			$('#weekCalendar').fullCalendar('addEventSource', events);
+
 			$.post('inc/listeCoursGrpProf.inc.php', {
 				acronyme: acronyme
 			}, function(resultat){
 				$('#listeCours').html(resultat);
-				$("[data-toggle='popover']").popover('hide');
 			})
 		})
 
@@ -97,7 +103,6 @@
 
 		$('#weekCalendar').fullCalendar({
 			weekends: false,
-			height: 600,
 			defaultView: 'agendaWeek',
 			header: {
 			},
@@ -131,17 +136,7 @@
 				element.html(event.coursGrp + ' - ' + event.startTime + '<br> <span style="color:red">' + event.libelle + '</span>');
 			},
 			eventClick: function (event, jsEvent, view) {
-				var heure = event.start.format('HH:mm');
-				var laDate = event.start.format('YYYY-MM-DD');
-				var coursGrp = event.coursGrp;
-				$.post('inc/getPresencesFromGhost.inc.php', {
-					laDate: laDate,
-					heure: heure,
-					coursGrp: coursGrp
-				}, function(resultat){
-					$('#feuillePresences').html(resultat);
-					$('.nav-tabs a:eq(1)').removeClass('disabled').tab('show');
-				})
+				console.log(event);
 			}
 		});
 

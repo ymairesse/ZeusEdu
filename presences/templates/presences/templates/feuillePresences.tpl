@@ -1,18 +1,15 @@
 	<form id="presencesEleves">
 
-	<input type="hidden" id="date" name="date" value="{$date}">
+	<input type="hidden" name="date" value="{$date}">
 	<input type="hidden" name="parent" value="prof/educ">
 	<input type="hidden" name="media" value="en classe">
 	<input type="hidden" name="periode" id="periode" value="{$periode}">
-	<input type="hidden" id="coursGrp" name="coursGrp" value="{$coursGrp|default:''}">
-	<input type="hidden" id="classe" name="classe" value="{$classe|default:''}">
+	<input type="hidden" name="coursGrp" value="{$coursGrp}">
 	<input type="hidden" name="acronyme" value="{$acronyme|default:''}">
 	<input type="hidden" name="oups" id="oups" value="">
 	<input type="hidden" name="presAuto" id="presAuto" value="true">
 
 	<strong>{$jourSemaine|ucwords} {$date}</strong>
-
-	<img src="../images/ajax-loader.gif" alt="wait" class="hidden" id="ajaxLoader">
 
 	<div class="pull-right" style="font-size:110%;">
 		[<span>{$nbEleves}</span> <span class="glyphicon glyphicon-user"></span> ]
@@ -21,15 +18,116 @@
 		[<span class="glyphicon glyphicon-user" style="color:red"></span> <span style="color:red" id="nbAbs"></span> ]
 	</div>
 
+	{assign var=noOrdre value=1}
+	{* répartition des élèves dans deux colonnes sur les écrans larges; sinon, les deux tableaux seront superposés *}
+	{assign var=nbCol1 value=round($listeEleves|count / 2)}
+	{assign var=listeDouble value=array($listeEleves|array_slice:0:$nbCol1:true, $listeEleves|array_slice:$nbCol1:Null:true)}
+
 	<div id="listeDouble">
 
-		{include file="listeDouble.tpl"}
+		{foreach from=$listeDouble key=i item=liste}
 
-	</div>
+		<div class="col-lg-6 col-md-12" style="padding:0">
+
+		<table class="table table-condensed table-hover tableauPresences" id="tableauPresences{$i}" style="margin:0;">
+
+			<thead {if $i == 1}class="hidden-md"{/if}>
+				<tr>
+					<th style="width:5em" class="hidden-md">&nbsp;</th>
+					<th style="">&nbsp;</th>
+					{foreach from=$lesPeriodes item=noPeriode}
+					<th class="horloge {if $noPeriode == $periode}ouvert{else}ferme{/if}"
+						data-periode="{$noPeriode}">
+						<i class="fa {if $noPeriode == $periode}fa-clock-o{else}fa-circle-thin{/if}"></i>
+					</th>
+					{/foreach}
+				</tr>
+			</thead>
+
+			{foreach from=$liste key=matricule item=unEleve}
+				{assign var=listePr value=$listePresences.$matricule}
+				<tr>
+					<th style="width:30px" class="hidden-md"><strong class="ordre">{$noOrdre}</strong> {$unEleve.classe|default:'&nbsp;'}</th>
+					{assign var=noOrdre value=$noOrdre+1}
+					<td style="width:230px"
+						{if $photosVis == 'visible'}
+						class="pop"
+						data-toggle="popover"
+						data-content="<img src='../photos/{$unEleve.photo}.jpg' alt='{$unEleve.matricule|default:'Pas de photo'}' style='width:100px'>"
+						data-html="true"
+						data-container="body"
+						{/if}>
+						{assign var=statut value=$listePr.$periode.statut|default:'indetermine'}
+						<button class="btn btn-large btn-block nomEleve {$statut} clip"
+								id="nomEleve-{$matricule}"
+								data-matricule="{$matricule}"
+								data-statut="{$statut}"
+								type="button">
+							<span class="visible-xs">{$unEleve.nom|truncate:10:'..'} {$unEleve.prenom|truncate:10:'.'}</span>
+							<span class="visible-sm visible-md visible-lg">{$unEleve.nom|truncate:20:'...'|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'}</span>
+						</button>
+					</td>
+
+					{* on passe les différentes périodes existantes en revue *}
+					{foreach from=$lesPeriodes item=noPeriode}
+						{assign var=statut value=$listePr.$noPeriode.statut|default:''}
+						{assign var=color value=$listeJustifications.$statut.color|default:'#000'}
+						{assign var=background value=$listeJustifications.$statut.background|default:'#fff'}
+						<td class="{if $noPeriode==$periode} now{else} notNow{/if} {$statut}
+							{if (!in_array($statut, array_keys($justifications)))} lock{/if}"
+							id="lock-{$matricule}_periode-{$noPeriode}"
+							style="color:{$color}; background:{$background}"
+							data-statut="{$statut}"
+							data-periode="{$noPeriode}"
+							data-matricule="{$matricule}"
+							title="{$listePr.$noPeriode.educ}"
+							data-container="body">
+
+							{if (in_array($statut, array_keys($justifications)))}
+								<strong>{$noPeriode}</strong>
+								{else}
+								<span class="glyphicon glyphicon-lock" title="{$listeJustifications.$statut.libelle|default:'Absence déjà signalée'}"></span>
+							{/if}
+
+							{if ($noPeriode == $periode)}
+								<input type="hidden"
+									value="{$statut}"
+									name="matr-{$matricule}"
+									class="cb"
+									id="matr-{$matricule}"
+									{if (!in_array($statut, array_keys($justifications)))}
+										disabled
+									{/if}>
+							{/if}
+						</td>
+					{/foreach}  {* $lesPeriodes *}
+				</tr>
+			{/foreach}  {* $liste *}
+
+			<!-- ouuuupsss... pour réinitialiser la prise de présences de cette période -->
+			<tfoot {if $i == 0}class="hidden-md"{/if}>
+				<tr>
+					<th style="width:30px" class="hidden-md">&nbsp;</th>
+					<th style="width:230px">&nbsp;</th>
+				{foreach from=$lesPeriodes item=noPeriode}
+					<th class="trash {if $noPeriode != $periode} disabled{/if}"
+						data-periode="{$noPeriode}">
+						<i class="fa fa-trash"></i>
+					</th>
+				{/foreach}
+				</tr>
+			</tfoot>
+		</table>
+
+		</div>  <!-- col-md... -->
+
+		{/foreach}  {* $listeDouble *}
+
+	</div>  <!-- row -->
 	<div class="clearfix"></div>
 	</form>
 
-<div class="visible-md visible-lg">
+<div class="visible-md">
 
 	<div class="table-responsive">
 
@@ -82,41 +180,24 @@
 
 $(document).ready(function(){
 
-	$(document).ajaxStart(function() {
-		$('#ajaxLoader').removeClass('hidden');
-		}).ajaxComplete(function() {
-			$('#ajaxLoader').addClass('hidden');
-		});
-
 	notificationNombres();
 	modifie = false;
 
 	$('#save').click(function(){
+		modifier = false;
 		var formulaire = $('#presencesEleves').serialize();
-		var coursGrp = $('#coursGrp').val();
-		var classe = $('#classe').val();
-		var date = $('#date').val();
 		$.post('inc/savePresences.inc.php', {
 			formulaire: formulaire
 		}, function(resultat){
-			modifie = false;
-			window.onbeforeunload = function(){};
-			$.post('inc/refreshAfterSave.inc.php', {
-				coursGrp: coursGrp,
-				classe: classe,
-				date: date
-			}, function(tableau){
-				$('#listeDouble').html(tableau);
-				bootbox.alert({
-					title: 'Enregistrement des présences',
-					message: resultat + ' enregistrements OK'
-				})
+			bootbox.alert({
+				title: 'Enregistrement des présences',
+				message: resultat + ' enregistrements OK'
 			})
 		})
 	})
 
-
-	$('#listeDouble').on('click', '.tableauPresences td', function(e){
+	// il suffit de cliquer sur le <td> contenant les input's
+	$(".tableauPresences td").click(function(e){
 		modification();
 		var ligne = $(this).closest('tr');
 		var cb = ligne.find('input:hidden');
@@ -183,7 +264,7 @@ $(document).ready(function(){
 		$("#confirmeVerrou").modal('hide');
 		})
 
-	$('#listeDouble').on('click', '.trash', function(){
+	$(".trash").click(function(){
 		var periodeActuelle = $("#periode").val();
 		var periodeTrash = $(this).data('periode');
 		// on ne travaille que si la période à réinitialiser est la période actuelle
@@ -208,7 +289,7 @@ $(document).ready(function(){
 			}
 		})
 
-	$('#listeDouble').on('click', '.horloge', function(){
+	$(".horloge").click(function(){
 		// annulation de toutes les modifications non enregistrées
 		$("#annuler").trigger('click');
 
