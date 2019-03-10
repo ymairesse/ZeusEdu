@@ -33,7 +33,7 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=retard&amp;mode=scan">Scan des retards</a></li>
 					<li><a href="index.php?action=retard&amp;mode=gestion">Gestion des retards</a></li>
-					<li><a href="index.php?action=retard&amp;mode=listeRetards">Liste des retards</a></li>
+					{* <li><a href="index.php?action=retard&amp;mode=listeRetards">Liste des retards</a></li> *}
 				</ul>
 			</li>
 			{/if}

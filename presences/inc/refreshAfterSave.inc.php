@@ -26,38 +26,37 @@ $Ecole = new Ecole();
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$date = isset($_POST['date']) ? $_POST['date'] : Null;
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
+// on a pris les présences pour un coursGrp ou pour une classe
+if ($coursGrp != Null)
+    $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
+    else $listeEleves = $Ecole->listeElevesClasse($classe, 'groupe');
+
+$smarty->assign('listeEleves', $listeEleves);
+
 $photosVis = isset($_COOKIE['photosVis']) ? $_COOKIE['photosVis'] : null;
 $smarty->assign('photosVis', $photosVis);
 
-$date = strftime('%d/%m/%Y');
 $smarty->assign('date', $date);
 
-$jourSemaine = strftime('%A', $Application->dateFR2Time($date));
-$smarty->assign('jourSemaine', $jourSemaine);
-
-$titusClasse = $Ecole->titusDeGroupe($classe);
-$smarty->assign('titusClasse', $titusClasse);
-
 $listePeriodes = $Presences->lirePeriodesCours();
-$smarty->assign('listePeriodes', $listePeriodes);
 $lesPeriodes = range(1, count($listePeriodes));
 $smarty->assign('lesPeriodes', $lesPeriodes);
 
-$periode = isset($_POST['periode']) ? $_POST['periode'] : $Presences->periodeActuelle($listePeriodes);
+$periode = $Presences->periodeActuelle($listePeriodes);
 $smarty->assign('periode', $periode);
 
 $smarty->assign('acronyme', $acronyme);
+$smarty->assign('coursGrp', $coursGrp);
 
-$listeEleves = $Ecole->listeElevesClasse($classe);
-$smarty->assign('listeEleves', $listeEleves);
-$smarty->assign('nbEleves', count($listeEleves));
 
 // quelles sont les mentions d'absences accessibles (en principe, NP, ABS, PRES)
 $justifications = $Presences->listeJustificationsAbsences(false);
@@ -67,7 +66,6 @@ $listeJustifications = $Presences->listeJustificationsAbsences(true);
 $smarty->assign('listeJustifications', $listeJustifications);
 
 $listePresences = $Presences->listePresencesElevesDate($date, $listeEleves);
-$listePresences = isset($listePresences) ? $listePresences : null;
 $smarty->assign('listePresences', $listePresences);
 
-$smarty->display('feuillePresencesClasse.tpl');
+$smarty->display('listeDouble.tpl');

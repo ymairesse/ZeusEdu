@@ -877,38 +877,38 @@ class presences
       *
       * @return int nombre d'enregistrements (0 -échec- ou 1 -réussite)
       */
-     // public function saveRetard ($post, $acronyme) {
-     //
-     //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-     //     if ($post['idRetard'] == '') {
-     //         $sql = 'INSERT INTO '.PFX.'adesRetards ';
-     //         $sql .= 'SET matricule = :matricule, acronyme = :acronyme, date = :date, ';
-     //         $sql .= 'heure = :heure, periode = :periode ';
-     //         }
-     //         else {
-     //             $sql = 'UPDATE '.PFX.'adesRetards ';
-     //             $sql .= 'SET date = :date, heure = :heure, periode = :periode ';
-     //             $sql .= 'WHERE idRetard = :idRetard AND acronyme = :acronyme AND matricule = :matricule ';
-     //         }
-     //     $requete = $connexion->prepare($sql);
-     //
-     //     $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-     //     $requete->bindParam(':heure', $post['heure'], PDO::PARAM_STR, 5);
-     //     $requete->bindParam(':periode', $post['periode'], PDO::PARAM_INT);
-     //     $date = Application::dateMysql($post['date']);
-     //     $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
-     //     $requete->bindParam(':matricule', $post['matricule'], PDO::PARAM_INT);
-     //     if ($post['idRetard'] != '') {
-     //         $requete->bindParam(':idRetard', $post['idRetard'], PDO::PARAM_INT);
-     //     }
-     //
-     //     $resultat = $requete->execute();
-     //     $nb = $requete->rowCount();
-     //
-     //     Application::DeconnexionPDO($connexion);
-     //
-     //     return $nb;
-     // }
+     public function saveRetard ($post, $acronyme) {
+
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         if ($post['idRetard'] == '') {
+             $sql = 'INSERT INTO '.PFX.'adesRetards ';
+             $sql .= 'SET matricule = :matricule, acronyme = :acronyme, date = :date, ';
+             $sql .= 'heure = :heure, periode = :periode ';
+             }
+             else {
+                 $sql = 'UPDATE '.PFX.'adesRetards ';
+                 $sql .= 'SET date = :date, heure = :heure, periode = :periode ';
+                 $sql .= 'WHERE idRetard = :idRetard AND acronyme = :acronyme AND matricule = :matricule ';
+             }
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':heure', $post['heure'], PDO::PARAM_STR, 5);
+         $requete->bindParam(':periode', $post['periode'], PDO::PARAM_INT);
+         $date = Application::dateMysql($post['date']);
+         $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+         $requete->bindParam(':matricule', $post['matricule'], PDO::PARAM_INT);
+         if ($post['idRetard'] != '') {
+             $requete->bindParam(':idRetard', $post['idRetard'], PDO::PARAM_INT);
+         }
+
+         $resultat = $requete->execute();
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
 
      /**
       * effacement de la notification de retard dont on fournit l'idRetard
@@ -918,22 +918,22 @@ class presences
       *
       * @return int : nombre d'effacements
       */
-     // public function delRetard ($idRetard, $acronyme){
-     //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-     //     $sql = 'DELETE FROM '.PFX.'adesRetards ';
-     //     $sql .= 'WHERE idRetard = :idRetard AND acronyme = :acronyme ';
-     //     $requete = $connexion->prepare($sql);
-     //
-     //     $requete->bindParam(':idRetard', $idRetard, PDO::PARAM_INT);
-     //     $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-     //
-     //     $resultat = $requete->execute();
-     //     $nb = $requete->rowCount();
-     //
-     //     Application::DeconnexionPDO($connexion);
-     //
-     //     return $nb;
-     // }
+     public function delRetard ($idRetard, $acronyme){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'DELETE FROM '.PFX.'adesRetards ';
+         $sql .= 'WHERE idRetard = :idRetard AND acronyme = :acronyme ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':idRetard', $idRetard, PDO::PARAM_INT);
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+         $resultat = $requete->execute();
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
 
      /**
       * Lecture des derniers enregistrements dans la table des retards
@@ -943,34 +943,34 @@ class presences
       *
       * @return array
       */
-     // public function getLastRetards($limite, $acronyme) {
-     //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-     //     $sql = 'SELECT idRetard, retards.matricule, acronyme, date, heure, periode, groupe, nom, prenom ';
-     //     $sql .= 'FROM '.PFX.'adesRetards AS retards ';
-     //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = retards.matricule ';
-     //     $sql .= 'WHERE acronyme = :acronyme ';
-     //     $sql .= 'ORDER BY idRetard DESC limit :limite ';
-     //     $requete = $connexion->prepare($sql);
-     //
-     //     $limite = (int) $limite;
-     //     $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-     //     $requete->bindParam(':limite', $limite, PDO::PARAM_INT);
-     //
-     //     $liste = array();
-     //     $resultat = $requete->execute();
-     //
-     //     if ($resultat) {
-     //         $requete->setFetchMode(PDO::FETCH_ASSOC);
-     //         while ($ligne = $requete->fetch()) {
-     //             $idRetard = $ligne['idRetard'];
-     //             $liste[$idRetard] = $ligne;
-     //         }
-     //     }
-     //
-     //     Application::DeconnexionPDO($connexion);
-     //
-     //     return $liste;
-     // }
+     public function getLastRetards($limite, $acronyme) {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT idRetard, retards.matricule, acronyme, date, heure, periode, groupe, nom, prenom ';
+         $sql .= 'FROM '.PFX.'adesRetards AS retards ';
+         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = retards.matricule ';
+         $sql .= 'WHERE acronyme = :acronyme ';
+         $sql .= 'ORDER BY idRetard DESC limit :limite ';
+         $requete = $connexion->prepare($sql);
+
+         $limite = (int) $limite;
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':limite', $limite, PDO::PARAM_INT);
+
+         $liste = array();
+         $resultat = $requete->execute();
+
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $idRetard = $ligne['idRetard'];
+                 $liste[$idRetard] = $ligne;
+             }
+         }
+
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
 
      /**
       * renvoie les détails du retard $idRetard afin d'édition

@@ -19,15 +19,12 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application::getmodule(3);
 
-// récupérer le formulaire d'encodage du livre
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
+$idRetard = isset($_POST['idRetard']) ? $_POST['idRetard'] : null;
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEleveAdes.inc.php';
-$EleveAdes = new EleveAdes();
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresence.inc.php';
+$Presence = new Presence();
 
-$nb = $EleveAdes->saveRetard($form, $acronyme);
+$retard = $Presence->getRetard($idRetard, $acronyme);
 
-echo $nb;
+echo json_encode($retard);
