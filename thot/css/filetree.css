@@ -201,6 +201,10 @@ ul.filetree a.dirLink {
     background: url(images/picture.png) no-repeat left top;
 }
 
+.filetree li.ext_svg, .filetree li.ext_SVG {
+    background: url(images/svg.png) no-repeat left top;
+}
+
 .filetree li.ext_js {
     background: url(images/script.png) no-repeat left top;
 }

@@ -23,6 +23,9 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
+
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : Null;
 parse_str($formulaire, $form);
 
@@ -32,6 +35,7 @@ $startDate = Application::datePHP($form['startDate']);
 $heure = isset($form['heure']) ? $form['heure'] : '00:00';
 
 $travail = $Jdc->getTravail($idTravail, $acronyme);
+// liste des PJ de la note originale
 $listePJ = $Jdc->getPJ($idTravail);
 
 switch ($type) {
@@ -64,9 +68,16 @@ $travail['titre'] = $travail['title'];
 $travail['categorie'] = $travail['idCategorie'];
 $travail['journee'] = isset($travail['allDay']) ? 1 : 0;
 $idTravail = $Jdc->saveJdc($travail, $acronyme);
-foreach ($listePJ as $shareId => $wtf) {
+
+$commentaire = sprintf('Document lié au JDC du %s de %s', $startDate, $cible);
+foreach ($listePJ as $wtf => $data) {
+    $fileId = $data['fileId'];
+    // calcul d'un nouveau $shareId
+    $shareId = $Files->getShareIdForFile($fileId, $type, $cible, 'all', $commentaire);
+
     $Jdc->setPJ($idTravail, $shareId);
 }
+
 $lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, $type, $cible);
 
 echo json_encode(array(

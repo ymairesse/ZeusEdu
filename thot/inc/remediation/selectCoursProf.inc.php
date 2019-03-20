@@ -23,7 +23,7 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-$listeCours = $Ecole->listeCoursProf($acronyme);
+$listeCours = $Ecole->listeCoursProf($acronyme, true);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();

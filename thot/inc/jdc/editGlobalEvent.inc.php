@@ -90,4 +90,4 @@ $smarty->assign('lblDestinataire', $lblDestinataire);
 $smarty->assign('travail', $travail);
 $smarty->assign('editable', $editable);
 
-$smarty->display('jdc/modal/modalEdit.tpl');
+$smarty->display('jdc/jdcEdit.tpl');

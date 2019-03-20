@@ -11,7 +11,7 @@
 				<option value="">Choisir</option>
 				{foreach from=$selectTypes key=leType item=dataType}
 				{if ($dataType.droits == Null) || in_array($userStatus, $dataType.droits)}
-					<option value="{$leType}"{if isset($type) && ($type == $leType)} selected{/if}>{$dataType.texte}</option>
+					<option value="{$leType}">{$dataType.texte}</option>
 				{/if}
 				{/foreach}
 			  </select>
@@ -23,7 +23,7 @@
 		<div class="col-sm-8 sousType {if !(isset($type))|| ($type != 'ecole')}hidden{/if}" id="divEcole">
 			<div class="form-group" id="selectEcole">
 				<label for="tous">Tous les élèves</label>
-				<select class="form-control" id="tous" name="tous">
+				<select class="form-control hidden" id="tous" name="tous">
 					<option value="ecole">Annonce pour tous les élèves</option>
 				</select>
 			</div>

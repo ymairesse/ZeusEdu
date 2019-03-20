@@ -23,11 +23,15 @@ $Ecole = new Ecole();
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new Thot();
 
+require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+
 $type = isset($_POST['type']) ? $_POST['type'] : null;
 
 // lecture de toutes les notifications pour l'utilisateur courant
 // ecole => ... niveau => ... classes => ... cours => ... eleves => ...
 $listeNotifications = $Thot->listeUserNotification($acronyme);
+// liste des accusés de réception éventuellement attendus (liste d'élèves d'une classe, par exemple)
+$listeAttendus = array();
 
 foreach ($listeNotifications[$type] as $notifId => $uneNotification) {
     // les accusés de lecture
@@ -63,8 +67,9 @@ foreach ($listeNotifications[$type] as $notifId => $uneNotification) {
             }
         }
     // cas particulier de l'élève isolé
-    if (isset($uneNotification['matricule']))
+    if (isset($uneNotification['matricule'])){
         $listeNotifications[$type][$notifId]['destinataire'] = Eleve::staticGetDetailsEleve($uneNotification['matricule']);
+        }
     }
 
 // liste des pièces jointes liées à ces notifications

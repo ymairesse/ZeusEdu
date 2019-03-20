@@ -2,112 +2,137 @@
 
 <div class="container-fluid">
 
-    <h2>Les documents et dossiers que je partage</h2>
+    <div class="row">
 
-    <div id="listePartages">
+        <div class="col-md-9 col-sm-12">
+            <h2>Les documents et dossiers que je partage</h2>
 
-        <ul class="nav nav-tabs">
-            {foreach from=$sharesList key=groupe item=groupShares name=onglets}
-            <li {if ($smarty.foreach.onglets.index == 0)}class="active"{/if}>
-                <a data-toggle="tab" href="#tabs-{$smarty.foreach.onglets.index}">{$dicoShareGroups.$groupe}</a>
-            </li>
-            {/foreach}
-        </ul>
-
-        <div class="tab-content">
-
-            {foreach from=$sharesList key=groupe item=groupShares name=onglets}
-            <div id="tabs-{$smarty.foreach.onglets.index}" class="tab-pane fade in{if $smarty.foreach.onglets.index == 0} active{/if}">
+            <div id="listePartages">
 
                 <ul class="nav nav-tabs">
-                {foreach from=$groupShares key=leGroupe item=shareData name=groupe}
-                    <li {if $smarty.foreach.groupe.index == 0}class="active"{/if}>
-                        <a data-toggle="tab" href="#id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}">{$leGroupe}</a>
+                    {foreach from=$sharesList key=groupe item=groupShares name=onglets}
+                    <li {if ($smarty.foreach.onglets.index == 0)}class="active"{/if}>
+                        <a data-toggle="tab" href="#tabs-{$smarty.foreach.onglets.index}">{$dicoShareGroups.$groupe}</a>
                     </li>
-                {/foreach}
+                    {/foreach}
                 </ul>
 
                 <div class="tab-content">
-                    {foreach from=$groupShares key=leGroupe item=shareData name=groupe}
-                        <div id="id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}"
-                            class="tab-pane fade in {if $smarty.foreach.groupe.index == 0} active{/if}"
-                            style="height:30em; overflow: auto">
 
-                            <table class="table table-condensed shareGroup">
-                                <tr>
-                                    <th style="width:2em">&nbsp;</th>
-                                    <th>Chemin</th>
-                                    <th>Nom du fichier</th>
-                                    <th style="width:2em">&nbsp;</th>
-                                    <th>Commentaire</th>
-                                    <th>Partagé avec</th>
-                                    <th style="width:2em">&nbsp;</th>
-                                </tr>
-                                {foreach from=$shareData key=shareId item=file}
-                                <tr data-shareid="{$shareId}" data-fileid="{$file.fileId}" class="{$file.dirOrFile}">
-                                    <td>
-                                        <button
-                                            type="button"
-                                            title="Placer/retirer un espion"
-                                            class="btn btn-xs {if isset ($spiedSharesList.$shareId)}btn-info btn-showSpy{else}btn-default btn-spy{/if}" data-shareid="{$file.shareId}">
-                                            <i class="fa fa-eye"></i>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        {if $file.dirOrFile == 'dir'}
-                                            <button
-                                                type="button"
-                                                class="btn btn-primary btn-xs btnFolder"
-                                                data-shareid="{$file.shareId}"
-                                                data-commentaire="{$file.path}{if $file.path != '/'}/{/if}{$file.fileName}">
+                    {foreach from=$sharesList key=groupe item=groupShares name=onglets}
+                    <div id="tabs-{$smarty.foreach.onglets.index}" class="tab-pane fade in{if $smarty.foreach.onglets.index == 0} active{/if}">
 
-                                                <i class="fa fa-folder-open text-danger"></i>
-                                                {$file.path}{if $file.path != '/'}/{/if}{$file.fileName}
-                                            </button>
-                                        {else}
-                                            {$file.path}
-                                        {/if}
-                                    </td>
-                                    <td>
-                                        {if $file.dirOrFile == 'file'}
-                                            <i class="fa fa-file text-info"></i>
-                                            <a href="inc/download.php?type=pfN&amp;f={$file.path}/{$file.fileName}">{$file.fileName}</a>
-                                            {else}
-                                        <span class="help-block">Tout le dossier</span>{/if}</td>
-                                    <td>
-                                        <button type="button" title="Modifier ce partage" class="btn btn-success btn-xs shareEdit" data-shareid="{$file.shareId}"><i class="fa fa-edit"></i></button>
-                                    </td>
-                                    <td class="commentaire">{$file.commentaire}</td>
-                                    <td>{$file.libelle}</td>
-                                    <td><button
-                                            type="button"
-                                            class="btn btn-danger btn-xs unShare"
-                                            data-fileid="{$file.fileId}"
-                                            data-shareId="{$file.shareId}"
-                                            data-filename="{$file.fileName}"
-                                            title="Arrêter le partage">
-                                            <i class="fa fa-share-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                        <ul class="nav nav-tabs">
+                        {foreach from=$groupShares key=leGroupe item=shareData name=groupe}
+                            <li {if $smarty.foreach.groupe.index == 0}class="active"{/if}>
+                                <a data-toggle="tab" href="#id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}">{$leGroupe}</a>
+                            </li>
+                        {/foreach}
+                        </ul>
 
-                                {/foreach}
+                        <div class="tab-content">
+                            {foreach from=$groupShares key=leGroupe item=shareData name=groupe}
+                                <div id="id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}"
+                                    class="tab-pane fade in {if $smarty.foreach.groupe.index == 0} active{/if}"
+                                    style="height:30em; overflow: auto">
 
-                            </table>
+                                    <table class="table table-condensed shareGroup">
+                                        <tr>
+                                            <th style="width:2em">&nbsp;</th>
+                                            <th>Chemin</th>
+                                            <th>Nom du fichier</th>
+                                            <th style="width:2em">&nbsp;</th>
+                                            <th>Commentaire</th>
+                                            <th>Partagé avec</th>
+                                            <th style="width:2em">&nbsp;</th>
+                                        </tr>
+                                        {foreach from=$shareData key=shareId item=file}
+                                        <tr data-shareid="{$shareId}" data-fileid="{$file.fileId}" class="{$file.dirOrFile}">
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    title="Placer/retirer un espion"
+                                                    class="btn btn-xs {if isset ($spiedSharesList.$shareId)}btn-info btn-showSpy{else}btn-default btn-spy{/if}" data-shareid="{$file.shareId}">
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                {if $file.dirOrFile == 'dir'}
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-primary btn-xs btnFolder"
+                                                        data-shareid="{$file.shareId}"
+                                                        data-commentaire="{$file.path}{if $file.path != '/'}/{/if}{$file.fileName}">
+                                                        <i class="fa fa-folder-open text-danger"></i>
+                                                        {$file.path}{if $file.path != '/'}/{/if}{$file.fileName}
+                                                    </button>
+                                                {else}
+                                                    {$file.path}
+                                                {/if}
+                                            </td>
+                                            <td>
+                                                {if $file.dirOrFile == 'file'}
+                                                    <i class="fa fa-file text-info"></i>
+                                                    <a href="inc/download.php?type=pfN&amp;f={$file.path}/{$file.fileName}">{$file.fileName}</a>
+                                                    {else}
+                                                <span class="help-block">Tout le dossier</span>{/if}</td>
+                                            <td>
+                                                <button type="button" title="Modifier ce partage" class="btn btn-success btn-xs shareEdit" data-shareid="{$file.shareId}"><i class="fa fa-edit"></i></button>
+                                            </td>
+                                            <td class="commentaire">{$file.commentaire}</td>
+                                            <td>{$file.libelle}</td>
+                                            <td><button
+                                                    type="button"
+                                                    class="btn btn-danger btn-xs unShare"
+                                                    data-fileid="{$file.fileId}"
+                                                    data-shareId="{$file.shareId}"
+                                                    data-filename="{$file.fileName}"
+                                                    title="Arrêter le partage">
+                                                    <i class="fa fa-share-alt"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        {/foreach}
+
+                                    </table>
+
+                                </div>
+                            {/foreach}
 
                         </div>
+
+                    </div>
                     {/foreach}
 
                 </div>
 
             </div>
-            {/foreach}
+
+        </div>
+
+        <div class="col-md-3 col-sm-12">
+
+            <h3>Mode d'emploi</h3>
+            <p style="border: 1px solid #333; padding: 0.5em"><button type="button" title="Placer/retirer/visualiser un espion" class="btn btn-xs btn-info btn-showSpy">
+                <i class="fa fa-eye"></i>
+            </button>  Ajout / suppression / visualisation d'un espion sur le fichier. L'identité de l'utilisateur et la date de dernier teléchargement du document sont enregistrés. Clic sur le bouton pour voir les téléchargements ou supprimer l'espion.</p>
+
+            <p style="border: 1px solid #333; padding: 0.5em"><button type="button" title="Modifier ce partage" class="btn btn-success btn-xs shareEdit">
+                <i class="fa fa-edit"></i>
+            </button> Modification du commentaire associé au partage</p>
+
+            <p style="border: 1px solid #333; padding: 0.5em"><button type="button" title="Arrêter le partage" class="btn btn-danger btn-xs unShare">
+                <i class="fa fa-share-alt"></i>
+            </button> Clôture du partage: les autres utilisateurs n'auront plus accès au document. Le document n'est pas effacé. Si un document est partagé plusieurs fois avec divers utilisateurs, il faut dé-partager chacune des occurrences du partage.</p>
 
         </div>
 
     </div>
 
 </div>
+
+
 
 {include file="files/modal/modalEditShare.tpl"}
 {include file="files/modal/modalUnshareFile.tpl"}

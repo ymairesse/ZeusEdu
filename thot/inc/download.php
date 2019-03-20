@@ -164,8 +164,8 @@ if ($download_hook['download'] != 1) {
     echo $download_hook['message'];
     echo " Une erreur inattendue s'est produite";
 }
-// $download->chip_print($download_hook);
-// exit;
+    // $download->chip_print($download_hook);
+    // exit;
 
 /*
 |-----------------

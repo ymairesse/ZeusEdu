@@ -3,14 +3,16 @@
 	<h2>Historique et Annonces</h2>
 		{* les différents onglets pour les différents destinataires possibles *}
 		<ul class="nav nav-tabs">
+
 			{foreach from=$listeTypes key=type item=data}
 				{if $data.droits == Null || in_array($userStatus, $data.droits)}
 				<li>
-					<a data-toggle="tab" href="#tabs-{$type}">{$data.texte}
+					<a data-toggle="tab" data-type="{$type}" href="#tabs-{$type}" class="onglet">{$data.texte}
 						<span class="badge" data-type="{$type}">{$listeNotifications.$type|@count|default:0}</span></a>
 				</li>
 				{/if}
 			{/foreach}
+
 			{* un onglet supplémentaire pour l'éditeur d'annonces *}
 			<li class="pull-right">
 				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-bullhorn fa-lg"></i> Nouvelle annonce</a>
@@ -24,7 +26,7 @@
 				{if $data.droits == Null || in_array($userStatus, $data.droits)}
 					{if isset($listeNotifications.$type)}
 						{assign var=liste value=$listeNotifications.$type}
-						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 1} in active{/if}">
+						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 0} in active{/if}">
 						{include file="notification/edit/notification4Type.tpl"}
 						</div>
 					{/if}
@@ -32,7 +34,9 @@
 			{/foreach}
 			{* l'éditeur d'annonces *}
 			<div id="tabs-edit" class="tab-pane fade">
+
 				{include file="notification/edit/tabEdit.tpl"}
+
 			</div>
 
 		</div>
@@ -90,8 +94,16 @@
 
 	$(document).ready(function() {
 
-		// activer l'onglet dont le numéro a été passé
-		$(".nav-tabs li a.realTab").eq({$onglet}).trigger('click');
+		// activer l'onglet dont le type a été passé
+		var ongletNotif = Cookies.get('ongletNotif');
+		if ((ongletNotif != undefined)) {
+			$('.onglet[data-type="' + ongletNotif + '"]').trigger('click');
+		}
+		// enregistrer l'onglet sélectionné dans un Cookie
+		$('.onglet').click(function(){
+			var type = $(this).data('type');
+			Cookies.set('ongletNotif', type, { expires: 365 });
+		})
 
 		$(document).ajaxStart(function() {
 			$('body').addClass('wait');
@@ -99,7 +111,7 @@
 			$('body').removeClass('wait');
 		});
 
-		{* enregistrement et envoi d une annonce *}
+		// enregistrement et envoi d'une annonce
 		$('#ficheEleve').on('click', '#submitNotif', function(){
 			var sent = $(this).attr('data-sent');
 			if (sent == 'true') {
@@ -108,7 +120,12 @@
 			else {
 				if ($('#notification').valid()) {
 					var formulaire = $('#notification').serialize();
-					var type = $('#type').val();
+					var matricule = $('#matricule').val();
+					var tous = $('#cbTous').prop('checked');  // la case à cocher "TOUS"
+					// en cas d'édition, le matricule est connu => c'est le cas d'un élève isolé
+					// en cas de nouvel enregistrement et que la case à cocher cbTous n'est pas cochée
+					// ou qu'elle est undefined, c'est le cas d'un élève isolé
+					var type = ((matricule != '') || tous == false)  ? 'eleves' : $('#type').val();
 					$.post('inc/notif/saveNotification.inc.php', {
 						formulaire: formulaire
 					}, function(resultat){
@@ -172,6 +189,7 @@
 						$('.cb').prop('checked', false);
 						$('#destinataire').val($('#tous').val());
 						$('#choixEleves').html(resultat).removeClass('hidden');
+						$('#tous').removeClass('hidden');
 						$('#notification input[type!="hidden"]').prop('disabled', false);
 						$('#mail, #accuse, #parent').prop('disabled', true);
 						$('#editorPanel').removeClass('hidden');
@@ -297,7 +315,7 @@
 
 		$("#ficheEleve").on('click', '.btn-delete', function() {
 			var notifId = $(this).data('id');
-			$("#modalDelIdBtn").data('id', id);
+			$("#modalDelIdBtn").data('id', notifId);
 			var type = $(this).data('type');
 			$("#modalDelIdBtn").data('type', type);
 			var objet = $(this).closest('tr').find('.objet').text();
@@ -380,7 +398,7 @@
 			$("#del_" + id).prop('checked', ch);
 		})
 
-		$(".showAccuse").click(function() {
+		$("#corpsPage").on('click', '.showAccuse', function() {
             var id = $(this).data('id');
             $.post('inc/notif/showAccuses.inc.php', {
                     id: id

@@ -29,6 +29,8 @@ if ($id != Null) {
         die('Cette note au JDC ne vous appartient pas');
 
     $noteJdc = $Jdc->getTravail($id);
+    $pjFiles = $Jdc->getPJ($id);
+
     $startDate = $noteJdc['startDate'];
     $destinataire = $noteJdc['destinataire'];
     $type = $noteJdc['type'];
@@ -47,5 +49,6 @@ if ($id != Null) {
     $smarty->assign('type',$type);
     $smarty->assign('coursGrp',$coursGrp);
     $smarty->assign('classe',$classe);
-    $smarty->display('jdc/modalDel.tpl');
+    $smarty->assign('pjFiles', $pjFiles);
+    $smarty->display('jdc/modal/modalDel.tpl');
     }

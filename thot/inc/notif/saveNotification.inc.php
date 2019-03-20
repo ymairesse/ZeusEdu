@@ -64,12 +64,14 @@ else {
 
 // ----------- enregistrement effectif de la notification
 // $listeNotifId parce que la fonction peut renvoyer les $notifId pour plusieurs élèves
+// ------------------------------------------------------------------------------
 $listeNotifId = $Thot->enregistrerNotification($notification, $acronyme);
 $texte[] = sprintf('%d annonce(s) enregistrée(s)', count($listeNotifId));
 
 // ------------------------------------------------------------------------------
 // ok pour la notification en BD, passons éventuellement à l'envoi de mail
 // si c'est une édition, le champ 'mail' est désactivé => !(isset)
+// ------------------------------------------------------------------------------
 if (isset($form['mail']) && $form['mail'] == 1) {
     require_once INSTALL_DIR."/smarty/Smarty.class.php";
     $smarty = new Smarty();
@@ -89,11 +91,11 @@ if (isset($form['mail']) && $form['mail'] == 1) {
     $listeEnvois = $Thot->mailer($listeMailing, $objetMail, $texteMail, $signatureMail);
     $texte[] = sprintf('%d mail(s) envoyé(s)', count($listeEnvois));
 }
-// Application::afficher($form);
 
 // ------------------------------------------------------------------------------
 // voyons si un accusé de lecture est souhaité
 // si c'est une édition, le champ 'accuse' est désactivé => !(isset)
+// ------------------------------------------------------------------------------
 if (isset($form['accuse']) && $form['accuse'] == 1) {
     if (isset($form['TOUS'])) {
         // la même annonce $id pour tous
@@ -109,8 +111,10 @@ if (isset($form['accuse']) && $form['accuse'] == 1) {
 
 // ------------------------------------------------------------------------------
 // enregistrement et suppression éventuelles des PJ
+// ------------------------------------------------------------------------------
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
+
 if (isset($form['files']) && count($form['files']) > 0) {
     // liaison des PJ existantes et suppression des PJ supprimées
     $nb = $Files->linkFilesNotifications($listeNotifId, $form, $acronyme);

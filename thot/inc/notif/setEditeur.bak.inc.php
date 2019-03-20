@@ -27,7 +27,7 @@ $Thot = new Thot();
 
 $notification = $Thot->newNotification($type, $acronyme, $destinataire);
 
-Application::afficher($notification, true);
+// Application::afficher($notification, true);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();

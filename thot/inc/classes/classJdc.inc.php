@@ -9,6 +9,45 @@ class Jdc
     {
     }
 
+    public function getConges($dateFrom, $dateTo, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate ';
+    	$sql .= 'FROM '.PFX.'thotJdc ';
+    	$sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
+    	$sql .= 'AND destinataire ="ecole" ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
+        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $type = $ligne['type'];
+                $destinataire = $ligne['destinataire'];
+                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
+                $liste[] = array(
+        			'id' => $ligne['id'],
+        			'title' => $ligne['title'],
+        			'enonce' => mb_strimwidth (strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
+                    'destinataire' => $destin,
+        			'className'=>'cat_'.$ligne['idCategorie'],
+        			'start'=> $ligne['startDate'],
+        			'end' => $ligne['endDate'],
+        			'allDay' => ($ligne['allDay']!=0),
+                    'type' => $ligne['type'],
+        			'editable' => ($ligne['proprietaire'] == $acronyme)
+        			);
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
     /**
      * renvoie la liste d'événements entres deux dates start et end pour une liste de cours donnée
      *
@@ -20,7 +59,6 @@ class Jdc
      */
     public function getEvents4Cours($dateFrom, $dateTo, $listeCoursGrp, $acronyme)
     {
-
         if (is_array($listeCoursGrp)) {
             $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
         } else {
@@ -57,6 +95,99 @@ class Jdc
                     'type' => $ligne['type'],
         			'editable' => ($ligne['proprietaire'] == $acronyme)
         			);
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste d'événements entres deux dates start et end pour un élève donné
+     * y compris son tmatricule, son niveau d'étude, sa classe et sa liste de cours
+     *
+     * @param int $from : date de début = timestamp Unix en millisecondes
+     * @param int $to   : date de fin = timestamp Unix en millisecondes
+     *
+     * @return string liste json
+     */
+    public function retreiveEvents4Eleve($start, $end, $niveau, $classe, $matricule, $listeCoursString)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, redacteur, title, enonce, class, allDay, startDate, endDate ';
+        $sql .= 'FROM '.PFX.'thotJdc ';
+        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
+        $sql .= 'AND destinataire in ('.$listeCoursString.') OR destinataire = :classe ';
+        $sql .= 'OR destinataire = :matricule OR destinataire = "all" OR destinataire = :niveau ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
+        $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $liste[] = array(
+                    'id' => $ligne['id'],
+                    'title' => $ligne['title'],
+                    'enonce' => mb_strimwidth(strip_tags(html_entity_decode($ligne['enonce'])), 0, 200,'...'),
+                    'className' => 'cat_'.$ligne['idCategorie'],
+                    'start' => $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => ($ligne['allDay'] != 0)
+                    );
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+      /**
+     * retrouve la liste des remédiations entre deux dates destinées à un élève dont on fournit le matricule
+     *
+     * @param $start date de début
+     * @param $end date de fin
+     * @param int $matricule
+     *
+     * @return array
+     */
+    public function retreiveRemediations ($start, $end, $matricule) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT eleves.idOffre, eleves.matricule, acronyme, title, contenu AS enonce, startDate, endDate, CONCAT(prenom," ", nom) AS destinataire, ';
+        $sql .= 'nom, prenom ';
+        $sql .= 'FROM '.PFX.'remediationEleves AS eleves ';
+        $sql .= 'JOIN '.PFX.'remediationOffre AS offres ON offres.idOffre = eleves.idOffre ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = eleves.matricule ';
+        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
+        $sql .= 'AND eleves.matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
+        $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = array(
+                    'id' => 'Rem_'.$ligne['idOffre'],
+                    'title' => '[Remédiation] '.$ligne['title'],
+                    'enonce' => mb_strimwidth(strip_tags(html_entity_decode($ligne['enonce'])), 0, 200,'...'),
+                    'className' => 'remediation',
+                    'start' => $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => 0,
+                    'destinataire' => $ligne['destinataire'],
+                    'cours' => $ligne['acronyme'],
+                    );
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -164,21 +295,74 @@ class Jdc
     }
 
     /**
-     * retourne la liste des remédiations entre deux dates $start et $end pour l'utilisateur $acronyme
+     * retourne la liste des notes pour les cours au JDC netre deux dates pour l'utilisateur $acronyme
      *
-     * @param string $start : date de début de l'intervalle
-     * @param string $end : date de fin de l'intervalle
+     * @param string $start : date de début
+     * @param string $end : date de fin
      * @param string $acronyme
      *
      * @return array
      */
-    public function getMyGlobalEvents($start, $end, $acronyme, $lesTypes) {
-        $lesTypes = "'".implode("','", $lesTypes)."'";
+    public function getSynoptiqueCours($start, $end, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT  * FROM '.PFX.'thotJdc AS jdc ';
+        $sql .= 'WHERE proprietaire = :acronyme ';
+        $sql .= 'AND destinataire IN (SELECT DISTINCT coursGrp FROM didac_profsCours WHERE acronyme = :acronyme) ';
+        $sql .= 'AND startDate BETWEEN :start AND :end ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
+        $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+
+        if ($resultat) {
+            while ($ligne = $requete->fetch()) {
+                $type = $ligne['type'];
+                $destinataire = $ligne['destinataire'];
+                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
+                $liste[] = array(
+                    'id' => $ligne['id'],
+                    'title' => $ligne['title'],
+                    'enonce' => mb_strimwidth(strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
+                    'destinataire' => $destin,
+                    'className' => 'cat_'.$ligne['idCategorie'],
+                    'start' => $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => ($ligne['allDay']!=0),
+                    'type' => $ligne['type'],
+                    'editable' => ($ligne['proprietaire'] == $acronyme),
+                    );
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les événements fullCalendar pour les catégories souhaitées
+     *
+     * @param array $listeCategories
+     * @param string $start : date de début de l'intervalle
+     * @param string $end : date de fin de l'intervalle
+     * @param string $acronyme : Null si on veut tous les événements pour le niveau d'organisation
+     *
+     * @return array
+     */
+    public function getEvents4modele($listeCategories, $start, $end, $acronyme){
+        if ($listeCategories != Null)
+            $listeCategories = implode(',', $listeCategories);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, proprietaire, idCategorie, type, destinataire, title, enonce, ';
         $sql .= 'allDay, startDate, endDate, DATE_FORMAT(NOW(),"%Y-%m-%d") AS ajd ';
         $sql .= 'FROM '.PFX.'thotJdc ';
-        $sql .= 'WHERE startDate BETWEEN :start AND :end AND proprietaire = :acronyme AND type IN ('.$lesTypes.') ';
+        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
+        $sql .= 'AND type = "coursGrp" AND idCategorie IN ('.$listeCategories.') ';
+        $sql .= 'AND proprietaire = :acronyme ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
@@ -207,7 +391,68 @@ class Jdc
                     );
             }
         }
-// Application::afficher($liste);
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste des JDC entre deux dates $start et $end pour l'utilisateur $acronyme
+     *
+     * @param string $type : niveau de l'annonce (ecole, niveau, classe, eleve)
+     * @param string $destinataire : pour qui dans ce niveau ('all' si 'ecole')
+     * @param string $start : date de début de l'intervalle
+     * @param string $end : date de fin de l'intervalle
+     * @param string $acronyme : Null si on veut tous les événements pour le niveau d'organisation
+     *
+     * @return array
+     */
+    public function getMyGlobalEvents($type, $destinataire, $start, $end, $acronyme=Null) {
+        $acronyme = isset($post['acronyme']) ? $post['acronyme'] : Null;
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, proprietaire, idCategorie, type, destinataire, title, enonce, ';
+        $sql .= 'allDay, startDate, endDate, DATE_FORMAT(NOW(),"%Y-%m-%d") AS ajd ';
+        $sql .= 'FROM '.PFX.'thotJdc ';
+        $sql .= 'WHERE startDate BETWEEN :start AND :end ';
+        $sql .= 'AND type = :type AND destinataire = :destinataire ';
+        if ($acronyme != Null)
+            $sql .= 'AND proprietaire = :acronyme ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
+        $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
+        $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 20);
+        $requete->bindParam(':type', $type, PDO::PARAM_STR, 10);
+
+        if ($acronyme != Null)
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $type = $ligne['type'];
+                $destinataire = $ligne['destinataire'];
+                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
+                $liste[] = array(
+                    'id' => $ligne['id'],
+                    'title' => $ligne['title'],
+                    'enonce' => mb_strimwidth(strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
+                    'destinataire' => $destin,
+                    'className' => 'cat_'.$ligne['idCategorie'],
+                    'start' => $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => ($ligne['allDay']!=0),
+                    'type' => $ligne['type'],
+                    'editable' => ($ligne['proprietaire'] == $acronyme),
+                    );
+            }
+        }
+
         Application::DeconnexionPDO($connexion);
 
         return $liste;
@@ -512,7 +757,7 @@ class Jdc
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT jdc.id, destinataire, type, proprietaire, redacteur, title, enonce, class, jdc.id, DATE(startDate) AS startDate, ';
-        $sql .= 'TIME(startDate) AS heure, endDate, TIMEDIFF(endDate, startDate) AS duree, allDay, ';
+        $sql .= 'TIME(startDate) AS heure, endDate, TIMEDIFF(endDate, startDate) AS duree, allDay, DATE_FORMAT(lastModif, "%d/%m/%Y %H:%i") AS lastModif, ';
         $sql .= 'jdc.idCategorie, categorie, sexe, nom, prenom, dpc.acronyme, libelle, nbheures, nomCours ';
         $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
         $sql .= 'JOIN '.PFX.'thotJdcCategories AS cat ON cat.idCategorie = jdc.idCategorie ';
@@ -554,6 +799,40 @@ class Jdc
     }
 
     /**
+     * retrouve la remédiation dont on fournit l'identifiant
+     *
+     * @param int $id : identifiant de la remédiation
+     *
+     * @return array
+     */
+    public function getRemediation($id) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DATE_FORMAT(startDate, "%H:%i") AS heure, DATE_FORMAT(startDate,"%d/%m/%Y") AS date, ';
+        $sql .= 'TIMEDIFF(endDate, startDate) AS duree, local, title, contenu AS enonce, ';
+        $sql .= 'offre.acronyme AS proprietaire, nom, prenom, sexe ';
+        $sql .= 'FROM '.PFX.'remediationOffre AS offre ';
+        $sql .= 'JOIN '.PFX.'remediationEleves AS eleves ON eleves.idOffre = offre.idOffre ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = offre.acronyme ';
+        $sql .= 'WHERE offre.idOffre = :id ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $travail = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $travail = $requete->fetch();
+            $travail['nomProf'] = ($travail['sexe'] == 'F') ? 'Mme ' : 'M. ';
+            $travail['nomProf'] .= mb_substr($travail['prenom'], 0, 1, 'UTF-8').'. '.$travail['nom'];
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $travail;
+    }
+
+    /**
      * lie un document partagé par son $shareId avec un JDC dont on fournit l'id
      *
      * @param int $id : identifiant du Jdc
@@ -561,13 +840,13 @@ class Jdc
      *
      * @return int : le nombre d'insertion (une)
      */
-    public function setPJ($id, $shareId) {
+    public function setPJ($idJdc, $shareId) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcPJ ';
-        $sql .= 'SET id = :id, shareId = :shareId ';
+        $sql .= 'SET idJdc = :idJdc, shareId = :shareId ';
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':idJdc', $idJdc, PDO::PARAM_INT);
         $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
 
         $resultat = $requete->execute();
@@ -586,11 +865,11 @@ class Jdc
      */
     public function getPJ($id) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, pj.shareId,  dts.fileId, path, fileName ';
+        $sql = 'SELECT idJdc, pj.shareId,  dts.fileId, path, fileName ';
         $sql .= 'FROM '.PFX.'thotJdcPJ AS pj ';
         $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = pj.shareId ';
         $sql .= 'JOIN '.PFX.'thotFiles AS files ON files.fileId = dts.fileId ';
-        $sql .= 'WHERE id = :id AND dirOrFile = "file" ';
+        $sql .= 'WHERE idJdc = :id AND dirOrFile = "file" ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
@@ -706,6 +985,12 @@ class Jdc
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
         $resultat = $requete->execute();
 
+        // suppression des PJ
+        $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
+        $sql .= 'WHERE idJdc = '.$id.' ';
+
+        $resultat = $connexion->exec($sql);
+
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
@@ -714,7 +999,8 @@ class Jdc
     /**
      * enregistre une notification au JDC.
      *
-     * @param $post : tout le contenu du formulaire
+     * @param array $post : tout le contenu du formulaire
+     * @param string $acronyme : identifiant de l'utilisateur
      *
      * @return integer: last Id
      */
@@ -761,12 +1047,12 @@ class Jdc
             // nouvel enregistrement
             $sql = 'INSERT INTO '.PFX.'thotJdc ';
             $sql .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
-            $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay ';
+            $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay, lastModif = NOW() ';
         } else {
             // simple mise à jour
             $sql = 'UPDATE '.PFX.'thotJdc ';
             $sql .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
-            $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay ';
+            $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay, lastModif = NOW() ';
             $sql .= 'WHERE id = :id ';
         }
         $requete = $connexion->prepare($sql);
@@ -1006,242 +1292,6 @@ class Jdc
     }
 
     /**
-     * retourne la liste des charges JDC pour la classe indiqué
-     *
-     * @param string $classe
-     *
-     * @return array
-     */
-    public function getChargesJDC($classe) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dtj.matricule, nom, prenom, dateDebut, dateFin, SUBSTR(NOW(), 1, 10) AS today ';
-        $sql .= 'FROM '.PFX.'thotJdcEleves AS dtj ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtj.matricule ';
-        $sql .= 'WHERE dtj.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe = :classe) ';
-        $sql .= 'ORDER BY nom, prenom ';
-
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $matricule = $ligne['matricule'];
-                // cet élève est-il en charge du JDC durant la période?
-                if (($ligne['dateDebut'] <= $ligne['today']) && ($ligne['dateFin'] >= $ligne['today']))
-                    $ligne['selected'] = 'selected';
-
-                $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
-                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-                $liste[$matricule] = $ligne;
-            }
-
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-        }
-    }
-
-    /**
-     * fixe la date de debut et de fin de charge pour l'élève dont on fournit le matricule
-     *
-     * @param int $matricule
-     * @param string $dateDebut
-     * @param string $dateFin
-     *
-     * @return int le nombre d'insertion en BD
-     */
-    public function setDateCharge ($matricule, $dateDebut, $dateFin) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'thotJdcEleves ';
-        $sql .= 'SET matricule = :matricule, dateDebut = :dateDebut, dateFin = :dateFin ';
-        $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin ';
-        $requete = $connexion->prepare($sql);
-
-        $dateDebut = ($dateDebut != '') ? Application::dateMysql($dateDebut) : Null;
-        $dateFin = ($dateFin != '') ? Application::dateMysql($dateFin) : Null;
-        if (($dateDebut > $dateFin) && ($dateFin != ''))
-            $resultat = -1;
-            else {
-                $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 20);
-                $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 20);
-                $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-
-                $resultat = $requete->execute();
-            }
-
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * attribue une note $id rédigée par un élève à l'utilisateur $acronyme
-     *
-     * @param int $id : identifiant de la note au Jdc
-     * @param string $acronyme : identifiant de l'utilisateur
-     *
-     * @return boolean
-     */
-    public function setProprioJdc ($id, $acronyme) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'UPDATE '.PFX.'thotJdc ';
-        $sql .= 'SET proprietaire = :acronyme ';
-        $sql .= 'WHERE id = :id ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * compte le nombre de likes et de dislikes pour le JDC dont on fournit l'identifiant
-     *
-     * @param int $id
-     *
-     * @return array 'like'=> nb, 'dislike' => nb
-     */
-    public function countLikes ($id) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, jeLike, commentaire ';
-        $sql .= 'FROM '.PFX.'thotJdcLike ';
-        $sql .= 'WHERE  id = :id ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $count = array('like' => 0, 'dislike' => 0);
-        $resultat = $requete->execute();
-        if ($resultat) {
-            while ($ligne = $requete->fetch()){
-                $vote = $ligne['jeLike'];
-                if ($vote == 0)
-                    $count['dislike']++;
-                    else $count['like']++;
-            }
-        }
-        Application::DeconnexionPDO($connexion);
-
-        return $count;
-    }
-
-    /**
-     * liste les problèmes liés aux "dislikes" pour un JDC dont on fournit l'id
-     *
-     * @param int $id
-     *
-     * @return array
-     */
-    public function listeDislikes ($id) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT likeTbl.matricule, commentaire, nom, prenom, groupe ';
-        $sql .= 'FROM '.PFX.'thotJdcLike AS likeTbl ';
-        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON likeTbl.matricule = de.matricule ';
-        $sql .= 'WHERE id = :id AND jeLike = 0 ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $matricule = $ligne['matricule'];
-                $liste[$matricule] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne la liste des appréciations pour les notes dont on fournit la liste des fa-industry
-     *
-     * @param array $listeIds
-     *
-     * @return array
-     */
-    public function listeAppreciations($listeIds) {
-        if (is_array($listeIds))
-            $listeIdsString = implode(',', $listeIds);
-            else $listeIdsString = $listeIds;
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, likeTbl.matricule, jeLike, commentaire, nom, prenom, groupe ';
-        $sql .= 'FROM '.PFX.'thotJdcLike AS likeTbl ';
-        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON likeTbl.matricule = de.matricule ';
-        $sql .= "WHERE id IN ($listeIdsString) ";
-        $requete = $connexion->prepare($sql);
-
-        $listeLike = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                $matricule = $ligne['matricule'];
-                $like = $ligne['jeLike'];
-                $listeLike[$id][$like][$matricule] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $listeLike;
-    }
-
-    /**
-     * retourne la liste des approbations de JDC en attente par le prof
-     *
-     * @param array $listeCoursProf
-     * @param array $titulariats : liste des classes dont le prof est titulaire
-     *
-     * @return array
-     */
-    public function getApprobations($listeCours, $titulariats) {
-        $listeCoursString = "'".implode("','", array_keys($listeCours))."'";
-        $listeTitulariatsString = "'".implode("','", array_keys($titulariats))."'";
-        $liste = $listeCoursString.','.$listeTitulariatsString;
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, destinataire, type, title, enonce, redacteur, startDate, nom, prenom, groupe, libelle ';
-        $sql .= 'FROM '.PFX.'thotJdc AS dtjdc ';
-        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dtjdc.redacteur ';
-        $sql .= 'LEFT JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(destinataire, 1, LOCATE('-', destinataire)-1) ";
-        $sql .= 'LEFT JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = destinataire ';
-        $sql .= "WHERE proprietaire IS NULL AND destinataire IN ($liste) ";
-        $sql .= 'ORDER BY startDate ';
-        $requete = $connexion->prepare($sql);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                $ligne['enonce'] = substr(strip_tags($ligne['enonce'], '<br><p><a>'), 0, 200);
-                $date = Application::datePHP(explode(' ',$ligne['startDate'])[0]);
-                $ligne['date'] = $date;
-                $liste[$id] = $ligne;
-            }
-        }
-
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
      * renvoie les notes du JDC comprises entre la date "from" et la date "to"
      * en tenant compte des options d'impression: rien que les matières vues et/ou tout
      *
@@ -1331,6 +1381,211 @@ class Jdc
     }
 
     /**
+     * renvoie toutes les mentions de types choisis pour l'utilisateur $acronyme entre deux dates
+     *
+     * @param string $acronyme
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $listeCategories : types d'événements à inclure
+     *
+     *
+     * @return array
+     */
+    public function getGhostJdc ($acronyme, $startDate, $endDate, $listeCategories){
+        $listeCategories = implode(',', $listeCategories);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT destinataire, idCategorie, allDay, DATEDIFF(startDate, :startDate) AS jour, ';
+        $sql .= 'TIME(startDate) AS startTime, TIME(endDate) AS endTime ';
+        $sql .= 'FROM '.PFX.'thotJdc ';
+        $sql .= 'WHERE type = "coursGrp" AND idCategorie IN ('.$listeCategories.') AND ';
+        $sql .= 'startDate BETWEEN :startDate AND :endDate AND proprietaire = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':startDate', $startDate, PDO::PARAM_STR, 15);
+        $requete->bindParam(':endDate', $endDate, PDO::PARAM_STR, 15);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * enregistrement du modèle d'horaire hebodmadaire
+     *
+     * @param array $listeCours
+     * @param string $acronyme
+     *
+     * @return int : nombre d'items enregistrés
+     */
+     public function saveGhost($listePlages, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotGhost ';
+        $sql .= 'WHERE acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->execute();
+
+        $sql = 'INSERT INTO '.PFX.'thotGhost ';
+        $sql .= 'SET destinataire = :destinataire, idCategorie = :idCategorie, allDay = :allDay, ';
+        $sql .= 'jour = :jour, startTime = :startTime, endTime = :endTime, acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $nb = 0;
+        foreach ($listePlages as $unePlage) {
+            $requete->bindParam(':destinataire', $unePlage['destinataire'], PDO::PARAM_STR, 15);
+            $requete->bindParam(':idCategorie', $unePlage['idCategorie'], PDO::PARAM_INT);
+            $requete->bindParam(':allDay', $unePlage['allDay'], PDO::PARAM_INT);
+            $requete->bindParam(':jour', $unePlage['jour'], PDO::PARAM_INT);
+            $requete->bindParam(':startTime', $unePlage['startTime'], PDO::PARAM_STR, 8);
+            $requete->bindParam(':endTime', $unePlage['endTime'], PDO::PARAM_STR, 8);
+            $nb += $requete->execute();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+     }
+
+     /**
+      * lecture des enregistrements d'horaire hebdomadaire pour l'utilisateur $acronyme
+      *
+      * @param string $acronyme
+      *
+      * @return array
+      */
+     public function getGhost($acronyme){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT id, ghost.idCategorie, destinataire, libelle, nbheures, statut, jour, startTime, endTime, allDay, categorie ';
+         $sql .= 'FROM '.PFX.'thotGhost AS ghost ';
+         $sql .= 'JOIN '.PFX.'thotJdcCategories AS categ ON categ.idCategorie = ghost.idCategorie ';
+         $sql .= 'JOIN '.PFX.'cours AS cours ON cours.cours = SUBSTR(destinataire, 1, LOCATE("-", destinataire)-1) ';
+         $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
+         $sql .= 'WHERE acronyme = :acronyme ';
+         $sql .= 'ORDER BY jour, startTime ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+         $liste = array();
+         $resultat = $requete->execute();
+         if ($resultat){
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()){
+                 $id = $ligne['id'];
+                 $ligne['jourSemaine'] = self::jourSemaine($ligne['jour']);
+                 $liste[$id] = $ligne;
+             }
+         }
+
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+
+    /**
+     * retourne le numéro du jour de la semaine correspondant à une date au format 'YYYY-MM-DD'
+     *
+     * @param string $date
+     *
+     * @return int
+     */
+    public function getDayOfweek4date($date){
+        $unixTimestamp = strtotime($date);
+        return date("w", $unixTimestamp);
+    }
+
+    /**
+     * retourne la liste des catégories d'événements au JDC
+     *
+     * @param void
+     *
+     * @return array 'idCategorie' => 'categorie'
+     */
+    public function getListeCategoriesJDC(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idCategorie, categorie ';
+        $sql .= 'FROM '.PFX.'thotJdcCategories ';
+        $sql .= 'ORDER BY ordre ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $idCategorie = $ligne['idCategorie'];
+                $liste[$idCategorie] = $ligne['categorie'];
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les statistiques de remplissage du JDC entre deux dates pour les profs sélectionnés
+     * @param array $listeProfs
+     * @param array $idCategorie
+     *
+     * @return array
+     */
+    public function getStatsJDC($listeProfs=Null, $idCategories, $debut, $fin){
+        if ($listeProfs != Null) {
+            $listeProfsString = "'".implode("','", $listeProfs)."'";
+        }
+        if ($idCategories != Null) {
+            $idCategoriesString = implode(",", $idCategories);
+        }
+        $debut = Application::dateMySql($debut);
+        $fin = Application::dateMySql($fin);
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT proprietaire, destinataire, COUNT(*) AS nb ';
+        $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
+        $sql .= 'WHERE type="coursGrp" AND startDate BETWEEN :debut AND :fin ';
+        if ($idCategories != Null)
+            $sql .= 'AND idCategorie IN ('.$idCategoriesString.') ';
+        if ($listeProfs != Null)
+            $sql .= 'AND proprietaire IN ('.$listeProfsString.') ';
+        $sql .= 'GROUP BY destinataire, proprietaire ';
+        $sql .= 'ORDER BY nb, proprietaire, destinataire ';
+        $requete  = $connexion->prepare($sql);
+
+        $requete->bindParam(':debut', $debut, PDO::PARAM_STR, 10);
+        $requete->bindParam(':fin', $fin, PDO::PARAM_STR, 10);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $acronyme = $ligne['proprietaire'];
+                $destinataire = $ligne['destinataire'];
+                $liste[$acronyme][$destinataire] = $ligne['nb'];
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
      * renvoie les types de cibles existantes pour les JDC
      *
      * @param void
@@ -1346,6 +1601,26 @@ class Jdc
             'matiere' => 'Une matière',
             'coursGrp' => 'Un de vos cours'
         );
+    }
+
+    /**
+     * renvoie le jour de la semaine dont on donne le numéro (0 = lundi)
+     *
+     * @param int $jour
+     *
+     * @return string
+     */
+    public static function jourSemaine($jour) {
+        $semaine = array(
+            0 => 'Lundi',
+            1 => 'Mardi',
+            2 => 'Mercredi',
+            3 => 'Jeudi',
+            4 => 'Vendredi',
+            5 => 'Samedi',
+            6 => 'Dimanche'
+        );
+            return $semaine[$jour];
     }
 
 }

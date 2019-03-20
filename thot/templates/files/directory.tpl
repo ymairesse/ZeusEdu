@@ -45,7 +45,7 @@ var maxFileSize = 25;
 Dropzone.options.myDropZone = {
     maxFilesize: maxFileSize,
     maxFiles: nbFichiersMax,
-    acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.mp3",
+    acceptedFiles: "image/jpeg,image/png,image/gif,image/svg+xml,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.mp3",
     url: "inc/files/upload.inc.php",
     queuecomplete: function() {
         // raffraichissement de la liste des fichiers

@@ -27,41 +27,32 @@
 			</li>
 
 			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe
-			{if $nbApprobations > 0}<span class="badge badge-menu">{$nbApprobations|default:0}</span>{/if}<b class="caret"></b></a>
+				<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $listeCours != Null}
 					<li><a href="index.php?action=jdc&amp;mode=coursGrp"><i class="fa fa-mortar-board"></i> Journal de classe par cours</a></li>
 					{/if}
-					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Journal de classe global</a></li>
+					{if ($userStatus == 'educ') || ($userStatus == 'direction') || ($userStatus == 'admin')}
+					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Notes au Journal de classe (éducs/direction)</a></li>
+					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
 
 					<li role="separator" class="divider"></li>
-					{if $nbApprobations > 0}
-					<li><a href="index.php?action=jdc&amp;mode=approbations">Approbations en attente <span class="badge badge-menu">{$nbApprobations|default:0}</span></a></li>
-					{/if}
 
 					<li><a href="index.php?action=remediation"><i class="fa fa-question-circle"></i> Offres de remédiation</a></li>
-					<li role="separator" class="divider"></li>
-
-					{if !empty($titulaire)}
-					<li><a href="index.php?action=jdc&amp;mode=attribJdcEleve">Attributions de la charge JDC [{','|implode:$titulaire}]</a></li>
-					{/if}
+					<li><a href="index.php?action=agendas"><i class="fa fa-calendar"></i> Agendas</a></li>
 
 				</ul>
 			</li>
 
-			{if !empty($titulaire) || ($userStatus == 'direction')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>
 				<ul class="dropdown-menu">
+					<li><a href="index.php?action=gestion&amp;mode=modele">Modèle de semaine</a></li>
 					{if !empty($titulaire)}
 					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
 					{/if}
-					{if $userStatus == 'direction'}
-					<li><a href="index.php?action=gestion&amp;mode=rv">Mes rendez-vous</a></li>
-					{/if}
 				</ul>
 			</li>
-			{/if}
 
 			<li class="dropdown"><a href="javascript.void(0)" class="dropdown-toggle" data-toggle="dropdown">
 				Documents <b class="caret"></b></a>
@@ -109,12 +100,13 @@
 			</li>
 			{/if*}
 
-			{if ($userStatus == 'admin')}
+			{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Admin <b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="index.php?action=connexions&amp;mode=date">Connexions par date</a></li>
 						<li><a href="index.php?action=connexions&amp;mode=logins">Logins en temps réel</a></li>
-						<li><a href="index.php?action=stats">Statistiques</a></li>
+						<li><a href="index.php?action=stats&amp;mode=parents">Statistiques Parents</a></li>
+						<li><a href="index.php?action=stats&amp;mode=jdc">Statistiques JDC</a></li>
 						<li><a href="index.php?action=admin&amp;mode=bulletin">Accès aux bulletins</a></li>
 						<li><a href="index.php?action=admin&amp;mode=gestParents">Gestion des parents</a></li>
 					</ul>

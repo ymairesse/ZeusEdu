@@ -1,5 +1,7 @@
 <?php
 
+$onglet = isset($_COOKIE['onglet']) ? $_COOKIE['onglet']: Null;
+
 // lecture de toutes les notifications pour l'utilisateur courant
 // ecole => ... niveau => ... classes => ... cours => ... eleves => ...
 $listeNotifications = $Thot->listeUserNotification($acronyme);
@@ -37,6 +39,7 @@ foreach ($listeNotifications as $type => $lesNotifications) {
             switch ($type) {
                 case 'ecole':
                     // wtf : il n'y a pas d'accusé de lecture possible pour toute l'école
+                    $listeAttendus[$type][$notifId] = Null;
                     break;
                 case 'niveau':
                     $listeAttendus[$type][$notifId] = $Ecole->nbEleves($destinataire);

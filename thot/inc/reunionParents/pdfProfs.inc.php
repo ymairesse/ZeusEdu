@@ -42,7 +42,7 @@ $nomFichier = sprintf('%s.pdf', $acronyme);
 $ds = DIRECTORY_SEPARATOR;
 // création éventuelle du répertoire au nom de l'utlilisateur
 $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
-die($chemin);
+
 if (!(file_exists($chemin)))
     mkdir($chemin, 0700, true);
 

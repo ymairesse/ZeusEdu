@@ -36,6 +36,10 @@ switch ($mode) {
         $smarty->assign('corpsPage', 'parents/listesParents');
         break;
 
+    case 'modele':
+        require_once 'inc/jdc/gestModele.inc.php';
+        break;
+
     default:
         // wtf
         break;

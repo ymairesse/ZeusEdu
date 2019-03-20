@@ -32,7 +32,8 @@ if ($id != Null) {
         die('Cette note au JDC ne vous appartient pas');
 
     $travail = $Jdc->getTravail($id);
-    $travail['listePJ'] = $Jdc->getPJ($id);
+    // $travail['listePJ'] = $Jdc->getPJ($id);
+    $pjFiles = $Jdc->getPJ($id);
 
     $destinataire = $travail['destinataire'];
     $type = $travail['type'];
@@ -41,35 +42,22 @@ if ($id != Null) {
         else $infos = Null;
     $lblDestinataire = $Jdc->getLabel($type, $destinataire, $infos);
 
-    // établir la liste des fichiers PJ sélectionnés
-    $selectedFiles = array();
-    foreach ($travail['listePJ'] AS $shareId => $data){
-        if ($data['path'] == '/')
-            $selectedFiles[] = $data['path'].$data['fileName'];
-            else $selectedFiles[] = $data['path'].'/'.$data['fileName'];
-    }
-
     $ds = DIRECTORY_SEPARATOR;
     require_once INSTALL_DIR.$ds.'widgets/fileTree/inc/classes/class.Treeview.php';
-
-    $Tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme, $selectedFiles);
-    $baobab = $Tree->getTree();
 
     require_once(INSTALL_DIR."/smarty/Smarty.class.php");
     $smarty = new Smarty();
     $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
-    $smarty->compile_dir = "../../templates_c";
+    $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
     $smarty->assign('INSTALL_DIR', INSTALL_DIR);
 
     $smarty->assign('categories', $categories);
     $smarty->assign('listePeriodes', $listePeriodes);
-
-    $smarty->assign('tree', $baobab);
-
     $smarty->assign('lblDestinataire', $lblDestinataire);
-    $smarty->assign('selectedFiles', $travail['listePJ']);
+
+    $smarty->assign('pjFiles', $pjFiles);
 
     $smarty->assign('travail',$travail);
-    $smarty->display('jdc/modal/modalEdit.tpl');
+    $smarty->display('jdc/jdcEdit.tpl');
     }

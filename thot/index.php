@@ -36,9 +36,6 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
 
-$approbationsJDC = $Jdc->getApprobations($listeCours, $titulaire);
-$smarty->assign('nbApprobations', count($approbationsJDC));
-
 switch ($action) {
     case 'notification':
         include_once 'inc/notif/notifications.inc.php';
@@ -77,6 +74,9 @@ switch ($action) {
         break;
     case 'bib':
         include_once 'inc/books/gestBooks.inc.php';
+        break;
+    case 'agendas':
+        require_once 'inc/agenda/agenda.inc.php';
         break;
     default:
         // wtf
