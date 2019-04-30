@@ -19,7 +19,8 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
 
 $id = isset($_POST['id']) ? $_POST['id'] : null;

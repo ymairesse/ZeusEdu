@@ -99,6 +99,23 @@
         var readonly = 'Dans ce mode, seule la consultation est possible';
         var error = 'Erreur';
 
+        $('body').on('click', '#btn-modalDel', function(){
+            var id = $('#id').val();
+            $.post('inc/jdc/delJdc.inc.php', {
+                id: id
+            }, function(resultat){
+                if (resultat > 0) {
+                    $('#unTravail').load('templates/jdc/selectItem.html');
+                    bootbox.alert({
+                        message: "Événement supprimé",
+                        size: 'small'
+                    });
+                }
+                $('#calendar').fullCalendar('refetchEvents');
+                $('#modalDel').modal('hide');
+            })
+        })
+
         $('#editeur').on('click', '#saveJDC', function(){
 	        if ($('#editJdc').valid()) {
 	            var formulaire = $('#editJdc').serialize();

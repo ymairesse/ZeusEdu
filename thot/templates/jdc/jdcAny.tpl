@@ -28,10 +28,12 @@
 				{if isset($travail)}
 					{include file='jdc/jdcEdit.tpl'}
 				{else}
-					<strong>Veuillez sélectionner un item dans le calendrier</strong>
+				xxxx
+					<p class="avertissement">Veuillez sélectionner un item dans le calendrier
 					{if $editable == 1}
-					<br><strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
+					<br>ou cliquer dans une zone libre pour rédiger une nouvelle note.
 					{/if}
+					</p>
 
 					<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
 				{/if}

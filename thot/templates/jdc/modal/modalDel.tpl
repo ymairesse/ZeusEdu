@@ -40,28 +40,3 @@
     </div>  <!-- modal-dialog -->
 
 </div>  <!-- modalDel -->
-
-<script type="text/javascript">
-
-    $(document).ready(function(){
-
-        $('#btn-modalDel').click(function(){
-            var id = $('#id').val();
-            $.post('inc/jdc/delJdc.inc.php', {
-                id: id
-            }, function(resultat){
-                if (resultat > 0) {
-                    bootbox.alert({
-                        message: "Événement supprimé",
-                        size: 'small'
-                    });
-                    $('#unTravail').load('templates/jdc/selectItem.html');
-                }
-                $('#calendar').fullCalendar('refetchEvents');
-                $('#modalDel').modal('hide');
-            })
-        })
-
-    })
-
-</script>

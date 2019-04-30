@@ -44,7 +44,7 @@
 				{if isset($travail)}
 					{include file='jdc/unTravail.tpl'}
 				{else}
-					<p class="avertissement">Veuillez sélectionner un item ou une date/heure dans le calendrier</p>
+					{include file='jdc/selectItem.html'}
 				{/if}
 			</div>
 

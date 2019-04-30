@@ -975,14 +975,7 @@ class Jdc
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
-        $resultat = $requete->execute();
-
-        $sql = 'DELETE FROM '.PFX.'thotJdcLike ';
-        $sql .= 'WHERE id = :id ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-        $resultat = $requete->execute();
+        $resultat1 = $requete->execute();
 
         // suppression des PJ
         $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
@@ -992,7 +985,7 @@ class Jdc
 
         Application::DeconnexionPDO($connexion);
 
-        return $resultat;
+        return $resultat1;
     }
 
     /**
