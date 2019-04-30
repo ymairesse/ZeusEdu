@@ -33,7 +33,6 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-
 $texte = array();
 
 // est-ce une mise à jour d'un enregistrement existant?

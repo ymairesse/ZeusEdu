@@ -98,7 +98,7 @@ $(document).ready (function() {
             var startDate = moment(calEvent.start).format('YYYY-MM-DD HH:mm'); // la date de début de l'événement
             // mémoriser la date pour le retour
             $("#startDate").val(startDate);
-            $.post('inc/jdc/getTravail.inc.php', {
+            $.post('inc/jdc/getJdcEdit.inc.php', {
                 id: id,
                 editable: true
                 },

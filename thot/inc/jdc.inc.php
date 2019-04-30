@@ -38,15 +38,13 @@ $smarty->assign('categories', $categories);
 
 switch ($mode) {
     case 'coursGrp':
-        require_once 'inc/jdc/jdcCours.inc.php';
+        $listeCoursGrp = $Ecole->listeCoursProf($acronyme, true);
+        $smarty->assign('listeCoursGrp', $listeCoursGrp);
+        $smarty->assign('corpsPage', 'jdc/choixCours');
         break;
 
     case 'jdcAny':
         require_once 'inc/jdc/jdcAny.inc.php';
-        break;
-
-    case 'approbations':
-        require_once 'inc/jdc/pageApprobationsJdc.inc.php';
         break;
 
     case 'subjectif':

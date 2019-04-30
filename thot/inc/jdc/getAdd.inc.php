@@ -25,18 +25,19 @@ $Jdc = new Jdc();
 
 $categories = $Jdc->categoriesTravaux();
 
-$heure = isset($_POST['heure']) ? $_POST['heure'] : null;
+$heure = isset($_POST['heure']) ? $_POST['heure'] : Null;
 if ($heure != Null) {
     $heure = $Jdc->heureLaPlusProche($heure);
 }
-$date = isset($_POST['date']) ? $_POST['date'] : null;
-$type = isset($_POST['type']) ? $_POST['type'] : null;
-$cible = isset($_POST['cible']) ? $_POST['cible'] : null;
-$lblDestinataire = isset($_POST['lblDestinataire']) ? $_POST['lblDestinataire'] : null;
+$date = isset($_POST['date']) ? $_POST['date'] : Null;
+$type = isset($_POST['type']) ? $_POST['type'] : Null;
+$cible = isset($_POST['cible']) ? $_POST['cible'] : Null;
+
+$destinataire = isset($_POST['destinataire']) ? $_POST['destinataire'] : Null;
+$lblDestinataire = isset($_POST['lblDestinataire']) ? $_POST['lblDestinataire'] : Null;
 
 $travail = array(
-    'idCategorie' => Null,
-    'destinataire' => $cible,
+    'destinataire' => $destinataire,
     'proprietaire' => $acronyme,
     'idCategorie' => $type,
     'startDate' => $date,

@@ -47,7 +47,7 @@
 
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=gestion&amp;mode=modele">Modèle de semaine</a></li>
+					<li><a href="index.php?action=admin&amp;mode=modele">Modèle de semaine</a></li>
 					{if !empty($titulaire)}
 					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
 					{/if}

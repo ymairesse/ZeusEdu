@@ -24,18 +24,19 @@ $end = $_POST['end'];
 $type = isset($_POST['type']) ? $_POST['type'] : Null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 
+$ds = DIRECTORY_SEPARATOR;
 $module = $Application->getModule(3);
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+require_once INSTALL_DIR.$ds.'inc/classes/classEleve.inc.php';
 $listeCoursEleve = Eleve::getListeCoursEleve($matricule);
 $detailsEleve = Eleve::staticGetDetailsEleve($matricule);
 $classe = $detailsEleve['groupe'];
 $niveau = substr($classe, 0, 1);
 
-$eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursEleve, $acronyme);
-$eventsListEleve = $Jdc->getEvents4Eleve($start, $end, $matricule, $acronyme);
+$eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursEleve, Null);
+$eventsListEleve = $Jdc->getEvents4Eleve($start, $end, $matricule, Null);
 $eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
 $eventsListNiveau = $Jdc->getEvents4Niveau($start, $end, $niveau, $acronyme);;
 $eventsListEcole = $Jdc->getEvents4Ecole($start, $end, $acronyme);

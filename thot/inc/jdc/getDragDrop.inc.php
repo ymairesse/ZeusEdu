@@ -56,20 +56,9 @@ if ($id != null) {
 
     if ($resultat != 0) {
         $travail = $Jdc->getTravail($id);
-        $travail['listePJ'] = $Jdc->getPJ($id);
+        $listePJ = $Jdc->getPJ($id);
+        // $travail['listePJ'] = $Jdc->getPJ($id);
         $categories = $Jdc->categoriesTravaux();
-
-        $matricule = $travail['redacteur'];
-
-        if ($matricule != '') {
-            require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-            $eleve = Eleve::staticGetDetailsEleve($matricule);
-            $nomEleve = sprintf('%s %s [%s]', $eleve['prenom'], $eleve['nom'], $eleve['groupe']);
-        }
-        else $nomEleve = '';
-        $statistiques = $Jdc->countLikes($id);
-
-
 
         require_once INSTALL_DIR.'/smarty/Smarty.class.php';
         $smarty = new Smarty();
@@ -77,8 +66,7 @@ if ($id != null) {
         $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
         $smarty->assign('id', $id);
-        $smarty->assign('nomEleve', $nomEleve);
-        $smarty->assign('statistiques', $statistiques);
+        $smarty->assign('listePJ', $listePJ);
         $smarty->assign('travail', $travail);
         $smarty->assign('editable', $editable);
         $smarty->assign('locked', $locked);

@@ -29,7 +29,7 @@
 
 		</div>
 
-		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto" id="editeur">
+		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto">
 
 			<p class="notice">En vue subjective, vous voyez tous les événements dans le JDC d'un élève, quel que soit le propriétaire.<br>
 			<strong>Aucune modification n'est possible</strong>.</p>
@@ -39,9 +39,6 @@
 					{include file='jdc/unTravail.tpl'}
 				{else}
 					<strong>Veuillez sélectionner un item dans le calendrier</strong>
-					{if $editable == 1}
-					<br><strong>ou cliquer dans une zone libre pour rédiger une nouvelle note.</strong>
-					{/if}
 
 					<div class="img-responsive"><img src="../images/logoPageVide.png" alt="Logo"></div>
 				{/if}
@@ -64,36 +61,13 @@
 
 </div>
 
-<div id="zoneDel"></div>
-<div id="zoneClone"></div>
-
 <style media="screen">
     .popover {
         width: 100%;
     }
 </style>
 
-{include file="jdc/modal/modalPrint.tpl"}
-
-{include file="jdc/modal/modalDislikes.tpl"}
-
 <script type="text/javascript">
-
-	function dateFromFr(uneDate) {
-		var laDate = uneDate.split('/');
-		return laDate[2] + '-' + laDate[1] + '-' + laDate[0];
-	}
-
-	// calendrier plus étroit, zone d'édition plus grande
-	function modeEdition(){
-		$('#calendrier').removeClass('col-md-9').addClass('col-md-6');
-		$('#editeur').removeClass('col-md-3').addClass('col-md-6');
-	}
-	// calendrier plus large, zone d'édition plus étroite
-	function modeConsultation(){
-		$('#calendrier').addClass('col-md-9').removeClass('col-md-6');
-		$('#editeur').addClass('col-md-3').removeClass('col-md-6');
-	}
 
 	$(document).ready(function() {
 
@@ -103,115 +77,7 @@
 			$('body').removeClass('wait');
 		});
 
-		$('#editeur').on('click', '#saveJDC', function(){
-	        if ($('#editJdc').valid()) {
-	            var formulaire = $('#editJdc').serialize();
-	            // récupérer le contenu du CKEDITOR
-	            var enonce = CKEDITOR.instances.enonce.getData();
-	            $.post('inc/jdc/saveJdc.inc.php', {
-	                formulaire: formulaire,
-	                enonce: enonce
-	            }, function(resultat) {
-					var resultJSON = JSON.parse(resultat);
-					var idJdc = resultJSON.idJdc;
-                    bootbox.alert({
-                        message: resultJSON.texte,
-                        size: 'small'
-                    });
-                    // récupérer le contenu de la zone "travail" à droite
-                    $.post('inc/jdc/getTravail.inc.php', {
-                        id: idJdc,
-                        editable: true
-                        }, function(resultat){
-                            $('#unTravail').html(resultat);
-                        })
-                    $('#calendar').fullCalendar('refetchEvents');
-	            });
-				modeConsultation();
-	        }
-	    })
-
-		$('#printJDC').click(function(){
-			var coursGrp = $('#coursGrp').val();
-			$.post('inc/jdc/listeCoursProfs.inc.php', {
-				coursGrp: coursGrp
-			}, function(resultat){
-				$('#listeCours').html(resultat);
-			})
-			$('#modalPrintJDC').modal('show');
-		})
-
-		$('#printForm').validate({
-			rules: {
-				from: {
-					required: true
-				},
-				to: {
-					required: true
-				}
-			}
-		})
-
-		$('#btnModalPrintJDC').click(function(){
-			var formulaire = $('#printForm').serialize();
-			if ($('#printForm').valid()) {
-				$.post('inc/jdc/printJdc.inc.php', {
-					formulaire: formulaire
-				}, function(resultat){
-					$('#modalPrintJDC').modal('hide');
-					bootbox.alert(resultat);
-				})
-			}
-		})
-
-		$('.datepicker').datepicker({
-            format: "dd/mm/yyyy",
-            clearBtn: true,
-            language: "fr",
-            calendarWeeks: true,
-            autoclose: true,
-            todayHighlight: true,
-			daysOfWeekDisabled: [0,6],
-            });
-
 		var editable = $('#calendar').data('editable');
-
-		$('#unTravail').on('click', '#btn-clone', function() {
-		    var idTravail = $(this).data('id');
-			var pastIsOpen = $('#unlocked').val();
-            $.post('inc/jdc/editCible.inc.php', {
-                idTravail: idTravail,
-				pastIsOpen: pastIsOpen
-            }, function(resultat) {
-                $('#zoneClone').html(resultat);
-                $('#modalEditCible').modal('show');
-            	})
-			})
-
-		$('#unTravail').on('click', '#infoLikes', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/getDislikes.inc.php', {
-				id: id
-			}, function(resultat){
-				$('#modalDislikes .modal-body').html(resultat);
-				$('#modalDislikes').modal('show');
-			})
-		})
-
-
-		function lockUnlock(){
-            var lockState = $('#unlocked').val();
-            if (lockState == "true") {
-                $('#unlocked').val('false');
-                $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
-				$('#unTravail .btn-edit').prop('disabled', true);
-                }
-                else {
-                    $('#unlocked').val('true');
-					$('#unTravail .btn-edit').prop('disabled', false);
-                    $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
-                }
-        }
 
 		$('#calendar').fullCalendar({
 			weekends: false,
@@ -219,14 +85,6 @@
 			eventLimit: 3,
 			height: 600,
 			timeFormat: 'HH:mm',
-			customButtons: {
-                unLockButton: {
-                  text: 'unlock',
-                  click: function(){
-                      lockUnlock();
-                  }
-                }
-              },
 			header: {
 				left: 'prev, today, next, unLockButton',
 				center: 'title',
@@ -238,7 +96,7 @@
 			},
 			businessHours: {
 				start: '08:15',
-				end: '19:00',
+				end: '18:00',
 				dow: [1, 2, 3, 4, 5]
 				},
 			minTime: "08:00:00",
@@ -283,167 +141,27 @@
 			},
 			// on clique sur un événement
 			eventClick: function (calEvent, jsEvent, view) {
+				console.log(calEvent);
 				var debut = moment(calEvent.start);
                 var today = moment().format('YYYY-MM-DD');
 				var unlockedPast = $('#unlocked').val();
 				var locked = (debut.isBefore(today) && (unlockedPast == "false")) ;
 				popoverElement = $(jsEvent.currentTarget);
 				var id = calEvent.id; // l'id de l'événement
-				$.post('inc/jdc/getTravail.inc.php', {
+				console.log(id);
+				$.post('inc/jdc/getJdcSubjectif.inc.php', {
 					id: id,
 					editable: editable,
 					locked: locked,
 					subjectif: true
 					},
 					function(resultat) {
-						$('#unTravail').fadeOut(400, function() {
-							$('#unTravail').html(resultat).fadeIn();
-							modeConsultation();
-						});
+						$('#unTravail').html(resultat).fadeIn();
 					}
 				)
-			},
-			// on clique dans le calendrier (ajout d'événement)
-			dayClick: function(calEvent, jsEvent, view) {
-				var debut = moment(calEvent);
-                var today = moment().format('YYYY-MM-DD');
-				var unlockedPast = $('#unlocked').val();
-                if (debut.isBefore(today) && (unlockedPast == "false")) {
-                    bootbox.alert({
-                        title: 'Erreur',
-                        message: datePassee
-                    })
-                } else {
-				var editable = $('#calendar').data('editable');
-				if (editable == 1) {
-					if (view.type == 'agendaDay'){
-						var heure = moment(calEvent).format('HH:mm');
-						var date = moment(calEvent).format('MM/DD/YYYY');
-						var type = $('#calendar').data('type');
-						var cible = $('#coursGrp').val();
-						var lblDestinataire = $("#calendar").data('lbldestinataire');
-						$.post('inc/jdc/getAdd.inc.php', {
-							date: date,
-							heure: heure,
-							type: type,
-							cible: cible,
-							lblDestinataire: lblDestinataire
-							},
-							function(resultat){
-								modeEdition();
-								$('#unTravail').html(resultat);
-							})
-						}
-					else {
-						$('#calendar').fullCalendar('gotoDate', debut);
-						// forcer le mode "agendaDay" pour permettre la modification
-						$('#calendar').fullCalendar('changeView', 'agendaDay');
-					}
-				}
-				else bootbox.alert('Dans ce mode, seule la consultation est permise');
-				}
-			},
-			eventResize: function(calEvent, delta, revertFunc) {
-				$('.popover').hide();
-				var startDate = moment(calEvent.start).format('YYYY-MM-DD HH:mm');
-				var endDate = moment(calEvent.end).format('YYYY-MM-DD HH:mm');
-				var id = calEvent.id;
-				var editable = $('#calendar').data('editable');
-				$.post('inc/jdc/getDragDrop.inc.php', {
-						id: id,
-						startDate: startDate,
-						endDate: endDate,
-						editable: editable,
-						allDay: false
-					},
-					function(resultat) {
-						$("#unTravail").html(resultat);
-					}
-				)
-			},
-			eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
-				var debut = moment(calEvent.start);
-				var today = moment().format('YYYY-MM-DD');
-				var unlockedPast = $('#unlocked').val();
-				$('.popover').hide();
-				var editable = $('#calendar').data('editable');
-				if (debut.isBefore(today) && (unlockedPast == "false")) {
-					bootbox.alert({
-						title: 'Erreur',
-						message: datePassee
-					});
-					$('#calendar').fullCalendar('refetchEvents');
-				}
-				else {
-				if (editable == 1){
-					var startDate = moment(calEvent.start).format('YYYY-MM-DD HH:mm');
-					// si l'événement est draggé sur allDay, la date de fin est incorrecte
-					if (calEvent.allDay == true) {
-						var endDate = startDate;
-						}
-						else var endDate = moment(calEvent.end).format('YYYY-MM-DD HH:mm');
-					var id = calEvent.id;
-					$.post('inc/jdc/getDragDrop.inc.php', {
-							id: id,
-							startDate: startDate,
-							endDate: endDate,
-							editable: editable,
-							allDay: calEvent.allDay
-						},
-						function(resultat) {
-							$("#unTravail").html(resultat);
-							$(".popover").remove();
-						}
-					)
-				}
-				else bootbox.alert('Dans ce mode, seule la consultation est permise');
-			}
-		}
-		})
-
-		// suppression d'une note au JDC
-		$("#unTravail").on('click', '#delete', function() {
-			var id = $(this).data('id');
-			$.post('inc/jdc/getModalDel.inc.php', {
-					id: id,
-				},
-				function(resultat) {
-					$("#zoneDel").html(resultat);
-					$("#modalDel").modal('show');
-				}
-			)
-		})
-
-		// modification d'une note au JDC
-		$("#unTravail").on('click', '#modifier', function() {
-			var id = $(this).data('id');
-			$.post('inc/jdc/getMod.inc.php', {
-					id: id
-				},
-				function(resultat) {
-					modeEdition();
-					$('#unTravail').html(resultat);
-				}
-			)
-		})
-
-		$("#zoneEdit").on('click', '#journee', function() {
-			if ($(this).prop('checked') == true) {
-				$("#duree").prop('disabled', true);
-				$('#heure').prop('disabled', true).val('');
-				$("#timepicker").prop('disabled', true);
-				$("#listeDurees").addClass('disabled');
-			} else {
-				$("#duree").prop('disabled', false);
-				$('#heure').prop('disabled', false);
-				$("#timepicker").prop('disabled', false);
-				$("#listeDurees").removeClass('disabled');
 			}
 		})
 
-        $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
-
-		var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
 
 		// http://jsfiddle.net/slyvain/6vmjt9rb/
         var popTemplate = [

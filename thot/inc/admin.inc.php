@@ -52,6 +52,11 @@ switch ($mode) {
         $smarty->assign('corpsPage', 'reunionParents/prepaRP');
         $smarty->assign('selecteur', 'selecteurs/selectDateType');
         break;
+
+    case 'modele':
+        require_once 'inc/jdc/gestModele.inc.php';
+        break;
+        
     default:
         // wtf
         break;

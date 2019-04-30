@@ -19,7 +19,6 @@
 
         <div class="col-md-6 col-sm-12">
 
-            <input type="hidden" name="destinataire" value="{$travail.destinataire}">
             <p>Pour <strong>{$lblDestinataire}</strong></p>
 
         </div>  <!-- col-md-... -->
@@ -31,7 +30,7 @@
         <div class="col-md-3 col-sm-6">
             <div class="form-group">
                 <label for="date" class="sr-only">Date</label>
-                <input type="text" name="date" id="datepicker" value="{$travail.startDate|date_format:"%d/%m/%Y"}" placeholder="Date de notification" class="ladate form-control input-sm" autocomplete="off">
+                <input type="text" name="date" id="datepicker" value="{$travail.startDate}" placeholder="Date de notification" class="ladate form-control input-sm" autocomplete="off">
                 <div class="help-block">Date de la note</div>
             </div>
         </div>
@@ -128,6 +127,7 @@
     <input type="hidden" name="id" value="{$travail.id|default:''}">
     <input type="hidden" name="type" value="{$travail.type|default:''}">
     <input type="hidden" name="edition" id="edition" value="false">
+    <input type="hidden" name="destinataire" value="{$travail.destinataire}">
 
 </form>
 

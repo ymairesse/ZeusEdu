@@ -14,18 +14,24 @@ if (!(isset($_SESSION[APPLICATION]))) {
 }
 
 $User = $_SESSION[APPLICATION];
-//$acronyme = $User->getAcronyme();
+$acronyme = $User->getAcronyme();
 
-// on peut avoir choisi un autre prof
-$acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : $User->getAcronyme();
+if (isset($_POST['laDate'])) {
+    $_POST['start'] = $_POST['laDate'];
+    }
+$start = $_POST['start'];
+$end = $_POST['end'];
 
-$dateLundi = date('Y-m-d', strtotime('monday this week'));
+$listeCategories = isset($_POST['categories']) ? $_POST['categories'] : Null;
+if ($listeCategories != Null) {
+    parse_str($listeCategories, $categories);
+    $listeCategories = $categories['categories'];
+}
 
-$ds = DIRECTORY_SEPARATOR;
 $module = $Application->getModule(3);
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
+require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-$eventsList = $Jdc->getEvents4modele($acronyme, $dateLundi);
+$eventsList = $Jdc->getEvents2createModele($listeCategories, $start, $end, $acronyme);
 
 echo json_encode($eventsList);

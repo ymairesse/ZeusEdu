@@ -6,6 +6,7 @@
 
 			<p class="jdcInfo {$mode} demiOmbre">Voir tous les événements de <strong>{$lblDestinataire}</strong> et écrire dans ce JDC</p>
 			<input type="hidden" name="unlocked" id="unlocked" value="false">
+
 			<div id="calendar"
 				class="{$mode} demiOmbre"
 				data-type="{$type|default:'ecole'}"
@@ -25,7 +26,7 @@
 
 			<div id="unTravail">
 				{if isset($travail)}
-					{include file='jdc/unTravail.tpl'}
+					{include file='jdc/jdcEdit.tpl'}
 				{else}
 					<strong>Veuillez sélectionner un item dans le calendrier</strong>
 					{if $editable == 1}
@@ -63,8 +64,6 @@
 </style>
 
 {include file="jdc/modal/modalPrint.tpl"}
-
-{include file="jdc/modal/modalDislikes.tpl"}
 
 <script type="text/javascript">
 
@@ -108,7 +107,7 @@
                         size: 'small'
                     });
                     // récupérer le contenu de la zone "travail" à droite
-                    $.post('inc/jdc/getTravail.inc.php', {
+                    $.post('inc/jdc/getJdcEdit.inc.php', {
                         id: idJdc,
                         editable: true
                         }, function(resultat){
@@ -143,34 +142,6 @@
                 $('#modalEditCible').modal('show');
             	})
 			})
-
-		$('#unTravail').on('click', '#infoLikes', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/getDislikes.inc.php', {
-				id: id
-			}, function(resultat){
-				$('#modalDislikes .modal-body').html(resultat);
-				$('#modalDislikes').modal('show');
-			})
-		})
-
-		$('#unTravail').on('click', '#approprier', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/setProprioJdc.inc.php', {
-				id: id
-			}, function (resultat){
-				if (resultat == 1) {
-					$.post('inc/jdc/getTravail.inc.php', {
-						id: id,
-						editable: editable
-						},
-						function(resultat) {
-							$('#unTravail').html(resultat);
-						}
-					)
-				}
-			})
-		})
 
 		function lockUnlock(){
             var lockState = $('#unlocked').val();
@@ -293,7 +264,7 @@
 				if (editable == 1) {
 					if (view.type == 'agendaDay'){
 						var heure = moment(calEvent).format('HH:mm');
-						var date = moment(calEvent).format('MM/DD/YYYY');
+						var date = moment(calEvent).format('DD/MM/YYYY');
 						var type = $('#calendar').data('type');
 						var cible = $('#calendar').data('cible');
 

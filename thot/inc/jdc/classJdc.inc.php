@@ -347,6 +347,57 @@ class Jdc
         return $liste;
     }
 
+
+    /**
+     * renvoie les événements fullCalendar pour les catégories souhaitées
+     *
+     * @param array $listeCategories
+     * @param string $start : date de début de l'intervalle
+     * @param string $end : date de fin de l'intervalle
+     * @param string $acronyme : Null si on veut tous les événements pour le niveau d'organisation
+     *
+     * @return array
+     */
+    public function getEvents4modele($acronyme, $dateLundi){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, acronyme, idCategorie, destinataire, jour, startTime, endTime, allDay, ';
+        $sql .= 'libelle, nbheures, statut ';
+        $sql .= 'FROM '.PFX.'thotGhost AS ghost ';
+        $sql .= 'JOIN '.PFX.'cours AS cours ON SUBSTR(destinataire, 1, LOCATE("-", destinataire)-1) = cours.cours ';
+        $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
+        $sql .= 'WHERE acronyme = :acronyme ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $destinataire = $ligne['destinataire'];
+                $liste[] = array(
+                    'id' => $ligne['id'],
+                    'idCategorie' => $ligne['idCategorie'],
+                    'className' => 'cat_'.$ligne['idCategorie'],
+                    'coursGrp' => $ligne['destinataire'],
+                    'startTime' => SUBSTR($ligne['startTime'], 0, 5),
+                    'endTime' => SUBSTR($ligne['endTime'], 0, 5),
+                    'start' => date('Y-m-d', strtotime($dateLundi . '+' . $ligne['jour'] . 'day')) .' '. $ligne['startTime'],
+                    'end' => date('Y-m-d', strtotime($dateLundi . '+' . $ligne['jour'] . 'day')) .' '. $ligne['endTime'],
+                    'allDay' => ($ligne['allDay']!=0),
+                    'libelle' => sprintf('%s %s %dh', $ligne['statut'], $ligne['libelle'], $ligne['nbheures']),
+                    );
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+
     /**
      * retourne la liste des JDC entre deux dates $start et $end pour l'utilisateur $acronyme
      *
@@ -718,7 +769,7 @@ class Jdc
     public function getTravail($id, $acronyme = Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT jdc.id, destinataire, type, proprietaire, title, enonce, class, jdc.id, startDate, ';
+        $sql = 'SELECT jdc.id, destinataire, type, proprietaire, title, enonce, class, jdc.id, DATE_FORMAT(startDate, "%d/%m/%Y") AS startDate, ';
         $sql .= 'TIME(startDate) AS heure, endDate, TIMEDIFF(endDate, startDate) AS duree, allDay, DATE_FORMAT(lastModif, "%d/%m/%Y %H:%i") AS lastModif, ';
         $sql .= 'jdc.idCategorie, categorie, sexe, nom, prenom, dpc.acronyme, libelle, nbheures, nomCours ';
         $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
@@ -747,13 +798,12 @@ class Jdc
                 $nom = sprintf('%s %s. %s', $adresse, mb_substr($ligne['prenom'], 0, 1, 'UTF-8'), $ligne['nom']);
                 }
                 else $nom = '';
-            $ligne['profs'] = $nom;
-            $ligne['startDate'] = Application::datePHP(explode(' ', $ligne['startDate'])[0]);
-            $ligne['heure'] = date('H:i', strtotime($ligne['heure']));
-            $ligne['duree'] = date('H:i', strtotime($ligne['duree']));
-            if ($ligne['allDay'] == 0)
-                unset($ligne['allDay']);
-            $travail = $ligne;
+                $ligne['profs'] = $nom;
+                $ligne['heure'] = date('H:i', strtotime($ligne['heure']));
+                $ligne['duree'] = date('H:i', strtotime($ligne['duree']));
+                if ($ligne['allDay'] == 0)
+                    unset($ligne['allDay']);
+                $travail = $ligne;
             }
 
         Application::DeconnexionPDO($connexion);
@@ -1406,7 +1456,6 @@ class Jdc
 
         $liste = array();
         $resultat = $requete->execute();
-
         if ($resultat){
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
@@ -1460,98 +1509,33 @@ class Jdc
      }
 
      /**
-    * renvoie les événements fullCalendar pour les catégories souhaitées
-    *
-    * @param array $listeCategories
-    * @param string $start : date de début de l'intervalle
-    * @param string $end : date de fin de l'intervalle
-    * @param string $acronyme : Null si on veut tous les événements pour le niveau d'organisation
-    *
-    * @return array
-    */
-   public function getEvents2createModele($listeCategories, $start, $end, $acronyme){
-       if ($listeCategories != Null)
-           $listeCategories = implode(',', $listeCategories);
-       $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-       $sql = 'SELECT id, proprietaire, idCategorie, type, destinataire, title, enonce, ';
-       $sql .= 'allDay, startDate, endDate, DATE_FORMAT(NOW(),"%Y-%m-%d") AS ajd ';
-       $sql .= 'FROM '.PFX.'thotJdc ';
-       $sql .= 'WHERE startDate BETWEEN :start AND :end ';
-       $sql .= 'AND type = "coursGrp" AND idCategorie IN ('.$listeCategories.') ';
-       $sql .= 'AND proprietaire = :acronyme ';
-       $requete = $connexion->prepare($sql);
-
-       $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
-       $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
-       $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-       $liste = array();
-       $resultat = $requete->execute();
-       if ($resultat) {
-           $requete->setFetchMode(PDO::FETCH_ASSOC);
-           while ($ligne = $requete->fetch()) {
-               $type = $ligne['type'];
-               $destinataire = $ligne['destinataire'];
-               $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
-               $liste[] = array(
-                   'id' => $ligne['id'],
-                   'title' => $ligne['title'],
-                   'enonce' => mb_strimwidth(strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
-                   'destinataire' => $destin,
-                   'className' => 'cat_'.$ligne['idCategorie'],
-                   'start' => $ligne['startDate'],
-                   'end' => $ligne['endDate'],
-                   'allDay' => ($ligne['allDay']!=0),
-                   'type' => $ligne['type'],
-                   'editable' => ($ligne['proprietaire'] == $acronyme),
-                   );
-           }
-       }
-
-       Application::DeconnexionPDO($connexion);
-
-       return $liste;
-   }
-
-     /**
-      * renvoie les événements fullCalendar l'utilisateur souhaité pour la semaine
-      * dont on fournit la date du lundi
+      * lecture des enregistrements d'horaire hebdomadaire pour l'utilisateur $acronyme
       *
       * @param string $acronyme
-      * @param string $dateLundi (au format YYYY-MM-DD)
       *
       * @return array
       */
-     public function getEvents4modele($acronyme, $dateLundi){
+     public function getGhost($acronyme){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT id, acronyme, idCategorie, destinataire, jour, startTime, endTime, allDay, ';
-         $sql .= 'libelle, nbheures, statut ';
+         $sql = 'SELECT id, ghost.idCategorie, destinataire, libelle, nbheures, statut, jour, startTime, endTime, allDay, categorie ';
          $sql .= 'FROM '.PFX.'thotGhost AS ghost ';
-         $sql .= 'JOIN '.PFX.'cours AS cours ON SUBSTR(destinataire, 1, LOCATE("-", destinataire)-1) = cours.cours ';
+         $sql .= 'JOIN '.PFX.'thotJdcCategories AS categ ON categ.idCategorie = ghost.idCategorie ';
+         $sql .= 'JOIN '.PFX.'cours AS cours ON cours.cours = SUBSTR(destinataire, 1, LOCATE("-", destinataire)-1) ';
          $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
          $sql .= 'WHERE acronyme = :acronyme ';
-
+         $sql .= 'ORDER BY jour, startTime ';
          $requete = $connexion->prepare($sql);
 
          $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
 
          $liste = array();
          $resultat = $requete->execute();
-         if ($resultat) {
+         if ($resultat){
              $requete->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $requete->fetch()) {
-                 $destinataire = $ligne['destinataire'];
-                 $liste[] = array(
-                     'id' => $ligne['id'],
-                     'className' => 'cat_'.$ligne['idCategorie'],
-                     'coursGrp' => $ligne['destinataire'],
-                     'startTime' => SUBSTR($ligne['startTime'], 0, 5),
-                     'endTime' => SUBSTR($ligne['endTime'], 0, 5),
-                     'start' => date('Y-m-d', strtotime($dateLundi . '+' . $ligne['jour'] . 'day')) .' '. $ligne['startTime'],
-                     'end' => date('Y-m-d', strtotime($dateLundi . '+' . $ligne['jour'] . 'day')) .' '. $ligne['endTime'],
-                     'allDay' => ($ligne['allDay']!=0),
-                     'libelle' => sprintf('%s %s %dh', $ligne['statut'], $ligne['libelle'], $ligne['nbheures']),
-                     );
+             while ($ligne = $requete->fetch()){
+                 $id = $ligne['id'];
+                 $ligne['jourSemaine'] = self::jourSemaine($ligne['jour']);
+                 $liste[$id] = $ligne;
              }
          }
 
@@ -1559,43 +1543,6 @@ class Jdc
 
          return $liste;
      }
-
-
-      /**
-       * lecture des enregistrements d'horaire hebdomadaire pour l'utilisateur $acronyme
-       *
-       * @param string $acronyme
-       *
-       * @return array
-       */
-      public function getGhost($acronyme){
-          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-          $sql = 'SELECT id, ghost.idCategorie, destinataire, libelle, nbheures, statut, jour, startTime, endTime, allDay, categorie ';
-          $sql .= 'FROM '.PFX.'thotGhost AS ghost ';
-          $sql .= 'JOIN '.PFX.'thotJdcCategories AS categ ON categ.idCategorie = ghost.idCategorie ';
-          $sql .= 'JOIN '.PFX.'cours AS cours ON cours.cours = SUBSTR(destinataire, 1, LOCATE("-", destinataire)-1) ';
-          $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
-          $sql .= 'WHERE acronyme = :acronyme ';
-          $sql .= 'ORDER BY jour, startTime ';
-          $requete = $connexion->prepare($sql);
-
-          $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-          $liste = array();
-          $resultat = $requete->execute();
-          if ($resultat){
-              $requete->setFetchMode(PDO::FETCH_ASSOC);
-              while ($ligne = $requete->fetch()){
-                  $id = $ligne['id'];
-                  $ligne['jourSemaine'] = self::jourSemaine($ligne['jour']);
-                  $liste[$id] = $ligne;
-              }
-          }
-
-          Application::DeconnexionPDO($connexion);
-
-          return $liste;
-      }
 
 
     /**

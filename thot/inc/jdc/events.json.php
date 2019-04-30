@@ -23,12 +23,16 @@ $end = $_POST['end'];
 
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 
+$ds = DIRECTORY_SEPARATOR;
 $module = $Application->getModule(3);
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-if ($coursGrp == 'synoptique')
+// Application::afficher(array($start, $end, $coursGrp, $acronyme));
+if ($coursGrp == 'synoptique') {
     $eventsList = $Jdc->getSynoptiqueCours($start, $end, $acronyme);
+    // Application::afficher($eventsList);
+    }
     else $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
 
 echo json_encode($eventsList);

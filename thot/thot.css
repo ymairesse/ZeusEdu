@@ -592,3 +592,14 @@ p.jdcInfo:before {
     color: grey;
     background-color: yellow;
     }
+
+#weekCalendar .fc-event {
+    color: black !important;
+    background-color: #eee !important;
+    border: 1px solid #aaa !important;
+}
+
+#weekCalendar .fc-event, #weekCalendar.fe-event:hover {
+    background-color: rgba(0, 0, 255, 0.1) !important;
+    color: gray !important;
+}

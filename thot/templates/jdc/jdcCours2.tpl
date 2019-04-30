@@ -17,15 +17,14 @@
 
         <div class="col-md-9 col-sm-12" id="calendrier">
 
-            <p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
             <input type="hidden" name="unlocked" id="unlocked" value="false">
-            <input type="hidden" name="mode" id="mode" value="{$mode}">
+            <input type="hidden" name="mode" ide="mode" value="{$mode}">
 
             <div id="calendar"
                 class="{$mode} demiOmbre"
                 data-type="{$type|default:''}"
-                data-destinataire="{$destinataire}"
                 data-lbldestinataire="{$lblDestinataire|default:''}"
+                data-coursgrp="{$coursGrp|default:''}"
                 data-editable="{$editable|default:false}"
                 data-viewstate="agendaWeek">
             </div>
@@ -43,7 +42,7 @@
 
 			<div id="unTravail">
 				{if isset($travail)}
-					{include file='jdc/jdcEdit.tpl'}
+					{include file='jdc/unTravail.tpl'}
 				{else}
 					<p class="avertissement">Veuillez sélectionner un item ou une date/heure dans le calendrier</p>
 				{/if}
@@ -52,23 +51,12 @@
 		</div>
 		<!-- col-md-... -->
 
-        <div class="col-xs-12">
 
-            <div class="btn-group" id="legend">
-                {foreach from=$categories key=cat item=travail}
-                <button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
-                {/foreach}
-            </div>
-        </div>
 
     </div>
 
 </div>
 
-<div id="zoneDel"></div>
-<div id="zoneClone"></div>
-
-{include file="jdc/modal/modalPrint.tpl"}
 
 <style media="screen">
     .popover {
@@ -96,8 +84,7 @@
 
     $(document).ready(function(){
 
-        var readonly = 'Dans ce mode, seule la consultation est possible';
-        var error = 'Erreur';
+        // CKEDITOR.replace('enonce');
 
         $('#editeur').on('click', '#saveJDC', function(){
 	        if ($('#editJdc').valid()) {
@@ -200,8 +187,29 @@
             }
 
             $('#calendar').fullCalendar({
+            //     weekends: false,
+            // 	// defaultView: 'agendaWeek',
+    		// 	// eventLimit: 3,
+    		// 	// height: 600,
+    		// 	// timeFormat: 'HH:mm',
+            // 	eventSources: [
+            // 		{
+            // 		url: 'inc/jdc/events.json.php',
+            // 		type: 'POST',
+            // 		data: {
+            // 			type: $('#calendar').data('type'),
+            // 			coursGrp: $('#calendar').data('coursgrp'),
+            // 			},
+            // 		error: function() {
+            // 			alert('Attention, vous semblez avoir perdu la connexion à l\'Internet');
+            // 			}
+            // 		}
+            // 	],
+            // })
+
+            $('#calendar').fullCalendar({
     			weekends: false,
-    			defaultView: 'agendaWeek',
+    			// defaultView: 'agendaWeek',
     			eventLimit: 3,
     			height: 600,
     			timeFormat: 'HH:mm',
@@ -242,7 +250,7 @@
     				type: 'POST',
     				data: {
     					type: $('#calendar').data('type'),
-    					coursGrp: $('#calendar').data('destinataire'),
+    					coursGrp: $('#calendar').data('coursgrp'),
     					},
     				error: function() {
     					alert('Attention, vous semblez avoir perdu la connexion à l\'Internet');
@@ -282,7 +290,8 @@
     					},
     					function(resultat) {
     						$('#unTravail').fadeOut(400, function() {
-    						$('#unTravail').html(resultat).fadeIn();
+    							$('#unTravail').html(resultat).fadeIn();
+    							modeConsultation();
     						});
     					}
     				)
@@ -293,32 +302,25 @@
     				var debut = moment(calEvent);
                     var today = moment().format('YYYY-MM-DD');
     				var unlockedPast = $('#unlocked').val();
-
                     if (debut.isBefore(today) && (unlockedPast == "false")) {
                         bootbox.alert({
-                            title: error,
-                            message: datePassee,
-                            size: 'small'
+                            title: 'Erreur',
+                            message: datePassee
                         })
                     } else {
-
-                    var editable = $('#calendar').data('editable');
-                    var type = $('#calendar').data('type');
-
-    				if ((editable == 1) && (type != 'synoptique')) {
+    				var editable = $('#calendar').data('editable');
+    				if (editable == 1) {
     					if (view.type == 'agendaDay'){
     						var heure = moment(calEvent).format('HH:mm');
-    						var date = moment(calEvent).format('DD/MM/YYYY');
+    						var date = moment(calEvent).format('MM/DD/YYYY');
+    						var type = $('#calendar').data('type');
     						var cible = $('#coursGrp').val();
-                            var destinataire = $('#calendar').data('destinataire');
-
     						var lblDestinataire = $("#calendar").data('lbldestinataire');
     						$.post('inc/jdc/getAdd.inc.php', {
     							date: date,
     							heure: heure,
     							type: type,
     							cible: cible,
-                                destinataire: destinataire,
     							lblDestinataire: lblDestinataire
     							},
     							function(resultat){
@@ -332,11 +334,7 @@
     						$('#calendar').fullCalendar('changeView', 'agendaDay');
     					}
     				}
-    				else bootbox.alert({
-                        title: error,
-                        message: readonly,
-                        size: 'small'
-                    })
+    				else bootbox.alert('Dans ce mode, seule la consultation est permise');
     				}
     			},
     			eventResize: function(calEvent, delta, revertFunc) {
@@ -365,9 +363,8 @@
     				var editable = $('#calendar').data('editable');
     				if (debut.isBefore(today) && (unlockedPast == "false")) {
     					bootbox.alert({
-    						title: error,
-    						message: datePassee,
-                            size: 'small'
+    						title: 'Erreur',
+    						message: datePassee
     					});
     					$('#calendar').fullCalendar('refetchEvents');
     				}
@@ -393,11 +390,7 @@
     						}
     					)
     				}
-    				else bootbox.alert({
-                        title: error,
-                        message: readonly,
-                        size: 'small'
-                    });
+    				else bootbox.alert('Dans ce mode, seule la consultation est permise');
     			}
     		}
     		})
@@ -477,8 +470,8 @@
 
             {if isset($travail.startDate)}
     			$('#calendar').fullCalendar('gotoDate', moment("{$travail.startDate}"));
+                alert({$travail.startDate});
     		{/if}
-
 
     })
 

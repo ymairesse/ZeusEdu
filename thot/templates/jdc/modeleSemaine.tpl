@@ -1,23 +1,16 @@
-<div class="col-xs-6 col-md-3">
+<div class="col-xs-12 col-sm-4 col-md-3">
 
-    <p class="notice">Veuillez sélectionner ci-dessous la liste des items à inclure dans le modèle de semaine de cours.</p>
+    <p class="notice">1. Veuillez sélectionner ci-dessous la liste des items à inclure dans le modèle de semaine de cours.</p>
 
     <div class="panel-body" style="height:25em; overflow: auto;">
         <form id="formCategories">
-
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" id="cbCategories" style="float: left; margin-right:0.5em">
-                TOUT
-            </label>
-        </div>
 
         <ul class="list-unstyled">
         {foreach from=$listeCategories key=idCategorie item=categorie}
             <li>
                 <div class="checkbox">
                     <label>
-                        <input class="selectCategories" type="checkbox" name="categories[]" value="{$idCategorie}">
+                        <input class="selectCategories" type="checkbox" name="categories[]" value="{$idCategorie}" checked>
                         <span style="padding-left:0.5em">{$categorie}</span>
                     </label>
                 </div>
@@ -27,20 +20,27 @@
         </form>
     </div>
 
-    <button type="button" class="btn btn-primary btn-block" id="btn-getSemaine">1. Générer la semaine <i class="fa fa-arrow-right"></i> </button>
-    <button type="button" class="btn btn-success btn-block" id='btn-createGhost'>2. Créer le modèle</button>
-
     <input type="hidden" name="laDate" id="laDate" value="">
 
 </div>
 
-<div class="col-xs-6 col-md-6" id="ghost">
+<div class="col-xs-12 col-sm-8 col-md-6" id="ghost">
+
+    <p class="notice"><span>2. Sélectionnez ci-dessous le semainier type en parcourant votre journal de classe</span></p>
 
     {include file="jdc/ghostCalendar.tpl"}
 
 </div>
 
-<div class="col-xs-12 col-md-3" id="synthese">
+<div class="col-xs-12 col-sm-12 col-md-3">
+
+    <p class="notice">3. Terminez en confirmant vos choix pour la création du modèle</p>
+
+    <button type="button" class="btn btn-success btn-block" id='btn-createGhost'>Créez le modèle</button>
+
+    <div id="synthese" style="padding-bottom: 2em;">
+
+    </div>
 
 </div>
 
@@ -79,10 +79,20 @@
             })
         })
 
-        $('#cbCategories').change(function(){
-            $('.selectCategories').trigger('click');
-        })
+        $('.selectCategories').change(function(){
+            var categorie = $(this).val();
+            $('.cat_'+categorie).toggleClass('hidden');
 
+            var events = {
+                url: 'inc/jdc/events4modele.json.php',
+                type: 'POST',
+                data: {
+                    categories: $('.selectCategories').serialize()
+                    }
+                };
+            $('#ghostCalendar').fullCalendar('removeEventSources');
+			$('#ghostCalendar').fullCalendar('addEventSource', events);
+        })
 
     })
 

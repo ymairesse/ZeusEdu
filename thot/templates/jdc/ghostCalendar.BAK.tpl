@@ -1,9 +1,18 @@
+GHOSTCALENDAR
 <div id="ghostCalendar">
 </div>
 
 <script type="text/javascript">
 
     $(document).ready(function(){
+
+        function getMondayDate(){
+            var date = $('.fc-day-header.fc-mon').data('date');
+            console.log(date);
+            return date;
+        }
+
+        $('#dateMonday').val(getMondayDate());
 
         $('#ghostCalendar').fullCalendar({
 			weekends: false,
@@ -16,21 +25,28 @@
 				center: 'title',
                 right: ''
 			},
+            test: 'test',
 			minTime: "08:00:00",
 			maxTime: "17:00:00",
 			firstDay: 1,
+            // empêcher l'édition avec la souris
+            eventStartEditable: false,
+            eventDurationEditable: false,
 			eventSources: [
 				{
-				url: 'inc/jdc/events4modele.json.php',
+				url: 'inc/jdc/events4ghost.json.php',
 				type: 'POST',
                 data: {
-					categories: $('.selectCategories').serialize()
+                    formulaire: $('#formCategories').serialize(),
 					},
 				}
 			],
+            dayClick: function(event, jsEvent, view) {
+                console.log(event);
+            },
             viewRender: function(view, element){
                 var currentdate = view.intervalStart.format();
-                $('#laDate').val(currentdate);
+                $('#dateMonday').val(currentdate);
             }
 		})
 
