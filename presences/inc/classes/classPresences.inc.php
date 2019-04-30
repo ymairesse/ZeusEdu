@@ -484,7 +484,7 @@ class presences
         $noPeriode = isset($post['periode']) ? $post['periode'] : null;
         $media = isset($post['media']) ? $post['media'] : null;
         $date = isset($post['date']) ? Application::dateMysql($post['date']) : null;
-        $oups = ($post['oups'] == '') ? false : true;
+        $oups = ($post['oups'] == 'false') ? false : true;
         $presAuto = isset($post['presAuto']) ? $post['presAuto'] : null;
         $heure = date('H:i');
         $quand = date('Y-m-d');
@@ -1016,30 +1016,29 @@ class presences
       * @param int $matricule : matricule de l'élève
       *
       * @return array
-      *
       */
      public function getRetards4Periode($debut, $fin, $niveau, $classe, $matricule){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT pr.id, pr.matricule, date, periode, pr.statut, de.nom AS nomEl, de.prenom AS prenomEl, ';
-        $sql .= 'de.groupe, logs.educ, profs.sexe, profs.nom, profs.prenom ';
-        $sql .= 'FROM '.PFX.'presencesEleves AS pr ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = pr.matricule ';
-        $sql .= 'JOIN '.PFX.'presencesLogs AS logs ON logs.id = pr.id ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = logs.educ ';
-        $sql .= 'LEFT JOIN '.PFX.'presencesRefLogs AS refs ON refs.id = pr.id ';
-        $sql .= 'WHERE (date BETWEEN :debut AND :fin) AND (pr.statut = "retard") ';
-
+        $sql = 'SELECT id, pel.matricule, date, periode, groupe, nom, prenom, traitLogs.idTraitement, ';
+        $sql .= 'dateTraitement, dateRetour, impression ';
+        $sql .= 'FROM '.PFX.'presencesEleves AS pel ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = pel.matricule ';
+        $sql .= 'LEFT JOIN '.PFX.'presencesIdTraitementLogs AS traitLogs ON (traitLogs.idRetard = id AND traitLogs.matricule = pel.matricule) ';
+        $sql .= 'LEFT JOIN '.PFX.'presencesTraitement AS trait ON trait.idTraitement = traitLogs.idTraitement ';
+        $sql .= 'WHERE date BETWEEN :debut AND :fin ';
+        $sql .= 'AND statut = "retard" ';
         if ($matricule != Null)
-            $sql .= 'AND pr.matricule = :matricule ';
+            $sql .= 'AND pel.matricule = :matricule ';
             else if ($classe != Null)
                 $sql .= 'AND de.groupe = :classe ';
                 else if ($niveau != Null)
                     $sql .= 'AND SUBSTR(de.groupe, 1, 1) = :niveau ';
-        $sql .= 'ORDER BY groupe, ref, nomEl, prenomEl, date, periode ';
+        $sql .= 'ORDER BY groupe, nom, prenom, date, periode ';
         $requete = $connexion->prepare($sql);
 
         $debut = Application::dateMySql($debut);
         $fin = Application::dateMySql($fin);
+
         $requete->bindParam(':debut', $debut, PDO::PARAM_STR, 10);
         $requete->bindParam(':fin', $fin, PDO::PARAM_STR, 10);
         if ($matricule != Null)
@@ -1050,14 +1049,29 @@ class presences
                         $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
 
         $liste = array();
+
         $resultat = $requete->execute();
         if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $matricule = $ligne['matricule'];
-                $id = $ligne['id'];
+                if (!(isset($liste[$matricule])))
+                    $liste[$matricule] = array('traite' => Null, 'retourne' => Null, 'nonTraite' => Null, 'impression' => 0);
+                $idTraitement = $ligne['idTraitement'];
                 $ligne['date'] = Application::datePHP($ligne['date']);
-                $liste[$matricule][$id] = $ligne;
+                $id = $ligne['id'];
+
+                $liste[$matricule]['impression'] = isset($ligne['impression']) ? $ligne['impression'] : 0;
+
+                if (!(isset($liste[$matricule]['nom']))) {
+                    $liste[$matricule]['classe'] = $ligne['groupe'];
+                    $liste[$matricule]['nom'] = sprintf('%s %s', $ligne['nom'], $ligne['prenom']);
+                }
+                if ($idTraitement != Null)
+                    if ($ligne['dateRetour'] == Null)
+                        $liste[$matricule]['traite'][$idTraitement][$id] = $ligne;
+                        else $liste[$matricule]['retourne'][$idTraitement][$id] = $ligne;
+                    else $liste[$matricule]['nonTraite'][$id] = $ligne;
             }
         }
 
@@ -1069,15 +1083,17 @@ class presences
      /**
       * enregistrement initial des informations de tratiement d'un retard
       *
-      * @param void
+      * @param string $acronyme : acronyme du prpriétaire
       *
       * @return int : la référence de l'enregistrement (id ou ref de l'enregistrement)
       */
-     public function initTraitementRetard(){
+     public function initTraitementRetard($acronyme){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'presencesTraitement ';
-        $sql .= 'SET dateTraitement = NOW() ';
+        $sql .= 'SET dateTraitement = NOW(), acronyme = :acronyme ';
         $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
 
         $resultat = $requete->execute();
 
@@ -1096,15 +1112,17 @@ class presences
       *
       * @return int : nombre d'enregistrements
       */
-     public function saveDatesSanction($ref, $listeDates){
+     public function saveDatesSanction($idTraitement, $form){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          $sql = 'INSERT IGNORE INTO '.PFX.'presencesDatesSanctions ';
-         $sql .= 'SET ref = :ref, dateSanction = :date ';
+         $sql .= 'SET idTraitement = :idTraitement, dateSanction = :date ';
          $requete = $connexion->prepare($sql);
 
          $resultat = 0;
-         $requete->bindParam(':ref', $ref, PDO::PARAM_INT);
-         foreach ($listeDates AS $uneDate) {
+         $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+
+         $datesSanctions = $form['datesSanctions'];
+         foreach ($datesSanctions as $uneDate) {
              $date = Application::dateMysql($uneDate);
              $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
              $resultat += $requete->execute();
@@ -1123,17 +1141,21 @@ class presences
       *
       * @return int : nombre d'enregistrements
       */
-     public function saveRefIdLogs($ref, $matricule, $listeIdLogs){
+     public function saveIdTraitementIdLogs($idTraitement, $form){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'INSERT IGNORE INTO '.PFX.'presencesRefLogs ';
-         $sql .= 'SET ref = :ref, id = :idLog, matricule = :matricule ';
+         $sql = 'INSERT IGNORE INTO '.PFX.'presencesIdTraitementLogs ';
+         $sql .= 'SET idTraitement = :idTraitement, idRetard = :idRetard, matricule = :matricule ';
          $requete = $connexion->prepare($sql);
 
          $resultat = 0;
-         $requete->bindParam(':ref', $ref, PDO::PARAM_INT);
+         $matricule = $form['matricule'];
+         // $liste
+         $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
          $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-         foreach ($listeIdLogs AS $idLog) {
-             $requete->bindParam(':idLog', $idLog, PDO::PARAM_INT);
+
+         $listeIdsLogs = $form['idRetards'];
+         foreach ($listeIdsLogs AS $idRetard) {
+             $requete->bindParam(':idRetard', $idRetard, PDO::PARAM_INT);
              $resultat += $requete->execute();
          }
 
@@ -1142,66 +1164,66 @@ class presences
          return $resultat;
      }
 
-     /**
-      * renvoie tous les enregistrements réalisés entre les dates données
-      *
-      * @param string $debut : date de début
-      * @param string $fin : date de fin
-      *
-      * @return array
-      */
-     public function getSanctions2dates($debut, $fin, $niveau, $classe, $matricule) {
-         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SET lc_time_names = "fr_FR" ';
-         $requete = $connexion->prepare($sql);
-         $requete->execute();
-         $sql = 'SELECT pe.id, pe.matricule, date, DATE_FORMAT(date, "%a") AS jour, statut, refLogs.id, refLogs.ref, ';
-         $sql .= 'dateTraitement, dateRetour, dateSanction ';
-         $sql .= 'FROM '.PFX.'presencesEleves AS pe ';
-         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = pe.matricule ';
-         $sql .= 'JOIN '.PFX.'presencesRefLogs AS refLogs ON pe.id = refLogs.id ';
-         $sql .= 'JOIN '.PFX.'presencesTraitement AS trait ON trait.ref = refLogs.ref ';
-         $sql .= 'JOIN '.PFX.'presencesDatesSanctions AS dates ON dates.ref = trait.ref ';
-         $sql .= 'WHERE statut = "retard" AND date BETWEEN :debut AND :fin ';
-         if ($matricule != Null)
-             $sql .= 'AND pe.matricule = :matricule ';
-             else if ($classe != Null)
-                 $sql .= 'AND de.groupe = :classe ';
-                 else if ($niveau != Null)
-                     $sql .= 'AND SUBSTR(de.groupe, 1, 1) = :niveau ';
-         $sql .= 'ORDER BY date ';
-         $requete = $connexion->prepare($sql);
-
-         $dabut = Application::dateMySql($debut);
-         $fin = Application::dateMySql($fin);
-         $requete->bindParam(':debut', $debut, PDO::PARAM_STR, 10);
-         $requete->bindParam(':fin', $fin, PDO::PARAM_STR, 10);
-
-         if ($matricule != Null)
-             $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-             else if ($classe != Null)
-                     $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
-                     else if ($niveau != Null)
-                         $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
-
-         $liste = array();
-         $resultat = $requete->execute();
-         if ($resultat) {
-             $requete->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $requete->fetch()){
-                 $id = $ligne['id'];
-                 $ligne['date'] = Application::datePHP($ligne['date']);
-                 $ligne['dateTraitement'] = Application::datePHP($ligne['dateTraitement']);
-                 $ligne['dateRetour'] = Application::datePHP($ligne['dateRetour']);
-                 $ligne['dateSanction'] = Application::datePHP($ligne['dateSanction']);
-                 $liste[$id] = $ligne;
-             }
-         }
-
-         Application::deconnexionPDO($connexion);
-
-         return $liste;
-     }
+     // /**
+     //  * renvoie tous les enregistrements réalisés entre les dates données
+     //  *
+     //  * @param string $debut : date de début
+     //  * @param string $fin : date de fin
+     //  *
+     //  * @return array
+     //  */
+     // public function getSanctions2dates($debut, $fin, $niveau, $classe, $matricule) {
+     //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+     //     $sql = 'SET lc_time_names = "fr_FR" ';
+     //     $requete = $connexion->prepare($sql);
+     //     $requete->execute();
+     //     $sql = 'SELECT pe.id, pe.matricule, date, DATE_FORMAT(date, "%a") AS jour, statut, refLogs.id, refLogs.idTratiement, ';
+     //     $sql .= 'trait.date AS dateTraiement, dateRetour, dateSanction ';
+     //     $sql .= 'FROM '.PFX.'presencesEleves AS pe ';
+     //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = pe.matricule ';
+     //     $sql .= 'JOIN '.PFX.'presencesRefLogs AS refLogs ON pe.id = refLogs.id ';
+     //     $sql .= 'JOIN '.PFX.'presencesTraitement AS trait ON trait.ref = refLogs.ref ';
+     //     $sql .= 'JOIN '.PFX.'presencesDatesSanctions AS dates ON dates.ref = trait.ref ';
+     //     $sql .= 'WHERE statut = "retard" AND date BETWEEN :debut AND :fin ';
+     //     if ($matricule != Null)
+     //         $sql .= 'AND pe.matricule = :matricule ';
+     //         else if ($classe != Null)
+     //             $sql .= 'AND de.groupe = :classe ';
+     //             else if ($niveau != Null)
+     //                 $sql .= 'AND SUBSTR(de.groupe, 1, 1) = :niveau ';
+     //     $sql .= 'ORDER BY date ';
+     //     $requete = $connexion->prepare($sql);
+     //
+     //     $dabut = Application::dateMySql($debut);
+     //     $fin = Application::dateMySql($fin);
+     //     $requete->bindParam(':debut', $debut, PDO::PARAM_STR, 10);
+     //     $requete->bindParam(':fin', $fin, PDO::PARAM_STR, 10);
+     //
+     //     if ($matricule != Null)
+     //         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+     //         else if ($classe != Null)
+     //                 $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+     //                 else if ($niveau != Null)
+     //                     $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+     //
+     //     $liste = array();
+     //     $resultat = $requete->execute();
+     //     if ($resultat) {
+     //         $requete->setFetchMode(PDO::FETCH_ASSOC);
+     //         while ($ligne = $requete->fetch()){
+     //             $id = $ligne['id'];
+     //             $ligne['date'] = Application::datePHP($ligne['date']);
+     //             $ligne['dateTraitement'] = Application::datePHP($ligne['dateTraitement']);
+     //             $ligne['dateRetour'] = Application::datePHP($ligne['dateRetour']);
+     //             $ligne['dateSanction'] = Application::datePHP($ligne['dateSanction']);
+     //             $liste[$id] = $ligne;
+     //         }
+     //     }
+     //
+     //     Application::deconnexionPDO($connexion);
+     //
+     //     return $liste;
+     // }
 
      /**
       * effacement d'une sanction dont on passe la référence
@@ -1236,24 +1258,24 @@ class presences
      }
 
      /**
-      * recherche les dates de sanction pour un  billet dont on donne la $ref
+      * recherche les dates de sanction pour un  billet dont on donne le $idTraitement
       *
-      * @param int $ref
+      * @param int $idTraitement
       *
       * @return array
       */
-     public function getDatesSanction4ref($ref){
+     public function getDatesSanction4idTraitement($idTraitement){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          $sql = 'SET lc_time_names = "fr_FR" ';
          $requete = $connexion->prepare($sql);
          $requete->execute();
 
-         $sql = 'SELECT dateSanction, DATE_FORMAT(dateSanction, "%W") AS jour, ref ';
+         $sql = 'SELECT dateSanction, DATE_FORMAT(dateSanction, "%W") AS jour, idTraitement ';
          $sql .= 'FROM '.PFX.'presencesDatesSanctions ';
-         $sql .= 'WHERE ref = :ref ';
+         $sql .= 'WHERE idTraitement = :idTraitement ';
          $requete = $connexion->prepare($sql);
 
-         $requete->bindParam(':ref', $ref, PDO::PARAM_INT);
+         $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
          $resultat = $requete->execute();
          $liste = array();
          if ($resultat) {
@@ -1269,29 +1291,34 @@ class presences
      }
 
      /**
-      * liste les dates de retards pour la sanction $ref
+      * liste les dates de retards pour le carton $idTraitement
       *
-      * @param int $ref
+      * @param int $idTraitement
       *
       * @return array
       */
-     public function getDatesRetards4ref($ref){
+     public function getDatesRetards4idTraitement($idTraitement){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT refLogs.id, DATE_FORMAT(quand, "%d/%m") AS date ';
-         $sql .= 'FROM '.PFX.'presencesRefLogs AS refLogs ';
-         $sql .= 'JOIN '.PFX.'presencesLogs AS logs ON logs.id = refLogs.id ';
-         $sql .= 'WHERE ref = :ref ';
+         $sql = 'SET lc_time_names = "fr_FR" ';
+         $requete = $connexion->prepare($sql);
+         $requete->execute();
+
+         $sql = 'SELECT refLogs.idRetard, DATE_FORMAT(quand, "%W %d/%m/%Y") AS date, DATE_FORMAT(quand, "%d/%m/%Y") AS dateSimple ';
+         $sql .= 'FROM '.PFX.'presencesIdTraitementLogs AS refLogs ';
+         $sql .= 'JOIN '.PFX.'presencesLogs AS logs ON logs.id = refLogs.idRetard ';
+         $sql .= 'WHERE idTraitement = :idTraitement ';
          $sql .= 'ORDER BY quand ';
          $requete = $connexion->prepare($sql);
 
-         $requete->bindParam(':ref', $ref, PDO::PARAM_INT);
+         $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
          $resultat = $requete->execute();
 
          $liste = array();
          if ($resultat) {
              $requete->setFetchMode(PDO::FETCH_ASSOC);
              while ($ligne = $requete->fetch()){
-                 $liste[] = $ligne['date'];
+                 $idRetard = $ligne['idRetard'];
+                 $liste[$idRetard] = $ligne;
              }
          }
 
@@ -1300,22 +1327,116 @@ class presences
          return $liste;
      }
 
-    /**
-     * // liste des $ref et des dates de sanctions correspondantes
-     * @param array $listeSanctions
-     *
-     * @return array
-     */
-    public function listeRefsDates($listeSanctions) {
-        $liste = array();
-        foreach ($listeSanctions as $id => $dataSanction){
-            $ref = $dataSanction['ref'];
-            $jour = ucfirst($dataSanction['jour']);
-            $liste[$ref][] = sprintf('%s %s', $jour,substr($dataSanction['date'],0,5));
-        }
+     /**
+      * supprime une date de retard (l'identifiant dans les logs, en fait)
+      * de la table presencesIdTraitementLogs
+      * pour l'élève de $matricule donné et le traitement $idTraitement
+      *
+      * @param int $idTraitement
+      * @param int $idRetard : identifiant de le prise de présences dans les logs
+      * @param int $matricule : matricule de l'élève
+      *
+      * @return int : le nombre de suppressions (0 ou 1)
+      */
+     public function delTraitementLogs($idTraitement, $idRetard, $matricule){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'DELETE FROM '.PFX.'presencesIdTraitementLogs ';
+         $sql .= 'WHERE idTraitement = :idTraitement AND idRetard = :idRetard ';
+         $sql .= 'AND matricule = :matricule ';
+         $requete = $connexion->prepare($sql);
 
-        return $liste;
+         $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+         $requete->bindParam(':idRetard', $idRetard, PDO::PARAM_INT);
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $resultat = $requete->execute();
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+     /**
+      * Effacement des dates de sanctions après édition du billet de retard
+      *
+      * @param int $idTraitement
+      * @param array $listeDates : liste des dates de sanction qui restent
+      *
+      * @return int : nombre de suppressions effectuées
+      */
+     public function delDatesSanction($idTraitement, $listeDates){
+         $listeDatesSQL = array();
+         foreach ($listeDates as $uneDate){
+             $listeDatesSQL[] = Application::dateMySql(explode(' ', $uneDate)[1]);
+            }
+         $listeDatesSQL = "'".implode("','", $listeDatesSQL)."'";
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'DELETE FROM '.PFX.'presencesDatesSanctions ';
+         $sql .= 'WHERE idTraitement = :idTraitement AND ';
+         $sql .= 'dateSanction NOT IN ('.$listeDatesSQL.') ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+
+         $resultat = $requete->execute();
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+/**
+ * mise à jour des informations générales de traitement (date, impression, date de retour, acronyme)
+ *
+ * @param int $idTraitement
+ * @param string $acronyme
+ * @param string $dateRetour
+ * @param int $impression : nombre d'impressions
+ *
+ * @return int
+ */
+public function updatePresencesTraitement($idTraitement, $acronyme, $dateRetour, $impression){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'UPDATE '.PFX.'presencesTraitement ';
+    $sql .= 'SET acronyme = :acronyme, dateTraitement = NOW() ';
+    if ($impression != Null)
+        $sql .= ', impression = impression + 1 ';
+    $sql .= ', dateRetour = :dateRetour ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+    $dateRetour = ($dateRetour != '') ? Application::dateMySql($dateRetour) : Null;
+    $requete->bindParam(':dateRetour', $dateRetour, PDO::PARAM_STR, 10);
+
+    $resultat = $requete->execute();
+    $nb = $requete->rowCount();
+
+    Application::DeconnexionPDO($connexion);
+
+    return $nb;
     }
+
+
+    //  * // liste des $idTraitement et des dates de sanctions correspondantes
+    //  * @param array $listeSanctions
+    //  *
+    //  * @return array
+    //  */
+    // public function listeRefsDates($listeSanctions) {
+    //     $liste = array();
+    //     foreach ($listeSanctions as $id => $dataSanction){
+    //         $ref = $dataSanction['ref'];
+    //         $jour = ucfirst($dataSanction['jour']);
+    //         $liste[$ref][] = sprintf('%s %s', $jour,substr($dataSanction['date'],0,5));
+    //     }
+    //
+    //     return $liste;
+    // }
 
     /**
      * renvoie les stats de prises de présences pour les profs de la liste fournie entre les dates données
@@ -1369,7 +1490,7 @@ class presences
      *
      * @return array
      */
-    public function getEvents4modele($acronyme){
+    public function getEvents4modele($acronyme, $dateLundi){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, acronyme, idCategorie, destinataire, jour, startTime, endTime, allDay, ';
         $sql .= 'libelle, nbheures, statut ';
@@ -1381,8 +1502,6 @@ class presences
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $mondayThisWeek = date('Y-m-d', strtotime('monday this week'));
 
         $liste = array();
         $resultat = $requete->execute();
@@ -1396,8 +1515,8 @@ class presences
                     'coursGrp' => $ligne['destinataire'],
                     'startTime' => SUBSTR($ligne['startTime'], 0, 5),
                     'endTime' => SUBSTR($ligne['endTime'], 0, 5),
-                    'start' => date('Y-m-d', strtotime('monday this week +'.$ligne['jour'].' day')).' '.$ligne['startTime'],
-                    'end' => date('Y-m-d', strtotime('monday this week +'.$ligne['jour'].' day')).' '.$ligne['endTime'],
+                    'start' => date('Y-m-d', strtotime($dateLundi . '+' . $ligne['jour'] . 'day')) .' '. $ligne['startTime'],
+                    'end' => date('Y-m-d', strtotime($dateLundi . '+' . $ligne['jour'] . 'day')) .' '. $ligne['endTime'],
                     'allDay' => ($ligne['allDay']!=0),
                     'libelle' => sprintf('%s %s %dh', $ligne['statut'], $ligne['libelle'], $ligne['nbheures']),
                     );
@@ -1407,6 +1526,193 @@ class presences
         Application::DeconnexionPDO($connexion);
 
         return $liste;
+    }
+
+/**
+ * retourne les caractéristiques du traitement $idTraitement (date trait, impr, retour)
+ *
+ * @param int $idTraitement
+ *
+ * @return array
+ */
+public function getDataTraitement($idTraitement){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'SET lc_time_names = "fr_FR" ';
+    $requete = $connexion->prepare($sql);
+    $requete->execute();
+
+    $sql = 'SELECT idTraitement, DATE_FORMAT(dateTraitement,"%W %d/%m/%Y") AS dateTraitement, ';
+    $sql .= 'impression, dateRetour, presTrait.acronyme, nom, prenom ';
+    $sql .= 'FROM '.PFX.'presencesTraitement AS presTrait ';
+    $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = presTrait.acronyme ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+
+    $ligne = array();
+    $resultat = $requete->execute();
+    if ($resultat){
+        $requete->setFetchMode(PDO::FETCH_ASSOC);
+        $ligne = $requete->fetch();
+        $ligne['dateRetour'] = Application::datePHP($ligne['dateRetour']);
+    }
+
+    Application::DeconnexionPDO($connexion);
+
+    return $ligne;
+}
+
+/**
+ * retourne la liste des dates de sanction correspondant à un $idTraitement
+ *
+ * @param int $idTraitement
+ *
+ * @return array
+ */
+public function getDatesSanction($idTraitement){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'SELECT dateSanction ';
+    $sql .= 'FROM '.PFX.'presencesDatesSanctions ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $sql .= 'ORDER BY dateSanction ';
+    $requete = $connexion->prepare($sql);
+
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+
+    $liste = array();
+    $resultat = $requete->execute();
+    if ($resultat){
+        $requete->setFetchMode(PDO::FETCH_ASSOC);
+        while ($ligne = $requete->fetch()){
+            $liste[] = $ligne['dateSanction'];
+        }
+    }
+
+    Application::DeconnexionPDO($connexion);
+
+    return $liste;
+}
+
+/**
+ * retourne la liste des dates de retard liées à un $idTraitement pour l'élève $matricule
+ *
+ * @param int $idTraitement
+ * @param int $matricule
+ *
+ * @return array
+ */
+public function getDatesRetard($idTraitement, $matricule){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'SELECT idRetard, date, periode, statut ';
+    $sql .= 'FROM '.PFX.'presencesIdTraitementLogs as traitLogs ';
+    $sql .= 'JOIN '.PFX.'presencesEleves AS pel ON pel.id = traitLogs.idRetard ';
+    $sql .= 'AND pel.matricule = traitLogs.matricule ';
+    $sql .= 'WHERE idTraitement = :idTraitement AND traitLogs.matricule = :matricule ';
+
+    $requete = $connexion->prepare($sql);
+
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+    $liste = array();
+    $resultat = $requete->execute();
+    if ($resultat){
+        $requete->setFetchMode(PDO::FETCH_ASSOC);
+        while ($ligne = $requete->fetch()){
+            $idRetard = $ligne['idRetard'];
+            $liste[$idRetard] = $ligne;
+        }
+    }
+
+    Application::DeconnexionPDO($connexion);
+
+    return $liste;
+}
+
+/**
+ * retourne l'acronyme du propriétaire d'un traitement de retard
+ *
+ * @param int $idRetard
+ *
+ * @return string
+ */
+public function getProprioTraitement ($idTraitement){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'SELECT acronyme ';
+    $sql .= 'FROM '.PFX.'presencesTraitement ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+
+    $acronyme = Null;
+    $resultat = $requete->execute();
+    if ($resultat) {
+        $requete->setFetchMode(PDO::FETCH_ASSOC);
+        $ligne = $requete->fetch();
+        $acronym = $ligne['acronyme'];
+    }
+
+    Application::DeconnexionPDO($connexion);
+
+    return $acronyme;
+}
+
+/**
+ * suppression d'un traitement de retards et des sanctions
+ *
+ * @param int $idTraitement
+ *
+ * @return int : nombre d'effacements (0 ou 1)
+ */
+public function delTraitement($idTraitement){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'DELETE FROM '.PFX.'presencesIdTraitementLogs ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+    $resultat = $requete->execute();
+
+    $sql = 'DELETE FROM '.PFX.'presencesDatesSanctions ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+    $resultat = $requete->execute();
+
+    $sql = 'DELETE FROM '.PFX.'presencesTraitement ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+    $resultat = $requete->execute();
+
+    Application::DeconnexionPDO($connexion);
+
+    return $resultat;
+    }
+
+/**
+ * incrémente le nombre d'impressions de la fiche $idTraitement
+ *
+ * @param int $idTraitement
+ *
+ * @return int
+ */
+public function incrementPrint($idTraitement){
+    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    $sql = 'UPDATE '.PFX.'presencesTraitement ';
+    $sql .= 'SET impression = impression + 1 ';
+    $sql .= 'WHERE idTraitement = :idTraitement ';
+    $requete = $connexion->prepare($sql);
+
+    $requete->bindParam(':idTraitement', $idTraitement, PDO::PARAM_INT);
+    $resultat = $requete->execute();
+
+    $nb = $requete->rowCount();
+
+    Application::DeconnexionPDO($connexion);
+
+    return $resultat;
     }
 
 }

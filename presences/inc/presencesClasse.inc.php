@@ -19,6 +19,9 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$date = isset($_POST['date']) ? $_POST['date'] : Null;
+
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -26,24 +29,26 @@ $Ecole = new Ecole();
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
-
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
+$userStatus = $User->getStatus4appli($module);
+$smarty->assign('userStatus', $userStatus);
+
 $photosVis = isset($_COOKIE['photosVis']) ? $_COOKIE['photosVis'] : null;
 $smarty->assign('photosVis', $photosVis);
 
-$date = strftime('%d/%m/%Y');
+if ($date == Null)
+    $date = strftime('%d/%m/%Y');
 $smarty->assign('date', $date);
-
-$jourSemaine = strftime('%A', $Application->dateFR2Time($date));
-$smarty->assign('jourSemaine', $jourSemaine);
+$jourSemaine = ucfirst(strftime('%A', $Application->dateFR2Time($date)));
+$smarty->assign('dateFr', $jourSemaine.', le '.$date);
 
 $titusClasse = $Ecole->titusDeGroupe($classe);
 $smarty->assign('titusClasse', $titusClasse);
+$smarty->assign('classe', $classe);
 
 $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes', $listePeriodes);

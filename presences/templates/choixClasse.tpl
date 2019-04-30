@@ -5,7 +5,7 @@
 		<div class="col-sm-12 col-md-1">
 			<div class="form-group">
 				<label for="classe">Classe</label>
-				<select id="classe" name="classe" class="form-control">
+				<select id="selectClasse" name="selectClasse" class="form-control">
 					<option value="">Classe</option>
 					{foreach from=$listeClasses item=classe}
 					<option value="{$classe}">{$classe}</option>
@@ -29,7 +29,7 @@
 
 	$(document).ready(function(){
 
-		$('#classe').change(function(){
+		$('#selectClasse').change(function(){
 			var classe = $(this).val();
 			$.post('inc/presencesClasse.inc.php', {
 				classe: classe

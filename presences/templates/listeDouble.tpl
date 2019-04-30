@@ -1,3 +1,6 @@
+<strong>{$dateFr}</strong>
+<div class="clearfix"></div>
+
 {assign var=noOrdre value=1}
 {* répartition des élèves dans deux colonnes sur les écrans larges; sinon, les deux tableaux seront superposés *}
 {assign var=nbCol1 value=round($listeEleves|count / 2)}

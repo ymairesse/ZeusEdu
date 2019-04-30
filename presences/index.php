@@ -17,8 +17,6 @@ $smarty->assign('photosVis', $photosVis);
 
 $appli = $Application->getModule(1);
 
-
-
 switch ($action) {
     case 'admin':
         include 'inc/gestAdmin.inc.php';

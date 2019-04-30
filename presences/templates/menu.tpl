@@ -17,16 +17,15 @@
 	<div class="collapse navbar-collapse" id="barreNavigation">
 		<ul class="nav navbar-nav">
 			<li><a href="index.php"><button type="button" class="btn btn-primary">Présences <img src="images/presencesIco.png" alt="P"></button></a></li>
-			{if $userStatus == 'prof'}
-				<li><a href="index.php?action=presences&amp;mode=tituCours">Profs</a></li>
-			{/if}
 
+			{if ($userStatus == 'educ') || ($userStatus == 'admin')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Educs<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=presences&amp;mode=cours">Présences par cours</a></li>
 					<li><a href="index.php?action=presences&amp;mode=classe">Présences par classe</a></li>
 				</ul>
 			</li>
+			{/if}
 
 			{if ($userStatus == 'educ') || ($userStatus == 'admin') || ($userStatus == 'coordinateur')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Retards<b class="caret"></b></a>
@@ -43,7 +42,6 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=listes&amp;mode=parDate">Absences par date</a></li>
 					<li><a href="index.php?action=listes&amp;mode=parClasse">Absences par classe</a></li>
-					<li><a href="index.php?action=listes&amp;mode=parCours">Absences par cours</a></li>
 					<li><a href="index.php?action=listes&amp;mode=parEleve">Absences par élève</a></li>
 				</ul>
 			</li>

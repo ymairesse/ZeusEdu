@@ -19,34 +19,37 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application::getmodule(3);
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
-
-$debut = Application::dateMySql($form['debut']);
-$fin = Application::dateMySql($form['fin']);
-$niveau = isset($form['niveau']) ? $form['niveau'] : Null;
-$classe = isset($form['classe']) ? $form['classe'] : Null;
-$matricule = isset($form['matricule']) ? $form['matricule'] : Null;
-
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-$listePeriodes = $Ecole->lirePeriodesCours();
+// récupérer le formulaire
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$debut = isset($_POST['debut']) ? $_POST['debut'] : Null;
+$fin = isset($_POST['fin']) ? $_POST['fin'] : Null;
+$niveau = Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
-require_once INSTALL_DIR."/smarty/Smarty.class.php";
+$listeIds = $Presences->getRetards4Periode($debut, $fin, Null, Null, $matricule);
+$listeRetards = isset($listeIds[$matricule]['nonTraite']) ? $listeIds[$matricule]['nonTraite'] : 0;
+
+require_once INSTALL_DIR.$ds.'edt'.$ds.'inc/classes/classEDT.inc.php';
+$Edt = new Edt();
+$imageEDT = $Edt->getEdtEleve($matricule);
+
+setlocale(LC_TIME, "fr_FR");
+$today = strftime('%A %d/%m/%Y');
+
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
+$listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes', $listePeriodes);
-// renvoie la liste des retards durant une période pour un niveau d'étude, une classe ou un élève
-$listeRetards = $Presences->getRetards4Periode($debut, $fin, $niveau, $classe, $matricule);
 
+$smarty->assign('date', $today);
+$smarty->assign('imageEDT', $imageEDT);
+$smarty->assign('matricule', $matricule);
 $smarty->assign('listeRetards', $listeRetards);
-$smarty->assign('form', $form);
 
-$smarty->display('retards/traitementRetards.tpl');
+$smarty->display('retards/choixSanction.tpl');

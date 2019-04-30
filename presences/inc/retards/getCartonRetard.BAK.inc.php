@@ -19,15 +19,8 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application::getmodule(3);
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
-
-$debut = Application::dateMySql($form['debut']);
-$fin = Application::dateMySql($form['fin']);
-$niveau = isset($form['niveau']) ? $form['niveau'] : Null;
-$classe = isset($form['classe']) ? $form['classe'] : Null;
-$matricule = isset($form['matricule']) ? $form['matricule'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
+$idTraitement = isset($_POST['idTraitement']) ? $_POST['idTraitement'] : null;
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -37,16 +30,18 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
+$dataTraitement = $Presences->getDataTraitement($idTraitement);
+$listeDatesSanction = $Presences->getDatesSanction4idTraitement($idTraitement);
+$listeDatesRetards = $Presences->getDatesRetards4idTraitement($idTraitement, $matricule);
+
 require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $smarty->assign('listePeriodes', $listePeriodes);
-// renvoie la liste des retards durant une période pour un niveau d'étude, une classe ou un élève
-$listeRetards = $Presences->getRetards4Periode($debut, $fin, $niveau, $classe, $matricule);
+$smarty->assign('dataTraitement', $dataTraitement);
+$smarty->assign('listeDatesSanction', $listeDatesSanction);
+$smarty->assign('$listeDatesRetards', $listeDatesRetards);
 
-$smarty->assign('listeRetards', $listeRetards);
-$smarty->assign('form', $form);
-
-$smarty->display('retards/traitementRetards.tpl');
+$smarty->display('retards/editTraitement.tpl');

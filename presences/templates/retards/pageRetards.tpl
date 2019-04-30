@@ -4,7 +4,7 @@
 
         <h2 class="col-xs-12">Traitement des retards</h2>
 
-        <div class="col-md-3 col-xs-12">
+        <div class="col-md-3 col-xs-12" id="selecteurEleves">
 
             {include file='selecteurs/selectRetards.tpl'}
 
@@ -16,8 +16,6 @@
 
     </div>
 </div>
-
-
 
 
 <script type="text/javascript">
@@ -47,60 +45,31 @@
             })
         })
 
-        $('#zoneSynthese').on('click', '.btn-print', function(){
-            var ref = $(this).data('ref');
-            var matricule = $(this).data('matricule');
-            $.post('inc/retards/generateRetard4PDF.inc.php', {
-                matricule: matricule,
-                ref: ref
-            }, function(resultat){
-                bootbox.alert({
-                    title: 'Sanction pour retards',
-                    message: resultat
-                });
-            })
+        $('#zoneSynthese').on('click', '.delButton', function(){
+            var idTraitement = $(this).parent().data('idtraitement');
+            $('.btn-printer[data-idtraitement="' + idTraitement + '"]').removeClass('btn-info').addClass('btn-default');
+            $(this).closest('div').remove();
         })
 
-        $('#zoneSynthese').on('click', '.btn-delete', function(){
-            var ref = $(this).data('ref');
-            bootbox.confirm({
-                title: 'Veuillez confirmer',
-                message: 'Effacement définitif de cette sanction',
-                callback: function(result) {
-                    if (result == true) {
-                        $.post('inc/retards/delSanctionRef.inc.php', {
-                            ref: ref
-                        }, function(resultat){
-                            $('.btn-sanction[data-ref="' + ref  +'"]').attr('disabled', false);
-                            $('.cbDate[data-ref="' + ref  +'"]').prop('checked', false).attr('disabled', false);
-                            $('span[data-ref="' + ref  +'"]').remove();
-                            $('#btn-getRetards').trigger('click');
-                        })
-                    }
+        $('#zoneSynthese').on('click', '.btn-printer', function(){
+            var matricule = $(this).data('matricule');
+            var idTraitement = $(this).data('idtraitement');
+            if ($(this).hasClass('btn-info')) {
+                $(this).removeClass('btn-info').addClass('btn-default');
+                $('.billet[data-idtraitement="' + idTraitement + '"]').remove();
+                $(this).next('input').val('');
                 }
-            })
-        })
-
-        $('#zoneSynthese').on('click', '.btn-sanction', function(){
-            var matricule = $(this).data('matricule');
-            var listeIds = [];
-            $('.cbDate[data-matricule="' + matricule + '"]:checked').not(':disabled').each(function(){
-                listeIds.push($(this).data('id'));
-                })
-            if (listeIds.length > 0) {
-                $.post('inc/retards/modalDateSanction.inc.php', {
-                    matricule: matricule,
-                    listeIds: listeIds
-                }, function(resultat){
-                    $('#modal').html(resultat);
-                    $('#modalChoixSanction').modal('show');
-                })
-            }
-            else bootbox.alert({
-                size: 'small',
-                title: 'Problème',
-                message: 'Veuillez sélectionner au moins un retard'
-            })
+                else {
+                    $(this).removeClass('btn-default').addClass('btn-info');
+                    $(this).next('input').val(matricule + "_" + idTraitement);
+                }
+            var nbPrint = $('.btn-printer.btn-info').length;
+            if (nbPrint == 0)
+                $('#printRetards').text('Imprimer').attr('disabled', true);
+                else {
+                    var texte = 'Imprimer <span class="badge">' + nbPrint + '</span>';
+                    $('#printRetards').html(texte).attr('disabled', false);
+                }
         })
 
 
@@ -115,7 +84,6 @@
                 })
 			}
 		})
-
 
 		$("#debut, #fin").datepicker({
 			clearBtn: true,
@@ -148,7 +116,7 @@
 				);
 			})
 
-		$("#listeClasses").on("change","#selectClasse",function(){
+		$("#listeClasses").on("change", "#selectClasse", function(){
 			var classe = $(this).val();
 			$("#selectEleve").val('');
 			$.post('inc/listeEleves.inc.php', {

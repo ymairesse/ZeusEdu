@@ -20,9 +20,6 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(2);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
@@ -30,10 +27,8 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : Null;
 $form = array();
 parse_str($formulaire, $form);
 
-// $coursGrp = $form['coursGrp'];
-// $classe = $form['classe'];
+$form['acronyme'] = $acronyme;
 
-// $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
 $nb = $Presences->savePresences($form, $acronyme);
 
 echo $nb;

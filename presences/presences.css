@@ -34,7 +34,7 @@ input[type=submit], input[type=reset], input[type=button] {
     background: -webkit-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
     background: -o-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
     background: -ms-linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
-    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#fbdf93', endColorstr='#fceabb', GradientType=0);
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#fbdf93', endColorstr='#fceabb', GradientType=0);
     background: linear-gradient(top, #fbdf93 0%, #f8b500 49%, #fccd4d 50%, #fceabb 100%);
 }
 
@@ -102,7 +102,6 @@ input[type=submit], input[type=reset], input[type=button] {
 .tableauPresences td {
     cursor: pointer;
     border: 1px solid #dddddd;
-
 }
 
 .tableauPresences th {
@@ -112,7 +111,6 @@ input[type=submit], input[type=reset], input[type=button] {
     font-weight: normal;
     font-size: 0.9em;
 }
-
 
 td.now {
     border: 2px solid orange;
@@ -162,12 +160,17 @@ i.disabled, p.disabled, li.disabled, td.disabled, th.disabled {
     font-size: 7pt;
 }
 
+#presencesEleves {
+    padding: 0;
+}
+
 .fc-event {
     color: black !important;
     background-color: #eee !important;
-    border: 1px solid #aaa !important;;
+    border: 1px solid #aaa !important;
 }
 
-#presencesEleves {
-    padding:0;
+.fc-event, .fe-event:hover {
+    background-color: rgba(0, 0, 255, 0.1) !important;
+    color: gray !important;
 }

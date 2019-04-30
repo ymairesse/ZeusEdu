@@ -23,15 +23,18 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-if (isset($form['dateF'])) {
+$nb = 0;
+
+if (isset($form['datesSanctions']) && isset($form['idRetards'])) {
     $ds = DIRECTORY_SEPARATOR;
     require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
     $Presences = new Presences();
     // définir un identifiant $ref pour le traitement en cours
-    $ref = $Presences->initTraitementRetard();
-    // liaison entre le $ref et les dates choisies pour la sanction
-    $nb = $Presences->saveDatesSanction($ref, $form['dateF']);
+    $idTraitement = $Presences->initTraitementRetard($acronyme);
 
-    $nb = $Presences->saveRefIdLogs($ref, $form['matricule'], $form['id']);
-    echo $ref;
+    // liaison entre le $ref et les dates choisies pour la sanction
+    $nb = $Presences->saveDatesSanction($idTraitement, $form);
+    $nb = $Presences->saveIdTraitementIdLogs($idTraitement, $form);
 }
+// nombre de retards traités
+echo $nb;

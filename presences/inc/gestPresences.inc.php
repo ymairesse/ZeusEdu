@@ -16,22 +16,20 @@ $smarty->assign('listeFlashInfos', $listeFlashInfos);
 
 $listePeriodes = $Presences->lirePeriodesCours();
 
+$appli = $Application->getModule(1);
+
+
 if (!empty($listePeriodes)) {
     $periode = isset($_POST['periode']) ? $_POST['periode'] : $Presences->periodeActuelle($listePeriodes);
     $smarty->assign('periode', $periode);
 
-    // l'utilisateur peut-il changer la date de prise de présence?
-    $freeDate = isset($_POST['freeDate']) ? $_POST['freeDate'] : null;
-    // retrouver la date de travail à partir de la date du jour ou accepter la date postés si date libre souhaitée
-    if ($freeDate == null) {
-        $date = strftime('%d/%m/%Y');
-    }
-    $smarty->assign('freeDate', $freeDate);
+    // $dateLundi = date( 'd/m/Y', strtotime( 'monday this week' ));
+    // $smarty->assign('dateLundi', $dateLundi);
 
-    $jourSemaine = strftime('%A', $Application->dateFR2Time($date));
-    $smarty->assign('jourSemaine', $jourSemaine);
-
+    $date = strftime('%d/%m/%Y');
     $smarty->assign('date', $date);
+    $jourSemaine = ucfirst(strftime('%A', $Application->dateFR2Time($date)));
+    $smarty->assign('dateFr', $jourSemaine.', le '.$date);
 
     if ($mode == 'classe') {
         $listeClasses = $Ecole->listeClasses();

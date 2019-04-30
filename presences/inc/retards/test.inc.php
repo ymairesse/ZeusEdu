@@ -20,20 +20,16 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$idTraitement = isset($_POST['idTraitement']) ? $_POST['idTraitement'] : Null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$liste = isset($_POST['liste']) ? $_POST['liste'] : Null;
+
+Application::afficher($liste);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-
-$dataEleve = $Ecole->nomPrenomClasse($matricule);
-
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
-$datesSanction = $Presences->getDatesSanction4ref($ref);
-$datesRetards = $Presences->getDatesRetards4ref($ref);
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
@@ -48,9 +44,25 @@ $smarty->assign('DATE', $Application->dateNow());
 // pour retrouver la photo de l'élève
 $smarty->assign('BASEDIR', BASEDIR);
 
-$smarty->assign('dataEleve', $dataEleve);
-$smarty->assign('datesRetards', $datesRetards);
-$smarty->assign('datesSanction', $datesSanction);
+foreach ($liste as $wtf => $data){
+    $matricule = $data['matricule'];
+    $idTraitement = $data['id'];
+
+    $datesSanction = $Presences->getDatesSanction4ref($idTraitement);
+    $datesRetards = $Presences->getDatesRetards4ref($idTraitement);
+    $dataEleve = $Ecole->nomPrenomClasse($matricule);
+
+    $smarty->assign('dataEleve', $dataEleve);
+    $smarty->assign('datesRetards', $datesRetards);
+    $smarty->assign('datesSanction', $datesSanction);
+}
+
+
+
+
+
+
+
 
 define('PAGEWIDTH', 600);
 

@@ -29,6 +29,7 @@ $Presences = new Presences();
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 $date = isset($_POST['date']) ? $_POST['date'] : Null;
+$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
@@ -46,12 +47,13 @@ $photosVis = isset($_COOKIE['photosVis']) ? $_COOKIE['photosVis'] : null;
 $smarty->assign('photosVis', $photosVis);
 
 $smarty->assign('date', $date);
+$jourSemaine = ucfirst(strftime('%A', $Application->dateFR2Time($date)));
+$smarty->assign('dateFr', $jourSemaine.', le '.$date);
 
 $listePeriodes = $Presences->lirePeriodesCours();
 $lesPeriodes = range(1, count($listePeriodes));
 $smarty->assign('lesPeriodes', $lesPeriodes);
 
-$periode = $Presences->periodeActuelle($listePeriodes);
 $smarty->assign('periode', $periode);
 
 $smarty->assign('acronyme', $acronyme);

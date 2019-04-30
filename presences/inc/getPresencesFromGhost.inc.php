@@ -15,9 +15,11 @@ if (!(isset($_SESSION[APPLICATION]))) {
 }
 
 $User = $_SESSION[APPLICATION];
+
 $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
+$userStatus = $User->getStatus4appli($module);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
@@ -37,7 +39,7 @@ $periode = 0; $trouve = false;
 $hMax = count($listePeriodes);
 while ($periode <= $hMax && !($trouve)) {
     $periode++;
-    if ($listePeriodes[$periode]['debut'] == $heure)
+    if ($listePeriodes[$periode]['debut'] >= $heure)
         $trouve = true;
 }
 
@@ -47,10 +49,14 @@ $smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
 $smarty->assign('periode', $periode);
+
 $smarty->assign('date', $date);
+$jourSemaine = ucfirst(strftime('%A', $Application->dateFR2Time($date)));
+$smarty->assign('dateFr', $jourSemaine.', le '.$date);
 
 $smarty->assign('acronyme', $acronyme);
 $smarty->assign('coursGrp', $coursGrp);
+$smarty->assign('userStatus', $userStatus);
 
 $detailsCours = $Ecole->detailsCours($coursGrp);
 $smarty->assign('detailsCours', $detailsCours);

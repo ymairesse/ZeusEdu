@@ -245,7 +245,6 @@
 			annee = parseInt(tableau[2], 10);
 			nbJoursFev = new Date(annee, 1, 1).getMonth() == new Date(annee, 1, 29).getMonth() ? 29 : 28;
 			var lgMois = new Array(31, nbJoursFev, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-			console.log(parseInt(jour));
 			condMois = ((mois >= 1) && (mois <= 12));
 			if (!(condMois)) return false;
 			condJour = ((jour >= 1) && (jour <= lgMois[mois - 1]));

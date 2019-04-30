@@ -36,11 +36,17 @@ $smarty->compile_dir = '../templates_c';
 $prof = $User->identite();
 $smarty->assign('prof', $prof);
 
+$userStatus = $User->getStatus4appli($module);
+$smarty->assign('userStatus', $userStatus);
+
 $photosVis = isset($_COOKIE['photosVis']) ? $_COOKIE['photosVis'] : null;
 $smarty->assign('photosVis', $photosVis);
 
 $date = strftime('%d/%m/%Y');
 $smarty->assign('date', $date);
+
+$jourSemaine = ucfirst(strftime('%A', $Application->dateFR2Time($date)));
+$smarty->assign('dateFr', $jourSemaine.', le '.$date);
 
 $jourSemaine = strftime('%A', $Application->dateFR2Time($date));
 $smarty->assign('jourSemaine', $jourSemaine);
