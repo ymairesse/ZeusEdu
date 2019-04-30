@@ -76,7 +76,6 @@ fieldset {
 }
 
 form {
-    // clear:both;
     border: 1px dashed Red;
     padding: 15px;
 }
@@ -761,6 +760,11 @@ a.fauxBouton:hover {
     padding: 2px;
 }
 
+.notice ol, .notice ul {
+    padding-left: 48px;
+    margin-top: -24px;
+}
+
 .smallNotice {}
 
 .etiquette {
@@ -1186,9 +1190,8 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
 }
 
 .avertissement {
-    padding-top: 1.5em;
+    padding-top: 0.5em;
     text-align: center;
-    font-size: 64px;
     font-weight: bold;
     color: #bbb;
 }
@@ -1265,8 +1268,22 @@ ul.dropdown-menu li.active a:hover, ul.dropdown-menu li.active a:focus, ul.dropd
     overflow: auto;
 }
 
-.sousPrg {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Small devices (landscape phones, 544px and up) */
+@media (min-width: 544px) {
+  .avertissement {font-size:1.5rem;} /*1rem = 16px*/
+}
+
+/* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
+@media (min-width: 768px) {
+  .avertissement {font-size:2rem;} /*1rem = 16px*/
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .avertissement {font-size:3rem;} /*1rem = 16px*/
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .avertissement {font-size:5rem;} /*1rem = 16px*/
 }
