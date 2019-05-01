@@ -11,7 +11,15 @@
 
         <div class="col-md-2 col-xs-2">
             {if $type == 'coursGrp'}
-                <button type="button" class="btn btn-lightBlue btn-block" id="printJDC" style="margin-top:10px;" title="" data-original-title="Impression PDF du JDC">PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i></button>
+                <button type="button"
+                        class="btn btn-lightBlue btn-block"
+                        id="printJDC"
+                        style="margin-top:10px;"
+                        title=""
+                        data-original-title="Impression PDF du JDC"
+                        data-coursgrp="{$coursGrp}">
+                    PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i>
+                </button>
             {/if}
         </div>
 
@@ -145,11 +153,11 @@
 	    })
 
         $('#printJDC').click(function(){
-			var coursGrp = $('#coursGrp').val();
+			var coursGrp = $(this).data('coursgrp');
 			$.post('inc/jdc/listeCoursProfs.inc.php', {
 				coursGrp: coursGrp
 			}, function(resultat){
-				$('#listeCours').html(resultat);
+				$('#modalListeCours').html(resultat);
 			})
 			$('#modalPrintJDC').modal('show');
 		})

@@ -32,7 +32,6 @@ $coursGrp = $form['coursGrp'];
 
 $jdcExtract = $Jdc->fromToJDCList($form, $acronyme);
 
-
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';

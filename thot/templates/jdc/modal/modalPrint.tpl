@@ -30,10 +30,9 @@
 						</div>
 					</div>
 
-					<div class="col-xs-12" id="listeCours">
+					<div class="col-xs-12" id="modalListeCours">
 
 					</div>
-
 
 					<div class="col-xs-12">
 						<div class="form-group">
