@@ -1037,6 +1037,16 @@ CREATE TABLE IF NOT EXISTS `didac_passwd` (
   PRIMARY KEY (`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE `didac_EDTeleves` (
+  `matricule` int(11) NOT NULL COMMENT 'Matricule de l''élève',
+  `nomSimple` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom sans accents ni trait d''union',
+  `nomImage` varchar(70) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Image de l''emploi du temps'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Conversion entre eleve et image de son emploi du temps';
+
+ALTER TABLE `didac_EDTeleves`
+  ADD PRIMARY KEY (`matricule`);
+
+
 CREATE TABLE IF NOT EXISTS `didac_presencesEleves` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `matricule` int(6) NOT NULL,
@@ -1106,6 +1116,38 @@ INSERT INTO `didac_presencesJustifications` (`justif`, `shortJustif`, `ordre`, `
 ('sortie', 'SORT', 8, 'Sortie autorisée', '#000000', '#ff00ff', 0, 0, 1, 0),
 ('justifie', 'JUST', 9, 'Justifié', '#000000', '#27bdf1', 0, 0, 0, 0),
 ('stage', 'STAG', 10, 'Stage', '#ffffff', '#0a7135', 0, 0, 0, 0);
+
+CREATE TABLE `didac_presencesTraitement` (
+  `idTraitement` int(11) NOT NULL COMMENT 'Référence du traitement du retard (id)',
+  `dateTraitement` date NOT NULL COMMENT 'Date du traitement',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme du propriéatire',
+  `impression` smallint(6) NOT NULL DEFAULT '0' COMMENT 'Nombre d''impressions de ce billet de sanction',
+  `dateRetour` date DEFAULT NULL COMMENT 'Date de retour du billet signé'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+ALTER TABLE `didac_presencesTraitement`
+  ADD PRIMARY KEY (`idTraitement`);
+
+ALTER TABLE `didac_presencesTraitement`
+  MODIFY `idTraitement` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Référence du traitement du retard (id)';
+
+CREATE TABLE `didac_presencesDatesSanctions` (
+    `idTraitement` int(11) NOT NULL COMMENT 'Référence dans la table des traitements',
+    `dateSanction` date NOT NULL COMMENT 'date de sanction pour retard'
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_presencesDatesSanctions`
+    ADD PRIMARY KEY (`idTraitement`,`dateSanction`);
+
+CREATE TABLE `didac_presencesIdTraitementLogs` (
+      `idTraitement` int(11) NOT NULL COMMENT 'Référence dans la table des traitements',
+      `idRetard` int(11) NOT NULL COMMENT 'référence du billet de retard dans la table des logs',
+      `matricule` int(11) NOT NULL COMMENT 'Matricule de l''élève pour ce billet'
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_presencesIdTraitementLogs`
+      ADD PRIMARY KEY (`idTraitement`,`idRetard`,`matricule`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_profs` (
