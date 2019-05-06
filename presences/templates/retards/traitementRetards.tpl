@@ -1,7 +1,8 @@
 <h2>Traitement des retards
     {if isset($form.matricule) && $form.matricule != Null} d'un élève
-        {elseif $form.classe != Null} de la classe {$form.classe}
+        {elseif isset($form.classe) && ($form.classe != Null)} de la classe {$form.classe}
         {elseif $form.niveau != Null} des élèves de {$form.niveau}e année
+        {else}de tous les élèves
     {/if}
 </h2>
 

@@ -15,8 +15,8 @@
 
 		<div class="form-group">
 			<label for="niveau">Niveau d'étude</label>
-			<select name="niveau" id="niveau" class="form-control" required>
-				<option value="">Niveau</option>
+			<select name="niveau" id="niveau" class="form-control">
+				<option value="">Tous les élèves</option>
 				{foreach from=$listeNiveaux item=unNiveau}
 					<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)} selected{/if}>{$unNiveau}e</option>
 				{/foreach}

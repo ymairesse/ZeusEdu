@@ -93,10 +93,6 @@
 			todayHighlight: true
 		});
 
-		if ($("#niveau").val() == '')
-			$("#boutons").hide();
-			else $("#boutons").show();
-
 		$("#niveau").change(function(){
 			var niveau = $(this).val();
 			$("#selectClasse").val('');

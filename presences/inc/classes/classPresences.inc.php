@@ -1034,6 +1034,7 @@ class presences
                 else if ($niveau != Null)
                     $sql .= 'AND SUBSTR(de.groupe, 1, 1) = :niveau ';
         $sql .= 'ORDER BY groupe, nom, prenom, date, periode ';
+
         $requete = $connexion->prepare($sql);
 
         $debut = Application::dateMySql($debut);

@@ -5,7 +5,13 @@
             <div class="form-group">
                 <label for="matricule">Matricule</label>
                 <div class="input-group">
-                    <input type="text" class="input-lg form-control" name="matricule" id="matricule" value="" tabindex="1">
+                    <input type="text"
+                        class="input-lg form-control"
+                        name="matricule"
+                        placeholder="Scan ou matricule de l'élève"
+                        id="matricule"
+                        value=""
+                        tabindex="1">
                     <span class="input-group-addon" tabindex="2" id="barcode"> <i class="fa fa-barcode fa-2x"></i> </span>
                 </div>
                 <span class="help-block">Matricule de l'élève (scanné)</span>
@@ -42,7 +48,7 @@
         <img src="../photos/nophoto.jpg" alt="Photo" class="img-responsive" style="width:250px" id="photo">
         <div class="form-group">
             <label for="nomEleve">Nom de l'élève</label>
-            <input type="text" name="nomEleve" id="nomEleve" value="" class="form-control input-lg">
+            <input type="text" name="nomEleve" id="nomEleve" value="" class="form-control input-lg" placeholder="Nom de l'élève">
         </div>
 
     </div>
@@ -186,9 +192,10 @@
                     async: true,
                     success: function(matricule) {
                         if (matricule != '') {
-                            $('#matricule').val(matricule).trigger('change');
                             var heure = setHeure();
                             $('#heure').val(heure);
+                            $('#matricule').val(matricule).trigger('change').select();
+                            $('#matricule').trigger('keyup');
                         }
                     }
                 })
