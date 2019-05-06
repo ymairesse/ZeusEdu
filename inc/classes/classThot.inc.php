@@ -171,12 +171,12 @@ class thot
             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
             $sql .= 'SET type=:type, destinataire = :destinataire, proprietaire = :proprietaire, objet = :objet, texte = :texte, ';
             $sql .= 'dateDebut = :dateDebut, dateFin= :dateFin, ';
-            $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent ';
+            $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent, dateEnvoi = NOW() ';
         } else {
             $sql = 'UPDATE '.PFX.'thotNotifications ';
             $sql .= 'SET type = :type, destinataire = :destinataire, proprietaire = :proprietaire, objet = :objet, texte = :texte, ';
             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, ';
-            $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent ';
+            $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent, dateEnvoi = NOW() ';
             $sql .= 'WHERE id = :id AND proprietaire = :proprietaire ';
         }
         $requete = $connexion->prepare($sql);

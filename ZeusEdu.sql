@@ -7,6 +7,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 
+
 CREATE TABLE IF NOT EXISTS `didac_adesChamps` (
   `champ` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `label` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
@@ -23,8 +24,13 @@ CREATE TABLE IF NOT EXISTS `didac_adesChamps` (
   `printWidth` tinyint(4) NOT NULL DEFAULT '0',
   `obligatoire` tinyint(1) NOT NULL,
   `retenue` tinyint(1) NOT NULL COMMENT 'Champ obligatoire pour une retenue?',
-  `info` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Information sur le rôle du champ'
+  `info` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Information sur le rôle du champ',
+  PRIMARY KEY (`champ`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Description des champs dans la base de données';
+
+--
+-- Contenu de la table `didac_adesChamps`
+--
 
 INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `typeDateRetenue`, `typeChamp`, `size`, `maxlength`, `colonnes`, `lignes`, `classCSS`, `autocomplete`, `printWidth`, `obligatoire`, `retenue`, `info`) VALUES
 ('ladate', 'Date du jour', 'formulaire,tableau,minimum', 1, 0, 'text', 12, 10, 0, 0, 'obligatoire', 'N', 12, 1, 1, 'Date du jour où le fait disciplinaire est noté'),
@@ -45,9 +51,6 @@ INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `type
 ('duree', 'Durée', 'tableau,billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 10, 0, 1, 'Durée de la retenue imposée à lélève'),
 ('local', 'Local', 'billetRetenue', 0, 0, '', 0, 0, 0, 0, '', 'N', 6, 0, 1, 'Local où se déroulera la retenue imposée à l''élèveLocal où se déroulera la retenue imposée à l''élève'),
 ('anneeScolaire', 'Année scolaire', 'formulaire', 0, 0, 'hidden', 0, 0, 0, 0, '', 'N', 9, 1, 1, 'Année scolaire durant laquelle le fait disciplinaire est noté.');
---
-ALTER TABLE `didac_adesChamps`
-  ADD PRIMARY KEY (`champ`);
 
 
   CREATE TABLE IF NOT EXISTS `didac_adesChampsFaits` (
@@ -892,18 +895,7 @@ CREATE TABLE IF NOT EXISTS didac_elevesEcoles (
   KEY anscol (annee)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-
-CREATE TABLE IF NOT EXISTS didac_flashInfos (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  date date NOT NULL,
-  heure time NOT NULL,
-  application varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  titre varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-  texte text COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (id)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE `didac_flashInfos` (
+CREATE TABLE IF NOT EXISTS `didac_flashInfos` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL COMMENT 'date de parution',
   `heure` time NOT NULL COMMENT 'Heure de parution',
@@ -1314,7 +1306,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotNotifications` (
   `accuse` tinyint(1) NOT NULL,
   `freeze` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La notification est conservée pour le proprio après péremption',
   `parent` tinyint(1) DEFAULT '0' COMMENT 'Un mail d''information est-il envoyé aux parents?',
-  `dateEnvoi` datetime DEFAULT CURRENT_TIMESTAMP
+  `dateEnvoi` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notifications aux utilisateurs élèves';
 
 ALTER TABLE `didac_thotNotifications`
@@ -1358,8 +1350,8 @@ CREATE TABLE IF NOT EXISTS `didac_thotSessions` (
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
-CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
-  `id` int(6) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `didac_thotJdc` (
+  `id` int(6) NOT NULL,
   `destinataire` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matricule ou coursGrp ou classe ou...',
   `type` enum('cours','coursGrp','classe','eleve','niveau','ecole') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type du destinataire',
   `proprietaire` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1371,19 +1363,15 @@ CREATE TABLE IF NOT EXISTS `didac_thotJdc` (
   `startDate` datetime NOT NULL,
   `endDate` datetime NOT NULL,
   `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée',
-  `lastModif` datetime DEFAULT NULL COMMENT 'Date de dernière modification',
-  PRIMARY KEY (`id`),
-  KEY `proprietaire` (`proprietaire`),
-  KEY `destinataire` (`destinataire`),
-  KEY `endDate` (`endDate`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
+  `lastModif` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Journal de classe';
 
 ALTER TABLE `didac_thotJdc`
   ADD PRIMARY KEY (`id`),
   ADD KEY `proprietaire` (`proprietaire`),
   ADD KEY `destinataire` (`destinataire`),
   ADD KEY `endDate` (`endDate`);
---
+
 ALTER TABLE `didac_thotJdc`
   MODIFY `id` int(6) NOT NULL AUTO_INCREMENT;
 
@@ -1462,13 +1450,6 @@ INSERT INTO `didac_thotJdcTypes` (`id`, `type`, `libelle`) VALUES
 (4, 'niveau', 'Mentions à un niveau d\'étude'),
 (5, 'ecole', 'Mentions à tous les élèves de l\'école');
 
-CREATE TABLE `didac_thotJdcPJ` (
-  `idJdc` int(11) NOT NULL COMMENT 'id du journal de classe',
-  `shareId` int(11) NOT NULL COMMENT 'id du partage'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Pièces jointes au JDC';
-
-ALTER TABLE `didac_thotJdcPJ`
-  ADD PRIMARY KEY (`idJdc`,`shareId`);
 
 CREATE TABLE `didac_thotParents` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
