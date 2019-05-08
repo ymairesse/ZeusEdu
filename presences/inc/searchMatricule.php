@@ -9,7 +9,7 @@ $Application = new Application();
 
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 
-$nomPrenomClasse = isset($_REQUEST['nomPrenomClasse']) ? $_REQUEST['nomPrenomClasse'] : null;
+$nomPrenomClasse = isset($_REQUEST['query']) ? $_REQUEST['query'] : null;
 
 $matricule = Eleve::searchMatricule($nomPrenomClasse);
 
