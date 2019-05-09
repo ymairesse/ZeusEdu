@@ -38,8 +38,8 @@ $smarty->compile_dir = '../templates_c';
 
 // on a pris les présences pour un coursGrp ou pour une classe
 if ($coursGrp != Null)
-    $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
-    else $listeEleves = $Ecole->listeElevesClasse($classe, 'groupe');
+    $listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha', false);
+    else $listeEleves = $Ecole->listeElevesClasse($classe, false);
 
 $smarty->assign('listeEleves', $listeEleves);
 
