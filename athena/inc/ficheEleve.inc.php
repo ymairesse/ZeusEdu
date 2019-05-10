@@ -42,6 +42,12 @@ $Ades = new Ades();
 $smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
 $smarty->assign('descriptionChamps', $Ades->listeChamps());
 
+// rechercher l'image de l'horeaire EDT si disponible
+require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
+$Edt = new Edt();
+$imageEDT = $Edt->getEdtEleve($matricule);
+$smarty->assign('imageEDT', $imageEDT);
+
 // le bulletin
 require_once INSTALL_DIR.'/bullISND/inc/classes/classBulletin.inc.php';
 $Bulletin = new Bulletin();
@@ -94,6 +100,15 @@ switch ($mode) {
 
         $listeSuivi = $athena->getSuiviEleve($matricule);
         $smarty->assign('listeSuivi', $listeSuivi);
+
+        // répertoire des évaluations
+        $listeCoursGrp = $Ecole->listeCoursGrpEleve($matricule);
+        $listeCoursGrpAbr = $Ecole->abrListeCoursGrp(array_keys($listeCoursGrp));
+        $listeCotes = $Bulletin->getCotes4listeCoursGrp($listeCoursGrp, $matricule);
+        $smarty->assign('abrCoursGrp', $listeCoursGrpAbr);
+        $smarty->assign('listeCotes', $listeCotes);
+        $smarty->assign('listeCoursGrp', $listeCoursGrp);
+        
 
         // Élèves à besoins spécifiques
         $infoEBS = $athena->getEBSeleve($matricule);

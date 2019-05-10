@@ -145,3 +145,21 @@ th.rotate > div > span {
 .selected {
     background: #F8DCA4;
 }
+
+#repertoire {
+    padding-top: 1em;
+}
+
+#repertoire .nav li a {
+    color: #f44;
+}
+
+#repertoire .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+    background: #fceabb; /* Old browsers */
+    background: -moz-linear-gradient(top, #fceabb 0%, #fccd4d 50%, #f8b500 51%, #fbdf93 100%);
+    background: -webkit-linear-gradient(top, #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%);
+    background: linear-gradient(to bottom, #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 )
+    font-weight: normal;
+    color: #666 !important;
+}

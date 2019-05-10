@@ -13,9 +13,10 @@
 			<li><a data-toggle="tab" href="#tabs-4" title="Infirmerie"><i style="color: red;" class="fa fa-medkit fa-lg"></i>  <span class="badge" style="color:red; background: white">{$consultEleve|@count}</span></a></li>
 			<li><a data-toggle="tab" href="#tabs-5">Bulletin</a></li>
 			<li><a data-toggle="tab" href="#tabs-6">Scolaire</a></li>
-			<li><a data-toggle="tab" href="#tabs-7">EDT</a></li>
-			<li><a data-toggle="tab" href="#tabs-8">ADES <span class="badge" style="color:red; background: white;">{$nbFaits}</span></a></li>
-			<li><a data-toggle="tab" href="#tabs-9">EBS {if $infoEBS != ''}<i class="fa fa-user-circle-o"></i> {/if}</a> </li>
+			<li><a data-toggle="tab" href="#tabs-7">Repertoire</a></li>
+			<li><a data-toggle="tab" href="#tabs-8">EDT</a></li>
+			<li><a data-toggle="tab" href="#tabs-9">ADES <span class="badge" style="color:red; background: white;">{$nbFaits}</span></a></li>
+			<li><a data-toggle="tab" href="#tabs-10">EBS {if $infoEBS != ''}<i class="fa fa-user-circle-o"></i> {/if}</a> </li>
 		</ul>
 	</div>
 
@@ -76,18 +77,25 @@
 
 		<div id="tabs-7" class="tab-pane fade in">
 
-			 <iframe src="https://isnd.be/peda/edt/index.html" style="width:100%; height:600px"></iframe>
+			{include file="detailSuivi/repertoire.tpl"}
 
 		</div>
 
-
 		<div id="tabs-8" class="tab-pane fade in">
+			{if $imageEDT == ''}
+			 	<iframe src="../edt/index.html" style="width:100%; height:600px"></iframe>
+				{else}
+				<img src="../edt/eleves/{$imageEDT}" alt="{$imageEDT}" class="img img-responsive">
+			{/if}
+		</div>
+
+		<div id="tabs-9" class="tab-pane fade in">
 
 			{include file="detailSuivi/infoDisciplinaires.tpl"}
 
 		</div>
 
-		<div id="tabs-9" class="tab-pane fade in">
+		<div id="tabs-10" class="tab-pane fade in">
 
 			{include file="detailSuivi/infoEBS.tpl"}
 
