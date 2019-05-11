@@ -2657,7 +2657,7 @@ class Bulletin
                 $listeCours[$matricule][$coursGrp] = $ligne;
             }
         }
-        $sql = 'SELECT matricule, dbhc.coursGrp, mouvement,  bulletin, dsc.statut, ';
+        $sql = 'SELECT matricule, dbhc.coursGrp, mouvement,  bulletin, dsc.statut, cadre, ';
         $sql .= 'cours, libelle, nbheures, rang, section, rang, nom, prenom, dpc.acronyme ';
         $sql .= 'FROM '.PFX.'bullHistoCours AS dbhc ';
         $sql .= 'JOIN '.PFX.'profsCours AS dpc ON (dpc.coursGrp = dbhc.coursGrp) ';
@@ -3897,6 +3897,55 @@ class Bulletin
 
         return $listeTravaux;
     }
+
+    /**
+      * retroune la liste de toutes les cotes dans le carnet de cotes pour la liste des cours donnée
+      * pour l'élève dont on fournit le matricule
+      *
+      * @param array|string $listeCoursGrp
+      * @param int $matricule
+      *
+      * @return array
+      */
+     public function getCotes4listeCoursGrp($listeCoursGrp, $matricule) {
+         if (is_array($listeCoursGrp)) {
+             $listeCoursGrpString = "'".implode('\',\'', array_keys($listeCoursGrp))."'";
+         } else {
+             $listeCoursGrpString = $listeCoursGrp;
+         }
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT cote, max, coursGrp, dbcc.libelle, dbcp.libelle AS competence, date, formCert, bulletin, publie ';
+         $sql .= 'FROM '.PFX.'bullCarnetCotes AS dbcc ';
+         $sql .= 'JOIN '.PFX.'bullCarnetEleves AS dbce ON dbce.idCarnet = dbcc.idCarnet ';
+         $sql .= 'JOIN '.PFX.'bullCompetences AS dbcp ON dbcp.id = dbcc.idComp ';
+         $sql .= 'WHERE matricule = :matricule AND coursGrp IN ('.$listeCoursGrpString.') AND publie = 1 AND neutralise = 0 ';
+         $sql .= 'ORDER BY bulletin, date ';
+
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+         $liste = array();
+         $resultat = $requete->execute();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $coursGrp = $ligne['coursGrp'];
+                 $bulletin = $ligne['bulletin'];
+                 $ligne['date'] = Application::datePHP($ligne['date']);
+                 if (($ligne['max'] > 0) && ($ligne['cote'] != '') && (!in_array($ligne['cote'], explode(',', COTEABS)))) {
+                     $ligne['echec'] = ($ligne['cote'] / $ligne['max']) < 0.5;
+                 } else {
+                     $ligne['echec'] = false;
+                 }
+                 $liste[$coursGrp][$bulletin][] = $ligne;
+             }
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $liste;
+     }
 
     /**
      * conversion d'une date au format MySQL vers un format usuel
