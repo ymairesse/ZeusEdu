@@ -24,15 +24,19 @@
                       <label for="periodes">Heure normale d'arrivée</label>
                       <select class="form-control" name="periode" id="modal_periode">
                           {foreach from=$listePeriodesCours key=i item=unePeriode}
-                          <option value="{$i}" {if $i==$periodeActuelle} selected{/if}>{$unePeriode.debut} - {$unePeriode.fin}</option> {/foreach} </select> </div> <div class="form-group">
-                              <label for="heure">Heure du scan</label>
-                              <input type="time" name="heure" id="modal_heure" value="{$heure}" class="form-control input-lg">
-                              <span class="help-block">Heure au moment du scan</span>
+                          <option value="{$i}" {if $i==$periodeActuelle} selected{/if}>{$unePeriode.debut} - {$unePeriode.fin}</option>
+                          {/foreach}
+                       </select>
+                   </div>
+                   <div class="form-group">
+                       <label for="heure">Heure du scan</label>
+                       <input type="time" name="heure" id="modal_heure" value="{$heure|default:''}" class="form-control input-lg">
+                       <span class="help-block">Heure au moment du scan</span>
                   </div>
 
                   <div class="form-group">
                       <label for="date">Date du retard</label>
-                      <input type="text" name="date" id="modal_date" class="datepicker form-control" value="{$date}">
+                      <input type="text" name="date" id="modal_date" class="datepicker form-control" value="{$date|default:''}">
                   </div>
 
               </form>

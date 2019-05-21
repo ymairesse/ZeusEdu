@@ -1,73 +1,73 @@
-    <div class="col-md-4 col-xs-6">
+<div class="col-md-4 col-xs-6">
 
-        <form id="formRetards">
+    <form id="formRetards">
 
-            <div class="form-group">
-                <label for="matricule">Matricule</label>
-                <div class="input-group">
-                    <input type="text"
-                        class="input-lg form-control"
-                        name="matricule"
-                        placeholder="Scan ou matricule de l'élève"
-                        id="matricule"
-                        value=""
-                        tabindex="1">
-                    <span class="input-group-addon" tabindex="2" id="barcode"> <i class="fa fa-barcode fa-2x"></i> </span>
-                </div>
-                <span class="help-block">Matricule de l'élève (scanné)</span>
-            </div>
-
-            <div class="form-group">
-                <label for="periodes">Heure normale d'arrivée</label>
-                <select class="form-control input-lg" name="periode" id="periode">
-                {foreach from=$listePeriodesCours key=i item=unePeriode}
-                <option value="{$i}"{if $i == $periodeActuelle} selected{/if}>{$unePeriode.debut} - {$unePeriode.fin}</option>
-                {/foreach}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="heure">Heure actuelle</label>
-                <input type="time" name="heure" id="heure" value="" class="form-control input-lg">
-                <span class="help-block">Heure au moment du scan</span>
-            </div>
-
-            <div class="form-group">
-                <label for="date">Date du retard</label>
-                <input type="text" name="date" id="date" class="datepicker form-control input-lg" value="">
-            </div>
-
-            <div class="discret" id="lastRetards">
-
-            </div>
-
-        </form>
-    </div>
-
-    <div class="col-md-4 col-xs-6" id="laPhoto">
-        <img src="../photos/nophoto.jpg" alt="Photo" class="img-responsive" style="width:250px" id="photo">
         <div class="form-group">
-            <label for="nomEleve">Nom de l'élève</label>
-            <input type="text" name="nomEleve" id="nomEleve" value="" class="form-control input-lg" placeholder="Nom de l'élève">
+            <label for="matricule">Matricule</label>
+            <div class="input-group">
+                <input type="text"
+                    class="input-lg form-control"
+                    name="matricule"
+                    placeholder="Scan ou matricule de l'élève"
+                    id="matricule"
+                    value=""
+                    tabindex="1">
+                <span class="input-group-addon" tabindex="2" id="barcode"> <i class="fa fa-barcode fa-2x"></i> </span>
+            </div>
+            <span class="help-block">Matricule de l'élève (scanné)</span>
         </div>
 
-    </div>
-
-    <div class="col-md-4 col-xs-12">
-
-        <form name="formScans" id="formScans">
-
-
-            <div class="clearfix"></div>
-        </form>
-
-
-        <div class="btn-group btn-group-justified">
-            <a type="button" class="btn btn-default btn-lg" role="button" id="resetRetard">Nettoyer</a>
-            <a type="button" class="btn btn-primary btn-lg" role="button" id="saveScan" tabindex="3">Enregistrer</a>
+        <div class="form-group">
+            <label for="periodes">Heure normale d'arrivée</label>
+            <select class="form-control input-lg" name="periode" id="periode">
+            {foreach from=$listePeriodesCours key=i item=unePeriode}
+            <option value="{$i}"{if $i == $periodeActuelle} selected{/if}>{$unePeriode.debut} - {$unePeriode.fin}</option>
+            {/foreach}
+            </select>
         </div>
 
+        <div class="form-group">
+            <label for="heure">Heure actuelle</label>
+            <input type="time" name="heure" id="heure" value="" class="form-control input-lg">
+            <span class="help-block">Heure au moment du scan</span>
+        </div>
+
+        <div class="form-group">
+            <label for="date">Date du retard</label>
+            <input type="text" name="date" id="date" class="datepicker form-control input-lg" value="">
+        </div>
+
+        <div class="discret" id="lastRetards">
+
+        </div>
+
+    </form>
+</div>
+
+<div class="col-md-4 col-xs-6" id="laPhoto">
+    <img src="../photos/nophoto.jpg" alt="Photo" class="img-responsive" style="width:250px" id="photo">
+    <div class="form-group">
+        <label for="nomEleve">Nom de l'élève</label>
+        <input type="text" name="nomEleve" id="nomEleve" value="" class="form-control input-lg" placeholder="Nom de l'élève">
     </div>
+
+</div>
+
+<div class="col-md-4 col-xs-12">
+
+    <form name="formScans" id="formScans">
+
+
+        <div class="clearfix"></div>
+    </form>
+
+
+    <div class="btn-group btn-group-justified">
+        <a type="button" class="btn btn-default btn-lg" role="button" id="resetRetard">Nettoyer</a>
+        <a type="button" class="btn btn-primary btn-lg" role="button" id="saveScan" tabindex="3">Enregistrer</a>
+    </div>
+
+</div>
 
 
 {include file="modal/editRetard.tpl"}
@@ -90,6 +90,19 @@
     var SESSIONEXPIREE = 'Votre session a expiré. Veuillez vous reconnecter.';
 
     $(document).ready(function() {
+
+        $('#btn-changeModalRetard').click(function(){
+            var matricule = $('#modal_matricule').val();
+            var periode = $('#modal_periode').val();
+            var heure = $('#modal_heure').val();
+            var date = $('#modal_date').val();
+
+            var eleve = $('.eleve[data-matricule="' + matricule +'"]');
+            eleve.find('.periode').val(periode);
+            eleve.find('.heure').val(heure);
+            eleve.find('.date').val(date);
+            $('#modalEdit').modal('hide');
+        })
 
         $('#resetRetard').click(function(){
             bootbox.confirm({
@@ -123,11 +136,13 @@
         $('#formScans').on('click', '.editRetard', function(){
             var input = $(this).closest('.eleve');
             var matricule = input.data('matricule');
-            var photo = input.data('photo');
-            var periode = input.data('periode');
-            var heure = input.data('heure');
-            var date = input.data('date');
             var nomEleve = input.data('nomeleve');
+
+            var photo = input.data('photo');
+            var periode = input.find('.periode').val();
+            var heure = input.find('.heure').val();
+            var date = input.find('.date').val();
+
             $('#modal_matricule').val(matricule);
             $('#modal_periode').val(periode);
             $('#modal_heure').val(heure);
@@ -136,7 +151,6 @@
             $('#modal_nomEleve').text(nomEleve);
             $('#modalEdit').modal('show');
         })
-
 
         $('#matricule').keypress(function (e) {
           if ((e.which == 13) && $('#nomEleve').val() != 'INCONNU') {
