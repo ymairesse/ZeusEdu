@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <h3>Création d'un nouveau cours</h3>
 
@@ -50,7 +50,7 @@
 		<div class="panel panel-default">
 
 			<div class="panel-heading">
-				<h4>Nouvelle occurrence</h4>
+				Nouvelle occurrence
 			</div>
 
 			<div class="panel-body">
@@ -77,9 +77,15 @@
 							<input type="checkbox" name="virtuel" id="cbVirtuel" value="1">
 							Cours Virtuel
 						</label>
+
 						<div class="help-block">
 							Les cours "virtuels" n'apparaissent pas au  bulletin
 						</div>
+					</div>
+
+					<div id="selectLinked">
+						<select class="form-control hidden" name="linkedCoursGrp" id="linkedCoursGrp" multiple required>
+						</select>
 					</div>
 
 				</div>  <!-- col-md-... -->
@@ -88,7 +94,7 @@
 
 					<div class="form-group">
 						<label for="profs">Professeur(s)</label>
-						<select name="profs[]" id="profs" multiple="multiple" class="form-control">
+						<select name="profs[]" id="profs" multiple="multiple" class="form-control" required>
 							<option value="">Sélectionner un ou plusieurs noms</option>
 							{foreach from=$listeProfs key=acronyme item=data}
 							<option value="{$acronyme}">{$data.nom} {$data.prenom}</option>
@@ -125,6 +131,7 @@
 		<th>Statut</th>
 		<th>Cadre</th>
 		<th>Virtuel</th>
+		<th>Cours liés</th>
 		<th>Professeur</th>
 		<th>Nombre d'élèves</th>
 	</tr>
@@ -134,7 +141,20 @@
 		<td>{$data.libelle}</td>
 		<td>{$data.statut}</td>
 		<td>{$data.cadre}</td>
-		<td><input type="checkbox" data-coursgrp="{$coursGrp}" class="virtuel" name="virtuel_{$coursGrp}" value="1" {if $data.virtuel == 1}checked{/if}></td>
+		<td>{if $data.virtuel == 1}
+			<button type="button" class="btn btn-danger btn-sm btn-virtuel" data-coursgrp="{$coursGrp}">Virtuel</button>
+			{else}
+			&nbsp;
+			{/if}
+		</td>
+		<td>{if $data.virtuel ==1}
+			<select class="form-control" name="wtf{$courGrp}">
+				{foreach from=$listeLinkedCoursGrp[$coursGrp] key=wtf item=linked}
+				<option value="{$linked}">{$linked}</option>
+				{/foreach}
+			</select>
+			 {else}&nbsp;{/if}
+		</td>
 		<td><form name="modProfs_{$coursGrp}" action="index.php" method="POST" class="microForm">
 		{if $data.acronyme != ''}
 			{$data.nomProf} ({$data.acronyme})
@@ -180,17 +200,66 @@
 
 <script type="text/javascript">
 
+	var texteVirtuel = 'Ce cours sera rendu "réel" et apparaîtra au bulletin<br>';
+	texteVirtuel += 'Les élèves restent inscrits.'
+
 	$(document).ready(function(){
 
-		$('.virtuel').change(function(){
+		$('#cbVirtuel').change(function(){
+			var matiere = $('#matiere').val();
+			if ($('#cbVirtuel').is(':checked')) {
+				$.post('inc/admin/getLinkedList.inc.php', {
+					matiere: matiere
+				}, function (resultat){
+					$('#selectLinked').html(resultat);
+				})
+			}
+			else $('#selectLinked').html('');
+		})
+
+		$('.btn-virtuel').click(function(){
 			var coursGrp = $(this).data('coursgrp');
-			var virtuel = ($(this).prop('checked') == true) ? 1 : 0;
-			$.post('inc/admin/saveVirtuel.inc.php', {
-				coursGrp: coursGrp,
-				virtuel: virtuel
+			var bouton = $(this);
+			// nombre de notes au JDC pour les composants du cours virtuel
+			$.post('inc/admin/getNbJdc4coursGrp.inc.php', {
+				coursGrp: coursGrp
 			}, function(nb){
-				bootbox.alert(nb + ' modification(s) enregistrée(s)');
+				if (nb == 0) {
+					bootbox.confirm({
+						title: 'Veuillez confirmer',
+						message: texteVirtuel,
+						buttons: {
+							cancel: {
+								label: 'Surtout pas!!',
+								className: 'btn-danger'
+								},
+							confirm: {
+								label: 'Oui, je le veux',
+								className: 'btn-success'
+								}
+							},
+						callback: function(result){
+							if (result == true){
+								$.post('inc/admin/saveVirtuel.inc.php', {
+									coursGrp: coursGrp,
+									virtuel: 0
+								}, function(nb){
+									bouton.closest('td').next('td').html('');
+									bouton.remove();
+									bootbox.alert(nb + ' modification(s) enregistrée(s)');
+								})
+							}
+						}
+					})
+				}
+				else {
+					bootbox.alert({
+						title: 'Opération impossible',
+						message: 'Il existe des notes au journal de classe pour au moins un des sous-cours'
+					})
+				}
 			})
+
 		})
 
 		$("#groupe").keyup(function(){
@@ -198,7 +267,6 @@
 			var matiere = $("#matiere").val();
 			$("#nouveauCours").text(matiere+'-'+groupe);
 			})
-
 
 		$("#creationCours").validate({
 				rules: {

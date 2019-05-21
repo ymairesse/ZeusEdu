@@ -54,10 +54,16 @@ switch ($mode) {
 			$groupe = isset($_POST['groupe']) ? $_POST['groupe'] : Null;
 			$profs = isset($_POST['profs']) ? $_POST['profs'] : Null;
 			$virtuel = isset($_POST['virtuel']) ? 1 : 0;
+			$linkedCoursGrp = isset($_POST['linkedCoursGrp']) ? $_POST['linkedCoursGrp'] : Null;
+
 			if ($profs && $groupe) {
 				$coursGrp = $cours.'-'.$groupe;
 				$nbInsert = 0;
-				$nbInsert = $Ecole->ajouterProfsCoursGrp($profs, $coursGrp, $virtuel);
+				$nbInsert = $Ecole->ajouterProfsCoursGrp($profs, $coursGrp, $virtuel, $linkedCoursGrp);
+				// si le cours est virtuel, attribuer les élèves des cours liés
+				if ($virtuel == 1){
+					$Ecole->attribuerElevesVirtuels($coursGrp, $linkedCoursGrp);
+				}
 				$smarty->assign("message",
 								array(
 									'title'=>SAVE,
@@ -74,7 +80,10 @@ switch ($mode) {
 			}
 		if (isset($cours)) {
 			$listeCoursGrp = $Ecole->listeCoursGrpDeCours($cours);
+			$listeLinkedCoursGrp = $Ecole->listeLinkedCoursGroup($listeCoursGrp);
+
 			$smarty->assign('listeCoursGrp', $listeCoursGrp);
+			$smarty->assign('listeLinkedCoursGrp', $listeLinkedCoursGrp);
 			$smarty->assign('cours', $cours);
 			$smarty->assign('corpsPage','tableauMatieres');
 			}

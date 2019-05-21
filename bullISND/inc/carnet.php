@@ -66,6 +66,10 @@ switch ($mode) {
         }
         break;
 
+    case 'repertoire':
+        require_once('inc/carnet/repertoire.inc.php');
+        break;
+
     case 'oneClick':
         $effaceDetails = isset($_POST['effaceDetails']) ? true : null;
         $smarty->assign('effaceDetails', $effaceDetails);

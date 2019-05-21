@@ -71,6 +71,9 @@ if (isset($matricule) && ($matricule != '')
     $syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
     $smarty->assign('listeCoursActuelle', $listeCoursActuelle);
 
+    $coursPrincipaux = $Ecole->getListeCoursPrincipaux();
+    $smarty->assign('coursPrincipaux', $coursPrincipaux);
+
     $smarty->assign('epreuvesExternes', $Bulletin->cotesExternesPrecedentes($matricule));
     $smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
     $smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));

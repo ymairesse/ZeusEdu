@@ -1,12 +1,12 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
-<div class="container">
+<div class="container-fluid">
 
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
 	<div class="row">
 
-		<div class="col-md-11 col-sm-9">
+		<div class="col-xs-12">
 
 			<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 				<li class="active"><a href="#tabs-1" data-toggle="tab">Notes</a></li>
@@ -54,12 +54,6 @@
 
 		</div>
 		<!-- col-md-10 ... -->
-
-		<div class="col-md-1 col-sm-3">
-
-			<img src="../photos/{$eleve.photo}.jpg" class="photo img-responsive" alt="{$eleve.prenom} {$eleve.nom}" title="{$eleve.prenom} {$eleve.nom}">
-
-		</div>
 
 	</div>
 	<!-- row -->

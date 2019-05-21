@@ -524,6 +524,24 @@ CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
+CREATE TABLE `didac_bullCoursPrincipaux` (
+  `idCours` smallint(6) NOT NULL COMMENT 'Identifiant numérique du cours',
+  `nomCours` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du cours'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `didac_bullCoursPrincipaux` (`idCours`, `nomCours`) VALUES
+(1, 'Français'),
+(2, 'Mathématique'),
+(3, 'Néerlandais'),
+(4, 'Anglais'),
+(5, 'Sciences'),
+(6, 'EDM');
+
+ALTER TABLE `didac_bullCoursPrincipaux`
+  ADD PRIMARY KEY (`idCours`,`nomCours`);
+
+
+
 CREATE TABLE IF NOT EXISTS didac_bullDetailsCotes (
   matricule int(6) NOT NULL,
   coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
@@ -1200,6 +1218,13 @@ CREATE TABLE IF NOT EXISTS didac_profsCours (
   KEY acronyme (acronyme)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Association Profs / cours donnés';
 
+CREATE TABLE `didac_profsVirtualLink` (
+  `virtualCoursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Cours virtuel à lier au cours réel correspondant',
+  `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'coursGrp lié'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liens cours virtuels vers cours réels';
+
+ALTER TABLE `didac_profsVirtualLink`
+  ADD PRIMARY KEY (`virtualCoursGrp`,`coursGrp`);
 
 CREATE TABLE IF NOT EXISTS didac_sessions (
   `user` varchar(7) COLLATE utf8_unicode_ci NOT NULL,

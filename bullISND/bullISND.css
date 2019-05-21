@@ -418,6 +418,7 @@ th.echec, td.echec, .echec {
 
 th.cert, td.cert, .cert {
     border: 2px solid black !important;
+    background-color: #faa;
 }
 
 .couleur0 {

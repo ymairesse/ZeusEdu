@@ -1,5 +1,5 @@
 <div id="top"></div>
-<div class="container hidden-print">
+<div class="container-fluid hidden-print">
 
 	<nav class="navbar navbar-default" role="navigation">
 
@@ -49,6 +49,8 @@
 		<li><a href="index.php?action=carnet&amp;mode=gererCotes">Gérer les cotes</a></li>
 		<li><a href="index.php?action=carnet&amp;mode=poidsCompetences">Poids des compétences</a></li>
 		<li><a href="index.php?action=carnet&amp;mode=oneClick">One Click Bulletin</a></li>
+		<li class="divider"></li>
+		<li><a href="index.php?action=carnet&amp;mode=repertoire">Répertoire / élève</a></li>
 		</ul>
 	</li>
 	<li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Bulletin <b class="caret"></b></a>

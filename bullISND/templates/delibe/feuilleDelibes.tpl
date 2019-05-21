@@ -1,8 +1,9 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2>Classe: | {$classe} | {$titusClasse|implode:','} -> Période: {$bulletin}</h2>
 
 <div class="table-responsive">
+
 	<table class="table table-condensed table-hover fdelibe">
 		<tr>
 			<th style="vertical-align: bottom;">
