@@ -6,14 +6,11 @@ $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $date = isset($_POST['date']) ? $_POST['date'] : null;
 
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-$matricule2 = isset($_POST['matricule2']) ? $_POST['matricule2'] : null;
-// on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
-$matricule = ($matricule != '') ? $matricule : $matricule2;
 $smarty->assign('matricule', $matricule);
 
-if ($matricule2 != null) {
+if ($matricule != null) {
     // récuperer la classe de l'élève si le matricule provient de la liste autocompletée
-    $detailsEleve = $Ecole->nomPrenomClasse($matricule2);
+    $detailsEleve = $Ecole->nomPrenomClasse($matricule);
     $classe = $detailsEleve['classe'];
 }
 
@@ -47,13 +44,11 @@ switch ($mode) {
     case 'parEleve':
         $smarty->assign('classe', $classe);
         $listeEleves = isset($classe) ? $Ecole->listeEleves($classe, 'groupe') : null;
+        // Application::afficher($listeEleves);
         $smarty->assign('listeEleves', $listeEleves);
         $listeClasses = $Ecole->listeGroupes();
         $smarty->assign('listeClasses', $listeClasses);
         $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-        $matricule2 = isset($_POST['matricule2']) ? $_POST['matricule2'] : null;
-        // on prend la valeur de $matricule (le sélecteur d'élèves de la classe sélectionnée) ou de $matricule2 (la liste automatique)
-        $matricule = ($matricule != '') ? $matricule : $matricule2;
         $smarty->assign('matricule', $matricule);
 
         if ($etape == 'showEleve') {
