@@ -40,29 +40,27 @@ if (isset($matricule) && ($matricule != '')
     $nbFaits = $EleveAdes->nbFaits($matricule, ANNEESCOLAIRE);
     $smarty->assign('nbFaits', $nbFaits);
 
-    if (isset($etape) && ($etape == 'enregistrer')) {
-        $nb = $padEleve->savePadEleve($_POST);
-        $texte = ($nb > 0) ? "$nb enregistrement(s) réussi(s)" : 'Pas de modification';
-        $smarty->assign('message', array(
-            'title' => SAVE,
-            'texte' => $texte,
-            'urgence' => 'success', )
-            );
-    }
+    $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
 
     $smarty->assign('padsEleve', $padEleve->getPads());
 
     // recherche des infos personnelles de l'élève
     $smarty->assign('eleve', $eleve->getDetailsEleve());
+
     // recherche des infos concernant le passé scolaire
     $smarty->assign('ecoles', $eleve->ecoleOrigine());
+
     // le CEB
     $smarty->assign('degre', $Ecole->degreDeClasse($eleve->groupe()));
     $smarty->assign('ceb', $Bulletin->getCEB($matricule));
+
     // recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
-    $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
-    $listeCoursActuelle = $listeCoursActuelle[$matricule];
+    $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule)[$matricule];
     $smarty->assign('listeCoursGrp', $listeCoursActuelle);
+
+    $dicoProfs = $padEleve->dicoProfs();
+    $smarty->assign('dicoProfs', $dicoProfs);
+
     $syntheseAnneeEnCours = $Bulletin->syntheseAnneeEnCours($listeCoursActuelle, $matricule);
     $smarty->assign('anneeEnCours', $syntheseAnneeEnCours);
     $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
@@ -71,13 +69,42 @@ if (isset($matricule) && ($matricule != '')
     $syntheseToutesAnnees = $Bulletin->syntheseToutesAnnees($matricule);
     $smarty->assign('listeCoursActuelle', $listeCoursActuelle);
 
-    $coursPrincipaux = $Ecole->getListeCoursPrincipaux();
-    $smarty->assign('coursPrincipaux', $coursPrincipaux);
+    // ----------------------------------------------------------------------
+    // matières à problèmes pour le pad "coordinateur"
+    $listeMatieres = $padEleve->getMatieres4pad($matricule);
+    $smarty->assign('listeMatieres', $listeMatieres);
+
+    // rubriques de suivi scolaire pour le pad "coordinateur"
+    $suivi4pad = $padEleve->getSuivi4pad($matricule);
+    $smarty->assign('suivi4pad', $suivi4pad);
+    // liste des années scolaires et périodes existantes pour cet élève
+    $tabsAnsPeriodes = $padEleve->getAnPeriode();
+    $smarty->assign('tabsAnsPeriodes', $tabsAnsPeriodes);
+
+
+    $listePeriodes = $Bulletin->listePeriodes(NBPERIODES);
+    $smarty->assign('listePeriodes', $listePeriodes);
+    $smarty->assign('NOMSPERIODES', explode(',', NOMSPERIODES));
+
+    $smarty->assign('PERIODESDELIBES', explode(',', PERIODESDELIBES));
+
 
     $smarty->assign('epreuvesExternes', $Bulletin->cotesExternesPrecedentes($matricule));
     $smarty->assign('syntheseToutesAnnees', $syntheseToutesAnnees);
-    $smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
-    $smarty->assign('mentions', $Bulletin->listeMentions($matricule, null, null, null));
+
+    $mentions = $Bulletin->listeMentions($matricule);
+    $smarty->assign('mentions', $mentions);
+// Application::afficher(array($mentions, $matricule));
+    // détermination du nombre max de période de délibé
+    $maxPeriodes = 0;
+    foreach ($mentions[$matricule] AS $anScol => $dataAnnee) {
+        foreach ($dataAnnee AS $annee => $data) {
+            if (count($data) > $maxPeriodes)
+                $maxPeriodes = count($data);
+            }
+        }
+    $smarty->assign('maxPeriodes', $maxPeriodes);
+
     $prevNext = $Bulletin->prevNext($matricule, $listeEleves);
     $titulaires = $eleve->titulaires($matricule);
     $smarty->assign('matricule', $matricule);

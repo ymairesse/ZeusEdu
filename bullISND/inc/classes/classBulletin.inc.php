@@ -7632,4 +7632,5 @@ class Bulletin
         return $liste;
         }
 
+
 }

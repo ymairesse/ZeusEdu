@@ -20,12 +20,12 @@ switch ($etape) {
         $listeCoursEleve = current($Bulletin->listeCoursGrpEleves($matricule, $bulletin, true));
         // recension des situations dans les différents cours pour l'élève concerné
         $listeSituations = current($Bulletin->listeSituationsCours($matricule, array_keys($listeCoursEleve), null, true));
-// Application::afficher($listeSituations);
+
         // calcul de la moyenne des cotes de situation pour l'élève concerné pour les périodes avec délibération
         $listePeriodesDelibe = explode(',',str_replace(' ','',PERIODESDELIBES));
         // statuts des cours en fonction de leur cadre légal (pour les cours non comptabilisés en echec etc...)
         $statutsCadres = $Bulletin->getStatutsCadres();
-// Application::afficher($statutsCadres);
+
         $moyenneSituations = $Bulletin->moyennesSituations($listeSituations, $listePeriodesDelibe, $statutsCadres);
 
         // sur la base de la moyenne des situations, détermination de la mention (grade) méritée avant délibération
@@ -33,7 +33,7 @@ switch ($etape) {
 
         // recherche toutes les mentions effectivement attribuées par le Conseil de Classe, durant l'année scolaire en cours pour l'élève concerné
         $listeMentions = $Bulletin->listeMentions($matricule,Null,$annee,ANNEESCOLAIRE);
-
+        
         // recherche toutes les décisions prises en délibération, y compris les infos nécessaires à la notification de l'élève $matricule
         $decision = $Bulletin->listeDecisions($matricule);
         $decision = $decision[$matricule];

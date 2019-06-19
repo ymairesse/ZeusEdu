@@ -44,4 +44,7 @@ switch ($mode) {
     case 'eprExternes':
         include 'delibe/eprExternes.inc.php';
         break;
+    case 'viewNotifs':
+        include 'delibe/notifsAdmin.inc.php';
+        break;
     }

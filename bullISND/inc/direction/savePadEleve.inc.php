@@ -30,9 +30,6 @@ require_once INSTALL_DIR.$ds.'inc/classes/classPad.inc.php';
 
 $nb = padEleve::updatePadEleve($padId, $matricule, $texte);
 
-// require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classBulletin.inc.php';
-// $Bulletin = new Bulletin();
-
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';

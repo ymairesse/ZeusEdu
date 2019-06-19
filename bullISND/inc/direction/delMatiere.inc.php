@@ -19,14 +19,15 @@ $acronyme = $User->getAcronyme();
 // retrouver le nom du module actif
 $module = $Application->getModule(3);
 
-// récupérer le formulaire d'encodage des cours
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+$anScol = isset($_POST['anScol']) ? $_POST['anScol'] : Null;
+$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
 
-$liste = array();
-foreach ($form as $field=>$value) {
-    $liste[] = $value;
-}
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.'inc/classes/classPad.inc.php';
+$padEleve = new padEleve($matricule, $acronyme);
 
-echo implode(',', $liste);
+$nb = $padEleve->delMatiere($matricule, $coursGrp, $anScol, $periode);
+
+echo $nb;
