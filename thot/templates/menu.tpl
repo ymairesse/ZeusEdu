@@ -105,10 +105,12 @@
 					<ul class="dropdown-menu">
 						<li><a href="index.php?action=connexions&amp;mode=date">Connexions par date</a></li>
 						<li><a href="index.php?action=connexions&amp;mode=logins">Logins en temps réel</a></li>
-						<li><a href="index.php?action=stats&amp;mode=parents">Statistiques Parents</a></li>
-						<li><a href="index.php?action=stats&amp;mode=jdc">Statistiques JDC</a></li>
+						<li><a href="index.php?action=stats&amp;mode=frequentation">Statistiques fréquentation</a></li>
 						<li><a href="index.php?action=admin&amp;mode=bulletin">Accès aux bulletins</a></li>
 						<li><a href="index.php?action=admin&amp;mode=gestParents">Gestion des parents</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="index.php?action=stats&amp;mode=jdc">Statistiques JDC</a></li>
+						<li><a href="index.php?action=admin&amp;mode=printJdc">Impression des JDC</a></li>
 					</ul>
 				</li>
 			{/if}
