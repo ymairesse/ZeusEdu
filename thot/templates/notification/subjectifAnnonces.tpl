@@ -43,7 +43,7 @@
         				</td>
         				<td class="dateHeure">
         					{if $dataAnnonce.accuse == 1}
-        						{if ($listeFlags.$id.dateHeure == Null)}
+                                {if (!(isset($listeFlags.$id.dateHeure)))}
         							<i class="fa fa-warning fa-lg faa-flash animated text-danger"></i>
         							{else}
         							{$listeFlags.$id.dateHeure}
