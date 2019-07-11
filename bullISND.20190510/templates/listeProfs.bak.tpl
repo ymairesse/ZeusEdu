@@ -1,1 +1,0 @@
-{$listeProfs|print_r}
