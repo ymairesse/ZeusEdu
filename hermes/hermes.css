@@ -21,25 +21,7 @@ h4.teteListe {
 
 .listeMails li {}
 
-.gauche {
-    float: left;
-    width: 250px;
-}
-
-.droit {
-    margin-left: 255px;
-    padding: 0 1em;
-}
-
-.champ {
-    // width:100%;
-    padding: 0.2em 0.5em;
-    background-color: #ffe;
-    box-shadow: 2px 2px 5px #aaa;
-    border-radius: 3px;
-}
-
-.label {
+.label, .epingle {
     cursor: pointer;
 }
 
@@ -53,40 +35,6 @@ h4.teteListe {
     margin-top: 1em;
     box-shadow: 10px 10px 5px #656565;
     min-height: 30em;
-}
-
-.cadreCache {
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid orange;
-    padding: 2em;
-    border-radius: 15px;
-    margin-top: 1em;
-    box-shadow: 10px 10px 5px #656565;
-    min-height: 30em;
-}
-
-.microForm {
-    margin: 0;
-    padding: 0;
-}
-
-.tableauHermes {
-    width: 100%;
-}
-
-.tableauHermes td {
-    border: 1px solid #dddddd;
-    font-size: 0.9em;
-}
-
-.tableauHermes th {
-    border: 1px outset black;
-    padding: 0;
-    background-color: #dddddd;
-    font-weight: normal;
-    font-size: 0.9em;
 }
 
 .blocMails {
@@ -135,4 +83,70 @@ h4.teteListe {
 
 .permanent {
     background-color: #f55;
+}
+
+label.error {
+    background: #ff0000;
+    color: #ffffff;
+}
+
+.epingles, .envoi, .arch {
+    cursor: pointer;
+}
+
+.tile.nonLu h4 {
+    background-color: #00a5ff;
+    color: #fff;
+}
+
+.badge.unread {
+    background: red;
+    color: white;
+}
+
+.hermesEntete {
+    background-color: #00a5ff;
+    border: 1px solid #ccc;
+    color: #fff;
+    padding-right: 0;
+}
+
+.hermesEntete input {
+    background: #eee;
+    height: 32px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+.hermesEntete label {
+    padding-top: 6px;
+    padding-left: 0;
+}
+
+.hermesMessage {
+    background-color: #eaeaeab3;
+    border: 1px solid #999;
+    min-height: 10em;
+    overflow: auto;
+    padding: 1em;
+}
+
+.listePJ {
+    list-style: none;
+    padding-left: 0;
+}
+
+.listePJ li {
+    display: inline;
+}
+
+tr.proprio {
+    background-color: #ecdb96 !important;
 }

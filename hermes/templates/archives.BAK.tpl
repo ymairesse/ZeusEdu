@@ -1,8 +1,12 @@
-<div class="container-fluid">
+<div class="container">
+
+	<h3>Archives de vos envois</h3>
+
+	<p>Vous avez <strong>{$listeArchives|@count}</strong> envois archivés.</p>
 
 	<div style="height:20em; overflow: auto">
 
-		<table id="listeMails" class="table table-condensed table-bordered">
+		<table id="listeMails" class="table table-condensed table-striped">
 			<thead>
 				<tr>
 					<th title="Supprimer la sélection" data-container="body" style="cursor:pointer">
@@ -10,11 +14,12 @@
 							<i class="fa fa-remove"></i>
 						</button>
 					</th>
-					<th>&nbsp;</th>
-					<th><i class="fa fa-envelope"></i></th>
-					<th>Date / heure</th>
-					<th>Objet</th>
-					<th>Destinataire(s)</th>
+					<th style="width:1em">&nbsp;</th>
+					<th style="width:12em;">Objet</th>
+					<th>Texte</th>
+					<th style="width:1em"><i class="fa fa-paperclip"></i></th>
+					<th style="width:10em">Date / heure</th>
+					<th style="width:15em;">Destinataire(s)</th>
 				</tr>
 			</thead>
 			{foreach from=$listeArchives key=id item=unMail}
@@ -27,9 +32,12 @@
 						<i class="fa fa-remove"></i>
 					</button>
 				</td>
-				<td>{if $unMail.PJ.0 != ''}<i class="fa fa-paperclip"></i>{/if}</td>
+				<td>{$unMail.objet}</td>
+				<td>{$unMail.texte|truncate:100:'...'}</td>
+				<td>
+				{if $unMail.PJ != ''}<i class="fa fa-paperclip"></i>{/if}
+				</td>
 				<td>{$unMail.date} {$unMail.heure}</td>
-				<td id="select_{$id}">{$unMail.objet}</td>
 				<td>{$unMail.destinataires}</td>
 			</tr>
 			{/foreach}

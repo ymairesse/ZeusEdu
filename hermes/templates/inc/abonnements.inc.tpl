@@ -1,9 +1,9 @@
-<div class="container-fluid">
+<div class="container">
 
 	<div class="row">
-		
+
 		<div class="col-md-4 col-sm-12">
-			
+
 			<form name="formStatut" method="POST" action="index.php" id="formStatut" class="form-vertical" role="form">
 				<h4>Statut de vos listes personnelles</h4>
 				<table class="table table-condensed">
@@ -31,7 +31,7 @@
 				<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 				<div class="btn-group pull-right">
 					<button type="reset" name="reset" class="btn btn-default">Annuler</button>
-					<button type="submit" name="submit" class="btn btn-primary">Enregistrer</button>					
+					<button type="submit" name="submit" class="btn btn-primary">Enregistrer</button>
 				</div>
 				{if $abonnesDe != Null}
 					<h5>Vos abonnés</h5>
@@ -52,8 +52,8 @@
 					{/if}
 			</form>
 		</div>
-			
-			
+
+
 		<div class="col-md-8 col-sm-12">
 				<form name="formAbonnement" id="formAbonnement" method="POST" action="index.php">
 				<h4>Abonnement / désabonnement aux listes</h4>
@@ -74,6 +74,7 @@
 						</tr>
 					{/foreach}
 					</table>
+
 					<h5>Listes disponibles</h5>
 					<table class="table tabl-condensed table-striped">
 						<tr>
@@ -105,7 +106,7 @@
 				<div class="btn-group pull-right">
 					<button type="reset" class="btn btn-default">Annuler</button>
 					<button type="submit" class="btn btn-primary">Enregistrer</button>
-				</div>					
+				</div>
 				</form>
 				<p style="clear:both"></p>
 

@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container">
 	
 	<h2>Votre envoi</h2>
 

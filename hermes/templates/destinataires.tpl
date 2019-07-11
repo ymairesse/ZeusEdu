@@ -15,8 +15,8 @@
 
 	<ul class="listeMails" style="display:none">
 	{assign var=membresProfs value=$listeProfs.membres}
-	{foreach from=$membresProfs key=acro item=prof}
-		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+	{foreach from=$membresProfs key=unAcronyme item=prof}
+		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}#{$unAcronyme}">
 			<span class="labelProf">{$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
 		</li>
 	{/foreach}
@@ -30,8 +30,8 @@
 	</div>
 	<ul class="listeMails" style="display:none">
 	{assign var=membresProfs value=$listeTitus.membres}
-	{foreach from=$membresProfs key=acro item=prof}
-		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+	{foreach from=$membresProfs key=unAcronyme item=prof}
+		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}#{$unAcronyme}">
 			<span class="labelProf">{$prof.classe} {$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
 		</li>
 	{/foreach}
@@ -54,9 +54,9 @@
 
 	{if $membresProfs != Null}
 	<ul class="listeMails" style="display:none">
-			{foreach from=$membresProfs key=acro item=prof}
+			{foreach from=$membresProfs key=unAcronyme item=prof}
 		<li>
-			<input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+			<input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}#{$unAcronyme}">
 			<span class="labelProf">{$prof.nom|truncate:15:'...'} {$prof.prenom} {$prof.classe|default:''}</span>
 		</li>
 		{/foreach}

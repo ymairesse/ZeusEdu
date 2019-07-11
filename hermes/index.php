@@ -11,14 +11,20 @@ $smarty->assign('onglet',$onglet);
 
 // ----------------------------------------------------------------------------
 //
-require_once("inc/classes/classHermes.inc.php");
-$hermes = new hermes;
+require_once 'inc/classes/classHermes.inc.php';
+$Hermes = new Hermes;
 
 $acronyme = $user->getAcronyme();
+$unRead = $Hermes->unreadMessages4User($acronyme);
+
 $smarty->assign('acronyme',$acronyme);
+$smarty->assign('unRead', $unRead);
 
 switch ($action) {
-	case 'Envoyer':
+	case 'notifications':
+		require_once 'inc/notifications.inc.php';
+		break;
+	case 'envoiMessages':
 		require_once ('inc/envoyer.inc.php');
 		break;
 	case 'archives':
@@ -31,19 +37,8 @@ switch ($action) {
 		require_once ('inc/preferences.inc.php');
 		break;
 	default:
-		$listeProfs = $hermes->listeMailingProfs();
-		$listeTitus = $hermes->listeMailingTitulaires();
-		$listesAutres = $hermes->listesPerso($acronyme);
-		$listeDirection = $hermes->listeDirection();
-		$smarty->assign('listeProfs',$listeProfs);
-		$smarty->assign('listeTitus',$listeTitus);
-		$smarty->assign('listesAutres',$listesAutres);
-		$smarty->assign('listeDirection',$listeDirection);
-		$smarty->assign('nbPJ', range(0,9));	// nombre max de pièces jointes autorisées
-		$smarty->assign('NOREPLY', NOREPLY);
-		$smarty->assign('NOMNOREPLY', NOMNOREPLY);
-		$smarty->assign('action','Envoyer');
-		$smarty->assign('corpsPage','envoiMail');
+		require_once 'inc/notifications.inc.php';
+		break;
 	}
 
 //
