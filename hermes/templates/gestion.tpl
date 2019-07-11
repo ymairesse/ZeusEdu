@@ -1,4 +1,5 @@
-<div class="container">
+<div class="container-fluid">
+	
 <h2>Gestion des listes de destinataires</h2>
 
 	<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">

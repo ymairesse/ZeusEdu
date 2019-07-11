@@ -9,14 +9,14 @@
 
 {include file='../../javascript.js'}
 {include file='../../styles.sty'}
-<link rel="stylesheet" href="../css/tuiles.css" type="text/css" media="screen">
+
 </head>
 <body>
 
 {include file="menu.tpl"}
 
-<div class="container">
-
+<div class="container-fluid">
+	
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
@@ -49,10 +49,10 @@
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
-
+	
 window.setTimeout(function() {
     $(".auto-fadeOut").fadeTo(500, 0).slideUp(500, function(){
-        $(this).remove();
+        $(this).remove(); 
 	    });
 	}, 3000);
 
@@ -65,7 +65,7 @@ $(document).ready (function() {
 		$("form input:visible:enabled").not('.datepicker,.timepicker').first().focus();
 
 	$("*[title]").tooltip();
-
+	
 	$(".pop").popover({
 		trigger:'hover'
 		});

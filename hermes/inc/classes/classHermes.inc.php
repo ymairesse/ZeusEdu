@@ -1,6 +1,6 @@
 <?php
 
-class Hermes
+class hermes
 {
     /**
      * établit une liste d'adresses mail à partir de la liste des noms#mail = listeDestinataires.
@@ -28,43 +28,42 @@ class Hermes
      *
      * @return bool
      */
-    public function sendMail($acronyme, $form)
+    public function send_mail($post, $files)
     {
-        $mail = new PHPmailer();
-        $mail->IsHTML(true);
-        $mail->CharSet = 'UTF-8';
+        $mailExpediteur = $post['mailExpediteur'];
+        $nomExpediteur = ($mailExpediteur == NOREPLY) ? NOMNOREPLY : $post['nomExpediteur'];
 
-        $mailExpediteur = $form['mailExpediteur'];
-        $nomExpediteur = ($mailExpediteur == NOREPLY) ? NOMNOREPLY : $form['nomExpediteur'];
-
-        $mail->From = $mailExpediteur;
-        $mail->FromName = $nomExpediteur;
-
-        $objet = $form['objet'];
-        $texte = $form['texte'];
+        $objet = $post['objet'];
+        $texte = $post['texte'];
 
         // ajout de la signature
-        $signature = file_get_contents('../templates/signature.tpl');
+        $signature = file_get_contents('templates/signature.tpl');
         $signature = str_replace('##expediteur##', $nomExpediteur, $signature);
         $signature = str_replace('##mailExpediteur##', $mailExpediteur, $signature);
         $texte .= $signature;
 
         // ajout du disclaimer
-        if ($form['disclaimer'] == 1) {
+        if ($post['disclaimer'] == 1) {
             $disclaimer = "<div style='font-size:small'><a href='".DISCLAIMER."'>Clause de non responsabilité</a></div>";
             $texte .= "<hr> $disclaimer";
         }
 
-        if (isset($form['mails']) && count($form['mails']) != '0') {
-            $listeMails = array_unique($form['mails']);
+        if (isset($post['mails']) && count($post['mails']) != '0') {
+            $listeMails = array_unique($post['mails']);
         } else {
             die('no mail');
         }
-
         if (($objet == '') || ($mailExpediteur == '') || ($nomExpediteur == '') || ($texte == '') || (count($listeMails) == 0)) {
             die('parametres manquants');
         }
 
+        $mail = new PHPmailer();
+        $mail->IsHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->From = $mailExpediteur;
+        $mail->FromName = $nomExpediteur;
+
+        $envoiMail = true;
         // envoyer le mail à l'expéditeur sauf si adresse NOREPLY
         if ($mailExpediteur != NOREPLY) {
             $mail->AddAddress($mailExpediteur);
@@ -72,163 +71,79 @@ class Hermes
 
         $mail->Subject = $objet;
         $mail->Body = $texte;
-        $nb = 0;
-
-        // ajout des destinataires
         foreach ($listeMails as $unDestinataire) {
             $cible = explode('#', $unDestinataire);
             $nom = $cible[0];
             $unMail = $cible[1];
-            $unAcronyme = $cible[2];
             $mail->AddBCC($unMail, $nom);
-            $nb++;
         }
-
-        $ds = DIRECTORY_SEPARATOR;
-        $userDir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme;
-
-        // ajout des pièces jointes
-        if (isset($form['files'])) {
-            foreach ($form['files'] as $wtf => $unFichier) {
-                $leFichier = explode('|//|', $unFichier);
-                $leFichier = $userDir.$leFichier[0].$leFichier[1];
-                // rustine pour éviter les //
-                preg_replace('~/+~', '/', $leFichier[0]);
-                preg_replace('~/+~', '/', $leFichier[1]);
-                $mail->AddAttachment($leFichier);
+        foreach ($files as $wtf => $unFichier) {
+            if (($unFichier['error'] == 0) && ($unFichier['size'] <= $post['MAX_FILE_SIZE'])) {
+                $mail->AddAttachment($unFichier['tmp_name'], $unFichier['name']);
             }
         }
 
-        $envoiMail = true;
         if (!$mail->Send()) {
             $envoiMail = false;
         }
 
-        if ($envoiMail == true)
-            return $nb;
-            else return 0;
+        return $envoiMail;
     }
 
     /**
-     * archivage d'un mail envoyé par $acronyme
+     * archivage d'un mail envoyé.
      *
-     * @param string $acronyme : l'expéditeur
-     * @param array $form : formulaire d'envoi du mail
-     *
-     * @return int : id de l'envoi dans la table des archives
+     * @param $post : formulaire post du mail
+     * @param $files : les fichiers joints
      */
-    public function archiveMail($acronyme, $form)
+    public function archiveMail($acronyme, $post, $files)
     {
-        $mailExpediteur = $form['mailExpediteur'];
-        $objet = $form['objet'];
-        $texte = $form['texte'];
-        $publie = isset($form['publier']) ? 1 : 0;
-        $dateFin = isset($form['fin']) ? Application::dateMysql($form['fin']) : Null;
-
-        $nbDestinataires = count($form['mails']);
+        // création éventuelle du répertoire au nom de l'utlilisateur
+        if (!(file_exists("upload/$acronyme"))) {
+            mkdir("upload/$acronyme");
+            $handle = fopen("upload/$acronyme/index.php", 'w') or die("can't open file");
+            fclose($handle);
+        }
+        // sauvegarde des fichiers joints
+        foreach ($files as $wtf => $data) {
+            if ($data['error'] == 0) {
+                $tmp_name = $data['tmp_name'];
+                $name = $data['name'];
+                move_uploaded_file($tmp_name, "upload/$acronyme/$name");
+            }
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $mailExpediteur = $post['mailExpediteur'];
+        $objet = $post['objet'];
+        $texte = htmlspecialchars($post['texte']);
+        $nbDestinataires = count($post['mails']);
         // si plus de 4 destinataires, on ne retient plus les noms
         if ($nbDestinataires > 4) {
-            $destinataires = sprintf('%s destinataires', $nbDestinataires);
-            $acroDest = $destinataires;
+            $destinataires = "$nbDestinataires destinataires";
         } else {
-            $destinataires = substr(implode(',', $form['mails']), 0, 99);
-            $acroDest = array();
-            foreach ($form['mails'] AS $unDestinataire) {
-                $cible = explode('#', $unDestinataire);
-                $acroDest[] = $cible[2];
+            $destinataires = implode(',', $post['mails']);
+        }
+        $pj = array();
+        foreach ($files as $wtf => $data) {
+            if ($data['error'] != 4) {
+                $pj[] = $data['name'];
             }
-            $acroDest = implode(',', $acroDest);
         }
+        $pj = implode(',', $pj);
 
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'hermesArchives ';
-        $sql .= 'SET acronyme = :acronyme, mailExp = :mailExpediteur, objet = :objet, texte = :texte, publie = :publie, dateFin = :dateFin, ';
-        $sql .= 'destinataires = :destinataires, acroDest = :acroDest, date=NOW(), heure=NOW() ';
-        try {
-            $requete = $connexion->prepare($sql);
-
-            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-            $requete->bindParam(':mailExpediteur', $mailExpediteur, PDO::PARAM_STR, 30);
-            $requete->bindParam(':objet', $objet, PDO::PARAM_STR, 100);
-            $requete->bindParam(':texte', $texte, PDO::PARAM_LOB);
-            $requete->bindParam(':destinataires', $destinataires, PDO::PARAM_STR, 100);
-            $requete->bindParam(':acroDest', $acroDest, PDO::PARAM_STR, 30);
-            $requete->bindParam(':publie', $publie, PDO::PARAM_INT);
-            $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
-
-            $resultat = $requete->execute();
-        }
-        catch(PDOException $e) {
-            echo $e->getMessage();
-        }
-
-        $id = $connexion->lastInsertId();
-
-        Application::DeconnexionPDO($connexion);
-
-        return $id;
-    }
-
-    /**
-     * archive les PJ liées à un message hermes
-     *
-     * @param string $acronyme : acronyme du propriétaire
-     * @param int $id : identifiant du message dans la table des archives
-     * @param array $form : le formulaire d'envoi contenant les noms des PJ
-     *
-     * @return int : le nombre de PJ enregistrées
-     */
-    public function archivePJ($acronyme, $id, $files){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'hermesPJ ';
-        $sql .= 'SET acronyme = :acronyme, id = :id, path = :path, pj = :pj, n = :n ';
+        $sql .= 'SET acronyme = :acronyme, mailExp = :mailExpediteur, objet = :objet, texte = :texte, ';
+        $sql .= 'destinataires = :destinataires, PJ = :pj, date=NOW(), heure=NOW() ';
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':texte', $texte, PDO::PARAM_STR);
+        $requete->bindParam(':mailExpediteur', $mailExpediteur, PDO::PARAM_STR, 30);
+        $requete->bindParam(':objet', $objet, PDO::PARAM_STR, 100);
+        $requete->bindParam(':destinataires', $destinataires, PDO::PARAM_STR);
+        $requete->bindParam(':pj', $pj, PDO::PARAM_STR);
 
-        // $n est le numéro du fichier; ce numéro permet de distinguer des fichiers de même nom sans donner le path
-        $n = 0;
-        $resultat = 0;
-        foreach ($files as $file) {
-            $unFichier = explode('|//|', $file);
-            $shareId = $unFichier[0];
-            $path = $unFichier[1];
-            $pj = $unFichier[2];
-            $requete->bindParam(':path', $path, PDO::PARAM_STR, 128);
-            $requete->bindParam(':pj', $pj, PDO::PARAM_STR, 64);
-            $requete->bindParam(':n', $n, PDO::PARAM_INT);
-            $n++;
-            $resultat += $requete->execute();
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * Archive les destinataires d'un message dont on fournit aussi l'id
-     *
-     * @param int $id : l'identifiant du message
-     * @param array $mails : liste des mails des destinataires sous la forme  Prenom nom#mail@zeusEdu.org#ACRONYME
-     *
-     * @return int : nombre de destinataires enregistrés
-     */
-    public function archiveDestinataires($id, $mails) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'hermesNotifUsers ';
-        $sql .= 'SET idNotif = :id, acronyme = :acronyme ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-        $resultat = 0;
-        foreach ($mails as $unDestinataire) {
-            $destination = explode('#', $unDestinataire);
-            $acronyme = $destination[2];
-            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-            $resultat += $requete->execute();
-        }
+        $resultat = $requete->execute();
 
         Application::DeconnexionPDO($connexion);
 
@@ -257,6 +172,7 @@ class Hermes
             $mail = $resultat->fetch();
             $mail['date'] = Application::datePHP($mail['date']);
             $mail['texte'] = html_entity_decode($mail['texte']);
+            $mail['PJ'] = explode(',', $mail['PJ']);
         }
         Application::DeconnexionPDO($connexion);
 
@@ -275,75 +191,36 @@ class Hermes
     public function listeArchives($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT ha.id, mailExp, nom, prenom, date, DATE_FORMAT(heure,'%H:%i') AS heure, objet, texte, ";
-        $sql .= 'acroDest, publie, dateFin, PJ.pj, path, n ';
+        $sql = "SELECT id, mailExp, nom, prenom, date, DATE_FORMAT(heure,'%H:%i') AS heure, objet, texte, destinataires, PJ ";
         $sql .= 'FROM '.PFX.'hermesArchives AS ha ';
-        $sql .= 'LEFT JOIN didac_profs AS dp ON (dp.acronyme = ha.acronyme) ';
-        $sql .= 'LEFT JOIN didac_hermesPJ as PJ ON PJ.id = ha.id ';
-        $sql .= 'WHERE ha.acronyme = :acronyme ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON (dp.acronyme = ha.acronyme) ';
+        $sql .= "WHERE ha.acronyme='$acronyme' ";
         $sql .= 'ORDER BY date DESC, heure DESC ';
-        $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $resultat = $requete->execute();
-        $liste = array();
+        $resultat = $connexion->query($sql);
+        $listeArchives = array();
         if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
                 $id = $ligne['id'];
-                if (!isset($liste[$id])) {
-                    $ligne['date'] = Application::datePHP($ligne['date']);
-                    $ligne['texte'] = html_entity_decode($ligne['texte']);
-                    $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-                    if (is_numeric($ligne['acroDest']))
-                        $ligne['acroDest'] = sprintf('%s destinaires', $ligne['acroDest']);
-                        else $ligne['acroDest'] = implode('<br>', explode(',', $ligne['acroDest']));
-                    $ligne['PJ'] = Null;
-                    $liste[$id] = $ligne;
-                    }
-                if (isset($ligne['pj'])){
-                    $n = $ligne['n'];
-                    $liste[$id]['PJ'][$n] = array('n' => $n, 'path' => $ligne['path'], 'file' => $ligne['pj']);
+                $ligne['date'] = Application::datePHP($ligne['date']);
+                $ligne['texte'] = html_entity_decode($ligne['texte']);
+                $listePersonnes = array();
+                $ligne['destinataires'] = explode(',', $ligne['destinataires']);
+                foreach ($ligne['destinataires'] as $unePersonne) {
+                    $unePersonne = explode('#', $unePersonne);
+                    $unePersonne = $unePersonne[0];
+                    $listePersonnes[] = $unePersonne;
                 }
+
+                $ligne['destinataires'] = implode(', ', $listePersonnes);
+                $ligne['PJ'] = explode(',', $ligne['PJ']);
+                $listeArchives[$id] = $ligne;
             }
         }
         Application::DeconnexionPDO($connexion);
 
-        return $liste;
-    }
-
-    /**
-     * renvoie la liste des PJ liées aux mails envoyés par l'utilisateur $acronyme
-     *
-     * @param string $acronyme
-     *
-     * @return array : liste triée sur les id des mails envoyés
-     */
-    public function sentPJ($acronyme){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT arch.id, pj.path, pj.PJ, pj.n ';
-        $sql .= 'FROM '.PFX.'hermesArchives AS arch ';
-        $sql .= 'JOIN '.PFX.'hermesPJ AS pj ON pj.id = arch.id ';
-        $sql .= 'WHERE arch.acronyme = :acronyme ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                $n = $ligne['n'];
-                $liste[$id][$n] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
+        return $listeArchives;
     }
 
     /**
@@ -396,69 +273,33 @@ class Hermes
     /**
      * efface l'enregistrement dont on fournit l'id de la base de données et l'acronyme du propriétaire (sécurité).
      *
-     * @param int $id : identifiant de lenregistremnt en BD
-     * @param string $acronyme : identifiant du propriétaire
+     * @param $id : identifiant de lenregistremnt en BD
+     * @param $acronyme : identifiant du propriétaire
      *
      * @return $nb : nombre d'enregistrements effacés (1)
      */
     public function delArchive($id, $acronyme)
     {
+		// récupérer les référérences et effacer les fichiers joints
+		$mail = $this->getMailById($id, $acronyme);
+		$pj = explode(',',$mail['PJ']);
+
+		foreach ($pj as $unFichier) {
+		    @unlink("../upload/$acronyme/$unFichier");
+		}
+
+		// effacer le mail en BD
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'DELETE FROM '.PFX.'hermesArchives ';
-        $sql .= 'WHERE id = :id AND acronyme = :acronyme ';
+        $sql .= "WHERE id=:id AND acronyme=:acronyme ";
 		$requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
+		$data = array(':id'=>$id, ':acronyme'=>$acronyme);
+        $resultat = $requete->execute($data);
 
         Application::DeconnexionPDO($connexion);
 
-        return $resultat;
-    }
-
-    /**
-     * effacement d'une notification dont on fournit l'id
-     *
-     * @param int $id : identifiant de la notification
-     *
-     * @return int : nombre d'effacements réalisés
-     */
-    public function deleteValve($id, $acronyme){
-        $resultat = 0;
-        if ($this->verifProprio($id, $acronyme)) {
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            // suppression de la table des PJ
-            $sql = 'DELETE FROM '.PFX.'hermesPJ ';
-            $sql .= 'WHERE id = :id AND acronyme = :acronyme ';
-            $requete = $connexion->prepare($sql);
-
-            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-            $requete->bindParam(':id', $id, PDO::PARAM_INT);
-            $resultat = $requete->execute();
-
-            // suppression de la table des notifications aux utilisateurs
-            $sql = 'DELETE FROM '.PFX.'hermesNotifUsers ';
-            $sql .= 'WHERE idNotif = :id ';
-            $requete = $connexion->prepare($sql);
-
-            $requete->bindParam(':id', $id, PDO::PARAM_INT);
-            $resultat = $requete->execute();
-
-            // interruption d'une éventuelle publication
-            $sql = 'UPDATE '.PFX.'hermesArchives ';
-            $sql .= 'SET publie = 0, dateFin = Null ';
-            $sql .= 'WHERE id = :id ';
-            $requete = $connexion->prepare($sql);
-
-            $requete->bindParam(':id', $id, PDO::PARAM_INT);
-            $resultat = $requete->execute();
-
-            Application::DeconnexionPDO($connexion);
-        }
-
-        return $resultat;
+        // return $resultat;
     }
 
     /**
@@ -759,7 +600,7 @@ class Hermes
     /**
      * retourne la liste de mailing des titulaires (profs principaux).
      *
-     * @param void
+     * @param void()
      *
      * @return array
      */
@@ -903,27 +744,22 @@ class Hermes
             // toutes les listes publiées sauf celles de l'utilisateur actuel
             $sql = 'SELECT id, proprio, nomListe, statut ';
             $sql .= 'FROM '.PFX.'hermesProprio ';
-            $sql .= 'WHERE (statut = "publie" AND proprio != :acronyme) ';
-            $sql .= 'AND id NOT IN (SELECT id FROM '.PFX.'hermesProprio WHERE proprio = :acronyme AND statut = "abonne") ';
-            $sql .= 'ORDER  BY nomListe ';
-            }
-        else {
+            $sql .= "WHERE (statut = 'publie' AND proprio != '$acronyme') ";
+            $sql .= 'AND id NOT IN (SELECT id FROM '.PFX.'hermesProprio ';
+            $sql .= "WHERE proprio = '$acronyme' and statut = 'abonne') ";
+        } else {
             // toutes les listes auxquelles l'utilisateur actuel est abonné avec le nom du propriétaire de ces listes
             $sql = 'SELECT hp.id, hp2.proprio, hp.nomListe, hp.statut ';
             $sql .= 'FROM '.PFX.'hermesProprio AS hp ';
-            $sql .= 'JOIN '.PFX.'hermesProprio AS hp2 ON hp.id = hp2.id ';
-            $sql .= 'WHERE (hp.statut = "abonne" AND hp.proprio = :acronyme) AND (hp2.proprio != :acronyme) ';
-            $sql .= 'ORDER  BY nomListe ';
+            $sql .= 'JOIN '.PFX.'hermesProprio AS hp2 ON (hp.id = hp2.id) ';
+            $sql .= "WHERE (hp.statut='abonne' AND hp.proprio = '$acronyme') AND hp2.proprio != '$acronyme' ";
         }
+        $sql .= 'ORDER  BY nomListe ';
 
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
+        $resultat = $connexion->query($sql);
         $liste = array();
-        $resultat = $requete->execute();
         if ($resultat) {
-            while ($ligne = $requete->fetch()) {
+            while ($ligne = $resultat->fetch()) {
                 $id = $ligne['id'];
                 $proprio = $ligne['proprio'];
                 $nomListe = $ligne['nomListe'];
@@ -938,8 +774,8 @@ class Hermes
     /**
      * gestion des abonnements, désabonnements et appropriations des listes.
      *
-     * @param array $post : provenant du formulaire idoine
-     * @param string $acronyme : de l'utilisateur
+     * @input array $post : provenant du formulaire idoine
+     * @input string $acronyme : de l'utilisateur
      *
      * @return int : nombre d'enregistrements dans la BD
      */
@@ -952,15 +788,11 @@ class Hermes
                 case 'abonner':
                     foreach ($listValues as $id) {
                         $nomListe = $post['liste_'.$id];
+                        $nomListe = $connexion::quote($nomListe);
                         $sql = 'INSERT IGNORE INTO '.PFX.'hermesProprio ';
-                        $sql .= 'SET id = :id, proprio = :acronyme, nomListe = :nomListe, statut="abonne" ';
-                        $requete = $connexion->prepare($sql);
-
-                        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-                        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-                        $requete->bindParam(':nomListe', $nomListe, PDO::PARAM_STR, 32);
-
-                        $resultat += $requete->execute();
+                        $sql .= "SET id='$id', proprio='$acronyme', nomListe='$nomListe', statut='abonne' ";
+                        die($sql);
+                        $resultat += $connexion->exec($sql);
                     }
                     break;
                 case 'approprier':
@@ -969,35 +801,22 @@ class Hermes
                         $proprio = $post['proprio_'.$id];
                         // ajout dans la table des propriétaires
                         $sql = 'INSERT INTO '.PFX.'hermesProprio ';
-                        $sql .= 'SET proprio = :acronyme, nomListe = :nomListe, statut = "prive" ';
-                        $requete = $connexion->prepare($sql);
-
-                        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-                        $requete->bindParam(':nomListe', $nomListe, PDO::PARAM_STR, 32);
-
+                        $sql .= "SET proprio='$acronyme', nomListe='$nomListe', statut='prive' ";
+                        $resultat += $connexion->exec($sql);
                         $newId = $connexion->lastInsertId();
 
                         // recopie des abonnés dans la nouvelle liste
                         $sql = 'INSERT IGNORE INTO '.PFX.'hermesListes (id, membre) ';
-                        $sql .= 'SELECT "$newId", membre FROM '.PFX.'hermesListes ';
-                        $sql .= 'WHERE id = :id ';
-                        $requete = $connexion->prepare($sql);
-
-                        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-                        $nb = $requete->execute();
+                        $sql .= "SELECT '$newId', membre FROM ".PFX.'hermesListes ';
+                        $sql .= "WHERE id='$id' ";
+                        $nb = $connexion->exec($sql);
                     }
                     break;
                 case 'desabonner':
                     foreach ($listValues as $id) {
                         $sql = 'DELETE FROM '.PFX.'hermesProprio ';
-                        $sql .= 'WHERE proprio = :acronyme AND id = :id AND statut="abonne" ';
-                        $requete = $connexion->prepare($sql);
-
-                        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-                        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-                        $resultat += $requete->execute();
+                        $sql .= "WHERE proprio='$acronyme' AND id='$id' AND statut='abonne' ";
+                        $resultat += $connexion->exec($sql);
                     }
                     break;
                 }
@@ -1128,514 +947,4 @@ class Hermes
 
         return $nb;
     }
-
-    /**
-     * retourne la liste de tous les messages en relation avec l'utilisateur $acronyme
-     * (envoyés par lui ou reçus par lui)
-     *
-     * @param string $acronyme
-     *
-     * @return array : liste des messages indexés sur leur id
-     */
-    public function getMessages4User($acronyme) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT arch.id, arch.acronyme, profs.mail, profs.nom, profs.prenom, date, heure, objet, texte, acroDest, pj.PJ, pj.path, publie, dateFin, lecture ';
-        $sql .= 'FROM '.PFX.'hermesArchives AS arch ';
-        $sql .= 'LEFT JOIN '.PFX.'hermesNotifUsers AS notif ON notif.idNotif = arch.id ';
-        $sql .= 'LEFT JOIN '.PFX.'hermesPJ AS pj ON pj.id = arch.id ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = arch.acronyme ';
-        $sql .= 'WHERE notif.acronyme = :acronyme ';
-        $sql .= 'ORDER BY date DESC, heure DESC ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                $ligne['date'] = Application::datePHP($ligne['date']);
-                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-                $ligne['nom'] = ($ligne['nom'] != Null) ? sprintf('%s %s', $ligne['prenom'], $ligne['nom']) : 'inconnu';
-                unset($ligne['prenom']);
-                if (is_numeric($ligne['acroDest']))
-                    $ligne['acroDest'] = sprintf('%s destinaires', $ligne['acroDest']);
-                    else $ligne['acroDest'] = implode('<br>', explode(',', $ligne['acroDest']));
-                $liste[$id] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * renvoie tous les messages publiés sur la plateforme par l'utilisateur $acronyme
-     *
-     * @param string $acronyme
-     *
-     * @return array
-     */
-    public function getMessagesFromUser($acronyme) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT arch.id, date, heure, objet, texte, dateFin, acroDest, dhpj.pj, arch.acronyme, lecture ';
-        $sql .= 'FROM '.PFX.'hermesArchives AS arch ';
-        $sql .= 'LEFT JOIN '.PFX.'hermesNotifUsers AS notif ON notif.idNotif = arch.id AND notif.acronyme = arch.acronyme ';
-        $sql .= 'LEFT JOIN '.PFX.'hermesPJ AS dhpj ON dhpj.id = arch.id ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = arch.acronyme ';
-        $sql .= 'WHERE arch.acronyme = :acronyme AND publie = 1 ';
-
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat){
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                if (!(isset($liste[$id]))) {
-                    $ligne['date'] = Application::datePHP($ligne['date']);
-                    $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-                    if ($ligne['pj'] != Null) {
-                        $file = $ligne['pj'];
-                        $ligne['pj'] = array($file);
-                        $liste[$id] = $ligne;
-                        }
-                    $liste[$id] = $ligne;
-                }
-                else {
-                    $file = $ligne['pj'];
-                    $liste[$id]['pj'][] = $file;
-                    }
-                }
-            }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne la liste des notifications à destination de l'utilisateur $acronyme donné
-     *
-     * @param string $acronyme
-     *
-     * @return array
-     */
-    public function getNotifs4User ($acronyme) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT arch.id, arch.acronyme, mailExp, date, heure, objet, texte, lecture, nom, prenom ';
-        $sql .= 'FROM '.PFX.'hermesArchives AS arch ';
-        $sql .= 'JOIN '.PFX.'hermesNotifUsers AS notif ON notif.idNotif = arch.id ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = arch.acronyme ';
-        $sql .= 'WHERE publie = 1 AND  notif.acronyme = :acronyme OR arch.acronyme = :acronyme ';
-        $sql .= 'ORDER BY date, heure ASC';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                $ligne['date'] = Application::datePHP($ligne['date']);
-                $ligne['texte'] = strip_tags($ligne['texte'], '<br><p><a>');
-                $liste[$id] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne l'ensemble des notes aux valves émises par ou reçues par l'utilisateur $acronyme
-     *
-     * @param string $acronyme
-     *
-     * @return array
-     */
-    public function getAllValves($acronyme){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT arch.id, arch.acronyme, date, heure, objet, texte, acroDest, dateFin, lecture, ';
-        $sql .= 'pj.pj, pj.path, pj.n ';
-        $sql .= 'FROM '.PFX.'hermesArchives AS arch ';
-        $sql .= 'JOIN '.PFX.'hermesNotifUsers AS notif ON notif.idNotif = arch.id ';
-        $sql .= 'LEFT JOIN '.PFX.'hermesPJ AS pj ON pj.id = arch.id ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = notif.acronyme ';
-        $sql .= 'WHERE arch.acronyme = :acronyme OR notif.acronyme = :acronyme AND publie = 1 ';
-        $sql .= 'ORDER BY date DESC, heure DESC ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat){
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                if (!(isset($liste[$id]))) {
-                    $ligne['date'] = Application::datePHP($ligne['date']);
-                    $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-                    if ($ligne['pj'] != Null) {
-                        $n = $ligne['n'];
-                        $attachment = array('path' => $ligne['path'], 'pj' => $ligne['pj'], 'n' => $n);
-                        $ligne['attachment'][] = $attachment;
-                        $liste[$id] = $ligne;
-                        }
-                    $liste[$id] = $ligne;
-                }
-                else {
-                    $attachment = array('path' => $ligne['path'], 'pj' => $ligne['pj'], 'n' => $ligne['n']);
-                    $liste[$id]['attachment'][] = $attachment;
-                    }
-            }
-        }
-
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne le liste des PJ associées aux notifications dont les $id sont passés en argument
-     *
-     * @param array $listeNotifs
-     *
-     * @return array
-     */
-    public function getPJ4notifs($listeNotifs) {
-        $listeIdString = implode(',', $listeNotifs);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, path, pj, n ';
-        $sql .= 'FROM '.PFX.'hermesPJ ';
-        $sql .= 'WHERE id IN ('.$listeIdString.') ';
-        $sql .= 'ORDER BY id, n ';
-        $requete = $connexion->prepare($sql);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['id'];
-                $n = $ligne['n'];
-                $liste[$id][$n] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * vérifie que l'utilisateur $acronyme est propriétaire du message $id
-     *
-     * @param int $id : l'identifiant du message
-     * @param string $acronyme : l'utlilisateur
-     *
-     * @return bool
-     */
-    public function verifProprio($id, $acronyme) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, acronyme ';
-        $sql .= 'FROM '.PFX.'hermesArchives ';
-        $sql .= 'WHERE acronyme = :acronyme AND id = :id ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $test = false;
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $message = $requete->fetch();
-            if (($message['id'] === $id) && ($message['acronyme'] === $acronyme))
-                $test = true;
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $test;
-    }
-
-    /**
-     * Vérifie que l'utilisateur $acronyme est bien destinataire de la notification $id
-     *
-     * @param int $id : l'identifiant de la notification
-     * @param string $acronyme : l'utilisateur
-     *
-     * @return bool
-     */
-    public function verifAcces($id, $acronyme) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT acronyme, idNotif ';
-        $sql .= 'FROM '.PFX.'hermesNotifUsers ';
-        $sql .= 'WHERE idNotif = :id AND acronyme = :acronyme ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-
-        if ($resultat) {
-            $ligne = $requete->fetch();
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return ($ligne['acronyme'] === $acronyme) && ($ligne['idNotif'] === $id);
-    }
-
-    /**
-     * marquer la notification $id comme lue par l'utilisataur $acronyme
-     *
-     * @param int $id : la notification
-     * @param string $acronyme : l'utlilisateur
-     * @param int $lu : 1, par défaut
-     *
-     * @return void
-     */
-    public function marqueLu($id, $acronyme, $lu = 1) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'UPDATE '.PFX.'hermesNotifUsers ';
-        $sql .= 'SET lecture = :lu ';
-        $sql .= 'WHERE idNotif = :id AND acronyme = :acronyme ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-        $requete->bindParam(':lu', $lu, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-
-        Application::DeconnexionPDO($connexion);
-
-        return;
-    }
-
-    /**
-     * recherche les détails de la notification $id
-     *
-     * @param int $id : identifiant de la notification
-     *
-     * @return array
-     */
-    public function getNotification($id) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT arch.id, arch.acronyme, mailExp, date, heure, objet, texte, hpj.path, hpj.PJ, n, ';
-        $sql .= 'nom, prenom, acroDest, dateFin ';
-        $sql .= 'FROM '.PFX.'hermesArchives AS arch ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = arch.acronyme ';
-        $sql .= 'LEFT JOIN '.PFX.'hermesPJ AS hpj ON hpj.id = arch.id WHERE arch.id = :id ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-        $notification = array(); $PJ = Null;
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                if ($notification == Null) {
-                    $ligne['date'] = Application::datePHP($ligne['date']);
-                    if ($ligne['dateFin'] != '')
-                        $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-
-                    // si la liste des destinaires est un simple nombre
-                    if (is_numeric($ligne['acroDest']))
-                        $ligne['acroDest'] = sprintf('%s destinaires', $ligne['acroDest']);
-                        else $ligne['acroDest'] = implode('<br>', explode(',', $ligne['acroDest']));
-                    $notification = $ligne;
-                    }
-                // distinguer entre 'PJ' et 'pj' (en minuscules)
-                if ($ligne['PJ'] != Null) {
-                    $n = $ligne['n'];
-                    $PJ = array('path' => $ligne['path'], 'PJ' => $ligne['PJ'], 'n' => $ligne['n']);
-                    $notification['pj'][] = $PJ;
-                    unset($notification['PJ']);  // plus besoin
-                    unset($notification['path']);
-                    unset($notification['n']);
-                    }
-                    else $notification['pj'] = Null;
-            }
-        }
-
-
-        Application::DeconnexionPDO($connexion);
-
-        return $notification;
-    }
-
-    /**
-     * retourne l'acronyme du propriétaire de la notification $id
-     *
-     * @param int $id : identifiant de la notification
-     *
-     * @return string : acronyme du propriétaire
-     */
-    public function getNotifProprio ($id) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT acronyme ';
-        $sql .= 'FROM '.PFX.'hermesArchives ';
-        $sql .= 'WHERE id = :id ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $acronyme = Null;
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $ligne = $requete->fetch();
-            $acronyme = $ligne['acronyme'];
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $acronyme;
-    }
-
-    /**
-     * renvoie toutes les informations sur le fichier $fileName lié à la notificiation $id et, en principe,
-     * référencé par le numéro $n
-     *
-     * @param int $id : l'identifiant de la notification
-     * @param string $fileName : le nom du fichier (sans le path)
-     * @param int $n : le numéro de la PJ (à moins qu'elle ait été modifiée par un hack)
-     *
-     * @return array : $path et $fileName garantis
-     */
-    public function getFileInfos ($notif, $fileName, $n) {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT path, pj, n ';
-        $sql .= 'FROM '.PFX.'hermesPJ ';
-        $sql .= 'WHERE id = :notif AND pj = :fileName AND n = :n ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':notif', $notif, PDO::PARAM_INT);
-        $requete->bindParam(':fileName', $fileName, PDO::PARAM_STR, 64);
-        $requete->bindParam(':n', $n, PDO::PARAM_INT);
-
-        $fileInfos = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $ligne = $requete->fetch();
-            $fileInfos = array('path' => $ligne['path'], 'fileName' => $ligne['pj']);
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $fileInfos;
-    }
-
-    /**
-     * renvoie les ids des notifications pas encore lues par l'utilisateur $acronyme
-     *
-     * @param string $acronyme
-     *
-     * @return array
-     */
-    public function unread4User($acronyme){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT idNotif ';
-        $sql .= 'FROM '.PFX.'hermesNotifUsers ';
-        $sql .= 'WHERE lecture = 0 AND acronyme = :acronyme ';
-        $sql .= 'AND acronyme NOT IN (SELECT acronyme FROM '.PFX.'hermesArchives WHERE acronyme = :acronyme AND id = idNotif) ';
-        $sql .= 'ORDER BY idNotif ';
-
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch())
-                $liste[] = $ligne['idNotif'];
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * renvoie les titres des messages pas encore lus par l'utilisateur
-     *
-     * @param string $acronyme
-     *
-     * @return array
-     */
-    public function unreadMessages4User($acronyme){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT idNotif, notif.acronyme, objet, date ';
-        $sql .= 'FROM '.PFX.'hermesNotifUsers AS notif ';
-        $sql .= 'JOIN '.PFX.'hermesArchives AS arch ON arch.id = idNotif ';
-        $sql .= 'WHERE notif.acronyme = :acronyme AND lecture = 0 ';
-        // $sql .= 'AND idNotif NOT IN (SELECT id FROM didac_hermesArchives WHERE id = idNotif AND acronyme = :acronyme ) ';
-        $sql .= 'ORDER BY date, objet DESC ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $liste = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $id = $ligne['idNotif'];
-                $ligne['date'] = Application::datePHP($ligne['date']);
-                $liste[$id] = $ligne;
-            }
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * change la date de fin d'un message aux valves
-     *
-     * @param int $id : identifiant du message
-     * @param string $acronyme : le propriétaire
-     * @param string $dateFin : la nouvelle date
-     *
-     * @return string : la date si tout s'est bien passé
-     */
-    public function changeDateFin($id, $acronyme, $dateFin){
-        $ajdSQL = Application::dateMySQL(Application::dateNow());
-        $dateFinSQL = Application::dateMySQL($dateFin);
-        if ($dateFinSQL >= $ajdSQL) {
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'UPDATE '.PFX.'hermesArchives ';
-            $sql .= 'SET dateFin = :dateFin WHERE acronyme = :acronyme AND id = :id ';
-            $requete = $connexion->prepare($sql);
-
-            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-            $requete->bindParam(':id', $id, PDO::PARAM_INT);
-            $requete->bindParam(':dateFin', $dateFinSQL, PDO::PARAM_STR, 7);
-
-            $resultat = $requete->execute();
-
-            Application::deconnexionPDO($connexion);
-
-            return ($resultat == 1) ? $dateFin : 0;
-        }
-        else return 0;
-
-    }
-
 }
