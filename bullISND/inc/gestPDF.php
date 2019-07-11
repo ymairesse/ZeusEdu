@@ -20,7 +20,8 @@ $module = Application::getModule(1);
 
 switch ($mode) {
     case 'archive':
-        // $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;
+        $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;
+        $smarty->assign('anneeScolaire', $anneeScolaire);
         $smarty->assign('listeAnnees', $Bulletin->anneesArchivesDispo());
         $smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
         $smarty->assign('action', $action);
@@ -31,9 +32,7 @@ switch ($mode) {
             $listeElevesArchives = $Bulletin->listeElevesArchives($anneeScolaire, $niveau);
             $smarty->assign('listeEleves', $listeElevesArchives);
             $nomEleve = isset($_POST['nomEleve']) ? $_POST['nomEleve'] : null;
-            $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;
             $smarty->assign('nomEleve', $nomEleve);
-            $smarty->assign('anneeScolaire', $anneeScolaire);
             $classeArchive = $Bulletin->classeArchiveEleve($matricule, $anneeScolaire);
             $smarty->assign('periodes', $Bulletin->listePeriodes(NBPERIODES));
             $smarty->assign('classeArchive', $classeArchive);
@@ -108,7 +107,7 @@ switch ($mode) {
 
         if ($etape == 'showNiveau') {
             if ($niveau) {
-                $listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', array('GT', 'TT', 'S'));
+                $listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe');
                 // accumuler tous les bulletins dans des fichiers par classe
                 $listeEleves = null;
                 foreach ($listeClasses as $classe) {

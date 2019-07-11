@@ -1295,6 +1295,7 @@ class Jdc
     public function fromToJDCList($form, $acronyme) {
         $startDate = Application::dateMysql($form['from']);
         $endDate = Application::dateMysql($form['to']);
+
         $coursGrp = $form['coursGrp'];
         $listeCategoriesString = implode(',', $form['printOptions']);
 
@@ -1337,6 +1338,87 @@ class Jdc
                 $ligne['endDate'] = Application::datePHP($endDate[0]);
                 $ligne['endHeure'] = $endDate[1];
                 $ligne['enonce'] = strip_tags($ligne['enonce'], '<h1><h2><h3><br><p><a>');
+                $liste[$id] = $ligne;
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+        }
+    }
+
+    /**
+     * renvoie les notes du JDC comprises entre la date "start" et la date "end"
+     * en tenant compte des options d'impression pour les catégories d'événements
+     *
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $listeCoursGrp : la liste des cours pour l'élève
+     * @param array $listeCatagories : la liste des catégories d'événements à imprimer
+     * @param string $anScol : année scolaire de l'archive à utiliser
+     *
+     * @return array
+     */
+    public function jdcFromTo($startDate, $endDate, $listeCoursGrp, $listeCategories, $anScol = Null) {
+        $startDate = Application::dateMysql($startDate).' 00:00';
+        $endDate = Application::dateMysql($endDate).' 23:59';
+
+        $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
+        $listeCategoriesString = is_array($listeCategories) ? implode(',', $listeCategories) : "'".$listeCategories."'";
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, categorie, libelle, type, destinataire, title, enonce, proprietaire, startDate, endDate, jdc.idCategorie ';
+        if ($anScol == Null) {
+            $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
+            $sql .= 'LEFT JOIN '.PFX.'thotJdcCategories AS cat ON cat.idCategorie = jdc.idCategorie ';
+            $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(destinataire, 1, LOCATE('-', destinataire)-1) ";
+            }
+            else {
+                $sql .= 'FROM '.PFX.'thotJdcArchive AS jdc ';
+                $sql .= 'LEFT JOIN '.PFX.'thotJdcCategoriesArchive AS cat ON cat.idCategorie = jdc.idCategorie AND jdc.anScol = cat.anScol ';
+                $sql .= 'JOIN '.PFX."thotJdcCoursArchive AS dc ON dc.cours = SUBSTR(destinataire, 1, LOCATE('-', destinataire)-1) AND dc.anScol = jdc.anScol ";
+            }
+        $sql .= 'WHERE startDate >= :startDate AND endDate <= :endDate ';
+        $sql .= "AND jdc.idCategorie IN (".$listeCategoriesString.") ";
+        $sql .= 'AND destinataire IN ('.$listeCoursGrpString.') ';
+        if ($anScol != Null) {
+            $sql .= 'AND jdc.anScol = :anScol ';
+            }
+        $sql .= 'ORDER BY startDate, jdc.idCategorie ';
+        $requete = $connexion->prepare($sql);
+// echo $sql;
+        $requete->bindParam(':startDate', $startDate, PDO::PARAM_STR, 15);
+        $requete->bindParam(':endDate', $endDate, PDO::PARAM_STR, 15);
+        if ($anScol != Null)
+            $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+// Application::afficher(array($anScol, $startDate, $endDate));
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['id'];
+                $startDate = explode(' ', $ligne['startDate']);
+                $endDate = explode(' ', $ligne['endDate']);
+                if ($startDate == $endDate) {
+                  $ligne['startDate'] = 'Toute la journée';
+                }
+                else {
+                  $ligne['startDate'] = Application::datePHP($startDate[0]);
+                }
+                // extraire le sigle du cours Ex: 2C:INFO2-03 => INFO2
+                $type = $ligne['type'];
+                if ($type = 'coursGrp') {
+                    $pattern = '/.*:([A-Z0-9]*)-[0-9]*/';
+                    preg_match($pattern, $ligne['destinataire'], $matches);
+                    $ligne['dest'] = $matches[1];
+                }
+                else $ligne['dest'] = '';
+
+                $ligne['startHeure'] = $startDate[1];
+                $ligne['endDate'] = Application::datePHP($endDate[0]);
+                $ligne['endHeure'] = $endDate[1];
+                $ligne['enonce'] = strip_tags($ligne['enonce'], '<br><p><a>');
                 $liste[$id] = $ligne;
             }
 
@@ -1718,4 +1800,374 @@ class Jdc
             return $semaine[$jour];
     }
 
+
+    /**
+     * recherche l'historique des cours pour l'élève $matricule
+     *
+     * @param int $matricule
+     * @param bool $flat : is "true", les périodes sont négligées
+     *
+     * @return array
+     */
+    public function getHistorique($matricule, $flat=true){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT bulletin, histo.coursGrp, mouvement, nbheures, libelle, pc.acronyme, CONCAT(prenom," ", nom) AS nom ';
+        $sql .= 'FROM '.PFX.'bullHistoCours AS histo ';
+        $sql .= 'JOIN '.PFX.'cours AS cours ON cours.cours = SUBSTR(coursGrp, 1, LOCATE("-", coursGrp)-1) ';
+        $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = histo.coursGrp ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = pc.acronyme ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $sql .= 'ORDER BY bulletin, coursGrp, mouvement ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $liste =array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $bulletin = $ligne['bulletin'];
+                $coursGrp = $ligne['coursGrp'];
+                $mouvement = $ligne['mouvement'];
+                if ($mouvement == 'ajout')
+                    $liste[$bulletin][$coursGrp] = $ligne;
+                    else unset($liste[$bulletin][$coursGrp]);
+                }
+            }
+
+        if ($flat == true) {
+            $newListe = array();
+            foreach ($liste as $periode => $listeCours) {
+                foreach ($listeCours as $wtf => $data) {
+                    $coursGrp = $data['coursGrp'];
+                    $newListe[$coursGrp] = array(
+                        'acronyme' => $data['acronyme'],
+                        'nom' => $data['nom'],
+                        'coursGrp' => $coursGrp,
+                        'libelle' => $data['libelle'],
+                        'nbheures' => $data['nbheures']
+                        );
+                    }
+                }
+            $liste = $newListe;
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retrouve les années scolaires de JDC archivées
+     *
+     * @param void
+     *
+     * @return array
+     */
+    public function getAnneesArchivesJdc(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT anScol FROM '.PFX.'thotJdcArchive ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = $ligne['anScol'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+		return $liste;
+	}
+
+	public function getSizeArchivesJdc(){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'SELECT TABLE_NAME AS `Table`, round(((data_length + index_length) / 1024 / 1024), 2) AS size ';
+		$sql .= 'FROM information_schema.TABLES ';
+		$sql .= 'WHERE table_schema = "'.BASE.'" ';
+		$sql .= 'AND table_name = "'.PFX.'thotJdc" ';
+		$requete = $connexion->prepare($sql);
+
+		$resultat = $requete->execute();
+
+		$size = Null;
+		if ($resultat){
+			$ligne = $requete->fetch();
+			$size = $ligne['size'];
+		}
+
+		Application::deconnexionPDO($connexion);
+
+		return $size;
+	}
+
+    /**
+     * renvoie la liste des classes pour l'année scolaire archivée $anScol
+     *
+     * @param string $anScol : année scolaire
+     * @param int $niveau : niveau d'étude
+     *
+     * @return array
+     */
+    public function listeClassesNiveau4anScol($anScol, $niveau){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT classe ';
+        $sql .= 'FROM '.PFX.'bullArchives ';
+        $sql .= 'WHERE annee = :anScol AND SUBSTR(classe, 1, 1) = :niveau ';
+        $sql .= 'ORDER BY classe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $liste[] = $ligne['classe'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des élèves pour l'année scolaire archivée $anScol
+     *
+     * @param string $anScol : année scolaire
+     * @param int $niveau : niveau d'étude
+     *
+     * @return array
+     */
+    public function listeElevesNiveau4anScol($anScol, $niveau){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT leMatricule, nomPrenom, classe ';
+        $sql .= 'FROM '.PFX.'bullArchives ';
+        $sql .= 'WHERE annee = :anScol AND SUBSTR(classe, 1, 1) = :niveau ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(nomPrenom," ",""),"-",""),"\'","") ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['leMatricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des élèves pour la classe $classe durant l'année archivée $anScol
+     *
+     * @param string $anScol : année scolaire
+     * @param string $classe : niveau d'étude
+     *
+     * @return array
+     */
+    public function listeElevesClasse4anScol($anScol, $classe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT leMatricule, nomPrenom, classe ';
+        $sql .= 'FROM '.PFX.'bullArchives ';
+        $sql .= 'WHERE annee = :anScol AND classe = :classe ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(nomPrenom," ",""),"-",""),"\'","") ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 5);
+
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['leMatricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * archive l'ensemble des tables thotJdc et tables annexes (categories, cours)
+     *
+     * @param string $anScol : l'année scolaire en cours
+     *
+     * @return int : nombre d'enregistrements
+     */
+    public function saveArchiveJDC($anScol){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT * FROM '.PFX.'thotJdc ';
+        $requete = $connexion->prepare($sql);
+
+        $jdc = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $jdc[] = $ligne;
+            }
+        }
+
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcArchive ';
+        $sql .= 'SET id = :id, anScol = :anScol, destinataire = :destinataire, type = :type, proprietaire = :proprietaire, ';
+        $sql .= 'idCategorie = :idCategorie, title = :title, enonce = :enonce, startDate = :startDate, ';
+        $sql .= 'endDate = :endDate, allDay = :allDay ';
+        $requete = $connexion->prepare($sql);
+
+        $nb = 0;
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+        foreach ($jdc as $wtf => $data){
+            $requete->bindParam(':id', $data['id'], PDO::PARAM_INT);
+            $requete->bindParam(':destinataire', $data['destinataire'], PDO::PARAM_STR, 20);
+            $requete->bindParam(':type', $data['type'], PDO::PARAM_STR, 12);
+            $requete->bindParam(':proprietaire', $data['proprietaire'], PDO::PARAM_STR, 7);
+            $requete->bindParam(':idCategorie', $data['idCategorie'], PDO::PARAM_INT);
+            $requete->bindParam(':title', $data['title'], PDO::PARAM_STR, 10);
+            $requete->bindParam(':enonce', $data['enonce'], PDO::PARAM_STR);
+            $requete->bindParam(':startDate', $data['startDate'], PDO::PARAM_STR, 20);
+            $requete->bindParam(':endDate', $data['endDate'], PDO::PARAM_STR, 20);
+            $requete->bindParam(':allDay', $data['allDay'], PDO::PARAM_INT);
+
+            $requete->execute();
+            $nb += $requete->rowCount();
+        }
+
+        // Archivage des catégories utilisées durant cette année scolaire
+        $sql = 'SELECT idCategorie, ordre, urgence, categorie ';
+        $sql .= 'FROM '.PFX.'thotJdcCategories ';
+        $requete = $connexion->prepare($sql);
+
+        $categories = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $categories[] = $ligne;
+            }
+        }
+
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcCategoriesArchive ';
+        $sql .= 'SET idCategorie = :idCategorie, anScol = :anScol, ordre = :ordre, ';
+        $sql .= 'urgence = :urgence, categorie = :categorie ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+        foreach ($categories as $wtf => $data) {
+            $requete->bindParam(':idCategorie', $data['idCategorie'], PDO::PARAM_INT);
+            $requete->bindParam(':ordre', $data['ordre'], PDO::PARAM_INT);
+            $requete->bindParam(':urgence', $data['urgence'], PDO::PARAM_INT);
+            $requete->bindParam(':categorie', $data['categorie'], PDO::PARAM_STR, 30);
+            $resultat = $requete->execute();
+        }
+
+        // archivage de la table des cours donné cette année scolaire-là
+        $sql = 'SELECT cours, nbheures, libelle, cadre, section ';
+        $sql .= 'FROM '.PFX.'cours ';
+        $requete = $connexion->prepare($sql);
+
+        $cours = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $cours[] = $ligne;
+            }
+        }
+
+        $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcCoursArchive ';
+        $sql .= 'SET cours = :cours, anScol = :anScol, nbheures = :nbheures, ';
+        $sql .= 'libelle = :libelle, cadre = :cadre, section = :section ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+        foreach ($cours as $wtf => $data) {
+            $requete->bindParam(':cours', $data['cours'], PDO::PARAM_STR, 17);
+            $requete->bindParam(':nbheures', $data['nbheures'], PDO::PARAM_INT);
+            $requete->bindParam(':libelle', $data['libelle'], PDO::PARAM_STR, 50);
+            $requete->bindParam(':cadre', $data['cadre'], PDO::PARAM_INT);
+            $requete->bindParam(':section', $data['section'], PDO::PARAM_STR, 3);
+            $resultat = $requete->execute();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * Effacement de l'archive du JDC de l'année scolaire $anScol
+     *
+     * @param string $anScol : année scolaire à supprimer
+     *
+     * @return int : nombre d'effacements
+     */
+    public function delArchiveJDC($anScol){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotJdcArchive ';
+        $sql .= 'WHERE anScol = :anScol ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * réinitialisation avec effacement complet des tables du JDC de l'année scolaire en cours
+     *
+     * @param void
+     *
+     * @return int
+     */
+     public function resetTablesJDC(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'TRUNCATE '.PFX.'thotJdc ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+        $nb = $requete->rowCount();
+
+        $sql = 'TRUNCATE '.PFX.'thotJdcEleve ';
+        $requete = $connexion->prepare($sql);
+        $requete->execute();
+        $nb += $requete->rowCount();
+
+        $sql = 'TRUNCATE '.PFX.'thotJdcPJ ';
+        $requete = $connexion->prepare($sql);
+        $requete->execute();
+        $nb += $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+     }
 }

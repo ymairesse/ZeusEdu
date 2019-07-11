@@ -164,7 +164,6 @@
 										<option value="Échec" {if isset($decision.decision) && $decision.decision=='Échec' } selected{/if}>Échec</option>
 										<option value="Ajournement" {if isset($decision.decision) && $decision.decision=='Ajournement' } selected{/if}>Ajournement</option>
 										<option value="Restriction" {if isset($decision.decision) && $decision.decision=='Restriction' } selected{/if}>Restriction avec accès en</option>
-										<option value="TEST">TEST TEST TEST</option>
 									</select>
 								</div>
 							</td>

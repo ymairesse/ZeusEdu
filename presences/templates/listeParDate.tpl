@@ -1,127 +1,84 @@
 <div class="container-fluid">
-<h3>Liste des absences du {$date}</h3>
-<h4>Liste 1
-{foreach from=$statutsAbs.liste1 item=item key=statut}
-	<span style="color:{$listeJustifications.$item.color}; background:{$listeJustifications.$item.background}"
-			title="{$listeJustifications.$item.libelle}">{$item}
-	</span>
-{/foreach}
-</h4>
 
-<div class="table-responsive">
-<table class="tableauPresences table table-striped table-condensed">
-	<tr>
-		<th>Matricule</th>
-		<th>Classe</th>
-		<th>Nom</th>
-		{foreach from=$listePeriodes key=periode item=limitesPeriode}
-		<th style="width:3.5em"><strong>{$periode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
-		{/foreach}
-		<td>&nbsp;</td>
-	</tr>
+	<div class="row">
+		<div class="col-md-2 col-sm-12">
 
-	{foreach from=$liste1 key=matricule item=unEleve name=boucle}
-	<tr style="font-size:1.3em">
-	<td>{$matricule}</td>
-	<td>{$unEleve.identite.classe}</td>
-	<td class="pop"
-		data-toggle="popover"
-		data-content="<img src='../photos/{$unEleve.identite.photo}.jpg' alt='{$matricule}' style='width:100px'>"
-		data-html="true"
-		data-container="body"
-		data-original-title="{$unEleve.identite.nom|truncate:15}">
-		{$unEleve.identite.nom}
-	</td>
-	{foreach from=$listePeriodes key=laPeriode item=wtf}
-		{if isset($unEleve.presences.$laPeriode)}
-			{assign var=p value=$unEleve.presences.$laPeriode}
-			{assign var=statut value=$p.statut}
-			{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
-			<td>
-				<span
-					style="display:block; width:100%; color:{$listeJustifications.$statut.color|default:'#f00'}; background:{$listeJustifications.$statut.background|default:'#666'}"
-					class="periode pop micro"
-					data-toggle="popover"
-					data-content="{$listeJustifications.$statut.libelle|default:'!!!'|cat:'<br>'|cat:$p.parent|cat:'<br>'|cat:$p.media}"
-					data-html="true"
-					data-container="body"
-					data-original-title="{$titre}">
-					{$listeJustifications.$statut.shortJustif|default:'!!!'}
-				</span>
-			</td>
-		{else}
-			<td title="indetermine" data-container="body" data-html="true">
-				<span style="display:block; width:2em" class="periode indetermine">
-				-
-				</span>
-			</td>
-		{/if}
-	{/foreach}
-	<td class="micro">{$smarty.foreach.boucle.iteration}</td>
-	</tr>
-	{/foreach}
-</table>
+			<form id="formSelecteur" class="hidden-print">
+
+				<div class="input-group">
+				   <input type="text" name="date" value="{$date}" id="date" class="datepicker form-control">
+				   <span class="input-group-btn">
+					  <button class="btn btn-primary" id="btn-liste" type="button">OK <i class="fa fa-arrow-right"></i> </button>
+				   </span>
+				</div>
+
+				<span id="ajaxLoader" class="hidden">
+	    			<img src="../images/ajax-loader.gif" alt="loading" class="img-responsive">
+	    		</span>
+
+				<div id="selectJustif">
+
+					{foreach from=$statutsAbs key=statut item=item}
+
+						<div class="checkbox"
+							style="color:{$item.color}; background:{$item.background};">
+							<label for="cb_{$item.justif}"  title="{$item.libelle}">
+								<input type="checkbox" value="{$item.justif}" name="statut[]" id="cb_{$item.justif}">
+								{$item.libelle}
+							</label>
+						</div>
+
+					{/foreach}
+					<button type="button" class="btn btn-primary btn-block" id="allStatus"><i class="fa fa-arrow-up"></i> Inverser la sélection <i class="fa fa-arrow-up"></i> </button>
+				</div>
+
+			</form>
+
+		</div>
+
+		<div class="col-md-10 col-sm-12" id="listeAbsences">
+			<p class="avertissement">Veuillez sélectionner la date et, au moins, un statut d'absence ci-contre</p>
+		</div>
+
+	</div>
+
 </div>
 
-<h4>Liste 2 (justifie un SMS)
-{foreach from=$statutsAbs.liste2 item=item key=statut}
-	<span style="color:{$listeJustifications.$item.color|default:null}; background:{$listeJustifications.$item.background|default:null}"
-		title="{$listeJustifications.$item.libelle|default:null}">{$item}</span>
-{/foreach}
-</h4>
 
-<div class="table-responsive">
-
-<table class="tableauPresences table table-striped table-condensed">
-	<tr>
-		<th>Matricule</th>
-		<th>Classe</th>
-		<th>Nom</th>
-		{foreach from=$listePeriodes key=periode item=limitesPeriode}
-		<th style="width:3.5em"><strong>{$periode}</strong><br>{$limitesPeriode.debut} - {$limitesPeriode.fin}</th>
-		{/foreach}
-		<td>&nbsp;</td>
-	</tr>
-
-	{foreach from=$liste2 key=matricule item=unEleve name=boucle}
-	<tr style="font-size:1.3em">
-	<td>{$matricule}</td>
-	<td>{$unEleve.identite.classe}</td>
-	<td class="pop"
-		data-toggle="popover"
-		data-content="<img src='../photos/{$unEleve.identite.photo}.jpg' alt='{$matricule}' style='width:100px'>"
-		data-html="true"
-		data-container="body"
-		data-original-title="{$unEleve.identite.nom}">
-		{$unEleve.identite.nom}
-	</td>
-	{foreach from=$listePeriodes key=laPeriode item=wtf}
-		{if isset($unEleve.presences.$laPeriode)}
-			{assign var=p value=$unEleve.presences.$laPeriode}
-			{assign var=statut value=$p.statut}
-			{assign var=titre value=$p.educ|cat:' ['|cat:$p.quand|cat:' à '|cat:$p.heure|cat:']'}
-			<td>
-				<span style="display:block; width:100%; color:{$listeJustifications.$statut.color|default:'#f00'};  background:{$listeJustifications.$statut.background|default:'#666'}"
-					class="periode pop micro"
-					data-toggle="popover"
-					data-content="{$listeJustifications.$statut.libelle|default:'!!!'|cat:'<br>'|cat:$p.parent|cat:'<br>'|cat:$p.media}"
-					data-html="true"
-					data-container="body"
-					data-original-title="{$titre}">
-				{$listeJustifications.$statut.shortJustif|default:'-'}
-				</span>
-			</td>
-		{else}
-			<td title="indetermine" data-container="body" data-html="true">
-				<span style="display:block; width:2em" class="periode indetermine">-</span>
-			</td>
-		{/if}
-	{/foreach}
-	<td class="micro">{$smarty.foreach.boucle.iteration}</td>
-	</tr>
-	{/foreach}
-</table>
+{* include file='legendeAbsences.tpl' *}
 </div>
 
-{include file='legendeAbsences.tpl'}
-</div>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		$(document).ajaxStart(function() {
+			$('#ajaxLoader').removeClass('hidden');
+		}).ajaxComplete(function() {
+			$('#ajaxLoader').addClass('hidden');
+		});
+
+		$('#btn-liste').click(function(){
+			var formulaire = $('#formSelecteur').serialize();
+			$.post('inc/getListeParDate.inc.php', {
+				formulaire: formulaire
+			}, function(resultat){
+				$('#listeAbsences').html(resultat);
+			})
+		})
+
+		$("#date").datepicker({
+			format: "dd/mm/yyyy",
+			clearBtn: true,
+			language: "fr",
+			calendarWeeks: true,
+			autoclose: true,
+			todayHighlight: true
+			});
+
+		$('#allStatus').click(function(){
+			$('#selectJustif input:checkbox').trigger('click');
+		})
+	})
+
+</script>

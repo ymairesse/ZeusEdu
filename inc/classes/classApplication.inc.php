@@ -28,7 +28,7 @@ class Application
 
         // lecture dans la table PFX."config" de la BD
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT parametre,valeur ';
+        $sql = 'SELECT parametre, valeur ';
         $sql .= 'FROM '.PFX.'config ';
         $resultat = $connexion->query($sql);
         if ($resultat) {
@@ -97,7 +97,7 @@ class Application
 
         foreach ($data as $wtf => $unData) {
             echo '<pre>';
-            print_r($unData);
+            var_export($unData);
             echo '</pre>';
         }
         if ($die == true) {
@@ -122,7 +122,7 @@ class Application
     /**
      * vider le répertoire "$dir" de tous les fichiers qu'il contient.
      *
-     * @param sting $dir
+     * @param string $dir
      */
     public function vider($dir)
     {
@@ -288,7 +288,7 @@ class Application
     /**
      * enregistre le statut d'activation / désactivation des applis.
      *
-     * @param $post : array contenant la liste des applis
+     * @param array $post : array contenant la liste des applis
      *
      * @return int : le nombre de modifications dans la BD
      */
@@ -1975,6 +1975,28 @@ class Application
         self::DeconnexionPDO($connexion);
 
         return $userName;
+    }
+
+    /**
+     * Effacement des tokens plus anciens que deux jours à partir de maintenant
+     *
+     * @param int $nbJours : nombre de jours depuis la demande de renouvellement du mdp
+     *
+     * @return void
+     */
+    public function delOldTokens($nbJours){
+        $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'lostPasswd ';
+        $sql .= 'WHERE date < NOW() - INTERVAL :nbJours DAY ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nbJours', $nbJours, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        self::DeconnexionPDO($connexion);
+
+        return;
     }
 
      /**

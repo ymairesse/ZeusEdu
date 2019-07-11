@@ -29,7 +29,11 @@ if (($etape == 'showCotes') && ($classe != null)) {
 
     $listeSituations = $Bulletin->listeSituationsDelibe($listeEleves, array_keys($listeCoursGrp), $bulletin);
 
+    $listeDecisions = $Bulletin->listeDecisions($listeEleves);
+
     $delibe = $Bulletin->echecMoyennesDecisions($listeSituations, $statutsCadres);
+
+    $listeEBS = $Ecole->getEBS($classe, 'groupe');
 
     $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
     $smarty->assign('delibe', $delibe);
@@ -41,5 +45,8 @@ if (($etape == 'showCotes') && ($classe != null)) {
     $smarty->assign('titusClasse', $titusClasse);
     $smarty->assign('listeCours', $listeCours);
     $smarty->assign('listeMentions', $listeMentions);
+    $smarty->assign('listeDecisions', $listeDecisions);
+    $smarty->assign('listeEBS', $listeEBS);
+    
     $smarty->assign('corpsPage', 'delibe/feuilleDelibes');
 }

@@ -603,3 +603,10 @@ p.jdcInfo:before {
     background-color: rgba(0, 0, 255, 0.1) !important;
     color: gray !important;
 }
+
+@media screen {
+    .overflow35 {
+        height: 35em;
+        overflow: auto;
+    }
+}

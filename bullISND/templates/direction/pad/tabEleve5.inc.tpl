@@ -29,7 +29,7 @@
 		            <td>{$listeSuivi.$id.proprietaire}</td>
 		            <td>{if $unItem.absent == 1}<i class="fa fa-question <fa-lg></fa-lg> text-danger" title="Ne s'est pas présenté"></i>{else}-{/if}</td>
 		            {assign var=leProf value=$unItem.envoyePar}
-		            <td>{if isset($listeProfs.$leProf)}{$listeProfs.$leProf.prenom|truncate:2:'.'} {$listeProfs.$leProf.nom}{else}{$unItem.envoyePar} (?){/if}</td>
+		            <td>{if isset($dicoProfs.$leProf)}{$dicoProfs.$leProf}{else}{$unItem.envoyePar} (?){/if}</td>
 		            <td data-date="{$unItem.date}">{$unItem.date}</td>
 		            <td data-heure="{$unItem.heure}">{$unItem.heure}</td>
 		            <td data-motif="{$unItem.motif}"

@@ -4,7 +4,7 @@
 <h2 title="{$libelleCours.coursGrp}">Bulletin {$bulletin} - {$libelleCours.cours} {$libelleCours.libelle} {$libelleCours.nbheures}h </h2>
 
 <form name="formBulletin" id="formBulletin" action="index.php" method="POST" role="form" class="form-vertical">
-	
+
 	<p id="ouvrirTout" class="btn btn-primary noprint">Déplier/replier toutes les remarques</p>
 	<div class="btn-group">
 		<button type="submit" class="btn btn-primary noprint enregistrer" name="submit" id="enregistrer">Enregistrer tout</button>
@@ -14,23 +14,23 @@
 	<input type="hidden" name="mode" value="enregistrer">
 	<input type="hidden" name="bulletin" value="{$bulletin}">
 	<input type="hidden" name="coursGrp" value="{$coursGrp}">
-	
+
 	<select name="selectEleve" id="selectEleve">
 		<option value=''>Sélectionner un élève</option>
 		{foreach from=$listeEleves key=matricule item=unEleve}
 		<option value="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
 		{/foreach}
 	</select>
-	
+
 	<hr>
 	{foreach from=$listeEleves key=matricule item=unEleve}
-		
+
 	<div class="row" style="padding:2em 0">
-		
+
 		<div class="col-md-2 col-sm-12 blocGaucheBulletin">
-	
+
 			<div style="text-align:center;">
-				
+
 				<div class="pull-rigth">
 					{if isset($listeElevesSuivPrec.$matricule.prev) && ($listeElevesSuivPrec.$matricule.prev != Null)}
 						<a href="#el{$listeElevesSuivPrec.$matricule.prev}">
@@ -41,38 +41,66 @@
 							<span class="glyphicon glyphicon-chevron-down" title="Suivant"></a>
 					{/if}
 				</div>
-			
+
 				<p id="el{$matricule}"><strong>{$unEleve.nom} {$unEleve.prenom}</strong></p>
-			
+
 				<img class="photoEleve" src="../photos/{$unEleve.photo}.jpg" width="100px" alt="{$matricule}" title="{$unEleve.nom} {$unEleve.prenom} {$matricule}">
 				<p><strong>Classe: {$unEleve.classe}</strong></p>
-		
+
 				<button type="submit" class="btn  btn-primary enregistrer noprint" title="Enregistre l'ensemble des modifications de la page">Enregistrer tout</button>
 				<span></span>
 			</div>
-		
+
 		</div>  <!-- col-md-... -->
-		
+
 
 		<div class="col-md-10 col-sm-12">
-			
+
 			<h3>Mentions Globales</h3>
 			<table class="tableauBull table table-condensed">
 				<tr style="height:2em; background-color: #FECF69; font-weight:bolder; text-align:right">
 					<td style="width:12%">TJ</td>
-					<td style="width:12%; text-align: center"><input class="majuscule" type="text" name="TJ-{$matricule}" value="{$cotesGlobales.$matricule.Tj|default:''}" maxlength="4" size="2"></td>
+					<td style="width:12%; text-align: center">
+						<div class="input-group input-group-sm">
+							<input class="form-control majuscule" type="text" name="TJ-{$matricule}" value="{$cotesGlobales.$matricule.Tj|default:''}" maxlength="5">
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-default crochet">[]</button>
+							</span>
+						</div>
+					</td>
 					<td style="width:12%">Examen</td>
-					<td style="width:12%; text-align: center"><input class="majuscule" type="text" name="EX-{$matricule}" value="{$cotesGlobales.$matricule.Ex|default:''}" maxlength="4" size="2"></td>
+					<td style="width:12%; text-align: center">
+						<div class="input-group input-group-sm">
+							<input class="form-control majuscule" type="text" name="EX-{$matricule}" value="{$cotesGlobales.$matricule.Ex|default:''}" maxlength="5">
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-default crochet">[]</button>
+							</span>
+						</div>
+					</td>
 					<td style="width:12%">Période</td>
-					<td style="width:12%; text-align: center"><input class="majuscule" type="text" name="PERIODE-{$matricule}" value="{$cotesGlobales.$matricule.periode|default:''}" maxlength="4" size="2"></td>
+					<td style="width:12%; text-align: center">
+						<div class="input-group input-group-sm">
+							<input class="form-control majuscule" type="text" name="PERIODE-{$matricule}" value="{$cotesGlobales.$matricule.periode|default:''}" maxlength="5">
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-default crochet">[]</button>
+							</span>
+						</div>
+					</td>
 					<td style="width:12%">Global</td>
-					<td style="width:12%; text-align: center"><input class="majuscule" type="text" name="GLOBAL-{$matricule}" value="{$cotesGlobales.$matricule.global|default:''}" maxlength="4" size="2"></td>
+					<td style="width:12%; text-align: center">
+						<div class="input-group input-group-sm">
+							<input class="form-control majuscule" type="text" name="GLOBAL-{$matricule}" value="{$cotesGlobales.$matricule.global|default:''}" maxlength="5">
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-default crochet">[]</button>
+							</span>
+						</div>
+					</td>
 				</tr>
-			
+
 			</table>
-			
+
 			{if isset($listeCompetences)}
-			
+
 				<h3>Détails par compétences</h3>
 				<table class="tableauBull table table-condensed table-hover">
 					<thead>
@@ -82,33 +110,33 @@
 						<th>Examen</th>
 					</tr>
 					</thead>
-			
+
 					{foreach from=$listeCompetences key=cours item=lesCompetences}
 						{foreach from=$lesCompetences key=idComp item=uneCompetence}
 							<tr>
-								
+
 								<td style="text-align:right" data-container="body" title="comp_{$idComp}"> {$uneCompetence.libelle}</td>
-							
+
 								<td style="width:6em; text-align:center">
-								<input type="text" name="coteTJ-{$matricule}-comp_{$idComp}" 
+								<input type="text" name="coteTJ-{$matricule}-comp_{$idComp}"
 									value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Tj|default:''}" maxlength="5" size="2" class="cote majuscule form-control">
 								</td>
-									
+
 								<td style="width:8em; text-align:center">
-								<input type="text" name="coteEX-{$matricule}-comp_{$idComp}-Ex" 
+								<input type="text" name="coteEX-{$matricule}-comp_{$idComp}-Ex"
 									value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Ex|default:''}" maxlength="5" size="2" class="cote majuscule form-control">
 								</td>
-				
+
 							</tr>
 						{/foreach}
 					{/foreach}
-	
+
 				</table>
-				
+
 			{/if}
-		
+
 			<h3>Remarque pour la période {$bulletin}</h3>
-				<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque form-control" rows="8" 
+				<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque form-control" rows="8"
 				name="COMMENTAIRE-{$matricule}">{$listeCommentaires.$bulletin.$coursGrp.$matricule|default:Null}</textarea>
 
 			<div class="accordion-group">
@@ -128,14 +156,14 @@
 					</div>
 				</div>
 			</div>  <!-- accordion-group -->
-		
+
 		</div>
-	
+
 	</div style="padding:1em 0">  <!-- row -->
-	
+
 	{/foreach}
-	
-	
+
+
 </form>
 
 </div>
@@ -161,14 +189,26 @@ var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annu
 $(document).ready(function(){
 
 	$("input").tabEnter();
-	
+
 	$().UItoTop({ easingType: 'easeOutQuart' });
-	
+
+	$('.crochet').attr('title', 'Mettre la cote entre crochets');
+
 	$(".ouvrir").prepend("[+]").next().hide();
 	$(".ouvrir").css("cursor","pointer").attr("title",show);
 	$("#ouvrirTout").css("cursor","pointer");
 
-	
+	$('.crochet').click(function(){
+		var input = $(this).closest('.input-group').find('input');
+		var leTexte = input.val();
+		var sansCrochet = leTexte.replace('[', '').replace(']','');
+		if (leTexte == sansCrochet)
+			leTexte = '[' + leTexte.toUpperCase() + ']';
+			else leTexte = sansCrochet;
+		input.val(leTexte);
+		modification();
+	})
+
 	$(".ouvrir").click(function(){
 		$(this).next().toggle("fast");
 		var texte = $(this).text();
@@ -181,13 +221,13 @@ $(document).ready(function(){
 				$(this).attr("title",show);
 			}
 		})
-	
-	
+
+
 	// le copier/coller provoque aussi  une "modification"
 	$("input, textarea").bind('paste', function(){
 		modification()
 	});
-	
+
 	$("#ouvrirTout").click(function(){
 		if (hiddenAll == true) {
 			$(".collapse").collapse('show');
@@ -198,7 +238,7 @@ $(document).ready(function(){
 				hiddenAll = true;
 			}
 	})
-	
+
 	function modification () {
 		if (!(modifie)) {
 			modifie = true;
@@ -213,19 +253,18 @@ $(document).ready(function(){
 			}
 		}
 
-	$("input, textarea").keyup(function(e){
+	$("input, textarea").keyup(function(event){
 		var readonly = $(this).attr("readonly");
 		if (!(readonly)) {
-		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-		if ((key > 31) || (key == 8)) {
-			modification();
+			var key = event.charCode || event.keyCode;
+			if ((key > 31) || (key == 8)) {
+				modification();
+				}
 			}
-		}
 	})
-	
-	
+
 	$(".enregistrer, #annuler").hide();
-	
+
 	$("#annuler").click(function(){
 		if (confirm(confirmationReset)) {
 			this.form.reset();
@@ -239,7 +278,7 @@ $(document).ready(function(){
 			return false
 		}
 		})
-	
+
 	$(".enregistrer").click(function(){
 		$(this).val("Un moment").addClass("patienter");
 		$.blockUI();
@@ -249,7 +288,7 @@ $(document).ready(function(){
 		window.onbeforeunload = function(){};
 	})
 
-	
+
 	$(".remarque").focus(function(){
 		var center = $(window).height()/2;
 		var top = $(this).offset().top ;
@@ -268,7 +307,7 @@ $(document).ready(function(){
 		var matricule = $(this).val();
 		goToByScroll("el"+matricule);
 		})
-	
+
 	$(".majuscule").change(function(){
 		var texte = $(this).val();
 		$(this).val(texte.toUpperCase());
@@ -279,4 +318,3 @@ $(document).ready(function(){
 
 {if isset($tableErreurs)} alert(erreursEncodage){/if}
 </script>
-

@@ -17,34 +17,20 @@ if ($matricule != null) {
 $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes', $listePeriodes);
 
-$listeJustifications = $Presences->listeJustificationsAbsences();
-$smarty->assign('listeJustifications', $listeJustifications);
+// liste des statuts d'absences possibles
+$statutsAbs = $Presences->listeJustificationsAbsences();
+$smarty->assign('statutsAbs', $statutsAbs);
 
 switch ($mode) {
     case 'parDate':
         $date = isset($_POST['date']) ? $_POST['date'] : strftime('%d/%m/%Y');
         $smarty->assign('date', $date);
-        $statutsAbs = array(
-				// tous les motifs d'absences sauf 'indetermine', 'present', 'absent'
-				'liste1' => array_diff(array_keys($Presences->listeJustificationsAbsences()), array('indetermine','present','absent')),
-                // tous les motifs qui justifient un SMS
-				'liste2' => array_keys($Presences->listeJustificationsAbsences(true, true))
-                );
-        $smarty->assign('statutsAbs', $statutsAbs);
-        $listesParDate = $Presences->listePresencesDate($date, $statutsAbs);
-
-        $smarty->assign('liste1', $listesParDate['liste1']);
-        $smarty->assign('liste2', $listesParDate['liste2']);
-        $smarty->assign('action', $action);
-        $smarty->assign('mode', $mode);
-        $smarty->assign('selecteur', 'selectDate');
         $smarty->assign('corpsPage', 'listeParDate');
         break;
 
     case 'parEleve':
         $smarty->assign('classe', $classe);
         $listeEleves = isset($classe) ? $Ecole->listeEleves($classe, 'groupe') : null;
-        // Application::afficher($listeEleves);
         $smarty->assign('listeEleves', $listeEleves);
         $listeClasses = $Ecole->listeGroupes();
         $smarty->assign('listeClasses', $listeClasses);
@@ -59,7 +45,7 @@ switch ($mode) {
             $Eleve = new Eleve($matricule);
             $detailsEleve = $Eleve->getDetailsEleve();
             $smarty->assign('detailsEleve', $detailsEleve);
-            $smarty->assign('corpsPage', 'presencesEleve');
+            $smarty->assign('corpsPage', 'listes/presencesEleve');
         }
         $smarty->assign('etape', 'showEleve');
         $smarty->assign('action', $action);
@@ -80,7 +66,7 @@ switch ($mode) {
             $listePresences = $Presences->listePresencesElevesDate($date, $listeEleves);
             $smarty->assign('listePresences', $listePresences);
 
-            $smarty->assign('corpsPage', 'presencesClasse');
+            $smarty->assign('corpsPage', 'listes/presencesClasse');
         }
 
         $smarty->assign('action', $action);

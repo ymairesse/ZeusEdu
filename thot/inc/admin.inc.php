@@ -56,7 +56,11 @@ switch ($mode) {
     case 'modele':
         require_once 'inc/jdc/gestModele.inc.php';
         break;
-        
+
+    case 'printJdc':
+        require_once 'inc/jdc/printJdcProfs.inc.php';
+        break;
+
     default:
         // wtf
         break;

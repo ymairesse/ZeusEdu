@@ -9,7 +9,8 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
 }
 
 $id = isset($_POST['id'])?$_POST['id']:Null;

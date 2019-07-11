@@ -1,4 +1,5 @@
-<div class="container">
+<div class="container-fluid">
+	
 <h3>Notifications des décisions de délibération {$classe}</h3>
 
 <form name="notification" id="notification" method="POST" action="index.php">

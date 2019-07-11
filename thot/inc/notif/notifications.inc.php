@@ -1,9 +1,5 @@
 <?php
 
-$etape = isset($_GET['etape']) ? $_GET['etape'] : Null;
-if ($etape == Null)
-    $etape = isset($_POST['etape']) ? $_POST['etape'] : Null;
-
 
 switch ($etape) {
     case 'subjectif':

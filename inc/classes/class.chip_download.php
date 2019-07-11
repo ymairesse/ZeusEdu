@@ -63,6 +63,7 @@ class chip_download
             'jpg' => 'image/jpg',
             'jpeg' => 'image/jpeg',
             'xcf' => 'image/xcf',
+            'svg' => 'image/svg',
 
             /* Audio */
             'mp3' => 'audio/mpeg',
@@ -73,6 +74,9 @@ class chip_download
 
             /* mindmap Freeplane */
             'mm' => 'application/x-freeplane',
+
+            /* Scratch 3 */
+            'sb3' => 'application/x-scratch',
 
             /* Video */
             //  	'mpeg'	=> 'video/mpeg',
@@ -97,6 +101,7 @@ class chip_download
     public function __construct($args = array(), $allowed_extensions = array())
     {
         $this->set_args($args);
+        var_dump($allowed_extensions);
         $this->set_allowed_extensions($allowed_extensions);
     }
 

@@ -1,9 +1,13 @@
 <?php
-$coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
-$classe = isset($_POST['classe'])?$_POST['classe']:Null;
-$moderw = isset($_POST['moderw'])?$_POST['moderw']:'r';
+
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
+$moderw = isset($_POST['moderw']) ? $_POST['moderw']:'r';
 $smarty->assign('coursGrp',$coursGrp);
 $smarty->assign('classe',$classe);
+$smarty->assign('niveau', $niveau);
+
 $smarty->assign('moderw',$moderw);
 
 $etape = isset($_POST['etape'])?$_POST['etape']:Null;
@@ -29,7 +33,7 @@ if ((($mode == 'parCours') || ($mode == 'parClasse')) && ($etape == 'enregistrer
 				'title'=>SAVE,
 				'texte'=>"Aucune modification"),
 				3000);
-				}	
+				}
 	}
 
 switch ($mode) {
@@ -37,7 +41,7 @@ switch ($mode) {
 		$listeCours = $user->listeCoursProf();
 		$smarty->assign('listeCours',$listeCours);
 		$smarty->assign('selecteur','selectCours');
-		
+
 		// un cours a été choisi, listons les élèves
 		if (isset($coursGrp)) {
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha',false) ;
@@ -54,12 +58,27 @@ switch ($mode) {
 		// une classe a été choisie, listons les élèves
 		if (isset($classe)) {
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
-			$smarty->assign('listeEleves',$listeEleves);
+			$smarty->assign('listeEleves', $listeEleves);
 			$listeProfs = $Ecole->listeProfs();
-			$smarty->assign('listeProfs',$listeProfs);
+			$smarty->assign('listeProfs', $listeProfs);
 			$smarty->assign('corpsPage','choixEleves');
 			}
 		break;
 
+	case 'parNiveau':
+		$listeNiveaux = $Ecole->listeNiveaux();
+		$smarty->assign('listeNiveaux', $listeNiveaux);
+		$smarty->assign('selecteur', 'selectNiveau');
+
+		// un niveau a été choisi, listons les classes
+		if (isset($niveau)) {
+			$smarty->assign('niveau', $niveau);
+			$listeClasses = $Ecole->listeClassesNiveau($niveau);
+			$smarty->assign('listeClasses', $listeClasses);
+			$listeProfs = $Ecole->listeProfs();
+			$smarty->assign('listeProfs', $listeProfs);
+			$smarty->assign('corpsPage', 'parNiveau');
+		}
+
+
 	}
-?>

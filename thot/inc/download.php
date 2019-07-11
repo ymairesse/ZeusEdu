@@ -16,7 +16,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-// le $type 'fileId' est donné par défaut
+// le $type 'shareId' est donné par défaut
 $type = isset($_GET['type']) ? $_GET['type'] : 'shareId';
 
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';

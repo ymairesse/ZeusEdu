@@ -1,9 +1,8 @@
 <?php
 
 require_once '../config.inc.php';
+require_once INSTALL_DIR."/inc/entetes.inc.php";
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
 // ----------------------------------------------------------------------------
 //
 

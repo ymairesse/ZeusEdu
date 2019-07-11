@@ -49,7 +49,7 @@ $(document).ready (function() {
 	$("#formSelecteur").submit(function(){
 		if ($("#selectEleve").val() != '') {
 			$("#wait").show();
-			$.blockUI();
+			// $.blockUI();
 			}
 			else return false;
 	})

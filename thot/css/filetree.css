@@ -680,3 +680,22 @@ td.ext_odp {
     background: url(images/odp.png) no-repeat left top;
     background-size: 24px;
 }
+
+.file {
+    border: 1px solid black;
+    height: 4em;
+    width: 4em;
+    float:left;
+    margin-right:1em;
+    background-image: url('images/pdf.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+
+.file span {
+    position: relative;
+    top:6em;
+    font-size: 8pt;
+    overflow:hidden;
+}

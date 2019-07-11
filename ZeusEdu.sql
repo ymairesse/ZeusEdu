@@ -1037,6 +1037,56 @@ CREATE TABLE IF NOT EXISTS didac_padGuest (
   PRIMARY KEY (id,guest)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='table des notes relatives aux élève';
 
+CREATE TABLE `didac_padPeriodes` (
+  `anScol` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire',
+  `periode` int(11) NOT NULL COMMENT 'Période de l''année scolaire'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des années scolaires et périodes disponibles';
+
+ALTER TABLE didac_padPeriodes
+  ADD PRIMARY KEY (anScol,periode);
+
+  CREATE TABLE didac_padMatieres (
+    `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
+    `anScol` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire',
+    `periode` int(11) NOT NULL COMMENT 'Période de l''année scolaire',
+    `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Cours concerné',
+    `acronyme` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Acronyme du prof',
+    `cause1` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Manque de travail',
+    `cause2` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Absences',
+    `cause3` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Travaux non remis',
+    `cause4` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Compréhension consignes',
+    `autreCause` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Autre cause de problème',
+    `remediation` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Remédiations sur les matières'
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+  ALTER TABLE didac_padMatieres
+    ADD PRIMARY KEY (`matricule`,`anScol`,`periode`,`coursGrp`),
+    ADD KEY `matricule` (`matricule`);
+
+CREATE TABLE didac_padSuivi (
+  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
+  `anScol` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire',
+  `periode` smallint(6) NOT NULL COMMENT 'Période de l''année scolaire',
+  `pp1` tinyint(1) DEFAULT '0' COMMENT 'Poursuite parcours 1',
+  `pp2` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Poursuite parcours 2',
+  `ppa` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Poursuite parcours texte 1',
+  `ppb` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Poursuite parcours texte 2',
+  `ff1` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Forces / faiblesse texte 1',
+  `ff2` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Forces / faiblesse texte 1',
+  `poInterne` varchar(80) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Projet orientation interne',
+  `poExterne` varchar(80) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Projet orientation externe',
+  `id1` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Intervention demandée 1',
+  `id2` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Intervention demandée 2',
+  `id3` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Intervention demandée 3',
+  `id4` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Intervention demandée 4',
+  `idTexte` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Intervention demandée texte',
+  `discipline` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Discipline',
+  `priseEnCharge` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Prise en charge'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Suivi scolaire hors cours';
+
+ALTER TABLE didac_padSuivi
+      ADD PRIMARY KEY (`matricule`,`anScol`,`periode`);
+
 
 CREATE TABLE IF NOT EXISTS `didac_passwd` (
   `matricule` int(6) NOT NULL,

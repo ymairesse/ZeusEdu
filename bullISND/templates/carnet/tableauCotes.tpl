@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2>Carnet de cotes de {$coursGrp} Période {$bulletin}</h2>
 

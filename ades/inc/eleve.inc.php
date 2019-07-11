@@ -27,6 +27,7 @@ switch ($mode) {
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe');
 		}
 		else $listeEleves = Null;
+
 		$smarty->assign('listeEleves', $listeEleves);
 		$smarty->assign('listeClasses', $listeClasses);
 		$smarty->assign('classe', $classe);

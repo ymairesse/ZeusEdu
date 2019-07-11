@@ -22,8 +22,8 @@ switch ($mode) {
                 }
             }
         // effacements effectifs des membres des listes et des listes vides
-        $nbMailing = $hermes->delMembresListe($mailingDel);
-        $nbListes = $hermes->delListes($listeDel, $acronyme);
+        $nbMailing = $Hermes->delMembresListe($mailingDel);
+        $nbListes = $Hermes->delListes($listeDel, $acronyme);
         $smarty->assign('message',array(
                 'title'=>DELETE,
                 'texte'=> "$nbMailing destinataire(s) supprimé(s)<br>$nbListes liste(s) vide(s) supprimée(s)<br>Les listes non vides ne sont pas supprimées",
@@ -31,7 +31,7 @@ switch ($mode) {
         break;
     case 'creationListe':
         $nomListe = isset($_POST['nomListe'])?$_POST['nomListe']:Null;
-        $idListe = $hermes->creerGroupe($acronyme,$nomListe);
+        $idListe = $Hermes->creerGroupe($acronyme,$nomListe);
         $smarty->assign('nomListe',$nomListe);
         $smarty->assign('message', array(
             'title'=>SAVE,
@@ -42,7 +42,7 @@ switch ($mode) {
         $listeMembres = isset($_POST['mails'])?$_POST['mails']:Null;
         $idListe = isset($_POST['idListe'])?$_POST['idListe']:Null;
         if (isset($listeMembres) && isset($idListe)) {
-            $nb = $hermes->addMembresListe ($idListe,$listeMembres);
+            $nb = $Hermes->addMembresListe ($idListe,$listeMembres);
             $smarty->assign("message", array(
                 'title'=>SAVE,
                 'texte'=>"$nb membres(s) ajouté(s)",
@@ -50,14 +50,15 @@ switch ($mode) {
             }
         break;
     case 'statutListe':
-        $nb = $hermes->saveListStatus($_POST, $acronyme);
+        $nb = $Hermes->saveListStatus($_POST, $acronyme);
         $smarty->assign("message", array(
             'title'=>SAVE,
             'texte'=>"$nb modification(s) enregistrée(s)",
             'urgence'=>'success'));
         break;
+
     case 'abonnement':
-        $nb = $hermes->gestAbonnements($_POST, $acronyme);
+        $nb = $Hermes->gestAbonnements($_POST, $acronyme);
         $smarty->assign("message", array(
             'title'=>SAVE,
             'texte'=>"$nb abonnement(s) modifié(s)",
@@ -68,16 +69,16 @@ switch ($mode) {
         break;
     break;
     }
-$listeProfs = $hermes->listeMailingProfs();
+$listeProfs = $Hermes->listeMailingProfs();
 $smarty->assign('listeProfs', $listeProfs);
 
-$autresListes = $hermes->listesPerso($acronyme, true);
+$autresListes = $Hermes->listesPerso($acronyme, true);
 $listes = array();
 foreach ($autresListes as $nomListe=>$laListe)
     $listes[$nomListe] = $laListe;
-$listePublie = $hermes->listesDisponibles($acronyme, 'publie');
-$listeAbonne = $hermes->listesDisponibles($acronyme, 'abonne');
-$abonnesDe = $hermes->abonnesDe($acronyme);
+$listePublie = $Hermes->listesDisponibles($acronyme, 'publie');
+$listeAbonne = $Hermes->listesDisponibles($acronyme, 'abonne');
+$abonnesDe = $Hermes->abonnesDe($acronyme);
 $smarty->assign('listePublie', $listePublie);
 $smarty->assign('listeAbonne', $listeAbonne);
 $smarty->assign('abonnesDe',$abonnesDe);

@@ -107,38 +107,70 @@ $(document).ready (function() {
 		$('#matrPrev, #matrNext').val('');
 		})
 
-	$("#nom").typeahead({
-		minLength: 2,
-		afterSelect: function(item){
-			$.ajax({
-				url: 'inc/searchMatricule.php',
-				type: 'POST',
-				data: 'query=' + item,
-				dataType: 'text',
-				async: true,
-				success: function(data){
-					if (data != '') {
-						$("#matricule").val(data);
-						$("#formSelecteur").submit();
-						}
-					}
-				})
-			},
-		source: function(query, process){
-			$.ajax({
-				url: 'inc/searchNom.php',
-				type: 'POST',
-				data: 'query=' + query,
-				dataType: 'JSON',
-				async: true,
-				success: function (data) {
-					$("#matricule").val('');
-					process(data);
-					}
-				}
-				)
-			}
-		})
+		$("#nom").typeahead({
+            minLength: 2,
+            source: function(query, process) {
+                $.ajax({
+                    url: 'inc/searchNom.php',
+                    type: 'POST',
+                    data: 'query=' + query,
+                    dataType: 'JSON',
+                    async: true,
+                    success: function(data) {
+                        $("#matricule").val('');
+                        process(data);
+                    }
+                })
+            },
+            afterSelect: function(item) {
+                $.ajax({
+                    url: 'inc/searchMatricule.php',
+                    type: 'POST',
+                    data: 'nomPrenomClasse=' + item,
+                    dataType: 'text',
+                    async: true,
+                    success: function(data) {
+                        if (data != '') {
+                            $('#matricule').val(data);
+                            $('#formSelecteur').submit();
+                        }
+                    }
+                })
+            }
+        })
+
+	// $("#nom").typeahead({
+	// 	minLength: 2,
+	// 	afterSelect: function(item){
+	// 		$.ajax({
+	// 			url: 'inc/searchMatricule.php',
+	// 			type: 'POST',
+	// 			data: 'query=' + item,
+	// 			dataType: 'text',
+	// 			async: true,
+	// 			success: function(data){
+	// 				if (data != '') {
+	// 					$("#matricule").val(data);
+	// 					$("#formSelecteur").submit();
+	// 					}
+	// 				}
+	// 			})
+	// 		},
+	// 	source: function(query, process){
+	// 		$.ajax({
+	// 			url: 'inc/searchNom.php',
+	// 			type: 'POST',
+	// 			data: 'query=' + query,
+	// 			dataType: 'JSON',
+	// 			async: true,
+	// 			success: function (data) {
+	// 				$("#matricule").val('');
+	// 				process(data);
+	// 				}
+	// 			}
+	// 			)
+	// 		}
+	// 	})
 
 })
 

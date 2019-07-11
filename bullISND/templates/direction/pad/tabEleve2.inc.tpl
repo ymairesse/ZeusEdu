@@ -46,7 +46,7 @@
 
 	{foreach from=$anneeEnCours key=periode item=data}
 	<tr>
-		<th>{$periode}</td>
+		<th>{$periode}</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=dataCours}
 			<td class="cote mention{$anneeEnCours.$periode.$coursGrp.mention|trim:'+'|default:''}"
 				title="{$coursGrp}"

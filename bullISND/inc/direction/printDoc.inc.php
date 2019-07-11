@@ -30,10 +30,10 @@ $module = $Application->getModule(3);
 
 // liste des élèves par classe
 if ($typeDoc == 'competences') {
-    $listeEleves = $Ecole->listeEleves($classe, 'classe', false, true);
+    $listeEleves = $Ecole->listeEleves($classe, 'groue', false, true);
 }
 if ($typeDoc == 'pia') {
-    $listeEleves = $Ecole->listeEleves($classe, 'classe', false, true);
+    $listeEleves = $Ecole->listeEleves($classe, 'groue', false, true);
 }
 
 $listeCours = $Ecole->listeCoursClasse($classe);

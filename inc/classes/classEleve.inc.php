@@ -309,7 +309,6 @@ class eleve
         if (!($nomPrenomClasse)) {
             die();
         }
-        // $nomPrenomClasse = addslashes($nomPrenomClasse);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT matricule ';
         $sql .= 'FROM '.PFX.'eleves ';

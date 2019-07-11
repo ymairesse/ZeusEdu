@@ -23,9 +23,15 @@ $selectTypes = $Thot->getTypes(true);
 // cette liste sera construite plus loin
 $listeAttendus = array_keys($listeTypes);
 
-$listeNiveaux = $Ecole->listeNiveaux();
+$listeNiveaux = Ecole::listeNiveaux();
+$smarty->assign('listeNiveaux', $listeNiveaux);
+
 $listeClasses = $Ecole->listeClasses();
-$listeCours = $user->getListeCours();
+$smarty->assign('listeClasses', $listeClasses);
+
+$listeCours = $Ecole->listeCoursProf($acronyme);
+$smarty->assign('listeCours', $listeCours);
+
 $listeGroupes = $Thot->getListeGroupes($acronyme);
 // valeur à déterminer ensuite
 $destinataire = Null;
@@ -84,8 +90,8 @@ $smarty->assign('listeAttendus', $listeAttendus);
 $smarty->assign('onglet', $onglet);
 $smarty->assign('listeTypes', $listeTypes);
 $smarty->assign('selectTypes', $selectTypes);
-$smarty->assign('listeNiveaux', $listeNiveaux);
-$smarty->assign('listeClasses', $listeClasses);
-$smarty->assign('listeCours', $listeCours);
 
-$smarty->assign('corpsPage', 'notification/historique');
+
+
+
+$smarty->assign('corpsPage', 'notification/notif');

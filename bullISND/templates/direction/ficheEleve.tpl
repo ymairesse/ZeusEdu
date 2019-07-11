@@ -62,6 +62,7 @@
 <!-- container -->
 
 <script type="text/javascript">
+
 	//  quel est l'onglet actif?
 	var onglet = "{$onglet|default:''}";
 
@@ -77,9 +78,50 @@
 			$(this).popover('hide');
 			})
 
-		var confirmationReset = "Êtes-vous sûr(e) de vouloir annuler?\nToutes les informations modifiées depuis le dernier enregistrement seront perdues.\nCliquez sur 'OK' si vous êtes sûr(e).";
-		var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
-		var modifie = false;
+
+		$('#tabs-1').on('click', '.btn-viewMatiere', function(){
+			$(this).closest('tr').find('td div').toggle(200);
+	        })
+
+		$('#tabs-1').on('click', '.btn-deleteMatiere', function(){
+			var coursGrp = $(this).data('coursgrp');
+			var anScol = $(this).data('anscol');
+			var periode = $(this).data('periode');
+			var matricule = $('#matricule').val();
+			bootbox.confirm({
+				title: 'Confirmation',
+				message: 'Veuillez confirmer la suppression des notes pour le cours ' + coursGrp,
+				callback: function(result){
+					if (result == true) {
+						$.post('inc/direction/delMatiere.inc.php', {
+							matricule: matricule,
+							coursGrp: coursGrp,
+							anScol: anScol,
+							periode: periode
+						}, function(nb){
+							if (nb != 0) {
+								$.post('inc/direction/refreshListeMatieres.inc.php', {
+									matricule: matricule,
+									anScol: anScol,
+									periode: periode
+								}, function(resultat){
+									$('.listeMatieres_' + anScol + '_' + periode).html(resultat);
+								})
+							}
+							bootbox.alert({
+								title: 'Suppression d\'une matière',
+								message: nb + ' matière supprimée'
+							});
+						})
+					}
+				}
+			})
+
+		})
+
+		$('#tabs-1').on('click', '#btn-openAll', function(){
+			$(this).closest('table').find('td div').toggle(200);
+		})
 
 
 		// si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet'
@@ -89,53 +131,35 @@
 		});
 
 
-		function modification() {
-			if (!(modifie)) {
-				modifie = true;
-				$("#mod").show();
-				window.onbeforeunload = function() {
-					var reponse = confirm(confirmationBeforeUnload);
-					if (!(reponse)) {
-						$.unblockUI();
-					}
-					return reponse
-				};
-			}
-		}
-
-		$("#padEleve").keyup(function(e) {
-			var readonly = $(this).attr("readonly");
-			if (!(readonly)) {
-				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-				if ((key > 31) || (key == 8)) {
-					modification();
-				}
-			}
-		})
-
-		$("#padEleve").submit(function() {
-			modifie = false;
-			window.onbeforeunload = function() {};
-			$.blockUI();
-			$("#wait").show();
-		})
-
-		$("#annuler").click(function() {
-			if (confirm(confirmationReset)) {
-				$("#mod").hide();
-				modifie = false;
-				window.onbeforeunload = function() {};
-				return true
-			} else {
-				$.unblockUI();
-				return false;
-			}
-		})
-
-		// le copier/coller provoque aussi  une "modification"
-		$("input, textarea").bind('paste', function() {
-			modification()
-		});
+		// function modification() {
+		// 	if (!(modifie)) {
+		// 		modifie = true;
+		// 		$("#mod").show();
+		// 		window.onbeforeunload = function() {
+		// 			var reponse = confirm(confirmationBeforeUnload);
+		// 			if (!(reponse)) {
+		// 				$.unblockUI();
+		// 			}
+		// 			return reponse
+		// 		};
+		// 	}
+		// }
+		//
+		// $("#padEleve").keyup(function(e) {
+		// 	var readonly = $(this).attr("readonly");
+		// 	if (!(readonly)) {
+		// 		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+		// 		if ((key > 31) || (key == 8)) {
+		// 			modification();
+		// 		}
+		// 	}
+		// })
+		//
+		//
+		// // le copier/coller provoque aussi  une "modification"
+		// $("input, textarea").bind('paste', function() {
+		// 	modification()
+		// });
 
 	})
 </script>

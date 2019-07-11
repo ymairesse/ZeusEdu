@@ -753,7 +753,7 @@ class thot
         $dateDebut = Application::dateMysql(Application::dateNow());
         $dateFin = Application::dateMysql(Application::dateUnMois());
         $sql = 'INSERT INTO '.PFX.'thotNotifications ';
-        $sql .= "SET type='eleves', proprietaire='$acronyme', destinataire=:matricule, objet='Décision du Conseil de Classe', ";
+        $sql .= "SET type='classes', proprietaire='$acronyme', destinataire=:matricule, objet='Décision du Conseil de Classe', ";
         $sql .= "texte=:texte, dateDebut='$dateDebut', dateFin='$dateFin', ";
         $sql .= "urgence='2', mail='1', accuse='1' ";
         $requete = $connexion->prepare($sql);
@@ -2297,30 +2297,85 @@ class thot
     }
 
     /**
-     * retourne les nombres de parents inscrits par Classe.
+     * renvoie les statistiques sur l'usage de Thot par les parents de la classe donnée
+     * pour la période définie
      *
-     * @param void()
+     * @param string $dateDebut
+     * @param string $dateFin
+     * @param string $classe
      *
-     * @return array: les nombres de parents inscrits par classe
+     * @return array
      */
-    public function statsParents()
-    {
+    public function getStatsParents($dateDebut, $dateFin, $classe){
+        $dateDebut = Application::dateMysql($dateDebut);
+        $dateFin = Application::dateMysql($dateFin);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT groupe, count(*) AS nb ';
-        $sql .= 'FROM '.PFX.'thotParents AS dp ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dp.matricule ';
-        $sql .= 'group by groupe ';
-        $resultat = $connexion->query($sql);
+        $sql = 'SELECT user, groupe, eleves.nom, eleves.prenom, formule, ';
+        $sql .= 'parents.nom AS nomParent, parents.prenom AS prenomParent, COUNT(user) AS nb ';
+        $sql .= 'FROM '.PFX.'thotLogins AS logins ';
+        $sql .= 'JOIN '.PFX.'thotParents AS parents ON parents.userName = logins.user ';
+        $sql .= 'JOIN '.PFX.'eleves AS eleves ON eleves.matricule = SUBSTR(user, -4, length(eleves.matricule)) ';
+        $sql .= 'WHERE date BETWEEN :dateDebut AND :dateFin AND groupe = :classe ';
+        $sql .= 'GROUP BY logins.user ';
+        $sql .= 'ORDER BY groupe, eleves.nom, nb ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
+        $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+
         $liste = array();
+        $resultat = $requete->execute();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $groupe = $ligne['groupe'];
-                $annee = substr($groupe, 0, 1);
-                $liste[$annee][$groupe] = $ligne;
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $user = $ligne['user'];
+                $liste[$user] = $ligne;
             }
         }
-        Application::deconnexionPDO($connexion);
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+    /**
+     * renvoie les statistiques de connexions des élèves d'une classe donnée entre deux dates
+     *
+     * @param string $dateDebut
+     * @param string $dateFin
+     * @param string $classe
+     *
+     * @return array
+     */
+    public function getStatsEleves($dateDebut, $dateFin, $classe){
+        $dateDebut = Application::dateMysql($dateDebut);
+        $dateFin = Application::dateMysql($dateFin);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT logins.user, COUNT(logins.user) AS nb, groupe, nom, prenom ';
+        $sql .= 'FROM '.PFX.'thotLogins AS logins ';
+        $sql .= 'JOIN '.PFX.'passwd AS pwd ON pwd.user = logins.user ';
+        $sql .= 'JOIN '.PFX.'eleves AS eleves ON eleves.matricule = SUBSTR(logins.user, -4, length(eleves.matricule)) ';
+        $sql .= 'WHERE date BETWEEN :dateDebut AND :dateFin AND groupe = :classe AND section != "PARTI" ';
+        $sql .= 'GROUP BY user ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(nom," ",""), "-",""), "\'",""), prenom ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
+        $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $user = $ligne['user'];
+                $liste[$user] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
 
         return $liste;
     }

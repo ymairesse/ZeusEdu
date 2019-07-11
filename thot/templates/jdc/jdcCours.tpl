@@ -107,6 +107,11 @@
         var readonly = 'Dans ce mode, seule la consultation est possible';
         var error = 'Erreur';
 
+        var fcView = Cookies.get('fc-view');
+        var views = ['month', 'agendaWeek', 'agendaDay', 'listMonth', 'listWeek'];
+        if (!(views.includes(fcView)))
+            fcView = 'month';
+
         $('body').on('click', '#btn-modalDel', function(){
             var id = $('#id').val();
             $.post('inc/jdc/delJdc.inc.php', {
@@ -224,9 +229,28 @@
                     }
             }
 
+            // cookie sur le type de vue retenu pour le JDC
+            $('#calendar').on('click', '.fc-button', function(){
+                if ($(this).hasClass('fc-month-button')) {
+                    Cookies.set('fc-view', 'month', { expires: 7, path: 'thot/' });
+                    }
+                    else if ($(this).hasClass('fc-agendaWeek-button')) {
+                        Cookies.set('fc-view', 'agendaWeek', { expires: 7, path: 'thot/' });
+                    }
+                    else if ($(this).hasClass('fc-agendaDay-button')) {
+                        Cookies.set('fc-view', 'agendaDay', { expires: 7, path: 'thot/' });
+                    }
+                    else if ($(this).hasClass('fc-listMonth-button')) {
+                        Cookies.set('fc-view', 'listMonth', { expires: 7, path: 'thot/' });
+                    }
+                    else if ($(this).hasClass('fc-listWeek-button')) {
+                        Cookies.set('fc-view', 'listWeek', { expires: 7, path: 'thot/' });
+                    }
+            })
+
             $('#calendar').fullCalendar({
     			weekends: false,
-    			defaultView: 'agendaWeek',
+    			defaultView: fcView,
     			eventLimit: 3,
     			height: 600,
     			timeFormat: 'HH:mm',

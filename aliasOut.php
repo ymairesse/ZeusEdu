@@ -15,10 +15,10 @@ if (!(isset($_SESSION[APPLICATION]))) {
 
 if (isset($_SESSION)) {
     // définition de la class USER utilisée en variable de SESSION
-  require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+    // require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
     $User = $_SESSION[APPLICATION];
-  // retour de la session de l'administrateur, sauvegardée dans la variable de session
-  $_SESSION[APPLICATION] = $User->getAlias();
+    // retour de la session de l'administrateur, sauvegardée dans la variable de session
+    $_SESSION[APPLICATION] = $User->getAlias();
     $User = $_SESSION[APPLICATION];
 } else {
       $User = null;

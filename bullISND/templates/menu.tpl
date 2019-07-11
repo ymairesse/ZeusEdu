@@ -94,7 +94,7 @@
 			<li><a href="index.php?action=delibes&amp;mode=synthese">Synthèses des situations par période</a></li>
 			{if $userStatus == 'admin'}
 				<li class="divider"></li>
-				<li><a href="index.php?action=delibes&amp;mode=viewNotifs">Notifications envoyées</a> </li>
+				<li><a href="index.php?action=delibes&amp;mode=viewNotifs">Notifications envoyées</a></li>
 			{/if}
 		</ul>
 		</li>

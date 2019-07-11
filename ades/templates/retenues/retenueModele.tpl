@@ -1,7 +1,7 @@
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<td style="text-align:left; width:30%"><img alt="Logo Ecole" src="http://localhost/sio2/peda/images/logoEcole.png" style="height:90px; width:103px" /></td>
+			<td style="text-align:left; width:30%"><img alt="Logo Ecole" src="../images/logoEcole.png" style="height:90px; width:103px" /></td>
 			<td style="text-align:right; width:70%">
 			<h3>##ECOLE##</h3>
 			<strong>##ADRESSE##<br />

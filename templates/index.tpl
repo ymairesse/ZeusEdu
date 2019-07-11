@@ -30,14 +30,26 @@
 
 		<div class="col-md-offset-2 col-md-9 col-xs-12">
 
-			{foreach from=$applisDisponibles key=k item=v}
-				<div class="sousPrg btn btn-primary" title="{$v.nomLong}">
-					<a href="{$v.URL}"><img src="images/{$v.icone}" alt="{$k}" style="float:left">
-					<span class="titreSousPrg">{$v.nomLong}</span></a>
+			{foreach from=$applisDisponibles key=title item=appli}
+				<div class="sousPrg btn btn-primary" title="{$appli.nomLong}">
+					<a href="{$appli.URL}"><img src="images/{$appli.icone}" alt="{$titre}" style="float:left">
+						{if isset($messages.$title)}<span class="badge badge-menu">{$messages.$title|@count|default:''}</span>{/if}
+					<span class="titreSousPrg">{$appli.nomLong}</span></a>
 				</div>
 			{/foreach}
 
 			<div id="titreAppli" style="clear:both">{$titre}</div>
+			<div id="messages" class="hidden">
+				<ul class="list-unstyled">
+				{foreach from=$messages key=title item=listeMessages}
+					{foreach from=$listeMessages key=id item=unMessage}
+					<li class="msg"><img src="images/{$title}Ico.png" alt="{$title|truncate:1:''}"> [{$unMessage.acronyme}] {$unMessage.date|truncate:5:''} - {$unMessage.objet|truncate:80}</li>
+					{/foreach}
+				{/foreach}
+				</ul>
+			</div>
+
+			</div>
 
 		</div>  <!-- col-md... -->
 
@@ -52,6 +64,10 @@
 var titreGeneral = $("#titreAppli").text();
 
 $(document).ready(function(){
+
+	var nbMessages = $('.msg').length;
+	if (nbMessages > 0)
+		$('#messages').removeClass('hidden');
 
 	$(".sousPrg").mouseenter(function(){
 		var texte = $(this).attr("title");

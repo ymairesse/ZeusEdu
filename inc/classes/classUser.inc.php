@@ -734,6 +734,17 @@ class user
     }
 
     /**
+     * retourne le statut de l'utlisateur actif pour l'application donnée
+     *
+     * @param string $appli
+     *
+     * @return string
+     */
+    public function getStatus4appli($appli){
+        return $this->applications[$appli]['userStatus'];
+    }
+
+    /**
      * renvoie l'adresse mail de l'utilisateur courant.
      */
     public function getMail()
@@ -1039,4 +1050,5 @@ class user
             return $p.$n;
         }
     }
+
 }

@@ -1,0 +1,50 @@
+.listeJours {
+    display: flex;
+    flex-flow: row nowrap;
+    height: 3em;
+    font-weight: bold;
+    font-size: 105%;
+}
+
+#labelJour {
+    display: flex;
+    flex-flow: row nowrap;
+    color: blue;
+}
+
+.unJour {
+    float:left;
+    width: 20%
+}
+
+.timeline {
+    float:left;
+    background: red;
+}
+
+.timeline li {
+    border: 1px solid #ccc;
+    height: 3em;
+    font-weight: bold;
+    font-size: 105%;
+    padding: 1em;
+    width: 10em;
+}
+
+.oneDay {
+    float:left;
+    width: 20%;
+    text-align:center;
+}
+
+
+.dayEvents {
+    width: 20%;
+}
+
+.oneDay li, .dayEvents li {
+    height:3em;
+    background-color: #99f;
+    padding: 0.5em 1em;
+    border: 1px solid white;
+}

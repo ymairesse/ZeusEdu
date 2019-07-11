@@ -22,8 +22,6 @@ switch ($mode) {
     case 'resetSituations':
         switch ($etape) {
             case 'confirmer':
-                $listeEleves = $Ecole->listeEleves();
-                $Bulletin->archiveEleves(ANNEESCOLAIRE, $listeEleves);
                 $Bulletin->archiveSituations(ANNEESCOLAIRE);
                 $Bulletin->deleteSituations();
                 $Bulletin->archiveEprExternes();
@@ -282,6 +280,16 @@ switch ($mode) {
                             'texte' => sprintf('%d verrous initialisés (ouverts)', $nb),
                             'urgence' => 'info',
                         ));
+        break;
+
+    case 'archivageEleves':
+        $listeEleves = $Ecole->listeEleves();
+        $nb = $Bulletin->archiveEleves(ANNEESCOLAIRE, $listeEleves);
+        $smarty->assign('message', array(
+                'title' => 'Archivage des élèves',
+                'texte' => sprintf('%d élèves archivés', $nb),
+                'urgence' => 'info',
+            ));
         break;
 
     default:

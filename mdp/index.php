@@ -1,13 +1,11 @@
 <?php
 
 require_once '../config.inc.php';
-include INSTALL_DIR.'/inc/entetesMin.inc.php';
+require_once INSTALL_DIR.'/inc/entetesMin.inc.php';
 // ----------------------------------------------------------------------------
 //
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
-
-
 
 switch ($action) {
     case 'etape2':
@@ -38,8 +36,11 @@ switch ($action) {
                 $smarty->assign('corpsPage', 'steps');
             }
         break;
+        
     case 'etape3':
-        // on vérifie que le token reçu en GET existe et qu'il n'est pas périmé
+        // effacement des tokens périmés (plus de deux jours)
+        $Application->delOldTokens(2);
+        // on vérifie que le token reçu en GET existe
         $acronyme = isset($_GET['acronyme']) ? $_GET['acronyme'] : null;
         $token = isset($_GET['token']) ? $_GET['token'] : null;
         // on revient avec le userName si le token est correct et associé à l'acronyme

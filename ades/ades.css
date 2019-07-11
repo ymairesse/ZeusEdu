@@ -133,3 +133,23 @@ h2 {
     display: flex;
     flex:1 0 auto;
 }
+
+#lastRetards li {
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	font-size: 10px;
+}
+
+.delRetard {
+	color: #b33;
+	font-size: small;
+	cursor: pointer;
+}
+
+.editRetard {
+	font-size: small;
+	color: #393;
+	cursor: pointer;
+}

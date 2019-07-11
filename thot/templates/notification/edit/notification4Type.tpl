@@ -39,7 +39,13 @@
 		</td>
 		<td>
 			{if $uneNote.accuse == 1}
-			<meter style="float:left; margin-right:0.5em" title="Cliquer pour voir le détail" data-container="body" class="showAccuse" value="{$listeAccuses.$nId|count|default:0}" min="0" max="{$listeAttendus.$type.$nId}" data-id="{$nId}"></meter>
+			<meter style="float:left; margin-right:0.5em"
+				title="Cliquer pour voir le détail"
+				data-container="body"
+				class="showAccuse"
+				value="{$listeAccuses.$nId|count|default:0}" min="0" max="{$listeAttendus.$type.$nId}"
+				data-id="{$nId}">
+			</meter>
 			<span class="discret">{$listeAccuses.$nId|count|default:0}/{$listeAttendus.{$type}.$nId}</span>
 			{else}N/A
 			{/if}

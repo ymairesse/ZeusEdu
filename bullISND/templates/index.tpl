@@ -10,6 +10,8 @@
 {include file='../../javascript.js'}
 {include file='../../styles.sty'}
 
+</script>
+
 </head>
 <body>
 

@@ -2,7 +2,6 @@
 
 class PDF_HTML extends PDF_Rotate
 {
-
     protected $B=0;
     protected $I=0;
     protected $U=0;
@@ -16,6 +15,13 @@ class PDF_HTML extends PDF_Rotate
     protected $H3 = false;
 
     protected $X=0;
+
+    function RotatedText($x,$y,$txt,$angle) {
+        //Rotation du texte autour de son origine
+        $this->Rotate($angle,$x,$y);
+        $this->Text($x,$y,$txt);
+        $this->Rotate(0);
+    }
 
     function WriteHTML($html)
     {
@@ -118,7 +124,6 @@ class PDF_HTML extends PDF_Rotate
             $this->Ln(5);
             $this->SetX($this->X);
         }
-
 
     }
 

@@ -62,6 +62,7 @@ if ($matricule == Null) {
         }
     }
     else {
+        $eleve = Eleve::staticGetDetailsEleve($matricule);
         $groupe = $eleve['nom'].' '.$eleve['prenom'];
         $listeEleves = Eleve::staticGetDetailsEleve($matricule);
     }
@@ -72,10 +73,11 @@ $listeChamps = $Ades->lireDescriptionChamps();
 $listeTypesFaits = $Ades->listeTypesFaits();
 $listeFaits = $Ades->fichesDisciplinaires($listeEleves, $debut, $fin, ANNEESCOLAIRE, $aImprimer);
 
+$ds = DIRECTORY_SEPARATOR;
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
-$smarty->template_dir = "../templates";
-$smarty->compile_dir = "../templates_c";
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
 $smarty->assign('ECOLE', ECOLE);
 $smarty->assign('ADRESSE', ADRESSE);
@@ -96,8 +98,10 @@ $smarty->assign('listeTypesFaits', $listeTypesFaits);
 $smarty->assign('listeChamps', $listeChamps);
 $smarty->assign('listeFaits', $listeFaits);
 
+
 require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
 $html2pdf = new Html2PDF('P', 'A4', 'fr');
+
 foreach ($listeFaits as $classe => $listeFaitsParEleves) {
     foreach ($listeFaitsParEleves as $matricule => $lesFaits) {
         $smarty->assign('lesFaits', $lesFaits);
@@ -105,12 +109,11 @@ foreach ($listeFaits as $classe => $listeFaitsParEleves) {
         $smarty->assign('Eleve', $Eleve);
         $listeRetenues = $EleveAdes->getListeRetenuesEleve($matricule);
         $smarty->assign('listeRetenues', $listeRetenues);
-        $ficheEleve4PDF = $smarty->fetch('../../templates/eleve/fichesDiscipline4PDF.tpl');
+        $ficheEleve4PDF = $smarty->fetch('eleve/fichesDiscipline4PDF.tpl');
         $html2pdf->WriteHTML($ficheEleve4PDF);
     }
 }
 
-$ds = DIRECTORY_SEPARATOR;
 $nomFichier = sprintf('discipline_%s.pdf', $groupe);
 
 // création éventuelle du répertoire au nom de l'utlilisateur

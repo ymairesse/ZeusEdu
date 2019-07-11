@@ -78,6 +78,9 @@ switch ($action) {
     case 'agendas':
         require_once 'inc/agenda/agenda.inc.php';
         break;
+    case 'archive':
+        include ('inc/jdc/archivesJdc.inc.php');
+        break;
     default:
         // wtf
         break;

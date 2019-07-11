@@ -1,6 +1,6 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 
-<div class="container-fluid">
+<div class="container">
 	
 	<div class="row">
 		

@@ -18,12 +18,6 @@ if (in_array($classe, $listeClasses)) {
     $texteNotification = file_get_contents('templates/notification/templateNote.html');
     $texteNotification = str_replace(PHP_EOL, '', $texteNotification);    // suppression des /n
     $listeDecisions = $Bulletin->listeDecisionsAvecTexte($listeDecisions, $listeEleves, $texteNotification);
-    /*****************************************************************************************************/
-    // certains parents souhaitent que leur enfant ne reçoive pas la notification par mail
-    // et/ou la notification dans la plate-forme Thot. On les exclut donc au cas par cas
-    // l'information est fournie par le prof titulaire (prof principal) durant la délibération du Conseil de Classe
-    // et figure dans la table des décisions dans la BD
-    /*****************************************************************************************************/
 
     // la liste des élèves pour lesquels une notification dans la BD est souhaitée
     $listeDecisionsBD = $Bulletin->listeDecisionsNote($listeDecisions);

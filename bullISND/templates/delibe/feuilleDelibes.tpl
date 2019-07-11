@@ -5,6 +5,8 @@
 <div class="table-responsive">
 
 	<table class="table table-condensed table-hover fdelibe">
+		<thead>
+
 		<tr>
 			<th style="vertical-align: bottom;">
 				<p>Nom de l'élève</p>
@@ -28,7 +30,10 @@
 			<th><img src="images/heuresEchecs.png" alt="nombre d'heures d'échec"></th>
 			<th><img src="images/mentionInit.png" alt="mention Initiale"></th>
 			<th><img src="images/mentionFinale.png" alt="mention Finale"></th>
+			<th><img src="images/decision.png" alt="Décision"></th>
 		</tr>
+
+		</thead>
 
 		<!-- fin de l'entête ----------------------------------------------------------------- -->
 
@@ -41,6 +46,11 @@
 				data-placement="top"
 				data-container="body"
 				data-original-title="{$nomPrenom|truncate:20}">
+				{if isset($listeEBS.$matricule)}
+				<a href="../trombiEleves/index.php?action=parEleve&matricule={$matricule}" target="_blank">
+					<i class="fa fa-user-circle-o EBSi"></i>
+				</a>
+				{/if}
 				{$unEleve.classe} {$nomPrenom|truncate:25:'...'}
 			</td>
 
@@ -97,6 +107,15 @@
 			</td>
 			<td class="cote delibe">{$delibe.$matricule.mention|default:'&nbsp;'}</td>
 			<td class="delibe">{$listeMentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</td>
+			<td class="cote{if $listeDecisions.$matricule.decision == 'Échec'} echec{/if}">
+				{if $listeDecisions.$matricule.decision == 'Échec'}
+						<strong title="Échec">X</strong>
+					{elseif $listeDecisions.$matricule.decision == 'Restriction'}
+						<strong title="Accès à {$listeDecisions.$matricule.restriction}" style="cursor:pointer">R</strong>
+					{else}
+					-
+				{/if}
+			</td>
 		</tr>
 		{/foreach}
 	</table>

@@ -6,9 +6,13 @@
 
 	<form name="choixInit" id="choixInit" action="index.php" method="POST" role="form" class="form-vertical">
 		<ul class="list-unstyled">
+			<li>
+				<input type="radio" name="mode" value="archivageEleves"{if (isset($mode)) && ($mode == 'archivageEleves')} checked{/if}>
+				<span>Archivage des élèves par classe pour l'année scolaire écoulée</span>
+			</li>
 			<li class="danger">
-				<input type="radio" name="mode" value="resetSituations"{if (isset($mode)) && ($mode == 'resetSituations')} chacked="checked"{/if}>
-				<span>Archivage et initialisation des situations de {$ANNEESCOLAIRE} et des épreuves externes</span>
+				<input type="radio" name="mode" value="resetSituations"{if (isset($mode)) && ($mode == 'resetSituations')} checked{/if}>
+				<span>Initialisation des situations de {$ANNEESCOLAIRE} et des épreuves externes</span>
 			</li>
 			<li class="danger">
 				<input type="radio" name="mode" value="resetDetailsCotes"{if (isset($mode)) && ($mode == 'resetDetailsCotes')} checked="checked"{/if}>

@@ -1,5 +1,4 @@
 /*  http://charliepark.org/bootstrap_buttons/ */
-
 .btn-pink {
     background-color: hsl(312, 49%, 43%) !important;
     background-repeat: repeat-x;
@@ -14,6 +13,23 @@
     border-color: #a3378d #a3378d hsl(312, 49%, 40.5%);
     color: #fff !important;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.16);
+    -webkit-font-smoothing: antialiased;
+}
+
+.btn-lightPink {
+    background-color: hsl(312, 65%, 79%) !important;
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#f5d0ed", endColorstr="#eca6de");
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#f5d0ed), to(#eca6de));
+    background-image: -moz-linear-gradient(top, #f5d0ed, #eca6de);
+    background-image: -ms-linear-gradient(top, #f5d0ed, #eca6de);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f5d0ed), color-stop(100%, #eca6de));
+    background-image: -webkit-linear-gradient(top, #f5d0ed, #eca6de);
+    background-image: -o-linear-gradient(top, #f5d0ed, #eca6de);
+    background-image: linear-gradient(#f5d0ed, #eca6de);
+    border-color: #eca6de #eca6de hsl(312, 65%, 76.5%);
+    color: #333 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.16);
     -webkit-font-smoothing: antialiased;
 }
 

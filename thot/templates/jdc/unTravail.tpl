@@ -51,12 +51,12 @@
     <div class="panel-footer">
         <p class="discret">Dernière modification {$travail.lastModif}</p>
         {if ($acronyme == $travail.proprietaire) && ($editable == true)}
-            <div class="btn-group" {if ($locked == "true")}title="Déverrouiller pour permettre les modifications"{/if}>
+            <div class="btn-group" {if isset($locked) && ($locked == "true")}title="Déverrouiller pour permettre les modifications"{/if}>
                 <button
                     type="button"
                     class="btn btn-danger btn-edit"
                     data-id="{$travail.id}"
-                    {if $locked == "true"} disabled{/if}
+                    {if isset($locked) && ($locked == "true")} disabled{/if}
                     id="delete">
                     <i class="fa fa-eraser fa-lg"></i>
                         Supprimer
@@ -75,7 +75,7 @@
                     data-id="{$travail.id}"
                     data-destinataire="{$travail.destinataire}"
                     data-type="{$travail.type}"
-                    {if $locked == "true"} disabled{/if}
+                    {if (isset($locked)) && ($locked == "true")} disabled{/if}
                     id="modifier">
                     <i class="fa fa-edit fa-lg"></i>
                         Modifier
@@ -84,7 +84,7 @@
             <div class="clearfix"></div>
 
         {/if}
-        {if $locked == "true"}
+        {if isset($locked) && ($locked == "true")}
             <p class="discret">Veuillez déverrouiller les périodes passées pour accéder à cet événement (bouton <i class="fa fa-lock"></i> du calendrier)</p>
         {/if}
     </div>

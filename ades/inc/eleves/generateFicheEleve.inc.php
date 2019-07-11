@@ -18,20 +18,22 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-// durée de validité pour les Cookies
-$unAn = time() + 365 * 24 * 3600;
-
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
-
 $module = $Application->getModule(3);
+
+require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
+$Ades = new Ades();
+
 require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
 $EleveAdes = new EleveAdes();
 
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 
-require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
-$Ades = new Ades();
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$form = array();
+parse_str($formulaire, $form);
+
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 
 require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
 $memoEleve = new padEleve($matricule, 'ades');

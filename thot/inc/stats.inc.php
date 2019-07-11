@@ -1,15 +1,21 @@
 <?php
 
 switch ($mode) {
-    case 'parents':
+    case 'frequentation':
         require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
         $thot = new Thot();
 
-        $stats = $thot->statsParents();
-        $smarty->assign('statsParents', $stats);
+        require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+        $Ecole = new Ecole();
+        $listeClasses = $Ecole->listeClasses();
+        $smarty->assign('listeClasses', $listeClasses);
 
-        $smarty->assign('corpsPage', 'statsParents');
+        $date = isset($_POST['date']) ? $_POST['date'] : strftime('%d/%m/%Y');
+        $smarty->assign('date', $date);
+
+        $smarty->assign('corpsPage', 'stats/statsParents');
         break;
+
     case 'jdc':
         $listeCategories = $Jdc->getListeCategoriesJDC();
         $listeProfs = $Ecole->listeProfs();
@@ -22,7 +28,7 @@ switch ($mode) {
         	$fin = date('d/m/Y');
         $smarty->assign('debut', $debut);
         $smarty->assign('fin', $fin);
-        
+
         $smarty->assign('listeCategories', $listeCategories);
         $smarty->assign('listeProfs', $listeProfs);
         $smarty->assign('corpsPage', 'jdc/statsJdc');

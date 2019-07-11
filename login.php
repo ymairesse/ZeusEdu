@@ -19,6 +19,7 @@ $mdp = (isset($_POST['mdp'])) ? $_POST['mdp'] : null;
 if (!empty($acronyme) && !empty($mdp)) {
     // recherche de toutes les informations sur l'utilisateur et les applications activées
     $user = new user($acronyme);
+
     // noter le passage de l'utilisateur dans les logs
     $user->logger($acronyme);
     $identification = $user->identification();

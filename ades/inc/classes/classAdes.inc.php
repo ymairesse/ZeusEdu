@@ -765,6 +765,7 @@ class Ades
                 $idretenue = $ligne['idretenue'];
                 $ligne['jourSemaine'] = Application::jourSemaineMySQL($ligne['dateRetenue']);
                 $ligne['dateRetenue'] = Application::datePHP($ligne['dateRetenue']);
+                $ligne['dateRetenue'] = ($ligne['dateRetenue']);
                 $ligne['occupation'] = 0;
                 $liste[$idretenue] = $ligne;
             }
