@@ -1526,6 +1526,50 @@ INSERT INTO `didac_thotJdcTypes` (`id`, `type`, `libelle`) VALUES
 (5, 'ecole', 'Mentions à tous les élèves de l\'école');
 
 
+
+CREATE TABLE `didac_thotJdcArchive` (
+  `id` int(6) NOT NULL,
+  `anScol` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire de l''archive',
+  `destinataire` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matricule ou coursGrp ou classe ou...',
+  `type` enum('cours','coursGrp','classe','eleve','niveau','ecole') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type du destinataire',
+  `proprietaire` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `idCategorie` tinyint(4) NOT NULL,
+  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `enonce` mediumblob COMMENT 'Énoncé du travail à effectuer',
+  `startDate` datetime NOT NULL,
+  `endDate` datetime NOT NULL,
+  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Archive du Journal de classe';
+
+ALTER TABLE `didac_thotJdcArchive`
+  ADD PRIMARY KEY (`id`);
+
+
+CREATE TABLE `didac_thotJdcCoursArchive` (
+`cours` varchar(17) COLLATE utf8_unicode_ci NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5',
+`anScol` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire pour ce cours',
+`nbheures` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'nombre d''heures du cours',
+`libelle` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Libelle long du cours (50 caractères)',
+`cadre` tinyint(4) NOT NULL COMMENT 'cadre de formation (code ministère) permet de déterminer les AC,OC,OB,FC,...',
+`section` enum('G','GT','S','TT','TQ','P','D') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'GT' COMMENT '''GT'',''S'',''TT'',''TQ'',''P'',''D'''
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+ALTER TABLE `didac_thotJdcCoursArchive`
+ADD PRIMARY KEY (`cours`,`anScol`);
+
+CREATE TABLE `didac_thotJdcCategoriesArchive` (
+  `idCategorie` tinyint(4) NOT NULL,
+  `anScol` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire pour ces catégories',
+  `ordre` tinyint(2) NOT NULL DEFAULT '0',
+  `urgence` enum('urgence0','urgence1','urgence2') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'urgence0',
+  `categorie` varchar(30) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Archive des Catégories des mentions au journal de classe';
+
+ALTER TABLE `didac_thotJdcCategoriesArchive`
+  ADD PRIMARY KEY (`idCategorie`,`anScol`);
+
+
 CREATE TABLE `didac_thotParents` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
   `formule` enum('M.','Mme') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Formule pour l''envoi de mails',

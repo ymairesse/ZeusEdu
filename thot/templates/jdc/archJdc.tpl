@@ -172,7 +172,7 @@
         $('#btn-resetJDC').click(function(){
             bootbox.confirm({
                 title: 'ATTENTION!!!',
-                message: '<strong style="color:red; font-size: 2em;"><i class="fa fa-exclamation-triangle fa-2x"></i> Veuillez confirmer la réinitialisation définitive et irrécupérable du JDC de l\'annnée scolaire.<br>AVEZ VOUS ARCHIVÉ L\'ANNÉE SCOLAIRE PASSÉE?</strong>',
+                message: '<strong style="color:red; font-size: 2em;"><i class="fa fa-exclamation-triangle fa-2x"></i> Veuillez confirmer la réinitialisation définitive et irrécupérable du JDC de l\'annnée scolaire.<br>AVEZ VOUS ARCHIVÉ CETTE ANNÉE SCOLAIRE?</strong>',
                 callback: function(result){
                     if (result == true) {
                         $.post('inc/jdc/resetJDCanScol.inc.php', {

@@ -2,7 +2,7 @@
 <div class="input-group">
     <input type="text" class="form-control" value="{$anneeScolaire}" readonly>
     <span class="input-group-addon">
-        <button class="btn btn-danger btn-delArchive"
+        <button class="btn btn-danger btn-xs btn-delArchive"
             data-anscol="{$anneeScolaire}"
             type="button"
             title="Effacer définitivement cette archive">

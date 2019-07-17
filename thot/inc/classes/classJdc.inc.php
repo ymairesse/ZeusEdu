@@ -2127,6 +2127,7 @@ class Jdc
      */
     public function delArchiveJDC($anScol){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // table des JDC
         $sql = 'DELETE FROM '.PFX.'thotJdcArchive ';
         $sql .= 'WHERE anScol = :anScol ';
         $requete = $connexion->prepare($sql);
@@ -2134,8 +2135,27 @@ class Jdc
         $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
 
         $resultat = $requete->execute();
-
         $nb = $requete->rowCount();
+
+        // table des archives des cours définis cette année-là
+        $sql = 'DELETE FROM '.PFX.'thotJdcCoursArchive ';
+        $sql .= 'WHERE anScol = :anScol ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        $nb2 = $requete->rowCount();
+
+        // table des archives des catégories utilisées cette année scolaire-là
+        $sql = 'DELETE FROM '.PFX.'thotJdcCategoriesArchive ';
+        $sql .= 'WHERE anScol = :anScol ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        $nb3 = $requete->rowCount();
 
         Application::deconnexionPDO($connexion);
 
