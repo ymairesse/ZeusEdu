@@ -42,8 +42,6 @@ CKEDITOR.editorConfig = function( config ) {
 	config.youtube_privacy = true;
 	config.youtube_related = false;
 
-	config.extraPlugins = 'autolink';
-
 	config.entities_additional = '';
 
 };
