@@ -64,8 +64,15 @@ $smarty->assign('jdcExtract', $jdcExtract);
 
 $jdc4PDF = $smarty->fetch('jdc/jdc4PDF.tpl');
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new Html2PDF('P', 'A4', 'fr');
+// define('PAGEWIDTH', 700);
+
+require_once INSTALL_DIR.$ds.'html2PDF/vendor/autoload.php';
+
+// use Spipu\Html2Pdf\Html2Pdf;
+// use Spipu\Html2Pdf\Exception\Html2PdfException;
+// use Spipu\Html2Pdf\Exception\ExceptionFormatter;
+
+$html2pdf = new \Spipu\Html2Pdf\Html2Pdf('P', 'A4', 'fr');
 
 $html2pdf->WriteHTML($jdc4PDF);
 

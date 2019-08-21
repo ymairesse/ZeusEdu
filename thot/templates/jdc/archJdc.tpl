@@ -191,8 +191,6 @@
             var fileName = $(this).data('filename');
             var arborescence = '{$module}';
             var btn = $(this);
-            console.log(fileName);
-            console.log(arborescence);
             $.post('inc/files/delFile.inc.php', {
                 fileName: fileName,
                 arborescence: arborescence

@@ -1,8 +1,3 @@
-{* <pre>
-{$dir|print_r}
-</pre> *}
-<link href="css/filetree.css" type="text/css" rel="stylesheet">
-
 <div class="panel panel-default">
 
   <div class="panel-body" style="height:30em; overflow: auto;">

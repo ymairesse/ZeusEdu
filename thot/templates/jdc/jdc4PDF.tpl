@@ -13,7 +13,7 @@
   }
 </style>
 
-<page backtop="25mm" backbottom="10mm" backleft="7mm" backright="45mm"  footer="page; date">
+<page backtop="25mm" backbottom="10mm" backleft="7mm" backright="15mm"  footer="page; date">
      <page_header>
        <img src="../../../images/logoEcole.png" alt="LOGO" style="float:right">
        <p>{$ECOLE}
@@ -21,10 +21,10 @@
          <br>Téléphone: {$TELEPHONE}</p>
      </page_header>
      <page_footer>
-        {$nomPrenomClasse}
+        {$coursGrp}
      </page_footer>
 
-    <h3>Journal de classe de {$nomPrenomClasse}<br> {if $dateDebut != ''} du {$dateDebut}{/if}
+    <h3>Journal de classe de {$coursGrp}<br> {if $dateDebut != ''} du {$dateDebut}{/if}
         {if $dateFin != ''} au {$dateFin}{/if} <br>Année scolaire: {$ANNEESCOLAIRE}</h3>
 
     <table style="width:100%">

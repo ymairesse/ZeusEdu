@@ -101,9 +101,7 @@ ul.filetree a.dirLink {
 .filetree li.wait {
     background: url(images/spinner.gif) no-repeat left top;
 }
-
-
-/*extensions and mime types*/
+/*
 
 .filetree li.ext_3gp {
     background: url(images/film.png) no-repeat left top;
@@ -249,7 +247,7 @@ ul.filetree a.dirLink {
     background: url(images/picture.png) no-repeat left top;
 }
 
-.filetree li.ext_pdf, td.ext_pdf {
+.filetree li.ext_pdf, .file.ext_pdf {
     background: url(images/pdf.png) no-repeat left top;
 }
 
@@ -355,347 +353,461 @@ ul.filetree a.dirLink {
 
 .filetree li.ext_odp {
     background: url(images/odp.png) no-repeat left top;
-}
+} */
 
 
 
-td.ext_3gp {
+.file.ext_3gp {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_afp {
+.file.ext_afp {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_afpa {
+.file.ext_afpa {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_asp {
+.file.ext_asp {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_aspx {
+.file.ext_aspx {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_avi {
+.file.ext_avi {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_bat {
+.file.ext_bat {
     background: url(images/application.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_bmp {
+.file.ext_bmp {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_c {
+.file.ext_c {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_cfm {
+.file.ext_cfm {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_cgi {
+.file.ext_cgi {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_com {
+.file.ext_com {
     background: url(images/application.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_cpp {
+.file.ext_cpp {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_css {
+.file.ext_css {
     background: url(images/css.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_doc {
+.file.ext_doc {
     background: url(images/doc.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
-td.ext_docx {
+.file.ext_docx {
     background: url(images/doc.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_exe {
+.file.ext_exe {
     background: url(images/application.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_gif {
+.file.ext_gif {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_fla {
+.file.ext_fla {
     background: url(images/flash.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_h {
+.file.ext_h {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_htm {
+.file.ext_htm {
     background: url(images/html.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_html {
+.file.ext_html {
     background: url(images/html.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_jar {
+.file.ext_jar {
     background: url(images/java.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_jpg, td.ext_JPG {
+.file.ext_jpg, .file.ext_JPG {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_jpeg {
+.file.ext_jpeg {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_js {
+.file.ext_js {
     background: url(images/script.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_lasso {
+.file.ext_lasso {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_log {
+.file.ext_log {
     background: url(images/txt.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_m4p {
+.file.ext_m4p {
     background: url(images/music.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_mov {
+.file.ext_mov {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_mp3 {
+.file.ext_mp3 {
     background: url(images/music.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_mp4 {
+.file.ext_mp4 {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_mpg {
+.file.ext_mpg {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_mpeg {
+.file.ext_mpeg {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_ogg {
+.file.ext_ogg {
     background: url(images/music.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_pcx {
+.file.ext_pcx {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_pdf, td.ext_pdf {
+.file.ext_pdf {
     background: url(images/pdf.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_php {
+.file.ext_php {
     background: url(images/php.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_png {
+.file.ext_png {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_ppt {
+.file.ext_ppt {
     background: url(images/ppt.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
-td.ext_pptx {
+.file.ext_pptx {
     background: url(images/ppt.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_psd {
+.file.ext_psd {
     background: url(images/psd.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_pl {
+.file.ext_pl {
     background: url(images/script.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_py {
+.file.ext_py {
     background: url(images/script.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_rb {
+.file.ext_rb {
     background: url(images/ruby.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_rbx {
+.file.ext_rbx {
     background: url(images/ruby.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_rhtml {
+.file.ext_rhtml {
     background: url(images/ruby.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_rpm {
+.file.ext_rpm {
     background: url(images/linux.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_ruby {
+.file.ext_ruby {
     background: url(images/ruby.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_sql {
+.file.ext_sql {
     background: url(images/db.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_swf {
+.file.ext_swf {
     background: url(images/flash.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_tif {
+.file.ext_tif {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_tiff {
+.file.ext_tiff {
     background: url(images/picture.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_txt {
+.file.ext_txt {
     background: url(images/txt.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_vb {
+.file.ext_vb {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_wav {
+.file.ext_wav {
     background: url(images/music.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_wmv {
+.file.ext_wmv {
     background: url(images/film.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_xls {
+.file.ext_xls {
     background: url(images/xls.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
-td.ext_xlsx {
+.file.ext_xlsx {
     background: url(images/xls.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_xml {
+.file.ext_xml {
     background: url(images/code.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_zip {
+.file.ext_zip {
     background: url(images/zip.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_odt {
+.file.ext_odt {
     background: url(images/odt.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_ods {
+.file.ext_ods {
     background: url(images/ods.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_odg {
+.file.ext_odg {
     background: url(images/odg.png) no-repeat left top;
-    background-size: 24px;
+    background-size: 60px;
 }
 
-td.ext_odp {
+.file.ext_odp {
     background: url(images/odp.png) no-repeat left top;
-    background-size: 24px;
-}
-
-.file {
-    border: 1px solid black;
-    height: 4em;
-    width: 4em;
-    float:left;
-    margin-right:1em;
-    background-image: url('images/pdf.png');
-    background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: 60px;
 }
 
 
-.file span {
+.file-container .file {
+	color: #335;
+	border: 1px solid black;
+	box-shadow: 0px 0px 2px rgba(255,255,255,0);
+	-webkit-transition: background 0.2s, border 0.2s, color 0.2s;
+	-moz-transition: background 0.2s, border 0.2s, color 0.2s;
+	-o-transition: background 0.2s, border 0.2s, color 0.2s;
+	-ms-transition: background 0.2s, border 0.2s, color 0.2s;
+	transition: background 0.2s, border 0.2s, color 0.2s;
+	width: 60px;
+	height: 75px;
+	text-decoration: none;
+	margin: 0;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	overflow: hidden;
+	float: left;
+
+  display: inline-block;
+  float: left;
+  position: relative;
+  width: 70px;
+  height: 60px;
+  padding-top:70px;
+}
+
+.file .item-menu .cert {
+	margin-top: 5px;
+	margin-left: 3px;
+	width: 0;
+	height: 0;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 5px solid silver;
+}
+
+.file .item-menu {
+	// display: none;
+	position: absolute;
+	right: 4px;
+	top: 4px;
+	width: 14px;
+	height: 14px;
+	box-sizing: content-box;
+	text-align: center;
+	border: 1px solid #ddd;
+	background: #fff;
+	cursor: pointer;
+	z-index: 50;
+	border-radius: 2px;
+}
+
+.file .item-select {
+	// display: none;
+	position: absolute;
+	right: 4px;
+	top: 4px;
+	width: 14px;
+	height: 14px;
+	box-sizing: content-box;
+	text-align: center;
+	border: 1px solid #ddd;
+	background: #fff;
+	cursor: pointer;
+	z-index: 50;
+	border-radius: 2px;
+	padding: 2px;
+	left: 5px;
+	border-radius: 50%;
+	background: rgba(0,0,0,0.5);
+	border: none;
+	color: #fff;
+}
+
+.file-container .carette {
     position: relative;
-    top:6em;
-    font-size: 8pt;
-    overflow:hidden;
+    cursor: pointer;
+    border-width: 6px;
+    border-style: solid;
+    border-right: 6px solid transparent;
+    border-color: #aaa transparent transparent;
+    width: 0;
+    height: 0;
+    }
+
+    .file-container .filename {
+    	font-size: 8pt !important;
+    	width: 67px;
+    	cursor: default;
+    	text-align: center;
+    	word-break: break-all;
+    	font-size: 1.0em;
+    	margin: 0 auto;
+    	line-height: 1.5em;
+    	display: -webkit-box;
+    	-webkit-box-orient: vertical;
+    	-webkit-line-clamp: 3;
+    	overflow: hidden;
+    	font-family: "Helvetica", Arial, monospace;
+    }
+
+.x-pdf {
+background: url('images/pdf.png');
+background-size: 100%;
+background-repeat: no-repeat;
+}
+
+.file-container .filename {
+font-size: 8pt !important;
+width: 67px;
+cursor: default;
+text-align: center;
+word-break: break-all;
+font-size: 1.0em;
+margin: 0 auto;
+line-height: 1.5em;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 3;
+overflow: hidden;
+font-family: "Helvetica", Arial, monospace;
+}
+
+.file-container .ico {
+position: relative;
+top: -20px;
+height: 68px;
+width: 60px;
+z-index: -1000;
+margin: -5px 5px -15px 0;
 }

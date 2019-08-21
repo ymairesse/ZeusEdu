@@ -17,7 +17,7 @@ $smarty->assign('onglet', $onglet);
 //
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$Thot = new thot();
+$Thot = new Thot();
 
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;

@@ -34,6 +34,7 @@ switch ($mode) {
         $smarty->assign('arborescence', Null);
         $smarty->assign('directory', Null);
         $smarty->assign('dir', $Files->flatDirectory($root));
+        // Application::afficher($Files->flatDirectory($root), true);
         $smarty->assign('corpsPage', 'files/directory');
         break;
 
