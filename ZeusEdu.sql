@@ -426,6 +426,18 @@ CREATE TABLE IF NOT EXISTS didac_bullArchives (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Tablea des anciens élèves pour archives des bulletins';
 
 
+CREATE TABLE `didac_archiveClassesEleves` (
+  `lematricule` int(6) NOT NULL COMMENT 'champ matricule (nom modifié pour éviter la purge lors du passage d''année)',
+  `annee` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+  `classe` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `nomPrenom` varchar(40) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Tablea des anciens élèves pour archives des bulletins';
+
+ALTER TABLE `didac_archiveClassesEleves`
+  ADD PRIMARY KEY (`lematricule`,`annee`),
+  ADD KEY `classe` (`classe`);
+
+
 CREATE TABLE IF NOT EXISTS didac_bullAttitudes (
   matricule int(6) NOT NULL,
   coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
@@ -1525,8 +1537,6 @@ INSERT INTO `didac_thotJdcTypes` (`id`, `type`, `libelle`) VALUES
 (3, 'classe', 'Mentions à des classes'),
 (4, 'niveau', 'Mentions à un niveau d\'étude'),
 (5, 'ecole', 'Mentions à tous les élèves de l\'école');
-
-
 
 CREATE TABLE `didac_thotJdcArchive` (
   `id` int(6) NOT NULL,
