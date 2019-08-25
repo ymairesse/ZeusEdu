@@ -284,7 +284,7 @@ switch ($mode) {
 
     case 'archivageEleves':
         $listeEleves = $Ecole->listeEleves();
-        $nb = $Bulletin->archiveEleves(ANNEESCOLAIRE, $listeEleves);
+        $nb = $Ecole->archiveEleves(ANNEESCOLAIRE, $listeEleves);
         $smarty->assign('message', array(
                 'title' => 'Archivage des élèves',
                 'texte' => sprintf('%d élèves archivés', $nb),

@@ -22,22 +22,25 @@ switch ($mode) {
     case 'archive':
         $anneeScolaire = isset($_POST['anneeScolaire']) ? $_POST['anneeScolaire'] : null;
         $smarty->assign('anneeScolaire', $anneeScolaire);
-        $smarty->assign('listeAnnees', $Bulletin->anneesArchivesDispo());
-        $smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
+        $listeAnnees = $Ecole->anneesArchivesDispo();
+        $listeNiveaux = $Ecole->listeNiveaux();
+
+        $smarty->assign('listeAnnees', $listeAnnees);
+        $smarty->assign('listeNiveaux', $listeNiveaux);
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
         $smarty->assign('etape', 'showEleve');
         $smarty->assign('selecteur', 'selectAnneeNiveauEleve');
         if ($etape == 'showEleve') {
-            $listeElevesArchives = $Bulletin->listeElevesArchives($anneeScolaire, $niveau);
+            $listeElevesArchives = $Ecole->listeElevesArchives($anneeScolaire, $niveau);
             $smarty->assign('listeEleves', $listeElevesArchives);
             $nomEleve = isset($_POST['nomEleve']) ? $_POST['nomEleve'] : null;
             $smarty->assign('nomEleve', $nomEleve);
-            $classeArchive = $Bulletin->classeArchiveEleve($matricule, $anneeScolaire);
+            $classeArchive = $Ecole->classeArchiveEleve($matricule, $anneeScolaire);
             $smarty->assign('periodes', $Bulletin->listePeriodes(NBPERIODES));
             $smarty->assign('classeArchive', $classeArchive);
             $smarty->assign('corpsPage', 'bulletinsArchive');
-        }
+            }
         break;
 
     case 'bulletinIndividuel':
@@ -73,6 +76,7 @@ switch ($mode) {
             }
         }
         break;
+
     case 'bulletinClasse':
         // liste complète des noms des classes en rapport avec leur classe
         $listeClasses = $Ecole->listeGroupes();
@@ -96,6 +100,7 @@ switch ($mode) {
             }
         }
         break;
+
     case 'niveau':
         $smarty->assign('nbBulletins', NBPERIODES);
         $listeNiveaux = $Ecole->listeNiveaux();

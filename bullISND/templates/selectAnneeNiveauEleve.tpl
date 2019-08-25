@@ -1,15 +1,15 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 
-		<select name="anneeScolaire" id="anneeScolaire">
+		<select name="anneeScolaire" id="anneeScolaire" class="form-control">
 		<option value="">Année Scolaire</option>
 		{foreach from=$listeAnnees item=uneAnnee}
 			<option value="{$uneAnnee}"{if isset($anneeScolaire) && ($uneAnnee == $anneeScolaire)} selected="selected"{/if}>{$uneAnnee}</option>
 		{/foreach}
 		</select>
 
-		<select name="niveau" id="selectNiveau">
+		<select name="niveau" id="selectNiveau" class="form-control">
 			<option value=''>Niveau d'étude</option>
 			{foreach from=$listeNiveaux item=unNiveau}
 			<option value="{$unNiveau}"{if (isset($niveau) && ($niveau == $unNiveau))} selected="selected"{/if}>{$unNiveau}e annee</option>
@@ -25,7 +25,7 @@
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	<input type="hidden" name="etape" value="showEleve">
-	<button type="submit" class="btn btn-primary btn-sm" id="envoi" style="display:none">OK</button>		
+	<button type="submit" class="btn btn-primary btn-sm" id="envoi" style="display:none">OK</button>
 	</form>
 
 </div>
