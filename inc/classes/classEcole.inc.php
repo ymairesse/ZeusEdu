@@ -3190,4 +3190,230 @@ class ecole
         return $liste;
     }
 
+    /**
+     * Archivage des matricules et classes des élèves pour l'année scolaire indiquée.
+     *
+     * @param string $anneeScolaire
+     * @param array $listeEleves
+     *
+     * @return int : nombre de références archivées
+     */
+    public function archiveEleves4anScol($anneeScolaire, $listeEleves)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'archiveClassesEleves ';
+        $sql .= "SET lematricule = :matricule, nomPrenom = :nomPrenom, classe = :classe, annee = :anneeScolaire ";
+        $sql .= 'ON DUPLICATE KEY UPDATE classe=:classe ';
+        $requete = $connexion->prepare($sql);
+        $nb = 0;
+        foreach ($listeEleves as $matricule => $data) {
+            $nomPrenom = $data['nom'].' '.$data['prenom'];
+            $classe = $data['groupe'];
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $requete->bindParam(':nomPrenom', $nomPrenom, PDO::PARAM_STR, 60);
+            $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+            // $eleve = array(':matricule' => $matricule, ':nomPrenom' => $nomPrenom, ':classe' => $classe);
+            $resultat = $requete->execute();
+            if ($resultat) {
+                ++$nb;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * renvoie la liste des élèves par niveau d'étude pour l'année scolaire demandée
+     *
+     * @param int $niveau : le niveau d'étude
+     * @param string $anScol : l'année scolaire au format XXXX-YYYY
+     *
+     * @return array
+     */
+    public function getClasses4anScol($anScol, $niveau){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT classe ';
+        $sql .= 'FROM '.PFX.'archiveClassesEleves ';
+        $sql .= 'WHERE annee = :anScol AND SUBSTR(classe, 1, 1) = :niveau ';
+        $sql .= 'ORDER BY classe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $liste[] = $ligne['classe'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des élèves pour l'année scolaire archivée $anScol à un niveau d'étude
+     *
+     * @param string $anScol : année scolaire
+     * @param int $niveau : niveau d'étude
+     *
+     * @return array
+     */
+    public function getElevesNiveau4anScol($anScol, $niveau){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT leMatricule, nomPrenom, classe ';
+        $sql .= 'FROM '.PFX.'archiveClassesEleves ';
+        $sql .= 'WHERE annee = :anScol AND SUBSTR(classe, 1, 1) = :niveau ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(nomPrenom," ",""),"-",""),"\'","") ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['leMatricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * Archivage des matricules et classes des élèves pour l'année scolaire indiquée.
+     *
+     * @param string $anneeScolaire
+     * @param array $listeEleves
+     *
+     * @return int : nombre de références archivées
+     */
+    public function archiveEleves($anneeScolaire, $listeEleves)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'archiveClassesEleves ';
+        $sql .= 'SET lematricule = :matricule, nomPrenom = :nomPrenom, classe = :classe, annee = :anneeScolaire ';
+        $sql .= 'ON DUPLICATE KEY UPDATE classe = :classe ';
+
+        $requete = $connexion->prepare($sql);
+        $nb = 0;
+        $requete->bindParam(':anneeScolaire', $anneeScolaire, PDO::PARAM_STR, 9);
+        foreach ($listeEleves as $matricule => $data) {
+            $nomPrenom = $data['nom'].' '.$data['prenom'];
+            $classe = $data['groupe'];
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $requete->bindParam(':nomPrenom', $nomPrenom, PDO::PARAM_STR, 60);
+            $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
+
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $nb++;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * retourne la liste des années d'archives disponibles dans la table des archives.
+     *
+     * @param
+     *
+     * @return array
+     */
+    public function anneesArchivesDispo(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT annee ';
+        $sql .= 'FROM '.PFX.'archiveClassesEleves ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+
+        $listeAnnees = array();
+        if ($resultat) {
+            while ($ligne = $requete->fetch()) {
+                $listeAnnees[] = $ligne['annee'];
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeAnnees;
+    }
+
+    /**
+     * retourne la liste des élèves d'un niveau donné (de la 1e à la 6e) pour une année scolaire indiquée.
+     *
+     * @param string $annee : annee scolaire passée (Ex: 2012-2013)
+     * @param integer $niveau : niveau d'étude
+     *
+     * @return array : liste des élèves
+     */
+    public function listeElevesArchives($annee, $niveau)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT lematricule, nomPrenom, classe ';
+        $sql .= 'FROM '.PFX.'archiveClassesEleves ';
+        $sql .= 'WHERE annee = :annee AND SUBSTR(classe,1,1) = :niveau ';
+        $sql .= 'ORDER BY nomPrenom, classe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':annee', $annee, PDO::PARAM_STR,9);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        $resultat = $requete->execute();
+        $listeEleves = array();
+        if ($resultat) {
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['lematricule'];
+                $nomPrenom = $ligne['nomPrenom'];
+                $listeEleves[$matricule] = $nomPrenom;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeEleves;
+    }
+
+    /**
+     * retourne la classe d'un ancien élève dont on fournit la matricule
+     * pour l'année scolaire indiquée.
+     *
+     * @param $matricule : matricule de l'élève
+     * @param $annee : année scolaire concernée
+     *
+     * @return array $classes par année scolaire
+     */
+    public function classeArchiveEleve($matricule, $annee)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT classe ';
+        $sql .= 'FROM '.PFX.'archiveClassesEleves ';
+        $sql .= "WHERE lematricule = :matricule AND annee = :annee ";
+        $sql .= 'ORDER BY annee ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':annee', $annee, PDO::PARAM_STR,9);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        if (isset($resultat)) {
+            $ligne = $requete->fetch();
+            $classe = $ligne['classe'];
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $classe;
+    }
+
 }

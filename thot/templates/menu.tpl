@@ -110,8 +110,8 @@
 						<li><a href="index.php?action=admin&amp;mode=bulletin">Accès aux bulletins</a></li>
 						<li><a href="index.php?action=admin&amp;mode=gestParents">Gestion des parents</a></li>
 						<li role="separator" class="divider"></li>
-						<li><a href="index.php?action=archive&amp;mode=jdc">Traitement des archives JDC</a></li>
-						<li><a href="index.php?action=stats&amp;mode=jdc">Statistiques JDC</a></li>
+						<li><a href="index.php?action=stats&amp;mode=jdc">Statistiques JDC par prof</a></li>
+						<li><a href="index.php?action=archive&amp;mode=jdc">Archivage et impression des archives JDC</a></li>
 					</ul>
 				</li>
 			{/if}

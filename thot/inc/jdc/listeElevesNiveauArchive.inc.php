@@ -20,19 +20,20 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
-$Jdc = new Jdc();
+
+require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
 
 $anScol = isset($_POST['anScol']) ? $_POST['anScol'] : Null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
 
-$listeEleves = $Jdc->listeElevesNiveau4anScol($anScol, $niveau);
+$listeEleves = $Ecole->getElevesNiveau4anScol($anScol, $niveau);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+require_once(INSTALL_DIR.'/smarty/Smarty.class.php');
 $smarty = new Smarty();
-$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
-$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->display('jdc/inc/listeEleves.tpl');

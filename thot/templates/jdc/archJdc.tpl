@@ -18,10 +18,11 @@
                 <button type="button" class="btn btn-primary btn-block" id="btn-archive">
                     Archiver l'année {$ANNEESCOLAIRE}
                 </button>
-
+                <p class="discret">L'archivage n'efface aucune information. L'initialisation du JDC efface toutes les mentions existantes.</p>
                 <button type="button" class="btn btn-danger btn-block" id="btn-resetJDC">
                     Initialiser le JDC
                 </button>
+                <p class="discret">L'initialisation supprime toutes les informations du JDC pour l'année scolaire courante</p>
             </div>
 
         </div>
@@ -152,8 +153,6 @@
         </div>
 
     </div>
-
-
 
 </div>
 

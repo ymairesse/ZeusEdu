@@ -25,4 +25,11 @@ $Jdc = new Jdc();
 
 $nb = $Jdc->saveArchiveJDC(ANNEESCOLAIRE);
 
+require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
+
+// archivage des élèves avec leurs classes respectives pour l'année scolaire courante
+$listeEleves = $Ecole->listeEleves();
+$Ecole->archiveEleves(ANNEESCOLAIRE, $listeEleves);
+
 echo $nb;

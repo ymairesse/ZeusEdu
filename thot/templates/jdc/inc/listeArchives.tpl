@@ -11,3 +11,5 @@
     </span>
 </div>
 {/foreach}
+
+<p class="discret">Les archives peuvent être effacées dès qu'il est certain que l'homologation n'aura plus l'utilité des JDC</p>
