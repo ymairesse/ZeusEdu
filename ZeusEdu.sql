@@ -1100,14 +1100,12 @@ CREATE TABLE didac_padSuivi (
 ALTER TABLE didac_padSuivi
       ADD PRIMARY KEY (`matricule`,`anScol`,`periode`);
 
-
-CREATE TABLE IF NOT EXISTS `didac_passwd` (
+CREATE TABLE `didac_passwd` (
   `matricule` int(6) NOT NULL,
   `user` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur de l''élève',
   `passwd` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe',
   `md5Pwd` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mot de passe encrypté MD5',
-  `mailDomain` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'domaine pour l''adresse mail',
-  PRIMARY KEY (`matricule`)
+  `mailDomain` varchar(40) COLLATE utf8_unicode_ci DEFAULT ' ' COMMENT 'domaine pour l''adresse mail'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `didac_EDTeleves` (
