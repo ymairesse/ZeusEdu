@@ -643,13 +643,13 @@ class athena
          if ($id == Null) {
             $sql = 'INSERT INTO '.PFX.'athena ';
             $sql .= 'SET matricule = :matricule, envoyePar = :envoyePar, anneeScolaire = :anneeScolaire, ';
-            $sql .= 'proprietaire = "", heure = "", motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
+            $sql .= 'proprietaire = "", date = NOW(), heure = "", motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
             $requete = $connexion->prepare($sql);
          }
         else {
             $sql = 'UPDATE '.PFX.'athena ';
             $sql .= 'SET matricule = :matricule, envoyePar = :envoyePar, anneeScolaire = :anneeScolaire, ';
-            $sql .= 'proprietaire = "", heure = "", motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
+            $sql .= 'proprietaire = "", heure = "", date = :date, motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
             $sql .= 'WHERE id = :id ';
             $requete = $connexion->prepare($sql);
         }
@@ -658,8 +658,10 @@ class athena
         $requete->bindParam(':envoyePar', $envoyePar, PDO::PARAM_STR, 7);
         $requete->bindParam(':anneeScolaire', $anneeScolaire, PDO::PARAM_STR, 9);
         $requete->bindParam(':motif', $motif, PDO::PARAM_STR);
+
         if ($id != Null) {
             $requete->bindParam(':id', $id, PDO::PARAM_INT);
+            $requete->bindParam(':date', $date, PDO::PARAM_STR);
             $resultat = $requete->execute();
             $lastId = $id;
             }
