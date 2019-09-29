@@ -1675,14 +1675,22 @@ class Application
     /**
      * supprimer les caractèes accentués d'une chaîne et les remplacer par le caractères non accentué.
      *
-     * @param $string : la chaîne à corriger
+     * @param string $string : la chaîne à corriger
      *
      * @return string
      */
-    public static function stripAccents($string)
-    {
-        return strtr($string, 'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ',
-        'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+    public static function stripAccents($string) {
+        $table = array(
+        'Š'=>'S', 'š'=>'s', 'Đ'=>'Dj', 'đ'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'Č'=>'C', 'č'=>'c', 'Ć'=>'C', 'ć'=>'c',
+        'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+        'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+        'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+        'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+        'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+        'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
+        'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r',
+        );
+      return strtr($string, $table);
     }
 
     /**
@@ -2194,6 +2202,35 @@ class Application
             }
         return $value;
     }
+
+     /**
+       * modifie la valeur de 'acronyme' en changeant "$ancien" par "$nouveau" dans la table indiquée
+       *
+       * @param string $ancien : ancien acronyme
+       * @param string $nouveau: nouvelle version
+       * @param string $table : nom de la table
+       * @param string $field : nom du champ à modifier (généralement 'acronyme')
+       *
+       * @return int : nombre de modifications
+       */
+      public function changeAcronyme4table($ancien, $nouveau, $table, $field){
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'UPDATE '.PFX.$table.' SET '.$field.' = :nouveau ';
+          $sql .= 'WHERE '.$field.' = :ancien ';
+          $requete = $connexion->prepare($sql);
+
+          $nb = 0;
+          $requete->bindParam(':ancien', $ancien, PDO::PARAM_STR, 7);
+          $requete->bindParam(':nouveau', $nouveau, PDO::PARAM_STR, 7);
+
+          $resultat = $requete->execute();
+          if ($resultat)
+  			$nb = $requete->rowCount();
+
+          Application::deconnexionPDO($connexion);
+
+  		return $nb;
+      }
 
 
 }
