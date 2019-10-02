@@ -61,20 +61,22 @@
 				{assign var=counter value=1}
 				{foreach from=$listeTravaux key=idCarnet item=travail}
 					{assign var=idComp value=$travail.idComp}
-				<th data-idcarnet="{$idCarnet}"
-					style="width:4em"
-					data-toggle="popover"
-					data-trigger="hover"
-					class="detailsCote {$travail.formCert}"
-					data-content="Libellé: {$travail.libelle}<br>
-								Remarque: {$travail.remarque}<br>
+					{assign var=libelle value=$travail.libelle|replace:"\'":"'"}
+					{assign var=remarque value=$travail.remarque|replace:"\'":"'"}
+				<th data-idcarnet='{$idCarnet}'
+					style='width:4em'
+					data-toggle='popover'
+					data-trigger='hover'
+					class='detailsCote {$travail.formCert}'
+					data-content="Libellé: {$libelle}<br>
+								Remarque: {$remarque}<br>
 								Neutralisé: <strong>{if $travail.neutralise == 1}Oui{else}Non{/if}</strong><br>
-								Form/Cert: {if $travail.formCert == 'cert'}Certificatif{else}Formatif{/if}<br>
+								Form/Cert: {if $travail.formCert == "cert"}Certificatif{else}Formatif{/if}<br>
 								Max: <strong>{$travail.max}</strong><br>
 								Publié sur Thot: <strong>{if $travail.publie == 1}Oui{else}Non{/if}</strong>"
-					data-html="true"
-					data-container="body"
-					data-placement="left"
+					data-html='true'
+					data-container='body'
+					data-placement='left'
 					data-original-title="C{$travail.ordre} {$listeCompetences.$idComp.libelle}">
 					{$travail.date|substr:0:5}<br>
 					<span class="micro">C{$travail.ordre}</span> / <strong>{$travail.max}</strong>

@@ -33,15 +33,17 @@
 					<div class="row">
 						<div class="col-md-6 col-sm-12">
 							<div class="form-group">
+								{assign var=libelle value=$entete.libelle|replace:"\'":"'"}
 								<label>Libellé</label>
-								<p class="form-control-static">{$entete.libelle}</p>
+								<p class="form-control-static">{$libelle}</p>
 							</div>
 						</div>  <!-- col-md-.. -->
 
 						<div class="col-md-6 col-sm-12">
 							<div class="form-group">
+								{assign var=remarque value=$entete.remarque|replace:"\'":"'"}
 								<label>Remarque</label>
-								<p class="form-control-static">{$entete.remarque}</p>
+								<p class="form-control-static">{$remarque}</p>
 							</div>
 						</div>  <!-- col-md-.. -->
 

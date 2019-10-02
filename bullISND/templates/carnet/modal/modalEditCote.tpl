@@ -83,16 +83,18 @@
 					</div>
 
 					<div class="form-group">
+						{assign var=libelle value=$entete.libelle|replace:"\'":"'"}
 						<label for="libelle">Libellé</label>
-						<input type="text" name="libelle" value="{$entete.libelle|default:''}" maxlength="50" class="form-control">
+						<input type="text" name="libelle" value="{$libelle|default:''}" maxlength="50" class="form-control">
 						<div class="help-block">Titre du travail</div>
 					</div>
 
 					<div class="row">
 						<div class="col-xs-8">
 							<div class="form-group">
+								{assign var=remarque value=$entete.remarque|replace:"\'":"'"}
 								<label for="remarque">Remarque privée</label>
-								<input type="text" name="remarque" id="remarque" value="{$entete.remarque|default:''}" class="form-control" maxlength="30">
+								<input type="text" name="remarque" id="remarque" value="{$remarque|default:''}" class="form-control" maxlength="30">
 								<div class="help-block">Remarque libre</div>
 							</div>
 						</div>
@@ -104,7 +106,7 @@
 										name="publie"
 										id="publie"
 										value="1"
-										class="{if $entete.neutralise == 1}disabled{/if}" 
+										class="{if $entete.neutralise == 1}disabled{/if}"
 										{if ($entete.publie == 1)}checked{/if}
 										>
 									Publié</label>
