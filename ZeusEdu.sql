@@ -681,20 +681,20 @@ CREATE TABLE IF NOT EXISTS didac_bullSitArchives (
   KEY matricule (matricule)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-
-CREATE TABLE IF NOT EXISTS `didac_bullSituations` (
+CREATE TABLE `didac_bullSituations` (
   `matricule` int(6) NOT NULL,
   `coursGrp` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `bulletin` tinyint(2) NOT NULL COMMENT 'Numéro du bulletin correspondant au données',
   `situation` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation de l''élève au terme de la période',
   `maxSituation` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  `choixProf` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Choix de cote de délibé par le prof (sans épr. externe)',
-  `attributProf` enum('','star','hook','degre','reussite50','magique') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `sitDelibe` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation en pourcents',
-  `attributDelibe` enum('','star','hook','degre','reussite50','magique','externe') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'attribut de la situation de délibé',
-  PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`)
+  `choixProf` varchar(6) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Choix de cote de délibé par le prof (sans épr. externe)',
+  `attributProf` enum('','star','hook','degre','reussite50','magique','externe') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sitDelibe` varchar(6) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Situation en pourcents',
+  `attributDelibe` enum('','star','hook','degre','reussite50','magique','externe') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'attribut de la situation de délibé'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ALTER TABLE `didac_bullSituations`
+  ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`);
 
 CREATE TABLE IF NOT EXISTS didac_bullTitus (
   matricule int(6) NOT NULL,
