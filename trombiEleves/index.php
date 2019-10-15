@@ -61,10 +61,10 @@ switch ($action) {
             $smarty->assign('listeCours', $eleve->listeCoursEleve());
             $classe = $eleve->classe();
 			$smarty->assign('classe', $classe);
-            require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
-            $Edt = new Edt();
-            $imageEDT = $Edt->getEdtEleve($matricule);
-            $smarty->assign('imageEDT', $imageEDT);
+            // require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
+            // $Edt = new Edt();
+            // $imageEDT = $Edt->getEdtEleve($matricule);
+            // $smarty->assign('imageEDT', $imageEDT);
             $eleveEBS = $Ecole->getEBS($matricule, 'eleve');
             $smarty->assign('eleveEBS', $eleveEBS);
             $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
