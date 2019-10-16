@@ -460,7 +460,8 @@ CREATE TABLE `didac_bullCarnetCotes` (
   `formCert` enum('form','cert') COLLATE utf8_unicode_ci NOT NULL,
   `bulletin` tinyint(2) NOT NULL,
   `remarque` text COLLATE utf8_unicode_ci,
-  `neutralise` tinyint(1) NOT NULL DEFAULT '0'
+  `neutralise` tinyint(1) NOT NULL DEFAULT '0',
+  `publie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Publié sur Thot pour les élèves'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `didac_bullCarnetCotes`
