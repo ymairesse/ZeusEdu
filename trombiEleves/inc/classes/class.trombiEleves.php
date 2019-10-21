@@ -22,10 +22,14 @@ class TrombiEleves
     	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
     	$sql = 'SELECT matricule, groupe, nom, prenom, DateNaiss, nomResp, telephone1, telephone2, telephone3 ';
     	$sql .= 'FROM '.PFX.'eleves ';
-        if ($cible == 'classe')
+        if ($cible == 'classe') {
             $sql .= 'WHERE matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe = :groupe) ';
-            else
+            $sql .= 'AND section != "PARTI" ';
+            }
+            else {
             $sql .= 'WHERE matricule IN (SELECT matricule FROM '.PFX.'elevesCours WHERE coursGrp = :groupe) ';
+            $sql .= 'AND section != "PARTI" ';
+            }
     	$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom, groupe ";
     	$requete = $connexion->prepare($sql);
 
