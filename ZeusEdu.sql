@@ -714,14 +714,16 @@ CREATE TABLE IF NOT EXISTS didac_bullTQCommentProfs (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Commentaires des profs des branches dans les bulletins';
 
 
-CREATE TABLE IF NOT EXISTS didac_bullTQCompetences (
-  id int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide',
-  cours varchar(17) COLLATE utf8_unicode_ci NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5 (le groupe n''est donc pas indiqué',
-  ordre tinyint(3) NOT NULL COMMENT 'ordre d''apparition de la compétences dans la liste pour ce cours',
-  libelle varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'libelle (tinyText)',
-  PRIMARY KEY (cours,libelle),
-  KEY id (id)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `didac_bullTQCompetences` (
+  `id` int(6) NOT NULL COMMENT 'id numérique unique ou laisser vide',
+  `cours` varchar(17) COLLATE utf8_unicode_ci NOT NULL COMMENT 'dénomination sous la forme "Année:codeCours". Ex: 3:FR5 (le groupe n''est donc pas indiqué',
+  `ordre` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'ordre d''apparition de la compétences dans la liste pour ce cours',
+  `libelle` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'libelle (tinyText)'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_bullTQCompetences`
+  ADD PRIMARY KEY (`cours`,`libelle`),
+  ADD KEY `id` (`id`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCotesCompetences (
