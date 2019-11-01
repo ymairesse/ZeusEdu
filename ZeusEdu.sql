@@ -453,7 +453,7 @@ CREATE TABLE IF NOT EXISTS didac_bullAttitudes (
 CREATE TABLE `didac_bullCarnetCotes` (
   `idCarnet` int(6) NOT NULL,
   `coursGrp` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `libelle` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `libelle` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
   `max` float NOT NULL COMMENT 'Cote maximale pour cette évaluation',
   `idComp` int(6) NOT NULL,
