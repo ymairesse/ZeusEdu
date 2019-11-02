@@ -102,6 +102,39 @@ class eleve
     }
 
     /**
+     * retourne les informations essentielles concernant un élève: nom, prenom, classe
+     *
+     * @param int $matricule
+     *
+     * @return array
+     */
+    public static function getMinDetailsEleve($matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT nom, prenom, classe, groupe ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $npc = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $ligne = $requete->fetch();
+            $npc = array(
+                'nom' => $ligne['nom'],
+                'prenom' => $ligne['prenom'],
+                'classe' => $ligne['classe'],
+                'groupe' => $ligne['groupe'],
+            );
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $npc;
+    }
+
+    /**
      * function classe.
      *
      * @param :
@@ -135,9 +168,9 @@ class eleve
     /**
      * function groupe.
      *
-     * @param void()
+     * @param void
      *
-     * @return $groupe : le groupe de l'élève
+     * @return string $groupe : le groupe de l'élève
      */
     public function groupe()
     {
@@ -151,7 +184,7 @@ class eleve
     /**
      * function matricule.
      *
-     * @param void()
+     * @param void
      *
      * @return int le matricule de l'élève
      */
@@ -277,7 +310,7 @@ class eleve
             $sql .= "AND section != 'PARTI' ";
         }
         $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom ";
-        $sql .= 'LIMIT 0,10 ';
+        // $sql .= 'LIMIT 0,20 ';
         $requete = $connexion->prepare($sql);
 
         $fragment = '%'.$fragment.'%';
@@ -655,7 +688,7 @@ class eleve
      * renvoie les informations de passwd de l'élève dont on fournit le matricule
      * procédure n'utilisant pas l'objet eleve.
      *
-     * @param $matricule
+     * @param int $matricule
      *
      * @return array
      */
