@@ -18,7 +18,7 @@ class ecole
     /**
      * retourne une liste des profs ou des membres du personnel.
      *
-     * @param $donneCours boolean  si "false", demande la liste de tous les membres du personnel; si "true", demande seulement les enseignants
+     * @param bool $donneCours : si "false", demande la liste de tous les membres du personnel; si "true", demande seulement les enseignants
      *
      * @return array liste de tous les profs de l'école
      */
@@ -337,6 +337,7 @@ class ecole
         if ($sections) {
             $sections = "'".implode("','", $sections)."'";
         }
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT DISTINCT groupe ';
         $sql .= 'FROM '.PFX.'eleves ';
@@ -742,7 +743,7 @@ class ecole
     public function listeElevesCours($coursGrp, $tri = null, $parti = false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT '.PFX.'elevesCours.matricule, nom, prenom, classe, user, mailDomain ';
+        $sql = 'SELECT '.PFX.'elevesCours.matricule, nom, prenom, classe, groupe, user, mailDomain ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'eleves.matricule = '.PFX.'elevesCours.matricule) ';
         $sql .= 'LEFT JOIN '.PFX.'passwd ON ('.PFX.'eleves.matricule = '.PFX.'passwd.matricule) ';
@@ -769,6 +770,7 @@ class ecole
                         'nom' => $ligne['nom'],
                         'prenom' => $ligne['prenom'],
                         'classe' => $ligne['classe'],
+                        'groupe' => $ligne['groupe'],
                         'mail' => $mail,
                         'photo' => self::photo($matricule),
                     );
@@ -858,6 +860,41 @@ class ecole
 
          return $liste;
      }
+
+     /**
+      * renvoie la liste des élèves affiliés à un groupe donné
+      *
+      * @param string $nomGroupe
+      *
+      * @return array
+      */
+     public function listeElevesGroupe($nomGroupe){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT idMembre, membres.statut, eleves.nom AS nom, eleves.prenom AS prenom, groupe, ';
+         $sql .= 'profs.nom AS nomProf, profs.prenom AS prenomProf ';
+         $sql .= 'FROM '.PFX.'groupesMembres AS membres ';
+         $sql .= 'LEFT JOIN '.PFX.'eleves AS eleves ON eleves.matricule = idMembre ';
+         $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = idMembre ';
+         $sql .= 'WHERE nomGroupe = :nomGroupe AND membres.statut = "membre" ';
+         $sql .= 'ORDER BY statut, profs.nom, profs.prenom, eleves.nom, eleves.prenom ';
+         $requete = $connexion->prepare($sql);
+
+         $liste = array();
+         $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+
+         $resultat = $requete->execute();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()){
+                 $idMembre = $ligne['idMembre'];
+                 $liste[$idMembre] = $ligne;
+             }
+         }
+
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+        }
 
     /**
      * renvoie le degré dans lequel se trouve une classe donnée.
@@ -1331,6 +1368,35 @@ class ecole
         $resultat = $connexion->query($sql);
         $ligne = $resultat->fetch();
         $nbEleves = $ligne['nb'];
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nbEleves;
+    }
+
+    /**
+     * renvoie le nombre total d'élèves du niveau d'étude $niveau
+     *
+     * @param int $niveau
+     *
+     * @return int
+     */
+    public function nbElevesNiveau($niveau)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT COUNT(*) AS nb FROM '.PFX.'eleves ';
+        $sql .= 'WHERE section != "PARTI" ';
+        $sql .= 'AND SUBSTR(groupe,1,1) = :niveau ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+        $nbEleves = 0;
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            $nbEleves = $ligne['nb'];
+        }
 
         Application::DeconnexionPDO($connexion);
 
@@ -3371,6 +3437,7 @@ class ecole
 
         $requete->bindParam(':annee', $annee, PDO::PARAM_STR,9);
         $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
         $resultat = $requete->execute();
         $listeEleves = array();
         if ($resultat) {
