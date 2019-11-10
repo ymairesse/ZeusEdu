@@ -1224,23 +1224,23 @@ ALTER TABLE `didac_presencesIdTraitementLogs`
       ADD PRIMARY KEY (`idTraitement`,`idRetard`,`matricule`);
 
 
-CREATE TABLE IF NOT EXISTS `didac_profs` (
-  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 7 lettres',
-  `nom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
-  `prenom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
-  `sexe` enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
-  `titre` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Directeur, éducateur, coordinateur,...',
-  `mdp` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'mdp encrypte en MD5',
-  `statut` enum('admin','user') COLLATE utf8_unicode_ci NOT NULL COMMENT '''admin'',''user''',
-  `mail` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '@' COMMENT 'adresse mail',
-  `telephone` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'tel',
-  `GSM` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'GSM',
-  `adresse` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'adresse postale (max 40 car)',
-  `commune` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'commune (max 30 car)',
-  `codePostal` varchar(6) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'max 6 car',
-  `pays` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'max 15 car',
-  PRIMARY KEY (`acronyme`)
+CREATE TABLE `didac_profs` (
+    `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 3 lettres',
+    `nom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
+    `prenom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
+    `sexe` enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
+    `titre` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Directeur, éducateur, coordinateur,...',
+    `mdp` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'mdp encrypte en MD5',
+    `statut` enum('admin','user') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'user' COMMENT '''admin'',''user''',
+    `mail` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '@isnd.be' COMMENT 'adresse mail',
+    `telephone` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'tel',
+    `GSM` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'GSM',
+    `adresse` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'adresse postale (max 40 car)',
+    `commune` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'commune (max 30 car)',
+    `codePostal` varchar(6) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'max 6 car',
+    `pays` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'max 15 car'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 INSERT INTO `didac_profs` (`acronyme`, `nom`, `prenom`, `sexe`, `mdp`, `statut`, `mail`, `telephone`, `GSM`, `adresse`, `commune`, `codePostal`, `pays`) VALUES
 ('ADM', 'administrateur', 'administrateur', 'M', 'e10adc3949ba59abbe56e057f20f883e', 'admin', 'adminZeus@ecole.org', '', '', '', '', '', '');
