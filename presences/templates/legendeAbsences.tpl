@@ -1,4 +1,5 @@
 <h4>Légende</h4>
+
 <table>
 	<tr>
 	{foreach from=$statutsAbs item=justification key=justif}

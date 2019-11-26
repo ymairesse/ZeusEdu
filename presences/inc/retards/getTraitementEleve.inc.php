@@ -32,9 +32,17 @@ $Presences = new Presences();
 $listeIds = $Presences->getRetards4Periode($debut, $fin, Null, Null, $matricule);
 $listeRetards = isset($listeIds[$matricule]['nonTraite']) ? $listeIds[$matricule]['nonTraite'] : 0;
 
-require_once INSTALL_DIR.$ds.'edt'.$ds.'inc/classes/classEDT.inc.php';
-$Edt = new Edt();
-$imageEDT = $Edt->getEdtEleve($matricule);
+// Vérifier si le module EDT a été installé
+$EDTInstalle = file_exists(INSTALL_DIR.$ds.'edt'.$ds.'inc/classes/classEDT.inc.php');
+
+if ($EDTInstalle) {
+    require_once INSTALL_DIR.$ds.'edt'.$ds.'inc/classes/classEDT.inc.php';
+    $Edt = new Edt();
+    $imageEDT = $Edt->getEdtEleve($matricule);
+    }
+
+require_once INSTALL_DIR.$ds.'inc/classes/classEleve.inc.php';
+$eleve = Eleve::getMinDetailsEleve($matricule);
 
 setlocale(LC_TIME, "fr_FR");
 $today = strftime('%A %d/%m/%Y');
@@ -48,8 +56,11 @@ $listePeriodes = $Presences->lirePeriodesCours();
 $smarty->assign('listePeriodes', $listePeriodes);
 
 $smarty->assign('date', $today);
-$smarty->assign('imageEDT', $imageEDT);
+if ($EDTInstalle)
+    $smarty->assign('imageEDT', $imageEDT);
+$smarty->assign('EDTInstalle', $EDTInstalle);
 $smarty->assign('matricule', $matricule);
+$smarty->assign('eleve', $eleve);
 $smarty->assign('listeRetards', $listeRetards);
 
 $smarty->display('retards/choixSanction.tpl');

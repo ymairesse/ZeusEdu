@@ -13,13 +13,21 @@
 
                 <form id="formModifSanctions">
 
-                  <p>Dernier traitement par: <strong>{if $dataTraitement.nom != ''}{$dataTraitement.nom} {$dataTraitement.prenom}{else}{$dataTraitement.acronyme}{/if}</strong></p>
-                  <p>Dernière modification: <strong>{$dataTraitement.dateTraitement}</strong> </p>
-                  <p>Nombre d'impressions: <strong>{$dataTraitement.impression}</strong> </p>
+                  <p>Traitement par:
+                      <strong>
+                      {if $dataTraitement.nom != ''}
+                        {$dataTraitement.prenom} {$dataTraitement.nom}{else}{$dataTraitement.acronyme}
+                      {/if}
+                      </strong>
+                  </p>
+                  <p>Dernière modification: <strong>{$dataTraitement.dateTraitement}</strong></p>
+                  <p>Nombre d'impressions: <strong>{$dataTraitement.impression}</strong></p>
 
                   <div class="input-group">
-                      <label for="retour">Date de retour</label>
-                      <input type="text" class="form-control datepicker" name="dateRetour" value="{$dataTraitement.dateRetour}">
+                      <input type="text" class="form-control datepicker" name="dateRetour" id="dateRetour" value="{$dataTraitement.dateRetour}">
+                      <span class="input-group-btn">
+                          <button type="button" class="btn btn-danger" id="btn-resetDate"><i class="fa fa-times"></i></button>
+                      </span>
                   </div>
 
                   <label>Dates des retards</label>
@@ -46,7 +54,7 @@
 
                 <div class="clearfix"></div>
 
-                <input type="hidden" name="idTraitement" value="{$idTraitement}">
+                <input type="hidden" name="idTraitement" id="modalIdTraitement" value="{$idTraitement}">
                 <input type="hidden" name="matricule" value="{$matricule}">
 
                 </form>
@@ -61,8 +69,7 @@
               <div class="clearfix"></div>
 
               <div class="btn-group-vertical pull-right btn-block">
-                  <button type="button" class="btn btn-default" id="btn-reset">Annuler</button>
-                  <button type="button" class="btn btn-primary" id="btn-save" name="button">Enregistrer</button>
+                  <button type="button" class="btn btn-primary" id="btn-saveEdit" name="button">Enregistrer</button>
               </div>
 
           </div>
@@ -94,20 +101,31 @@
             debug: true
         })
 
-        $('#btn-save').click(function(){
+        $('#btn-resetDate').click(function(){
+            $('#dateRetour').val('');
+        })
+
+        $('#btn-saveEdit').click(function(){
             var form = $('#formModifSanctions');
             if (form.valid()) {
+                    var idTraitement = $('#modalIdTraitement').val();
                     var formulaire = form.serialize();
                     $.post('inc/retards/saveEditedRetard.inc.php', {
                         formulaire: formulaire
                     }, function(resultat){
-                        bootbox.alert({
-                            title: "Modifications",
-                            message: resultat + " date(s) supprimée(s)",
-                        });
+                        if (resultat != '') {
+                            $('.btn-retour[data-idtraitement="' + idTraitement + '"]').text(resultat);
+                            bootbox.alert({
+                                title: "Modifications",
+                                message: "Date enregistrée au " + resultat,
+                                });
+                            }
+                            else {
+                                $('.btn-retour[data-idtraitement="' + idTraitement + '"]').html('<i class="fa fa-pencil"></i>');
+                            }
+                        $('#modalEditRetard').modal('hide');
                     });
                 }
-                else bootbox.alert('Quelque chose ne va pas');
             })
 
         $('#btn-deleteTraitement').click(function(){
@@ -120,9 +138,10 @@
                         $.post('inc/retards/delTraitement.inc.php', {
                             idTraitement: idTraitement
                         }, function(nb){
-                            if (nb == 1)
-                                $('#btn-getRetards').trigger('click');
-                                $('#modalEditRetard').modal('hide');
+                            if (nb == 1) {
+                                $('.btn[data-idtraitement="' + idTraitement + '"]').remove();
+                                }
+                            $('#modalEditRetard').modal('hide');
                         })
                     }
                 }

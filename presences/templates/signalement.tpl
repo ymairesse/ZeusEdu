@@ -7,7 +7,8 @@
 	<h2>Signalement des absences de <span style="color:red">{$eleve.prenom} {$eleve.nom}</span></h2>
 	{/if}
 
-	<form name="signalement" method="POST" action="index.php" id="signalement" role="form" class="form-vertical">
+	{* <form name="signalement" method="POST" action="index.php" id="signalement" role="form" class="form-vertical"> *}
+	<form id="signalement" role="form" class="form-vertical">
 
 		<input type="hidden" name="heure" id="heure" value="{$heure}">
 		<input type="hidden" name="matricule" value="{$matricule}">
@@ -117,12 +118,9 @@
 
 		<div class="row">
 
-			<input type="hidden" name="educ" value="{$identite.acronyme}">
-			<input type="hidden" name="action" value="{$action}">
-			<input type="hidden" name="mode" value="{$mode}">
-			<input type="hidden" name="etape" value="enregistrer">
 			<button type="button" id="plusUn" class="btn btn-primary">+1 jour</button>
-			<button class="btn btn-primary pull-right" type="submit">Enregistrer</button>
+			<button type="button" id="btn-etendue" class="btn btn-success">Étendue</button>
+			<button  type="button" id="btn-saveJustification" class="btn btn-primary pull-right">Enregistrer</button>
 
 		</div>
 
@@ -133,11 +131,35 @@
 </div>
 
 <script type="text/javascript">
+
 	var modifie = false;
 	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
 	var mode = "{$mode}";
 
 	$(document).ready(function() {
+
+		$('#btn-saveJustification').click(function(){
+			var formulaire = $('#signalement').serialize();
+			$.post('inc/saveJustification.inc.php', {
+				formulaire: formulaire
+			}, function(nb){
+				bootbox.alert({
+					title: 'Enregistrement',
+					message: nb + " justification(s) enregistrée(s)"
+				});
+				$('.star').addClass('hidden');
+			})
+		})
+
+		$('#presencesJour').on('click', '.from', function(){
+			$('.from').removeClass('selected');
+			$(this).addClass('selected');
+		})
+
+		$('#presencesJour').on('click', '.to', function(){
+			$('.to').removeClass('selected');
+			$(this).addClass('selected');
+		})
 
 		$("#choixCorrespondant li a").click(function() {
 			$("#parent").val($(this).attr("data-value"))
@@ -216,7 +238,7 @@
 			$(this).parent('td').css('background', background);
 
 			$(this).next('input').val('oui');
-			$(this).next().next('img').show();
+			$(this).next().next('img').removeClass('hidden');
 		})
 
 		$("#datepicker").datepicker({

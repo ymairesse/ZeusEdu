@@ -51,8 +51,6 @@
 
         <p><label class="checkbox-inline"><input type="checkbox" name="speed" value="1"{if $justification.speed==1 } checked{/if}> Accès rapide</label></p>
 
-        <p><label class="checkbox-inline"><input type="checkbox" name="sms" value="1"{if $justification.sms==1 } checked{/if}> Envoi de SMS</label></p>
-
     </div>
 
     <div class="btn-group pull-right">

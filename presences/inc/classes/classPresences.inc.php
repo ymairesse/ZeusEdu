@@ -529,11 +529,10 @@ class presences
      * enregistrement des signalements d'absences (éventuellement sur plusieurs jours.
      *
      * @param array $post      : les informations provenant du formulaire de saisie
-     * @param int   $matricule : le matricule de l'élève concerné
      *
      * @return int : nombre d'enregistrements
      */
-    public function saveAbsences($post, $matricule)
+    public function saveAbsences($post)
     {
         $educ = isset($post['educ']) ? $post['educ'] : null;
         $matricule = isset($post['matricule']) ? $post['matricule'] : null;
@@ -545,12 +544,16 @@ class presences
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // introduction dans la table des logs et récupération de l'id autoIncrementé
         $sql = 'INSERT INTO '.PFX.'presencesLogs ';
-        $sql .= 'SET educ=:educ, parent=:parent, media=:media, quand=:quand, heure=:heure ';
+        $sql .= 'SET educ = :educ, parent = :parent, media = :media, quand = :quand, heure = :heure ';
         $requete = $connexion->prepare($sql);
 
-        $data = array(':educ' => $educ, ':parent' => $parent, ':media' => $media, ':quand' => $quand, ':heure' => $heure);
+        $requete->bindParam(':educ', $educ, PDO::PARAM_STR, 7);
+        $requete->bindParam(':parent', $parent, PDO::PARAM_STR, 40);
+        $requete->bindParam(':media', $media, PDO::PARAM_STR, 30);
+        $requete->bindParam(':quand', $quand, PDO::PARAM_STR, 10);
+        $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
 
-        $resultat = $requete->execute($data);
+        $resultat = $requete->execute();
         $id = $connexion->lastInsertId();
 
         $nb = 0;
@@ -566,10 +569,17 @@ class presences
                 if ($post['modif-'.$noPeriode.'_date-'.$date] == 'oui') {
                     $date = Application::dateMysql($date);
                     $sql = 'INSERT INTO '.PFX.'presencesEleves ';
-                    $sql .= "SET id='$id', matricule='$matricule', date='$date', periode='$noPeriode', statut='$statut' ";
-                    $sql .= "ON DUPLICATE KEY UPDATE id='$id', periode='$noPeriode', statut='$statut' ";
+                    $sql .= "SET id = :id, matricule = :matricule, date = :date, periode = :noPeriode, statut = :statut ";
+                    $sql .= "ON DUPLICATE KEY UPDATE id = :id, periode = :noPeriode, statut = :statut ";
+                    $requete = $connexion->prepare($sql);
 
-                    $resultat = $connexion->exec($sql);
+                    $requete->bindParam(':id', $id, PDO::PARAM_INT);
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_STR, 7);
+                    $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+                    $requete->bindParam(':noPeriode', $noPeriode, PDO::PARAM_INT);
+                    $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 11);
+
+                    $resultat = $requete->execute();
                     if ($resultat) {
                         ++$nb;
                     }    // ne compte les boucles qu'une seule fois alors que "ON DUPLICATE" signale 2 modifications dans la table
@@ -610,7 +620,9 @@ class presences
          if ($resultat) {
              $requete->setFetchMode(PDO::FETCH_ASSOC);
              while ($ligne = $requete->fetch()) {
-                 $date = Application::datePHP($ligne['date']);
+                 $timeStamp = strtotime($ligne['date']);
+                 setlocale(LC_TIME, "fr_FR");
+                 $date = strftime("%a %d/%m", $timeStamp);
                  if (!(isset($liste[$date]))) {
                      foreach ($listePeriodes as $noPeriode => $bornes) {
                          $liste[$date][$noPeriode] = $empty;
@@ -639,27 +651,24 @@ class presences
       * $admin = true si toutes les justifications sont présentées sinon, seulement celles pour les profs.
       *
       * @param $admin : si "true", toutes les justifications, sinon, seulement celles des profs
-      * @param $sms : si true, les justifications d'absences nécessitant un SMS
       * @param $speed: si true, les justifications d'asences pour inscription rapide
       *
       * @return array
       */
-     public function listeJustificationsAbsences($admin = true, $sms = false, $speed = false)
+     public function listeJustificationsAbsences($admin = true, $speed = false)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire, speed, sms ';
+         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire, speed ';
          $sql .= 'FROM '.PFX.'presencesJustifications ';
          $sql .= 'WHERE 1 ';
          if ($admin == false) {
              $sql .= 'AND accesProf = true ';
          }
-         if ($sms == true) {
-             $sql .= 'AND sms = true ';
-         }
          if ($speed == true) {
              $sql .= 'AND speed = true ';
          }
          $sql .= 'ORDER BY ordre, justif ';
+
          $resultat = $connexion->query($sql);
          $liste = array();
          if ($resultat) {
@@ -727,7 +736,7 @@ class presences
      public function getJustification($just)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire, speed, sms ';
+         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire, speed ';
          $sql .= 'FROM '.PFX.'presencesJustifications ';
          $sql .= "WHERE justif = '$just' ";
          $resultat = $connexion->query($sql);
@@ -759,7 +768,6 @@ class presences
          $background = isset($post['background']) ? $post['background'] : null;
          $accesProf = isset($post['accesProf']) ? $post['accesProf'] : 0;
          $speed = isset($post['speed']) ? $post['speed'] : 0;
-         $sms = isset($post['sms']) ? $post['sms'] : 0;
 
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
@@ -768,7 +776,7 @@ class presences
          $sql .= 'background=:background, accesProf=:accesProf, speed=:speed ';
          $sql .= 'ON DUPLICATE KEY UPDATE ';
          $sql .= 'shortJustif=:shortJustif, ordre=:ordre, libelle=:libelle, color=:color, ';
-         $sql .= 'background=:background, accesProf=:accesProf, speed=:speed, sms=:sms ';
+         $sql .= 'background=:background, accesProf=:accesProf, speed=:speed ';
 
          $requete = $connexion->prepare($sql);
          $data = array(
@@ -780,7 +788,6 @@ class presences
                 ':background' => $background,
                 ':accesProf' => $accesProf,
                 ':speed' => $speed,
-                ':sms' => $sms,
             );
 
          $resultat = $requete->execute($data);
@@ -967,7 +974,7 @@ class presences
       */
      public function getRetards4Periode($debut, $fin, $niveau, $classe, $matricule){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, pel.matricule, date, periode, groupe, nom, prenom, traitLogs.idTraitement, ';
+        $sql = 'SELECT id, pel.matricule, date, groupe, nom, prenom, traitLogs.idTraitement, periode, ';
         $sql .= 'dateTraitement, dateRetour, impression ';
         $sql .= 'FROM '.PFX.'presencesEleves AS pel ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = pel.matricule ';
@@ -981,7 +988,7 @@ class presences
                 $sql .= 'AND de.groupe = :classe ';
                 else if ($niveau != Null)
                     $sql .= 'AND SUBSTR(de.groupe, 1, 1) = :niveau ';
-        $sql .= 'ORDER BY groupe, nom, prenom, date, periode ';
+        $sql .= 'ORDER BY groupe, nom, prenom, date ';
 
         $requete = $connexion->prepare($sql);
 
@@ -1004,22 +1011,31 @@ class presences
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $matricule = $ligne['matricule'];
+                // création de la liste d'informations pour cet élève
                 if (!(isset($liste[$matricule])))
-                    $liste[$matricule] = array('traite' => Null, 'retourne' => Null, 'nonTraite' => Null, 'impression' => 0);
+                    $liste[$matricule] = array('traite' => Null, 'nonTraite' => Null);
+                // $idTraitement est peut-être Null si le retard n'a pas encore été traité
                 $idTraitement = $ligne['idTraitement'];
-                $ligne['date'] = Application::datePHP($ligne['date']);
+
+                // la date du retard (on s'en fiche, non?)
+                // $ligne['date'] = Application::datePHP($ligne['date']);
+
+                // identifiant de la prise de présence prof/educ correspondant au retard
                 $id = $ligne['id'];
+                // nombre d'impressions déjà réalisées
+                // $liste[$matricule]['impression'] = isset($ligne['impression']) ? $ligne['impression'] : 0;
 
-                $liste[$matricule]['impression'] = isset($ligne['impression']) ? $ligne['impression'] : 0;
-
-                if (!(isset($liste[$matricule]['nom']))) {
+                // if (!(isset($liste[$matricule]['nom']))) {
                     $liste[$matricule]['classe'] = $ligne['groupe'];
                     $liste[$matricule]['nom'] = sprintf('%s %s', $ligne['nom'], $ligne['prenom']);
-                }
-                if ($idTraitement != Null)
-                    if ($ligne['dateRetour'] == Null)
-                        $liste[$matricule]['traite'][$idTraitement][$id] = $ligne;
-                        else $liste[$matricule]['retourne'][$idTraitement][$id] = $ligne;
+                // }
+                // mettre dans une liste ou dans l'autre
+                if ($idTraitement != Null){
+                    $liste[$matricule]['traite'][$idTraitement] =
+                        array('dateTraitement' => $ligne['dateTraitement'],
+                            'dateRetour' => Application::datePHP($ligne['dateRetour']),
+                            'impression' => $ligne['impression']);
+                    }
                     else $liste[$matricule]['nonTraite'][$id] = $ligne;
             }
         }
@@ -1584,6 +1600,147 @@ public function incrementPrint($idTraitement){
     Application::DeconnexionPDO($connexion);
 
     return $resultat;
+    }
+
+    /**
+     * recension des nombres de jours avec au moins une absence
+     * on ne compte qu'une seule absence pour la journée même si plusieurs occurrences
+     * dans une liste de présences
+     *
+     * @param array $listePresences
+     *
+     * @return int
+     */
+    public function nbJoursAvecAbsence($listePresences){
+        $listeAbsences = array();
+        foreach ($listePresences AS $date => $listePeriodes){
+            foreach ($listePeriodes as $periode => $data) {
+                if ($data['statut'] == 'absent')
+                    $listeAbsences[$date] = 1;
+            }
+        }
+
+        return count($listeAbsences);
+    }
+
+    /**
+     * recension du nombre de retards
+     * dans une liste de présences ($this->listePresencesEleve($matricule)) d'un élève
+     * on compte chaque retard dans la journée
+     *
+     * @param array $listePresences
+     *
+     * @return int
+     */
+    public function nbRetards($listePresences){
+        $nb = 0;
+        foreach ($listePresences AS $date => $listePeriodes){
+            foreach ($listePeriodes as $periode => $data) {
+                if ($data['statut'] == 'retard')
+                    $nb++;
+            }
+        }
+
+        return $nb;
+    }
+
+    /**
+     * liste des élèves pour vérification du retour des billets de sanctions retard
+     *
+     * @param string $niveau : date de départ dete
+     * @param string $dateFin : date de fin de la liste
+     * @param int $niveau : niveau d'étude demandé
+     * @param string $groupe : groupe classe (éventuellement vide)
+     * @param int $matricule : matricule de l'élève (éventuellement vide)
+     */
+    public function getListeSyntheseRetards($dateDebut, $dateFin, $niveau, $groupe, $matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT logs.matricule, nom, prenom, groupe, dateSanction, pds.idTraitement, idRetard, dateRetour, impression ';
+        $sql .= 'FROM '.PFX.'presencesDatesSanctions AS pds ';
+        $sql .= 'JOIN '.PFX.'presencesIdTraitementLogs AS logs ON logs.idTraitement = pds.idTraitement ';
+        $sql .= 'JOIN '.PFX.'presencesTraitement AS pt ON pt.idTraitement = pds.idTraitement ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = logs.matricule ';
+        $sql .= 'WHERE dateSanction BETWEEN :dateDebut AND :dateFin ';
+        if ($niveau != Null)
+            $sql .= 'AND SUBSTRING(groupe,1,1) = :niveau ';
+        if ($groupe != '')
+            $sql .= 'AND groupe = :groupe ';
+        if ($matricule != '')
+            $sql .= 'AND matricule = :matricule ';
+        $sql .= 'ORDER BY groupe, nom, prenom, idTraitement, dateSanction ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
+        $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
+        if ($niveau != Null)
+            $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        if ($groupe != Null)
+            $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 6);
+        if ($matricule != Null)
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_STR, 10);
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $idTraitement = $ligne['idTraitement'];
+                $nomPrenomClasse = sprintf('%s %s %s', $ligne['groupe'], $ligne['nom'], $ligne['prenom']);
+
+                $liste[$matricule][$idTraitement]['npc'] = $nomPrenomClasse;
+
+                $liste[$matricule][$idTraitement]['dateRetour'] = Application::datePHP($ligne['dateRetour']);
+
+                $dateSanction = Application::datePHP($ligne['dateSanction']);
+                if (!(isset($liste[$matricule][$idTraitement]['datesSanction'])))
+                    $liste[$matricule][$idTraitement]['datesSanction'] = array();
+                if (!(in_array($dateSanction, $liste[$matricule][$idTraitement]['datesSanction'])))
+                    $liste[$matricule][$idTraitement]['datesSanction'][] = $dateSanction;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste de tous les retards pour l'élève $matricule durant l'année scolaire
+     *
+     * @param int $matricule
+     *
+     * @return array
+     */
+    public function getAllRetards($listeEleves, $long=false) {
+        $listeMatricules = implode(',', $listeEleves);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, date, periode ';
+        $sql .= 'FROM '.PFX.'presencesEleves ';
+        $sql .= 'WHERE matricule IN ('.$listeMatricules.') AND statut = "retard" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_STR, 10);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $date = Application::datePHP($ligne['date']);
+                if ($long == false) {
+                    $date = substr($date, 0, 5);
+                }
+                $periode = $ligne['periode'];
+                $liste[$matricule][] = sprintf('%s <strong>%se</strong> heure', $date, $periode);
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
 }

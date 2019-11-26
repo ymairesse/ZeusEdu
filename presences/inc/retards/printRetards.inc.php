@@ -57,9 +57,9 @@ foreach ($_POST['toPrint'] as $data) {
 
         $billet4PDF = $smarty->fetch('retards/billetRetard4PDF.tpl');
         $html2pdf->writeHTML($billet4PDF);
-        
+
         $nb = $Presences->incrementPrint($idTraitement);
     }
 }
 
-$html2pdf->output('FicheRetard.pdf');
+$html2pdf->output('FicheRetard.pdf','D');

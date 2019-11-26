@@ -10,7 +10,7 @@ require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
-    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    echo "ERREURSESSION";
     exit;
 }
 
@@ -19,7 +19,9 @@ $acronyme = $User->getAcronyme();
 
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 
-require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-$detailsEleve = Eleve::staticGetDetailsEleve($matricule);
+if (is_numeric($matricule)) {
+    require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+    $detailsEleve = Eleve::staticGetDetailsEleve($matricule);
 
-echo json_encode($detailsEleve);
+    echo json_encode($detailsEleve);
+}

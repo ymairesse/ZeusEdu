@@ -76,6 +76,7 @@ $smarty->assign('justifications', $justifications);
 
 $listeJustifications = $Presences->listeJustificationsAbsences(true);
 $smarty->assign('listeJustifications', $listeJustifications);
+$smarty->assign('statutsAbs', $listeJustifications);
 
 $listePresences = $Presences->listePresencesElevesDate($date, $listeEleves);
 $listePresences = isset($listePresences) ? $listePresences : null;

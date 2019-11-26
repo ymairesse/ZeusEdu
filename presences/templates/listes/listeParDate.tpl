@@ -1,8 +1,18 @@
+<style media="screen">
+    .overflow {
+        height:35em;
+        overflow: auto;
+    }
+</style>
+
 <div class="table-responsive">
 
-<h2>Liste des présences du {$date} <span class="pull-right">{$listeParDate|@count} élèves sélectionnés</span></h2>
+<h2>
+    Liste des présences du {$date} [{$listeParDate|@count} élèves sélectionnés]
+    <button type="button" class="btn btn-lightBlue btn-xs pull-right" id="btn-print" name="button"><i class="fa fa-print"></i> Imprimer</button>
+</h2>
 
-<div style="height:35em; overflow:auto;">
+<div class="overflow">
 
 <table>
     <tr>
@@ -86,6 +96,16 @@
     	$(".pop").click(function(){
     		$(".pop").not(this).popover("hide");
     		})
+
+        $('#btn-print').click(function(){
+            var formulaire = $('#formSelecteur').serialize();
+            $.post('inc/printListeParDate.inc.php', {
+                formulaire: formulaire
+            }, function(resultat){
+                $('#listeAbsences').html(resultat);
+            })
+        })
+
     })
 
 </script>

@@ -31,8 +31,9 @@
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Retards<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=retard&amp;mode=scan">Scan des retards</a></li>
-					<li><a href="index.php?action=retard&amp;mode=gestion">Gestion des retards</a></li>
-					{* <li><a href="index.php?action=retard&amp;mode=listeRetards">Liste des retards</a></li> *}
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=retard&amp;mode=traitement">Traitement des retards</a></li>
+					<li><a href="index.php?action=retard&amp;mode=synthese">Synthèse des retards</a></li>
 				</ul>
 			</li>
 			{/if}
@@ -71,7 +72,7 @@
 			{/if}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Préférences <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=preferences&amp;mode=photos">Photos {if $photosVis == 'visible'}invisibles{else}visibles{/if}</a></li>
+					<li><a href="javascript:void(0)" id="vis">Photos actuellement <span>{if $photosVis == 'visible'}invisibles{else}visibles{/if}</span></a></li>
 				</ul>
 			</li>
 		</ul>
@@ -94,3 +95,26 @@
 </nav>
 
 </div>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$('#vis').click(function(){
+			var visible = Cookies.get('photosVis');
+			if (visible == 'visible') {
+				Cookies.set('photosVis', 'invisible', { expires: 30 });
+				var texte = 'invisibles';
+			}
+				else {
+				Cookies.set('photosVis', 'visible', { expires: 30 });
+				var texte = 'visibles';
+			}
+			$('#vis span').text(texte);
+			bootbox.alert({
+				title: 'Photos visibles / invisibles',
+				message: 'Les photos seront ' + texte + ' au prochain chargement.'
+			})
+		})
+	})
+
+</script>

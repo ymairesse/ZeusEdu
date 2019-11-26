@@ -13,7 +13,6 @@
                     <th>Mention courte</th>
                     <th>Libellé</th>
                     <th>Ordre</th>
-                    <th>SMS</th>
                     <th style="width:1em">&nbsp;</th>
                 </tr>
             </thead>

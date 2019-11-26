@@ -5,7 +5,11 @@ switch ($mode) {
         require_once 'inc/retards/scanRetards.inc.php';
         break;
 
-    case 'gestion':
-        require_once 'inc/retards/retards.inc.php';
+    case 'traitement':
+        require_once 'inc/retards/traitement.inc.php';
+        break;
+
+    case 'synthese':
+        require_once 'inc/retards/synthese.inc.php';
         break;
     }

@@ -19,13 +19,17 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application::getmodule(3);
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
+$formulaire = isset($_POST['formSanctions']) ? $_POST['formSanctions'] : null;
+$formSanctions = array();
+parse_str($formulaire, $formSanctions);
+
+$formulaire = isset($_POST['formSelect']) ? $_POST['formSelect'] : null;
+$formSelection = array();
+parse_str($formulaire, $formSelection);
 
 $nb = 0;
 
-if (isset($form['datesSanctions']) && isset($form['idRetards'])) {
+if (isset($formSanctions['datesSanctions']) && isset($formSanctions['idRetards'])) {
     $ds = DIRECTORY_SEPARATOR;
     require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
     $Presences = new Presences();
@@ -33,8 +37,8 @@ if (isset($form['datesSanctions']) && isset($form['idRetards'])) {
     $idTraitement = $Presences->initTraitementRetard($acronyme);
 
     // liaison entre le $ref et les dates choisies pour la sanction
-    $nb = $Presences->saveDatesSanction($idTraitement, $form);
-    $nb = $Presences->saveIdTraitementIdLogs($idTraitement, $form);
+    $nb = $Presences->saveDatesSanction($idTraitement, $formSanctions);
+    $nb = $Presences->saveIdTraitementIdLogs($idTraitement, $formSanctions);
 }
 // nombre de retards traités
 echo $nb;

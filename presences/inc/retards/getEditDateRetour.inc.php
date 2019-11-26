@@ -19,29 +19,28 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application::getmodule(3);
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-$idTraitement = isset($_POST['idTraitement']) ? $_POST['idTraitement'] : null;
-
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-$listePeriodes = $Ecole->lirePeriodesCours();
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$idTraitement = isset($_POST['idTraitement']) ? $_POST['idTraitement'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
+
+$dataEleve = $Ecole->nomPrenomClasse($matricule);
+
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
 $dataTraitement = $Presences->getDataTraitement($idTraitement);
-$listeDatesSanction = $Presences->getDatesSanction4idTraitement($idTraitement);
-$listeDatesRetards = $Presences->getDatesRetards4idTraitement($idTraitement, $matricule);
 
-require_once INSTALL_DIR."/smarty/Smarty.class.php";
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-$smarty->assign('listePeriodes', $listePeriodes);
+$smarty->assign('dataEleve', $dataEleve);
 $smarty->assign('dataTraitement', $dataTraitement);
-$smarty->assign('listeDatesSanction', $listeDatesSanction);
-$smarty->assign('$listeDatesRetards', $listeDatesRetards);
+$smarty->assign('idTraitement', $idTraitement);
+$smarty->assign('matricule', $matricule);
 
-$smarty->display('retards/editTraitement.tpl');
+$smarty->display('retards/modal/modalDateRetour.tpl');

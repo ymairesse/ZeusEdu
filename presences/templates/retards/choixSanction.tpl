@@ -1,16 +1,22 @@
 <div class="col-xs-12 col-md-7">
-    {if $imageEDT != ''}
-    <img src="../edt/eleves/{$imageEDT}" alt="{$imageEDT}" class="img img-responsive">
-    {else}
-    <p>Horaire non disponible</p>
-    {/if}
+    {if $EDTInstalle}
+        {if $imageEDT != ''}
+        <img src="../edt/eleves/{$imageEDT}" alt="{$imageEDT}" class="img img-responsive">
+        {else}
+        <p>Horaire non disponible</p>
+        {/if}
+        {else}
+        <p class="avertissement">Le module "EDT (Index Education)" doit être installé pour accéder à l'horaire individuel de l'élève</p>
+        <p>Ce module n'est livré que sur demande.</p>
+        {/if}
 </div>
 
 
 <div class="col-xs-12 col-md-5">
     <form id="formSanctions">
-
+        <h2>{$eleve.nom} {$eleve.prenom} [{$eleve.classe}]</h2>
         <h3>Liste des retards pour la période</h3>
+
         <div style="max-height:10em; overflow:auto;">
             {foreach from=$listeRetards key=idRetard item=data}
             <div class="checkbox">
@@ -33,10 +39,6 @@
                 style="color:#aaa;">
         </div>
 
-        {* <ol id="ulDates">
-
-        </ol> *}
-
         <ol id="listeDates">
 
         </ol>
@@ -45,6 +47,7 @@
         <button type="button" class="btn btn-primary pull-right" id="btn-saveSanction">Enregistrer</button>
 
         <div class="clearfix"></div>
+
     </form>
 
 </div>
@@ -63,29 +66,17 @@
 
     $(document).ready(function() {
 
-        $('#btn-saveSanction').click(function(){
-            var listeRetards = $('.idRetard:checked');
-            var datesSanctions = $('.sanctions');
-            if ((listeRetards.length > 0) && (datesSanctions.length > 0)) {
-                var formulaire = $('#formSanctions').serialize();
-                $.post('inc/retards/saveSanctionRetard.inc.php', {
-                    formulaire: formulaire
-                }, function(nbTraites){
-                    var formulaire = $('#formSelect').serialize();
-                    $.post('inc/retards/generateListeRetards.inc.php', {
-                        formulaire: formulaire
-                        },
-                    function (resultat){
-                        $("#zoneSynthese").html(resultat);
-                        $('.nav-tabs a').eq(0).trigger('click');
-                    })
-                })
+        $('#formSanctions').validate({
+            rules: {
+                'idRetards[]': {
+                    required: true,
+                    minlength: 1
+                },
+                'datesSanctions': {
+                    required: true
+                }
             }
-            else bootbox.alert({
-                title: 'Erreur',
-                message: 'Sélectionnez au moins une date de retard et une date de sanction'
-            })
-        })
+        });
 
         $("#datesSanctions").datepicker({
             multidate: true,
@@ -101,16 +92,7 @@
             if (lesDates.length > 0)
                 putDates(lesDates);
                 else $('#listeDates').html('');
-            });;
-
-        $('#btnAddDate').click(function() {
-            var date = $('#datesSanctions').val();
-            if (date != '') {
-                var date2 = date.split(' ')[1];
-                $('#ulDates').append('<li>' + date + '<input type="hidden" name="dateF[]" value="' + date2 + '"></li>');
-                $('#btn-save').prop('disabled', false);
-            }
-        })
+            });
 
     })
 </script>

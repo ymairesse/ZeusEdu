@@ -89,4 +89,7 @@ $listePresences = $Presences->listePresencesElevesDate($date, $listeEleves);
 $listePresences = isset($listePresences) ? $listePresences : null;
 $smarty->assign('listePresences', $listePresences);
 
+$statutsAbs = $Presences->listeJustificationsAbsences();
+$smarty->assign('statutsAbs', $statutsAbs);
+
 $smarty->display('feuillePresencesCours.tpl');

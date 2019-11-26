@@ -11,4 +11,7 @@ $smarty->assign('justifications', $justifications);
 $listeJustifications = $Presences->listeJustificationsAbsences(true);
 $smarty->assign('listeJustifications', $listeJustifications);
 
+$statutsAbs = $Presences->listeJustificationsAbsences();
+$smarty->assign('statutsAbs', $statutsAbs);
+
 $smarty->assign('corpsPage', 'choixCoursProf');

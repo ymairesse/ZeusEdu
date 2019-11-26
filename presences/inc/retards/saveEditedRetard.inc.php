@@ -27,8 +27,9 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
-$idTraitement = $form['idTraitement'];
-$matricule = $form['matricule'];
+$idTraitement = isset($form['idTraitement']) ? $form['idTraitement'] : Null;
+$matricule = isset($form['matricule']) ? $form['matricule'] : Null;;
+$dateRetour = isset($form['dateRetour']) ? $form['dateRetour'] : Null;
 
 // mise à jour des dates de retard (on supprime celles qui n'existent plus)
 $datesRetardsOrg = $Presences->getDatesRetards4idTraitement($idTraitement);
@@ -37,7 +38,6 @@ foreach (array_keys($datesRetardsOrg) as $idRetard) {
         $Presences->delTraitementLogs($idTraitement, $idRetard, $matricule);
     }
 
-$dateRetour = isset($form['dateRetour']) ? $form['dateRetour'] : Null;
 $nbImpression = Null;
 $Presences->updatePresencesTraitement($idTraitement, $acronyme, $dateRetour, $nbImpression);
 
@@ -45,4 +45,4 @@ $Presences->updatePresencesTraitement($idTraitement, $acronyme, $dateRetour, $nb
 $datesSanction = $form['datesSanction'];
 $nb = $Presences->delDatesSanction($idTraitement, $datesSanction);
 
-echo $nb;
+echo substr($dateRetour, 0, 5);

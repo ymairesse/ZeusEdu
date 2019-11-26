@@ -7,17 +7,6 @@ $smarty->assign('mode', $mode);
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 $smarty->assign('matricule', $matricule);
 
-// enregistrement des informations d'absences
-if ($etape == 'enregistrer') {
-    $nb = $Presences->saveAbsences($_POST, $matricule);
-    $smarty->assign('message', array(
-            'title' => SAVE,
-            'texte' => sprintf(NBSAVE, $nb),
-            'urgence' => 'success', ));
-    // on repasse toutes les infos pour ré-affichage
-    $smarty->assign('post', $_POST);
-}
-
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 // si un élève est déclaré, on aura certainement besoin des détails
 if ($matricule != null) {
@@ -55,9 +44,13 @@ if ($matricule != null) {
         $listePresences = $Presences->listePresencesEleveMultiDates($_POST['dates'], $matricule);
     } else {
         // on utilise la date d'aujourd'hui, par défaut
-            $smarty->assign('date', $dateNow);
+        $smarty->assign('date', $dateNow);
         $listePresences = $Presences->listePresencesElevesDate($dateNow, $matricule);
     }
+
+    // liste des statuts d'absences possibles
+    $statutsAbs = $Presences->listeJustificationsAbsences();
+    $smarty->assign('statutsAbs', $statutsAbs);
 
     $prevNext = $Ecole->prevNext($matricule, $listeEleves);
     $smarty->assign('prevNext', $prevNext);

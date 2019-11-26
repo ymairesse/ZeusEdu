@@ -11,17 +11,13 @@
 
 </style>
 
-<page backtop="15mm" backbottom="15mm" backleft="10mm" backright="10mm" footer="date">
+<page backtop="15mm" backbottom="10mm" backleft="10mm" backright="10mm" footer="date">
 
     <page_header>
-        <img src="{$BASEDIR}images/logoEcoleBlanc.png" alt="LOGO" style="float:right; width:50px;">
+        <img src="{$BASEDIR}images/logoEcoleBlanc.png" alt="LOGO" style="float:right; width:40px;">
         <p>{$ECOLE}
-            <br> {$ADRESSE} {$COMMUNE}
-            <br>Téléphone: {$TELEPHONE}</p>
+        <br> {$ADRESSE} {$COMMUNE}</p>
     </page_header>
-    <page_footer>
-
-    </page_footer>
 
     <table style="width:100%; border:0 solid white;">
         <tr style="border:0;">
