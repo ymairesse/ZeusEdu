@@ -22,17 +22,21 @@ $module = $Application::getmodule(3);
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
+//
+// Application::afficher($form, true);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 
 $total = 0;
-foreach ($form['matricule'] as $i => $matricule) {
-    $date = $form['date'][$i];
-    $periode = $form['periode'][$i];
-    $heure = $form['heure'][$i];
-    $total += $Presences->saveScanRetard($acronyme, $matricule, $date, $periode, $heure);
+if (isset($form['matricule'])) {
+    foreach ($form['matricule'] as $i => $matricule) {
+        $date = $form['date'][$i];
+        $periode = $form['periode'][$i];
+        $heure = $form['heure'][$i];
+        $total += $Presences->saveScanRetard($acronyme, $matricule, $date, $periode, $heure);
+    }
 }
 
 echo $total;
