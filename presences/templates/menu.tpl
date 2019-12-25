@@ -51,8 +51,8 @@
 			{if ($userStatus == 'educ') || ($userStatus == 'admin') || ($userStatus == 'accueil')}
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Justifications<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=signalements&amp;mode=absence">Signalements d'absences</a></li>
-					<li><a href="index.php?action=signalements&amp;mode=speed">Signalements rapides</a></li>
+					<li><a href="index.php?action=signaler&amp;mode=normal">Signalements d'absences</a></li>
+					<li><a href="index.php?action=signaler&amp;mode=speed"><i class="fa fa-bolt"></i> Signalements rapides</a></li>
 				</ul>
 			</li>
 			{/if}

@@ -93,6 +93,7 @@ $(document).ready(function(){
 
 	$('#datePresences').change(function(){
 		var date = $('#datePresences').val();
+		$('#date').val(date);
 		var classe = $('#classe').val();
 		var coursGrp = $('#coursGrp').val();
 		var periode = $('#periode').val();

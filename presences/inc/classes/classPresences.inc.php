@@ -591,6 +591,122 @@ class presences
         return $nb;
     }
 
+    /**
+     * enregistrement des signalements d'absences (éventuellement sur plusieurs jours.
+     *
+     * @param array $post      : les informations provenant du formulaire de saisie
+     *
+     * @return int : nombre d'enregistrements
+     */
+    public function saveJustificationEleve($post)
+    {
+        $educ = isset($post['educ']) ? $post['educ'] : null;
+        $matricule = isset($post['matricule']) ? $post['matricule'] : null;
+        $parent = isset($post['parent']) ? $post['parent'] : null;
+        $media = isset($post['media']) ? $post['media'] : null;
+        // date et heure actuelles
+        $heure = date('H:i');
+        $quand = date('Y-m-d');
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // introduction dans la table des logs et récupération de l'id autoIncrementé
+        $sql = 'INSERT INTO '.PFX.'presencesLogs ';
+        $sql .= 'SET educ = :educ, parent = :parent, media = :media, quand = :quand, heure = :heure ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':educ', $educ, PDO::PARAM_STR, 7);
+        $requete->bindParam(':parent', $parent, PDO::PARAM_STR, 40);
+        $requete->bindParam(':media', $media, PDO::PARAM_STR, 30);
+        $requete->bindParam(':quand', $quand, PDO::PARAM_STR, 10);
+        $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
+
+        $resultat = $requete->execute();
+        // on récupère l'id de la prise de présences
+        $id = $connexion->lastInsertId();
+
+        $nb = 0;
+
+        $dateFrom = isset($post['dateFrom']) ? $post['dateFrom'] : null;
+        $dateTo = isset($post['dateTo']) ? $post['dateTo'] : null;
+        $dateFrom = Application::dateMysql($dateFrom);
+        $dateTo = Application::dateMysql($dateTo);
+
+        $periodeFrom = isset($post['periodeFrom']) ? $post['periodeFrom'] : null;
+        $periodeTo = isset($post['periodeTo']) ? $post['periodeTo'] : null;
+
+        $statut = isset($post['justification']) ? $post['justification'] : null;
+
+        // ne conserver que les jours ouvrés de la période considérée
+        $listeJours = $this->listBusinessDays($dateFrom, $dateTo);
+        $nbJours = count($listeJours);
+
+        // le nombre de périodes prévues dans la journée
+        $listePeriodes = $this->lirePeriodesCours();
+        $nbPeriodes = count($listePeriodes);
+
+        $sql = 'INSERT INTO '.PFX.'presencesEleves ';
+        $sql .= 'SET id = :id, matricule = :matricule, date = :date, periode = :noPeriode, statut = :statut ';
+        $sql .= 'ON DUPLICATE KEY UPDATE id = :id, periode = :noPeriode, statut = :statut ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 11);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_STR, 7);
+
+        $nb = 0;
+        foreach ($listeJours as $n => $unJour) {
+            $date = Application::dateMySql($unJour);
+            $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+
+            // est-ce le premier jour?
+            if ($n == 0) {
+                // sur une seule journée
+                if ($nbJours == 1) {
+                    foreach (range($periodeFrom, $periodeTo) as $noPeriode) {
+                        $requete->bindParam(':noPeriode', $noPeriode, PDO::PARAM_INT);
+                        $resultat = $requete->execute();
+                        if ($resultat)
+                            $nb++;
+                        }
+                }
+                else {
+                    // on complète le statut jusqu'à la fin de la journée
+                    foreach (range($periodeFrom, $nbPeriodes) as $noPeriode) {
+                        $requete->bindParam(':noPeriode', $noPeriode, PDO::PARAM_INT);
+                        $resultat = $requete->execute();
+                        if ($resultat)
+                            $nb++;
+                        }
+                    }
+                }
+                else {
+                    // sommes-nous avant le dernier jour?
+                    if ($n < $nbJours-1) {
+                        // on complète le statut jusqu'à la fin de la journée
+                        foreach (range(1, $nbPeriodes) as $noPeriode) {
+                            $requete->bindParam(':noPeriode', $noPeriode, PDO::PARAM_INT);
+                            $resultat = $requete->execute();
+                            if ($resultat)
+                                $nb++;
+                            }
+                        }
+                    else {
+                        // on complète le statut jusqu'à la période de fin
+                        foreach (range(1, $periodeTo) as $noPeriode) {
+                            $requete->bindParam(':noPeriode', $noPeriode, PDO::PARAM_INT);
+                            $resultat = $requete->execute();
+                            if ($resultat)
+                                $nb++;
+                            }
+                    }
+                }
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
      /**
       * retourne la liste des jours d'absences d'un élève dont on fournit le matricule.
       *
@@ -1739,6 +1855,38 @@ public function incrementPrint($idTraitement){
         }
 
         Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste des jours ouvrés entre deux dates au format 'Y-m-d'
+     *
+     * @param string $dateFrom
+     * @param string $dateTo
+     *
+     * @return array
+     */
+    public function listBusinessDays($dateFrom, $dateTo){
+        $dateFrom = new DateTime($dateFrom);
+        $dateTo = new DateTime($dateTo);
+        // inclure le dernier jour
+        $dateTo = $dateTo->modify( '+1 day' );
+        $period = new DatePeriod(
+            $dateFrom,
+            new DateInterval('P1D'),
+            $dateTo
+        );
+
+        $liste = array();
+        foreach ($period as $key => $value) {
+            $laDate = $value->format('Y-m-d');
+            $unixTimeStamp = strToTime($laDate);
+            $dow = date('w', $unixTimeStamp);
+            // ne pas prendre les jours de WE
+            if (($dow != 6) && ($dow != 0))
+                $liste[] = $value->format('d/m/Y');
+        }
 
         return $liste;
     }

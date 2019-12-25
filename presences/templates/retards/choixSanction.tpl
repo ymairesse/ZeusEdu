@@ -1,9 +1,9 @@
 <div class="col-xs-12 col-md-7">
     {if $EDTInstalle}
-        {if $imageEDT != ''}
+        {if ($imageEDT != '') && (file_exists('../edt/eleves/{$imageEDT}'))}
         <img src="../edt/eleves/{$imageEDT}" alt="{$imageEDT}" class="img img-responsive">
         {else}
-        <p>Horaire non disponible</p>
+        <p class="avertissement">Horaire EDT non disponible</p>
         {/if}
         {else}
         <p class="avertissement">Le module "EDT (Index Education)" doit être installé pour accéder à l'horaire individuel de l'élève</p>

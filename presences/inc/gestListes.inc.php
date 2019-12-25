@@ -75,25 +75,4 @@ switch ($mode) {
         $smarty->assign('selecteur', 'selectClasseDate');
         break;
 
-    case 'parCours':
-        // $etape = isset($_POST['etape']) ? $_POST['etape'] : Null;
-        // $date = isset($_POST['date']) ? $_POST['date'] : strftime('%d/%m/%Y');
-        // $smarty->assign('date', $date);
-        //
-        // if ($etape == 'showListe') {
-        //     if (isset($coursGrp) && ($date != '')) {
-        //         $listePresences = $Presences->listePresencesCoursDate($date, $coursGrp);
-        //         Application::afficher($listePresences);
-        //     }
-        // }
-        // require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
-        // $User = new User($acronyme);
-        //
-        // $listeCours = $User->listeCoursProf();
-        // $smarty->assign('listeCours', $listeCours);
-        // $smarty->assign('coursGrp', $coursGrp);
-        // $smarty->assign('mode', $mode);
-        // $smarty->assign('action', 'listes');
-        // $smarty->assign('selecteur', 'selectCoursDate');
-        break;
     }

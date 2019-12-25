@@ -6,7 +6,7 @@
 <div class="col-xs-2">
 	{if $userStatus == 'educ' || $userStatus == 'admin'}
 		<div class="input-group date">
-			<input type="text" class="datepicker form-control" name="date" id="datePresences" value="{$date}">
+			<input type="text" class="datepicker form-control" name="datePresences" id="datePresences" value="{$date}">
 			<div class="input-group-addon"><i class="fa fa-calendar"></i> </div>
 		</div>
 	{/if}

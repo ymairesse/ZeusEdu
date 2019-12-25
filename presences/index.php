@@ -9,6 +9,8 @@ require_once 'inc/classes/classPresences.inc.php';
 $Presences = new Presences();
 $acronyme = $user->getAcronyme();
 
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
+$mode = isset($_REQUEST['mode']) ? $_REQUEST['mode'] : null;
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 
 // les photos sont-elles visibles?
@@ -30,6 +32,11 @@ switch ($action) {
     case 'listes':
         include 'inc/gestListes.inc.php';
         break;
+
+    case 'signaler':
+        include 'inc/absences/signaler.php';
+        break;
+
     case 'signalements':
         include 'inc/signalements.inc.php';
         break;
