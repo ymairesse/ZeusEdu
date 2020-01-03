@@ -16,7 +16,7 @@
 						<input name="acronyme" type="hidden" value="{$userIdentite.acronyme|default:''}">
 						<strong class="form-control-static">{$userIdentite.acronyme|default:''}</strong>
 						{else}
-						<input type="text" maxlength="3" name="acronyme" id="acronyme" value="{$userIdentite.acronyme|default:''}" class="required form-control">
+						<input type="text" maxlength="7" name="acronyme" id="acronyme" value="{$userIdentite.acronyme|default:''}" class="required form-control">
 						<div class="help-block" id="acronymeOK"></div>
 					{/if}
 				</div>
