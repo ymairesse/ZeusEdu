@@ -105,6 +105,19 @@ class Application
         }
     }
 
+    public static function afficherSilent($data, $die = false) {
+        foreach ($data as $wtf => $unData) {
+            echo '<!-- ';
+            echo '<pre>';
+            var_export($unData);
+            echo '</pre>';
+            echo ' -->';
+        }
+        if ($die == true) {
+            die();
+        }
+    }
+
     /**
      * renvoie le temps écoulé depuis le déclenchement du chrono.
      *
@@ -294,8 +307,8 @@ class Application
      */
     public function saveApplisStatus($post)
     {
-        // chercher la liste des applications disponibles
-        $listeApplis = self::listeApplis();
+        // chercher la liste des applications disponibles, même inactives
+        $listeApplis = self::listeApplis(false);
         // logout et admin ne peuvent jamais être désactivées
         unset($listeApplis['logout']);
         unset($listeApplis['admin']);
@@ -563,6 +576,7 @@ class Application
         $applisAutorisees = array_keys($_SESSION['applications']);
         if (!(in_array(repertoireActuel(), $applisAutorisees))) {
             header('Location: '.$BASEDIR.'index.php');
+            exit;
         } else {
             return true;
         }
@@ -1660,6 +1674,8 @@ class Application
             $insert = @array_combine($champsInsert, $uneLigne);
             // le compte du nombre de champs est-il bon dans la variable $insert
             if ($nbChampsInsert == count($insert)) {
+                //echo $sql;
+                //Application::afficher($insert, true);
                 $requete->execute($insert);
                 ++$ajouts;
             } else {
