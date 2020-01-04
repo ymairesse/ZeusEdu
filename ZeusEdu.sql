@@ -1584,6 +1584,20 @@ CREATE TABLE `didac_thotJdcCategoriesArchive` (
 ALTER TABLE `didac_thotJdcCategoriesArchive`
   ADD PRIMARY KEY (`idCategorie`,`anScol`);
 
+CREATE TABLE `didac_thotGhost` (
+    `id` int(11) NOT NULL,
+    `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme du propriétaire',
+    `idCategorie` tinyint(11) NOT NULL COMMENT 'Identifiant de la catégorie (Matières vues, devoir,...)',
+    `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Cours concerné',
+    `jour` tinyint(4) NOT NULL COMMENT 'Jour de la semaine (commençant par lundi=0)',
+    `startTime` time NOT NULL COMMENT 'Heure de début',
+    `endTime` time NOT NULL COMMENT 'Heure de fin',
+    `allDay` tinyint(1) NOT NULL
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Ghost de l''horaires hebdomadaire';
+
+ALTER TABLE `didac_thotGhost`
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `acronyme` (`acronyme`);
 
 CREATE TABLE `didac_thotParents` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
