@@ -1475,21 +1475,22 @@ CREATE TABLE IF NOT EXISTS `didac_thotJdcCategories` (
   `categorie` varchar(30) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des mentions au journal de classe';
 
-
 INSERT INTO `didac_thotJdcCategories` (`idCategorie`, `ordre`, `urgence`, `categorie`) VALUES
 (1, 1, 'urgence0', 'Devoir'),
-(2, 2, 'urgence1', 'Leçon'),
+(2, 2, 'urgence1', 'Évaluation TJ'),
 (3, 3, 'urgence0', 'Préparation'),
 (4, 6, 'urgence0', 'Document à remettre'),
-(5, 0, 'urgence2', 'Évaluation certificative'),
+(5, 1, 'urgence2', 'Évaluation certificative'),
 (6, 5, 'urgence0', 'Matériel à apporter'),
-(7, 7, 'urgence0', 'Information');
+(7, 0, 'urgence0', 'Matières vues'),
+(8, 99, 'urgence0', 'Autres'),
+(9, 9, 'urgence0', 'Activité extérieure');
 
 ALTER TABLE `didac_thotJdcCategories`
- ADD PRIMARY KEY (`idCategorie`);
+  ADD PRIMARY KEY (`idCategorie`);
 
 ALTER TABLE `didac_thotJdcCategories`
-MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
+  MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 
 CREATE TABLE `didac_thotJdcPJ` (
