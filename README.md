@@ -77,6 +77,8 @@ Les mises à jour cruciales à réaliser dans la base de données ou dans des fi
 Installation
 ============
 
+L'installation sur le serveur web et l'initialisation de la base de données sont décrites dans la vidéo https://youtu.be/xYIUn1mpE2A
+
  - Configurer le fichier /config.inc.php pour la base de données
  - uploader tous les fichiers sur le serveur web
  - créer la base de données: par exemple avec phpMyAdmin. La base de données doit être en utf8_unicode_ci
