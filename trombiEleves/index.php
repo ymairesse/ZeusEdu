@@ -6,6 +6,8 @@ include(INSTALL_DIR.'/inc/entetes.inc.php');
 // ----------------------------------------------------------------------------
 //
 
+$unAn = time() + 365 * 24 * 3600;
+
 $classe = Application::postOrCookie('classe', $unAn);
 
 $matricule = isset($_GET['matricule']) ? $_GET['matricule'] : Null;
@@ -20,7 +22,6 @@ if ($classe != Null) {
     $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
     $smarty->assign('listeEleves',$listeElevesClasse);
     }
-
 
 $onglet = isset($_POST['onglet']) ? $_POST['onglet'] : Null;
 
@@ -61,10 +62,14 @@ switch ($action) {
             $smarty->assign('listeCours', $eleve->listeCoursEleve());
             $classe = $eleve->classe();
 			$smarty->assign('classe', $classe);
-            // require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
-            // $Edt = new Edt();
-            // $imageEDT = $Edt->getEdtEleve($matricule);
-            // $smarty->assign('imageEDT', $imageEDT);
+            // si le module "EDT" est installée
+            if (is_dir('../edt')) {
+                require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
+                $Edt = new Edt();
+                $imageEDT = $Edt->getEdtEleve($matricule);
+                $smarty->assign('imageEDT', $imageEDT);
+            }
+
             $eleveEBS = $Ecole->getEBS($matricule, 'eleve');
             $smarty->assign('eleveEBS', $eleveEBS);
             $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
