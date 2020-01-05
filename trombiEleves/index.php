@@ -43,25 +43,25 @@ switch ($action) {
         break;
     case 'parCours':
         if ($cours != Null) {
-			$listeElevesCours = $Ecole->listeElevesCours($cours);
+            $listeElevesCours = $Ecole->listeElevesCours($cours);
             $listeEBS = $Ecole->getEBS($cours, 'coursGrp');
 
-			$smarty->assign('cible', 'coursGrp');
-			$smarty->assign('coursGrp', $cours);
+            $smarty->assign('cible', 'coursGrp');
+            $smarty->assign('coursGrp', $cours);
             $smarty->assign('nomFichier', $cours);
             $smarty->assign('action','parCours');
-			$smarty->assign('tableauEleves', $listeElevesCours);
+            $smarty->assign('tableauEleves', $listeElevesCours);
             $smarty->assign('listeEBS', $listeEBS);
-			$smarty->assign('corpsPage', 'trombinoscope');
+            $smarty->assign('corpsPage', 'trombinoscope');
 		}
         break;
 	case 'parEleve':
 		if ($matricule != Null) {
-			$eleve = new Eleve($matricule);
-			$smarty->assign('eleve', $eleve->getDetailsEleve());
+            $eleve = new Eleve($matricule);
+            $smarty->assign('eleve', $eleve->getDetailsEleve());
             $smarty->assign('listeCours', $eleve->listeCoursEleve());
             $classe = $eleve->classe();
-			$smarty->assign('classe', $classe);
+            $smarty->assign('classe', $classe);
             // si le module "EDT" est installée
             if (is_dir('../edt')) {
                 require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
@@ -75,13 +75,13 @@ switch ($action) {
             $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
             $smarty->assign('listeEleves',$listeElevesClasse);
             $smarty->assign('action','parEleve');
-			$smarty->assign('titulaires', $eleve->titulaires());
+            $smarty->assign('titulaires', $eleve->titulaires());
             $smarty->assign('onglet', $onglet);
-			$smarty->assign('corpsPage', 'infoEleves');
+            $smarty->assign('corpsPage', 'infoEleves');
 		}
 		break;
     default:
-		$smarty->assign('action','parEleve');
+        $smarty->assign('action','parEleve');
         $smarty->assign('nbEleves', $Ecole->nbEleves());
         $smarty->assign('nbClasses', $Ecole->nbClasses());
         $smarty->assign('statAccueil', $Ecole->anniversaires());
