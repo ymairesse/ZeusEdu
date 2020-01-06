@@ -1,8 +1,5 @@
 <?php
 
-require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-
-$Ecole = new Ecole();
 // liste de plusieurs classes à grouper = $classes
 // une seule classe venant d'une liste de sélection = $selectClasse
 // un groupe reprenant plusieurs classes = $groupe
@@ -22,7 +19,7 @@ $listeClasses = $Ecole->listeGroupes();
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('laClasse', $laClasse);
 if ($laClasse != '') {
-    $listeEleves = $Ecole->listeEleves($laClasse, 'groupe');
+    $listeEleves = $Ecole->listeEleves($laClasse, 'groupe', true);
     $smarty->assign('listeEleves', $listeEleves);
 }
 
@@ -56,8 +53,8 @@ switch ($mode) {
             $smarty->assign('matricule', $matricule);
             $smarty->assign('selecteur', 'selecteurs/selectClasseEleve');
             $smarty->assign('mode', 'save');
-                // on ouvre le formulaire en modification
-                $smarty->assign('recordingType', 'modif');
+            // on ouvre le formulaire en modification
+            $smarty->assign('recordingType', 'modif');
             $smarty->assign('corpsPage', 'eleves/inputEleve');
         }
         // choix de l'élève
