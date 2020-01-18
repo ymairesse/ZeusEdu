@@ -1445,12 +1445,14 @@ class Bulletin
                 $coteCert = 0;
                 $maxCert = 0;
                 foreach ($lesCompetences as $idComp => $lesCotes) {
-                    $coteForm += $this->sansVirg($lesCotes['form']['cote']);
+                    $coteForm += floatval($this->sansVirg($lesCotes['form']['cote']));
+
                     if (($lesCotes['form']['cote'] != '') && (is_numeric($this->sansVirg($lesCotes['form']['cote'])))) {
                         $maxForm += $this->sansVirg($lesCotes['form']['maxForm']);
                     }
 
-                    $coteCert += $this->sansVirg($lesCotes['cert']['cote']);
+                    $coteCert += floatval($this->sansVirg($lesCotes['cert']['cote']));
+
                     if (($lesCotes['cert']['cote'] != '') && (is_numeric($this->sansVirg($lesCotes['cert']['cote'])))) {
                         $maxCert += $this->sansVirg($lesCotes['cert']['maxCert']);
                     }
@@ -1977,6 +1979,8 @@ class Bulletin
                  $sql .= "SET matricule='$matricule', coursGrp='$coursGrp', bulletin='$bulletin', ";
                  $sql .= "situation='$situation', maxSituation = '$maxSituation' ";
                  $sql .= "ON DUPLICATE KEY UPDATE situation='$situation', maxSituation='$maxSituation'";
+                 if ($matricule == 8022)
+                    die($sql);
                  $resultat = $connexion->exec($sql);
              }
          }
@@ -1987,54 +1991,59 @@ class Bulletin
      * enregistrement des cotes de situations de l'ensemble d'une classe
      * en provenance du formulaire de l'admin.
      *
-     * @param $post
+     * @param array $post
      *
      * @return int : nombre d'enregistrements dans la BD
      */
     public function enregistrerSituationsClasse($post)
     {
-        $bulletin = $post['bulletin'];
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sqlSit = 'INSERT INTO '.PFX.'bullSituations ';
-        $sqlSit .= "SET situation=:sit, bulletin='$bulletin',matricule=:matricule, coursGrp=:coursGrp ";
-        $sqlSit .= 'ON DUPLICATE KEY UPDATE situation=:sit';
-
-        $sqlMax = 'INSERT INTO '.PFX.'bullSituations ';
-        $sqlMax .= "SET maxSituation=:max, bulletin='$bulletin',matricule=:matricule, coursGrp=:coursGrp ";
-        $sqlMax .= 'ON DUPLICATE KEY UPDATE maxSituation=:max';
+        $sqlSit = 'UPDATE '.PFX.'bullSituations ';
+        $sqlSit .= 'SET situation = :sit ';
+        $sqlSit .= 'WHERE bulletin = :bulletin AND matricule = :matricule AND coursGrp = :coursGrp ';
         $requeteSit = $connexion->prepare($sqlSit);
+
+        $sqlMax = 'UPDATE '.PFX.'bullSituations ';
+        $sqlMax .= 'SET maxSituation = :max ';
+        $sqlMax .= 'WHERE bulletin = :bulletin AND matricule = :matricule AND coursGrp = :coursGrp ';
         $requeteMax = $connexion->prepare($sqlMax);
+
         $nbResultats = 0;
+
+        $bulletin = $post['bulletin'];
+        $requeteMax->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+        $requeteSit->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+
         foreach ($post as $eleveCours => $cote) {
             $eleveCours = explode('#', $eleveCours);
+            // Application::afficher($eleveCours);
             $type = $eleveCours[0];
             if (($type == 'max') || ($type == 'sit')) {
-                $matricule = explode('_', $eleveCours[1]);
-                $matricule = $matricule[1];
+                $matricule = explode('_', $eleveCours[1])[1];
                 $coursGrp = explode('_', $eleveCours[2]);
                 // dans le fichier .tpl de la grille des situations, les caractères "espace" sont remplacés par des "!"
                 // il faut remettre les " " pour rétablir les noms des cours
                 $coursGrp = str_replace('!', ' ', $coursGrp[1]);
             }
+
             switch ($type) {
                 case 'sit':
-                    $nbResultats += $requeteSit->execute(array(
-                        ':matricule' => $matricule,
-                        ':coursGrp' => $coursGrp,
-                        ':sit' => $cote,
-                        ));
+                    $requeteSit->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requeteSit->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+                    $requeteSit->bindParam(':sit', $cote, PDO::PARAM_STR, 6);
+                    // echo $sqlSit;
+                    // Application::afficher(array($matricule, $coursGrp, $cote), true);
+                    $nbResultats += $requeteSit->execute();
                     break;
                 case 'max':
-                    $nbResultats += $requeteMax->execute(array(
-                        ':matricule' => $matricule,
-                        ':coursGrp' => $coursGrp,
-                        ':max' => $cote,
-                        ));
-                    break;
-                default:
+                    $requeteMax->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requeteMax->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+                    $requeteMax->bindParam(':max', $cote, PDO::PARAM_STR, 6);
+                    $nbResultats += $requeteMax->execute();
                     break;
                 }
         }
+
         Application::DeconnexionPDO($connexion);
 
         return $nbResultats;
@@ -2742,11 +2751,11 @@ class Bulletin
         }
 
         // on ajoute tous les cours qui ont été ajoutés un jour... (même s'ils ont été supprimés ensuite)
-        $sql = 'SELECT '.PFX.'bullHistoCours.coursGrp, acronyme, nom, prenom, cours, libelle, nbheures, statut, section, rang ';
-        $sql .= 'FROM '.PFX.'bullHistoCours AS histo';
+        $sql = 'SELECT '.PFX.'histo.coursGrp, acronyme, nom, prenom, cours, libelle, nbheures, statut, section, rang ';
+        $sql .= 'FROM '.PFX.'bullHistoCours AS histo ';
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON (pc.coursGrp = histo.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs AS profs ON (pc.acronyme = profs.acronyme) ';
-        $sql .= 'JOIN '.PFX.'cours AS cours ON (cours.cours = SUBSTR(histo.coursGrp, 1, LOCATE('-',histo.coursGrp)-1)) ';
+        $sql .= 'JOIN '.PFX.'cours AS cours ON (cours.cours = SUBSTR(histo.coursGrp, 1, LOCATE("-", histo.coursGrp)-1)) ';
         $sql .= 'JOIN '.PFX.'statutCours AS statut ON (statut.cadre = cours.cadre) ';
         $sql .= 'WHERE matricule IN ('.$listeMatricules.') AND mouvement = "ajout" ';
         $requete = $connexion->prepare($sql);
@@ -2758,11 +2767,11 @@ class Bulletin
                 $matricule = $ligne['matricule'];
                 $coursGrp = $ligne['coursGrp'];
                 $listeCours[$matricule][$coursGrp] = array(
-                            'coursGrp' => $coursGrp,                    'cours' => $ligne['cours'],
-                            'libelle' => $ligne['libelle'],            'nbheures' => $ligne['nbheures'],
-                            'statut' => $ligne['statut'],                'section' => $ligne['section'],
-                            'rang' => $ligne['rang'],                'matricule' => $matricule,
-                            'nom' => $ligne['nom'],                    'prenom' => $ligne['prenom'],
+                            'coursGrp' => $coursGrp,            'cours' => $ligne['cours'],
+                            'libelle' => $ligne['libelle'],     'nbheures' => $ligne['nbheures'],
+                            'statut' => $ligne['statut'],       'section' => $ligne['section'],
+                            'rang' => $ligne['rang'],           'matricule' => $matricule,
+                            'nom' => $ligne['nom'],             'prenom' => $ligne['prenom'],
                             'acronyme' => $ligne['acronyme'],
                             );
             }
@@ -3356,7 +3365,7 @@ class Bulletin
         $sql .= "WHERE SUBSTR(cours, 1,1) IN ($listeNiveauxString) ";
         $sql .= "AND section IN ($sections) ";
         $sql .= 'ORDER BY libelle ';
-// echo $sql;
+
         $listeCours = array();
         $resultat = $connexion->query($sql);
         if ($resultat) {
@@ -3966,10 +3975,15 @@ class Bulletin
                 $coursGrp = $ligne['coursGrp'];
                 $bulletin = $ligne['bulletin'];
                 $ligne['date'] = Application::datePHP($ligne['date']);
-                if (($ligne['max'] > 0) && ($ligne['cote'] != '') && (!in_array($ligne['cote'], explode(',', COTEABS)))) {
-                    $ligne['echec'] = ($ligne['cote'] / $ligne['max']) < 0.5;
-                } else {
-                    $ligne['echec'] = false;
+
+                if (in_array($ligne['cote'], explode(',', COTENULLE)))
+                    $ligne['echec'] = true;
+                    else {
+                    if (($ligne['max'] > 0) && ($ligne['cote'] != '') && (!in_array($ligne['cote'], explode(',', COTEABS)))) {
+                        $ligne['echec'] = ($ligne['cote'] / $ligne['max']) < 0.5;
+                    } else {
+                        $ligne['echec'] = false;
+                    }
                 }
                 $liste[$coursGrp][$bulletin][] = $ligne;
             }
@@ -4053,7 +4067,7 @@ class Bulletin
                         else $erreur = true;
                 }
                 if (($max > 0) && ($cote != '') && (!in_array($cote, explode(',', COTEABS)))) {
-                    $echec = ($cote / $max) < 0.5;
+                    $echec = $this->estCoteNulle($cote) || ($cote / $max) < 0.5;
                 } else {
                     $echec = false;
                 }
@@ -4108,6 +4122,9 @@ class Bulletin
              foreach ($listeCotesCarnet as $matricule => $listeCotes) {
                  foreach ($listeCotes as $noCarnet => $data) {
                      // on additionne pour la moyenne
+                     // conversion d'une cote nulle en zéro
+                     if ($this->estCoteNulle($data['cote']))
+                        $data['cote'] = 0;
                     // s'il y a une cote et que ce n'est pas une mention d'absence (constante COTEABS)
                     if (($data['cote'] != '') && (!in_array($data['cote'], explode(',', COTEABS)))) {
                         if (isset($sommes[$noCarnet])) {
@@ -4978,7 +4995,7 @@ class Bulletin
      * */
     private function estLicite($cote)
     {
-        return (is_numeric($cote) && ($cote != '')) || (self::estCoteNulle($cote));
+        return (is_numeric($cote) && ($cote != '')) || ($this->estCoteNulle($cote));
     }
 
     /**
@@ -5002,6 +5019,8 @@ class Bulletin
                         $cote = $this->sansVirg($uneCote['cote']);
                         $max = $this->sansVirg($uneCote['max']);
                         if ($this->estLicite($cote)) {
+                            if ($this->estCoteNulle($cote))
+                                $cote = 0;
                             if (isset($listeSommes[$matricule][$unType][$idComp]['cote'])) {
                                 $listeSommes[$matricule][$unType][$idComp]['cote'] += $cote;
                             } else {
