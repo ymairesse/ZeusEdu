@@ -1299,9 +1299,48 @@ CREATE TABLE IF NOT EXISTS didac_sessions (
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='sessions actives';
 
---
--- Gestion des élèves à besoins spécifiques (EBS)
---
+
+CREATE TABLE `didac_remediationOffre` (
+  `idOffre` int(11) NOT NULL COMMENT 'identifiant numérique de l''offre',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant du prof',
+  `title` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Titre de la remédiation',
+  `contenu` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'détail de l''offre de remédiation',
+  `startDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date de la remédiation',
+  `endDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date et heure de fin de la remédiation',
+  `local` varchar(12) COLLATE utf8_unicode_ci NOT NULL DEFAULT '???' COMMENT 'local',
+  `places` tinyint(4) NOT NULL COMMENT 'Nombre de places disponibles',
+  `cache` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cette remédiation est archivée',
+  `lastModif` date DEFAULT NULL COMMENT 'Date du dernier enregistrement'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Offres de remédiations';
+
+ALTER TABLE `didac_remediationOffre`
+  ADD PRIMARY KEY (`idOffre`);
+
+ALTER TABLE `didac_remediationOffre`
+  MODIFY `idOffre` int(11) NOT NULL AUTO_INCREMENT COMMENT 'identifiant numérique de l''offre';
+
+CREATE TABLE `didac_remediationEleves` (
+    `idOffre` int(11) NOT NULL COMMENT 'Identifiant de l''offre de remédiation',
+    `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève',
+    `presence` enum('indetermine','present','absent') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence',
+    `obligatoire` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La remédiation est-elle obligatoire?'
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Élèves inscrits aux remédiations';
+
+ALTER TABLE `didac_remediationEleves`
+    ADD PRIMARY KEY (`idOffre`,`matricule`);
+
+
+CREATE TABLE `didac_remediationCibles` (
+  `idOffre` int(11) NOT NULL COMMENT 'Identifiant numérique de l''offre de remédiation',
+  `type` enum('ecole','niveau','classe','matiere','coursGrp') COLLATE utf8_unicode_ci NOT NULL,
+  `cible` varchar(20) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cibles des offres de remédiations ';
+
+ALTER TABLE `didac_remediationCibles`
+  ADD PRIMARY KEY (`idOffre`,`type`,`cible`);
+
+
+
 
 CREATE TABLE IF NOT EXISTS `didac_EBSamenagements` (
   `idAmenagement` smallint(6) NOT NULL AUTO_INCREMENT,
