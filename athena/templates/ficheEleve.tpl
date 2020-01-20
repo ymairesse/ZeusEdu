@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
@@ -9,13 +9,13 @@
 			<li><a data-toggle="tab" href="#tabs-0">Suivi</a></li>
 			<li><a data-toggle="tab" href="#tabs-1">Personnel</a></li>
 			<li><a data-toggle="tab" href="#tabs-2">Responsables</a></li>
-			<li><a data-toggle="tab" href="#tabs-3" title="Médical">{if $medicEleve.info != ''}<i class="fa fa-heartbeat faa-pulse animated" style="font-size:1.2em; color: red"></i>{else}<i class="fa fa-heart" style="color:red"></i> {/if}</a></li>
+			<li><a data-toggle="tab" href="#tabs-3" id="medical" title="Médical">{if $medicEleve.info != ''}<i class="fa fa-heartbeat faa-pulse animated" style="font-size:1.2em; color: red"></i>{else}<i class="fa fa-heart" style="color:blue"></i> {/if}</a></li>
 			<li><a data-toggle="tab" href="#tabs-4" title="Infirmerie"><i style="color: red;" class="fa fa-medkit fa-lg"></i>  <span class="badge" style="color:red; background: white">{$consultEleve|@count}</span></a></li>
 			<li><a data-toggle="tab" href="#tabs-5">Bulletin</a></li>
-			<li><a data-toggle="tab" href="#tabs-6">Scolaire</a></li>
-			<li><a data-toggle="tab" href="#tabs-7">Repertoire</a></li>
-			<li><a data-toggle="tab" href="#tabs-8">EDT</a></li>
-			<li><a data-toggle="tab" href="#tabs-9">ADES <span class="badge" style="color:red; background: white;">{$nbFaits}</span></a></li>
+			<li><a data-toggle="tab" href="#tabs-6" id="scolaire">Scolaire</a></li>
+			<li><a data-toggle="tab" href="#tabs-7" id="rep">Répertoire</a></li>
+			<li><a data-toggle="tab" href="#tabs-8" id="edt">EDT</a></li>
+			<li><a data-toggle="tab" href="#tabs-9" id="ades">ADES <span class="badge" style="color:red; background: white;">{$nbFaits}</span></a></li>
 			<li><a data-toggle="tab" href="#tabs-10">EBS {if $infoEBS != ''}<i class="fa fa-user-circle-o"></i> {/if}</a> </li>
 		</ul>
 	</div>
@@ -71,27 +71,27 @@
 
 		<div id="tabs-6" class="tab-pane fade in">
 
-			{include file="detailSuivi/scolaire.tpl"}
+			{* {include file="detailSuivi/scolaire.tpl"} *}
 
 		</div>
 
 		<div id="tabs-7" class="tab-pane fade in">
 
-			{include file="detailSuivi/repertoire.tpl"}
+			{* include file="detailSuivi/repertoire.tpl" *}
 
 		</div>
 
 		<div id="tabs-8" class="tab-pane fade in">
-			{if $imageEDT == ''}
+			{* {if $imageEDT == ''}
 			 	<iframe src="../edt/index.html" style="width:100%; height:600px"></iframe>
 				{else}
 				<img src="../edt/eleves/{$imageEDT}" alt="{$imageEDT}" class="img img-responsive">
-			{/if}
+			{/if} *}
 		</div>
 
 		<div id="tabs-9" class="tab-pane fade in">
 
-			{include file="detailSuivi/infoDisciplinaires.tpl"}
+			{* {include file="detailSuivi/infoDisciplinaires.tpl"} *}
 
 		</div>
 
@@ -115,6 +115,42 @@ $(document).ready(function(){
 
 	// activer l'onglet dont le numéro a été passé
 	$('#tabs li a').eq(onglet).tab('show');
+
+	$('#ades').click(function(){
+		var matricule = $('#matricule').val();
+		$.post('inc/suivi/ades.inc.php', {
+			matricule: matricule
+		}, function(resultat){
+			$('#tabs-9').html(resultat);
+		})
+	})
+
+	$('#rep').click(function(){
+		var matricule = $('#matricule').val();
+		$.post('inc/suivi/repertoire.inc.php', {
+			matricule: matricule
+		}, function(resultat){
+			$('#tabs-7').html(resultat);
+		})
+	})
+
+	$('#edt').click(function(){
+		var matricule = $('#matricule').val();
+		$.post('inc/suivi/edt.inc.php', {
+			matricule: matricule
+		}, function(resultat){
+			$('#tabs-8').html(resultat);
+		})
+	})
+
+	$('#scolaire').click(function(){
+		var matricule = $('#matricule').val();
+		$.post('inc/suivi/scolaire.inc.php', {
+			matricule: matricule
+		}, function(resultat){
+			$('#tabs-6').html(resultat);
+		})
+	})
 
 
 	$("#tabs li").click(function(){

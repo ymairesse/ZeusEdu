@@ -14,13 +14,16 @@
 <body>
 
 {include file="menu.tpl"}
-{include file="../../templates/faust.tpl"}
 
-<div class="container">
+<div class="container-fluid">
 
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
+	
+	<span id="neverdie" style="float:right">
+		{include file="templates/neverdie.tpl"}
+	</span>
 
 	{if (isset($message))}
 	<div class="alert alert-dismissable alert-{$message.urgence|default:'info'}
@@ -36,6 +39,7 @@
 <img src="../images/bigwait.gif" id="wait" style="display:none" alt="wait">
 
 <div id="corpsPage">
+
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
 {else}

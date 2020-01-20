@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2 title="{$eleve.matricule}">{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
@@ -37,29 +37,22 @@
 
 			</div>
 
-			<div class="col-md-3">
+			<div class="col-md-6">
 
-				<div class="form-group">
-					<label for="heure">Heure</label>
-					<input id="timepicker" size="5" maxlength="5" type="text" name="heure" value="{$visite.heure|truncate:5:''|default:''}" class="form-control">
-					<div class="help-group">Clic+Enter pour "Maintenant"</div>
-				</div>
-
+			<div class="form-group">
+				<label for="heure">Heure</label>
+				<input id="timepicker" size="5" maxlength="5" type="text" name="heure" value="{$visite.heure|truncate:5:''|default:''}" class="form-control">
+				<div class="help-group">Clic+Enter pour "Maintenant"</div>
 			</div>
-
-			<div class="col-md-3">
-				<div class="form-group">
-					<label for="duree">Durée</label>
-					<input type="text" maxlength="3" name="duree" id="duree" value="{$visite.duree|default:50}" class="form-control">
-					<div class="help-group">Durée prévue (min)</div>
-				</div>
 
 			</div>
 
 		</div>  <!-- row -->
 
-		<button type="button" class="btn {if $visite.jdc ==1}btn-success{else}btn-danger{/if} btn-block" id="btnJdc" name="button">RV au JDC de l'élève</button>
-		<input type="hidden" name="jdc" id="jdc" value="{$visite.jdc|default:0}">
+		<div class="form-group">
+			<strong>Ne s'est pas présenté </strong>
+			<input type="checkbox" name="absent" id="absent" value="1" {if ($visite != Null) && ($visite.absent == 1)} checked{/if}>
+		</div>
 
 		<div class="form-group">
 			<label for="motif">Motif de la visite</label><br>
@@ -71,17 +64,12 @@
 		<div class="col-md-5 col-sm-10">
 
 			<div class="form-group">
-				<label for="absent">Ne s'est pas présenté </label>
-				<input type="checkbox" name="absent" id="absent" value="1" {if ($visite != Null) && ($visite.absent == 1)} checked{/if}>
-			</div>
-
-			<div class="form-group">
 				<label for="traitement">Travail effectué</label><br>
 				<textarea name="traitement" id="traitement" rows="4" class="form-control">{$visite.traitement|default:''}</textarea>
 			</div>
 
 			<div class="form-group">
-				<label for="prive">Confidentiel </label>
+				<strong>Confidentiel </strong>
 				<input type="checkbox" name="prive" id="prive" value="1" {if ($visite == Null) || ($visite.prive == 1)} checked{/if}>
 			</div>
 
@@ -159,20 +147,6 @@
 <script type="text/javascript">
 
 	$("document").ready(function(){
-
-		$('#duree').attr('autocomplete', 'on');
-
-		$('#btnJdc').click(function(){
-			var jdc = $('#jdc').val();
-			if (jdc == 0) {
-				$('#jdc').val(1);
-				$('#btnJdc').removeClass('btn-danger').addClass('btn-success');
-				}
-				else {
-					$('#jdc').val(0);
-					$('#btnJdc').removeClass('btn-success').addClass('btn-danger');
-				}
-		})
 
 		$('#btn-elevesPlus').click(function(){
 			var classe = $('#classe').val();

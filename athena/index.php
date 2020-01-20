@@ -14,9 +14,13 @@ $smarty->assign('acronyme', $acronyme);
 
 $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
 
+// durée de validité pour les Cookies
+$unAn = time() + 365 * 24 * 3600;
+
 $classe = Application::postOrCookie('classe', $unAn);
 
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
+
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 $smarty->assign('matricule', $matricule);
@@ -25,6 +29,8 @@ $onglet = isset($_POST['onglet']) ? $_POST['onglet'] : 0;
 $smarty->assign('onglet', $onglet);
 
 $noBulletin = isset($_POST['noBulletin']) ? $_POST['noBulletin'] : PERIODEENCOURS;
+
+$smarty->assign('BASEDIR', BASEDIR);
 
 require_once INSTALL_DIR."/inc/classes/class.Athena.php";
 $Athena = new Athena();

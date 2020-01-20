@@ -24,7 +24,7 @@
 {/if}
 
 <!-- année scolaire en cours -->
-{assign var=annee value=$classe|substr:0:1}
+{assign var=annee value=$eleve.classe|substr:0:1}
 <h3>Résultats de {$annee}e année (année scolaire en cours)</h3>
 <div class="table-responsive">
 

@@ -1,5 +1,6 @@
 <div id="mesEleves" class="tab-content">
 
+	{if $elevesSuivis|@count > 0}
     {foreach from=$elevesSuivis key=anneeScolaire item=mesEleves}
         <div class="tab-pane {if $anneeScolaire == $ANNEESCOLAIRE}active{/if}" id="tabs-{$anneeScolaire}" style="max-height:35em; overflow: auto">
             <table class="table table-hover table-condensed">
@@ -72,6 +73,9 @@
         </table>
         </div>
     {/foreach}
+    {else}
+        <p class="avertissement">Vous ne suivez actuellement aucun élève</p>
+    {/if}
 </div>
 
 <script type="text/javascript">

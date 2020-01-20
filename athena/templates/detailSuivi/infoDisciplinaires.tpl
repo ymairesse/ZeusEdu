@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 	<div class="row">
 
@@ -30,7 +30,7 @@
 				{foreach from=$listeTousFaits key=anneeScolaire item=listeFaits}
 
 				<div class="tab-pane{if $tour == 0} active{assign var=tour value=$tour+1}{else} hidden-print{/if}" id="tab{$anneeScolaire}">
-
+				{if $listeFaits != Null}
 					{foreach from=$listeTypesFaits key=typeFait item=descriptionTypeFait}
 					{* si un fait de ce type figure dans la fiche disciplinaire *}
 					{if isset($listeFaits[$typeFait])}
@@ -104,9 +104,11 @@
 					<!-- table -->
 					{/if}
 					{/foreach}
+					{else}
+					<p class="avertissement">Pas de rapport de comportement pour cette année scolaire</p>
+				{/if}
 				</div>
 				<!-- tab-pane -->
-
 				{/foreach}
 
 			</div>

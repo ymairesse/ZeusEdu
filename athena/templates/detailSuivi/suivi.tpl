@@ -11,6 +11,7 @@
             <th syle="width:15%">Motif</th>
             <th syle="width:15%">Traitement</th>
             <th syle="width:15%">À suivre</th>
+            <th style="width: 2em"><i class="fa fa-book" title="Mention au JDC"></th>
             <th style="width:1em">&nbsp;</th>
         </tr>
     </thead>
@@ -78,7 +79,10 @@
     			data-placement="left"
     			data-content="{$unItem.aSuivre|truncate:500}">
                 {$unItem.aSuivre|truncate:35}
-                </td>
+            </td>
+            <td>
+				{if $unItem.jdc == 1}<i class="fa fa-book" style="color:green;" title="Mention au JDC"></i>{else}&nbsp;{/if}
+            </td>
             <td>
                 {if $unItem.proprietaire == $acronyme}
                 <button title="Supprimer cette ligne" class="btn btn-default btn-sm btn-delete" type="button"><i class="fa fa-times text-danger delete" data-id="{$unItem.id}"></i></button>

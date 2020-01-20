@@ -1,12 +1,13 @@
 <?php
 
-require_once '../../../config.inc.php';
+require_once '../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+
 session_start();
 
 if (!(isset($_SESSION[APPLICATION]))) {
@@ -14,16 +15,14 @@ if (!(isset($_SESSION[APPLICATION]))) {
     exit;
 }
 
-$User = $_SESSION[APPLICATION];
-$acronyme = $User->getAcronyme();
+$param = isset($_POST['param']) ? $_POST['param'] : Null;
 
-$module = $Application->getModule(3);
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty();
+$smarty->template_dir = '../templates';
+$smarty->compile_dir = '../templates_c';
 
-require_once INSTALL_DIR.'/inc/classes/class.Athena.php';
-$Athena = new Athena();
-
-$id = isset($_POST['id']) ? $_POST['id'] : Null;
-
-$ok = $Athena->adopterDemande($id, $acronyme);
-
-echo $ok;
+$randomParam = rand();
+$smarty->assign('param', $param);
+$smarty->assign('heure', date('H:i'));
+$smarty->display('neverdie.tpl');

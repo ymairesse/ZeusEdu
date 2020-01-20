@@ -10,6 +10,7 @@ $tri = isset($_COOKIE['tri']) ? $_COOKIE['tri'] : 'chrono';
 
 // liste des élèves suivis par l'utililisateur courant
 $elevesSuivis = Athena::getEleveUser($acronyme, null, null, $tri);
+
 $smarty->assign('elevesSuivis', $elevesSuivis);
 // liste des élèves sans RV
 $elevesSansRV = Athena::getEleveUser($acronyme, null, null, $tri, null, true);
@@ -30,3 +31,4 @@ $smarty->assign('tri', $tri);
 
 $smarty->assign('selecteur', 'selectClasseEleve');
 $smarty->assign('corpsPage', 'elevesSuivis');
+

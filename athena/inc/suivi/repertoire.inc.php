@@ -15,28 +15,29 @@ if (!(isset($_SESSION[APPLICATION]))) {
     exit;
 }
 
-$User = $_SESSION[APPLICATION];
-$acronyme = $User->getAcronyme();
-
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$listeElevesPlus = isset($_POST['listeElevesPlus']) ? $_POST['listeElevesPlus'] : Null;
-$listeMatriculesPlus = array();
-parse_str($listeElevesPlus, $listeMatriculesPlus);
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
+if ($matricule == null) {
+    die();
+}
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-$listeEleves = $Ecole->listeEleves($classe);
+require_once INSTALL_DIR.'/bullISND/inc/classes/classBulletin.inc.php';
+$Bulletin = new Bulletin();
+
+// répertoire des évaluations
+$listeCoursGrp = $Ecole->listeCoursGrpEleve($matricule);
+$listeCoursGrpAbr = $Ecole->abrListeCoursGrp(array_keys($listeCoursGrp));
+$listeCotes = $Bulletin->getCotes4listeCoursGrp($listeCoursGrp, $matricule);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeEleves', $listeEleves);
-$smarty->assign('matricule', $matricule);
-$elevesPlus = isset($listeMatriculesPlus['elevesPlus']) ? $listeMatriculesPlus['elevesPlus'] : Null;
-$smarty->assign('listeElevesPlus', $elevesPlus);
+$smarty->assign('abrCoursGrp', $listeCoursGrpAbr);
+$smarty->assign('listeCotes', $listeCotes);
+$smarty->assign('listeCoursGrp', $listeCoursGrp);
 
-$smarty->display('detailSuivi/ulListeEleves.tpl');
+$smarty->display('detailSuivi/repertoire.tpl');
