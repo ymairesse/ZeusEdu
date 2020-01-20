@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
 
-    var time = new Date();
+    var time = new Date().getTime();
 
     if ($('#coeur').text() == '') {
         var heure = time.getHours() + ":" + time.getMinutes();
