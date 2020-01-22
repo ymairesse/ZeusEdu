@@ -17,19 +17,18 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$module = $Application->getModule(3);
+$module = $Application->getModule(2);
 
-// récupérer le formulaire d'encodage du JDC
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
+$id = isset($_POST['id']) ? $_POST['id'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$guest = isset($_POST['guest']) ? $_POST['guest'] : Null;
 
-require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.'inc/classes/classPad.inc.php';
+$PadEleve = new padEleve($matricule, $acronyme);
 
-$listeEleves = $form['eleves'];
-$listeProfs = $form['acronyme'];
-$moderw = $form['moderw'];
-
-$nb = padEleve::savePartages($acronyme, $moderw, $listeEleves, $listeProfs);
+$nb = 0;
+if ($PadEleve->isOwner($acronyme, $id))
+    $nb = $PadEleve->unlink($guest, $id);
 
 echo $nb;

@@ -1,8 +1,7 @@
 <div id="selecteur" class="noprint" style="clear:both" class="form-inline">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
-		<div class="form-group">
-			<label for="coursGrp">Cours</label>
+		<div class="input-group">
 			<select name="coursGrp" id="coursGrp" class="form-control">
 			<option value="">Cours</option>
 			{foreach from=$listeCours key=k item=unCours}

@@ -231,10 +231,11 @@ class padEleve
             $listeElevesString = $listeEleves;
         }
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, dp.id,guest,mode ';
+        $sql = 'SELECT matricule, dp.id, guest, mode ';
         $sql .= 'FROM '.PFX.'pad AS dp ';
         $sql .= 'JOIN '.PFX.'padGuest AS dpg ON dp.id = dpg.id ';
         $sql .= "WHERE matricule IN ($listeElevesString) AND proprio = '$acronyme' ";
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -243,7 +244,7 @@ class padEleve
                 $matricule = $ligne['matricule'];
                 $guest = $ligne['guest'];
                 $mode = $ligne['mode'];
-                $liste[$matricule][$guest] = $mode;
+                $liste[$matricule][$guest] = array('id' => $ligne['id'], 'mode' => $ligne['mode']);
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -516,13 +517,13 @@ class padEleve
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'padSuivi ';
         $sql .= 'SET matricule = :matricule, anScol = :anScol, periode = :periode, ';
-        $sql .= 'pp1 = :pp1, pp2 = :pp2, ppa = :ppa, ppb = :ppb, ';
+        $sql .= 'pp1 = :pp1, pp2 = :pp2, ppa = :ppa, ';
         $sql .= 'ff1 = :ff1, ff2 = :ff2, ';
         $sql .= 'poInterne = :pi, poExterne = :pe, ';
         $sql .= 'id1 = :id1, id2 = :id2, id3 = :id3, id4 = :id4, idTexte = :idTexte, ';
         $sql .= 'discipline = :discipline, priseEnCharge = :prEnCharge ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'pp1 = :pp1, pp2 = :pp2, ppa = :ppa, ppb = :ppb, ';
+        $sql .= 'pp1 = :pp1, pp2 = :pp2, ppa = :ppa, ';
         $sql .= 'ff1 = :ff1, ff2 = :ff2, ';
         $sql .= 'poInterne = :pi, poExterne = :pe, ';
         $sql .= 'id1 = :id1, id2 = :id2, id3 = :id3, id4 = :id4, idTexte = :idTexte, ';
@@ -543,10 +544,10 @@ class padEleve
         $ppb = $form['facilite'];   // texte libre
         $requete->bindParam(':pp1', $pp1, PDO::PARAM_INT);
         $requete->bindParam(':pp2', $pp2, PDO::PARAM_INT);
-        $requete->bindParam(':ppa', $ppa, PDO::PARAM_STR, 128);
-        $requete->bindParam(':ppb', $ppb, PDO::PARAM_STR, 128);
+        $requete->bindParam(':ppa', $ppa, PDO::PARAM_STR, 256);
+        // $requete->bindParam(':ppb', $ppb, PDO::PARAM_STR, 128);
         //
-        // // forece et faiblesse
+        // // force et faiblesse
         $ff1 = $form['justification'];
         $ff2 = $form['remediation'];
 
@@ -704,6 +705,62 @@ class padEleve
         $resultat = $requete->execute();
 
         $nb = $requete->rowCount();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * vérifie si l'utilisateur $acronyme est propriétaire du pad $id
+     *
+     * @param int $id : identifiant de la note pad
+     * @param string $acronyme : l'utlisateur actuel
+     *
+     * @return bool
+     */
+    public function isOwner($acronyme, $id){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT proprio, id ';
+        $sql .= 'FROM '.PFX.'pad ';
+        $sql .= 'WHERE id = :id AND proprio = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne != Null;
+    }
+
+    /**
+     * interrompt le partage du pad id $id avec l'utilisateur $guest
+     *
+     * @param int $id : identifiant de la note pad
+     * @param string $guest : acronyme de l'utilisateur guest
+     *
+     * @return int : nombre de suppressions de partage
+     */
+    public function unlink($guest, $id) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'padGuest ';
+        $sql .= 'WHERE id = :id AND guest = :guest ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':guest', $guest, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        $nb = 0;
+        if ($resultat){
+            $nb = $requete->rowCount();
+        }
 
         Application::DeconnexionPDO($connexion);
 

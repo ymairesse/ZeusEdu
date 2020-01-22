@@ -1,4 +1,5 @@
 <?php
+
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
 $classe = isset($_POST['classe'])?$_POST['classe']:Null;
 
@@ -23,16 +24,17 @@ switch ($mode) {
 			}
 
 		break;
+
 	case 'parCours':
 		$listeCours = $user->listeCoursProf();
 		$smarty->assign('listeCours',$listeCours);
 		$smarty->assign('selecteur','selectCours');
-		
+
 		// un cours a été choisi, listons les élèves
 		if (isset($coursGrp)) {
 			$listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha',false);
 			$acronyme = $user->acronyme();
-			$listePartages = PadEleve::listePartages($acronyme,$listeEleves);
+			$listePartages = PadEleve::listePartages($acronyme, $listeEleves);
 			$smarty->assign('listeEleves',$listeEleves);
 			$smarty->assign('listePartages',$listePartages);
 			$listeProfs = $Ecole->listeProfs();
@@ -41,5 +43,3 @@ switch ($mode) {
 			}
 		break;
 	}
-
-?>

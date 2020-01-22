@@ -1,17 +1,17 @@
 <div id="selecteur" class="noprint" style="clear:both">
-
+	
 	<form name="formSelecteur" id="formSelecteur" action="index.php" method="POST" role="form" class="form-inline">
 		{if isset($coursGrp)}
-			<div class="form-group">
+			<div class="input-group">
 				<label for="selectEleve">
 				{if $listeCours.$coursGrp.nomCours != ''}
-					{$listeCours.$coursGrp.nomCours} || {$coursGrp} {$listeCours.$coursGrp.nbheures}h
+					{$listeCours.$coursGrp.nomCours} || {$coursGrp} {$listeCours.$coursGrp.nbheures}h 
 					{else}
 					{$listeCours.$coursGrp.statut} {$listeCours.$coursGrp.libelle} {$listeCours.$coursGrp.nbheures}h {$coursGrp}
 				{/if}
 				</label>
 			{/if}
-
+			
 			{if isset($listeEleves)}
 				{include file="listeEleves.tpl"}
 			{/if}
@@ -42,13 +42,13 @@ $(document).ready (function() {
 			$("#formSelecteur").submit()
 			else $("#envoi").hide();
 		})
-
+		
 	$("#prev").click(function(){
 		var matrPrev = $("#matrPrev").val();
 		$("#selectEleve").val(matrPrev);
 		$("#formSelecteur").submit();
 	})
-
+	
 	$("#next").click(function(){
 		var matrNext = $("#matrNext").val();
 		$("#selectEleve").val(matrNext);

@@ -1,15 +1,16 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
-		<div class="form-group">
-			<label for="selectClasse">Classe</label>
-				<select name="classe" id="selectClasse" class="form-control">
+
+		<div class="input-group">
+			<select name="classe" id="selectClasse" class="form-control-inline form-control">
 				<option value="">Classe</option>
 				{foreach from=$listeClasses item=uneClasse}
 					<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected{/if}>{$uneClasse}</option>
 				{/foreach}
-				</select>
+			</select>
 		</div>
+
 		<span id="choixEleve">
 
 		{include file='listeEleves.tpl'}

@@ -12,13 +12,12 @@
 
 		<div class="col-md-5 col-xs-12">
 			<h4>Liste des élèves</h4>
-				<button type="button" class="btn btn-primary btn-block" id="selectAllEleves">Sélectionner tout</button>
+			<div id="nbEleves">0 élève sélectionné</div>
 				<select name="eleves[]" id="eleves" multiple size="24" class="form-control">
 				{foreach from=$listeEleves key=matricule item=eleve}
 					<option value="{$matricule}">{$eleve.classe} {$eleve.nom} {$eleve.prenom}</option>
 				{/foreach}
 				</select>
-				<div id="nbEleves">0 élève sélectionné</div>
 		</div> 	<!-- col-md... -->
 
 		<div class="col-md-5 col-xs-12">
@@ -26,28 +25,20 @@
 			<div id="nbProfs">0 prof sélectionné</div>
 				<select name="profs[]" id="profs" multiple size="24" class="form-control">
 				{foreach from=$listeProfs key=acronyme item=prof}
-					<option value="{$acronyme}">{$prof.nom|truncate:18} {$prof.prenom} [{$acronyme}]</option>
+					<option value="{$acronyme}">{$prof.nom} {$prof.prenom} [{$acronyme}]</option>
 				{/foreach}
 				</select>
 		</div> <!-- col-md... -->
 
 		<div class="col-md-2 col-xs-12">
 			<h4>Mode de partage</h4>
-			<div class="radio">
-				<label><input type="radio" name="moderw" value="r"{if !(isset($moderw)) || $moderw == 'r'} checked="checked"{/if}>Lecture seule</label>
-			</div>
-			<div class="radio">
-				<label><input type="radio" name="moderw" value="rw"{if $moderw == 'rw'} checked="checked"{/if}> Lecture/écriture</label>
-			</div>
+			<p><input type="radio" name="moderw" value="r"{if !(isset($moderw)) || $moderw == 'r'} checked="checked"{/if}> Lecture seule</p>
+			<p><input type="radio" name="moderw" value="rw"{if $moderw == 'rw'} checked="checked"{/if}> Lecture/écriture</p>
+			<p><input type="radio" name="moderw" value="release"{if $moderw == 'release'} checked="checked"{/if}> Fin du partage</p>
 
-			<div class="radio">
-				<label><input type="radio" name="moderw" value="release"{if $moderw == 'release'} checked="checked"{/if}> Fin du partage</label>
-			</div>
+				<button type="reset" class="btn btn-default btn-block">Annuler</button>
+				<button type="submit" class="btn btn-primary btn-block" id="submit">Enregistrer</button>
 
-			<div class="btn-group-vertical" class="pull-right btn-block" style="width:100%">
-				<button type="reset" class="btn btn-default">Annuler</button>
-				<button type="submit" class="btn btn-primary" id="submit">Enregistrer</button>
-			</div>
 			<input type="hidden" name="coursGrp" value="{$coursGrp|default:''}">
 			<input type="hidden" name="classe" value="{$classe|default:''}">
 			<input type="hidden" name="action" value="{$action}">
@@ -65,12 +56,6 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-
-	$('#selectAllEleves').click(function(){
-		$('#eleves option').prop('selected', true);
-		var nb = $("#eleves :selected").length;
-		$("#nbEleves").html(nb+" élève(s) sélectionné(s)");
-	})
 
 	$("#formPartage").submit(function(){
 		if (($("#eleves :selected").length == 0) || $("#profs :selected").length == 0)

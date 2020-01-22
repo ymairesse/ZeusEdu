@@ -12,22 +12,22 @@
 
 </head>
 <body>
-
+	
 {include file="menu.tpl"}
 
 <div class="container">
-
+	
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
 
 	{if (isset($message))}
-	<script type="text/javascript">
-		bootbox.alert({
-			title: "{$message.title}",
-			message: "{$message.texte}"
-		})
-	</script>
+	<div class="alert alert-dismissable alert-{$message.urgence|default:'info'}
+		{if (!(in_array($message.urgence,array('danger','warning'))))} auto-fadeOut{/if}">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<h4>{$message.title}</h4>
+		<p>{$message.texte}</p>
+	</div>
 	{/if}
 
 </div>  <!-- container -->
@@ -46,12 +46,12 @@
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
-
+	
 	window.setTimeout(function() {
     $(".auto-fadeOut").fadeTo(500, 0).slideUp(500, function(){
-        $(this).remove();
+        $(this).remove(); 
 	    });
-	}, 3000);
+	}, 3000);	
 
 $(document).ready (function() {
 
@@ -62,16 +62,16 @@ $(document).ready (function() {
 		$("form input:visible:enabled").not('.datepicker').first().focus();
 
 	$("*[title]").tooltip();
-
+	
 	$(".pop").popover({
 		trigger:'hover'
 		});
 	$(".pop").click(function(){
 		$(".pop").not(this).popover("hide");
 		})
-
+		
 	$("input").not(".autocomplete").attr("autocomplete","off");
-
+	
 })
 
 </script>
