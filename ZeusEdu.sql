@@ -288,7 +288,8 @@ CREATE TABLE `didac_athena` (
     `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
     `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
     `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
-    `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire'
+    `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire',
+    `lastModif` datetime DEFAULT NULL COMMENT 'Date du dernier enregistrement'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
  ALTER TABLE `didac_athena`
@@ -300,14 +301,14 @@ CREATE TABLE `didac_athena` (
    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 
-   CREATE TABLE `didac_athenaDemandes` (
-     `id` int(11) NOT NULL COMMENT 'Identifiant dans la table didac_athena',
-     `date` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'date de la demande',
-     `urgence` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Niveau d''urgence de la demande'
-   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des demandes de suivi d''élève';
+CREATE TABLE `didac_athenaDemandes` (
+ `id` int(11) NOT NULL COMMENT 'Identifiant dans la table didac_athena',
+ `date` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'date de la demande',
+ `urgence` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Niveau d''urgence de la demande'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des demandes de suivi d''élève';
 
-   ALTER TABLE `didac_athenaDemandes`
-     ADD PRIMARY KEY (`id`);
+ALTER TABLE `didac_athenaDemandes`
+ ADD PRIMARY KEY (`id`);
 
 
 CREATE TABLE IF NOT EXISTS `didac_applications` (
@@ -1226,14 +1227,14 @@ ALTER TABLE `didac_presencesIdTraitementLogs`
 
 
 CREATE TABLE `didac_profs` (
-    `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 3 lettres',
+    `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Abréviation en 7 lettres',
     `nom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'nom du prof',
     `prenom` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'prénom du prof',
     `sexe` enum('M','F') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'M ou F',
     `titre` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Directeur, éducateur, coordinateur,...',
     `mdp` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'mdp encrypte en MD5',
     `statut` enum('admin','user') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'user' COMMENT '''admin'',''user''',
-    `mail` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '@isnd.be' COMMENT 'adresse mail',
+    `mail` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT Null COMMENT 'adresse mail',
     `telephone` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'tel',
     `GSM` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'GSM',
     `adresse` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'adresse postale (max 40 car)',
@@ -1310,7 +1311,7 @@ CREATE TABLE `didac_remediationOffre` (
   `local` varchar(12) COLLATE utf8_unicode_ci NOT NULL DEFAULT '???' COMMENT 'local',
   `places` tinyint(4) NOT NULL COMMENT 'Nombre de places disponibles',
   `cache` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cette remédiation est archivée',
-  `lastModif` date DEFAULT NULL COMMENT 'Date du dernier enregistrement'
+  `lastModif` datetime DEFAULT NULL COMMENT 'Date du dernier enregistrement'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Offres de remédiations';
 
 ALTER TABLE `didac_remediationOffre`
@@ -1539,17 +1540,6 @@ CREATE TABLE `didac_thotJdcPJ` (
 
 ALTER TABLE `didac_thotJdcPJ`
   ADD KEY `id` (`id`,`shareId`);
-
-
-CREATE TABLE `didac_thotJdcLike` (
-  `id` int(11) NOT NULL COMMENT 'id de la note au JDC',
-  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève qui like/dislike',
-  `jeLike` tinyint(1) NOT NULL COMMENT 'like ou dislike',
-  `commentaire` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'raison du dislike'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Like et dislike des notes "élèves" au JDC';
-
-ALTER TABLE `didac_thotJdcLike`
-  ADD PRIMARY KEY (`id`,`matricule`);
 
 
 CREATE TABLE `didac_thotJdcEleve` (
