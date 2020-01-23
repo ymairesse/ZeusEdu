@@ -2131,7 +2131,7 @@ class ecole
                     $cours = substr($coursGrp, 0, $posDash);
                     else $cours = $coursGrp; */
 
-                $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
             $sql .= 'FROM '.PFX.'cours AS c ';
             $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = c.cadre) ';
@@ -2150,6 +2150,35 @@ class ecole
         }
 
         return $ligne;
+    }
+
+    /**
+     * retourne les détails concernant la matière $cours indiquée (ne pas confondre avec coursGrp)
+     *
+     * @param string $cours
+     *
+     * @return array
+     */
+    public function getDetailsMatiere($cours){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
+        $sql .= 'FROM '.PFX.'cours AS c ';
+        $sql .= 'JOIN '.PFX.'statutCours AS statut ON (statut.cadre = c.cadre) ';
+        $sql .= 'WHERE cours = :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+        $details = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $details = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $details;
     }
 
     /**
@@ -2267,7 +2296,7 @@ class ecole
      *
      * @return int : nombre d'insertions
      */
-    public function ajouterProfsCoursGrp($listeProfs, $coursGrp, $virtuel, $linkedCoursGrp)
+    public function ajouterProfsCoursGrp($listeProfs, $coursGrp, $virtuel, $linkedCoursGrp = Null)
     {
         $nbResultats = 0;
         if ($listeProfs) {
