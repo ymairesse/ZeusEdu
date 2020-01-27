@@ -82,6 +82,9 @@ switch ($mode) {
                 $smarty->assign('corpsPage', 'paramGeneraux');
             break;
         }
-		break;
+	    break;
 
+    case 'majAcronymes':
+        $smarty->assign('corpsPage', 'newAcronymes');
+        break;
     }

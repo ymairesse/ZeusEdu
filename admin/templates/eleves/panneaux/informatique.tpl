@@ -32,7 +32,7 @@
                 <div class="form-group">
                     <label for="mdp">Mot de passe</label>
                     <div class="input-group">
-                        <input type="password" class="form-control" value="{$info.passwd|default:''}" disabled>
+                        <input type="password" class="form-control" value="{$info.passwd|default:''}" id="passwd" disabled>
                         <span class="input-group-btn">
                            <button class = "btn btn-primary" id="eye" type = "button">
                               <i class="fa fa-eye"></i>
@@ -41,6 +41,7 @@
                     </div>
                     <p class="help-block">Cliquer pour voir</p>
                 </div>
+                <button type="button" class="btn btn-primary pull-right" id="resetPasswd">Réinitialiser le mdp</button>
 
             </div>
 

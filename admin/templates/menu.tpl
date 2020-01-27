@@ -105,6 +105,7 @@
 				<li><a href="index.php?action=autres&amp;mode=alias">Prendre un alias</a></li>
 				<li><a href="index.php?action=autres&amp;mode=switchApplications">Activer/désactiver les applications</a></li>
 				<li><a href="index.php?action=autres&amp;mode=config">Paramètres généraux</a></li>
+				<li><a href="index.php?action=autres&amp;mode=majAcronymes">Mise à jour des acronymes</a> </li>
 			</ul>
 		</li>
 	</ul>

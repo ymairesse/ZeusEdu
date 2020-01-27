@@ -18,7 +18,8 @@
 							{include file='eleves/panneaux/eleve.tpl'}
 							{include file='eleves/panneaux/responsable.tpl'}
 							{include file='eleves/panneaux/pere.tpl'}
-							{include file='eleves/panneaux/mere.tpl'} {include file='eleves/panneaux/informatique.tpl'}
+							{include file='eleves/panneaux/mere.tpl'}
+							{include file='eleves/panneaux/informatique.tpl'}
 
 						</div>
 
@@ -34,6 +35,8 @@
 						<input type="hidden" name="etape" value="{$etape}">{/if}
 						<input type="hidden" name="recordingType" value="{$recordingType}">
 						<input type="hidden" name="laClasse" value="{$laClasse}">
+						<input type="hidden" name="userName" value="{$info.user}" id="userName">
+						<input type="hidden" name="mailDomain" value="{$eleve.mailDomain}" id="mailDomain">
 					</div>
 				</div>
 
@@ -132,6 +135,20 @@
 				},
 			},
 			errorElement: "span"
+		})
+
+		$('#resetPasswd').click(function(){
+			var matricule = $('#matricule').val();
+			$.post('inc/eleves/changePasswd.inc.php', {
+				matricule: matricule,
+			}, function(newPasswd){
+				$('#passwd').val(newPasswd);
+				bootbox.alert({
+					title: 'Changement du mot de passe',
+					message: 'Le mot de passe a été changé'
+				})
+			})
+
 		})
 
 		$("#matricule").keyup(function() {

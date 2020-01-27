@@ -95,7 +95,7 @@
 
 		<div class="row">
 
-		<table width="100%"class="table table-striped table-condensed">
+		<table width="100%" class="table table-striped table-condensed">
 		<tr>
 			<th>&nbsp;</th>
 			<th>Application</th>
