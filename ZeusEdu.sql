@@ -1275,7 +1275,7 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 ('thot', 'ADM', 'admin');
 
 CREATE TABLE `didac_profsCours` (
-  `acronyme` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 3 lettres',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 7 lettres max',
   `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'anff:nom du cours en 5 caractères-groupe Ex: 3:FR5-2',
   `nomCours` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'rempli par le prof: laisser vide',
   `virtuel` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ce cours est-il virtuel (pas dans le bulletin)?'
@@ -1339,8 +1339,6 @@ CREATE TABLE `didac_remediationCibles` (
 
 ALTER TABLE `didac_remediationCibles`
   ADD PRIMARY KEY (`idOffre`,`type`,`cible`);
-
-
 
 
 CREATE TABLE IF NOT EXISTS `didac_EBSamenagements` (
