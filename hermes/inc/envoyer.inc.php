@@ -1,39 +1,28 @@
 <?php
 
-if (!(isset($_SESSION[APPLICATION]))) {
-    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
-    exit;
-}
+$ok = $hermes->send_mail($_POST, $_FILES);
 
-$User = $_SESSION[APPLICATION];
-$acronyme = $User->getAcronyme();
+$smarty->assign('message',array(
+    'title'=>"Envoi d'un mail",
+    'texte'=>$ok==true?MAILOK:MAILKO,
+    'urgence'=>$ok==true?'success':'danger'
+    ));
 
-$module = $Application->getModule(1);
+// traiter le cas de l'expéditeur NOREPLY
+$mailExpediteur = $_POST['mailExpediteur'];
+$_POST['nomExpediteur'] = ($mailExpediteur == NOREPLY)?NOMNOREPLY:$_POST['nomExpediteur'];
 
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classHermes.inc.php";
-$hermes = new hermes();
+// création du groupe éventuellement créé durant l'envoi du mail
+$hermes->archiveMail($acronyme, $_POST, $_FILES);
+if ($_POST['groupe'] != '') {
+    $hermes->creerGroupe($acronyme,$_POST['groupe'],$_POST['mails']);
+    }
 
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.'widgets/fileTree/inc/classes/class.Treeview.php';
-
-$selectedFiles = array();
-
-$Tree = new Treeview(INSTALL_DIR.$ds.'upload'.$ds.$acronyme, $selectedFiles);
-$arbre = $Tree->getTree();
-
-$listeProfs = $Hermes->listeMailingProfs();
-$listeTitus = $Hermes->listeMailingTitulaires();
-$listesAutres = $Hermes->listesPerso($acronyme);
-$listeDirection = $Hermes->listeDirection();
-
-$smarty->assign('NOREPLY', NOREPLY);
-$smarty->assign('NOMNOREPLY', NOMNOREPLY);
-
-$smarty->assign('listeProfs',$listeProfs);
-$smarty->assign('listeTitus',$listeTitus);
-$smarty->assign('listesAutres',$listesAutres);
-$smarty->assign('listeDirection',$listeDirection);
-$smarty->assign('tree', $arbre);
-
-$smarty->assign('corpsPage', 'envoiMail');
+// la liste des destinataires est dans $_POST sous forme mail#nom
+// la liste des fichiers joints est dans $_FILES
+$smarty->assign('detailsMail', array('post'=>$_POST,'files'=>$_FILES));
+// éclater la liste des destinataires sur le #
+// chaque destinataire est de la forme  "Prenom Nom#pnom@ecole.org"
+$destinataires = $hermes->listeNomsFromDestinataires($_POST['mails']);
+$smarty->assign('destinatairesString', implode(', ',$destinataires));
+$smarty->assign('corpsPage','confirmMail');

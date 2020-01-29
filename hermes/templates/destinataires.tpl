@@ -8,34 +8,37 @@
 
 	{assign var=noListe value=1}
 	<!--	tous les utilisateurs -->
-	<div style="width:100%">
-		<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
-		<h4 class="teteListe" title="Cliquer pour ouvrir">{$listeProfs.nomListe}</h4>
-	</div>
+	{if isset($listeProfs)}
+		<div style="width:100%">
+			<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
+			<h4 class="teteListe" title="Cliquer pour ouvrir">{$listeProfs.nomListe}</h4>
+		</div>
 
-	<ul class="listeMails" style="display:none">
-	{assign var=membresProfs value=$listeProfs.membres}
-	{foreach from=$membresProfs key=unAcronyme item=prof}
-		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}#{$unAcronyme}">
-			<span class="labelProf">{$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
-		</li>
-	{/foreach}
-	</ul>
-
-	{assign var=noListe value=$noListe+1}
-	<!--	tous les titulaires (profs principaux) -->
-	<div style="width:100%">
-		<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
-		<h4 class="teteListe" title="Cliquer pour ouvrir">{$listeTitus.nomListe}</h4>
-	</div>
-	<ul class="listeMails" style="display:none">
-	{assign var=membresProfs value=$listeTitus.membres}
-	{foreach from=$membresProfs key=unAcronyme item=prof}
-		<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}#{$unAcronyme}">
-			<span class="labelProf">{$prof.classe} {$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
-		</li>
-	{/foreach}
-	</ul>
+		<ul class="listeMails" style="display:none">
+		{assign var=membresProfs value=$listeProfs.membres}
+		{foreach from=$membresProfs key=acro item=prof}
+			<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+				<span class="labelProf">{$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
+			</li>
+		{/foreach}
+		</ul>
+	{/if}
+	{if isset($listeTitus)}
+		{assign var=noListe value=$noListe+1}
+		<!--	tous les titulaires (profs principaux) -->
+		<div style="width:100%">
+			<input type="checkbox" class="checkListe" name="liste_{$noListe}" style="float: left; margin-right:0.5em">
+			<h4 class="teteListe" title="Cliquer pour ouvrir">{$listeTitus.nomListe}</h4>
+		</div>
+		<ul class="listeMails" style="display:none">
+		{assign var=membresProfs value=$listeTitus.membres}
+		{foreach from=$membresProfs key=acro item=prof}
+			<li><input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
+				<span class="labelProf">{$prof.classe} {$prof.nom|truncate:15:'...'} {$prof.prenom}</span>
+			</li>
+		{/foreach}
+		</ul>
+	{/if}
 
 	<!-- 	toutes les autres listes personnelles ou publiées -->
 	{foreach from=$listesAutres key=idListe item=listePerso}
@@ -54,9 +57,9 @@
 
 	{if $membresProfs != Null}
 	<ul class="listeMails" style="display:none">
-			{foreach from=$membresProfs key=unAcronyme item=prof}
+			{foreach from=$membresProfs key=acro item=prof}
 		<li>
-			<input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}#{$unAcronyme}">
+			<input class="selecteur mails" type="checkbox" name="mails[]" value="{$prof.prenom} {$prof.nom|truncate:15:'...'}#{$prof.mail}">
 			<span class="labelProf">{$prof.nom|truncate:15:'...'} {$prof.prenom} {$prof.classe|default:''}</span>
 		</li>
 		{/foreach}

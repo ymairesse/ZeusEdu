@@ -1,20 +1,22 @@
-<div class="container">
+<div class="container-fluid">
+	
 <h2>Gestion des listes de destinataires</h2>
 
 	<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-        <li class="active"><a href="#tabs-1" data-toggle="tab">Suppressions</a></li>
-        <li><a href="#tabs-2" data-toggle="tab">Ajouts</a></li>
+        <li class="active"><a href="#tabs-1" data-toggle="tab">Ajouts</a></li>
+        <li><a href="#tabs-2" data-toggle="tab">Suppressions</a></li>
         <li><a href="#tabs-3" data-toggle="tab">Publication et abonnements</a></li>
+    </ul>
     </ul>
 
     <div id="my-tab-content" class="tab-content">
 
 		<div class="tab-pane active" id="tabs-1">
-			{include file="inc/supprMailing.inc.tpl"}
-		</div>
-
-		<div class="tab-pane" id="tabs-2">
 			{include file="inc/addMailing.inc.tpl"}
+		</div>
+		
+		<div class="tab-pane" id="tabs-2">
+			{include file="inc/supprMailing.inc.tpl"}
 		</div>
 
 		<div class="tab-pane" id="tabs-3">

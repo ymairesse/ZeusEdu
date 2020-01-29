@@ -6,11 +6,10 @@ require_once '../../inc/classes/classApplication.inc.php';
 $Application = new Application();
 
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
-
 session_start();
+
 if (!(isset($_SESSION[APPLICATION]))) {
-    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
-    exit;
+    die("<div class='alert alert-danger'>Votre session a expiré. Veuillez vous reconnecter.</div>");
 }
 
 $liste = isset($_POST['liste'])?$_POST['liste']:Null;
