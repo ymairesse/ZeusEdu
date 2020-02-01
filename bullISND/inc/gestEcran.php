@@ -12,7 +12,7 @@ $smarty->assign('matricule',$matricule);
 
 switch ($mode) {
 	case 'bulletinIndividuel':
-		$listeClasses = $Ecole->listeGroupes(array('GT','TT','S',''));
+		$listeClasses = $Ecole->listeGroupes();
 
 		if ($classe != Null)
 			$listeEleves = $Ecole->listeEleves($classe, 'groupe', false);
