@@ -1234,7 +1234,7 @@ CREATE TABLE `didac_profs` (
     `titre` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Directeur, éducateur, coordinateur,...',
     `mdp` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'mdp encrypte en MD5',
     `statut` enum('admin','user') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'user' COMMENT '''admin'',''user''',
-    `mail` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT Null COMMENT 'adresse mail',
+    `mail` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'adresse mail',
     `telephone` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'tel',
     `GSM` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'GSM',
     `adresse` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'adresse postale (max 40 car)',
