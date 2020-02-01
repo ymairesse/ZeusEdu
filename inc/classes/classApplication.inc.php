@@ -809,7 +809,7 @@ class Application
     public function scanDirectories($rootDir)
     {
         // set filenames invisible if you want
-        $invisibleFileNames = array('.', '..', 'index.html', 'index.php');
+        $invisibleFileNames = array('.', '..', 'index.html', 'index.php','.htaccess');
         // run through content of root directory
         $dirContent = scandir($rootDir);
         $allData = array();
@@ -1305,7 +1305,7 @@ class Application
         if (!$mail->Send()) {
             $envoiMail = false;
         }
-            // echo $mail->ErrorInfo;
+
         // prévenir l'utilisateur
             if ($userMail) {
                 $mail->ClearAddresses();
@@ -2035,8 +2035,8 @@ class Application
          $passwd = isset($post['passwd']) ? $post['passwd'] : null;
          $passwd2 = isset($post['passwd2']) ? $post['passwd2'] : null;
          $token = $post['token'];
-     // confirmation du userName dans la BD (sécurité)
-     $userName = strtoupper($this->chercheToken($post['token'], $post['userName']));
+         // confirmation du userName dans la BD (sécurité)
+         $userName = strtoupper($this->chercheToken($post['token'], $post['userName']));
          $nb = 0;
          if (($passwd == $passwd2) && ($userName != '') && (strlen($passwd) >= 8)) {
              $passwd = md5($passwd);
@@ -2118,6 +2118,7 @@ class Application
         // liste des messages par application
         $listeApplis = array_keys($this->listeApplis());
 
+        $notifications = Null;
         foreach ($listeApplis as $uneAppli) {
             // recherche des applications pour lesquelles un fichier "funcNotifs.inc.php" a été créé
             // on y trouve une fonction de comptage des notifications en attente
