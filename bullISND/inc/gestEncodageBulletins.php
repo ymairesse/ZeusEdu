@@ -27,7 +27,8 @@ $smarty->assign('tableErreurs',Null);
 $smarty->assign('COTEABS',COTEABS);
 $smarty->assign('COTENULLE',COTENULLE);
 
-$sections = "'G', 'GT', 'TT'";
+// y compris les élèves dont la SECTION  n'est pas précisée
+$sections = '"'.implode('","', explode(",", SECTIONS)).'"'.',""';
 
 $listeCours = $user->listeCoursProf($sections, true);
 $smarty->assign('listeCours',$listeCours);
@@ -58,10 +59,13 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 
 		// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération
 		$listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
+
 		// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 		$listeSituationsAvant = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);
+
 		// calcule les nouvelles situations pour tous les bulletins, à partir des situations existantes et du globalPeriode
 		$listeSituations = $Bulletin->calculeNouvellesSituations($listeSituationsAvant, $listeGlobalPeriodePondere, $bulletin);
+
 		$Bulletin->enregistrerSituations($listeSituations, $bulletin);
 		}
 
