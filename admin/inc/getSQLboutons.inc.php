@@ -31,6 +31,7 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
+$smarty->assign('indice', $indice);
 $smarty->assign('boutons', $boutons);
 $smarty->assign('table', $table);
 $smarty->display('sql/listeBoutons.inc.tpl');
