@@ -1815,18 +1815,26 @@ class Application
      * renvoie le résultat de la requête SQL sous forme d'array.
      *
      * @param string $table : nom de la table à convertir en array
+     * @param int $from : début de recherche dans la table
+     * @param int $nb : nombre d'éléments à chercher
      *
      * @return $tableau : array
      */
-    public function SQLtable2array($table)
+    public function SQLtable2array($table, $from, $nb)
     {
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT * FROM '.PFX."$table";
-        $resultat = $connexion->query($sql);
+        $sql = 'SELECT * FROM '.PFX."$table ";
+        $sql .= 'limit :from, :nb ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':from', $from, PDO::PARAM_INT);
+        $requete->bindParam(':nb', $nb, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
         $tableau = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $tableau = $resultat->fetchall();
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $tableau = $requete->fetchall();
         }
         self::DeconnexionPDO($connexion);
 
@@ -2249,5 +2257,63 @@ class Application
   		return $nb;
       }
 
+    /**
+     * renvoie le nombre total de lignes d'une table dans la BD
+     *
+     * @param string $table
+     *
+     * @retnur array
+     */
+    public function nbRows4table ($table){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT COUNT(*) AS nb FROM '.PFX.$table;
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        $ligne = $requete->fetch();
+        $nb = $ligne['nb'];
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+    * renvoie une série de nombres entre 0 et $nbBlocs autour de $actuel
+    *
+    * @param int $actuel
+    * @param int $nbElemnts
+    *
+    * @return array
+    */
+    public function listeBoutons($actuel, $nbElements) {
+        $nbBoutons = intdiv($nbElements, 20);
+        $reste = $nbElements % 20;
+        $nbBoutons += ($reste == 0) ? 0 : 1;
+        $liste = array();
+
+        $liste[$actuel] = $actuel;
+
+        if ($actuel >= 2)
+            $liste[$actuel-1] = $actuel-1;
+        if ($actuel >= 3)
+            $liste[$actuel-2] = $actuel-2;
+
+        if ($actuel < $nbBoutons)
+            $liste[$actuel+1] = $actuel+1;
+        if ($actuel < $nbBoutons-1)
+            $liste[$actuel+2] = $actuel+2;
+
+        $liste[1] = 1;
+        $liste[$nbBoutons] = $nbBoutons;
+
+        if ($actuel-3 > 0)
+            $liste[$actuel-3] = '...';
+        if ($actuel+3 < $nbBoutons)
+            $liste[$actuel+3] = '...';
+        ksort($liste);
+
+        return $liste;
+        }
 
 }
