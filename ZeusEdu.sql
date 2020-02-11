@@ -527,6 +527,11 @@ ALTER TABLE `didac_bullCompetences`
   ADD PRIMARY KEY (`cours`,`libelle`),
   ADD KEY `id` (`id`);
 
+ALTER TABLE `didac_bullCompetences`
+  MODIFY `id` int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide';
+COMMIT;
+
+
 CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
   `matricule` int(6) NOT NULL,
   `decision` enum('Réussite','Échec','Ajournement','Restriction','TEST') COLLATE utf8_unicode_ci DEFAULT NULL,
