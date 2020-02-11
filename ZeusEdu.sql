@@ -1248,6 +1248,9 @@ CREATE TABLE `didac_profs` (
     `pays` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'max 15 car'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ALTER TABLE `didac_profs`
+  ADD PRIMARY KEY (`acronyme`);
+
 
 INSERT INTO `didac_profs` (`acronyme`, `nom`, `prenom`, `sexe`, `mdp`, `statut`, `mail`, `telephone`, `GSM`, `adresse`, `commune`, `codePostal`, `pays`) VALUES
 ('ADM', 'administrateur', 'administrateur', 'M', 'e10adc3949ba59abbe56e057f20f883e', 'admin', 'adminZeus@ecole.org', '', '', '', '', '', '');
