@@ -30,10 +30,10 @@ $module = $Application->getModule(3);
 
 // liste des élèves par classe
 if ($typeDoc == 'competences') {
-    $listeEleves = $Ecole->listeEleves($classe, 'groue', false, true);
+    $listeEleves = $Ecole->listeEleves($classe, 'groupe', false, true);
 }
 if ($typeDoc == 'pia') {
-    $listeEleves = $Ecole->listeEleves($classe, 'groue', false, true);
+    $listeEleves = $Ecole->listeEleves($classe, 'groupe', false, true);
 }
 
 $listeCours = $Ecole->listeCoursClasse($classe);
@@ -80,7 +80,7 @@ $nomFichier = sprintf('%s_%s.pdf', $typeDoc, $classe);
 // création éventuelle du répertoire au nom de l'utlilisateur
 $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
 if (!(file_exists($chemin))) {
-    mkdir($chemin);
+    mkdir($chemin, 0700, true);
 }
 
 $html2pdf->Output($chemin.$ds.$nomFichier, 'F');
