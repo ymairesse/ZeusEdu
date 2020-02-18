@@ -1997,56 +1997,45 @@ class Bulletin
      */
     public function enregistrerSituationsClasse($post)
     {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sqlSit = 'UPDATE '.PFX.'bullSituations ';
-        $sqlSit .= 'SET situation = :sit ';
-        $sqlSit .= 'WHERE bulletin = :bulletin AND matricule = :matricule AND coursGrp = :coursGrp ';
-        $requeteSit = $connexion->prepare($sqlSit);
-
-        $sqlMax = 'UPDATE '.PFX.'bullSituations ';
-        $sqlMax .= 'SET maxSituation = :max ';
-        $sqlMax .= 'WHERE bulletin = :bulletin AND matricule = :matricule AND coursGrp = :coursGrp ';
-        $requeteMax = $connexion->prepare($sqlMax);
-
-        $nbResultats = 0;
-
-        $bulletin = $post['bulletin'];
-        $requeteMax->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
-        $requeteSit->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
-
+        // organisation des cotes dans un tableau avant enregistrement
+        $listeSituations = array();
         foreach ($post as $eleveCours => $cote) {
             $eleveCours = explode('#', $eleveCours);
-            // Application::afficher($eleveCours);
             $type = $eleveCours[0];
-            if (($type == 'max') || ($type == 'sit')) {
+            if (in_array($type, array('sit', 'max'))) {
                 $matricule = explode('_', $eleveCours[1])[1];
-                $coursGrp = explode('_', $eleveCours[2]);
-                // dans le fichier .tpl de la grille des situations, les caractères "espace" sont remplacés par des "!"
-                // il faut remettre les " " pour rétablir les noms des cours
+                $coursGrp = explode ('_', $eleveCours[2]);
                 $coursGrp = str_replace('!', ' ', $coursGrp[1]);
+                if ($type == 'sit')
+                    $listeSituations[$matricule][$coursGrp]['situation'] = $cote;
+                    else $listeSituations[$matricule][$coursGrp]['maxSituation'] = $cote;
             }
-
-            switch ($type) {
-                case 'sit':
-                    $requeteSit->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-                    $requeteSit->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
-                    $requeteSit->bindParam(':sit', $cote, PDO::PARAM_STR, 6);
-                    // echo $sqlSit;
-                    // Application::afficher(array($matricule, $coursGrp, $cote), true);
-                    $nbResultats += $requeteSit->execute();
-                    break;
-                case 'max':
-                    $requeteMax->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-                    $requeteMax->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
-                    $requeteMax->bindParam(':max', $cote, PDO::PARAM_STR, 6);
-                    $nbResultats += $requeteMax->execute();
-                    break;
-                }
         }
+
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'bullSituations ';
+        $sql .= 'SET bulletin = :bulletin, matricule = :matricule, coursGrp = :coursGrp, ';
+        $sql .= 'situation = :situation, maxSituation = :maxSituation ';
+        $sql .= 'ON DUPLICATE KEY UPDATE situation = :situation, maxSituation = :maxSituation ';
+        $requete = $connexion->prepare($sql);
+
+        $bulletin = $post['bulletin'];
+        $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+
+        $resultat = 0;
+        foreach ($listeSituations as $matricule => $dataCours) {
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            foreach ($dataCours as $coursGrp => $dataCotes) {
+                $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+                $requete->bindParam(':situation', $dataCotes['situation'], PDO::PARAM_STR, 6);
+                $requete->bindParam(':maxSituation', $dataCotes['maxSituation'], PDO::PARAM_STR, 6);
+                $resultat += $requete->execute();
+                }
+            }
 
         Application::DeconnexionPDO($connexion);
 
-        return $nbResultats;
+        return $resultat;
     }
 
     public function sommesBrutesFormCert($bulletin, $classe)
