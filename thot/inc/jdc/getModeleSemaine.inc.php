@@ -29,4 +29,5 @@ $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $smarty->assign('laDate', $laDate);
+
 $smarty->display('jdc/ghostCalendar.tpl');

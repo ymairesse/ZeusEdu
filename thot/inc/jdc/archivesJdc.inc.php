@@ -12,5 +12,4 @@ $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
 $listeNiveaux = Ecole::listeNiveaux();
 $smarty->assign('listeNiveaux', $listeNiveaux);
 
-// $smarty->assign('mode', $mode);
 $smarty->assign('corpsPage', 'jdc/archJdc');

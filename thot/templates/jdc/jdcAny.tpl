@@ -238,6 +238,7 @@
 				var locked = (debut.isBefore(today) && (unlockedPast == "false")) ;
 				popoverElement = $(jsEvent.currentTarget);
 				var id = calEvent.id; // l'id de l'événement
+				console.log(id);
 				$.post('inc/jdc/getTravail.inc.php', {
 					id: id,
 					editable: editable,

@@ -417,9 +417,9 @@ class Remediation
             $sql .= "SET idOffre = Null, ";
             else $sql .= "SET idOffre = :idOffre, ";
         $sql .= 'acronyme = :acronyme, title = :title, contenu = :contenu, startDate = :startDate, endDate = :endDate, ';
-        $sql .= 'local = :local, places = :places, cache = :cache ';
+        $sql .= 'local = :local, places = :places, cache = :cache, lastModif = NOW() ';
         $sql .= 'ON DUPLICATE KEY UPDATE title = :title, contenu = :contenu, startDate = :startDate, endDate = :endDate, ';
-        $sql .= 'local = :local, places = :places, cache = :cache ';
+        $sql .= 'local = :local, places = :places, cache = :cache, lastModif = NOW() ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':idOffre', $idOffre, PDO::PARAM_INT);

@@ -1,4 +1,4 @@
-<h4>Travaux en cours <span class="badge badge-info pull-right">{$listeTravauxCours|@count}</span></h4>
+<h4>Travaux en cours <span class="badge badge-info pull-right">{$listeTravauxCours|@count|default:0}</span></h4>
 
 <div id="listeTravaux" style="max-height:35em; overflow: auto">
 

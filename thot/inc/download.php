@@ -16,7 +16,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-// le $type 'shareId' est donné par défaut
+// le $type 'fileId' est donné par défaut
 $type = isset($_GET['type']) ? $_GET['type'] : 'shareId';
 
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
@@ -176,17 +176,17 @@ if ($download_hook['download'] != 1) {
 if ($download_hook['download'] == true) {
 
     /* You can write your logic before proceeding to download */
-
-    // enregistrement du suivi de téléchargement pour le document
-    $spyInfo = $Files->getSpyInfo4ShareId($shareId);
-    // il y a un espion sur le fichier ou le répertoire
-    if (!(empty($spyInfo))) {
-        $spyId = $spyInfo['spyId'];
-        $path = (isset($downloadedFileInfo['path'])) ? $downloadedFileInfo['path'] : Null;
-        $fileName = (isset($downloadedFileInfo['fileName'])) ? $downloadedFileInfo['fileName'] : Null;
-        $Files->setSpiedDownload ($acronyme, $spyId, $path, $fileName);
-    }
-
+    if (isset($shareId)) {
+		// enregistrement du suivi de téléchargement pour le document
+		$spyInfo = $Files->getSpyInfo4ShareId($shareId);
+		// il y a un espion sur le fichier ou le répertoire
+		if (!(empty($spyInfo))) {
+			$spyId = $spyInfo['spyId'];
+			$path = (isset($downloadedFileInfo['path'])) ? $downloadedFileInfo['path'] : Null;
+			$fileName = (isset($downloadedFileInfo['fileName'])) ? $downloadedFileInfo['fileName'] : Null;
+			$Files->setSpiedDownload ($acronyme, $spyId, $path, $fileName);
+		}
+	}
     /* Let's download file */
     $download->get_download();
 }

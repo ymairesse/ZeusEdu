@@ -41,7 +41,19 @@ $eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
 $eventsListNiveau = $Jdc->getEvents4Niveau($start, $end, $niveau, $acronyme);;
 $eventsListEcole = $Jdc->getEvents4Ecole($start, $end, $acronyme);
 $listeRemediations = $Jdc->retreiveRemediations($start, $end, $matricule);
+$listeCoaching = $Jdc->retreiveCoaching($start, $end, $matricule);
 
-$eventsList = array_merge($eventsListEleve, $eventsListCours, $eventsListClasse, $eventsListNiveau, $eventsListEcole, $listeRemediations);
+
+$eventsList = array_merge(
+    $eventsListEleve,
+    $eventsListCours,
+    $eventsListClasse,
+    $eventsListNiveau,
+    $eventsListEcole,
+    $listeRemediations,
+    $listeCoaching
+);
+
+// $eventsList = array_merge($eventsListEleve, $eventsListCours, $eventsListClasse, $eventsListNiveau, $eventsListEcole, $listeRemediations);
 
 echo json_encode($eventsList);

@@ -18,6 +18,7 @@
     </div>
 
     <div class="panel-body">
+
         <p><strong>Le {$travail.startDate} à {$travail.heure} ({$travail.duree}) </strong></p>
         {if $travail.libelle != ''}
             <p><strong>{$travail.libelle} {$travail.nbheures}h {if isset($travail.nomCours)}</strong> > {$travail.nomCours} {/if} [{$travail.destinataire}]</p>
@@ -56,7 +57,7 @@
                     type="button"
                     class="btn btn-danger btn-edit"
                     data-id="{$travail.id}"
-                    {if isset($locked) && ($locked == "true")} disabled{/if}
+                    {if isset($locked) && $locked == "true"} disabled{/if}
                     id="delete">
                     <i class="fa fa-eraser fa-lg"></i>
                         Supprimer
@@ -75,7 +76,7 @@
                     data-id="{$travail.id}"
                     data-destinataire="{$travail.destinataire}"
                     data-type="{$travail.type}"
-                    {if (isset($locked)) && ($locked == "true")} disabled{/if}
+                    {if isset($locked) && $locked == "true"} disabled{/if}
                     id="modifier">
                     <i class="fa fa-edit fa-lg"></i>
                         Modifier
@@ -84,7 +85,7 @@
             <div class="clearfix"></div>
 
         {/if}
-        {if isset($locked) && ($locked == "true")}
+        {if isset($locked) && $locked == true}
             <p class="discret">Veuillez déverrouiller les périodes passées pour accéder à cet événement (bouton <i class="fa fa-lock"></i> du calendrier)</p>
         {/if}
     </div>

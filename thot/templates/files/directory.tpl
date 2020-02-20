@@ -40,7 +40,7 @@
 <script type="text/javascript">
 
 var nbFichiersMax = 5;
-var maxFileSize = 25;
+var maxFileSize = 20;
 
 Dropzone.options.myDropZone = {
     maxFilesize: maxFileSize,

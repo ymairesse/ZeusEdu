@@ -583,6 +583,12 @@ p.jdcInfo:before {
     color: black !important;
 }
 
+.coaching {
+    background: rgb(255,255,255);
+	background: linear-gradient(63deg, rgba(255,255,255,1) 9%, rgba(255,170,170,1) 96%);
+    color: black !important;
+}
+
 .modified {
     background-color: #9f9 !important;
 }

@@ -51,7 +51,6 @@
 					{if !empty($titulaire)}
 					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
 					{/if}
-					<li><a href="index.php?action=admin&amp;mode=gestGroupes">Gestion des groupes</a></li>
 				</ul>
 			</li>
 

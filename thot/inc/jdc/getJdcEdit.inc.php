@@ -45,6 +45,8 @@ if ($id != Null) {
 
     $categories = $Jdc->categoriesTravaux();
     $smarty->assign('categories', $categories);
+    $listePeriodes = $Jdc->lirePeriodesCours();
+    $smarty->assign('listePeriodes', $listePeriodes);
 
     $coursGrp = $travail['destinataire'];
     $lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, 'coursGrp', $coursGrp);

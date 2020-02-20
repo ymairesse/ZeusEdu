@@ -400,7 +400,7 @@
 
 		$("#corpsPage").on('click', '.showAccuse', function() {
             var id = $(this).data('id');
-			console.log(id);
+            console.log(id);
             $.post('inc/notif/showAccuses.inc.php', {
                     id: id
                 },

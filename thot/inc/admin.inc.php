@@ -3,9 +3,8 @@
 $date = isset($_POST['date']) ? $_POST['date'] : null;
 $smarty->assign('date', $date);
 
-
-// require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-// $thot = new Thot();
+require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
+$thot = new Thot();
 
 switch ($mode) {
     case 'bulletin':
@@ -52,10 +51,6 @@ switch ($mode) {
 
         $smarty->assign('corpsPage', 'reunionParents/prepaRP');
         $smarty->assign('selecteur', 'selecteurs/selectDateType');
-        break;
-
-    case 'gestGroupes':
-        require_once 'inc/gestion/gestGroupes.inc.php';
         break;
 
     case 'modele':

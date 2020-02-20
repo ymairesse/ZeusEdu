@@ -76,7 +76,7 @@
 		}).ajaxComplete(function() {
 			$('body').removeClass('wait');
 		});
-
+		
 		var editable = $('#calendar').data('editable');
 
 		$('#calendar').fullCalendar({
@@ -141,7 +141,6 @@
 			},
 			// on clique sur un événement
 			eventClick: function (calEvent, jsEvent, view) {
-				console.log(calEvent);
 				var debut = moment(calEvent.start);
                 var today = moment().format('YYYY-MM-DD');
 				var unlockedPast = $('#unlocked').val();

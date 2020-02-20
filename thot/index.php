@@ -17,7 +17,7 @@ $smarty->assign('onglet', $onglet);
 //
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$Thot = new Thot();
+$Thot = new thot();
 
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
@@ -78,9 +78,9 @@ switch ($action) {
     case 'agendas':
         require_once 'inc/agenda/agenda.inc.php';
         break;
-    case 'archive':
-        include ('inc/jdc/archivesJdc.inc.php');
-        break;
+	case 'archive':
+		include ('inc/jdc/archivesJdc.inc.php');
+		break;
     default:
         // wtf
         break;

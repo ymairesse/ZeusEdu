@@ -87,15 +87,13 @@
     </div>
 
 <style media="screen" type="text/css">
-
-    #erreur label.error {
-        width: 100%;
-        font-size: 0.8em;
-        color: yellow;
-        padding: 0.2em  0em 0em 1em ;
-        font-weight: lighter;
-        }
-
+#erreur label.error {
+    width: 100%;
+    font-size: 0.8em;
+    color: yellow;
+    padding: 0.2em  0em 0em 1em ;
+    font-weight: lighter;
+    }
 </style>
 
 <script type="text/javascript">

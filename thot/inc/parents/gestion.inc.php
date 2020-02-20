@@ -18,15 +18,9 @@ switch ($mode) {
         $showEdition = true;
         break;
 
-    case 'gestGroupes':
-        require_once 'inc/gestion/gestGroupes.inc.php';
+    case 'gestAccuses':
+        require_once 'inc/gestAccuses.inc.php';
         break;
-
-    // case 'gestAccuses':
-    //     require_once 'inc/gestAccuses.inc.php';
-    //     break;
-    //
-    //
 
     case 'reunionParents':
         require_once 'inc/gestRP.inc.php';

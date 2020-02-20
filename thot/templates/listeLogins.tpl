@@ -43,9 +43,9 @@
 				<td>{$unLogin.eleve.groupe}</td>
 				<td>{$unLogin.eleve.nom} {$unLogin.eleve.prenom}</td>
 				{if $unLogin.parent != Null}
-				<td>
-					<i class="fa fa-user-plus" data-container="body"
-						title="{$unLogin.parent.formule} {$unLogin.parent.nomParent} {$unLogin.parent.prenomParent}"></i> {$unLogin.parent.userName}</td>
+				<td data-container="body"
+					title="{$unLogin.parent.formule} {$unLogin.parent.nom} {$unLogin.parent.prenom}">
+					<i class="fa fa-user-plus"></i> {$unLogin.parent.userName}</td>
 				{else}
 				<td>{$unLogin.user}</td>
 				{/if}
