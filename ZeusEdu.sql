@@ -1126,17 +1126,21 @@ CREATE TABLE `didac_EDTeleves` (
 ALTER TABLE `didac_EDTeleves`
   ADD PRIMARY KEY (`matricule`);
 
+CREATE TABLE `didac_presencesEleves` (
+    `id` int(11) NOT NULL,
+    `matricule` int(6) NOT NULL,
+    `date` date NOT NULL,
+    `periode` tinyint(1) NOT NULL,
+    `statut` varchar(12) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève'
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
 
-CREATE TABLE IF NOT EXISTS `didac_presencesEleves` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `matricule` int(6) NOT NULL,
-  `date` date NOT NULL,
-  `periode` tinyint(1) NOT NULL,
-  `statut` enum('indetermine','present','absent','signale','justifie','sortie','renvoi','ecarte','suivi','stage','retard') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'indetermine' COMMENT 'Statut de présence de l''élève',
-  PRIMARY KEY (`matricule`,`date`,`periode`),
-  KEY `matricule` (`matricule`),
-  KEY `id` (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Prise des présences et des absences';
+ALTER TABLE `didac_presencesEleves`
+    ADD PRIMARY KEY (`matricule`,`date`,`periode`),
+    ADD KEY `matricule` (`matricule`),
+    ADD KEY `id` (`id`);
+
+ALTER TABLE `didac_presencesEleves`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 CREATE TABLE IF NOT EXISTS didac_presencesHeures (
   debut time NOT NULL COMMENT 'Début de l''heure de cours',
