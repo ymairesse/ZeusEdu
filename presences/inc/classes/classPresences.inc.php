@@ -600,6 +600,7 @@ class presences
      */
     public function saveJustificationEleve($post)
     {
+
         $educ = isset($post['educ']) ? $post['educ'] : null;
         $matricule = isset($post['matricule']) ? $post['matricule'] : null;
         $parent = isset($post['parent']) ? $post['parent'] : null;
@@ -767,21 +768,18 @@ class presences
       * $admin = true si toutes les justifications sont présentées sinon, seulement celles pour les profs.
       *
       * @param $admin : si "true", toutes les justifications, sinon, seulement celles des profs
-      * @param $speed: si true, les justifications d'asences pour inscription rapide
+      * @param $speed: si true, les justifications d'asences pour inscription rapide (obsolète: devrait être supprimé)
       *
       * @return array
       */
      public function listeJustificationsAbsences($admin = true, $speed = false)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire, speed ';
+         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire ';
          $sql .= 'FROM '.PFX.'presencesJustifications ';
          $sql .= 'WHERE 1 ';
          if ($admin == false) {
              $sql .= 'AND accesProf = true ';
-         }
-         if ($speed == true) {
-             $sql .= 'AND speed = true ';
          }
          $sql .= 'ORDER BY ordre, justif ';
 
@@ -820,7 +818,7 @@ class presences
     public function getDetailsStatuts ($statuts){
         $statutsString = "'".implode("','", $statuts)."'";
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT justif, shortJustif, ordre, libelle, color, background, accesProf, obligatoire, speed ';
+        $sql = 'SELECT justif, shortJustif, ordre, libelle, color, background, accesProf, obligatoire ';
         $sql .= 'FROM '.PFX.'presencesJustifications ';
         $sql .= 'WHERE justif IN ('.$statutsString.') ';
         $sql .= 'ORDER BY ordre, libelle ';
@@ -852,7 +850,7 @@ class presences
      public function getJustification($just)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire, speed ';
+         $sql = 'SELECT justif, shortJustif, libelle, color, background, ordre, accesProf, obligatoire ';
          $sql .= 'FROM '.PFX.'presencesJustifications ';
          $sql .= "WHERE justif = '$just' ";
          $resultat = $connexion->query($sql);
@@ -883,30 +881,26 @@ class presences
          $color = isset($post['color']) ? $post['color'] : null;
          $background = isset($post['background']) ? $post['background'] : null;
          $accesProf = isset($post['accesProf']) ? $post['accesProf'] : 0;
-         $speed = isset($post['speed']) ? $post['speed'] : 0;
 
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
          $sql = 'INSERT INTO '.PFX.'presencesJustifications ';
-         $sql .= 'SET justif=:justif, shortJustif=:shortJustif, ordre=:ordre, libelle=:libelle, color=:color, ';
-         $sql .= 'background=:background, accesProf=:accesProf, speed=:speed ';
+         $sql .= 'SET justif = :justif, shortJustif = :shortJustif, ordre = :ordre, ';
+         $sql .= 'libelle = :libelle, color = :color, background = :background, accesProf = :accesProf ';
          $sql .= 'ON DUPLICATE KEY UPDATE ';
-         $sql .= 'shortJustif=:shortJustif, ordre=:ordre, libelle=:libelle, color=:color, ';
-         $sql .= 'background=:background, accesProf=:accesProf, speed=:speed ';
-
+         $sql .= 'shortJustif = :shortJustif, ordre = :ordre, libelle = :libelle, color = :color, ';
+         $sql .= 'background = :background, accesProf = :accesProf ';
          $requete = $connexion->prepare($sql);
-         $data = array(
-                ':justif' => $justif,
-                ':shortJustif' => $shortJustif,
-                ':ordre' => $ordre,
-                ':libelle' => $libelle,
-                ':color' => $color,
-                ':background' => $background,
-                ':accesProf' => $accesProf,
-                ':speed' => $speed,
-            );
 
-         $resultat = $requete->execute($data);
+         $requete->bindParam(':justif', $justif, PDO::PARAM_STR, 12);
+         $requete->bindParam(':shortJustif', $shortJustif, PDO::PARAM_STR, 5);
+         $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+         $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 30);
+         $requete->bindParam(':color', $color, PDO::PARAM_STR, 7);
+         $requete->bindParam(':background', $background, PDO::PARAM_STR, 7);
+         $requete->bindParam(':accesProf', $accesProf, PDO::PARAM_INT);
+
+         $resultat = $requete->execute();
 
          Application::deconnexionPDO($connexion);
 
@@ -924,10 +918,12 @@ class presences
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          $sql = 'DELETE FROM '.PFX.'presencesJustifications ';
-         $sql .= 'WHERE justif=:justif ';
+         $sql .= 'WHERE justif = :justif ';
          $requete = $connexion->prepare($sql);
-         $data = array(':justif' => $justif);
-         $resultat = $requete->execute($data);
+
+         $requete->bindParam(':justif', $justif, PDO::PARAM_STR, 12);
+
+         $resultat = $requete->execute();
 
          Application::deconnexionPDO($connexion);
 

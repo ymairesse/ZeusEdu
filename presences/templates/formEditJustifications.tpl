@@ -6,15 +6,15 @@
         <input type="hidden" name="justif" id="justif" value="{$justification.justif}"> {else}
         <div class="form-group">
             <label for="justif">Nouveau mode de justification</label>
-            <input type="text" class="form-control" id="justif" name="justif" placeholder="mode de justification" value="" required>
+            <input type="text" class="form-control" id="justif" name="justif" placeholder="mode de justification" value="" required maxlength="12">
             <p class="help-block">Mode de justification (12 caractères)</p>
         </div>
         {/if}
 
         <div class="form-group">
             <label for="abr">Forme abréviée</label>
-            <input type="text" class="form-control" id="shortJustif" name="shortJustif" value="{$justification.shortJustif}" required>
-            <p class="help-block">Majuscules non accentuées</p>
+            <input type="text" class="form-control" id="shortJustif" name="shortJustif" value="{$justification.shortJustif}" required maxlength="5">
+            <p class="help-block">Majuscules non accentuées (5 caractères)</p>
         </div>
 
         <div class="form-group">
@@ -49,7 +49,7 @@
 
         <p><label class="checkbox-inline"><input type="checkbox" name="accesProf" value="1" {if $justification.accesProf==1 } checked{/if}> Accès profs</label></p>
 
-        <p><label class="checkbox-inline"><input type="checkbox" name="speed" value="1"{if $justification.speed==1 } checked{/if}> Accès rapide</label></p>
+        {* <p><label class="checkbox-inline"><input type="checkbox" name="speed" value="1"{if $justification.speed==1 } checked{/if}> Accès rapide</label></p> *}
 
     </div>
 

@@ -15,6 +15,7 @@
 	</div>
 
 	<div class="collapse navbar-collapse" id="barreNavigation">
+
 		<ul class="nav navbar-nav">
 			<li><a href="index.php"><button type="button" class="btn btn-primary">Présences <img src="images/presencesIco.png" alt="P"></button></a></li>
 
