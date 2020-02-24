@@ -85,8 +85,9 @@ class Bulletin
      * si les sommes des pondérations pour une périoe ([all] et par matricule) sont 0, alors c'est que personne n'a de pondération pour la période
      * et il ne faut pas ouvrir la possibilité de mettre un poids pour la compétence correspondante.
      *
-     * @param $coursGrp : la dénomination du cours
-     * @param array : tableau des pondérations prévues pour chaque période, respectivement en formatif et en certificatif
+     * @param string $coursGrp : la dénomination du cours
+     * 
+     * @return array : tableau des pondérations prévues pour chaque période, respectivement en formatif et en certificatif
      */
     public function sommesPonderations($coursGrp)
     {
@@ -98,8 +99,11 @@ class Bulletin
                     if (!(isset($liste[$periode]))) {
                         $liste[$periode] = array('form' => 0, 'cert' => 0);
                     }
-                    $liste[$periode]['form'] += $ponderation['form'];
-                    $liste[$periode]['cert'] += $ponderation['cert'];
+
+                    if (is_numeric($this->sansVirg($ponderation['form'])))
+                        $liste[$periode]['form'] += $ponderation['form'];
+                    if (is_numeric($this->sansVirg($ponderation['cert'])))
+                        $liste[$periode]['cert'] += $ponderation['cert'];
                 }
             }
         }
