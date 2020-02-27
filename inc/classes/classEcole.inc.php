@@ -870,12 +870,13 @@ class ecole
       */
      public function listeElevesGroupe($nomGroupe){
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT idMembre, membres.statut, eleves.nom AS nom, eleves.prenom AS prenom, groupe, ';
+         $sql = 'SELECT membres.matricule, membres.acronyme, membres.statut, ';
+         $sql .= 'eleves.nom AS nom, eleves.prenom AS prenom, groupe, ';
          $sql .= 'profs.nom AS nomProf, profs.prenom AS prenomProf ';
          $sql .= 'FROM '.PFX.'groupesMembres AS membres ';
-         $sql .= 'LEFT JOIN '.PFX.'eleves AS eleves ON eleves.matricule = idMembre ';
-         $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = idMembre ';
-         $sql .= 'WHERE nomGroupe = :nomGroupe AND membres.statut = "membre" ';
+         $sql .= 'LEFT JOIN '.PFX.'eleves AS eleves ON eleves.matricule = membres.matricule ';
+         $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = membres.acronyme ';
+         $sql .= 'WHERE nomGroupe = :nomGroupe AND membres.matricule != -1 ';
          $sql .= 'ORDER BY statut, profs.nom, profs.prenom, eleves.nom, eleves.prenom ';
          $requete = $connexion->prepare($sql);
 
@@ -886,8 +887,8 @@ class ecole
          if ($resultat) {
              $requete->setFetchMode(PDO::FETCH_ASSOC);
              while ($ligne = $requete->fetch()){
-                 $idMembre = $ligne['idMembre'];
-                 $liste[$idMembre] = $ligne;
+                 $matricule = $ligne['matricule'];
+                 $liste[$matricule] = $ligne;
              }
          }
 
@@ -1569,6 +1570,54 @@ class ecole
          }
 
          return strtolower($passwd);
+     }
+
+     /**
+      * supprime le mot de passe d'un élève dont on fournit la matricule
+      *
+      * @param int $matricule
+      *
+      * @return void
+      */
+     public function delPasswdEleve($matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'passwd ';
+        $sql .= 'SET passwd = "", md5Pwd = "" ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+     }
+
+     /**
+      * attribue et renvoie le mdp de l'élève dont on fournit le matricule
+      *
+      * @param int $matricule
+      *
+      * @return string
+      */
+     public function setPasswdEleve($matricule){
+        $passwd = $this->randomPasswdEleve(9);
+        $md5pwd = md5($passwd);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'passwd ';
+        $sql .= 'SET passwd = :passwd, md5Pwd = :md5pwd ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':passwd', $passwd, PDO::PARAM_STR, 20);
+        $requete->bindParam(':md5pwd', $md5pwd, PDO::PARAM_STR, 40);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $passwd;
      }
 
     /**
@@ -3182,7 +3231,7 @@ class ecole
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
-                $listeEBS[$matricule]['amenagements'][] = $ligne['amenagement'];
+                $listeEBS[$matricule]['amenagements'][] = str_replace('"', '&quot;', $ligne['amenagement']);
             }
         }
 
