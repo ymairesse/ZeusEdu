@@ -1476,6 +1476,27 @@ CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
   PRIMARY KEY (`id`,`matricule`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des accusés de lecture des notifications';
 
+CREATE TABLE `didac_groupes` (
+  `nomGroupe` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom technique du groupe',
+  `Intitule` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom public du groupe',
+  `description` blob NOT NULL COMMENT 'Description du groupe',
+  `type` enum('ouvert','invitation','ferme') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ferme' COMMENT 'Type de groupe',
+  `proprio` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Propriétaire du groupe',
+  `maxMembres` int(11) NOT NULL DEFAULT '0' COMMENT 'Nombre max de membres du groupe'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Gestion des groupes arbitraires';
+
+ALTER TABLE `didac_groupes`
+  ADD PRIMARY KEY (`nomGroupe`);
+
+  CREATE TABLE `didac_groupesMembres` (
+   `nomGroupe` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du groupe',
+   `matricule` int(11) NOT NULL DEFAULT '-1' COMMENT 'Matricule de l''élève membre',
+   `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT ' ' COMMENT 'acronyme du prof membre',
+   `statut` enum('proprio','membre','admin') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'membre' COMMENT 'Statut du membre du groupe'
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Membres d''un groupe';
+
+ALTER TABLE `didac_groupesMembres`
+   ADD PRIMARY KEY (`nomGroupe`,`matricule`,`acronyme`);
 
 CREATE TABLE IF NOT EXISTS `didac_thotFratrie` (
   `parent` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur du parent',
