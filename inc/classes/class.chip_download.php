@@ -48,6 +48,7 @@ class chip_download
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
             'odt' => 'application/vnd.oasis.opendocument.text',
             'odp' => 'application/vnd.oasis.opendocument.presentation',
+            'otp' => 'application/vnd.oasis.opendocument.presentation-template',
             'odg' => 'application/vnd.oasis.opendocument.graphics',
             'ott' => 'application/vnd.oasis.opendocument.text-template',
 			'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -101,7 +102,6 @@ class chip_download
     public function __construct($args = array(), $allowed_extensions = array())
     {
         $this->set_args($args);
-        var_dump($allowed_extensions);
         $this->set_allowed_extensions($allowed_extensions);
     }
 
