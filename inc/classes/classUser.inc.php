@@ -34,9 +34,9 @@ class user
      *
      * @return array
      */
-    public function identite($refresh = false)
+    public function identite()
     {
-        if (!(isset($this->identite)) || $refresh) {
+        if (!(isset($this->identite))) {
             if (is_array($this->acronyme)) {
                 $acronyme = (string) $this->acronyme[0];
             } else {
@@ -44,11 +44,15 @@ class user
             }
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'SELECT * FROM '.PFX.'profs ';
-            $sql .= "WHERE acronyme = '$acronyme' LIMIT 1 ";
-            $resultat = $connexion->query($sql);
+            $sql .= 'WHERE acronyme = :acronyme LIMIT 1 ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+            $resultat = $requete->execute();
             if ($resultat) {
-                $resultat->setFetchMode(PDO::FETCH_ASSOC);
-                $this->identite = $resultat->fetch();
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $this->identite = $requete->fetch();
             }
             Application::DeconnexionPDO($connexion);
         }
@@ -239,7 +243,7 @@ class user
      * le nom de l'application est vérifié au cas où deux applications différentes utiliseraient
      * les sessions de la même façon.
      *
-     * @param $nomApplication
+     * @param array $nomApplication
      *
      * @return bool
      */
@@ -248,13 +252,17 @@ class user
         // vérifier que l'utilisateur est identifié pour l'application active
         $identite = $this->identite();
 
-        return ($this->applicationName() == $nomApplication) && isset($identite['acronyme']) && isset($identite['mdp']);
+        $OK = ($this->applicationName() == $nomApplication) && isset($identite['acronyme']) && isset($identite['mdp']);
+        if ($OK == false)
+            die('Veuillez prévenir les administrateurs de ce message');
+
+        return $OK;
     }
 
     /**
      * Vérification que l'utilisateur actuel a les droits pour accéder à un module de l'application.
      *
-     * @param $BASEDIR
+     * @param array $BASEDIR
      *
      * @return bool
      */
@@ -265,6 +273,7 @@ class user
         $repertoireActuel = $dir[0];
         if (!(in_array($repertoireActuel, $appliAutorisees))) {
             header('Location: '.BASEDIR.'index.php');
+            exit;
         } else {
             return true;
         }
@@ -969,11 +978,17 @@ class user
     public static function identiteProf($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT * FROM '.PFX."profs WHERE acronyme = '$acronyme' ";
+        $sql = 'SELECT * FROM '.PFX.'profs WHERE acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
         $ligne = array();
-        $resultat = $connexion->query($sql);
+        $resultat = $requete->execute();
         if ($resultat) {
-            $ligne = $resultat->fetch();
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            $ligne = $requete->fetch();
         }
         Application::DeconnexionPDO($connexion);
 
