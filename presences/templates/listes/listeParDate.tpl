@@ -98,12 +98,13 @@
     		})
 
         $('#btn-print').click(function(){
-            var formulaire = $('#formSelecteur').serialize();
-            $.post('inc/printListeParDate.inc.php', {
-                formulaire: formulaire
-            }, function(resultat){
-                $('#listeAbsences').html(resultat);
-            })
+            window.print();
+            // var formulaire = $('#formSelecteur').serialize();
+            // $.post('inc/printListeParDate.inc.php', {
+            //     formulaire: formulaire
+            // }, function(resultat){
+            //     $('#listeAbsences').html(resultat);
+            // })
         })
 
     })
