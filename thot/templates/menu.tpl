@@ -51,6 +51,7 @@
 					{if !empty($titulaire)}
 					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
 					{/if}
+					<li><a href="index.php?action=admin&amp;mode=gestGroupes">Gestion des groupes</a></li>
 				</ul>
 			</li>
 
@@ -62,6 +63,12 @@
 					<li><a href="index.php?action=files&amp;mode=sharedWithMe">Partagés avec moi <i class="fa fa-share"></i></a></li>
 					<li role="separator" class="divider"></li>
 					<li><a href="index.php?action=files&amp;mode=casier">Mon casier électronique</a></li>
+				</ul>
+			</li>
+
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Forums <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="index.php?action=forum&amp;mode=categories">Accès aux forums</a></li>
 				</ul>
 			</li>
 
