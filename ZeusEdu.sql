@@ -1911,3 +1911,72 @@ CREATE TABLE `didac_thotBooksidBookIdAuteur` (
 
 ALTER TABLE `didac_thotBooksidBookIdAuteur`
 ADD PRIMARY KEY (`idBook`,`idAuteur`);
+
+--
+-- Structure de la table `didac_thotForums`
+--
+CREATE TABLE `didac_thotForums` (
+  `idCategorie` int(11) NOT NULL COMMENT 'Identifiant numérique de la catégorie',
+  `libelle` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Libellé de la catégorie',
+  `parentId` int(11) DEFAULT NULL COMMENT 'Identifiant numérique de la catégorie parent',
+  `userStatus` enum('profs','eleves') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Accès libre pour...'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des sujets du forum';
+
+ALTER TABLE `didac_thotForums`
+  ADD PRIMARY KEY (`idCategorie`);
+
+ALTER TABLE `didac_thotForums`
+  MODIFY `idCategorie` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique de la catégorie';
+
+  --
+  -- Structure de la table `didac_thotForumsAccess`
+  --
+CREATE TABLE `didac_thotForumsAccess` (
+    `idSujet` int(11) NOT NULL COMMENT 'Identifiant numérique du sujet',
+    `idCategorie` int(11) NOT NULL COMMENT 'Identifiant numérique de la catégorie',
+    `type` set('prof','ecole','niveau','matiere','coursGrp','classe','groupe','all') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type de cible précisé dans le champ "cible"',
+    `cible` varchar(13) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Identifiant de la cible (acronyme, classe, cours, userEleve,...)'
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Gestion de l''accessibilité des sujets aux cibles';
+
+ALTER TABLE `didac_thotForumsAccess`
+    ADD PRIMARY KEY (`idSujet`,`idCategorie`,`cible`);
+
+    --
+    -- Structure de la table `didac_thotForumsSujets`
+    --
+CREATE TABLE `didac_thotForumsSujets` (
+  `idCategorie` int(11) NOT NULL COMMENT 'Sujet faisant partie de la catégorie',
+  `idSujet` int(11) NOT NULL COMMENT 'Identifiant du sujet',
+  `sujet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Sujet de la convesation',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Propriétaire',
+  `dateCreation` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de création du sujet',
+  `modifParAuteur` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Le post est modifiable par l''auteur du sujet (le prof)',
+  `modifParEleve` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post est modifiable par l''élève'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des sujets de discussion';
+
+ALTER TABLE `didac_thotForumsSujets`
+    ADD PRIMARY KEY (`idCategorie`,`idSujet`);
+
+ALTER TABLE `didac_thotForumsSujets`
+    MODIFY `idSujet` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du sujet';
+
+--
+-- Structure de la table `didac_thotForumsPosts`
+--
+CREATE TABLE `didac_thotForumsPosts` (
+  `postId` int(11) NOT NULL COMMENT 'Identifiant numérique du post',
+  `idCategorie` int(11) NOT NULL COMMENT 'Catégorie numérique du sujet',
+  `idSujet` int(11) NOT NULL COMMENT 'Identifiant numérique du sujet',
+  `parentId` int(11) NOT NULL COMMENT 'En réponse à...',
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date du post',
+  `auteur` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Auteur du post (élève ou prof)',
+  `userStatus` enum('eleve','prof') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''auteur (prof ou élève)',
+  `post` blob COMMENT 'Post dans le fil',
+  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des posts';
+
+ALTER TABLE `didac_thotForumsPosts`
+  ADD PRIMARY KEY (`postId`);
+
+ALTER TABLE `didac_thotForumsPosts`
+  MODIFY `postId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique du post';
