@@ -1925,9 +1925,6 @@ ALTER TABLE `didac_thotAgendas`
 
 ALTER TABLE `didac_thotAgendas`
   MODIFY `idAgenda` int(6) NOT NULL AUTO_INCREMENT;
-
-
-
 CREATE TABLE `didac_thotAgendasContenu` (
   `idPost` int(6) NOT NULL COMMENT 'Identifiant de la note dans l''agenda',
   `idAgenda` int(6) NOT NULL COMMENT 'Identifiant de l''agenda maître',
@@ -1946,6 +1943,49 @@ ALTER TABLE `didac_thotAgendasContenu`
 
 ALTER TABLE `didac_thotAgendasContenu`
   MODIFY `idPost` int(6) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la note dans l''agenda';
+
+
+CREATE TABLE `didac_thotAgendaCategories` (
+    `idCategorie` tinyint(4) NOT NULL,
+    `ordre` tinyint(2) NOT NULL DEFAULT '0',
+    `classe` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `categorie` varchar(30) COLLATE utf8_unicode_ci NOT NULL
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des mentions au journal de classe';
+
+
+ALTER TABLE `didac_thotAgendaCategories`
+    ADD PRIMARY KEY (`idCategorie`);
+
+ALTER TABLE `didac_thotAgendaCategories`
+    MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- Contenu de la table `didac_thotAgendaCategories`
+--
+INSERT INTO `didac_thotAgendaCategories` (`idCategorie`, `ordre`, `classe`, `categorie`) VALUES
+(1, 1, 'cat_1', 'Sortie en soirée'),
+(2, 2, 'cat_2', 'Sortie en journée'),
+(3, 3, 'cat_3', 'Journée d\'action'),
+(4, 4, 'cat_4', 'Stage'),
+(5, 5, 'cat_5', 'Animation'),
+(6, 6, 'cat_6', 'Retraite');
+
+--
+-- Structure de la table `didac_thotAgendaPartages`
+--
+CREATE TABLE `didac_thotAgendaPartages` (
+  `idAgenda` int(11) NOT NULL COMMENT 'Id de l''agenda',
+  `type` enum('cours','coursGrp','classe','eleve','niveau','ecole','groupe','profs') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type de destinataire du  partage',
+  `destinataire` varchar(12) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Dstinataire du partage',
+  `droits` enum('read','readWrite') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'read' COMMENT 'Droits sur l''agenda'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Index pour la table `didac_thotAgendaPartages`
+--
+ALTER TABLE `didac_thotAgendaPartages`
+  ADD PRIMARY KEY (`idAgenda`,`type`,`destinataire`);
+
 
 
 --
