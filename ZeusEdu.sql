@@ -1912,6 +1912,42 @@ CREATE TABLE `didac_thotBooksidBookIdAuteur` (
 ALTER TABLE `didac_thotBooksidBookIdAuteur`
 ADD PRIMARY KEY (`idBook`,`idAuteur`);
 
+
+CREATE TABLE `didac_thotAgendas` (
+  `idAgenda` int(6) NOT NULL,
+  `nomAgenda` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom unique de l''agenda pour le propriétaire',
+  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Agenda';
+
+ALTER TABLE `didac_thotAgendas`
+  ADD PRIMARY KEY (`idAgenda`),
+  ADD UNIQUE KEY `nom` (`nomAgenda`,`proprietaire`);
+
+ALTER TABLE `didac_thotAgendas`
+  MODIFY `idAgenda` int(6) NOT NULL AUTO_INCREMENT;
+
+
+
+CREATE TABLE `didac_thotAgendasContenu` (
+  `idPost` int(6) NOT NULL COMMENT 'Identifiant de la note dans l''agenda',
+  `idAgenda` int(6) NOT NULL COMMENT 'Identifiant de l''agenda maître',
+  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `enonce` mediumblob COMMENT 'Énoncé de la note dans l''agenda',
+  `redacteur` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Dernier rédacteur de la note',
+  `startDate` datetime NOT NULL,
+  `endDate` datetime NOT NULL,
+  `allDay` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Cet événement occupe toute la journée',
+  `idCategorie` smallint(6) NOT NULL COMMENT 'Catégorie de la table AgendaCategories',
+  `lastModif` datetime DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Notes dans l''agenda';
+
+ALTER TABLE `didac_thotAgendasContenu`
+  ADD PRIMARY KEY (`idPost`);
+
+ALTER TABLE `didac_thotAgendasContenu`
+  MODIFY `idPost` int(6) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la note dans l''agenda';
+
+
 --
 -- Structure de la table `didac_thotForums`
 --
