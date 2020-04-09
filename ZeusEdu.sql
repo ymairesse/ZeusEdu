@@ -1660,6 +1660,9 @@ ALTER TABLE `didac_thotGhost`
     ADD PRIMARY KEY (`id`),
     ADD KEY `acronyme` (`acronyme`);
 
+ALTER TABLE `didac_thotGhost`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 CREATE TABLE `didac_thotParents` (
   `matricule` int(6) NOT NULL COMMENT 'matricule de l''élève',
   `formule` enum('M.','Mme') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Formule pour l''envoi de mails',
