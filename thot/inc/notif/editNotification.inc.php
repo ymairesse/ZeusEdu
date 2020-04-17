@@ -17,11 +17,11 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$notifId = isset($_POST['notifId']) ? $_POST['notifId'] : Null;
+$id = isset($_POST['id']) ? $_POST['id'] : Null;
 
 require_once INSTALL_DIR."/inc/classes/classThot.inc.php";
 $Thot = new Thot();
-$notification = $Thot->getNotification($notifId, $acronyme);
+$notification = $Thot->getNotification($id, $acronyme);
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -45,8 +45,8 @@ $userStatus = $User->userStatus($module);
 $listeEleves = Null;
 
 // est-ce une notification destinée à l'élève dont le matricule est le destinataire?
-// if (preg_match('/^[\d\s]*$/', $notification['destinataire'])) {
-if ($notification['matricule'] != '') {
+
+if (isset($notification['matricule']) && ($notification['matricule'] != '')) {
     $listeEleves = $Ecole->detailsDeListeEleves($notification['matricule']);
     }
     else {
@@ -105,8 +105,8 @@ switch ($type) {
         break;
     }
 
-// pièces jointes à la notification $notifId
-$pjFiles = $Thot->getPj4Notifs($notifId, $acronyme);
+// pièces jointes à la notification $id
+$pjFiles = $Thot->getPj4Notifs($id, $acronyme);
 // il suffit de prendre les PJ de la première notification (les autres sont les mêmes)
 if ($pjFiles != Null)
     $pjFiles = current($pjFiles);
@@ -129,7 +129,7 @@ $smarty->assign('stringDestinataire', $stringDestinataire);
 $smarty->assign('niveau', $notification['niveau']);
 $smarty->assign('notification', $notification);
 $smarty->assign('listeEleves', $listeEleves);
-$smarty->assign('notifId', $notifId);
+$smarty->assign('id', $id);
 // à destination du widget fileTree
 $smarty->assign('pjFiles', $pjFiles);
 

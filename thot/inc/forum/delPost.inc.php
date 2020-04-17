@@ -32,7 +32,7 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new ThotForum();
 
-$okProprio = $Forum->verifAuteur($acronyme, $postId, $idSujet, $idCategorie); 
+$okProprio = $Forum->verifAuteur($acronyme, $postId, $idSujet, $idCategorie);
 
 if ($okProprio) {
     $nb = $Forum->delPost($acronyme, $postId, $idSujet, $idCategorie);

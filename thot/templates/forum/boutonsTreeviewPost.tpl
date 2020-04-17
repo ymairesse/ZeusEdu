@@ -1,11 +1,18 @@
-<div class="postForum pop"
-    style="max-height:8em; overflow: auto;"
+<div class="postForum"
     id="post_{$postId}"
+    data-date="{$post.ladate}"
     data-postid="{$postId}"
     data-toggle="popover"
     data-content="{$post.user}"
     data-container="body"
     data-placement="top">
+
+    <button type="button" class="btn btn-primary btn-xs initiales" title="{$post.user}">
+        {if $post.userStatus == 'prof'}<i class="fa fa-graduation-cap"></i>
+        {else}<i class="fa fa-user"></i>
+        {/if}
+        {$post.initiales}
+    </button>
     {if $post.post != ''}
         {$post.post}
     {else}

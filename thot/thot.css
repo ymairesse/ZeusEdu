@@ -462,6 +462,10 @@ body.wait *, body.wait {
     background-color: yellow !important;;
 }
 
+.admin {
+    background-color: pink !important;
+}
+
 .proprio .past-event {
     background-color: #dd7;
     color: #777;
@@ -585,7 +589,7 @@ p.jdcInfo:before {
 
 .coaching {
     background: rgb(255,255,255);
-	background: linear-gradient(63deg, rgba(255,255,255,1) 9%, rgba(255,170,170,1) 96%);
+    background: linear-gradient(63deg, rgba(255,255,255,1) 9%, rgba(255,170,170,1) 96%);
     color: black !important;
 }
 
@@ -615,4 +619,141 @@ p.jdcInfo:before {
         height: 35em;
         overflow: auto;
     }
+}
+
+/* Treeview */
+
+div.panel:first-child {
+    margin-top:20px;
+}
+
+div.treeview, div.treeviewPost {
+    min-width: 100px;
+    min-height: 100px;
+    max-height: 256px;
+    overflow:auto;
+    padding: 4px;
+    margin-bottom: 20px;
+    color: #369;
+    border: solid 1px;
+    border-radius: 4px;
+}
+
+div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
+    display: none;
+}
+
+.treeview, .treeview ul, .treeviewPost, .treeviewPost ul {
+    margin:0;
+    padding:0;
+    list-style:none;
+    color: #369;
+}
+.treeview ul, .treeviewPost {
+    margin-left:1em;
+    position:relative
+}
+
+.treeview ul ul, .treeviewPost ul ul {
+    margin-left:.5em
+}
+
+.treeview ul:before, .treeviewPost ul:before {
+    content:"";
+    display:block;
+    width:0;
+    position:absolute;
+    top:0;
+    left:0;
+    border-left:1px solid;
+    bottom:15px;
+}
+
+.treeview li, .treeviewPost li {
+    margin:0;
+    padding:0 0 0 1em;;
+    line-height:2em;
+    position:relative;
+}
+
+.treeview ul li:before, .treeviewPost ul li:before {
+    content:"";
+    display:block;
+    width:10px;
+    height:0;
+    border-top:1px solid;
+    margin-top:-1px;
+    position:absolute;
+    top:1em;
+    left:0
+}
+
+.tree-indicator {
+    margin-right:5px;
+    cursor:pointer;
+}
+
+.treeview li a , .treeviewPost li a {
+    text-decoration: none;
+    color:inherit;
+    font-weight: normal;
+    cursor:pointer;
+}
+
+.treeview li a.active, .treeviewPost li a.active {
+    background-color: #f4d186;
+    color: black;
+    padding: 0 1em 0 0;
+}
+
+#treeviewCategories .eleves {
+    background-color: #8ee5ff;
+    color:  black;
+}
+
+#treeviewCategories .profs {
+	background-color: #ff9c99;
+	color: #333;
+}
+
+#listeSujets button.active {
+	background-color: #fffb05 !important;
+	color: #262f24 !important;
+}
+
+
+#listeSujets button.profs {
+    background-color: #ff9c99;
+	color: #333;
+}
+
+
+#listeSujets button.eleves {
+    background-color: #8ee5ff;
+    color:  #444;
+}
+
+.supprime {
+	text-decoration: line-through;
+	color: #999;
+}
+
+.postForum {
+    border: 1px solid #ddd;
+    padding: 0 0.5em;
+}
+
+.postForum a {
+    text-decoration: underline !important;
+    color: #00f !important;
+    font-weight: 650 !important;
+}
+
+.postForum.active {
+    background-color: #ff5;
+}
+
+.postForum.em8 {
+    max-height:8em;
+    overflow: auto;
 }
