@@ -20,7 +20,6 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$post = isset($_POST['post']) ? $_POST['post'] : null;
 $form = array();
 parse_str($formulaire, $form);
 

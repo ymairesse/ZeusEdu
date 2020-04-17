@@ -9,16 +9,11 @@
       </div>
       <div class="modal-body">
           <form id="formModalModify">
-              {if ($acronyme == $postAncien.acronyme) && ($acronyme != $postAncien.auteur)}
-              <label for="myPost"><i class="fa fa-exclamation-triangle"></i> Modification en tant que propriétaire du sujet "{$postAncien.sujet}"</label>
-              {else}
-              <label for="myPost">Ma contribution au sujet {$postAncien.sujet}</label>
-              {/if}
+              <label for="myPost">Ma contribution</label>
               <textarea name="myPost" id="myPost" rows="5" class="form-control">{$postAncien.post}</textarea>
               <input type="hidden" name="postId" id="postId" value="{$postAncien.postId}">
               <input type="hidden" name="idSujet" id="idSujet" value="{$postAncien.idSujet}">
               <input type="hidden" name="idCategorie" id="idCategorie" value="{$postAncien.idCategorie}">
-              <input type="hidden" name="proprio" value="{$postAncien.acronyme}">
 
           </form>
       </div>

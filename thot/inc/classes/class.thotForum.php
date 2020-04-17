@@ -181,7 +181,7 @@ class ThotForum
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = sujets.acronyme ';
         $sql .= 'WHERE idSujet = :idSujet AND sujets.idCategorie = :idCategorie ';
         $requete = $connexion->prepare($sql);
-
+    
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
     
@@ -197,8 +197,8 @@ class ThotForum
 
         return $sujet;
     }
-
-    /**
+    
+     /**
      * renvoie les caractéristiques d'un post dont on fournit $postId, $idCategorie, $idSujet
      *
      * @param int $idCategorie
@@ -249,6 +249,7 @@ class ThotForum
 
         return $ligne;
     }
+
 
     /**
      * Vérifie si une catégorie du nom $libelle existe déjà comme fils direct de la catégorie $parentId
@@ -422,6 +423,28 @@ class ThotForum
     }
 
     /**
+     * supprime tous les posts liés au sujet $idSujet dans la catégorie $idCategorie
+     *
+     * @param int $idCatgorie
+     * @param int $idSujet
+     *
+     * @return int : nombre de suppressions
+     */
+    public function delSubjectPosts($idSujet, $idCategorie) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotForumsPosts ';
+        $sql .= 'WHERE idSujet = :idSujet AND idCategorie = :idCategorie ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $nb = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
      * supprimee les informations d'accès au sujet $idSujet de la catégorie $idCategorie
      *
      * @param int $idSujet
@@ -440,8 +463,28 @@ class ThotForum
 
         Application::deconnexionPDO($connexion);
     }
-
+    
     /**
+     * Supprime toutes les références à un sujet dans la table des likes
+     *
+     * @param int $idSujet
+     * @param int $idCategorie
+     *
+     * @return void
+     */
+    public function delSubjectLikes($idSujet, $idCategorie) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotForumsLikes ';
+        $sql .= 'WHERE idSujet = :idSujet AND idCategorie = :idCategorie ';
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $nb = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+    }
+
+     /**
      * Supprime le sujet $idSujet de la catégorie $idCategorei
      *
      * @param int $idSujet
@@ -452,14 +495,20 @@ class ThotForum
     public function delSubject($idSujet, $idCategorie){
         // suppression de tous les accès liés au sujet $idSujet de la catégorie $idCategorie
         $this->delSubjectAccess($idSujet, $idCategorie);
+        // suppression de Likes aux posts de ce sujet
+        $this->delSubjectLikes($idSujet, $idCategorie);
+        // suppression des contributions au sujet
+        $this->delSubjectPosts($idSujet, $idCategorie);
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-                // suppression effective du sujet $idSujet dans la catégorie $idCategorie
+        // suppression effective du sujet $idSujet dans la catégorie $idCategorie
         $sql = 'DELETE FROM '.PFX.'thotForumsSujets ';
         $sql .= 'WHERE idSujet = :idSujet AND idCategorie = :idCategorie ';
         $requete = $connexion->prepare($sql);
+        
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+
         $nb = $requete->execute();
 
         Application::deconnexionPDO($connexion);
@@ -713,19 +762,16 @@ class ThotForum
      *
      * @return int le $postId du post
      */
-    public function saveEditedPost($post, $postId, $auteur){
+    public function saveEditedPost($post, $postId, $acronyme){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'UPDATE '.PFX.'thotForumsPosts ';
         $sql .= 'SET date = NOW(), post = :post, modifie = 1 ';
-        $sql .= 'WHERE postId = :postId AND auteur = :auteur ';
+        $sql .= 'WHERE postId = :postId AND auteur = :acronyme ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':post', $post, PDO::PARAM_STR);
         $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
-        // l'auteur peut être un élève (cas de l'édition par le propriétaire du sujet)
-
-        // $auteur = (string)$auteur;
-        $requete->bindParam(':auteur', $auteur, PDO::PARAM_STR, 7);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
 
         $resultat = $requete->execute();
 
@@ -769,7 +815,7 @@ class ThotForum
      *
      * @return array
      */
-    public function getPosts4subject($idCategorie, $idSujet){
+      public function getPosts4subject($idCategorie, $idSujet){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT postId, parentId, DATE_FORMAT(date, "%d/%m") AS ladate, DATE_FORMAT(date, "%H:%i") AS heure, ';
         $sql .= 'auteur, userStatus, post, modifie, posts.idCategorie, posts.idSujet, ';
@@ -780,7 +826,7 @@ class ThotForum
         $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = auteur ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS eleves ON eleves.matricule = auteur ';
         $sql .= 'WHERE posts.idCategorie = :idCategorie AND posts.idSujet = :idSujet ';
-        $sql .= 'ORDER BY postId ASC ';
+        $sql .= 'ORDER BY date DESC ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
@@ -792,16 +838,19 @@ class ThotForum
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $postId = $ligne['postId'];
-                // $ligne['post'] = strip_tags($ligne['post'],'<http>,<https>');
+
+				$ligne['post'] = strip_tags($ligne['post'],'<a>');
+
                 $ligne['post'] = nl2br($ligne['post']);
                 if ($ligne['userStatus'] == 'prof') {
                     $appel = ($ligne['sexeProf'] == 'M') ? 'M.' : 'Mme';
-                    $user = sprintf('%s %s. %s', $appel, mb_substr($ligne['prenomProf'], 0, 1), $ligne['nomProf']);
+                    $ligne['user'] = sprintf('%s %s. %s', $appel, mb_substr($ligne['prenomProf'], 0, 1), $ligne['nomProf']);
+                    $ligne['initiales'] = mb_substr($ligne['prenomProf'], 0, 1).mb_substr($ligne['nomProf'], 0, 1);
                     }
                     else {
-                        $user = sprintf('%s %s [%s]', $ligne['prenomEleve'], $ligne['nomEleve'], $ligne['groupe']);
+                        $ligne['user'] = sprintf('%s %s [%s]', $ligne['prenomEleve'], $ligne['nomEleve'], $ligne['groupe']);
+                        $ligne['initiales'] = mb_substr($ligne['prenomEleve'], 0, 1).mb_substr($ligne['nomEleve'], 0, 1).$ligne['groupe'];
                     }
-                $ligne['user'] = $user;
 
                 $liste[$postId] = $ligne;
             }
@@ -813,7 +862,7 @@ class ThotForum
 
         return $tree;
     }
-
+    
     /**
      * renvoie le post dont le postId est passé en argument
      *
@@ -1064,6 +1113,107 @@ class ThotForum
     }
 
     /**
+     * vérifie que l'utilisateur $acronyme est l'auteur du post $postId
+     * du sujet $idSujet de la catégorie $idCategorie
+     *
+     * @param int $acronyme
+     * @param int $postId
+     * @param int $idSujet
+     * @param int $idCategorie
+     *
+     * @return bool
+     */
+    public function verifAuteur($acronyme, $postId, $idSujet, $idCategorie){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT postId, idCategorie, idSujet, auteur ';
+        $sql .= 'FROM '.PFX.'thotForumsPosts ';
+        $sql .= 'WHERE postId = :postId AND idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $ligne = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne != Null;
+    }
+    
+	 /**
+     * vérifie que l'utilisateur $acronyme est bien le propriétaire du sujet
+     * $idSujet de la catégorie $idCategorie
+     *
+     * @param string $acronyme
+     * @param int $idCategorie
+     * @param int $idSujet
+     *
+     * @return array
+     */
+    public function verifProprio($acronyme, $idCategorie, $idSujet){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT postId, idCategorie, idSujet, auteur ';
+        $sql .= 'FROM '.PFX.'thotForumsSujets ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $ligne = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne != Null;
+    }
+    
+	/**
+	 * Efface le contenu du post $postId de l'utilisateur $matricule pour le sujet
+	 * $idSujet de la catégorie $idCategorie
+	 *
+	 * @param int $matricule
+	 * @param int $postId
+	 * @param int $idSujet
+	 * @param int $idCategorie
+	 *
+	 * @return int : nombre d'effacements (0 ou 1)
+	 */
+	public function delPost($acronyme, $postId, $idSujet, $idCategorie){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'UPDATE '.PFX.'thotForumsPosts ';
+		$sql .= 'SET post = NULL ';
+		$sql .= 'WHERE postId = :postId AND idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
+		$requete = $connexion->prepare($sql);
+
+		$requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+		$requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+		$requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+		$requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+		$ligne = Null;
+		$resultat = $requete->execute();
+
+		$nb = $requete->rowcount();
+
+		Application::DeconnexionPDO($connexion);
+
+		return $nb;
+	}
+
+    /**
      * renvoie la liste des sujets dont l'utilisateur $acronyme est propriétaire
      *
      * @param string $acronyme
@@ -1105,121 +1255,21 @@ class ThotForum
 
         return $liste;
     }
-
-    /**
-     * vérifie que l'utilisateur $acronyme est l'auteur du post $postId
-     * du sujet $idSujet de la catégorie $idCategorie
-     *
-     * @param int $acronyme
-     * @param int $postId
-     * @param int $idSujet
-     * @param int $idCategorie
-     *
-     * @return bool
-     */
-    public function verifAuteur($acronyme, $postId, $idSujet, $idCategorie){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT postId, idCategorie, idSujet, auteur ';
-        $sql .= 'FROM '.PFX.'thotForumsPosts ';
-        $sql .= 'WHERE postId = :postId AND idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $ligne = Null;
-        $resultat = $requete->execute();
-        if ($resultat){
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            $ligne = $requete->fetch();
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $ligne != Null;
-    }
-
-    /**
-     * vérifie que l'utilisateur $acronyme est bien le propriétaire du sujet
-     * $idSujet de la catégorie $idCategorie
-     *
-     * @param string $acronyme
-     * @param int $idCategorie
-     * @param int $idSujet
-     *
-     * @return array
-     */
-    public function verifProprio($acronyme, $idCategorie, $idSujet){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT idCategorie, idSujet, acronyme ';
-        $sql .= 'FROM '.PFX.'thotForumsSujets ';
-        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND acronyme = :acronyme ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-        $ligne = Null;
-        $resultat = $requete->execute();
-        if ($resultat){
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            $ligne = $requete->fetch();
-        }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $ligne != Null;
-    }
-
-        /**
-         * Efface le contenu du post $postId de l'utilisateur $matricule pour le sujet
-         * $idSujet de la catégorie $idCategorie
-         *
-         * @param int $matricule
-         * @param int $postId
-         * @param int $idSujet
-         * @param int $idCategorie
-         *
-         * @return int : nombre d'effacements (0 ou 1)
-         */
-        public function delPost($acronyme, $postId, $idSujet, $idCategorie){
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'UPDATE '.PFX.'thotForumsPosts ';
-            $sql .= 'SET post = NULL ';
-            $sql .= 'WHERE postId = :postId AND idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
-            $requete = $connexion->prepare($sql);
-
-            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-            $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-            $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
-            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
-            $ligne = Null;
-            $resultat = $requete->execute();
-
-            $nb = $requete->rowcount();
-
-            Application::DeconnexionPDO($connexion);
-
-            return $nb;
-        }
-
-        /**
-         * renvoie le nom du prof avec la formule d'appel qui convient
-         *
-         * @param string $sexe
-         * @param string $prenom
-         * @param string $nom
-         *
-         * @return string : Mme J. Dupont
-         */
-        public function nomProf($sexe, $prenom, $nom){
-            $appel = ($sexe == 'F') ? 'Mme' : 'M.';
-            $nom = sprintf('%s %s. %s', $appel, mb_substr($prenom, 0, 1, 'UTF-8'), $nom);
-            return $nom;
-        }
+    
+    
+	/**
+	 * renvoie le nom du prof avec la formule d'appel qui convient
+	 *
+	 * @param string $sexe
+	 * @param string $prenom
+	 * @param string $nom
+	 *
+	 * @return string : Mme J. Dupont
+	 */
+	public function nomProf($sexe, $prenom, $nom){
+		$appel = ($sexe == 'F') ? 'Mme' : 'M.';
+		$nom = sprintf('%s %s. %s', $appel, mb_substr($prenom, 0, 1, 'UTF-8'), $nom);
+		return $nom;
+	}
 
 }

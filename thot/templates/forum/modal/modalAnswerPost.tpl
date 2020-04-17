@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div id="modalAnswerPost" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAnswerPostLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

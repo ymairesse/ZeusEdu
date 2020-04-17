@@ -18,28 +18,18 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
+$laDate = isset($_POST['laDate']) ? $_POST['laDate'] : Null;
 
-$idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : Null;
-$idSujet = isset($_POST['idSujet']) ? $_POST['idSujet'] : Null;
+$test = ($laDate != '') ? explode('/', $laDate) : Null;
 
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
-$Forum = new thotForum();
-
-
-$listePosts = $Forum->getPosts4subject($idCategorie, $idSujet);
-
-$infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
+if ((count($test) == 3) && checkDate($test[1], $test[0], $test[2]))
+    $today = trim($laDate);
+    else $today = strftime('%d/%m/%Y');
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('acronyme', $acronyme);
-$smarty->assign('listePosts', $listePosts);
-$smarty->assign('idCategorie', $idCategorie);
-$smarty->assign('idSujet', $idSujet);
-$smarty->assign('infoSujet', $infoSujet);
-
-$smarty->display('forum/treeviewPosts.tpl');
+$smarty->assign('today', $today);
+$smarty->display('forum/modal/modalDate.tpl');

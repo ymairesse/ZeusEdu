@@ -20,9 +20,6 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-
-// texte provenant du CKEDITOR
-$post = isset($_POST['post']) ? $_POST['post'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
@@ -40,8 +37,9 @@ $infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
 $infoPost = $Forum->getInfoPost($idCategorie, $idSujet, $postId);
 
 $auteur = $infoPost['auteur'];
-// convertir les balises http(s) en vrais liens cliquables
-$post = preg_replace('$(\s|^)(https?://[a-z0-9_./?=&#\$-]+)(?![^<>]*>)$i', ' <a href="$2" target="_blank">$2</a>', $post." ");
+
+// convertir les balises http en vrais liens
+$post = preg_replace('$(\s|^)(https?://[a-z0-9_./?=&-]+)(?![^<>]*>)$i', ' <a href="$2" target="_blank">$2</a>', $post." ");
 
 // enregistrement de la contribution $postId modifiée
 $postId = $Forum->saveEditedPost($post, $postId, $auteur);
