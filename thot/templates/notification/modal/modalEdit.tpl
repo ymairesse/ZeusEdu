@@ -16,7 +16,7 @@
 
                     <input type="text" maxlength="80" name="objet" id="objet" placeholder="Objet de votre note" class="form-control" value="{$notification.objet|default:''}">
 
-                    <textarea id="texte" name="texte" class="form-control" placeholder="Frappez votre texte ici" autofocus="true"></textarea>
+                    <textarea id="texte" name="texte" class="ckeditor form-control" placeholder="Frappez votre texte ici" autofocus="true"></textarea>
 
                     <div class="row">
 

@@ -1,3 +1,5 @@
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+
 <div class="container-fluid">
 
 		<input type="hidden" name="id" id="id" value="{$notification.id}">
@@ -73,14 +75,9 @@
 				<div class="clearfix">
 				</div>
 
-
-				<textarea id="texte"
-					name="texte"
-					class="form-control"
-					placeholder="Frappez votre texte ici"
-					required
-					autofocus="true">{$notification.texte|default:''}</textarea>
-
+				{* emplacement du textarea -> CKEDITOR *}
+				<textarea id="texte" name="texte" rows="25" class="ckeditor form-control hidden" placeholder="Frappez votre texte ici" autofocus="true" required>{$notification.texte|default:''}</textarea>
+				{* emplacement du textarea -> CKEDITOR *}
 
 				{*------------------------------------------------------------------------------*}
 				{include file="../../../widgets/fileTree/templates/treeview4PJ.tpl"}
@@ -111,13 +108,7 @@
 
 	$(document).ready(function() {
 
-		$('#texte').summernote({
-			lang: 'fr-FR', // default: 'en-US'
-			height: null, // set editor height
-			minHeight: 150, // set minimum height of editor
-			focus: true, // set focus to editable area after initializing summernote
-		});
-
+		CKEDITOR.replace('texte');
 
 		$("#dateDebut").datepicker({
 				format: "dd/mm/yyyy",
@@ -145,6 +136,12 @@
 			// pour ne pas ignorer le "textarea" qui sera caché
 			ignore: [],
 			rules: {
+				texte: {
+					required: function(){
+						CKEDITOR.instances['texte'].updateElement();
+					},
+					minlength: 20
+				},
 				objet: {
 					required: true
 					},

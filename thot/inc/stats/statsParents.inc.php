@@ -21,10 +21,7 @@ $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$Thot = new Thot(); 
-
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
+$Thot = new Thot();
 
 // récupérer le formulaire
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
@@ -41,8 +38,6 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-$listeEleves = $Ecole->listeElevesClasse($classe);
-
 if ($cible == 'parents') {
     $stats = $Thot->getStatsParents($dateDebut, $dateFin, $classe);
     $smarty->assign('stats', $stats);
@@ -50,12 +45,6 @@ if ($cible == 'parents') {
     }
     else {
         $stats = $Thot->getStatsEleves($dateDebut, $dateFin, $classe);
-        foreach ($stats as $user => $dataStats) {
-			$matricule = $dataStats['matricule'];
-			$listeEleves[$matricule]['stats'] = $dataStats['nb'];
-			} 
-		$smarty->assign('listeEleves', $listeEleves);
-        $smarty->assign('dateDebut', $dateDebut);
-        $smarty->assign('dateFin', $dateFin);
+        $smarty->assign('stats', $stats);
         $smarty->display('stats/detailsStatsEleves.tpl');
     }

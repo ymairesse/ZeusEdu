@@ -58,7 +58,7 @@
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour l'édition  d'une notification               ..  -->
 <!-- .......................................................................... -->
-{* include file="notification/modal/modalEdit.tpl" *}
+{include file="notification/modal/modalEdit.tpl"}
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour l'édition  des PJ (ajout/suppr)             ..  -->
 <!-- .......................................................................... -->
@@ -70,17 +70,9 @@
 
 <script type="text/javascript">
 
-	function resetForm(){
-		$('#texte').summernote('enable');
-		$('#texte').summernote('code', '');
-		$('#objet').val('');
-	}
-
 	function reset(){
-		$('#texte').summernote('enable');
-		$('#texte').summernote('code', '');
-		// CKEDITOR.instances.texte.setReadOnly(false);
-		// CKEDITOR.instances.texte.setData('');
+		CKEDITOR.instances.texte.setReadOnly(false);
+		CKEDITOR.instances.texte.setData('');
 		var ajd = moment().format('DD/MM/YYYY');
 		var dans1mois = moment().add(1, 'months').format('DD/MM/YYYY');
 		$('#objet').val('');
@@ -126,8 +118,6 @@
 				reset();
 			}
 			else {
-				var texteAnnonce = $('#texte').summernote('code');
-				$('#notification #texte').val(texteAnnonce);
 				if ($('#notification').valid()) {
 					var formulaire = $('#notification').serialize();
 					var matricule = $('#matricule').val();
@@ -156,8 +146,7 @@
 
 						// réinitialisation de l'éditeur et des satellites
 						$('#notification input[type=checkbox], #notification input[type=text]').prop('readOnly', true);
-						$('#texte').summernote('disable');
-						// CKEDITOR.instances.texte.setReadOnly(true);
+						CKEDITOR.instances.texte.setReadOnly(true);
 						$('#submitNotif').removeClass('btn-primary').addClass('btn-lightBlue').attr('data-sent', 'true');
 						$('#submitNotif').html('<i class="fa fa-paper-plane"></i> Nouvelle annonce');
 					})
@@ -180,7 +169,7 @@
 				},
 				callback: function(result) {
 					if (result == true) {
-						resetForm();
+						reset();
 					}
 				}
 			})
@@ -189,7 +178,7 @@
 		$('#ficheEleve').on('change', '#type', function(){
 			var type = $(this).val();
 			$('.sousType').addClass('hidden');
-			// $('#editorPanel, #choixEleves').addClass('hidden');
+			$('#editorPanel, #choixEleves').addClass('hidden');
 			$('#notification input[type!="hidden"]').prop('disabled', true);
 			switch (type) {
 				case 'ecole':
@@ -308,9 +297,9 @@
 		})
 
 		$('#ficheEleve').on('click', '.btnEdit', function(){
-			var id = $(this).data('id');
+			var notifId = $(this).data('id');
 			$.post('inc/notif/editNotification.inc.php', {
-				id: id
+				notifId: notifId
 			}, function(resultat){
 				$('#tabs-edit').html(resultat);
 				$('#onglet-edit').trigger('click');

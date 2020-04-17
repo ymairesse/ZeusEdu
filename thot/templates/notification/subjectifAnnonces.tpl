@@ -15,12 +15,7 @@
         			<th>Acc. lecture</th>
         		</tr>
         		{foreach from=$listeAnnonces key=id item=dataAnnonce name=n}
-
-<!--
-<pre>
-{$id|print_r}
-</pre>
--->        			<tr
+        			<tr
         				data-id="{$id}"
         				data-accuse="
         					{if ($dataAnnonce.accuse == 1)}

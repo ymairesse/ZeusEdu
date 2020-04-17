@@ -17,13 +17,12 @@ $smarty->assign('onglet', $onglet);
 //
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$Thot = new thot();
+$Thot = new Thot();
 
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-
 
 $module = $Application->getModule(1);
 
@@ -39,7 +38,7 @@ $Jdc = new Jdc();
 
 switch ($action) {
     case 'notification':
-        include_once 'inc/notif/notifications.inc.php';
+        include_once 'inc/notification/notifications.inc.php';
         break;
     case 'remediation':
         require_once 'inc/remediation/remediation.inc.php';
@@ -79,14 +78,14 @@ switch ($action) {
     case 'agendas':
         require_once 'inc/agenda/agenda.inc.php';
         break;
-	case 'archive':
-		include ('inc/jdc/archivesJdc.inc.php');
-		break;
-	case 'forum':
-		require_once 'inc/forum/gestForums.php';
-		break;
+    case 'archive':
+        include ('inc/jdc/archivesJdc.inc.php');
+        break;
+    case 'forum':
+        require_once 'inc/forum/gestForums.php';
+        break;
     default:
-        // include_once 'inc/manAtWork.php';
+        // wtf
         break;
 }
 

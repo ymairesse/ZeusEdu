@@ -57,22 +57,18 @@
 
             <div class="panel panel-info">
                 <div class="panel-heading" id="libelle" data-defaulttext="Liste des contributions">
-                    <span id="titreSujet">Liste des contributions</span>
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-success btn-xs" id="btn-hideRepondre" title="Cacher les boutons"><i class="fa fa-eye-slash"></i></button>
-                        <button type="button" class="btn btn-warning btn-xs" id="btn-allText" title="Texte continu"><i class="fa fa-text-height"></i></button>
-                        <button type="button" class="btn btn-info btn-xs" id="btn-date" disabled><i class="fa fa-calendar"></i> <span id="laDate">Date</span></button>
-                    </div
-                    <div class="clearfix"></div>
+                    <span>Liste des contributions</span>
+                    <button type="button" class="btn btn-success btn-xs pull-right" id="btn-hideRepondre">Cacher les boutons</button>
                 </div>
 
-                <div class="panel-body" id="listePosts" style="height:45em; overflow:auto;">
+                <div class="panel-body" id="listePosts" style="height:35em; overflow:auto;">
 
                 </div>
 
             </div>
 
         </div>
+
 
     </div>
 
@@ -84,45 +80,6 @@
 
 
     $(document).ready(function(){
-
-        var dateForum = Cookies.get('dateForum');
-        $('#btn-date #laDate').text(dateForum);
-
-        $('#btn-date').click(function(){
-            var laDate = $(this).text();
-            $.post('inc/forum/modalChoixDate.inc.php', {
-                laDate: laDate
-            }, function(resultat){
-                $('#modal').html(resultat);
-                $('#modalDate').modal('show');
-            })
-        })
-
-        $('#btn-allText').click(function(){
-            $('.postForum').toggleClass('em8');
-            if ((Cookies.get('texteSuivi') == undefined) || (Cookies.get('texteSuivi') == "false"))
-                Cookies.set('texteSuivi', "true", { expires : 7 })
-                else Cookies.set('texteSuivi', "false", { expires : 7 })
-        })
-
-        $('#modal').on('click', '#btn-confirmDate', function(){
-            var laDate = $('#dateForum').val();
-            $('.postForum').removeClass('active');
-            if (laDate != '') {
-                Cookies.set('dateForum', laDate, { expires: 7 });
-                $('#btn-date #laDate').text(laDate);
-                var laDate = laDate.substr(0,5);
-                $('.postForum[data-date="' + laDate +'"]').addClass('active');
-                }
-                else {
-                    $('#btn-date #laDate').text('Date');
-                }
-            $('#modalDate').modal('hide');
-        })
-
-        $('#listePosts').on('click', '.postForum', function(){
-            $(this).toggleClass('active');
-        })
 
         // effacement d'un post
         $('#listePosts').on('click', '.btn-delPost', function(){
@@ -461,7 +418,6 @@
                         $('#modifSubject').data('idcategorie','').data('idsujet','').data('sujet','').attr('disabled', true);
                         $('#delSubject').data('idcategorie','').data('idsujet','').data('sujet','').attr('disabled', true);
                         $('#listePosts').html('');
-                        $('#titreSujet').text($('#libelle').data('defaulttext'));
                     })
                 }
             }
@@ -475,8 +431,7 @@
         var idSujet = $(this).data('idsujet');
         var idCategorie = $(this).data('idcategorie');
         var sujet = $(this).data('sujet');
-        $('#titreSujet').html(sujet);
-        $('#btn-date').attr('disabled', false);
+        $('#libelle span').html(sujet);
         $.post('inc/forum/verifProprio.inc.php', {
             idSujet: idSujet,
             idCategorie: idCategorie
@@ -497,15 +452,6 @@
             sujet: sujet
         }, function(resultat){
             $('#listePosts').html(resultat);
-            var dateForum = Cookies.get('dateForum');
-            if (dateForum != undefined) {
-                var dateForum = dateForum.substr(0,5);
-                $('.postForum[data-date="' + dateForum +'"]').addClass('active');
-            }
-            var texteSuivi = Cookies.get('texteSuivi');
-            if (texteSuivi == "false"){
-                $('.postForum').addClass('em8');
-            }
         })
     })
 

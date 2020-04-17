@@ -23,11 +23,11 @@
                 </div>
 
                 <div class="radio">
-                    <label><input type="radio" name="cible" value="parents">Parents</label>
+                    <label><input type="radio" name="cible" value="parents" checked>Parents</label>
                 </div>
 
                 <div class="radio">
-                    <label><input type="radio" name="cible" value="eleves" checked>Élèves</label>
+                    <label><input type="radio" name="cible" value="eleves">Élèves</label>
                 </div>
 
                 <div class="form-group">

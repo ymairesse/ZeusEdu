@@ -1,3 +1,5 @@
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+
 <div id="modalModify" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalModifyLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -20,6 +22,8 @@
               <input type="hidden" name="idCategorie" id="idCategorie" value="{$postAncien.idCategorie}">
               <input type="hidden" name="proprio" value="{$postAncien.acronyme}">
 
+              <button type="reset" name="reset" id="reset" value="" style="display:none"></button>
+
           </form>
       </div>
       <div class="modal-footer">
@@ -36,7 +40,7 @@
     $(document).ready(function() {
 
         $('#resetNewPost').click(function() {
-            $('#myPost').val('');
+            $('#reset').trigger('click');
         })
 
         $('#formModalModify').validate({
