@@ -1,10 +1,11 @@
-<h2>Connexion des élèves à la plate-forme</h2>
+<h2>Connexion des élèves à la plate-forme entre le {$dateDebut} et le {$dateFin}</h2>
 
 <div class="overflow35">
 
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
+				<th>&nbsp;</th>
                 <th>Classe</th>
                 <th>Élève</th>
                 <th>Connexions</th>
@@ -12,11 +13,13 @@
         </thead>
 
         <tbody>
-            {foreach from=$stats key=user item=data}
+            
+            {foreach from=$listeEleves key=matricule item=dataEleve name=boucle}
             <tr>
-                <td>{$data.groupe}</td>
-                <td>{$data.nom} {$data.prenom}</td>
-                <td>{$data.nb}</td>
+				<td class="discret">{$smarty.foreach.boucle.iteration}</td>
+				<td>{$dataEleve.groupe}</td>
+				<td>{$dataEleve.nom} {$dataEleve.prenom}</td>
+				<td>{$dataEleve.stats|default:0}</td>
             </tr>
             {/foreach}
         </tbody>

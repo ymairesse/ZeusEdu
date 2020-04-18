@@ -42,6 +42,7 @@ if ($form['id'] != '') {
 else {
     // toutes les informations viennent du formulaire
     $notification = $form;
+    // Application::afficher($form);
     // établir la liste des élèves concernés
     switch ($form['type']) {
         case 'classes':
@@ -61,6 +62,7 @@ else {
             break;
     }
 }
+
 
 // ----------- enregistrement effectif de la notification
 // $listeNotifId parce que la fonction peut renvoyer les $notifId pour plusieurs élèves
@@ -99,8 +101,8 @@ if (isset($form['mail']) && $form['mail'] == 1) {
 if (isset($form['accuse']) && $form['accuse'] == 1) {
     if (isset($form['TOUS'])) {
         // la même annonce $id pour tous
-        $notifId = current($listeNotifId);
-        $nbAccuses = $Thot->setAccuse($notifId, array_keys($listeEleves));
+        $id = current($listeNotifId);
+        $nbAccuses = $Thot->setAccuse($id, array_keys($listeEleves));
         }
         else {
             // la liste des élèves qui doivent accuser lecture est dans $listeNotifId

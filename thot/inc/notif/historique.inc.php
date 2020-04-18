@@ -26,7 +26,8 @@ $listeAttendus = array_keys($listeTypes);
 $listeNiveaux = $Ecole->listeNiveaux();
 $listeClasses = $Ecole->listeClasses();
 $listeCours = $user->getListeCours();
-$listeGroupes = $Thot->getListeGroupes($acronyme);
+// $listeGroupes = $Thot->getListeGroupes($acronyme);
+
 // valeur à déterminer ensuite
 $destinataire = Null;
 
@@ -70,7 +71,6 @@ foreach ($listeNotifications as $type => $lesNotifications) {
             $listeNotifications[$type][$notifId]['destinataire'] = Eleve::staticGetDetailsEleve($uneNotification['matricule']);
         }
     }
-
 
 // ------------------------------------------------------------------------------
 // préparation d'une nouvelle notification vierge
