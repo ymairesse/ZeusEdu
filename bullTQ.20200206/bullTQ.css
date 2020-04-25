@@ -1,0 +1,98 @@
+.up, .down {
+    cursor: pointer;
+    padding: 0 1em;
+    font-weight: bold;
+}
+
+.up:hover, .down:hover {
+    background-color: orange;
+    color: white;
+}
+
+.blocGaucheBulletin {
+    clear: both;
+    float: left;
+    width: 15%;
+    border: 1px solid black;
+    padding: 1em;
+    margin-bottom: 1em;
+    border-radius: 10px;
+}
+
+.blocDroitBulletin {
+    float: right;
+    width: 80%;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.tableauBull {
+    width: 100%;
+    font-size: 10pt;
+}
+
+.tableauBull td {
+    border: 1px solid #dddddd;
+    font-size: 0.9em;
+}
+
+.tableauBull th {
+    border: 1px outset black;
+    padding: 0;
+    background-color: #dddddd;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+.tableauBull .bilan {
+    background-color: #ccccee;
+}
+
+.tableauBull .bilan .echecs {
+    color: red;
+}
+
+.tableauBull .bilan .echecs {
+    text-align: left;
+}
+
+.tableauTitu {
+    border-collapse: collapse
+}
+
+.tableauTitu th {
+    background-color: #ddd;
+}
+
+.tableauTitu td {
+    border: 1px solid black;
+    min-width: 4em;
+    text-align: center;
+}
+
+.photoEleve {
+    box-shadow: 1px 1px 12px #555;
+}
+
+.patienter {
+    background-color: orange;
+}
+
+.coursBulletin {
+    background-color: #EEEEEE;
+    border-radius: 10px 10px 10px 10px;
+    border: 1px solid black;
+    margin: 1em 0px;
+    box-shadow: 8px 8px 12px #999;
+}
+
+.remarqueProf {
+    padding: 1em;
+    border: 1px solid black;
+    margin: 1em 1em;
+    background-color: #fff;
+}
+
+.border {
+    border: 1px solid #555;
+}

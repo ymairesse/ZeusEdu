@@ -1670,6 +1670,7 @@ class ecole
         $sql .= 'ON DUPLICATE KEY UPDATE ';
         $sql .= 'passwd=:passwd, md5pwd=:md5pwd ';
         $requete = $connexion->prepare($sql);
+
         $resultat = 0;
         foreach ($listeElevesSansPasswd as $matricule => $unEleve) {
             $user = $this->userNameEleve($unEleve['nom'], $unEleve['prenom'], $matricule);

@@ -24,11 +24,13 @@ $smarty = new Smarty();
 $message = isset($_GET['message']) ? $_GET['message'] : null;
 $smarty->assign('message', $message);
 
-$acronyme = isset($_GET['acronyme']) ? $_GET['acronyme'] : null;
-$smarty->assign('acronyme', $acronyme);
+$acronyme = isset($_COOKIE['acronyme']) ? $_COOKIE['acronyme'] : Null;
+$mdp = isset($_COOKIE['mdp']) ? $_COOKIE['mdp'] : Null;
+$memory = isset($_COOKIE['memory']) ? $_COOKIE['memory'] : Null;
 
-$mdp = isset($_GET['mdp']) ? $_GET['mdp'] : null;
+$smarty->assign('acronyme', $acronyme);
 $smarty->assign('mdp', $mdp);
+$smarty->assign('memory', $memory);
 
 // toutes les informations d'identification réseau (adresse IP, jour et heure)
 $smarty->assign('identification', user::identification());

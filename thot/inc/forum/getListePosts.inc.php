@@ -26,8 +26,11 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new thotForum();
 
-
 $listePosts = $Forum->getPosts4subject($idCategorie, $idSujet);
+
+$FBstats = $Forum->getFBstats4subject($idCategorie, $idSujet);
+
+$likes4user = $Forum->getLikesOnSubject4user($acronyme, $idCategorie, $idSujet);
 
 $infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
 
@@ -36,10 +39,14 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('acronyme', $acronyme);
-$smarty->assign('listePosts', $listePosts);
 $smarty->assign('idCategorie', $idCategorie);
 $smarty->assign('idSujet', $idSujet);
+
+$smarty->assign('listePosts', $listePosts);
+$smarty->assign('likes4user', $likes4user);
 $smarty->assign('infoSujet', $infoSujet);
+$smarty->assign('FBstats', $FBstats);
+
+$smarty->assign('acronyme', $acronyme);
 
 $smarty->display('forum/treeviewPosts.tpl');

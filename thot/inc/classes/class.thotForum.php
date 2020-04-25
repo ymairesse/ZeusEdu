@@ -6,6 +6,8 @@
 class ThotForum
 {
 
+    CONST acceptedTags = "<a><b><i><u><span><iframe><img><div><table><tbody><tr><td><ul><li><br><p><strike><pre><h1><h2><pre><blockquote>";
+
     function __construct()
     {
         // code...
@@ -181,10 +183,10 @@ class ThotForum
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = sujets.acronyme ';
         $sql .= 'WHERE idSujet = :idSujet AND sujets.idCategorie = :idCategorie ';
         $requete = $connexion->prepare($sql);
-    
+
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-    
+
         $sujet = Null;
         $resultat = $requete->execute();
         if ($resultat){
@@ -197,7 +199,7 @@ class ThotForum
 
         return $sujet;
     }
-    
+
      /**
      * renvoie les caractéristiques d'un post dont on fournit $postId, $idCategorie, $idSujet
      *
@@ -232,7 +234,9 @@ class ThotForum
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             $ligne = $requete->fetch();
             if ($ligne) {
-                $ligne['post'] = strip_tags($ligne['post'],'<http>');
+                $ligne['post'] = strip_tags($ligne['post'], self::acceptedTags);
+                $ligne['post'] = nl2br($ligne['post']);
+
                 $userStatus = $ligne['userStatus'];
                 if ($ligne['userStatus'] == 'prof') {
                     $appel = ($ligne['sexeProf'] == 'M') ? 'M.' : 'Mme';
@@ -463,7 +467,7 @@ class ThotForum
 
         Application::deconnexionPDO($connexion);
     }
-    
+
     /**
      * Supprime toutes les références à un sujet dans la table des likes
      *
@@ -505,7 +509,7 @@ class ThotForum
         $sql = 'DELETE FROM '.PFX.'thotForumsSujets ';
         $sql .= 'WHERE idSujet = :idSujet AND idCategorie = :idCategorie ';
         $requete = $connexion->prepare($sql);
-        
+
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
 
@@ -838,8 +842,8 @@ class ThotForum
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $postId = $ligne['postId'];
-
-				$ligne['post'] = strip_tags($ligne['post'],'<a>');
+                // admettre les balises <a><b><u><span><iframe><img><table><tbody><tr><td>....'
+				$ligne['post'] = strip_tags($ligne['post'], self::acceptedTags);
 
                 $ligne['post'] = nl2br($ligne['post']);
                 if ($ligne['userStatus'] == 'prof') {
@@ -862,7 +866,7 @@ class ThotForum
 
         return $tree;
     }
-    
+
     /**
      * renvoie le post dont le postId est passé en argument
      *
@@ -894,7 +898,10 @@ class ThotForum
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             $ligne = $requete->fetch();
             if ($ligne) {
-                $ligne['post'] = strip_tags($ligne['post'],'<http>');
+                // admettre les balises <a><b><u><span><iframe><img><table><tbody><tr><td>'
+				$ligne['post'] = strip_tags($ligne['post'], self::acceptedTags);
+                $ligne['post'] = nl2br($ligne['post']);
+
                 $userStatus = $ligne['userStatus'];
                 if ($ligne['userStatus'] == 'prof') {
                     $appel = ($ligne['sexeProf'] == 'M') ? 'M.' : 'Mme';
@@ -1146,7 +1153,7 @@ class ThotForum
 
         return $ligne != Null;
     }
-    
+
 	 /**
      * vérifie que l'utilisateur $acronyme est bien le propriétaire du sujet
      * $idSujet de la catégorie $idCategorie
@@ -1179,7 +1186,7 @@ class ThotForum
 
         return $ligne != Null;
     }
-    
+
 	/**
 	 * Efface le contenu du post $postId de l'utilisateur $matricule pour le sujet
 	 * $idSujet de la catégorie $idCategorie
@@ -1255,21 +1262,307 @@ class ThotForum
 
         return $liste;
     }
-    
-    
-	/**
-	 * renvoie le nom du prof avec la formule d'appel qui convient
-	 *
-	 * @param string $sexe
-	 * @param string $prenom
-	 * @param string $nom
-	 *
-	 * @return string : Mme J. Dupont
-	 */
-	public function nomProf($sexe, $prenom, $nom){
-		$appel = ($sexe == 'F') ? 'Mme' : 'M.';
-		$nom = sprintf('%s %s. %s', $appel, mb_substr($prenom, 0, 1, 'UTF-8'), $nom);
-		return $nom;
-	}
+
+    // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    // Procédures liées à FBlikes vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    //
+    /**
+     * enregistre ou met à jour les informations de Like d'un $post de $matricule
+     * pour la catégorie $idCategorie, le sujet $idSujet et le post $postId
+     *
+     * @param int $idCatgorie
+     * @param int $idSujet
+     * @param int $postId
+     * @param int $matricule
+     * @param string $emoji
+     *
+     * @return int : nombre d'enregistrements ou modficiations
+     */
+    public function saveLike($idCategorie, $idSujet, $postId, $acronyme, $emoji){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT INTO '.PFX.'thotForumsLikes ';
+        $sql .= 'SET idCategorie = :idCategorie, idSujet = :idSujet, postId = :postId, ';
+        $sql .= 'likeLevel = :emoji, user = :acronyme, userStatus = "prof" ';
+        $sql .= 'ON DUPLICATE KEY UPDATE likeLevel = :emoji ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':emoji', $emoji, PDO::PARAM_STR, 10);
+
+        $nb = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * supprime un like pour le post $postId du sujet $idSujet pour la catégorie
+     * $idCategorie et pour l'utilisateur $matricule
+     *
+     * @param int $idCategorie
+     * @param int $idSujet
+     * @param int postId
+     * @param int $matricule
+     *
+     * @return int : nombre de suppressions (0 ou 1)
+     */
+    public function delLike($idCategorie, $idSujet, $postId, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotForumsLikes ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND postId = :postId ';
+        $sql .= 'AND user = :user ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $requete->bindParam(':user', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * renvoie les stats du nombre d'utilisateurs par emoji pour le post $postId
+     * de la catégorie $idCatgorie our le sujet $idSujet
+     *
+     * @param int $idCategorie
+     * @param int $idSujet
+     * @param int $postId
+     *
+     * @return array
+     */
+    public function statsByemoji($idCatgorie, $idSujet, $postId) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT likelevel, COUNT(*) AS nb ';
+        $sql .= 'FROM '.PFX.'thotForumsLikes ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND postId = :postId ';
+        $sql .= 'GROUP BY likeLevel ';
+        $sql .= 'ORDER BY likelevel ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $likelevel = $ligne['likelevel'];
+                $liste[$likelevel] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les likeleve éventuel pour les utilisateurs qui ont liké le post
+     * pour le post $postId de la catégorie $idCatgorie du sujet $idSujet
+     *
+     * @param int $idCatgorie
+     * @param int $idSujet
+     * @param int $postId
+     *
+     * @return string
+     */
+    public function getEmoji4user($idCategorie, $idSujet, $postId, $matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT likelevel, user, de.nom AS nomEleve, de.prenom AS prenomEleve, de.groupe, ';
+        $sql .= 'dp.nom AS nomProf, dp.prenom AS prenomProf, dp.sexe ';
+        $sql .= 'FROM '.PFX.'thotForumsLikes AS fb ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = fb.user ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = fb.user ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND postId = :postId ';
+        $sql .= 'ORDER BY likelevel, de.groupe, nomEleve, prenomEleve, nomProf, prenomProf ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $likelevel = $ligne['likelevel'];
+                $user = $ligne['user'];
+                $liste[$likelevel][$user] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne les likes de l'utilisateur courant sur le sujet $idSujet
+     * de la catégorie $idCategorie
+     *
+     * @param int $matricule
+     * @param int $idCatgorie
+     * @param int $idSujet
+     *
+     * @return array
+     */
+    public function getLikesOnSubject4user($acronyme, $idCategorie, $idSujet){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT user, likeLevel, idCategorie, idSujet, postId ';
+        $sql .= 'FROM '.PFX.'thotForumsLikes ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND user = :user ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':user', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $likeLevel = $ligne['likeLevel'];
+                if ($likeLevel != 'null') {
+                    $postId = $ligne['postId'];
+                    $liste[$postId] = $likeLevel;
+                }
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les statistiques de likes pour le post $postId de la catégorie $idCategorie
+     * pour le sujet $idSujet
+     *
+     * @param int $idCatgorie
+     * @param int $idSujet
+     * @param int $postId
+     *
+     * @return array
+     */
+    public function getFBstats4postId($idCategorie, $idSujet, $postId){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT likelevel, user, userStatus, ';
+        $sql .= 'de.nom AS nomEleve, de.prenom AS prenomEleve, de.groupe, ';
+        $sql .= 'dp.nom AS nomProf, dp.prenom AS prenomProf, dp.sexe ';
+        $sql .= 'FROM '.PFX.'thotForumsLikes AS likes ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = likes.user ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = likes.user ';
+        $sql .= 'WHERE likes.idCategorie = :idCategorie AND likes.idSujet = :idSujet AND likes.postId = :postId ';
+        $sql .= 'ORDER BY likelevel, nomEleve, nomProf ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                if ($ligne['userStatus'] != 'eleve')
+                $likelevel = $ligne['likelevel'];
+                if ($likelevel != 'null') {
+                    if ($ligne['userStatus'] == 'eleve') {
+                        $ligne['nom'] = sprintf('%s %s [%s]', $ligne['prenomEleve'], $ligne['nomEleve'], $ligne['groupe']);
+                        }
+                        else {
+                            $ligne['nom'] = $this->nomProf($ligne['sexe'], $ligne['prenomProf'], $ligne['nomProf']);
+                        }
+                    $liste[$likelevel][] = $ligne['nom'];
+                }
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les statistiques de likes pour tous les posts sur un sujet $idSujet
+     * de la catégorie $idCatgorie
+     *
+     * @param int $idCatgorie
+     * @param int $idSujet
+     *
+     * @return array
+     */
+    public function getFBstats4subject($idCategorie, $idSujet){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT likes.postId, likes.idSujet, likes.idCategorie, likelevel, user, userStatus, ';
+        $sql .= 'de.nom AS nomEleve, de.prenom AS prenomEleve, de.groupe, ';
+        $sql .= 'dp.nom AS nomProf, dp.prenom AS prenomProf, dp.sexe ';
+        $sql .= 'FROM '.PFX.'thotForumsLikes AS likes ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = likes.user ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = likes.user ';
+        $sql .= 'WHERE likes.idCategorie = :idCategorie AND likes.idSujet = :idSujet ';
+        $sql .= 'ORDER BY likelevel, nomEleve, nomProf ';
+        $requete = $connexion->prepare($sql);
+// echo $sql;
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+// Application::afficher(array($idCategorie, $idSujet), true);
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $likelevel = $ligne['likelevel'];
+                if ($likelevel != 'null') {
+                    $postId = $ligne['postId'];
+                    if ($ligne['userStatus'] == 'eleve') {
+                        $ligne['nom'] = sprintf('%s %s [%s]', $ligne['prenomEleve'], $ligne['nomEleve'], $ligne['groupe']);
+                        }
+                        else {
+    //                         Application::afficher($ligne, true);
+                            $ligne['nom'] = $this->nomProf($ligne['sexe'], $ligne['prenomProf'], $ligne['nomProf']);
+                            // $ligne['nom'] = 'bidouille';
+                        }
+                    $liste[$postId][$likelevel][] = $ligne['nom'];
+                }
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    // Procédures liées à FBlikes ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    /**
+     * renvoie le nom du prof avec la formule d'appel qui convient
+     *
+     * @param string $sexe
+     * @param string $prenom
+     * @param string $nom
+     *
+     * @return string : Mme J. Dupont
+     */
+    public function nomProf($sexe, $prenom, $nom){
+        $appel = ($sexe == 'F') ? 'Mme' : 'M.';
+        $nom = sprintf('%s %s. %s', $appel, mb_substr($prenom, 0, 1, 'UTF-8'), $nom);
+        return $nom;
+    }
 
 }

@@ -10,6 +10,9 @@
 {include file='../../javascript.js'}
 {include file='../../styles.sty'}
 
+<script src="js/fbLike/facebook-reactions.js"></script>
+<link rel="stylesheet" href="js/fbLike/stylesheet.css" media="screen">
+
 <link rel="stylesheet" href="../summernote/summernote.min.css">
 <script src="../summernote/summernote.min.js"></script>
 <script src="../summernote/lang/summernote-fr-FR.min.js"></script>

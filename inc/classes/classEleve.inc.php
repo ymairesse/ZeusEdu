@@ -484,6 +484,7 @@ class eleve
             $n = 0;
             $sql = 'INSERT INTO '.PFX.'eleves SET '.implode(',', $sqlInsert);
             $sql .= ' ON DUPLICATE KEY UPDATE '.implode(',', $sqlUpdate);
+
             $resultat = $connexion->exec($sql);
             if ($resultat > 0) {
                 ++$n;

@@ -29,11 +29,12 @@ $type = isset($_POST['type']) ? $_POST['type'] : null;
 
 // lecture de toutes les notifications pour l'utilisateur courant
 // ecole => ... niveau => ... classes => ... cours => ... eleves => ...
-$listeNotifications = $Thot->listeUserNotification($acronyme);
+$listeNotifications = $Thot->listeUserNotification($acronyme, $type);
+
 // liste des accusés de réception éventuellement attendus (liste d'élèves d'une classe, par exemple)
 $listeAttendus = array();
 
-foreach ($listeNotifications[$type] as $notifId => $uneNotification) {
+foreach ($listeNotifications as $notifId => $uneNotification) {
     // les accusés de lecture
     if ($uneNotification['accuse'] == 1) {
         $destinataire = $uneNotification['destinataire'];
@@ -66,10 +67,6 @@ foreach ($listeNotifications[$type] as $notifId => $uneNotification) {
                 break;
             }
         }
-    // cas particulier de l'élève isolé
-    if (isset($uneNotification['matricule'])){
-        $listeNotifications[$type][$notifId]['destinataire'] = Eleve::staticGetDetailsEleve($uneNotification['matricule']);
-        }
     }
 
 // liste des pièces jointes liées à ces notifications
@@ -83,7 +80,7 @@ $smarty = new Smarty();
 $smarty->template_dir = "../../templates";
 $smarty->compile_dir = "../../templates_c";
 
-$smarty->assign('liste', $listeNotifications[$type]);
+$smarty->assign('liste', $listeNotifications);
 $smarty->assign('listeAccuses', $listeAccuses);
 $smarty->assign('listeAttendus', $listeAttendus);
 $smarty->assign('listePJ', $listePJ);

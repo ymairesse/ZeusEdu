@@ -39,7 +39,7 @@
     <div class="col-sm-9 col-xs-12">
         <ul id="PjFiles" class="PjFiles list-unstyled" style="min-height: 2em;">
 
-            {if isset($pjFiles) && count($pjFiles > 0)}
+            {if isset($pjFiles) && ($pjFiles|@count > 0)}
                 {foreach from=$pjFiles key=shareId item=data}
                 <li>
                     <button type="button" class="btn btn-danger btn-xs delPJ" data-path="{$data.path}" data-filename="{$data.fileName}"><i class="fa fa-times delPJ" title="Supprimer"></i></button>
@@ -55,6 +55,8 @@
                     <input type="hidden" name="files[]" class="files" value="{$data.shareId}|//|{$data.path}|//|{$data.fileName}">
                 </li>
                 {/foreach}
+                {else}
+                <p>Pas de pièce jointe</p>
             {/if}
 
         </ul>

@@ -760,11 +760,6 @@ a.fauxBouton:hover {
     padding: 2px;
 }
 
-.notice ol, .notice ul {
-    padding-left: 48px;
-    margin-top: -24px;
-}
-
 .smallNotice {}
 
 .etiquette {

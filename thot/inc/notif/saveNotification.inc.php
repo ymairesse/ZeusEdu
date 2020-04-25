@@ -27,6 +27,8 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
+$type = isset($_POST['type']) ? $_POST['type'] : null;
+
 $listeEleves = Null;
 
 // si c'est une édition (le $id est déjà défini)
@@ -42,33 +44,48 @@ if ($form['id'] != '') {
 else {
     // toutes les informations viennent du formulaire
     $notification = $form;
-    // Application::afficher($form);
-    // établir la liste des élèves concernés
-    switch ($form['type']) {
-        case 'classes':
-            // si TOUS est sélectionné, la liste de tous les élèves de la classe, sinon seulement les élèves sélectionnés
-            $listeEleves = isset($form['TOUS']) ? $Ecole->listeElevesClasse($form['destinataire']) : array_flip($form['membres']);
-            break;
-        case 'coursGrp':
-            // si TOUS est sélectionné, la liste de tous les élèves du cours, sinon seulement les élèves sélectionnés
-            $listeEleves = isset($form['TOUS']) ? $Ecole->listeElevesCours($form['destinataire']) : array_flip($form['membres']);
-            break;
-        case 'groupe':
-            // prévoir ici la recherche des élèves membres d'un "groupe"
-            // prévoir ici la recherche des élèves membres d'un "groupe"
-            $listeEleves = Null;
-            // prévoir ici la recherche des élèves membres d'un "groupe"
-            // prévoir ici la recherche des élèves membres d'un "groupe"
-            break;
+    $type = $form['type'];
+    // les types suivants ne permettent pas le choix d'élèves; on va vérifier
+    // si l'on se trouve dans ce cas de figure
+    $typeSansChoix = array('ecole', 'niveau', 'cours', 'eleves');
+    if (!in_array($type, $typeSansChoix)){
+        // on vérifie si la case "TOUS" a été décochée
+        // si c'est le cas, on se trouve devant une notification à un ou plusieurs élèves distincts
+        // sinon, on garde le type de notification (coursGrp, classe, groupe,...)
+        if (!isset($form['TOUS']))
+            $notification['type'] = 'eleves';
+        }
     }
-}
-
 
 // ----------- enregistrement effectif de la notification
 // $listeNotifId parce que la fonction peut renvoyer les $notifId pour plusieurs élèves
 // ------------------------------------------------------------------------------
-$listeNotifId = $Thot->enregistrerNotification($notification, $acronyme);
+$listeNotifId = $Thot->saveNotification($notification, $type, $acronyme);
+
 $texte[] = sprintf('%d annonce(s) enregistrée(s)', count($listeNotifId));
+
+
+// **************** détermination de la liste des élèves concernés par l'annonce
+// rappel: les annonces à école, niveau et matière ne permettent pas l'envoi de mail
+// et de demande d'accusé de lecture => wtf
+switch ($type) {
+    case 'eleves':
+        $listeEleves = array_flip($form['membres']);
+        break;
+    case 'classes':
+        $listeEleves = $Ecole->listeElevesClasse($form['destinataire']);
+        break;
+    case 'coursGrp':
+        $listeEleves = $Ecole->listeElevesCours($form['destinataire']);
+        break;
+    case 'groupe':
+        $listeEleves = Null;  // prévoir la procédure pour les groupes arbitraires
+        break;
+    default:
+        // wtf
+        // pas de liste particulière pour les autres types
+        break;
+}
 
 // ------------------------------------------------------------------------------
 // ok pour la notification en BD, passons éventuellement à l'envoi de mail

@@ -18,6 +18,7 @@ if (isset($_SESSION[APPLICATION])) {
 	}
 session_destroy();
 header('Location: ./accueil.php?message=logout');
+exit; 
 ?>
 
 <!DOCTYPE html>

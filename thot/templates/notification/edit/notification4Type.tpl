@@ -31,7 +31,7 @@
 		<td style="width:20%;">
 			<span class="destinataire">
 				{if $uneNote.type == 'eleves'}
-				{$uneNote.destinataire.nom} {$uneNote.destinataire.prenom} {$uneNote.destinataire.groupe}
+				{$uneNote.nom} {$uneNote.prenom} {$uneNote.groupe}
 				{else}
 				{$uneNote.destinataire}
 				{/if}

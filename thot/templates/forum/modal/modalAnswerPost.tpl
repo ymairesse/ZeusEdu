@@ -16,7 +16,10 @@
             <div class="modal-body">
                 {if isset($postAncien.from)}
                 <label for="texteAncien">{$postAncien.from} écrivait</label>
-                <textarea name="texteAncien" id="texteAncien" class="form-control" rows="3" style="height:5em; overflow:auto" readonly>{$postAncien.post}</textarea>
+                <div style="height:5em; overflow:auto; border: 1px solid #aaa; background-color: #eee; padding: 0.5em; margin-bottom :1em;">
+                    {$postAncien.post}
+                </div>
+
                 {/if}
                 <form id="formModalAnswer">
                     <label for="myPost">
@@ -50,6 +53,29 @@
         $('#resetNewPost').click(function() {
             $('#myPost').val('');
         })
+
+        $('#myPost').summernote({
+            lang: 'fr-FR', // default: 'en-US'
+            height: null, // set editor height
+            minHeight: 150, // set minimum height of editor
+            focus: true, // set focus to editable area after initializing summernote
+            styleTags: [
+               'p',
+                   { title: 'Blockquote', tag: 'blockquote', className: 'blockquote', value: 'blockquote' },
+                   'pre', 'h1', 'h2'
+               ],
+            toolbar: [
+              ['style', ['style']],
+              ['font', ['bold', 'underline', 'italic', 'clear']],
+              ['font', ['strikethrough', 'superscript', 'subscript']],
+              ['color', ['color']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['table', ['table']],
+              ['insert', ['link', 'picture', 'video']],
+              ['view', ['fullscreen', 'codeview', 'help']],
+            ],
+            maximumImageFileSize: 524288,
+        });
 
         $('#formModalAnswer').validate({
             rules: {

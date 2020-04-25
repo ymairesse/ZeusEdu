@@ -1,6 +1,7 @@
 <div class="container-fluid">
 
 	<h2>Historique et Annonces</h2>
+
 		{* les différents onglets pour les différents destinataires possibles *}
 		<ul class="nav nav-tabs">
 
@@ -15,7 +16,7 @@
 
 			{* un onglet supplémentaire pour l'éditeur d'annonces *}
 			<li class="pull-right">
-				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-bullhorn fa-lg"></i> Nouvelle annonce</a>
+				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-edit"></i> Éditeur d'annonces</a>
 			</li>
 		</ul>
 
@@ -28,6 +29,10 @@
 						{assign var=liste value=$listeNotifications.$type}
 						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 0} in active{/if}">
 						{include file="notification/edit/notification4Type.tpl"}
+						</div>
+						{else}
+						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 0} in active{/if}">
+						<p class="avertissement">Aucune annonce de ce type</p>
 						</div>
 					{/if}
 				{/if}
@@ -56,10 +61,6 @@
 {include file="notification/modal/modalDelete.tpl"}
 
 <!-- .......................................................................... -->
-<!-- .....formulaire modal pour l'édition  d'une notification               ..  -->
-<!-- .......................................................................... -->
-{* include file="notification/modal/modalEdit.tpl" *}
-<!-- .......................................................................... -->
 <!-- .....formulaire modal pour l'édition  des PJ (ajout/suppr)             ..  -->
 <!-- .......................................................................... -->
 {include file="files/modal/modalTreeView.tpl"}
@@ -73,14 +74,12 @@
 	function resetForm(){
 		$('#texte').summernote('enable');
 		$('#texte').summernote('code', '');
-		$('#objet').val('');
 	}
 
 	function reset(){
 		$('#texte').summernote('enable');
 		$('#texte').summernote('code', '');
-		// CKEDITOR.instances.texte.setReadOnly(false);
-		// CKEDITOR.instances.texte.setData('');
+
 		var ajd = moment().format('DD/MM/YYYY');
 		var dans1mois = moment().add(1, 'months').format('DD/MM/YYYY');
 		$('#objet').val('');
@@ -96,8 +95,7 @@
 		$('#selecteur select').prop('disabled', false);
 		$('#type').val('').trigger('change');
 		$('.sousType').addClass('hidden');
-		$('#submitNotif').attr('data-sent', 'false').removeClass('btn-lightBlue').addClass('btn-primary');
-		$('#submitNotif').html('<i class="fa fa-paper-plane"></i> Envoyer');
+		$('#dateEnvoi').addClass('hidden').html('');
 	}
 
 	$(document).ready(function() {
@@ -119,50 +117,14 @@
 			$('body').removeClass('wait');
 		});
 
-		// enregistrement et envoi d'une annonce
-		$('#ficheEleve').on('click', '#submitNotif', function(){
-			var sent = $(this).attr('data-sent');
-			if (sent == 'true') {
-				reset();
-			}
-			else {
-				var texteAnnonce = $('#texte').summernote('code');
-				$('#notification #texte').val(texteAnnonce);
-				if ($('#notification').valid()) {
-					var formulaire = $('#notification').serialize();
-					var matricule = $('#matricule').val();
-					var tous = $('#cbTous').prop('checked');  // la case à cocher "TOUS"
-					// en cas d'édition, le matricule est connu => c'est le cas d'un élève isolé
-					// en cas de nouvel enregistrement et que la case à cocher cbTous n'est pas cochée
-					// ou qu'elle est undefined, c'est le cas d'un élève isolé
-					var type = ((matricule != '') || tous == false)  ? 'eleves' : $('#type').val();
-					$.post('inc/notif/saveNotification.inc.php', {
-						formulaire: formulaire
-					}, function(resultat){
-						bootbox.alert({
-							title: 'Envoi d\'une annonce',
-							message: resultat
-						});
-
-						// raffraîchissement de l'historique des notifications pour ce type
-						$.post('inc/notif/refreshNotifications.inc.php', {
-							type: type
-						}, function(resultat){
-							$('#tabs-'+type).html(resultat);
-							// ne pas compter l'entête ni le pied du tableau => -2
-							var lignes = $('#tabs-'+type+' table tr').length -2;
-							$(".badge[data-type='"+type+"']").text(lignes);
-						});
-
-						// réinitialisation de l'éditeur et des satellites
-						$('#notification input[type=checkbox], #notification input[type=text]').prop('readOnly', true);
-						$('#texte').summernote('disable');
-						// CKEDITOR.instances.texte.setReadOnly(true);
-						$('#submitNotif').removeClass('btn-primary').addClass('btn-lightBlue').attr('data-sent', 'true');
-						$('#submitNotif').html('<i class="fa fa-paper-plane"></i> Nouvelle annonce');
-					})
-				}
-			}
+		$('#ficheEleve').on('click', '#btn-raz', function(){
+			$('#choixEleves').addClass('hidden');
+			$('#submitNotif').attr('disabled', true);
+			$('#texte').summernote('code', '');
+			$('#objet').val('');
+			$('#type').val('').trigger('change');
+			$('#dateEnvoi').addClass('hidden').html('');
+			$('#selecteurVertical select').attr('disabled', false)
 		})
 
 		$('#ficheEleve').on('click', '#reset', function(){
@@ -186,77 +148,172 @@
 			})
 		})
 
+		// enregistrement et envoi d'une annonce
+		$('#ficheEleve').on('click', '#submitNotif', function(){
+			var texteAnnonce = $('#texte').summernote('code');
+			// attribuer le texte au formulaire "normal"
+			$('#notification #texte').val(texteAnnonce);
+			if ($('#notification').valid()) {
+				var formulaire = $('#notification').serialize();
+
+				// la case à cocher "TOUS"
+				var tous = $('#cbTous').prop('checked');
+
+				// #type est le sélecteur principal (école, cours, classe,...)
+				// var type = (tous == false) ? 'eleves' : $('#type').val();
+				var type = $('#leType').val();
+
+				$.post('inc/notif/saveNotification.inc.php', {
+					formulaire: formulaire,
+					type: type
+				}, function(resultat){
+					var maintenant = moment().format('dddd DD/MM/YYYY hh:mm:ss');
+					$('#dateEnvoi').removeClass('hidden').html('Envoyé le ' + maintenant);
+					bootbox.alert({
+						title: 'Envoi d\'une annonce',
+						message: resultat,
+						callback: function(){
+							// raffraîchissement de l'historique des notifications pour ce type
+							$.post('inc/notif/refreshNotifications.inc.php', {
+								type: type
+							}, function(resultat){
+								$('#tabs-'+type).html(resultat);
+								// ne pas compter l'entête ni le pied du tableau => -2
+								var lignes = $('#tabs-' + type + ' table tr').length -2;
+								$(".badge[data-type='" + type + "']").text(lignes);
+							});
+							// réactiver l'onglet du type
+							$('.onglet[href="#tabs-' + type + '"]').trigger('click');
+						}
+					});
+				})
+			}
+		})
+
+
+		// Toutes les fonctions du sélecteur à gauche vvvvvvvvvvvvvvvvvvvvvvvvvv
+
 		$('#ficheEleve').on('change', '#type', function(){
 			var type = $(this).val();
+			$('#typeNotif').val(type);
 			$('.sousType').addClass('hidden');
-			// $('#editorPanel, #choixEleves').addClass('hidden');
+			$('#choixEleves').html('');
+			// on remet à disabled pour être sûr
+			$('#submitNotif').attr('disabled', true);
+			// $('#leType').val(type);
+			// tous les champs non cachés sont "disabled"
 			$('#notification input[type!="hidden"]').prop('disabled', true);
+
 			switch (type) {
 				case 'ecole':
 					$('#divEcole').removeClass('hidden');
+					$('#leType').val(type);
 					$.post('inc/notif/noListeEleves.inc.php', {
 						destinataire: 'École'
 					}, function(resultat){
-						$('.cb').prop('checked', false);
-						$('#destinataire').val($('#tous').val());
+						// choixEleves revient avec l'avertissement qu'il n'y a pas de choix possible
 						$('#choixEleves').html(resultat).removeClass('hidden');
-						$('#tous').removeClass('hidden');
-						$('#notification input[type!="hidden"]').prop('disabled', false);
-						$('#mail, #accuse, #parent').prop('disabled', true);
-						$('#editorPanel').removeClass('hidden');
+
+						$('#mail, #accuse, #parent').prop('disabled', true).prop('checked', false);
+						// OK, on peut envoyer
+						$('#submitNotif').attr('disabled', false);
 					});
 					break;
 				case 'niveau':
 					$('#divNiveau').removeClass('hidden');
+					$('#choixEleves').html('').removeClass('hidden');
+					$('#mail, #accuse, #parent').prop('disabled', true).prop('checked', false);
 					$('#niveau4niveau').val('');
+					$('#leType').val(type);
 					break;
 				case 'classes':
 					$('#divClasse').removeClass('hidden');
-					$('#choixEleves').html('').removeClass('hidden');
+					$('#mail, #accuse, #parent').prop('disabled', false).prop('checked', false);
+					$('#niveau4classe').val('');
 					$('#classe').val('');
+					$('#leType').val(type);
 					break;
 				case 'cours':
 					$('#divMatiere').removeClass('hidden');
+					$('#mail, #accuse, #parent').prop('disabled', false).prop('checked', false);
+					$('#niveau4matiere').val('');
+					$('#matiere').val('');
+					$('#leType').val(type);
 					break;
 				case 'coursGrp':
 					$('#divCoursGrp').removeClass('hidden');
-					$('#choixEleves').html('').removeClass('hidden');
+					$('#mail, #accuse, #parent').prop('disabled', false).prop('checked', false);
+					$('#choixEleves').html('');
+					$('#leType').val(type);
+					break;
+				default:
+					$('#leType').val('');
 					break;
 			}
 		})
 
 		$('#ficheEleve').on('change', '#niveau4niveau', function(){
+			// var type = $('#type').val();
 			var niveau = $(this).val();
-			$('.cb').prop('checked', false);
-			$('#accuse').prop('disabled', false);
-			$('#notification input[type!="hidden"]').prop('disabled', false);
-			$('#mail, #parent').prop('disabled', true);
-			$('#accuse').prop('disabled', false);
-			$('#destinataire').val(niveau);
-			$('#editorPanel').removeClass('hidden');
-			$('#stringDestinataire').html(niveau + 'e année');
-			$('#choixEleves').removeClass('hidden');
+			if (niveau != '') {
+				$('.cb').prop('checked', false);
+				$('#accuse').prop('disabled', false);
+				$('#notification input[type!="hidden"]').prop('disabled', false);
+				$('#mail, #parent').prop('disabled', true);
+				$('#accuse').prop('disabled', false);
+				$('#destinataire').val(niveau);
+
+				// OK, on peut envoyer
+				$('#submitNotif').attr('disabled', false);
+
+				$.post('inc/notif/noListeEleves.inc.php', {
+					destinataire: 'Niveau '+niveau
+				}, function(resultat){
+					$('#choixEleves').html(resultat).removeClass('hidden');
+				})
+			}
+			else {
+				// ne pas envoyer
+				$('#submitNotif').attr('disabled', true);
+			}
 		})
 
 		$('#ficheEleve').on('change', '#niveau4classe', function(){
+			$('#choixEleves').html('').addClass('hidden');
+			// ne pas envoyer
+			$('#submitNotif').attr('disabled', true);
 			var niveau = $(this).val();
-			$.post('inc/notif/selectClasseNiveau.inc.php', {
-				niveau: niveau
-			}, function(resultat){
-				$('#divSelectClasse').html(resultat);
-				$('#classe').val('');
-				$('#choixEleves, #editorPanel').addClass('hidden');
-			})
+			if (niveau != '') {
+				$.post('inc/notif/selectClasseNiveau.inc.php', {
+					niveau: niveau
+				}, function(resultat){
+					$('#divSelectClasse').html(resultat);
+					$('#classe').val('');
+				})
+			}
+			else {
+				$('#choixEleves').html('').addClass('hidden');
+				// ne pas envoyer
+				$('#submitNotif').attr('disabled', true);
+			}
 		})
 
 		$('#ficheEleve').on('change', '#niveau4matiere', function(){
+			$('#choixEleves').html('').addClass('hidden');
+			// ne pas envoyer
+			$('#submitNotif').attr('disabled', true);
 			var niveau = $(this).val();
-			$.post('inc/notif/selectMatiereNiveau.inc.php', {
-				niveau: niveau
-			}, function(resultat){
-				$('#divSelectMatiere').html(resultat);
-				$('#choixEleves, #editorPanel').addClass('hidden');
-			});
+			if (niveau != '') {
+				$.post('inc/notif/selectMatiereNiveau.inc.php', {
+					niveau: niveau
+				}, function(resultat){
+					$('#divSelectMatiere').html(resultat);
+				});
+			}
+			else {
+				// ne pas envoyer
+				$('#submitNotif').attr('disabled', true);
+			}
 		})
 		$('#ficheEleve').on('change', '#matiere', function(){
 			var matiere = $(this).val();
@@ -264,9 +321,10 @@
 				$('#notification input[type!="hidden"]').prop('disabled', false);
 				$('.cb').prop('checked', false);
 				$('#accuse').prop('disabled', false);
-				$('#mail, #parent').prop('disabled', true);
-				$('#stringDestinataire').html(matiere);
-				$('#editorPanel').removeClass('hidden');
+				$('#mail, #parent').prop('disabled', false);
+				// OK, on peut envoyer
+				$('#submitNotif').attr('disabled', false);
+
 				$.post('inc/notif/noListeEleves.inc.php', {
 					destinataire: matiere
 				}, function(resultat){
@@ -275,48 +333,92 @@
 				});
 			}
 			else {
-				$('#choixEleves, #editorPanel').addClass('hidden');
+				// ne pas envoyer
+				$('#submitNotif').attr('disabled', true);
 			}
 		})
 
 		$('#ficheEleve').on('change', '#classe', function(){
 			var classe = $(this).val();
-			$.post('inc/notif/listeElevesClasse.inc.php', {
-				classe: classe
-			}, function(resultat){
-				$('#choixEleves').html(resultat).removeClass('hidden');
+			// var type = $('#type').val();
+			if (classe != '') {
 				$('.cb').prop('checked', false);
-				$('#destinataire').val(classe);
-				$('#notification input[type!="hidden"]').prop('disabled', false);
-				$('#editorPanel').removeClass('hidden');
-				$('#stringDestinataire').html(classe);
-			});
+				$('#accuse').prop('disabled', false);
+				$('#mail, #parent').prop('disabled', false);
+				// OK, on peut envoyer
+				$('#submitNotif').attr('disabled', false);
+				$.post('inc/notif/listeElevesClasse.inc.php', {
+					classe: classe
+				}, function(resultat){
+					$('#choixEleves').html(resultat).removeClass('hidden');
+					$('.cb').prop('checked', false);
+					$('#destinataire').val(classe);
+					$('#notification input[type!="hidden"]').prop('disabled', false);
+					$('#stringDestinataire').html(classe);
+				});
+			}
+			else {
+				$('#choixEleves').html('').addClass('hidden');
+				// ne pas envoyer
+				$('#submitNotif').attr('disabled', true);
+			}
 		})
 
 		$('#ficheEleve').on('change', '#selectCoursGrp', function(){
 			var coursGrp = $(this).val();
-			$.post('inc/notif/listeElevesCoursGrp.inc.php', {
-				coursGrp: coursGrp
-			}, function(resultat){
-				$('#choixEleves').html(resultat).removeClass('hidden');
+			if (coursGrp != '') {
 				$('.cb').prop('checked', false);
-				$('#destinataire').val(coursGrp);
-				$('#notification input[type!="hidden"]').prop('disabled', false);
-				$('#editorPanel').removeClass('hidden');
-				$('#stringDestinataire').html(coursGrp);
-			})
+				$('#accuse').prop('disabled', false);
+				$('#mail, #parent').prop('disabled', false);
+				// OK, on peut envoyer
+				$('#submitNotif').attr('disabled', false);
+				$.post('inc/notif/listeElevesCoursGrp.inc.php', {
+					coursGrp: coursGrp
+				}, function(resultat){
+					$('#choixEleves').html(resultat).removeClass('hidden');
+					$('.cb').prop('checked', false);
+					$('#destinataire').val(coursGrp);
+					$('#notification input[type!="hidden"]').prop('disabled', false);
+					// $('#editorPanel').removeClass('hidden');
+					$('#stringDestinataire').html(coursGrp);
+				})
+			}
+			else {
+				$('#choixEleves').html('').addClass('hidden');
+				// ne pas envoyer
+				$('#submitNotif').attr('disabled', true);
+			}
 		})
+
+		$('#ficheEleve').on('change', '#listeEleves .checkbox', function(){
+			var checkedCB = $('#listeEleves li.checkbox :checked').length;
+			var totalCB = $('#listeEleves li.checkbox').length;
+			if (checkedCB == totalCB) {
+				$('#cbTous').prop('checked', true);
+				var type = $('#type').val();
+				$('#leType').val(type);
+				}
+				else {
+					$('#cbTous').prop('checked', false);
+					$('#leType').val('eleves');
+				}
+		})
+
+		// Toutes les fonctions du sélecteur à gauche ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 		$('#ficheEleve').on('click', '.btnEdit', function(){
 			var id = $(this).data('id');
+			var type = $(this).data('type');
 			$.post('inc/notif/editNotification.inc.php', {
 				id: id
 			}, function(resultat){
 				$('#tabs-edit').html(resultat);
 				$('#onglet-edit').trigger('click');
 				$('#selecteur').addClass('hidden');
-				$('#editorPanel').removeClass('hidden');
 				$('#choixEleves').removeClass('hidden');
+				$('#submitNotif').attr('disabled', false);
+				$('#selecteurVertical select').attr('disabled', true)
 			})
 		})
 
@@ -420,12 +522,6 @@
                     $("#modalAccuses").modal('show');
                 });
         })
-
-		// si l'on clique sur un onglet, son numéro est retenu dans un input caché dont la "class" est 'onglet'
-        $(".nav-tabs li a").click(function() {
-            var ref = $(this).attr("href").split("-")[1];
-            $(".onglet").val(ref);
-        });
 
 	})
 </script>

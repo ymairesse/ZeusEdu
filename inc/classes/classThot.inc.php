@@ -157,15 +157,16 @@ class thot
      *  )
      *
      * @param array $post : informations provenant du formulaire ad-hoc
+     * @param string $type : ecole, niveau, coursGrp, cours,...
      * @param string $acronyme de l'utilisateur
      *
      * @return int $id : l'id de la notification qui vient d'être enregistrée dans la BD
      */
-    public function enregistrerNotification($post, $acronyme)
-    {
+    public function saveNotification($post, $type, $acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // est-ce une édition ($notifId existe) ou une nouvelle notification (Null) ?
         $notifId = isset($post['id']) ? $post['id'] : Null;
+        $type = isset($post['type']) ? $post['type'] : Null;;
 
         if ($notifId == Null) {
             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
@@ -183,12 +184,8 @@ class thot
 
         if ($notifId != Null)
             $requete->bindParam(':id', $notifId, PDO::PARAM_INT);
-        $type = $post['type'];
-        $requete->bindParam(':type', $type, PDO::PARAM_STR, 7);
+        $requete->bindParam(':type', $post['type'], PDO::PARAM_STR, 10);
 
-        $destinataire = $post['destinataire'];
-
-        $requete->bindParam(':destinataire', $post['destinataire'], PDO::PARAM_STR, 15);
         $requete->bindParam(':proprietaire', $acronyme, PDO::PARAM_STR, 7);
         $requete->bindParam(':objet', $post['objet'], PDO::PARAM_STR, 80);
         $requete->bindParam(':texte', $post['texte'], PDO::PARAM_STR);
@@ -196,48 +193,46 @@ class thot
         $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
         $dateFin = Application::dateMysql($post['dateFin']);
         $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
-        $mail = isset($post['mail']) ? 1 : 0;
-        $accuse = isset($post['accuse']) ? 1 : 0;
-        $freeze = isset($post['freeze']) ? 1 : 0;
-        $parent = isset($post['parent']) ? 1 : 0;
+        $mail = isset($post['mail']) ? $post['mail'] : 0;
+        $accuse = isset($post['accuse']) ? $post['accuse'] : 0;
+        $freeze = isset($post['freeze']) ? $post['freeze'] : 0;
+        $parent = isset($post['parent']) ? $post['parent'] : 0;
         $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
         $requete->bindParam(':accuse', $accuse, PDO::PARAM_INT);
         $requete->bindParam(':freeze', $freeze, PDO::PARAM_INT);
         $requete->bindParam(':parent', $parent, PDO::PARAM_INT);
 
-        $proprietaire = $acronyme;
-        $objet = $post['objet'];
-        $texte = $post['texte'];
-
-
         $listeNotifId = array();
 
-        // pour l'ensemble des élèves ou pour un niveau d'étude, ou quand il n'y a pas de sélection d'élèves ou quand c'est une édition
-        // il y aura un seul enregistrement dans la BD et ce sera un Update
-        if ((in_array($type, array('ecole', 'niveau', 'cours'))) || isset($post['TOUS']) || $notifId != Null) {
-            // un seul enregistrement pour tout le groupe (classe, cours, niveau, ecole)
-            $resultat = $requete->execute();
-            // $resultat = $connexion->exec($sql);
-            $notifId = ($notifId == Null) ? $connexion->lastInsertId() : $notifId;
+        if ($notifId != Null) {
+            // c'est une édition; il n'y a donc qu'un seul enregistrement à prévoir
             $destinataire = $post['destinataire'];
+            $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+            $resultat = $requete->execute();
             $listeNotifId[$destinataire] = $notifId;
             }
             else {
-            // sinon, cela peut encore être du type classe, coursGrp ou groupe
-            // et on peut éventuellement sélectionner seulement certains élèves
-            // vérifier qu'il y a bien au moins un élève sélectionné (la liste n'est pas vide)
-            if (!(isset($post['TOUS'])) && isset($post['membres'])) {
-                // un enregistrement pour chaque élève du groupe sélectionné
-                foreach ($post['membres'] as $matricule) {
-                    $requete->bindParam(':destinataire', $matricule, PDO::PARAM_STR, 15);
-                    $resultat = $requete->execute();
-                    $notifId = $connexion->lastInsertId();
-                    $listeNotifId[$matricule] = $notifId;
+                // c'est pour un ou plusieurs nouveaux enregistrements
+                if (($type == 'eleves') && isset($post['membres'])) {
+                    // il est possible qu'il y ait plusieurs enreigstrements
+                    foreach ($post['membres'] as $matricule){
+                        $requete->bindParam(':destinataire', $matricule, PDO::PARAM_STR, 15);
+                        $resultat = $requete->execute();
+                        $notifId = $connexion->lastInsertId();
+                        $listeNotifId[$matricule] = $notifId;
+                        }
+                    }
+                    else {
+                        // nouvel enregistrement unique pour une cible unique
+                        $destinataire = $post['destinataire'];
+                        $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+                        $resultat = $requete->execute();
+                        $notifId = $connexion->lastInsertId();
+                        $listeNotifId[$destinataire] = $notifId;
                     }
                 }
-            }
 
-        Application::deconnexionPDO($connexion);
+        Application::DeconnexionPDO($connexion);
 
         return $listeNotifId;
     }
@@ -329,20 +324,23 @@ class thot
     /**
      * liste des notifications de l'utilisateur dont on fournit l'acronyme.
      *
-     * @param $acronyme
+     * @param string $acronyme
+     * @param string | Null $type
      *
      * @return array
      */
     public function listeUserNotification($acronyme, $unType=Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, type, objet, texte, dtn.destinataire, dateDebut, dateFin, mail, accuse, freeze, parent ';
+        $sql = 'SELECT id, type, objet, texte, dtn.destinataire, dateDebut, dateFin, ';
+        $sql .= 'mail, accuse, freeze, parent, nom, prenom, groupe ';
         $sql .= 'FROM '.PFX.'thotNotifications  AS dtn ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dtn.destinataire ';
         $sql .= 'WHERE proprietaire = :acronyme ';
         if ($unType != Null) {
             $sql .= 'AND type = :unType ';
         }
-        $sql .= 'ORDER BY dateDebut, destinataire ';
+        $sql .= 'ORDER BY dateEnvoi DESC, dateDebut, destinataire ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
@@ -366,21 +364,6 @@ class thot
             }
         }
         Application::deconnexionPDO($connexion);
-
-        // placement en type 'eleves' pour les notifications "cours" ou "classe" ou "groupe" à un élève ciblé
-        foreach ($liste as $leType => $lesNotifications) {
-            if ($leType == 'classes' || $leType == 'coursGrp' || $leType == 'groupe'){
-                foreach ($lesNotifications as $id => $uneNotification) {
-                    // le destinataire est-il un 'matricule' (numérique, donc)?
-                    if (preg_match('#^[\d\s]*$#', $uneNotification['destinataire'])) {
-                        $uneNotification['type'] = 'eleves';
-                        $uneNotification['matricule'] = $uneNotification['destinataire'];
-                        $liste['eleves'][$id] = $uneNotification;
-                        unset($liste[$leType][$id]);
-                    }
-                }
-            }
-        }
 
         // si un type a été précisé, on ne conserve que celui-là
         if ($unType != Null)

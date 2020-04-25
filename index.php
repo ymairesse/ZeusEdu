@@ -1,8 +1,9 @@
 <?php
 
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 require_once('config.inc.php');
 
@@ -19,13 +20,13 @@ require_once (INSTALL_DIR."/inc/classes/classChrono.inc.php");
 $chrono = new chrono();
 
 $user = isset($_SESSION[APPLICATION]) ? $_SESSION[APPLICATION] : Null;
-if (!(isset($user)))
-    header ("Location: accueil.php");
 
-if (!($user->accesApplication(APPLICATION))) {
-    header ("Location: accueil.php");
+if (!isset($user)) {
+// if (!isset($user) || !($user->accesApplication(APPLICATION))) {
+	header ("Location: accueil.php");
 	}
     else {
+
         require_once(INSTALL_DIR."/smarty/Smarty.class.php");
         $smarty = new Smarty();
         $smarty->assign('titre', TITREGENERAL);
@@ -51,12 +52,9 @@ if (!($user->accesApplication(APPLICATION))) {
 		if ($alias != '')
 			$alias = $alias->identite();
 			else $alias = Null;
-		$smarty->assign('alias', $alias['acronyme']);
-
-        // vérification des notifications pendantes...
-        $messages = $Application->listeMessages($user);
-        $smarty->assign('messages', $messages);
+		$smarty->assign('alias',$alias['acronyme']);
 
 		$smarty->assign('executionTime', round($chrono->stop(),6));
         $smarty->display('index.tpl');
         }
+?>

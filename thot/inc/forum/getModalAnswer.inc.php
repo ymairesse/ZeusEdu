@@ -32,6 +32,7 @@ $Forum = new ThotForum();
 if ($postId != 0) {
     // c'est une réponse à un post précédent
     $postAncien = $Forum->getInfoPost($idCategorie, $idSujet, $postId);
+    // $postAncien['post'] = strip_tags($postAncien['post'],'<a><b><i><u><span><iframe><img><table><tbody><tr><td><ul><li><br><p><strike><pre>');
     }
     else {
         // c'est un post à la racine

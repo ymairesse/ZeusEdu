@@ -6,14 +6,14 @@
     data-content="{$post.user}"
     data-container="body"
     data-placement="top">
-    
-    <button type="button" class="btn btn-primary btn-xs initiales" title="{$post.user}">
+
+    <button type="button" class="btn btn-primary btn-xs initiales" title="{$post.user}" style="float:left">
         {if $post.userStatus == 'prof'}<i class="fa fa-graduation-cap"></i>
         {else}<i class="fa fa-user"></i>
         {/if}
         {$post.initiales}
     </button>
-    
+
     {if $post.post != ''}
         {$post.post}
     {else}
@@ -71,5 +71,37 @@
             <i class="fa fa-flash"></i>
             </button>
         {/if}
+
+        {* Boutons Like vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv *}
+
+        <span class="fbReactions" data-postid="{$postId}">
+            <a class="FB_reactions"
+                data-reactions-type="horizontal"
+                data-postid="{$postId}"
+                data-idcategorie="{$post.idCategorie}"
+                data-idsujet="{$post.idSujet}"
+                data-unique-id="{$post.idCategorie}:{$post.idSujet}:{$postId}"
+                data-emoji-class="{$likes4user.$postId|default:''}">
+            	<span>{$likes4user.$postId|default:'J\'aime'}</span>
+            </a>
+        </span>
+        {* Statistiques Like *}
+        <span class="listeFBlikes"
+            data-postid="{$post.postId}"
+            data-toggle="tooltip"
+            data-unique-id="{$post.idCategorie}:{$post.idSujet}:{$post.postId}">
+
+            {if isset($FBstats.$postId)}
+
+               {assign var=stats value=$FBstats.$postId}
+
+                {include file="forum/singleLikeType.tpl"}
+
+            {/if}
+
+        {* Boutons Like ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ *}
+
+        </span>
+
      <span class="pull-right">{$post.ladate} - {$post.heure}</span>
 </div>

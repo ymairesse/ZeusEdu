@@ -61,7 +61,11 @@
 						<label for="name" class="control-label sr-only">Mot de passe</label>
 							<input type="password" id="mdp" name="mdp" class="form-control input-lg" placeholder="Mot de passe" value="{$mdp}" autocomplete="off">
 							<span class="help-group">Au moins 6 caractères</span>
-					   </div>
+					</div>
+
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" name="memory" {if $memory != Null}checked{/if}>Se souvenir de moi pendant 12h</label>
+					</div>
 
 					<br class="clearfix">
 						<div class="btn-group pull-right">

@@ -1,4 +1,8 @@
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+         // do this before the first CKEDITOR.replace( ... )
+         CKEDITOR.timestamp = 'something_random';
+ </script>
 
 <div class="panel day-highlight dh-{$event.classe}">
 

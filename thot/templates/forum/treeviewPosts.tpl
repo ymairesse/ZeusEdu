@@ -49,6 +49,12 @@
     $(document).ready(function(){
 
         $('.treeviewPost').treeview();
+
+        $('.FB_reactions').facebookReactions({
+            postUrl: 'inc/forum/saveLike.inc.php',
+            defaultText: "J'aime",
+            }
+        );
     })
 
 </script>

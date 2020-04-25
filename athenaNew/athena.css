@@ -1,0 +1,165 @@
+.cadreGauche {
+    border: 2px solid blue;
+    width: 44%;
+    float: left;
+    background-color: #dddddd;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-topright: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -moz-border-radius-bottomleft: 20px;
+  }
+
+.cadreDroit {
+    border: 2px solid red;
+    width: 44%;
+    float: right;
+    background-color: #dddddd;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-topright: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -moz-border-radius-bottomleft: 20px;
+  }
+
+.legendePhoto {
+	background-color: #aaa;
+	color:white;
+	padding: 5px 2px 5px 2px;
+	display: block;
+	}
+
+.photoEleve {
+    box-shadow: 1px 1px 12px #555;
+}
+
+#trombi {
+  margin: auto;
+  width: 80%;
+  list-style-type: none;
+}
+#trombi {
+  border:  none;
+}
+
+#accordion h3 {padding-left: 2em; margin-bottom: 0;}
+#accordion div ul li {list-style-type: none; }
+
+.inputDefault {font-style: italic; color: grey;}
+.inputNormal {font-style: normal; color: black;}
+
+.info {background-color: #ffd;
+    margin: 0.5em;
+    padding: 0.7em;
+    border:1px solid #555
+}
+
+fieldset p {
+	background-color: #eee;
+	padding: 0.5em;
+	margin:0}
+
+.microForm {
+	margin: 0;
+	padding: 0;
+}
+
+.noborder {
+	border: none;
+}
+
+.ui-tabs .infoMedic {
+    background: red;
+}
+
+
+th.rotate {
+  /* Something you can count on */
+  height: 140px;
+  white-space: nowrap;
+}
+
+th.rotate > div {
+  transform:
+    translate(5px, -5px)
+    rotate(315deg);
+  width: 30px;
+}
+th.rotate > div > span {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
+}
+
+.microform {
+    padding: 0;
+    }
+
+.confidentiel {
+    color: #888;
+}
+
+
+.mentionI {
+    background-color: #FEA2A0;
+}
+
+.mentionF {
+    background-color: #F7D29D;
+    color: black;
+}
+
+.mentionS {
+    background-color: #EBF79D;
+}
+
+.mentionAB {
+    background-color: #9DF7A1;
+}
+
+.mentionB {
+    background-color: #9EF8DB;
+    color: black;
+}
+
+.mentionBplus {
+    background-color: #26F8B6;
+    color: black
+}
+
+.mentionTB {
+    background-color: #7290E2;
+    color: white
+}
+
+.mentionTBplus {
+    background-color: #2558E2;
+    color: white
+}
+
+.mentionE {
+    background-color: #D2AAE6;
+}
+
+.urgence1 {
+    background: #faa;
+}
+
+.selected {
+    background: #F8DCA4;
+}
+
+#repertoire {
+    padding-top: 1em;
+}
+
+#repertoire .nav li a {
+    color: #f44;
+}
+
+#repertoire .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+    background: #fceabb; /* Old browsers */
+    background: -moz-linear-gradient(top, #fceabb 0%, #fccd4d 50%, #f8b500 51%, #fbdf93 100%);
+    background: -webkit-linear-gradient(top, #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%);
+    background: linear-gradient(to bottom, #fceabb 0%,#fccd4d 50%,#f8b500 51%,#fbdf93 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 )
+    font-weight: normal;
+    color: #666 !important;
+}

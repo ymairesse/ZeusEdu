@@ -741,6 +741,11 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
 .postForum {
     border: 1px solid #ddd;
     padding: 0 0.5em;
+    line-height: 1.3em;
+}
+
+.postForum p {
+    margin-bottom: 0.6em;
 }
 
 .postForum a {
@@ -756,4 +761,24 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
 .postForum.em8 {
     max-height:8em;
     overflow: auto;
+}
+
+.note-editable div, .postForum div {
+    padding-bottom: 0.8em;
+}
+
+#selecteurVertical .form-group, #selecteurVertical .panel {
+    margin: 0;
+}
+
+#selecteurVertical .panel-body {
+    background-color: #ddd;
+    padding: 0.5em;
+}
+
+#dateEnvoi {
+	color: red;
+	padding: .2em 0.5em;
+	border: 1px solid #e1dcdc;
+	background: #cdfb88;
 }

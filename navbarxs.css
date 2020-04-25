@@ -1,0 +1,14 @@
+.navbar-xs {
+	min-height:36px; height: 36px;
+	}
+.navbar-xs .navbar-brand {
+	padding: 0px 12px;
+	font-size: 16px;
+	line-height: 36px;
+	height: 44px;
+	}
+.navbar-xs .navbar-nav > li > a {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	line-height: 36px;
+	}

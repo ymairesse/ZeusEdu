@@ -6,18 +6,19 @@
 		<input type="hidden" name="matricule" id="matricule" value="{$notification.matricule|default:''}">
 		<input type="hidden" name="leType" id="leType" value="{$type|default:''}">
 
-		<div class="panel panel-default hidden" id="editorPanel">
+		<div class="panel panel-default" id="editorPanel">
 
 			<div class="panel-body">
 
 				<div class="row">
+					<p id="dateEnvoi" class="hidden"></p>
 					<div class="col-xs-8">
 						<input type="text" maxlength="80" name="objet" id="objet" placeholder="Objet de votre annonce" class="form-control" value="{$notification.objet|default:''}">
 					</div>
 					<div class="col-xs-4">
 						<div class="btn-group btn-group-justified">
 							<div class="btn-group">
-								<button type="button" class="btn btn-primary" id="submitNotif"><i class="fa fa-paper-plane"></i> Envoyer</button>
+								<button type="button" class="btn btn-primary" id="submitNotif" disabled><i class="fa fa-paper-plane"></i> Envoyer</button>
 							</div>
 							<div class="btn-group">
 								<button type="button" class="btn btn-default" id="reset"><i class="fa fa-refresh"></i> Annuler</button>
@@ -62,13 +63,13 @@
 					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 		        </div>
 
-				<div class="form-group col-md-2 col-xs-4">
+				{* <div class="form-group col-md-2 col-xs-4">
 					<label for="parents" title="Notification par mail aux parents (qui ont accepté ces envois)">Mail<br>Parents</label>
 					<input type="checkbox" name="parent" id="parent" class="form-control-inline cb" value="1"
 					{if (isset($notification.parents)) && ($notification.parents==1 )} checked{/if}
 					 {if isset($edition)} disabled{/if}>
 					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
-				</div>
+				{* }</div> *}
 
 				<div class="clearfix">
 				</div>
@@ -116,6 +117,17 @@
 			height: null, // set editor height
 			minHeight: 150, // set minimum height of editor
 			focus: true, // set focus to editable area after initializing summernote
+			toolbar: [
+              ['style', ['style']],
+              ['font', ['bold', 'underline', 'clear']],
+              ['font', ['strikethrough', 'superscript', 'subscript']],
+              ['fontname', ['fontname']],
+              ['color', ['color']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['table', ['table']],
+              ['insert', ['link', 'picture', 'video']],
+              ['view', ['fullscreen', 'codeview', 'help']],
+            ],
 		});
 
 

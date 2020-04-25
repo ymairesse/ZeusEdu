@@ -15,10 +15,10 @@ if (!(isset($_SESSION[APPLICATION]))) {
 
 if (isset($_SESSION)) {
     // définition de la class USER utilisée en variable de SESSION
-    // require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+  require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
     $User = $_SESSION[APPLICATION];
-    // retour de la session de l'administrateur, sauvegardée dans la variable de session
-    $_SESSION[APPLICATION] = $User->getAlias();
+  // retour de la session de l'administrateur, sauvegardée dans la variable de session
+  $_SESSION[APPLICATION] = $User->getAlias();
     $User = $_SESSION[APPLICATION];
 } else {
       $User = null;
@@ -30,6 +30,8 @@ if (isset($_SESSION)) {
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Déconnexion</title>
 	<link type="text/css" media="all" rel="stylesheet" href="screen.css">
+	<link type="text/css" media="screen" rel="stylesheet" href="js/blockUI.css">
+	<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 
 </head>
 <body>

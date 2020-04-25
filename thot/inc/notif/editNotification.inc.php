@@ -100,6 +100,9 @@ switch ($type) {
             }
             else $stringDestinataire = $notification['destinataire'];
         break;
+    case 'eleves':
+        $stringDestinataire = 'Un·e élève';
+        break;
     default:
         $stringDestinataire = 'wtf';
         break;

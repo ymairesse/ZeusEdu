@@ -1,3 +1,27 @@
+<style media="screen">
+    blockquote {
+        color: #333;
+        border-left: 5px solid #ccc;
+        font-size: 10pt;
+        padding: 10px;
+    }
+
+    h1 {
+    	color: #333;
+    	background-color: pink;
+    	text-align: left;
+        padding: 0.2em 0em 0.2em 0.5em;
+    }
+
+    h2 {
+    	color: #663;
+    	background-color: #b6b6f0 !important;
+    	background-image: unset;
+    	padding: 0.2em 0em 0.2em 1em;
+    }
+
+</style>
+
 <div class="container-fluid">
 
     <div class="row">
