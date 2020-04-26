@@ -202,12 +202,13 @@
 			$('#submitNotif').attr('disabled', true);
 			// $('#leType').val(type);
 			// tous les champs non cachés sont "disabled"
-			$('#notification input[type!="hidden"]').prop('disabled', true);
-
+			$('#notification input.cb').prop('disabled', true);
+			// $('#objet').prop('disabled', false);
 			switch (type) {
 				case 'ecole':
 					$('#divEcole').removeClass('hidden');
 					$('#leType').val(type);
+					$('#destinataire').val('ecole');
 					$.post('inc/notif/noListeEleves.inc.php', {
 						destinataire: 'École'
 					}, function(resultat){
