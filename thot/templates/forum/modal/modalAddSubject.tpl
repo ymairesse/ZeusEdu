@@ -23,7 +23,7 @@
               </div>
 
             <div class="checkbox">
-                <label><input type="checkbox" name="fbLike" id="fbLike" value="1" {if $fbLike == 1} checked{/if}>Bouton <img src="images/defaultFB.png" alt="like" style="width:28px;height:28px;"> sur ce sujet (les contributeurs peuvent "liker" les posts)</label>
+                <label><input type="checkbox" name="fbLike" id="fbLike" value="1" {if $fbLike|default:1 == 1} checked{/if}>Bouton <img src="images/defaultFB.png" alt="like" style="width:28px;height:28px;"> sur ce sujet (les contributeurs peuvent "liker" les posts)</label>
             </div>
 
               <div id="selecteurCible">
