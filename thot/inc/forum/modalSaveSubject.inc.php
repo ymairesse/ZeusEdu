@@ -26,6 +26,7 @@ parse_str($formulaire, $form);
 $idCategorie = isset($form['modalIdCategorie']) ? $form['modalIdCategorie'] : Null;
 $idSujet = isset($form['modalIdSujet']) ? $form['modalIdSujet'] : Null;
 $sujet = isset($form['modalSubject']) ? $form['modalSubject'] : Null;
+$fbLike = isset($form['fbLike']) ? $form['fbLike'] : 0;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
@@ -35,11 +36,11 @@ $categorie = $Forum->getInfoCategorie($idCategorie);
 
 if ($idSujet == Null) {
     // enregistrement du nouveau sujet
-    $idSujet = $Forum->saveSubject($idCategorie, $sujet, $acronyme);
+    $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme);
     }
     else {
         // modification du sujet existant
-        $idSujet = $Forum->saveSubject($idCategorie, $sujet, $acronyme, $idSujet);
+        $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $idSujet);
     }
 
 // enregistrement des accès pour ce sujet

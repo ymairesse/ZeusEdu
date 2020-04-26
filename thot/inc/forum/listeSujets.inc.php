@@ -25,10 +25,8 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new thotForum();
 
-// $listeSujets = $Forum->getSubjects4category($idCategorie);
-
-$sujetsAbonnes = $Forum->getSubjects4user($acronyme);
 $sujetsAmoi = $Forum->getSubject4proprio($acronyme);
+$sujetsAbonnes = $Forum->getSubjects4user($acronyme);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();

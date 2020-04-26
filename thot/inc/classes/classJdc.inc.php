@@ -440,17 +440,18 @@ class Jdc
             while ($ligne = $requete->fetch()) {
                 $type = $ligne['type'];
                 $destinataire = $ligne['destinataire'];
-                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
+                $lblDestinataire = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
                 $liste[] = array(
                     'id' => $ligne['id'],
                     'title' => $ligne['title'],
                     'enonce' => mb_strimwidth(strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
-                    'destinataire' => $destin,
+                    'type' => $ligne['type'],
+                    'destinataire' => $destinataire,
+                    'lblDestinataire' => $lblDestinataire,
                     'className' => 'cat_'.$ligne['idCategorie'],
                     'start' => $ligne['startDate'],
                     'end' => $ligne['endDate'],
                     'allDay' => ($ligne['allDay']!=0),
-                    'type' => $ligne['type'],
                     'editable' => ($ligne['proprietaire'] == $acronyme),
                     );
             }
@@ -847,8 +848,8 @@ class Jdc
 
         return $travail;
     }
-    
-    
+
+
     /**
      * retrouve les informations sur le RV de coaching dont on fournit l'identifiant
      *
@@ -1460,7 +1461,7 @@ class Jdc
 
         return $resultat;
     }
-    
+
     /**
      * renvoie les notes du JDC comprises entre la date "start" et la date "end"
      * en tenant compte des options d'impression pour les catégories d'événements
@@ -1879,7 +1880,7 @@ class Jdc
         );
             return $semaine[$jour];
     }
-    
+
 	 /**
 	 * recherche l'historique des cours pour l'élève $matricule
 	 *
@@ -1936,8 +1937,8 @@ class Jdc
 
 		return $liste;
 	}
-	
-	
+
+
     /**
      * retrouve les années scolaires de JDC archivées
      *

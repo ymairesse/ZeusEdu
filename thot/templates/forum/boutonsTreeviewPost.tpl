@@ -73,7 +73,7 @@
         {/if}
 
         {* Boutons Like vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv *}
-
+        {if $infoSujet.fbLike == 1}
         <span class="fbReactions" data-postid="{$postId}">
             <a class="FB_reactions"
                 data-reactions-type="horizontal"
@@ -98,7 +98,7 @@
                 {include file="forum/singleLikeType.tpl"}
 
             {/if}
-
+        {/if}
         {* Boutons Like ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ *}
 
         </span>

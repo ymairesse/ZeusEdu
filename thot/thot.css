@@ -763,6 +763,10 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
     overflow: auto;
 }
 
+.postForum button {
+    margin-right: 0.5em;
+}
+
 .note-editable div, .postForum div {
     padding-bottom: 0.8em;
 }

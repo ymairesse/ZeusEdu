@@ -6,7 +6,7 @@
         data-toggle="popover"
         data-postid="{$postId}"
         data-emoji="{$likeLevel}"
-        title="<img src='js/fbLike/emojis/{$likeLevel}.svg' height='24px'> {ucfirst($likeLevel)} <span class='badge badge-danger pull-right'>{$dataLike|@count}</span>"
+        title="<img src='js/fbLike/emojis/{$likeLevel}.svg' height='20px'> {ucfirst($likeLevel)} <span class='badge badge-danger pull-right'>{$dataLike|@count}</span>"
         data-html="true"
         data-placement="top"
         data-container="body"

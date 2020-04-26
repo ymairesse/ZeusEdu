@@ -28,6 +28,7 @@ require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new thotForum();
 
 $categorie = $Forum->getInfoCategorie($idCategorie);
+$infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
 
 require_once INSTALL_DIR.$ds.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -54,6 +55,7 @@ $smarty->assign('listeAbonnes', $listeAbonnes);
 $smarty->assign('categorie', $categorie);
 // le sujet dans sa catégorie
 $smarty->assign('idSujet', $idSujet);
-$smarty->assign('sujet', $sujet);
+$smarty->assign('sujet', $infoSujet['sujet']);
+$smarty->assign('fbLike', $infoSujet['fbLike']);
 
 $smarty->display('forum/modal/modalAddSubject.tpl');

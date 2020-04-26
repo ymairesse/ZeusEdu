@@ -29,6 +29,7 @@ $heure = isset($_POST['heure']) ? $_POST['heure'] : Null;
 if ($heure != Null) {
     $heure = $Jdc->heureLaPlusProche($heure);
 }
+
 $date = isset($_POST['date']) ? $_POST['date'] : Null;
 $type = isset($_POST['type']) ? $_POST['type'] : Null;
 $cible = isset($_POST['cible']) ? $_POST['cible'] : Null;
@@ -45,6 +46,7 @@ $travail = array(
     'type' => $type,
     'listePJ' => Null,
     );
+
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();

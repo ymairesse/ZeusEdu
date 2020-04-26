@@ -32,7 +32,6 @@ if ($id != Null) {
         die('Cette note au JDC ne vous appartient pas');
 
     $travail = $Jdc->getTravail($id);
-    // $travail['listePJ'] = $Jdc->getPJ($id);
     $pjFiles = $Jdc->getPJ($id);
 
     $destinataire = $travail['destinataire'];
@@ -40,7 +39,6 @@ if ($id != Null) {
     if ($type == 'coursGrp')
         $infos = $User->listeCoursProf();
         else $infos = Null;
-    $lblDestinataire = $Jdc->getLabel($type, $destinataire, $infos);
 
     $ds = DIRECTORY_SEPARATOR;
     require_once INSTALL_DIR.$ds.'widgets/fileTree/inc/classes/class.Treeview.php';
@@ -49,6 +47,9 @@ if ($id != Null) {
     $smarty = new Smarty();
     $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
     $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
+
+    $lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, $type, $destinataire);
+    $smarty->assign('lblDestinataire', $lblDestinataire);
 
     $smarty->assign('INSTALL_DIR', INSTALL_DIR);
 

@@ -17,6 +17,7 @@
                     <i class="fa fa-user fa-2x pull-left"></i>
                 {/if}
                 <strong>[{$unSujet.libelle}]</strong> - {$unSujet.sujet}<br>{$unSujet.nomProf} le {$unSujet.ladate} à {$unSujet.heure}
+                {if $unSujet.fbLike == 1} <i class="fa fa-thumbs-o-up" title="Like autorisé"></i>{/if}
             </button>
 
     {/foreach}

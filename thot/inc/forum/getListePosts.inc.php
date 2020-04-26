@@ -26,13 +26,13 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new thotForum();
 
+$infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
+
 $listePosts = $Forum->getPosts4subject($idCategorie, $idSujet);
 
 $FBstats = $Forum->getFBstats4subject($idCategorie, $idSujet);
 
 $likes4user = $Forum->getLikesOnSubject4user($acronyme, $idCategorie, $idSujet);
-
-$infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
@@ -43,8 +43,9 @@ $smarty->assign('idCategorie', $idCategorie);
 $smarty->assign('idSujet', $idSujet);
 
 $smarty->assign('listePosts', $listePosts);
-$smarty->assign('likes4user', $likes4user);
 $smarty->assign('infoSujet', $infoSujet);
+
+$smarty->assign('likes4user', $likes4user);
 $smarty->assign('FBstats', $FBstats);
 
 $smarty->assign('acronyme', $acronyme);

@@ -22,6 +22,10 @@
                   <span class="help-block">Thème de ce nouveau sujet (80 caractères max)</span>
               </div>
 
+            <div class="checkbox">
+                <label><input type="checkbox" name="fbLike" id="fbLike" value="1" {if $fbLike == 1} checked{/if}>Bouton <img src="images/defaultFB.png" alt="like" style="width:28px;height:28px;"> sur ce sujet (les contributeurs peuvent "liker" les posts)</label>
+            </div>
+
               <div id="selecteurCible">
                 {if $categorie.userStatus == 'eleves'}
                     {include file="forum/modal/selectProfsEleves.tpl"}
