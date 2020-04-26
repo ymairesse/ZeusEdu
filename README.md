@@ -16,63 +16,6 @@ Modifications importantes
 =========================
 Les mises à jour cruciales à réaliser dans la base de données ou dans des fichiers de portée générale
 
-2017-12-20 : mise à jour de /inc/classes/classApplication.inc.php (ajout de la fonction dateTimeFr($dateTime))
-
-2017-12-27 : ajout du champ "rédacteur" dans la table didac_thotJdc pour permettre la rédaction par les élèves
-
-2017-12-28 : ajout de la table didac_thotJdcLike
-
-2017-12-30 : mise à jour /screen.css
-
-2017-12-31 : modification de la classe Ecole
-
-2018-01-04: modification de la classe Athena
-
-2018-01-04 : ajout de la table didac_athenaDemandes
-
-2018-01-06 : modification de la table didac_adesFaits (valeurs NULL pour certains champs)
-
-2018-01-07 : ajout de la table didac_thotJdcEleves
-
-2018-02-15 : valeur par défaut du champ PJ de hermesArchives = Null, modification de la table didac_hermesArchives (ajout de deux champs: publie, dateFin)
-
-2018-02-25 : modification de la longueur du champ "acroDest" dans la table didac_hermesArchives (4 acronymes x 7 signes + les virgules)
-
-2018-03-04 : modification du type de champ pour le texte des messages Hermes => mediumBlob au lieu de Blob
-
-2018-05-23 : ajout de la table didac_thotJDCTypes
-
-2018-06-02 : ajout de la table didac_thotJdcPJ : pièces jointes au JDC
-
-2018-08-07 : ajout du type "groupe" dans didac_thotNotifications (champ "type")
-
-2018-08-23 : suppression des champs "url", "start" et "end" de la table didac_thotJdc
-
-2018-08-23 : ajout du type "coursGrp" dans didac_thotJdc (le type "cours" peut être gardé temporairement)
-
-2018-09-01 : ajout de deux fonctions dans la class classEcole.inc.php
-
-2018-09-01 : ajout de la table didac_adesRetards dans la BD
-
-2018-09-01 : mise à jour de la class Eleve (inc/classes/classEleve.inc.php)
-
-2018-09-08 : ajustement des sections possibles dans la table didac_titus (changement de "G" -> "GT")
-
-2018-09-09 : suppresion de la clef primaire multiple sur didac_thotShares et ajout de la clef primaire sur shareId
-
-2018-09-22 : ajout du champ "lastModif" à la table didac_thotJdc
-
-2018-11-12 : ajout de la table didac_thotFratrie pour permettre un seul login par famille
-
-2018-11-23 : ajout de la table didac_thotJdcEleve et suppression de didac_thotJdcEleves
-
-2018-12-25 : ajout des champs "echec" et "total" à la table didac_statutCours
-
-2018-12-26 : ajout des tables nécessaires à la gestion des EBS, gestion des EBS dans Athena
-
-2018-12-27 : ajout de la table educsClasses pour les éducateurs référents
-
-2019-05-07: ajout de la table coursPrincipaux pour le bloc note coordinateur
 
 Installation
 ============
@@ -101,3 +44,14 @@ L'installation sur le serveur web et l'initialisation de la base de données son
  - Ajouter l'application dans l'admin générale
  - Activer l'application pour les utilisateurs dans l'admin générale
  - Créer l'application ;o)
+
+Licence
+=======
+
+Copyright 2005-2020 <COPYRIGHT Yves Mairesse ymairesse@sio2.be>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
