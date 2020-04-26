@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <form name="editJdc" id="editJdc" class="form-vertical">
 
     <div class="row">
@@ -115,7 +113,7 @@
 
     <div class="form-group">
         <label for="enonce" class="sr-only">Texte</label>
-        <textarea name="enonce" id="enonce" class="form-control ckeditor" rows="4" cols="40" placeholder="Votre texte ici">{$travail.enonce|default:''}</textarea>
+        <textarea name="enonce" id="enonce" class="summernote form-control" placeholder="Votre texte ici">{$travail.enonce|default:''}</textarea>
     </div>
 
     {* ------------------------------------------------------------------------------*}
@@ -189,16 +187,77 @@ jQuery.validator.addMethod(
 
 $(document).ready(function(){
 
-    CKEDITOR.replace('enonce');
+    $('#enonce').summernote({
+        lang: 'fr-FR', // default: 'en-US'
+        height: null, // set editor height
+        minHeight: 250, // set minimum height of editor
+        focus: true, // set focus to editable area after initializing summernote
+        styleTags: [
+           'p',
+               { title: 'Blockquote', tag: 'blockquote', className: 'blockquote', value: 'blockquote' },
+               'pre', 'h1', 'h2'
+           ],
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'italic', 'clear']],
+          ['font', ['strikethrough', 'superscript', 'subscript']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']],
+        ],
+        maximumImageFileSize: 524288,
+        callbacks: {
+            onChange: function(contents, $editable) {
+                $('#enonce').val(contents);
+            }
+        }
+    });
+
+
+
+    // $('#editJdc').validate({
+    //     ignore: ":hidden:not(#summernote),.note-editable.panel-body",
+    // 	highlight: function( label ) {
+    // 		$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+    // 	},
+    // 	success: function( label ) {
+    // 		$(label).closest('.form-group').removeClass('has-error');
+    // 		label.remove();
+    // 	},
+    // 	errorPlacement: function( error, element ) {
+    // 		var placement = element.closest('.input-group');
+    // 		if (!placement.get(0)) {
+    // 			placement = element;
+    // 		}
+    // 		if (error.text() !== '') {
+    // 			if( placement.attr('id') == 'enonce' ) {
+    // 				placement.next().after(error);
+    // 			} else {
+    // 				placement.after(error);
+    // 			}
+    // 		}
+    // 	}
+    // })
 
     $("#editJdc").validate({
+        // pour faire valider aussi le champ caché "textarea" couvert par Summernote
+        ignore: [],
+        errorPlacement: function( error, element ) {
+            var placement = element.closest('.input-group');
+            if (!placement.get(0)) {
+                placement = element;
+            }
+            if (error.text() !== '') {
+                if (element.hasClass("summernote")) {
+                    error.insertAfter(element.siblings(".note-editor"));
+                } else {
+                    error.insertAfter(element);
+                    }
+                }
+            },
         rules: {
-            categorie: {
-                required: true
-                },
-            destinataire: {
-                required: true
-                  },
             date: {
                 required: true,
                 uneDate: true
@@ -214,8 +273,12 @@ $(document).ready(function(){
                 required: true
                 },
             enonce: {
-                required: true
-                }
+                required: true,
+                minlength: 20
+            }
+        },
+        messages: {
+            enonce: 'Un texte significatif svp.'
         }
     });
 

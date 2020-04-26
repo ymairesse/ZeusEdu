@@ -130,10 +130,12 @@
         })
 
         $('#editeur').on('click', '#saveJDC', function(){
+            var enonce = $('#enonce').val();
+            $('#editJdc #enonce').val(enonce);
+
 	        if ($('#editJdc').valid()) {
 	            var formulaire = $('#editJdc').serialize();
-	            // récupérer le contenu du CKEDITOR
-	            var enonce = CKEDITOR.instances.enonce.getData();
+
 	            $.post('inc/jdc/saveJdc.inc.php', {
 	                formulaire: formulaire,
 	                enonce: enonce

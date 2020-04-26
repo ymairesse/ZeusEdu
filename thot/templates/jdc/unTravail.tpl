@@ -1,3 +1,4 @@
+
 <div class="panel day-highlight dh-{$travail.class}">
 
     <span id="delClass"></span>
@@ -14,6 +15,7 @@
                 {elseif $travail.type == 'eleve'}
                 <i class="fa fa-user" title="Un-e élève"></i>
             {/if}
+         {$lblDestinataire}
         </span></h3>
     </div>
 

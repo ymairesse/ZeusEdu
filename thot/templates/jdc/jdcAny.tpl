@@ -28,7 +28,6 @@
 				{if isset($travail)}
 					{include file='jdc/jdcEdit.tpl'}
 				{else}
-				xxxx
 					<p class="avertissement">Veuillez sélectionner un item dans le calendrier
 					{if $editable == 1}
 					<br>ou cliquer dans une zone libre pour rédiger une nouvelle note.
@@ -94,10 +93,12 @@
 		});
 
 		$('#editeur').on('click', '#saveJDC', function(){
+			var enonce = $('#enonce').val();
+			$('#editJdc #enonce').val(enonce);
+
 	        if ($('#editJdc').valid()) {
 	            var formulaire = $('#editJdc').serialize();
-	            // récupérer le contenu du CKEDITOR
-	            var enonce = CKEDITOR.instances.enonce.getData();
+
 	            $.post('inc/jdc/saveJdc.inc.php', {
 	                formulaire: formulaire,
 	                enonce: enonce
@@ -215,7 +216,7 @@
 			],
 			eventRender: function(event, element, view) {
 				element.popover({
-					title: event.destinataire,
+					title: event.lblDestinataire,
 					content: event.enonce,
 					template: popTemplate,
 					html: true,
@@ -226,6 +227,7 @@
 					container: "#calendar"
 				});
 				element.attr('data-type', event.type);
+				element.attr('date-lbldestinataire', event.lblDestinataire);
 			},
 			viewRender: function(view, element) {
 				$('.popover').hide();
@@ -233,12 +235,12 @@
 			// on clique sur un événement
 			eventClick: function (calEvent, jsEvent, view) {
 				var debut = moment(calEvent.start);
-                var today = moment().format('YYYY-MM-DD');
+				var today = moment().format('YYYY-MM-DD');
+				var lblDestinataire = calEvent.lblDestinataire;
 				var unlockedPast = $('#unlocked').val();
 				var locked = (debut.isBefore(today) && (unlockedPast == "false")) ;
 				popoverElement = $(jsEvent.currentTarget);
 				var id = calEvent.id; // l'id de l'événement
-				console.log(id);
 				$.post('inc/jdc/getTravail.inc.php', {
 					id: id,
 					editable: editable,
@@ -276,7 +278,7 @@
 							date: date,
 							heure: heure,
 							type: type,
-							cible: cible,
+							destinataire: cible,
 							lblDestinataire: lblDestinataire
 							},
 							function(resultat){
@@ -362,6 +364,23 @@
 					$("#modalDel").modal('show');
 				}
 			)
+		})
+
+		$('#zoneDel').on('click', '#btn-modalDel', function(){
+			var id = $('#id').val();
+			$.post('inc/jdc/delJdc.inc.php', {
+				id: id
+			}, function(resultat){
+				if (resultat > 0) {
+					$('#unTravail').load('templates/jdc/selectItem.html');
+					bootbox.alert({
+						message: "Événement supprimé",
+						size: 'small'
+					});
+				}
+				$('#calendar').fullCalendar('refetchEvents');
+				$('#modalDel').modal('hide');
+			})
 		})
 
 		// modification d'une note au JDC
