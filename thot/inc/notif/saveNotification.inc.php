@@ -44,7 +44,6 @@ if ($form['id'] != '') {
 else {
     // toutes les informations viennent du formulaire
     $notification = $form;
-    $type = $form['type'];
     // les types suivants ne permettent pas le choix d'élèves; on va vérifier
     // si l'on se trouve dans ce cas de figure
     $typeSansChoix = array('ecole', 'niveau', 'cours', 'eleves');
@@ -63,7 +62,6 @@ else {
 $listeNotifId = $Thot->saveNotification($notification, $type, $acronyme);
 
 $texte[] = sprintf('%d annonce(s) enregistrée(s)', count($listeNotifId));
-
 
 // **************** détermination de la liste des élèves concernés par l'annonce
 // rappel: les annonces à école, niveau et matière ne permettent pas l'envoi de mail
