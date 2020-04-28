@@ -33,6 +33,35 @@
 </div>
 
 <script type="text/javascript">
+
+    function sendFile(file, el) {
+        var form_data = new FormData();
+        form_data.append('file', file);
+        $.ajax({
+            data: form_data,
+            type: "POST",
+            url: 'editor-upload.php',
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                $(el).summernote('editor.insertImage', url);
+            }
+        });
+    }
+
+    function deleteFile(src) {
+        $.ajax({
+            data: { src : src },
+            type: "POST",
+            url: 'inc/deleteImage.inc.php',
+            cache: false,
+            success: function(resultat) {
+                console.log(resultat);
+                }
+        } );
+    }
+
     $(document).ready(function() {
 
         $('#resetNewPost').click(function() {
@@ -40,10 +69,10 @@
         })
 
         $('#myPost').summernote({
-			lang: 'fr-FR', // default: 'en-US'
-			height: null, // set editor height
-			minHeight: 150, // set minimum height of editor
-			focus: true, // set focus to editable area after initializing summernote
+            lang: 'fr-FR', // default: 'en-US'
+            height: null, // set editor height
+            minHeight: 150, // set minimum height of editor
+            focus: true, // set focus to editable area after initializing summernote
             styleTags: [
                'p',
                    { title: 'Blockquote', tag: 'blockquote', className: 'blockquote', value: 'blockquote' },
@@ -51,16 +80,29 @@
                ],
             toolbar: [
               ['style', ['style']],
-              ['font', ['bold', 'underline', 'italic', 'clear']],
+              ['font', ['bold', 'underline', 'clear']],
               ['font', ['strikethrough', 'superscript', 'subscript']],
+              ['fontname', ['fontname']],
               ['color', ['color']],
               ['para', ['ul', 'ol', 'paragraph']],
               ['table', ['table']],
               ['insert', ['link', 'picture', 'video']],
               ['view', ['fullscreen', 'codeview', 'help']],
             ],
-            maximumImageFileSize: 524288
-		});
+            maximumImageFileSize: 2097152,
+            dialogsInBody: true,
+            callbacks: {
+                onImageUpload: function(files, editor, welEditable) {
+                    for (var i = files.length - 1; i >= 0; i--) {
+                        sendFile(files[i], this);
+                    }
+                },
+                onMediaDelete : function(target) {
+                    console.log(target[0].src);
+                    deleteFile(target[0].src);
+                }
+            }
+        });
 
         $('#formModalModify').validate({
             rules: {

@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../../config.inc.php';
+require_once '../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
@@ -17,15 +17,14 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$module = $Application->getModule(3);
+$module = $Application->getModule(2);
 
-$idSujet = isset($_POST['idSujet']) ? $_POST['idSujet'] : null;
-$idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : null;
+$pathAndFile = array_reverse(explode('/', $_POST['src']));
+
+$fileName = $pathAndFile[0];
+$acronyme = $pathAndFile[1];
+$path = $pathAndFile[2];
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
-$Forum = new thotForum();
 
-$n = $Forum->delSubject($idSujet, $idCategorie);
-
-echo $n;
+unlink(INSTALL_DIR.$ds.$module.$ds.$path.$ds.$acronyme.$ds.$fileName);

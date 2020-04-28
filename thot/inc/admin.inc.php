@@ -7,6 +7,10 @@ require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
 
 switch ($mode) {
+    case 'gestGroupes':
+        require_once 'inc/groupes/gestGroupes.php';
+        break;
+
     case 'bulletin':
         require_once 'inc/gestBulletins.inc.php';
         break;

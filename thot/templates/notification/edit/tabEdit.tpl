@@ -11,7 +11,7 @@
 			<div class="form-group" id="divType">
 				<label for="type" class="sr-only">Cible</label>
 				<select class="form-control" name="type" id="type">
-					<option value="">Choisir</option>
+					<option value="">Choisir le/les destinataire(s)</option>
 					{foreach from=$selectTypes key=leType item=dataType}
 					{if ($dataType.droits == Null) || in_array($userStatus, $dataType.droits)}
 						<option value="{$leType}">{$dataType.texte}</option>

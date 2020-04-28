@@ -56,7 +56,7 @@
 				</div>
 
 				<div class="form-group col-md-2 col-xs-4">
-		            <label for="freeze" title="Notification permanente, n'est pas effacée après la date finale">Perma-<br>nent</label>
+		            <label for="freeze" title="Notification permanente, reste disponible pour vous après la date de fin">Perma-<br>nent</label>
 		            <input type="checkbox" name="freeze" id="freeze" class="form-control-inline cb" value="1"
 		            {if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
 					{if isset($edition)} disabled{/if}>
@@ -110,6 +110,22 @@
 
 <script type="text/javascript">
 
+	function sendFile(file, el) {
+		var form_data = new FormData();
+		form_data.append('file', file);
+		$.ajax({
+			data: form_data,
+			type: "POST",
+			url: 'editor-upload.php',
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function(url) {
+				$(el).summernote('editor.insertImage', url);
+			}
+		});
+	}
+
 	$(document).ready(function() {
 
 		$('#texte').summernote({
@@ -128,6 +144,15 @@
               ['insert', ['link', 'picture', 'video']],
               ['view', ['fullscreen', 'codeview', 'help']],
             ],
+			maximumImageFileSize: 2097152,
+			dialogsInBody: true,
+			callbacks: {
+				onImageUpload: function(files, editor, welEditable) {
+					for (var i = files.length - 1; i >= 0; i--) {
+						sendFile(files[i], this);
+					}
+				}
+			}
 		});
 
 

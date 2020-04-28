@@ -26,7 +26,8 @@
 				</ul>
 			</li>
 
-			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe
+			<li class="dropdown">
+				<a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe
 				<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $listeCours != Null}
@@ -45,12 +46,22 @@
 				</ul>
 			</li>
 
+			{if !empty($titulaire)}
+			<li class="dropdown">
+				<a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Titulaire
+				<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li>
+						<a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a>
+					</li>
+				</ul>
+			</li>
+			{/if}
+
+
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=admin&amp;mode=modele">Modèle de semaine</a></li>
-					{if !empty($titulaire)}
-					<li><a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a></li>
-					{/if}
 					<li><a href="index.php?action=admin&amp;mode=gestGroupes">Gestion des groupes</a></li>
 				</ul>
 			</li>

@@ -438,6 +438,7 @@ class ThotForum
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'DELETE FROM '.PFX.'thotForumsPosts ';
         $sql .= 'WHERE idSujet = :idSujet AND idCategorie = :idCategorie ';
+
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);

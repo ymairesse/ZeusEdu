@@ -15,8 +15,8 @@
 			{/foreach}
 
 			{* un onglet supplémentaire pour l'éditeur d'annonces *}
-			<li class="pull-right">
-				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-edit"></i> Éditeur d'annonces</a>
+			<li class="pull-right onglet">
+				<a data-toggle="tab"  data-type="editeur" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-edit"></i> Éditeur d'annonces</a>
 			</li>
 		</ul>
 
