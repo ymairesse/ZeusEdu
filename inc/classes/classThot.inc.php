@@ -2959,7 +2959,28 @@ class thot
      * @return array
      *
      */
-    public function getListeGroupes ($acronyme) {
-        return Null;
+    public function getListeProprioGroupes ($acronyme) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT nomGroupe, intitule, description, type, proprio, maxMembres ';
+        $sql .= 'FROM '.PFX.'groupes ';
+        $sql .= 'WHERE proprio = :acronyme ';
+        $sql .= 'ORDER BY intitule ';
+        $requete = $connexion->prepare ($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $nomGroupe = $ligne['nomGroupe'];
+                $liste[$nomGroupe] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
     }
 }
