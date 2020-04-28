@@ -207,6 +207,7 @@ class thot
         if ($notifId != Null) {
             // c'est une édition; il n'y a donc qu'un seul enregistrement à prévoir
             $destinataire = $post['destinataire'];
+
             $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
             $resultat = $requete->execute();
             $listeNotifId[$destinataire] = $notifId;
@@ -1089,30 +1090,35 @@ class thot
      *
      * @return array
      */
-    public function listeParents($listeClasses)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $liste = array();
-        foreach ($listeClasses as $uneClasse) {
-            $sql = 'SELECT dtp.matricule, de.nom AS nomEleve, de.prenom AS prenomEleve, lien, dtp.nom, dtp.prenom, dtp.mail ';
-            $sql .= 'FROM '.PFX.'thotParents AS dtp ';
-            $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
-            $sql .= "WHERE dtp.matricule IN (SELECT matricule FROM didac_eleves WHERE groupe LIKE '$uneClasse') ";
-            $sql .= 'ORDER BY de.nom, de.prenom ';
+     public function listeParents($listeClasses)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-            $resultat = $connexion->query($sql);
-            if ($resultat) {
-                $resultat->setFetchMode(PDO::FETCH_ASSOC);
-                while ($ligne = $resultat->fetch()) {
-                    $matricule = $ligne['matricule'];
-                    $liste[$uneClasse][$matricule][] = $ligne;
-                }
-            }
-        }
-        Application::deconnexionPDO($connexion);
+         foreach ($listeClasses as $uneClasse) {
+             $sql = 'SELECT dtp.matricule, de.nom AS nomEleve, de.prenom AS prenomEleve, lien, dtp.nom, dtp.prenom, dtp.mail ';
+             $sql .= 'FROM '.PFX.'thotParents AS dtp ';
+             $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
+             $sql .= 'WHERE dtp.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe LIKE :uneClasse) ';
+             $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(de.nom," ",""),"-",""),"\'",""), de.prenom ';
+             $requete = $connexion->prepare($sql);
 
-        return $liste;
-    }
+             $requete->bindParam(':uneClasse', $uneClasse, PDO::PARAM_STR, 6);
+
+             $resultat = $requete->execute();;
+
+ 			$liste = array();
+             if ($resultat) {
+                 $requete->setFetchMode(PDO::FETCH_ASSOC);
+                 while ($ligne = $requete->fetch()) {
+                     $matricule = $ligne['matricule'];
+                     $liste[$uneClasse][$matricule][] = $ligne;
+                 }
+             }
+         }
+         Application::deconnexionPDO($connexion);
+
+         return $liste;
+     }
 
     /**
      * renvoie la liste des parents non inscrits sur la plate-forme pour la liste des classes donnée
