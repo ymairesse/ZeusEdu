@@ -52,6 +52,8 @@ class athena
         $matricule = $post['matricule'];
         $date = Application::dateMySql($post['date']);
         $heure = $post['heure'];
+        $duree = $post['duree'];
+        $jdc = $post['jdc'];
         $absent = isset($post['absent']) ? 1 : 0;
         $envoyePar = isset($post['envoyePar'])?$post['envoyePar']:$post['professeur'];
         $motif = $post['motif'];
@@ -64,21 +66,31 @@ class athena
         if ($id != null) {
             // c'est une mise à jour d'une visite précédente
             $sql = 'UPDATE '.PFX.'athena ';
-            $sql .= "SET matricule=:matricule, proprietaire=:proprietaire, date='$date', heure='$heure', absent='$absent', prive='$prive', ";
-            $sql .= 'envoyePar=:envoyePar, motif=:motif, traitement=:traitement,  aSuivre=:aSuivre, anneeScolaire=:anneeScolaire ';
-            $sql .= "WHERE id='$id' ";
+            $sql .= 'SET matricule = :matricule, proprietaire = :proprietaire, date = :date, heure = :heure, duree = :duree, ';
+            $sql .= 'jdc = :jdc, absent = :absent, prive= :prive, ';
+            $sql .= 'envoyePar = :envoyePar, motif = :motif, traitement = :traitement,  aSuivre=:aSuivre, anneeScolaire=:anneeScolaire, lastModif = NOW() ';
+            $sql .= 'WHERE id = :id ';
             $requete = $connexion->prepare($sql);
         } else {
             // c'est une nouvelle visite
             $sql = 'INSERT INTO '.PFX.'athena ';
-            $sql .= "SET matricule=:matricule, proprietaire=:proprietaire, date='$date', heure='$heure', absent='$absent', prive='$prive', ";
-            $sql .= 'envoyePar=:envoyePar, motif=:motif, traitement=:traitement, aSuivre=:aSuivre, anneeScolaire=:anneeScolaire ';
+            $sql .= 'SET matricule=:matricule, proprietaire=:proprietaire, date = :date, heure = :heure, duree = :duree, ';
+            $sql .= 'jdc = :jdc, absent = :absent, prive = :prive, ';
+            $sql .= 'envoyePar = :envoyePar, motif = :motif, traitement = :traitement, aSuivre = :aSuivre, anneeScolaire = :anneeScolaire, lastModif = NOW() ';
             $requete = $connexion->prepare($sql);
         }
 
+        if ($id != Null)
+            $requete->bindParam(':id', $id, PDO::PARAM_INT);
         $requete->bindParam(':proprietaire', $proprietaire, PDO::PARAM_STR, 7);
         $requete->bindParam(':envoyePar', $envoyePar, PDO::PARAM_STR, 7);
         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+        $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
+        $requete->bindParam(':absent', $absent, PDO::PARAM_INT);
+        $requete->bindParam(':duree', $duree, PDO::PARAM_INT);
+        $requete->bindParam(':jdc', $jdc, PDO::PARAM_INT);
+        $requete->bindParam(':prive', $prive, PDO::PARAM_INT);
         $requete->bindParam(':motif', $motif, PDO::PARAM_STR);
         $requete->bindParam(':traitement', $traitement, PDO::PARAM_STR);
         $requete->bindParam(':aSuivre', $aSuivre, PDO::PARAM_STR);
@@ -89,13 +101,20 @@ class athena
         // les ajouts d'élèves sont toujours considérés comme de nouvelles visites
         if (isset($post['elevesPlus'])) {
             $sql = 'INSERT INTO '.PFX.'athena ';
-            $sql .= "SET matricule=:matricule, proprietaire=:proprietaire, date='$date', heure='$heure', absent='$absent', prive='$prive', ";
-            $sql .= 'envoyePar=:envoyePar, motif=:motif, traitement=:traitement, aSuivre=:aSuivre, anneeScolaire=:anneeScolaire ';
+            $sql .= 'SET matricule = :matricule, proprietaire = :proprietaire, date = :date, heure = :heure, duree = :duree, ';
+            $sql .= 'jdc = :jdc, absent = :absent, prive = :prive, ';
+            $sql .= 'envoyePar = :envoyePar, motif = :motif, traitement = :traitement, aSuivre = :aSuivre, anneeScolaire = :anneeScolaire ';
             $requete = $connexion->prepare($sql);
 
             $requete->bindParam(':proprietaire', $proprietaire, PDO::PARAM_STR, 7);
             $requete->bindParam(':envoyePar', $envoyePar, PDO::PARAM_STR, 7);
             $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+            $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
+            $requete->bindParam(':absent', $absent, PDO::PARAM_INT);
+            $requete->bindParam(':duree', $duree, PDO::PARAM_INT);
+            $requete->bindParam(':jdc', $jdc, PDO::PARAM_INT);
+            $requete->bindParam(':prive', $prive, PDO::PARAM_INT);
             $requete->bindParam(':motif', $motif, PDO::PARAM_STR);
             $requete->bindParam(':traitement', $traitement, PDO::PARAM_STR);
             $requete->bindParam(':aSuivre', $aSuivre, PDO::PARAM_STR);
@@ -119,31 +138,35 @@ class athena
      *
      * @return array
      */
-    public function getSuiviEleve($matricule)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, proprietaire, matricule, date, heure, envoyePar, motif, traitement, prive, aSuivre, absent ';
-        $sql .= 'FROM '.PFX.'athena ';
-        $sql .= "WHERE matricule = '$matricule' AND proprietaire != '' ";
-        $sql .= 'ORDER BY date DESC, heure DESC ';
+     public function getSuiviEleve($matricule)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT id, proprietaire, matricule, date, heure, envoyePar, motif, traitement, ';
+         $sql .= 'prive, aSuivre, absent, duree, jdc ';
+         $sql .= 'FROM '.PFX.'athena ';
+         $sql .= 'WHERE matricule = :matricule AND proprietaire != "" ';
+         $sql .= 'ORDER BY date DESC, heure DESC ';
+         $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
-        $liste = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $id = $ligne['id'];
-                $ligne['date'] = Application::datePHP($ligne['date']);
-                $ligne['motif'] = htmlspecialchars($ligne['motif']);
-                $ligne['traitement'] = htmlspecialchars($ligne['traitement']);
-                $ligne['aSuivre'] = htmlspecialchars($ligne['aSuivre']);
-                $liste[$id] = $ligne;
-            }
-        }
-        Application::DeconnexionPDO($connexion);
+ 		$requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
 
-        return $liste;
-    }
+         $resultat = $requete->execute();
+         $liste = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $id = $ligne['id'];
+                 $ligne['date'] = Application::datePHP($ligne['date']);
+                 $ligne['motif'] = htmlspecialchars($ligne['motif']);
+                 $ligne['traitement'] = htmlspecialchars($ligne['traitement']);
+                 $ligne['aSuivre'] = htmlspecialchars($ligne['aSuivre']);
+                 $liste[$id] = $ligne;
+             }
+         }
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
 
     /**
      * retourne les détails du contenu d'une visite d'élève à un suivi.
@@ -156,14 +179,19 @@ class athena
     public function getDetailsSuivi($id, $proprietaire)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, proprietaire, matricule, date, heure, envoyePar, motif, traitement, prive, aSuivre, absent ';
+        $sql = 'SELECT id, proprietaire, matricule, date, heure, duree, envoyePar, motif, traitement, prive, aSuivre, absent, jdc ';
         $sql .= 'FROM '.PFX.'athena ';
-        $sql .= "WHERE id='$id' AND proprietaire='$proprietaire' ";
-        $resultat = $connexion->query($sql);
+        $sql .= 'WHERE id = :id AND proprietaire = :proprietaire ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':proprietaire', $proprietaire, PDO::PARAM_STR, 7);
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
         $visite = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $visite = $resultat->fetch();
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $visite = $requete->fetch();
             $visite['date'] = Application::datePHP($visite['date']);
         }
         Application::DeconnexionPDO($connexion);
@@ -208,7 +236,8 @@ class athena
          $listeConsultations = array();
          if ($dateDebut && $dateFin) {
              $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-             $sql = 'SELECT id, '.PFX.'athena.matricule, date, heure, nom, prenom, classe, motif, traitement, aSuivre, absent ';
+             $sql = 'SELECT id, '.PFX.'athena.matricule, date, heure, nom, prenom, ';
+             $sql .= 'classe, motif, traitement, aSuivre, absent, jdc ';
              $sql .= 'FROM '.PFX.'athena AS at ';
              $sql .= 'JOIN '.PFX.'eleves AS de ON (de.matricule = at.matricule) ';
              $sql .= "WHERE ((date >= '$dateDebut') AND (date <= '$dateFin')) ";
