@@ -276,30 +276,35 @@ CREATE TABLE IF NOT EXISTS `didac_educsClasses` (
   PRIMARY KEY (`acronyme`,`groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Classes en charge des éducateurs';
 
+--
+-- Structure de la table `didac_athena`
+--
 CREATE TABLE `didac_athena` (
-    `id` int(11) NOT NULL,
-    `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
-    `matricule` int(11) NOT NULL,
-    `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
-    `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire au format XXXX-XXXX',
-    `date` date NOT NULL,
-    `heure` time NOT NULL,
-    `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
-    `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
-    `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
-    `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
-    `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire',
-    `lastModif` datetime DEFAULT NULL COMMENT 'Date du dernier enregistrement'
+  `id` int(11) NOT NULL,
+  `absent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève ne s''est pas présenté',
+  `matricule` int(11) NOT NULL,
+  `proprietaire` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'référence du référent',
+  `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Année scolaire au format XXXX-XXXX',
+  `date` date NOT NULL,
+  `heure` time NOT NULL,
+  `duree` smallint(6) NOT NULL DEFAULT '50' COMMENT 'Durée en minutes prévue pour l''entrevue 	',
+  `envoyePar` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT 'qui envoie l''élève au suivi scolaire',
+  `motif` blob NOT NULL COMMENT 'Motif de l''envoi au suivi scolaire',
+  `traitement` blob NOT NULL COMMENT 'Traitement proposé à l''élève',
+  `prive` tinyint(1) NOT NULL COMMENT 'L''information est privée',
+  `aSuivre` blob NOT NULL COMMENT 'Suivi nécessaire',
+  `jdc` tinyint(1) NOT NULL DEFAULT '0' COMMENT ' Le RV est-il publié dans le JDC de l''élève ',
+  `lastModif` datetime DEFAULT NULL COMMENT 'Date du dernier enregistrement'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
- ALTER TABLE `didac_athena`
-   ADD PRIMARY KEY (`id`),
-   ADD KEY `date` (`date`),
-   ADD KEY `matricule` (`matricule`);
+ALTER TABLE `didac_athena`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `date` (`date`),
+  ADD KEY `matricule` (`matricule`);
 
- ALTER TABLE `didac_athena`
-   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
+ALTER TABLE `didac_athena`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT
 
 CREATE TABLE `didac_athenaDemandes` (
  `id` int(11) NOT NULL COMMENT 'Identifiant dans la table didac_athena',
@@ -1947,31 +1952,26 @@ ALTER TABLE `didac_thotAgendasContenu`
 ALTER TABLE `didac_thotAgendasContenu`
   MODIFY `idPost` int(6) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la note dans l''agenda';
 
-
 CREATE TABLE `didac_thotAgendaCategories` (
     `idCategorie` tinyint(4) NOT NULL,
     `ordre` tinyint(2) NOT NULL DEFAULT '0',
     `classe` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
     `categorie` varchar(30) COLLATE utf8_unicode_ci NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des mentions au journal de classe';
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des mentions au journal de classe';
 
+   INSERT INTO `didac_thotAgendaCategories` (`idCategorie`, `ordre`, `classe`, `categorie`) VALUES
+  (1, 1, 'cat_1', 'Sortie en soirée'),
+  (2, 2, 'cat_2', 'Sortie en journée'),
+  (3, 3, 'cat_3', 'Journée d\'action'),
+  (4, 4, 'cat_4', 'Stage'),
+  (5, 5, 'cat_5', 'Animation'),
+  (6, 6, 'cat_6', 'Retraite');
 
-ALTER TABLE `didac_thotAgendaCategories`
+  ALTER TABLE `didac_thotAgendaCategories`
     ADD PRIMARY KEY (`idCategorie`);
 
-ALTER TABLE `didac_thotAgendaCategories`
-    MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT;
-
---
--- Contenu de la table `didac_thotAgendaCategories`
---
-INSERT INTO `didac_thotAgendaCategories` (`idCategorie`, `ordre`, `classe`, `categorie`) VALUES
-(1, 1, 'cat_1', 'Sortie en soirée'),
-(2, 2, 'cat_2', 'Sortie en journée'),
-(3, 3, 'cat_3', 'Journée d\'action'),
-(4, 4, 'cat_4', 'Stage'),
-(5, 5, 'cat_5', 'Animation'),
-(6, 6, 'cat_6', 'Retraite');
+  ALTER TABLE `didac_thotAgendaCategories`
+    MODIFY `idCategorie` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Structure de la table `didac_thotAgendaPartages`
