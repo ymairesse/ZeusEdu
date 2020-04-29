@@ -166,7 +166,7 @@ class thot
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // est-ce une édition ($notifId existe) ou une nouvelle notification (Null) ?
         $notifId = isset($post['id']) ? $post['id'] : Null;
-        $type = isset($post['type']) ? $post['type'] : Null;;
+        // $type = isset($post['type']) ? $post['type'] : Null;;
 
         if ($notifId == Null) {
             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
@@ -184,7 +184,7 @@ class thot
 
         if ($notifId != Null)
             $requete->bindParam(':id', $notifId, PDO::PARAM_INT);
-        $requete->bindParam(':type', $post['type'], PDO::PARAM_STR, 10);
+        $requete->bindParam(':type', $type, PDO::PARAM_STR, 10);
 
         $requete->bindParam(':proprietaire', $acronyme, PDO::PARAM_STR, 7);
         $requete->bindParam(':objet', $post['objet'], PDO::PARAM_STR, 80);
