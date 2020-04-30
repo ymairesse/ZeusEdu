@@ -166,7 +166,6 @@ class thot
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // est-ce une édition ($notifId existe) ou une nouvelle notification (Null) ?
         $notifId = isset($post['id']) ? $post['id'] : Null;
-        // $type = isset($post['type']) ? $post['type'] : Null;;
 
         if ($notifId == Null) {
             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
@@ -490,6 +489,7 @@ class thot
         if (!(is_array($listeNotifications))){
             $listeNotifications = array('type' => array($listeNotifications => 'wtf'));
         }
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT dtnp.shareId, path, fileName ';
         $sql .= 'FROM '.PFX.'thotNotifPJ AS dtnp ';
@@ -516,6 +516,40 @@ class thot
         }
 
         Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des PJ associées à chacune des notifications
+     * de la liste $listeNotifications passée
+     *
+     * @param array $listeNotifications
+     *
+     * @return array
+     */
+    public function getPJ4ListeNotifications($listeNotifications){
+        $listeNotifsString = implode(',', $listeNotifications);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT pj.shareId, notifId, dts.fileId, path, fileName ';
+        $sql .= 'FROM '.PFX.'thotNotifPJ AS pj ';
+        $sql .= 'JOIN '.PFX.'thotShares AS dts ON dts.shareId = pj.shareId ';
+        $sql .= 'JOIN '.PFX.'thotFiles AS dtf ON dtf.fileId = dts.fileId ';
+        $sql .= 'WHERE notifId IN ('.$listeNotifsString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $notifId = $ligne['notifId'];
+                $shareId = $ligne['shareId'];
+                $liste[$notifId][$shareId] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
 
         return $liste;
     }

@@ -28,8 +28,14 @@ require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 $type = isset($_POST['type']) ? $_POST['type'] : null;
 
 // lecture de toutes les notifications pour l'utilisateur courant
-// ecole => ... niveau => ... classes => ... cours => ... eleves => ...
+// mais seulement pour le type qui doit être rafraîchit
 $listeNotifications = $Thot->listeUserNotification($acronyme, $type);
+
+// liste des pièces jointes liées à toutes les notifications
+$listePJ = $Thot->getPJ4ListeNotifications(array_keys($listeNotifications));
+
+// liste des accusés de lecture demandés par l'utilisateur courant pour le type de destinataire
+$listeAccuses = $Thot->getAccuses4user($acronyme, $type);
 
 // liste des accusés de réception éventuellement attendus (liste d'élèves d'une classe, par exemple)
 $listeAttendus = array();
@@ -68,12 +74,6 @@ foreach ($listeNotifications as $notifId => $uneNotification) {
             }
         }
     }
-
-// liste des pièces jointes liées à ces notifications
-$listePJ = $Thot->getPj4Notifs($listeNotifications, $acronyme);
-
-// liste des accusés de lecture demandés par l'utilisateur courant pour le type de destinataire
-$listeAccuses = $Thot->getAccuses4user($acronyme, $type);
 
 require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
