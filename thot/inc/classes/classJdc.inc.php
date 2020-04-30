@@ -524,13 +524,13 @@ class Jdc
       *
       * @return array
       */
-      public function getEvents4Ecole($dateFrom, $dateTo, $acronyme){
+      public function getEvents4Ecole($dateFrom, $dateTo, $acronyme = Null){
           $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
           $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, title, enonce, class, allDay, startDate, endDate, allDay ';
           $sql .= 'FROM '.PFX.'thotJdc ';
           $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
           if ($acronyme != Null)
-            $sql .= 'AND acronyme = :acronyme ';
+            $sql .= 'AND proprietaire = :acronyme ';
           $sql .= "AND destinataire = 'all' ";
           $requete = $connexion->prepare($sql);
 

@@ -37,9 +37,9 @@ $niveau = substr($classe, 0, 1);
 
 $eventsListCours = $Jdc->getEvents4Cours($start, $end, $listeCoursEleve, Null);
 $eventsListEleve = $Jdc->getEvents4Eleve($start, $end, $matricule, Null);
-$eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, $acronyme);
-$eventsListNiveau = $Jdc->getEvents4Niveau($start, $end, $niveau, $acronyme);;
-$eventsListEcole = $Jdc->getEvents4Ecole($start, $end, $acronyme);
+$eventsListClasse = $Jdc->getEvents4Classe($start, $end, $classe, Null);
+$eventsListNiveau = $Jdc->getEvents4Niveau($start, $end, $niveau, Null);;
+$eventsListEcole = $Jdc->getEvents4Ecole($start, $end, Null);
 $listeRemediations = $Jdc->retreiveRemediations($start, $end, $matricule);
 $listeCoaching = $Jdc->retreiveCoaching($start, $end, $matricule);
 
