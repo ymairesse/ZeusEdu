@@ -5724,15 +5724,18 @@ class Bulletin
 
          $resultat = $connexion->query($sql);
          $listeCotes = array();
+         $n = 0;
          while ($ligne = $resultat->fetch()) {
              $matricule = $ligne['matricule'];
              $cours = $ligne['cours'];
              $idComp = $ligne['idComp'];
+             // Application::afficher(array($matricule, $cours, $idComp));
              $form = isset($ligne['form']) ? $this->sansVirg(trim($ligne['form'])) : null;
              $maxForm = isset($ligne['maxForm']) ? $this->sansVirg(trim($ligne['maxForm'])) : null;
              $cert = isset($ligne['cert']) ? $this->sansVirg(trim($ligne['cert'])) : null;
              $maxCert = isset($ligne['maxCert']) ? $this->sansVirg(trim($ligne['maxCert'])) : null;
-             if (isset($form)) {
+
+             if (($form != Null) && (is_numeric($form))) {
                  if (isset($listeCotes[$matricule][$cours][$idComp]['cote'])) {
                      $listeCotes[$matricule][$cours][$idComp]['cote'] += $form;
                  } else {
@@ -5744,7 +5747,7 @@ class Bulletin
                      $listeCotes[$matricule][$cours][$idComp]['max'] = $maxForm;
                  }
              }
-             if (isset($cert)) {
+             if (($cert != Null) && (is_numeric($cert))) {
                  if (isset($listeCotes[$matricule][$cours][$idComp]['cote'])) {
                      $listeCotes[$matricule][$cours][$idComp]['cote'] += $cert;
                  } else {
@@ -5756,6 +5759,7 @@ class Bulletin
                      $listeCotes[$matricule][$cours][$idComp]['max'] = $maxCert;
                  }
              }
+
          }
          Application::DeconnexionPDO($connexion);
 
