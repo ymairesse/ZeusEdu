@@ -35,8 +35,10 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new HTML2PDF('P', 'A4', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 $smarty->assign('listePeriodes', $Bulletin->listePeriodes(NBPERIODES));
 
@@ -103,6 +105,7 @@ if (!(file_exists($chemin))) {
 
 $html2pdf->Output($chemin.$ds.$nomFichier, 'F');
 $smarty->assign('nomFichier', $module.$ds.$nomFichier);
+$smarty->assign('classe', $classe);
 
 $link = $smarty->fetch('direction/lienDocument.tpl');
 echo $link;
