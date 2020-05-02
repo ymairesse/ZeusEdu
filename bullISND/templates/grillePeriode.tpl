@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 	<h2>Situations | classe: {$classe} | Période: {$bulletin}</h2>
 
@@ -27,6 +27,7 @@
 				</span>
 			</th>
 			{/foreach}
+			<th>Moyenne</th>
 			</tr>
 			{foreach from=$listeEleves key=matricule item=detailsEleve}
 			{assign var=nomPrenom value={$detailsEleve.nom|cat:" "|cat:$detailsEleve.prenom}}
@@ -65,6 +66,9 @@
 						<td class="cote">-</td>
 					{/if}
 				{/foreach}
+				<td style="text-align:center; font-weight:bold; border: 2px solid black;" class="mention{$moyennes[$matricule]['mention']}">
+					{$moyennes[$matricule]['cote']}
+				</td>
 
 			</tr>
 			{/foreach}

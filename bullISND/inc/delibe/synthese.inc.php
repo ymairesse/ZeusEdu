@@ -10,9 +10,12 @@ if (($etape == 'showCotes') && ($classe)) {
     $listeCoursGrpListeEleves = $Bulletin->listeCoursGrpEleves($listeEleves, $bulletin, true);
 
     $listeSituations100 = $Bulletin->getSituations100($bulletin, $listeEleves);
+    $moyennesSynthese = $Bulletin->getMoyennes($listeSituations100);
+
     $listeCours = $Ecole->listeCoursClassePourDelibe($classe);
 
     $smarty->assign('listeSituations100', $listeSituations100);
+    $smarty->assign('moyennes', $moyennesSynthese);
     $smarty->assign('listeCours', $listeCours);
     $smarty->assign('listeCoursGrpListeEleves',$listeCoursGrpListeEleves);
     $smarty->assign('listeEleves', $listeEleves);

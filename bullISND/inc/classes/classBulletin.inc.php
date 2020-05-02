@@ -86,7 +86,7 @@ class Bulletin
      * et il ne faut pas ouvrir la possibilité de mettre un poids pour la compétence correspondante.
      *
      * @param string $coursGrp : la dénomination du cours
-     * 
+     *
      * @return array : tableau des pondérations prévues pour chaque période, respectivement en formatif et en certificatif
      */
     public function sommesPonderations($coursGrp)
@@ -3891,6 +3891,32 @@ class Bulletin
         }
 
         return $listeSituations100;
+    }
+
+    /**
+     * retourne les moyennes par élèves pour la liste des situations par cours
+     * passée en argument
+     *
+     * @param array $listeSituations100
+     *
+     * @return array
+     */
+    public function getMoyennes($listeSituations100){
+        $listeMoyennes = array();
+        foreach ($listeSituations100 as $matricule => $data){
+            $n = 0;
+            $somme = 0;
+            foreach ($data as $cours => $detailsCours){
+                $sit100 = $detailsCours['sit100'];
+                $somme += $sit100;
+                $n++;
+            }
+            $moyenne = ($n > 0) ? round($somme / $n, 1) : '-';
+            $listeMoyennes[$matricule]['cote'] = $moyenne;
+            $listeMoyennes[$matricule]['mention'] = $this->calculeMention($moyenne);
+        }
+
+        return $listeMoyennes;
     }
 
     /*
