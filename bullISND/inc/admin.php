@@ -519,7 +519,7 @@ switch ($mode) {
         }
         // dans tous les cas, on montre le sélecteur de groupe/classe
         $listeTitus = $Ecole->listeTitus();
-        $listeClasses = $Ecole->listeGroupes(array('GT', 'TT', 'S', 'D'));
+        $listeClasses = $Ecole->listeGroupes();
         $smarty->assign('listeTitus', $listeTitus);
         $smarty->assign('listeClasses', $listeClasses);
 
