@@ -60,6 +60,9 @@ foreach ($Eleve as $key => $value) {
     $smarty->assign("$key", $value);
 }
 
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
 if ($idretenue != 0) {
     foreach ($infosRetenue as $key => $value) {
         $smarty->assign("$key", $value);
@@ -68,7 +71,6 @@ if ($idretenue != 0) {
     // chargement de la présentation du billet de retenue
     $format = json_decode(file_get_contents('../../templates/retenues/format.json'), true);
 
-    require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
     $orientation = ($format['orientation'] == 'portrait') ? 'P' : 'L';
     $page = ($format['page'] == 'A5') ? 'A5' : 'A4';
     $html2pdf = new HTML2PDF($orientation, $page, 'fr');
