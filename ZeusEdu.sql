@@ -304,7 +304,7 @@ ALTER TABLE `didac_athena`
 
 ALTER TABLE `didac_athena`
     MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT
+
 
 CREATE TABLE `didac_athenaDemandes` (
  `id` int(11) NOT NULL COMMENT 'Identifiant dans la table didac_athena',
@@ -534,7 +534,6 @@ ALTER TABLE `didac_bullCompetences`
 
 ALTER TABLE `didac_bullCompetences`
   MODIFY `id` int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide';
-COMMIT;
 
 
 CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
@@ -2039,8 +2038,8 @@ ALTER TABLE `didac_thotForumsAccess`
     ALTER TABLE `didac_thotForumsSujets`
       ADD PRIMARY KEY (`idCategorie`,`idSujet`);
 
-
-      MODIFY `idSujet` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du sujet';
+      ALTER TABLE `didac_thotForumsSujets`
+        MODIFY `idSujet` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du sujet';
 
 --
 -- Structure de la table `didac_thotForumsPosts`
