@@ -31,6 +31,13 @@
 
 
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
+
+	<button type="button"
+		class="btn pull-right {if $mentionsSelect != Null}btn-danger{else}btn-primary{/if}"
+		title="{if $mentionsSelect != Null}Mentions filtrées: {$mentionsSelect|implode:', '}{else}Aucun filtre{/if}"
+		id="filtre">
+		<i class="fa fa-filter"></i> Filtrer{if $mentionsSelect != Null} Période {$periodeSelect} [{$mentionsSelect|implode:', '}]{/if}</button>
+
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
 	{if isset($prevNext)}
@@ -40,6 +47,11 @@
 	<input type="hidden" name="etape" value="showEleve">
 	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
+
+
+</div>
+
+<div id="modal">
 </div>
 
 <script type="text/javascript">
@@ -54,6 +66,25 @@ $(document).ready (function() {
 			else return false;
 	})
 
+	$('#filtre').click(function(){
+		$.post('inc/delibe/modalFiltrer.inc.php', {
+		}, function(resultat){
+			$('#modal').html(resultat);
+			$('#modalFiltrer').modal('show');
+		})
+	})
+
+	$('#modal').on('click', '#activerFiltre', function(){
+		if ($('#formFiltre').valid()) {
+			var formulaire = $('#formFiltre').serialize();
+			$.post('inc/delibe/activerFiltre.inc.php', {
+				formulaire: formulaire
+			}, function(resultat){
+				$('#modalFiltrer').modal('hide');
+				 location.reload();
+			})
+		}
+	})
 
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante

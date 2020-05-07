@@ -7706,9 +7706,90 @@ class Bulletin
             }
 
         }
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+        Application::deconnexionPDO($connexion);
 
         return $liste;
+        }
+
+        /**
+         * recherche la liste des mentions attribuées en délibé durant l'année scolaire en cours
+         * sans tenir compte des "+" et des "-"
+         *
+         * @param string $anScol
+         *
+         * @return array
+         */
+        public function listeMentionsAnScol($anScol){
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT DISTINCT(mention) ';
+            $sql .= 'FROM '.PFX.'bullMentions ';
+            $sql .= 'WHERE anScol = :anScol ';
+            $sql .= 'ORDER BY LOWER(mention) DESC ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+
+            $liste = array();
+            $resultat = $requete->execute();
+            if ($resultat){
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                while ($ligne = $requete->fetch()){
+                    // on supprime les + et -
+                    $mention = trim($ligne['mention'],'+-');
+                    // si la mention n'est pas encore dans la liste
+                    if (!(in_array($mention, $liste)) && ($mention != ''))
+                        array_push($liste, trim($mention,'+-'));
+                }
+            }
+
+            Application::deconnexionPDO($connexion);
+
+            return $liste;
+        }
+
+        /**
+         * recherche dans la listes des élèves ceux qui ont acquis une des mentions de la liste
+         * durant la période choisie
+         *
+         * @param array $listeEleves : liste des matricules des élèves de la classe
+         * @param int $periode : la période choisie
+         * @param array $listeMentions : la liste des mentions recherchées
+         * @param string $anScol : l'année scolaire en cours
+         *
+         * @return array : la liste des matricules des élèves concernés
+         */
+        public function listeSelectDelibe($listeEleves, $periode, $listeMentions, $anScol){
+            $listeElevesString = implode(',', $listeEleves);
+            if ($listeMentions != Null)
+                $listeMentionsString = "'".implode("','", $listeMentions)."'";
+
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT matricule, mention ';
+            $sql .= 'FROM '.PFX.'bullMentions ';
+            $sql .= 'WHERE anscol = :anScol ';
+            if ($listeMentions != Null)
+                $sql .= 'AND REPLACE(mention,"+","") IN ('.$listeMentionsString.') ';
+            $sql .= 'AND periode = :periode ';
+            $sql .= 'AND matricule IN ('.$listeElevesString.') ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+            $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+
+            $liste = array();
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                while ($ligne = $requete->fetch()){
+                    $matricule = $ligne['matricule'];
+                    array_push($liste, $matricule);
+                }
+            }
+
+            Application::deconnexionPDO($connexion);
+
+            return $liste;
         }
 
 }

@@ -4,7 +4,11 @@
 	<option value="">Choisir un élève</option>
 	{if isset($listeEleves)}
 		{foreach from=$listeEleves key=leMatricule item=unEleve}
-		<option value="{$leMatricule}"{if isset($matricule) && ($leMatricule==$matricule)} selected{/if}>{$unEleve.nom} {$unEleve.prenom}</option>
+			<option value="{$leMatricule}"
+			{if isset($listeSelectionEleves) && ($listeSelectionEleves != Null)  && (!in_array($leMatricule, $listeSelectionEleves))} disabled{/if}
+			 {if isset($matricule) && ($leMatricule==$matricule)} selected{/if}>
+			 {$unEleve.nom} {$unEleve.prenom}
+		 	</option>
 		{/foreach}
 	{/if}
 </select>

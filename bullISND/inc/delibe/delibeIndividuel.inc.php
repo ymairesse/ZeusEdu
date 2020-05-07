@@ -1,11 +1,19 @@
 <?php
 
 $listeEleves = isset($classe)?$Ecole->listeEleves($classe,'groupe'):Null;
+
+$periodeSelect = isset($_COOKIE['periodeSelect']) ? $_COOKIE['periodeSelect'] : Null;
+$mentionsSelect = isset($_COOKIE['mentionsSelect']) ? $_COOKIE['mentionsSelect'] : Null;
+
+$smarty->assign('periodeSelect', $periodeSelect);
+$smarty->assign('mentionsSelect', $mentionsSelect);
+
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('bulletin', $bulletin);
 $smarty->assign('selecteur','selectClasseEleve');
 $smarty->assign('action','delibes');
 $smarty->assign('mode','individuel');
+
 switch ($etape) {
     case 'enregistrer':
         $nb = $Bulletin->enregistrerMentions($_POST);
@@ -17,6 +25,13 @@ switch ($etape) {
                             );
         // pas de break;
     case 'showEleve':
+        // présélection des élèves avec mentions pour la période choisie
+        // $periodeSelect = isset($_COOKIE['periodeSelect']) ? $_COOKIE['periodeSelect'] : Null;
+        // $mentionsSelect = isset($_COOKIE['mentionsSelect']) ? $_COOKIE['mentionsSelect'] : Null;
+        $listeSelectionEleves = $Bulletin->listeSelectDelibe(array_keys($listeEleves), $periodeSelect, $mentionsSelect, ANNEESCOLAIRE);
+        $smarty->assign('listeSelectionEleves', $listeSelectionEleves);
+
+
         $listeCoursEleve = current($Bulletin->listeCoursGrpEleves($matricule, $bulletin, true));
         // recension des situations dans les différents cours pour l'élève concerné
         $listeSituations = current($Bulletin->listeSituationsCours($matricule, array_keys($listeCoursEleve), null, true));
@@ -33,7 +48,7 @@ switch ($etape) {
 
         // recherche toutes les mentions effectivement attribuées par le Conseil de Classe, durant l'année scolaire en cours pour l'élève concerné
         $listeMentions = $Bulletin->listeMentions($matricule,Null,$annee,ANNEESCOLAIRE);
-        
+
         // recherche toutes les décisions prises en délibération, y compris les infos nécessaires à la notification de l'élève $matricule
         $decision = $Bulletin->listeDecisions($matricule);
         $decision = $decision[$matricule];
