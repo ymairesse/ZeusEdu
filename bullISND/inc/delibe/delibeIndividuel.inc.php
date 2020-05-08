@@ -1,12 +1,17 @@
 <?php
 
-$listeEleves = isset($classe)?$Ecole->listeEleves($classe,'groupe'):Null;
+$listeEleves = isset($classe) ? $Ecole->listeEleves($classe,'groupe') : Null;
 
+// cookies pour la gestion d'une sélection d'élèves seulement
 $periodeSelect = isset($_COOKIE['periodeSelect']) ? $_COOKIE['periodeSelect'] : Null;
 $mentionsSelect = isset($_COOKIE['mentionsSelect']) ? $_COOKIE['mentionsSelect'] : Null;
 
+// cookies pour la sélection de périodes non délibératoires issues de la feuille de synthèse par période
+$periodesSynthese = isset($_COOKIE['periodesSynthese']) ? $_COOKIE['periodesSynthese'] : Null;
+
 $smarty->assign('periodeSelect', $periodeSelect);
 $smarty->assign('mentionsSelect', $mentionsSelect);
+$smarty->assign('periodesSynthese', $periodesSynthese);
 
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('bulletin', $bulletin);
@@ -31,10 +36,17 @@ switch ($etape) {
         $listeSelectionEleves = $Bulletin->listeSelectDelibe(array_keys($listeEleves), $periodeSelect, $mentionsSelect, ANNEESCOLAIRE);
         $smarty->assign('listeSelectionEleves', $listeSelectionEleves);
 
-
         $listeCoursEleve = current($Bulletin->listeCoursGrpEleves($matricule, $bulletin, true));
         // recension des situations dans les différents cours pour l'élève concerné
         $listeSituations = current($Bulletin->listeSituationsCours($matricule, array_keys($listeCoursEleve), null, true));
+
+        $listesSyntheses = array();
+        if ($periodesSynthese != Null){
+            foreach ($periodesSynthese as $wtf => $periode) {
+                $listesSyntheses[$periode] = $Bulletin->getSituations100($periode, $matricule);
+            }
+        }
+        $smarty->assign('listesSyntheses', $listesSyntheses);
 
         // calcul de la moyenne des cotes de situation pour l'élève concerné pour les périodes avec délibération
         $listePeriodesDelibe = explode(',',str_replace(' ','',PERIODESDELIBES));

@@ -17,7 +17,7 @@
 
 				<div class="table-responsive">
 
-					<table class="table table-hover table-condensed">
+					<table class="table table-hover table-condensed" id="delibeIndividuel">
 						<thead>
 							<tr>
 								<th>Cours</th>
@@ -28,40 +28,53 @@
 								{foreach from=$listePeriodes item=periode}
 								<th style="width:30%">Remarques Période {$periode}</th>
 								{/foreach}
+								{foreach from=$listesSyntheses key=unePeriode item=dataSynthese}
+								<th style="width:4em">
+									Pér. {$unePeriode} /100
+								</th>
+								{/foreach}
 							</tr>
 						</thead>
 
 						{foreach from=$listeCours key=coursGrp item=unCours}
-						<tr class="{$unCours.statut}">
-							<td style="width:30%" class="pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$unCours.libelle}<br><span class='discret'>{$coursGrp}</span>" data-html="true">
-								{$unCours.statut}: {$unCours.libelle}
-							</td>
-
-							<td>{$unCours.nbheures}h</td>
-							{foreach from=$listePeriodes item=periode}
-								{if isset($listeSituations.$coursGrp.$periode)}
-								<td class="cote {if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
-										&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
-										&& ($listeSituations.$coursGrp.$periode.attributDelibe != 'hook')}echec{/if}"
-										{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
-										{if isset($listeSituations.$coursGrp.$periode.pourcent)}
-											title="Situation interne {$listeSituations.$coursGrp.$periode.pourcent}%"
-											data-container="body"
-										{/if}>
-									{if $listeSituations.$coursGrp.$periode.attributDelibe == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}] {else} {$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}{$listeSituations.$coursGrp.$periode.symbole} {/if}
+							<tr class="{$unCours.statut}">
+								<td style="width:30%" class="pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$unCours.libelle}<br><span class='discret'>{$coursGrp}</span>" data-html="true">
+									{$unCours.statut}: {$unCours.libelle}
 								</td>
-							{else}
-								<td>&nbsp;</td>
-							{/if}
-							{/foreach}
 
-							{foreach from=$listePeriodes item=periode}
-								<td class="remarqueDelibe pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$listeRemarques.$matricule.$coursGrp.$periode|default:''}" data-placement="top" data-html="true">
-									{$listeRemarques.$matricule.$coursGrp.$periode|default:'&nbsp;'|truncate:80}
+								<td>{$unCours.nbheures}h</td>
+								{foreach from=$listePeriodes item=periode}
+									{if isset($listeSituations.$coursGrp.$periode)}
+									<td class="cote {if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
+											&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
+											&& ($listeSituations.$coursGrp.$periode.attributDelibe != 'hook')}echec{/if}"
+											{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
+											{if isset($listeSituations.$coursGrp.$periode.pourcent)}
+												title="Situation interne {$listeSituations.$coursGrp.$periode.pourcent}%"
+												data-container="body"
+											{/if}>
+										{if $listeSituations.$coursGrp.$periode.attributDelibe == 'hook'}[{$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}] {else} {$listeSituations.$coursGrp.$periode.sitDelibe|default:'&nbsp;'}{$listeSituations.$coursGrp.$periode.symbole} {/if}
+									</td>
+								{else}
+									<td>&nbsp;</td>
+								{/if}
+								{/foreach}
+
+								{foreach from=$listePeriodes item=periode}
+									<td class="remarqueDelibe pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$listeRemarques.$matricule.$coursGrp.$periode|default:''}" data-placement="top" data-html="true">
+										{$listeRemarques.$matricule.$coursGrp.$periode|default:'&nbsp;'|truncate:80}
+									</td>
+								{/foreach}
+
+								{foreach from=$listesSyntheses key=unePeriode item=dataSynthese}
+								{assign var=cours value=$coursGrp|substr:0:strpos($coursGrp,'-')}
+								{assign var=points100 value=$listesSyntheses.$unePeriode.$matricule.$cours.sit100|default:'-'}
+								<td class="synthese{if is_numeric($points100) && $points100 < 50} echec{/if}">
+									{$points100}
 								</td>
-							{/foreach}
+								{/foreach}
 
-						</tr>
+							</tr>
 						{/foreach}
 
 						<tr class="conclusionDelibe">
