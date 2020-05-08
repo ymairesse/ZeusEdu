@@ -240,8 +240,11 @@ select[disabled] {
 }
 
 .synthese {
-    border: 1px solid black;
-    background-color: #feeeca
+	border: 1px solid black;
+	font-weight: bold;
+	background-color: #a6e2ff;
+	color: #777;
+	text-align: center;
 }
 
 .synthese p {
@@ -768,4 +771,10 @@ figcaption.EBS a {
 input[readonly], textarea[readonly] {
     background-color: #ccc !important;
     color: #337 !important;;
+}
+
+#delibeIndividuel td.cote {
+    background-color: #aaf;
+    border: 1px solid #555;
+    font-weight:bold;
 }
