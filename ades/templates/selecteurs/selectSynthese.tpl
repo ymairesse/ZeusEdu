@@ -31,12 +31,17 @@
 			{include file="selecteurs/listeEleves.tpl"}
 		</div>
 
-
+		<div class="btn-group btn-group-justified">
+			<div class="btn-group">
 			<button type="button" class="btn btn-warning" title="Sélection des faits à imprimer" id="printSelect">Sélection <i class="fa fa-wrench"></i></button>
-			<div class="btn-group pull-right">
-				<button type="button" class="btn btn-primary" title="À l'écran" id="generer"> <i class="fa fa-eye"></i></button>
-				<button type="button" class="btn btn-success" title="Fichier PDF" id="genererPDF"> <i class="fa fa-file-pdf-o"></i></button>
 			</div>
+			<div class="btn-group">
+			<button type="button" class="btn btn-primary" title="À l'écran" id="generer"> <i class="fa fa-eye"></i> Vue écran</button>
+			</div>
+			<div class="btn-group">
+			<button type="button" class="btn btn-success" title="Fichier PDF" id="genererPDF"> <i class="fa fa-file-pdf-o"></i> Impression</button>
+			</div>
+		</div>
 
 		<span id="ajaxLoader" class="hidden">
 			<img src="images/ajax-loader.gif" alt="loading" class="img-responsive">

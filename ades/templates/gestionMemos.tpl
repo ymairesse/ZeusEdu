@@ -1,4 +1,5 @@
-<div class="container">
+<div class="container-fluid">
+
 <h2>Gestion des textes enregistrés</h2>
 
 <div id="success"></div>
@@ -7,7 +8,7 @@
 
 	<div class="col-md-9 col-sm-12">
 		{if $listeMemos == array()}
-			<p>Rien à traiter...</p>
+			<p class="avertissement">Rien à traiter...</p>
 			{else}
 
 				{foreach from=$listeMemos key=titre item=listeTextes}

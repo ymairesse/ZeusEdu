@@ -26,6 +26,15 @@
 </div>
 
 <script type="text/javascript">
+	
+		function showEleve(matricule) {
+		$.post('inc/eleves/generateFicheEleve.inc.php', {
+			matricule: matricule
+			},
+		function(resultat){
+			$("#ficheEleve").show().html(resultat);
+			})
+		}
 
 $(document).ready (function() {
 
@@ -40,15 +49,6 @@ $(document).ready (function() {
 				}
 			)
 		});
-
-	function showEleve(matricule) {
-		$.post('inc/eleves/generateFicheEleve.inc.php', {
-			matricule: matricule
-			},
-		function(resultat){
-			$("#ficheEleve").show().html(resultat);
-			})
-		}
 
 	$("#envoi").click(function(){
 		var matricule = $('#selectEleve').val();
@@ -79,7 +79,17 @@ $(document).ready (function() {
 							matricule: matricule
 							},
 						function(resultat){
-							$("#ficheEleve").show().html(resultat);
+							$('#ficheEleve').show().html(resultat);
+							$.post('inc/eleves/getListeElevesClasse.inc.php', {
+								matricule: matricule
+							}, function (resultat){
+								$('#choixEleve').html(resultat);
+								$.post('inc/eleves/getClasse4eleve.inc.php', {
+									matricule: matricule
+								}, function(groupe){
+									$('#selectClasse').val(groupe);
+								});
+							})
 							});
 						// compléter le sélecteur avec la classe, la liste d'élèves
 						// à faire...

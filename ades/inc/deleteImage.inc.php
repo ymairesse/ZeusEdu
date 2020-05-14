@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../../config.inc.php';
+require_once '../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
@@ -17,9 +17,14 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$module = $Application->getModule(2);
 
-require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
-$detailsEleve = Eleve::staticGetDetailsEleve($matricule);
+$pathAndFile = array_reverse(explode('/', $_POST['src']));
 
-echo json_encode($detailsEleve);
+$fileName = $pathAndFile[0];
+$acronyme = $pathAndFile[1];
+$path = $pathAndFile[2];
+
+$ds = DIRECTORY_SEPARATOR;
+
+unlink(INSTALL_DIR.$ds.$path.$ds.$acronyme.$ds.$fileName);

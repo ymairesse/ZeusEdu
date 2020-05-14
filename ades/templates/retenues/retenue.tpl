@@ -1,30 +1,29 @@
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<img alt="Logo Ecole" src="{$BASEDIR}images/logoEcole.png" style="height:90px; width:103px" />
-			<td style="text-align:left; width:30%"></td>
+			<td style="text-align:left; width:30%"><p><img style="width: 110px;" src="http://localhost/peda/ades/./img-uploads/1588754506.png"><br></p></td>
 			<td style="text-align:right; width:70%">
 			<h3>{$ECOLE}</h3>
-			<strong>{$ADRESSE}<br />
-			T&eacute;l&eacute;phone: {$TELEPHONE}<br />
+			<strong>{$ADRESSE}<br>
+			Téléphone: {$TELEPHONE}<br>
 			{$COMMUNE}, le {$DATE}</strong></td>
 		</tr>
 	</tbody>
 </table>
 
-<h3 style="text-align:center; width:100%; border: 5px solid black;">{$titreFait}</h3>
+<h3>{$titreFait}</h3>
 
-<p><strong>{$prenom}</strong> <strong>{$nom}</strong> en classe de {$classe}<br />
-a m&eacute;rit&eacute; une retenue de {$duree} h le {$dateRetenue} &agrave; {$heure} (local {$local}) pour le motif suivant</p>
+<p><strong>{$prenom}</strong> <strong>{$nom}</strong> en classe de {$classe}<br>
+a mérité une retenue de {$duree} h le {$dateRetenue} à {$heure} (local {$local}) pour le motif suivant</p>
 
-<p><br />
+<p><br>
 {$motif}</p>
 
-<p><strong>Mat&eacute;riel &agrave; apporter:</strong></p>
+<p><strong>Matériel à apporter:</strong></p>
 
-<p>Journal de Classe, de quoi &eacute;crire, {$materiel}</p>
+<p>Journal de Classe, de quoi écrire, {$materiel}</p>
 
-<p><strong>Travail &agrave; effectuer:</strong></p>
+<p><strong>Travail à effectuer:</strong></p>
 
 <p>{$travail}</p>
 

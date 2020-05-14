@@ -22,22 +22,24 @@ class Ades
     /**
      * liste des utilisateurs du module ADES.
      *
-     * @param
+     * @param void
      *
      * @return array
      */
-    public function adesUsersList($module)
+    public function adesUsersList()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT '.PFX."profs.acronyme, CONCAT(nom,' ',prenom) as nomPrenom, userStatus ";
-        $sql .= 'FROM '.PFX.'profs ';
-        $sql .= 'JOIN '.PFX.'profsApplications ON ('.PFX.'profsApplications.acronyme = '.PFX.'profs.acronyme) ';
-        $sql .= 'WHERE '.PFX."profsApplications.application = '$module' AND userStatus != 'none' ";
+        $sql = 'SELECT dpa.acronyme, userStatus, CONCAT(nom, " ", prenom) AS nomPrenom ';
+        $sql .= 'FROM '.PFX.'profsApplications AS dpa ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = dpa.acronyme ';
+        $sql .= 'WHERE application = "ades" AND userStatus != "none" ';
         $sql .= 'ORDER BY nom, prenom, userStatus ';
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
         $liste = array();
+        $resultat = $requete->execute();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            while ($ligne = $requete->fetch()) {
                 $acronyme = $ligne['acronyme'];
                 $nomPrenom = $ligne['nomPrenom'];
                 $status = $ligne['userStatus'];
@@ -1067,7 +1069,7 @@ class Ades
         return $resultat;
     }
 
-    /**
+   /**
      * retourne la liste des mémos de l'utilisateur et des mémos libres.
      *
      * @param string $acronyme : abréviation de l'utilisateur
@@ -1079,14 +1081,17 @@ class Ades
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idTexte, user, champ, free, texte ';
         $sql .= 'FROM '.PFX.'adesTextes ';
-        $sql .= "WHERE user = '$acronyme' OR free='1' ";
+        $sql .= 'WHERE user = :acronyme OR free = 1 ';
         $sql .= 'ORDER BY champ, texte ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR,7);
+
+        $resultat = $requete->execute();
         $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $champ = $ligne['champ'];
                 $id = $ligne['idTexte'];
                 $liste[$champ][$id] = $ligne;
@@ -1655,7 +1660,7 @@ class Ades
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
         $requete->bindParam(':memo', $memo, PDO::PARAM_STR);
-        $requete->bindParam(':proprio', $module, PDO::PARAM_INT);
+        $requete->bindParam(':proprio', $module, PDO::PARAM_STR, 12);
 
         $resultat = $requete->execute();
 

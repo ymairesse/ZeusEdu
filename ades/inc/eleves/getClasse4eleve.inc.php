@@ -15,20 +15,16 @@ if (!(isset($_SESSION[APPLICATION]))) {
     exit;
 }
 
-$User = $_SESSION[APPLICATION];
-$acronyme = $User->getAcronyme();
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$memo = isset($_POST['memo']) ? $_POST['memo'] : Null;
+require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 
 $module = $Application->getModule(3);
 
-require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
-$Ades = new Ades();
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 
-$resultat = $Ades->saveMemo($matricule, $memo, $module);
+$eleve = Eleve::staticGetDetailsEleve($matricule);
+$groupe = $eleve['groupe'];
 
-if ($resultat) {
-    echo "Enregistré le " . date('d/m/Y à H:i:s');
-}
-else echo "Problème durant l'enregistrement";
+echo $groupe;

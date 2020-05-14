@@ -57,8 +57,10 @@ $echelles = $Ades->fieldWidth(PAGEWIDTH, $listeTypesFaits, $descriptionChamps);
 $smarty->assign('echelles', $echelles);
 $smarty->assign('contexte', 'tableau');
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new Html2PDF('P', 'A4', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 $ficheEleve4PDF = $smarty->fetch('eleve/ficheEleve4PDF.tpl');
 $html2pdf->WriteHTML($ficheEleve4PDF);

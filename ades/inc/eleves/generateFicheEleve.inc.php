@@ -61,8 +61,9 @@ $smarty->assign('memoEleve', $memoEleve->getPads());
 
 $ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
 $listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
-
+ 
 $smarty->assign('listeTousFaits', $ficheDisciplinaire);
 $smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
 
 echo $smarty->fetch('eleve/ficheEleve.tpl');
+// echo $smarty->fetch('eleve/test.tpl');

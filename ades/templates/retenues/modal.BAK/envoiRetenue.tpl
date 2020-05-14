@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <!-- boîte modale d'envoi d'une retenue -->
 <div class="modal fade" id="modalSendRetenue" tabindex="-1" role="dialog" aria-labelledby="titleSendRetenue" aria-hidden="true">
     <div class="modal-dialog">
@@ -14,7 +12,7 @@
 
                     <div id="listeParents"></div>
 
-                    <textarea name="texteRetenue" id='texteRetenue' class="form-control ckeditor" rows="4" cols="40">{include file="retenues/texteRetenue.html"}</textarea>
+                    <textarea name="texteRetenue" id='texteRetenue' class="form-control" rows="4" cols="40">{include file="retenues/texteRetenue.html"}</textarea>
                     <strong class="pull-right">{if $identite.sexe == 'F'}Mme{else}M.{/if} {$identite.prenom|truncate:1:''}. {$identite.nom} - {$identite.titre}</strong>
 
                 </div>
@@ -33,20 +31,10 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-        CKEDITOR.replace('texteRetenue');
-
         $("#modalSendRetenue").on('click', '.sendTo', function() {
             if ($('.sendTo:checked').length > 0)
                 $("#btnSendRetenue").attr('disabled', false);
             else $("#btnSendRetenue").attr('disabled', true);
-        })
-
-        $("#btnReset").click(function() {
-            $.post('inc/retenues/ckeditorReset.inc.php', {
-                },
-                function(resultat) {
-                    CKEDITOR.instances.texteRetenue.setData(resultat);
-                })
         })
 
         $(".send-eDoc").click(function() {
@@ -74,7 +62,7 @@
                 function(resultat) {
                     var fileName = resultat;
                     var data = $("#sendRetenue").serialize();
-                    var texteMail = CKEDITOR.instances.texteRetenue.getData();
+                    
                     $.post('inc/retenues/sendDocument.inc.php', {
                             post: data,
                             texteMail: texteMail,

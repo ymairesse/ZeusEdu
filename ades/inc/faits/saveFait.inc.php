@@ -1,5 +1,6 @@
 <?php
 
+
 require_once '../../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
@@ -26,6 +27,7 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
+
 $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
 $EleveAdes = new EleveAdes();
@@ -40,6 +42,7 @@ $type = $form['type'];
 $prototype = $Ades->prototypeFait($type);
 // si c'est une retenue, on retrouve les détails (date, local,...) de celle-ci dans la BD
 $retenue = ($prototype['structure']['typeRetenue'] != 0) ? $Ades->detailsRetenue($idretenue) : null;
+
 $nb = $EleveAdes->enregistrerFaitDisc($form, $prototype, $retenue, $acronyme);
 
 echo $form['matricule'];

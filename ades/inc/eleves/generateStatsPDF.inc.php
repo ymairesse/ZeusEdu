@@ -79,8 +79,11 @@ define('PAGEWIDTH', 600);
 
 $statistiques = $Ades->statistiques($listeEleves, $debut, $fin, $aImprimer);
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new Html2PDF('P', 'A4', 'fr');
+$ds = DIRECTORY_SEPARATOR;
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 $smarty->assign('debut', $debut);
 $smarty->assign('fin', $fin);
@@ -90,7 +93,6 @@ $smarty->assign('statistiques', $statistiques);
 $ficheStats4PDF = $smarty->fetch('../../templates/eleve/statistiques4PDF.tpl');
 $html2pdf->WriteHTML($ficheStats4PDF);
 
-$ds = DIRECTORY_SEPARATOR;
 $nomFichier = sprintf('stats_%s.pdf', $groupe);
 
 // création éventuelle du répertoire au nom de l'utlilisateur

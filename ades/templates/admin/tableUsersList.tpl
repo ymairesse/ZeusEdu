@@ -13,7 +13,7 @@
             {if $cetAcronyme != $acronyme}
             {* il n'est pas possible de changer son propre statut: précaution!! *}
 
-            <select name="statut" class="statut" title="Modifier le statut de l'utilisateur">
+            <select name="statut" class="statut form-control" title="Modifier le statut de l'utilisateur">
                 {foreach from=$listeStatuts key=status item=statut}
                 <option value="{$status}"{if $status == $user.status} selected="selected"{/if}>{$statut}</option>
                 {/foreach}

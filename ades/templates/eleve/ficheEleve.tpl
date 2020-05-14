@@ -1,7 +1,7 @@
 {assign var=memo value=$memoEleve.proprio}
 {assign var=idProprio value=$memo|key}
 {assign var=leMemo value=$memo.$idProprio}
-<div class="container">
+<div class="container-fluid">
 
 	<div class="alert alert-danger alert-dismissible hidden" role="alert" id="mailKO">
 		<button type="button" class="close pull-right">&times;</button>
@@ -40,7 +40,6 @@
 	</div>
 	<!-- tab-content -->
 
-
 	<!-- boîte modale pour l'édition ou nouveau fait disciplinaire -->
 
 	<div class="modal fade" id="editFait" tabindex="-1" role="dialog" aria-labelledby="titleEditFait" aria-hidden="true">
@@ -72,7 +71,7 @@
 		</div>
 	</div>
 
-	{include file="retenues/modal/envoiRetenue.tpl"}
+	{include file="eleve/modal/envoiRetenue.tpl"}
 
 </div>
 <!-- container -->

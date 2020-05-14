@@ -26,7 +26,7 @@ switch ($mode) {
         if ($userStatus == 'admin') {
             $module = $Application->getModule(1);
             $listeProfs = $Ecole->listeProfs();
-            $adesUsersList = $Ades->adesUsersList($module);
+            $adesUsersList = $Ades->adesUsersList();
             $listeStatuts = $Application->listeStatuts();
             $smarty->assign('listeStatuts', $listeStatuts);
             $smarty->assign('usersList', $adesUsersList);

@@ -1,7 +1,6 @@
 {if isset($listeEleves)}
 
 <div class="form-group">
-	<label for="selectEleve">Élèves</label>
 	<select name="matricule" id="selectEleve" class="form-control">
 		<option value="">Tous les élèves</option>
 		{foreach from=$listeEleves key=leMatricule item=unEleve}
