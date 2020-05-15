@@ -106,7 +106,7 @@
                 },
             function(resultat){
                 $("#trombinoscope").hide();
-                $("#ficheEleve").show().html(resultat);
+                $("#ficheEleve").html(resultat).show();
             })
         })
     })

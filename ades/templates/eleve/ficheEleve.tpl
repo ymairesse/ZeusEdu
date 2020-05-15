@@ -3,16 +3,6 @@
 {assign var=leMemo value=$memo.$idProprio}
 <div class="container-fluid">
 
-	<div class="alert alert-danger alert-dismissible hidden" role="alert" id="mailKO">
-		<button type="button" class="close pull-right">&times;</button>
-		L'envoi du mail a échoué
-	</div>
-
-	<div class="alert alert-success alert-dismissible hidden" role="alert" id="mailOK">
-		<button type="button" class="close pull-right">&times;</button>
-		Le mail a été envoyé
-	</div>
-
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
 	<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">

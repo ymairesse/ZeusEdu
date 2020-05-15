@@ -120,7 +120,11 @@
 
 								<td style="width:1em">
 									{if ($userStatus == 'educ') || ($userStatus == 'admin')}
-									<button type="button" class="btn btn-success btn-xs send-eDoc" data-idfait="{$idfait}" title="Envoyer">
+									<button type="button"
+										class="btn btn-success btn-xs send-eDoc"
+										data-idfait="{$idfait}"
+										data-matricule="{$matricule}"
+										title="Mail aux parents">
 										<i class="fa fa-mail-forward"></i>
 									</button>
 									{else}

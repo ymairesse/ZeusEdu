@@ -1,4 +1,5 @@
 <ul id="trombi">
+
 	{foreach from=$tableauEleves key=matricule item=unEleve name=trombi}
 		<li class="unePhoto" data-matricule="{$matricule}" data-classe="{$classe}">
 			<a href="javascript:void(0)">
@@ -7,4 +8,5 @@
 			<p style="margin-top:0.5em">{$unEleve.classe} {$unEleve.prenom} {$unEleve.nom}</p>
 		</li>
 	{/foreach}
+	
 </ul>

@@ -46,6 +46,8 @@ $smarty = new Smarty();
 $smarty->template_dir = "../../templates";
 $smarty->compile_dir = "../../templates_c";
 
+$smarty->assign('matricule', $matricule);
+
 $userStatus = $User->userStatus($module);
 $smarty->assign('userStatus', $userStatus);
 
@@ -61,9 +63,8 @@ $smarty->assign('memoEleve', $memoEleve->getPads());
 
 $ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
 $listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
- 
+
 $smarty->assign('listeTousFaits', $ficheDisciplinaire);
 $smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
 
 echo $smarty->fetch('eleve/ficheEleve.tpl');
-// echo $smarty->fetch('eleve/test.tpl');

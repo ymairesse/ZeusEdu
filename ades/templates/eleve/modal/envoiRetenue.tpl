@@ -98,7 +98,7 @@
 
         $(".send-eDoc").click(function() {
             var idFait = $(this).data('idfait');
-            var matricule = $("#selectEleve").val();
+            var matricule = $(this).data('matricule');
             $.post('inc/docsSend/getMailsParents.inc.php', {
                     matricule: matricule
                 },
