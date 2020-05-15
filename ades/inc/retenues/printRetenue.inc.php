@@ -18,12 +18,23 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
-require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
+
+// récupérer le formulaire d'encodage du JDC
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : Null;
+$form = array();
+parse_str($formulaire, $form);
+
+$idFait = isset($form['idFait']) ? $form['idFait'] : Null;
+
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classEleveAdes.inc.php";
+$EleveAdes = new EleveAdes();
+
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classAdes.inc.php';
 $Ades = new Ades();
 
-$idfait = isset($_POST['idfait']) ? $_POST['idfait'] : null;
 
-$infosFait = $Ades->infosFait($idfait);
+$infosFait = $EleveAdes->infosFait($idFait);
 foreach ($infosFait as $key => $chaine) {
     $infosFait[$key] = html_entity_decode($chaine);
 }
@@ -32,7 +43,7 @@ $matricule = $infosFait['matricule'];
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 $Eleve = new Eleve($matricule);
 $Eleve = $Eleve->getDetailsEleve();
-Application::afficher($Eleve, true);
+
 $idretenue = $infosFait['idretenue'];
 $infosRetenue = $Ades->infosRetenue($idretenue);
 
@@ -64,8 +75,6 @@ foreach ($Eleve as $key => $value) {
 }
 
 // création éventuelle du répertoire au nom de l'utlilisateur
-$ds = DIRECTORY_SEPARATOR;
-$module = $Application->getModule(3);
 $chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module;
 if (!(file_exists($chemin)))
     mkdir ($chemin, 0700, true);
@@ -73,7 +82,9 @@ if (!(file_exists($chemin)))
 // chargement de la présentation du billet de retenue
 $format = json_decode(file_get_contents('../../templates/retenues/format.json'), true);
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
 $orientation = ($format['orientation'] == 'portrait') ? 'P' : 'L';
 $page = ($format['page'] == 'A5') ? 'A5' : 'A4';
 $html2pdf = new HTML2PDF($orientation, $page, 'fr');
@@ -81,6 +92,7 @@ $html2pdf = new HTML2PDF($orientation, $page, 'fr');
 $retenue4PDF = $smarty->fetch('retenues/retenue.tpl');
 
 $html2pdf->WriteHTML($retenue4PDF);
+// le document est enregistré prêt à être envoyé
 $html2pdf->Output($chemin.$ds.$fileName,'F');
 
 echo $fileName;

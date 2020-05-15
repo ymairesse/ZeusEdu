@@ -1,10 +1,7 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
-<!-- boîte modale d'envoi d'une retenue -->
 <div class="modal fade" id="modalSendRetenue" tabindex="-1" role="dialog" aria-labelledby="titleSendRetenue" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="sendRetenue">
+            <form id="formSendRetenue">
 
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -14,7 +11,9 @@
 
                     <div id="listeParents"></div>
 
-                    <textarea name="texteRetenue" id='texteRetenue' class="form-control ckeditor" rows="4" cols="40">{include file="retenues/texteRetenue.html"}</textarea>
+                    <textarea name="texteMail" id='texteMail' class="form-control">
+                    {include file="retenues/texteRetenue.html"}
+                    </textarea>
                     <strong class="pull-right">{if $identite.sexe == 'F'}Mme{else}M.{/if} {$identite.prenom|truncate:1:''}. {$identite.nom} - {$identite.titre}</strong>
 
                 </div>
@@ -31,20 +30,70 @@
 </div>
 
 <script type="text/javascript">
+
+    function sendFile(file, el) {
+    	var form_data = new FormData();
+    	form_data.append('file', file);
+    	$.ajax({
+    		data: form_data,
+    		type: "POST",
+    		url: 'editor-upload.php',
+    		cache: false,
+    		contentType: false,
+    		processData: false,
+    		success: function(url) {
+    			$(el).summernote('editor.insertImage', url);
+    		}
+    	});
+    }
+
+    function deleteFile(src) {
+    	$.ajax({
+    		data: { src : src },
+    		type: "POST",
+    		url: 'inc/deleteImage.inc.php',
+    		cache: false,
+    		success: function(resultat) {
+    			console.log(resultat);
+    			}
+    	} );
+    }
+
     $(document).ready(function() {
+
+        $('#texteMail').summernote({
+    		lang: 'fr-FR', // default: 'en-US'
+    		height: null, // set editor height
+    		minHeight: 150, // set minimum height of editor
+    		focus: true, // set focus to editable area after initializing summernote
+    		toolbar: [
+    		  ['style', ['style']],
+    		  ['font', ['bold', 'underline', 'clear']],
+    		  ['font', ['strikethrough', 'superscript', 'subscript']],
+    		  ['color', ['color']],
+    		  ['para', ['ul', 'ol', 'paragraph']],
+    		  ['table', ['table']],
+    		  ['insert', ['link', 'picture', 'video']],
+    		  ['view', ['fullscreen', 'codeview', 'help']],
+    		],
+    		maximumImageFileSize: 2097152,
+    		dialogsInBody: true,
+    		callbacks: {
+    			onImageUpload: function(files, editor, welEditable) {
+    				for (var i = files.length - 1; i >= 0; i--) {
+    					sendFile(files[i], this);
+    				}
+    			},
+    			onMediaDelete : function(target) {
+    				deleteFile(target[0].src);
+    			}
+    		}
+    	});
 
         $("#modalSendRetenue").on('click', '.sendTo', function() {
             if ($('.sendTo:checked').length > 0)
                 $("#btnSendRetenue").attr('disabled', false);
             else $("#btnSendRetenue").attr('disabled', true);
-        })
-
-        $("#btnReset").click(function() {
-            $.post('inc/retenues/ckeditorReset.inc.php', {
-                },
-                function(resultat) {
-                    CKEDITOR.instances.texteRetenue.setData(resultat);
-                })
         })
 
         $(".send-eDoc").click(function() {
@@ -62,36 +111,32 @@
         })
 
         $("#btnSendRetenue").click(function() {
-            var idfait = $("#modalIdFait").val();
-            var texteRetenue = $("#texteRetenue").val();
-            var sendTo = $(".sendTo")
-                // création du document
+            var formulaire = $('#formSendRetenue').serialize();
+            // création du document dans le répoertoire de l'utilisateur actif
             $.post('inc/retenues/printRetenue.inc.php', {
-                    idfait: idfait
+                    formulaire: formulaire
                 },
-                function(resultat) {
-                    var fileName = resultat;
-                    var data = $("#sendRetenue").serialize();
-                    var texteMail = CKEDITOR.instances.texteRetenue.getData();
+                function(fileName) {
+                    // et maintenant, on envoie le document en PJ
                     $.post('inc/retenues/sendDocument.inc.php', {
-                            post: data,
-                            texteMail: texteMail,
-                            fileName: fileName
+                        formulaire: formulaire,
+                        fileName: fileName
                         },
                         function(resultat) {
+                            var title= "Envoi de mail";
                             if (resultat == 1) {
-                                $("#mailOK").removeClass('hidden');
-                                $("#mailKO").addClass('hidden');
+                                var message = "Mail(s) envoyé(s)"
                             } else {
-                                $("#mailKO").removeClass('hidden');
-                                $("#mailOK").addClass('hidden');
+                                var message = "Le mail n'a pas pu être envoyé"
                             }
+                            bootbox.alert({
+                                title: title,
+                                message: message
+                            })
                         });
                 });
-            // envoi du mail
-
-            $("#modalSendRetenue").modal('hide');
-        })
+                $("#modalSendRetenue").modal('hide');
+            })
 
     })
 </script>

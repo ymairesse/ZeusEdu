@@ -16,12 +16,17 @@ if (!(isset($_SESSION[APPLICATION]))) {
 
 $User = $_SESSION[APPLICATION];
 
-$fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
-$texte = isset($_POST['texteMail']) ? $_POST['texteMail'] : null;
-$post = isset($_POST['post']) ? $_POST['post'] : null;
-
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
-parse_str($post, $form);
+parse_str($formulaire, $form);
+
+$fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
+$texteMail = isset($form['texteMail']) ? $form['texteMail'] : null;
+if (isset($form['sendTo']) && count($form['sendTo']) != '0') {
+    $listeMails = array_unique($form['sendTo']);
+} else {
+    die('no mail');
+}
 
 $nomExpediteur = $User->getNom();
 $mailExpediteur = $User->getMail();
@@ -34,22 +39,15 @@ $objet = ECOLE.' - Document disciplinaire';
 
 // ajout de la signature
 $signature = file_get_contents('../../templates/signature.tpl');
-
 $signature = str_replace('##expediteur##', $nomExpediteur, $signature);
 $signature = str_replace('##mailExpediteur##', $mailExpediteur, $signature);
-$texte .= $signature;
+$texteMail .= $signature;
 
 // ajout du disclaimer
 $disclaimer = "<div style='font-size:small'><a href='".DISCLAIMER."'>Clause de non responsabilité</a></div>";
-$texte .= "<hr> $disclaimer";
+$texteMail .= "<hr> $disclaimer";
 
-if (isset($form['sendTo']) && count($form['sendTo']) != '0') {
-    $listeMails = array_unique($form['sendTo']);
-} else {
-    die('no mail');
-}
-
-if (($objet == '') || ($mailExpediteur == '') || ($nomExpediteur == '') || ($texte == '') || (count($listeMails) == 0)) {
+if (($objet == '') || ($mailExpediteur == '') || ($nomExpediteur == '') || ($texteMail == '') || (count($listeMails) == 0)) {
     die('parametres manquants');
 }
 
@@ -63,7 +61,7 @@ $mail->From = $mailExpediteur;
 $mail->FromName = $nomExpediteur;
 
 $mail->Subject = $objet;
-$mail->Body = $texte;
+$mail->Body = $texteMail;
 
 foreach ($listeMails as $unMail) {
     $mail->AddAddress($unMail);

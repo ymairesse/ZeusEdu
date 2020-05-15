@@ -98,9 +98,10 @@ $smarty->assign('listeTypesFaits', $listeTypesFaits);
 $smarty->assign('listeChamps', $listeChamps);
 $smarty->assign('listeFaits', $listeFaits);
 
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new Html2PDF('P', 'A4', 'fr');
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 foreach ($listeFaits as $classe => $listeFaitsParEleves) {
     foreach ($listeFaitsParEleves as $matricule => $lesFaits) {

@@ -92,18 +92,6 @@
 			$(".onglet").val(ref);
 		});
 
-		$("#printPage").click(function() {
-			var anScol = $("#tabsDisc li.active").data('anneescolaire');
-			var matricule = $(this).data('matricule');
-			$.post('inc/printFicheCourante.inc.php', {
-					anScol: anScol,
-					matricule: matricule
-				},
-				function(resultat) {
-
-				})
-		})
-
 		$(".close").click(function(){
 			$(this).parent('div').addClass('hidden');
 		})
