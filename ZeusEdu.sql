@@ -939,13 +939,14 @@ CREATE TABLE IF NOT EXISTS didac_elevesEcoles (
   KEY anscol (annee)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `didac_flashInfos` (
+CREATE TABLE `didac_flashInfos` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL COMMENT 'date de parution',
   `heure` time NOT NULL COMMENT 'Heure de parution',
   `application` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Application à laquelle le "flash info" est affecté',
   `titre` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Titre du "flash info"',
-  `texte` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Le texte du "Flash Info"'
+  `texte` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Le texte du "Flash Info"',
+  `developpe` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le texte est-il développé par défaut?'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `didac_flashInfos`
