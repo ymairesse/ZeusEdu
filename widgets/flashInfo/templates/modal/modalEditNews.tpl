@@ -10,7 +10,7 @@
         <h4 class="modal-title" id="modalEditNewsLabel">Créer / modifier une annonce</h4>
       </div>
 
-      <div class="modal-body" id="editNews" style="max-height: 20em; overflow: auto;">
+      <div class="modal-body" id="editNews" style="max-height: 40em; overflow: auto;">
 
           {include file="modal/editFlashInfo.tpl"}
 

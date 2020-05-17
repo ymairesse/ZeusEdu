@@ -15,7 +15,6 @@
 	{include file="./listeAnnonces.tpl"}
 
 	{else}
-
 		<img  src="../images/logoPageVide.png" class="img-responsive img-center">
 
 	{/if}  {* flashinfo count > 0 *}
