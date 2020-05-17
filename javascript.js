@@ -23,6 +23,10 @@
 
 <script type="text/javascript" src="../js/jsCookie/src/js.cookie.js"></script>
 
+<link rel="stylesheet" href="../summernote/summernote.min.css">
+<script src="../summernote/summernote.min.js"></script>
+<script src="../summernote/lang/summernote-fr-FR.min.js"></script>
+
 <script type="text/javascript">
 bootbox.setDefaults({
   locale: "fr",
