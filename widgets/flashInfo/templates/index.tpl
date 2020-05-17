@@ -1,5 +1,9 @@
 <link rel="stylesheet" href="../widgets/flashInfo/widget.css" type="text/css" media="screen, print">
 
+<link rel="stylesheet" href="../summernote/summernote.min.css">
+<script src="../summernote/summernote.min.js"></script>
+<script src="../summernote/lang/summernote-fr-FR.min.js"></script>
+
 {if $userStatus == 'admin'}
 	<button type="button" class="btn btn-primary pull-right" id="btn-newNews">Nouvelle annonce</button>
 {/if}
@@ -9,13 +13,17 @@
 	{if isset($listeFlashInfos) && $listeFlashInfos|@count > 0}
 
 	{include file="./listeAnnonces.tpl"}
-	{include file="./modal/modalLecture.tpl"}
-	{include file="./modal/modalDelNews.tpl"}
+
+	{else}
+
+		<img  src="../images/logoPageVide.png" class="img-responsive img-center">
 
 	{/if}  {* flashinfo count > 0 *}
 </div>
 
-{include file="./modal/modalEditNews.tpl"}
+<div id="modal"></div>
+
+{include file="./modal/modalLecture.tpl"}
 
 <script type="text/javascript">
 
@@ -29,15 +37,14 @@ $(document).ready(function(){
 			module: "{$module}"
 		},
 		function(resultat){
-			$('#editNews').html(resultat);
+			$('#modal').html(resultat);
 			$('#modalEditNews').modal('show');
 		})
 	})
 
-	$('#modalEditNews').on('click', '#saveNews', function(){
-		if ($('#editFlash').valid()) {
-			CKEDITOR.instances.editor.updateElement();
-			var formulaire = $("#editFlash").serialize();
+	$('#modal').on('click', '#btn-saveNews', function(){
+		if ($('#editFlashInfo').valid()) {
+			var formulaire = $("#editFlashInfo").serialize();
 			$.post('../widgets/flashInfo/inc/saveFlashInfo.inc.php', {
 				formulaire: formulaire
 				},
@@ -73,29 +80,35 @@ $(document).ready(function(){
 			module: module
 		},
 			function(resultat){
-				$('#editNews').html(resultat);
+				$('#modal').html(resultat);
 				$('#modalEditNews').modal('show');
 			})
 	})
 
 	$('#listeAnnonces').on('click', '.btn-del', function(){
 		var id = $(this).closest('li').data('id');
-		var titre = $(this).closest('li').data('titre');;
-		$('#btn-modalDelNews').data('id', id);
-		$("#newsTitle").html(titre);
-		$('#modalDel').modal('show');
+		var module = "{$module}";
+		$.post('../widgets/flashInfo/inc/modalDelNews.inc.php', {
+			id: id,
+			module: module
+		}, function(resultat){
+			$('#modal').html(resultat);
+			$('#modalDel').modal('show');
+		})
+
 	})
 
-	$('#btn-modalDelNews').click(function(){
+	$('#modal').on('click', '#btn-modalDelNews', function(){
 		var id = $(this).data('id');
 		var module = "{$module}"
 		$.post('../widgets/flashInfo/inc/delNews.inc.php', {
 			id: id,
 			module: module
 			}, function (resultat){
-				if (resultat >= 0) {
-					$('li.uneNews[data-id="' + resultat + '"]').remove();
+				if (resultat > 0) {
+					$('li.uneNews[data-id="' + id + '"]').remove();
 					bootbox.alert({
+						title: 'Effacement de l\'annonce',
 						message: 'Cette annonce a été effacée'
 					});
 				}
@@ -103,7 +116,7 @@ $(document).ready(function(){
 		$('#modalDel').modal('hide');
 	})
 
-	$('#listeAnnonces').on('click', '.btn-titleNews, #btn-eye', function(){
+	$('#listeAnnonces').on('click', '.btn-titleNews', function(){
 		var texteHTML = $(this).closest('li').data('texte');
 		var titre = $(this).closest('li').data('titre');
 		$('#modalLecture .texteNews').html(texteHTML);

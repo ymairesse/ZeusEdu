@@ -23,7 +23,7 @@
             <button type="button" class="btn btn-default btn-titleNews btn-block"><span class="discret">{$uneInfo.date|date_format:"%d/%m/%Y"}</span> - {$uneInfo.titre}</button>
         </div>
         {if $uneInfo.developpe == 1}
-            <div class="developpe">
+            <div class="developpe" style="max-height: 20em; overflow: auto;">
                 {$uneInfo.texte}
             </div>
         {/if}

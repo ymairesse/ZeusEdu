@@ -23,6 +23,15 @@ $module = isset($_POST['module']) ? $_POST['module'] : Null;
 require_once INSTALL_DIR.'/widgets/flashInfo/inc/classes/class.FlashInfo.php';
 $FlashInfo = new FlashInfo;
 
-$nb = $FlashInfo->delFlashInfo ($id, $module);
+$laNews = $FlashInfo->getNewsData ($id, $module);
+$title = $laNews['titre'];
 
-echo $nb;
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty();
+$smarty->template_dir = '../templates';
+$smarty->compile_dir = '../templates_c';
+
+$smarty->assign('title', $title);
+$smarty->assign('id', $id);
+
+$smarty->display('modal/modalDelNews.tpl');

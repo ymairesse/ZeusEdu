@@ -20,16 +20,17 @@ $acronyme = $User->getAcronyme();
 $id = isset($_POST['id']) ? $_POST['id'] : Null;
 $module = isset($_POST['module']) ? $_POST['module'] : Null;
 
-require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
+require_once INSTALL_DIR.'/widgets/flashInfo/inc/classes/class.FlashInfo.php';
 $FlashInfo = new FlashInfo();
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../../templates';
+$smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
-$news = $FlashInfo->getData($id);
+$FlashInfo = $FlashInfo->getNewsData($id);
 
-$smarty->assign('flashInfo', $FlashInfo->getData($id));
+$smarty->assign('flashInfo', $FlashInfo);
 $smarty->assign('module', $module);
-$smarty->display(INSTALL_DIR."/widgets/flashInfo/templates/editFlashInfo.tpl");
+
+$smarty->display('modal/modalEditNews.tpl');

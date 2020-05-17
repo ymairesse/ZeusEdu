@@ -17,7 +17,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
+require_once INSTALL_DIR.'/widgets/flashInfo/inc/classes/class.FlashInfo.php';
 $FlashInfo = new FlashInfo;
 
 $module = isset($_POST['module']) ? $_POST['module'] : Null;

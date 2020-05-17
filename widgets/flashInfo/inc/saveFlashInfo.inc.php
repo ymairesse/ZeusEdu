@@ -18,7 +18,7 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
+require_once INSTALL_DIR.'/widgets/flashInfo/inc/classes/class.FlashInfo.php';
 $FlashInfo = new FlashInfo;
 
 $nb = $FlashInfo->saveFlashInfo($form);
