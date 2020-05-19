@@ -2629,7 +2629,7 @@ class Files
         // ou les créer s'ils n'existent pas encore
         $fileIds = $this->findFileId4FileList($files, $acronyme);
 
-        $type = $post['type']; // groupe, coursGrp, cours, classe, niveau, ecole...
+        $type = $post['leType']; // groupe, coursGrp, cours, classe, niveau, ecole...
         $groupe = $post['destinataire'];
         // l'annonce est-elle dédiée à un élève en particulier ou à un groupe?
         if (($post['matricule'] != ''))
