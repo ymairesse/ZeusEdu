@@ -126,6 +126,19 @@
 		});
 	}
 
+	function deleteFile(src) {
+		console.log(src);
+		$.ajax({
+			data: { src : src },
+			type: "POST",
+			url: 'inc/deleteImage.inc.php',
+			cache: false,
+			success: function(resultat) {
+				console.log(resultat);
+				}
+		} );
+	}
+
 	$(document).ready(function() {
 
 		$('#texte').summernote({
@@ -134,16 +147,15 @@
 			minHeight: 150, // set minimum height of editor
 			focus: true, // set focus to editable area after initializing summernote
 			toolbar: [
-              ['style', ['style']],
-              ['font', ['bold', 'underline', 'clear']],
-              ['font', ['strikethrough', 'superscript', 'subscript']],
-              ['fontname', ['fontname']],
-              ['color', ['color']],
-              ['para', ['ul', 'ol', 'paragraph']],
-              ['table', ['table']],
-              ['insert', ['link', 'picture', 'video']],
-              ['view', ['fullscreen', 'codeview', 'help']],
-            ],
+			  ['style', ['style']],
+			  ['font', ['bold', 'underline', 'clear']],
+			  ['font', ['strikethrough', 'superscript', 'subscript']],
+			  ['color', ['color']],
+			  ['para', ['ul', 'ol', 'paragraph']],
+			  ['table', ['table']],
+			  ['insert', ['link', 'picture', 'video']],
+			  ['view', ['fullscreen', 'codeview', 'help']],
+			],
 			maximumImageFileSize: 2097152,
 			dialogsInBody: true,
 			callbacks: {
@@ -151,10 +163,12 @@
 					for (var i = files.length - 1; i >= 0; i--) {
 						sendFile(files[i], this);
 					}
+				},
+				onMediaDelete : function(target) {
+					deleteFile(target[0].src);
 				}
 			}
 		});
-
 
 		$("#dateDebut").datepicker({
 				format: "dd/mm/yyyy",

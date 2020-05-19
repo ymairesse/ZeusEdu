@@ -27,4 +27,4 @@ $path = $pathAndFile[2];
 
 $ds = DIRECTORY_SEPARATOR;
 
-unlink(INSTALL_DIR.$ds.$module.$ds.$path.$ds.$acronyme.$ds.$fileName);
+unlink(INSTALL_DIR.$ds.$path.$ds.$acronyme.$ds.$fileName);
