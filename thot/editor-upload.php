@@ -23,21 +23,18 @@ $ds = DIRECTORY_SEPARATOR;
 
 $imgUp = 'img-uploads';
 
-$root = INSTALL_DIR.$ds.$module.$ds.$imgUp.$ds.$acronyme;
-// créer le répetoire s'il n'existe pas encore
-if (!(file_exists($root))) {
-	mkdir($root, 0700, true);
-}
+// répertoire privé au module
+$root = INSTALL_DIR.$ds.$module.$ds.$imgUp;
 
 if(empty($_FILES['file']))
 {
 	exit();
 }
-$errorImgFile = "./images/erreur.png";
+$errorImgFile = INSTALL_DIR."/images/erreur.png";
 $temp = explode(".", $_FILES["file"]["name"]);
 
-$newfilename = round(microtime(true)) . '.' . end($temp);
-$destinationFilePath = '.'.$ds.$imgUp.$ds.$acronyme.$ds.$newfilename;
+$newfilename = $acronyme.'_' . round(microtime(true)) . '.' . end($temp);
+$destinationFilePath = '.'.$ds.$imgUp.$ds.$newfilename;
 
 if(!move_uploaded_file($_FILES['file']['tmp_name'], $destinationFilePath)){
 	echo $errorImgFile;
