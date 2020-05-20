@@ -1473,6 +1473,13 @@ CREATE TABLE `didac_thotNotifFlags` (
 ALTER TABLE `didac_thotNotifFlags`
   ADD PRIMARY KEY (`id`,`matricule`);
 
+CREATE TABLE `didac_thotNotifPJ` (
+    `notifId` int(11) NOT NULL COMMENT 'id de la notification',
+    `shareId` int(11) NOT NULL COMMENT 'id du partage'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Références des PJ aux notifications';
+
+ALTER TABLE `didac_thotNotifPJ`
+    ADD PRIMARY KEY (`shareId`,`notifId`);
 
 CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
   `id` int(11) NOT NULL COMMENT 'id de la notification correspondante',
