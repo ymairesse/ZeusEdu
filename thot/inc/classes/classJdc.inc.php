@@ -1177,7 +1177,7 @@ class Jdc
     public function categoriesTravaux()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT idCategorie, categorie ';
+        $sql = 'SELECT idCategorie, categorie, ordre ';
         $sql .= 'FROM '.PFX.'thotJdcCategories ';
         $sql .= 'ORDER BY ordre ';
         $resultat = $connexion->query($sql);
@@ -1193,6 +1193,161 @@ class Jdc
 
         return $liste;
     }
+
+    /**
+     * renvoie la liste des catégories de travaux déjà utilisées dans le JDC
+     * => non effaçables dans la configuration du JDC
+     *
+     * @param void
+     *
+     * @return array
+     */
+     public function getUsedCategories()
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT DISTINCT idCategorie ';
+         $sql .= 'FROM '.PFX.'thotJdc ';
+         $sql .= 'ORDER BY idCategorie ';
+         $requete = $connexion->prepare($sql);
+
+         $resultat = $requete->execute();
+         $liste = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()){
+                 array_push($liste, $ligne['idCategorie']);
+                }
+             }
+
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+     /**
+      * enregistre la mention $mention pour la categorie $idCategorie
+      *
+      * @param string $mention
+      * @param int $idCategorie
+      *
+      * @return array
+      */
+      public function saveMention($categorie, $idCategorie = Null) {
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          if ($idCategorie == Null) {
+              $sql = 'INSERT INTO '.PFX.'thotJdcCategories ';
+              $sql .= 'SET categorie = :categorie ';
+            }
+            else {
+                $sql = 'UPDATE '.PFX.'thotJdcCategories ';
+                $sql .= 'SET categorie = :categorie ';
+                $sql .= 'WHERE idCategorie = :idCategorie ';
+            }
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':categorie', $categorie, PDO::PARAM_STR, 30);
+          if ($idCategorie != Null) {
+              $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+            }
+
+          $resultat = $requete->execute();
+          if ($idCategorie == null) {
+              $idCategorie = $connexion->lastInsertId();
+          }
+
+          Application::DeconnexionPDO($connexion);
+
+          return $idCategorie;
+        }
+
+        /**
+        * définit un nouvel ordre pour une nouvelle catégorie $idCategorie
+        * après le plus grand ordre existant
+        *
+        * @param int $idCategorie
+        *
+        * @return int : le nouvel ordre qui a été attribué
+        */
+        public function putOrdre4Categorie($idCategorie) {
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT MAX(ordre) AS maxOrdre FROM '.PFX.'thotJdcCategories ';
+            $requete = $connexion->prepare($sql);
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $ligne = $requete->fetch();
+                $maxOrdre = $ligne['maxOrdre'] + 1;
+                }
+
+            $sql = 'UPDATE '.PFX.'thotJdcCategories ';
+            $sql .= 'SET ordre = 1 + :maxOrdre ';
+            $sql .= 'WHERE idCategorie = :idCategorie ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':maxOrdre', $maxOrdre, PDO::PARAM_INT);
+            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+
+            $ordre = $connexion->lastInsertId();
+
+            Application::DeconnexionPDO($connexion);
+
+            return $ordre;
+            }
+
+   /**
+     * échange l'ordre d'affichage des items du JDC pour les éléments
+     * idCategorie et nextidCategorie
+     *
+     * @param int $ordre : ordre de l'élément $idCategorie
+     * @param int $idCategorie : catégorie du premier élément à échanger
+     * @param int $nextOrdre : ordre de l'élément $nextidCategorie
+     * @param void $nextidCategorie : catégorie du deuxième élément de l'échange
+     *
+     * @return int
+     */
+     public function attribOrdreCategorie($ordre, $idCategorie)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'UPDATE '.PFX.'thotJdcCategories ';
+         $sql .= 'SET ordre = :ordre ';
+         $sql .= 'WHERE idCategorie = :idCategorie ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+         $resultat = $requete->execute();
+
+         $nb = $requete->rowCount();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $nb;
+     }
+
+    /**
+      * suppression d'une catégorie d'événements au JDX
+      *
+      * @param int $idCategorie : catégorie du premier élément à échanger
+      *
+      * @return int nombre de suppressions
+      */
+      public function delCategorie($idCategorie)
+      {
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'DELETE FROM '.PFX.'thotJdcCategories ';
+          $sql .= 'WHERE idCategorie = :idCategorie ';
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+          $resultat = $requete->execute();
+
+          $nb = $requete->rowCount();
+
+          Application::DeconnexionPDO($connexion);
+
+          return $nb;
+      }
 
     /**
      * retourne la liste des types d'accès existants: eleve, classe, cours, niveau, ecole...
@@ -2098,6 +2253,7 @@ class Jdc
      * @return int : nombre d'enregistrements
      */
     public function saveArchiveJDC($anScol){
+        // récupération de tous les JDC de l'année scolaire en cours -----------
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT * FROM '.PFX.'thotJdc ';
         $requete = $connexion->prepare($sql);
@@ -2106,11 +2262,10 @@ class Jdc
         $resultat = $requete->execute();
         if ($resultat){
             $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $jdc[] = $ligne;
-            }
+            $jdc = $requete->fetchall();
         }
 
+        // archivage des journaux de classe pour année scolaire
         $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcArchive ';
         $sql .= 'SET id = :id, anScol = :anScol, destinataire = :destinataire, type = :type, proprietaire = :proprietaire, ';
         $sql .= 'idCategorie = :idCategorie, title = :title, enonce = :enonce, startDate = :startDate, ';
@@ -2135,7 +2290,7 @@ class Jdc
             $nb += $requete->rowCount();
         }
 
-        // Archivage des catégories utilisées durant cette année scolaire
+        // recherche des catégories utilisées durant cette année scolaire -----------
         $sql = 'SELECT idCategorie, ordre, urgence, categorie ';
         $sql .= 'FROM '.PFX.'thotJdcCategories ';
         $requete = $connexion->prepare($sql);
@@ -2149,6 +2304,7 @@ class Jdc
             }
         }
 
+        // archivage des catégories de l'année scolaire en cours
         $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcCategoriesArchive ';
         $sql .= 'SET idCategorie = :idCategorie, anScol = :anScol, ordre = :ordre, ';
         $sql .= 'urgence = :urgence, categorie = :categorie ';
@@ -2164,7 +2320,7 @@ class Jdc
             $resultat = $requete->execute();
         }
 
-        // archivage de la table des cours donné cette année scolaire-là
+        // recherche des cours donné cette année scolaire ----------------------
         $sql = 'SELECT cours, nbheures, libelle, cadre, section ';
         $sql .= 'FROM '.PFX.'cours ';
         $requete = $connexion->prepare($sql);
@@ -2178,19 +2334,45 @@ class Jdc
             }
         }
 
+        // archivage de la table des cours donné cette année scolaire-là
         $sql = 'INSERT IGNORE INTO '.PFX.'thotJdcCoursArchive ';
         $sql .= 'SET cours = :cours, anScol = :anScol, nbheures = :nbheures, ';
         $sql .= 'libelle = :libelle, cadre = :cadre, section = :section ';
 
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 7);
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
         foreach ($cours as $wtf => $data) {
             $requete->bindParam(':cours', $data['cours'], PDO::PARAM_STR, 17);
             $requete->bindParam(':nbheures', $data['nbheures'], PDO::PARAM_INT);
             $requete->bindParam(':libelle', $data['libelle'], PDO::PARAM_STR, 50);
             $requete->bindParam(':cadre', $data['cadre'], PDO::PARAM_INT);
             $requete->bindParam(':section', $data['section'], PDO::PARAM_STR, 3);
+            $resultat = $requete->execute();
+        }
+
+        // recherche des classes des élèves pour l'année scolaire en cours -----------
+        $sql = 'SELECT matricule, groupe, CONCAT(nom, " ", prenom) AS nomPrenom ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $liste = $requete->fetchall();
+        }
+
+        // archivage des élèves de l'année scolaire courante dans la table bullArchives
+        $sql = 'INSERT IGNORE INTO '.PFX.'bullArchives ';
+        $sql .= 'SET leMatricule = :matricule, annee = :anScol, classe = :groupe, nomPrenom = :nomPrenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anScol', $anScol, PDO::PARAM_STR, 9);
+        foreach ($liste as $wtf => $data){
+            $requete->bindParam(':matricule', $data['matricule'], PDO::PARAM_INT);
+            $requete->bindParam(':groupe', $data['groupe'], PDO::PARAM_STR, 5);
+            $requete->bindParam(':nomPrenom', $data['nomPrenom'], PDO::PARAM_STR, 40);
             $resultat = $requete->execute();
         }
 

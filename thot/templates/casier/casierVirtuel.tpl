@@ -189,7 +189,7 @@
             $(this).addClass('active');
             var idTravail = $(this).data('idtravail');
             var coursGrp = $("#selectCours :selected").val();
-            
+
             // cadre d'évaluation du travail
             $.post('inc/casier/listeElevesEvalues.inc.php', {
                     idTravail: idTravail,
@@ -317,10 +317,10 @@
         $("#zoneEdition").on('click', "#saveEval", function() {
             var formulaire = $("#evalTravail").serialize();
             // récupérer le contenu actuel du CKEditor
-            var evaluation = CKEDITOR.instances.editeurEvaluation.getData();
+            // var evaluation = CKEDITOR.instances.editeurEvaluation.getData();
             $.post('inc/casier/postEvaluation.inc.php', {
                 formulaire: formulaire,
-                evaluation: evaluation
+                // evaluation: evaluation
             }, function(date) {
                 bootbox.alert({
                     message: "Évaluation enregistrée le "+date

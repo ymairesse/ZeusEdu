@@ -1,9 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-<script type="text/javascript">
-         // do this before the first CKEDITOR.replace( ... )
-         CKEDITOR.timestamp = 'something_random';
- </script>
-
 <div class="panel day-highlight dh-{$event.classe}">
 
         <div class="col-xs-10">
@@ -24,6 +18,8 @@
 </div>
 
 <script type="text/javascript">
+
+
 
 jQuery.validator.addMethod (
     "dateFr",
@@ -73,8 +69,6 @@ jQuery.validator.addMethod(
     );
 
     $(document).ready(function(){
-
-        CKEDITOR.replace('enonce');
 
         $("#formEditAgenda").validate({
             rules: {

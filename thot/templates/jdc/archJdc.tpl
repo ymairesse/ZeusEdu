@@ -85,7 +85,7 @@
 
                     </div>
 
-                    <div class="form-group hidden" id="categories">
+                    <div class="form-group" id="categories">
                         <label for="cbCategories">Catégories</label>
                         <div class="checkbox">
                             <label>
@@ -211,7 +211,7 @@
             $.post('inc/jdc/jdcEleves4PDF.inc.php', {
                 formulaire: formulaire
             }, function(resultat){
-                $('#bodyJdc').append(resultat);
+                $('#bodyJdc').html(resultat);
             })
 
         })
@@ -234,7 +234,6 @@
                     }
                 }
             })
-
         })
 
         $('#btn-archive').click(function(){
@@ -264,11 +263,13 @@
 
         $('#anScol').change(function(){
             var anScol = $(this).val();
-            var debut = anScol.substr(0,4);
-            var fin = anScol.substr(5,4);
-            $('#debut').datepicker('setDate', new Date(debut,8,01));
-            $('#fin').datepicker('setDate', new Date(fin,5,30));;
-            $('.input-daterange').removeClass('hidden');
+            if (anScol != '') {
+                var debut = anScol.substr(0,4);
+                var fin = anScol.substr(5,4);
+                $('#debut').datepicker('setDate', new Date(debut,8,01));
+                $('#fin').datepicker('setDate', new Date(fin,5,30));
+                $('.input-daterange').removeClass('hidden');
+            }
         })
 
         $('#niveau, #anScol').change(function(){

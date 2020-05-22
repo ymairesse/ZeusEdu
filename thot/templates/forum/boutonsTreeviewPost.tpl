@@ -1,4 +1,4 @@
-<div class="postForum"
+<div class="postForum clearfix"
     id="post_{$postId}"
     data-date="{$post.ladate}"
     data-postid="{$postId}"
@@ -22,6 +22,7 @@
 </div>
 
 <div class="repondre" data-postid="{$post.postId}">
+
     <button type="button"
         style="color:#11036f"
         class="btn btn-success btn-xs btn-forum btn-repondre"
@@ -48,7 +49,7 @@
                 data-postid="{$post.postId}"
                 data-idcategorie="{$post.idCategorie}"
                 data-idsujet="{$post.idSujet}"
-                {if $post.post == ''}disabled{/if}>
+                {if ($post.post == '') && !(in_array($post.postId, $erasableList))}disabled{/if}>
             <i class="fa fa-times"></i>
             </button>
 
@@ -67,7 +68,7 @@
                 data-postid="{$post.postId}"
                 data-idcategorie="{$post.idCategorie}"
                 data-idsujet="{$post.idSujet}"
-                {if $post.post == ''}disabled{/if}>
+                {if ($post.post == '') && !(in_array($post.postId, $erasableList))}disabled{/if}>
             <i class="fa fa-flash"></i>
             </button>
         {/if}
@@ -103,5 +104,5 @@
 
         </span>
 
-     <span class="pull-right">{$post.ladate} - {$post.heure}</span>
+     <span class="pull-right">{$post.ladate} - {$post.heure} {if $post.modifie == 1}<i class="discret">Modifié le {$post.dateModif} à {$post.heureModif}{/if}</i></span>
 </div>

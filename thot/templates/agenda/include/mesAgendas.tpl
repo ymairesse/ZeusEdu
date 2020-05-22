@@ -3,8 +3,11 @@
         <div class="panel-heading">
             <h3>Mes agendas</h3>
         </div>
+
         <div class="panel-body">
             <div class="form-group">
+                <label for="selectAgendas">Choisir un agenda</label>
+
                 <select class="form-control" name="agendas" id="selectAgendas">
                     <option value="">Choisir</option>
                     {foreach from=$listeAgendas key=idBoucle item=data}
@@ -38,6 +41,7 @@
         </div>
         <div class="panel-body">
             <div class="form-group">
+                <label for="sharedAgenda">Utiliser un agenda partagé</label>
                 <select class="form-control" name="shared" id="sharedAgenda">
                     <option value="">Sélectionner un agenda</option>
                     {foreach from=$listeShared key=idBoucle item=data}
@@ -46,5 +50,5 @@
                 </select>
             </div>
         </div>
-        
+
     </div>

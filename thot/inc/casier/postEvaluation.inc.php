@@ -24,7 +24,7 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-$evaluation = isset($_POST['evaluation']) ? $_POST['evaluation'] : null;
+$evaluation = isset($form['evaluation']) ? $form['evaluation'] : null;
 $idTravail = isset($form['idTravail']) ? $form['idTravail'] : Null;
 
 // la fonction verifProprietaireTravail renvoie l'id du travail s'il est bien attribué à $acronyme
@@ -39,7 +39,7 @@ if ($id == $idTravail) {
 
     $smarty->assign('dateSave', $dateSave);
     echo $dateSave;
-    
+
 } else {
     die('Ce travail ne vous appartient pas');
 }

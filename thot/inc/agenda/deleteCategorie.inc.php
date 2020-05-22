@@ -20,16 +20,9 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
-$Jdc = new Jdc();
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/class.Agenda.php";
+$Agenda = new Agenda();
 
-$nb = $Jdc->saveArchiveJDC(ANNEESCOLAIRE); 
+$idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : null;
 
-require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-
-// archivage des élèves avec leurs classes respectives pour l'année scolaire courante
-$listeEleves = $Ecole->listeEleves();
-$Ecole->archiveEleves(ANNEESCOLAIRE, $listeEleves);
-
-echo $nb;
+$nb = $Agenda->delCategorie($idCategorie);

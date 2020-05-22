@@ -7,7 +7,7 @@
         {if isset($post.children)}
             <li>
 
-                {include file="forum/boutonsTreeviewPost.tpl"}
+                {include file="forum/boutonsTreeviewPost4PDF.tpl"}
 
                 {arborescence data=$post.children level=$level+1}
 
@@ -15,7 +15,7 @@
         {else}
             <li>
 
-                {include file="forum/boutonsTreeviewPost.tpl"}
+                {include file="forum/boutonsTreeviewPost4PDF.tpl"}
 
             </li>
         {/if}
@@ -67,11 +67,6 @@
 
         $('.treeviewPost').treeview();
 
-        $('.FB_reactions').facebookReactions({
-            postUrl: 'inc/forum/saveLike.inc.php',
-            defaultText: "J'aime",
-            }
-        );
 
     })
 

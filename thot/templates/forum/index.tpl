@@ -42,6 +42,9 @@
 
                 <div class="panel-body" id="treeviewCategories" style="max-height:20em;overflow:auto;">
 
+                    <div id="ajaxLoader" class="hidden">
+                        <img src="images/ajax-loader.gif" alt="loading" class="center-block">
+                    </div>
                     {include file="forum/treeviewCategories.tpl"}
 
                 </div>
@@ -109,6 +112,12 @@
 
     $(document).ready(function(){
 
+        $(document).ajaxStart(function() {
+            $('#ajaxLoader').removeClass('hidden');
+        }).ajaxComplete(function() {
+            $('#ajaxLoader').addClass('hidden');
+        });
+
         var dateForum = Cookies.get('dateForum');
         $('#btn-date #laDate').text(dateForum);
 
@@ -172,8 +181,12 @@
                 if (resultat == 1) {
                     $('.postForum[data-postid="' + postId + '"]').html("<span class='supprime'>Cette contribution a été supprimée</span>");
                     $('.repondre [data-postid="' + postId + '"].btn-forum').attr('disabled', true);
-                    $('#modalDelPost').modal('hide');
                 }
+                else {
+                    $('.postForum[data-postid="' + postId + '"]').remove();
+                    $('.repondre[data-postid="' + postId + '"]').remove();
+                }
+                $('#modalDelPost').modal('hide');
             })
         })
 

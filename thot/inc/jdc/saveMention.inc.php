@@ -20,16 +20,18 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-$nb = $Jdc->saveArchiveJDC(ANNEESCOLAIRE); 
+$mention = isset($_POST['mention']) ? $_POST['mention'] : null;
+$idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : null;
+$ordre = isset($_POST['ordre']) ? $_POST['ordre'] : null;
 
-require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
+$idCategorie = $Jdc->saveMention($mention, $idCategorie);
 
-// archivage des élèves avec leurs classes respectives pour l'année scolaire courante
-$listeEleves = $Ecole->listeEleves();
-$Ecole->archiveEleves(ANNEESCOLAIRE, $listeEleves);
+if ($ordre == Null){
+    // mettre au dernier rang avec un ordre > plus grand
+    $ordre = $Jdc->putOrdre4Categorie($idCategorie);
+    }
 
 echo $nb;

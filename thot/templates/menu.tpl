@@ -42,6 +42,11 @@
 
 					<li><a href="index.php?action=remediation"><i class="fa fa-question-circle"></i> Offres de remédiation</a></li>
 					<li><a href="index.php?action=agendas"><i class="fa fa-calendar"></i> Agendas</a></li>
+					{if ($userStatus == admin)}
+					<li role="separator" class="divider"></li>
+					<li><a href="index.php?action=admin&amp;mode=itemsJDC">Rubriques au JDC</a></li>
+					<li><a href="index.php?action=admin&amp;mode=itemsAgenda">Rubriques à l'agenda</a></li>
+					{/if}
 
 				</ul>
 			</li>

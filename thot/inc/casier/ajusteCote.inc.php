@@ -38,6 +38,7 @@ foreach ($form as $field => $value) {
         $listeCotes[$id]['max'] = Application::sansVirg($value);
     }
 }
+Application::afficher($listeCotes);
 
 // totalisation des cotes par compétence pour le travail
 $total = array('cote'=> '', 'max' => '');

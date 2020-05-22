@@ -6,7 +6,7 @@
 
             <div class="panel panel-info">
                 <div class="panel-heading">
-
+                    Mes groupes
                 </div>
                 <div class="panel-body">
                     <pre>

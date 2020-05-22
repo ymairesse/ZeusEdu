@@ -7,6 +7,14 @@ require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
 
 switch ($mode) {
+    case 'itemsJDC':
+        require_once 'inc/jdc/itemsJdc.php';
+        break;
+
+    case 'itemsAgenda':
+        require_once 'inc/agenda/itemsAgenda.php';
+        break;
+        
     case 'gestGroupes':
         require_once 'inc/groupes/gestGroupes.php';
         break;

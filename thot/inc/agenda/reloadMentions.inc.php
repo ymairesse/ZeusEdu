@@ -20,16 +20,18 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
-$Jdc = new Jdc();
+require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/class.Agenda.php";
+$Agenda = new Agenda();
 
-$nb = $Jdc->saveArchiveJDC(ANNEESCOLAIRE); 
+$usedCateogries = $Agenda->getUsedCategories();
+$listeCategories = $Agenda->categoriesAgenda();
 
-require_once INSTALL_DIR.$ds.'inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
+require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$smarty = new Smarty();
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-// archivage des élèves avec leurs classes respectives pour l'année scolaire courante
-$listeEleves = $Ecole->listeEleves();
-$Ecole->archiveEleves(ANNEESCOLAIRE, $listeEleves);
+$smarty->assign('listeCategories', $listeCategories);
+$smarty->assign('usedCategories', $usedCateogries);
 
-echo $nb;
+$smarty->display('agenda/include/tableSort.tpl');

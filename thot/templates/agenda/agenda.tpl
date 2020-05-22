@@ -17,9 +17,8 @@
             <h2>{$listeAgendas.$idAgenda.nomAgenda}</h2>
             <input type="hidden" name="unlocked" id="unlocked" value="false">
 
-            <div id="calendar"
-                data-editable="true"
-                data-idagenda="{$idAgenda}">
+            <div id="calendar" data-editable="true" data-idagenda="{$idAgenda}">
+
             </div>
 
         </div>
@@ -46,14 +45,13 @@
 
 
     var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
-    var noRedac = 'Vous n\'êtes par rédacteur de cette note';
+    var noRedac = 'Vous n\'êtes pas rédacteur de cette note';
 
     var popoverElement;
 
     function closePopovers() {
         $('.popover').not(this).popover('hide');
     }
-
 
     // calendrier plus étroit, zone d'édition plus grande
     function modeEdition(){
@@ -64,6 +62,20 @@
     function modeConsultation(){
         $('#calendrier').addClass('col-md-9').removeClass('col-md-6');
         $('#editeur').addClass('col-md-3').removeClass('col-md-6');
+    }
+
+    function lockUnlock(){
+        var lockState = $('#unlocked').val();
+        if (lockState == "true") {
+            $('#unlocked').val('false');
+            $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
+            $('#unTravail .btn-edit').prop('disabled', true);
+            }
+            else {
+                $('#unlocked').val('true');
+                $('#unTravail .btn-edit').prop('disabled', false);
+                $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
+            }
     }
 
     $(document).ready(function(){
@@ -132,11 +144,8 @@
         $('#unTravail').on('click', '#saveEdit', function(){
             if ($('#formEditAgenda').valid()) {
                var formulaire = $('#formEditAgenda').serialize();
-               // récupérer le contenu du CKEDITOR
-               var enonce = CKEDITOR.instances.enonce.getData();
                $.post('inc/agenda/saveAgenda.inc.php', {
-                   formulaire: formulaire,
-                   enonce: enonce
+                   formulaire: formulaire
                }, function(resultat) {
                    var resultJSON = JSON.parse(resultat);
                    var idAgenda = resultJSON.idAgenda;
@@ -289,8 +298,6 @@
                 }
             }
         })
-
-        $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
 
         $('body').on('click', function (e) {
             // close the popover if: click outside of the popover || click on the close button of the popover
@@ -506,6 +513,9 @@
                 }
 
         })
+
+    $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
+
     })
 
 </script>

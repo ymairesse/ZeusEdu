@@ -488,6 +488,192 @@ class Agenda
     }
 
     /**
+     * renvoie la liste des catégories de travaux déjà utilisées dans le JDC
+     * => non effaçables dans la configuration du JDC
+     *
+     * @param void
+     *
+     * @return array
+     */
+     public function getUsedCategories()
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT DISTINCT idCategorie ';
+         $sql .= 'FROM '.PFX.'thotAgendasContenu ';
+         $sql .= 'ORDER BY idCategorie ';
+         $requete = $connexion->prepare($sql);
+
+         $resultat = $requete->execute();
+         $liste = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()){
+                 array_push($liste, $ligne['idCategorie']);
+                }
+             }
+
+         Application::DeconnexionPDO($connexion);
+
+         return $liste;
+     }
+
+
+    /**
+      * échange l'ordre d'affichage des items du JDC pour les éléments
+      * idCategorie et nextidCategorie
+      *
+      * @param int $ordre : ordre de l'élément $idCategorie
+      * @param int $idCategorie : catégorie du premier élément à échanger
+      * @param int $nextOrdre : ordre de l'élément $nextidCategorie
+      * @param void $nextidCategorie : catégorie du deuxième élément de l'échange
+      *
+      * @return int
+      */
+      public function attribOrdreCategorie($ordre, $idCategorie)
+      {
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'UPDATE '.PFX.'thotAgendaCategories ';
+          $sql .= 'SET ordre = :ordre ';
+          $sql .= 'WHERE idCategorie = :idCategorie ';
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+          $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+          $resultat = $requete->execute();
+
+          $nb = $requete->rowCount();
+
+          Application::DeconnexionPDO($connexion);
+
+          return $nb;
+      }
+
+   /**
+    * enregistre la mention $mention pour la categorie $idCategorie
+    *
+    * @param string $mention
+    * @param int $idCategorie
+    *
+    * @return array
+    */
+    public function saveMention($categorie, $idCategorie = Null) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        if ($idCategorie == Null) {
+            $sql = 'INSERT INTO '.PFX.'thotAgendaCategories ';
+            $sql .= 'SET categorie = :categorie ';
+          }
+          else {
+              $sql = 'UPDATE '.PFX.'thotAgendaCategories ';
+              $sql .= 'SET categorie = :categorie ';
+              $sql .= 'WHERE idCategorie = :idCategorie ';
+          }
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':categorie', $categorie, PDO::PARAM_STR, 30);
+        if ($idCategorie != Null) {
+            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+          }
+
+        $resultat = $requete->execute();
+        if ($idCategorie == null) {
+            $idCategorie = $connexion->lastInsertId();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $idCategorie;
+      }
+
+      /**
+       * retourne les différentes catégories d'agendas disponibles (interro, devoir,...).
+       *
+       * @param void
+       *
+       * @return array
+       */
+      public function categoriesAgenda()
+      {
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'SELECT idCategorie, categorie, ordre ';
+          $sql .= 'FROM '.PFX.'thotAgendaCategories ';
+          $sql .= 'ORDER BY ordre ';
+          $resultat = $connexion->query($sql);
+          $liste = array();
+          if ($resultat) {
+              $resultat->setFetchMode(PDO::FETCH_ASSOC);
+              while ($ligne = $resultat->fetch()) {
+                  $id = $ligne['idCategorie'];
+                  $liste[$id] = $ligne;
+              }
+          }
+          Application::DeconnexionPDO($connexion);
+
+          return $liste;
+      }
+
+      /**
+       * suppression d'une catégorie d'événements aux agendas
+       *
+       * @param int $idCategorie : catégorie du premier élément à supprimer
+       *
+       * @return int nombre de suppressions
+       */
+       public function delCategorie($idCategorie)
+       {
+           $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+           $sql = 'DELETE FROM '.PFX.'thotAgendaCategories ';
+           $sql .= 'WHERE idCategorie = :idCategorie ';
+           $requete = $connexion->prepare($sql);
+
+           $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+           $resultat = $requete->execute();
+
+           $nb = $requete->rowCount();
+
+           Application::DeconnexionPDO($connexion);
+
+           return $nb;
+       }
+
+      /**
+      * définit un nouvel ordre pour une nouvelle catégorie $idCategorie
+      * après le plus grand ordre existant
+      *
+      * @param int $idCategorie
+      *
+      * @return int : le nouvel ordre qui a été attribué
+      */
+      public function putOrdre4Categorie($idCategorie) {
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'SELECT MAX(ordre) AS maxOrdre FROM '.PFX.'thotAgendaCategories ';
+          $requete = $connexion->prepare($sql);
+          $resultat = $requete->execute();
+          if ($resultat) {
+              $ligne = $requete->fetch();
+              $maxOrdre = $ligne['maxOrdre'] + 1;
+              }
+
+          $sql = 'UPDATE '.PFX.'thotAgendaCategories ';
+          $sql .= 'SET ordre = 1 + :maxOrdre ';
+          $sql .= 'WHERE idCategorie = :idCategorie ';
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':maxOrdre', $maxOrdre, PDO::PARAM_INT);
+          $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+
+          $resultat = $requete->execute();
+
+          $ordre = $connexion->lastInsertId();
+
+          Application::DeconnexionPDO($connexion);
+
+          return $ordre;
+          }
+
+
+
+
+    /**
      * vérifie que le post $idPost appartient bien à l'utilisateur $acronyme en tant que propriétaire ou rédacteur
      *
      * @param int $idPost
@@ -642,7 +828,7 @@ class Agenda
         }
 
         $title = isset($post['title']) ? $post['title'] : null;
-        $enonce = isset($post['enonce']) ? $post['enonce'] : null;
+        $enonce = isset($post['texte']) ? $post['texte'] : null;
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($idPost == null) {
@@ -675,6 +861,7 @@ class Agenda
         if ($idPost == null) {
             $lastId = $connexion->lastInsertId();
         }
+
         Application::DeconnexionPDO($connexion);
 
         if ($idPost == null) {

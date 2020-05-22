@@ -82,7 +82,6 @@
               ['style', ['style']],
               ['font', ['bold', 'underline', 'clear']],
               ['font', ['strikethrough', 'superscript', 'subscript']],
-              ['fontname', ['fontname']],
               ['color', ['color']],
               ['para', ['ul', 'ol', 'paragraph']],
               ['table', ['table']],
@@ -98,7 +97,6 @@
                     }
                 },
                 onMediaDelete : function(target) {
-                    console.log(target[0].src);
                     deleteFile(target[0].src);
                 }
             }

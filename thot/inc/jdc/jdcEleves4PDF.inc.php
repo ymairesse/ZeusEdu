@@ -73,8 +73,11 @@ $smarty->assign('nomPrenomClasse', $nomPrenomClasse);
 
 $jdc4PDF = $smarty->fetch('jdc/jdc4PDF.tpl');
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new Html2PDF('P', 'A4', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
+
 // pour éviter l'erreur "le contenu d'une balise TD ne rentre pas sur une seule page"
 $html2pdf->setTestTdInOnePage(false);
 

@@ -6,7 +6,7 @@
 class ThotForum
 {
 
-    CONST acceptedTags = "<a><b><i><u><span><iframe><img><div><table><tbody><tr><td><ul><li><br><p><strike><pre><h1><h2><pre><blockquote>";
+    CONST acceptedTags = "<a><b><i><u><span><iframe><img><div><table><tbody><tr><td><ul><li><br><p><strike><pre><h1><h2><pre><blockquote><sub><sup>";
 
     function __construct()
     {
@@ -770,7 +770,7 @@ class ThotForum
     public function saveEditedPost($post, $postId, $acronyme){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'UPDATE '.PFX.'thotForumsPosts ';
-        $sql .= 'SET date = NOW(), post = :post, modifie = 1 ';
+        $sql .= 'SET post = :post, modifie = 1, dateModif = NOW() ';
         $sql .= 'WHERE postId = :postId AND auteur = :acronyme ';
         $requete = $connexion->prepare($sql);
 
@@ -823,6 +823,7 @@ class ThotForum
       public function getPosts4subject($idCategorie, $idSujet){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT postId, parentId, DATE_FORMAT(date, "%d/%m") AS ladate, DATE_FORMAT(date, "%H:%i") AS heure, ';
+        $sql .= 'DATE_FORMAT(dateModif,"%d/%m") as dateModif, DATE_FORMAT(dateModif, "%H:%i") AS heureModif, ';
         $sql .= 'auteur, userStatus, post, modifie, posts.idCategorie, posts.idSujet, ';
         $sql .= 'sujets.acronyme, profs.sexe AS sexeProf, profs.nom AS nomProf, profs.prenom AS prenomProf, ';
         $sql .= 'eleves.sexe AS sexeEleve, eleves.nom AS nomEleve, eleves.prenom AS prenomEleve, eleves.groupe ';
@@ -843,7 +844,6 @@ class ThotForum
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $postId = $ligne['postId'];
-                // admettre les balises <a><b><u><span><iframe><img><table><tbody><tr><td>....'
 				$ligne['post'] = strip_tags($ligne['post'], self::acceptedTags);
 
                 $ligne['post'] = nl2br($ligne['post']);
@@ -866,6 +866,7 @@ class ThotForum
         $tree = $this->buildPostTree($liste);
 
         return $tree;
+
     }
 
     /**
@@ -899,7 +900,6 @@ class ThotForum
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             $ligne = $requete->fetch();
             if ($ligne) {
-                // admettre les balises <a><b><u><span><iframe><img><table><tbody><tr><td>'
 				$ligne['post'] = strip_tags($ligne['post'], self::acceptedTags);
                 $ligne['post'] = nl2br($ligne['post']);
 
@@ -1133,16 +1133,18 @@ class ThotForum
      */
     public function verifAuteur($acronyme, $postId, $idSujet, $idCategorie){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT postId, idCategorie, idSujet, auteur ';
-        $sql .= 'FROM '.PFX.'thotForumsPosts ';
-        $sql .= 'WHERE postId = :postId AND idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
+        $sql = 'SELECT posts.postId, posts.idCategorie, posts.idSujet, posts.auteur ';
+        $sql .= 'FROM '.PFX.'thotForumsPosts AS posts ';
+        $sql .= 'JOIN '.PFX.'thotForumsSujets AS sujets ON posts.idCategorie = sujets.idCategorie AND posts.idSujet = sujets.idSujet ';
+        $sql .= 'WHERE postId = :postId AND posts.idCategorie = :idCategorie AND posts.idSujet = :idSujet ';
+        $sql .= 'AND (posts.auteur = :acronyme OR sujets.acronyme = :acronyme) ';
         $requete = $connexion->prepare($sql);
-
+// echo $sql;
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
         $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-
+// Application::afficher(array($idCategorie, $idSujet, $postId, $acronyme), true);
         $ligne = Null;
         $resultat = $requete->execute();
         if ($resultat){
@@ -1188,38 +1190,140 @@ class ThotForum
         return $ligne != Null;
     }
 
-	/**
-	 * Efface le contenu du post $postId de l'utilisateur $matricule pour le sujet
-	 * $idSujet de la catégorie $idCategorie
-	 *
-	 * @param int $matricule
-	 * @param int $postId
-	 * @param int $idSujet
-	 * @param int $idCategorie
-	 *
-	 * @return int : nombre d'effacements (0 ou 1)
-	 */
-	public function delPost($acronyme, $postId, $idSujet, $idCategorie){
-		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = 'UPDATE '.PFX.'thotForumsPosts ';
-		$sql .= 'SET post = NULL ';
-		$sql .= 'WHERE postId = :postId AND idCategorie = :idCategorie AND idSujet = :idSujet AND auteur = :acronyme ';
-		$requete = $connexion->prepare($sql);
+    /**
+     * Établir la liste des posts devenus Null (supprimés dans un thread) et qui n'ont pas d'enfant
+     * Ils sont donc devenus effaçables sans dégât sur le thread
+     * @param void
+     *
+     * @return array
+     */
+    public function erasableListe($idCategorie, $idSujet){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT postId FROM '.PFX.'thotForumsPosts ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND ISNULL(post) ';
+        $sql .= 'AND postId NOT IN (SELECT parentId FROM '.PFX.'thotForumsPosts) ';
+        $requete = $connexion->prepare($sql);
 
-		$requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-		$requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-		$requete->bindParam(':postId', $postId, PDO::PARAM_INT);
-		$requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
 
-		$ligne = Null;
-		$resultat = $requete->execute();
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                array_push($liste, $ligne['postId']);
+            }
+        }
 
-		$nb = $requete->rowcount();
+        Application::DeconnexionPDO($connexion);
 
-		Application::DeconnexionPDO($connexion);
+        return $liste;
+    }
 
-		return $nb;
-	}
+    /**
+     * Vérifie si le post $postId du sujet $idSujet et $idCategorie a des enfants
+     *  (auquel cas, il peut être supprimé)
+     *
+     * @param int $idCategorie
+     * @param int $idSujet
+     * @param int $postId
+     *
+     * @return bool
+     */
+    public function hasChildren($idCategorie, $idSujet, $postId){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idCategorie, idSujet, postId ';
+        $sql .= 'FROM '.PFX.'thotForumsPosts ';
+        $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND parentId = :postId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+
+        $ligne = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne != Null;
+    }
+
+    /**
+     * Efface le contenu du post $postId de l'utilisateur $matricule pour le sujet
+     * $idSujet de la catégorie $idCategorie
+     *
+     * @param int $matricule
+     * @param int $postId
+     * @param int $idSujet
+     * @param int $idCategorie
+     *
+     * @return int : nombre d'effacements (0 ou 1)
+     */
+    public function clearPost($acronyme, $postId, $idSujet, $idCategorie){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'thotForumsPosts ';
+        $sql .= 'SET post = Null ';
+        $sql .= 'WHERE postId = :postId ';
+        $sql .= 'AND idCategorie = :idCategorie ';
+        $sql .= 'AND idSujet = :idSujet ';
+        $sql .= 'AND (auteur = :acronyme OR :acronyme IN (SELECT acronyme FROM '.PFX.'thotForumsSujets WHERE idCategorie = :idCategorie AND idSujet = :idSujet)) ';
+        $requete = $connexion->prepare($sql);
+// echo $sql;
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 15);
+// Application::afficher(array($idCategorie, $idSujet, $postId, $acronyme), true);
+        $ligne = Null;
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowcount();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * Efface le contenu du post $postId de l'utilisateur $matricule pour le sujet
+     * $idSujet de la catégorie $idCategorie
+     *
+     * @param int $matricule
+     * @param int $postId
+     * @param int $idSujet
+     * @param int $idCategorie
+     *
+     * @return int : nombre d'effacements (0 ou 1)
+     */
+    public function delPost($acronyme, $postId, $idSujet, $idCategorie){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotForumsPosts ';
+        $sql .= 'WHERE postId = :postId ';
+        $sql .= 'AND idCategorie = :idCategorie ';
+        $sql .= 'AND idSujet = :idSujet ';
+        $sql .= 'AND (auteur = :acronyme OR :acronyme IN (SELECT acronyme FROM '.PFX.'thotForumsSujets WHERE idCategorie = :idCategorie AND idSujet = :idSujet)) ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+        $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 15);
+
+        $ligne = Null;
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowcount();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
 
     /**
      * renvoie la liste des sujets dont l'utilisateur $acronyme est propriétaire

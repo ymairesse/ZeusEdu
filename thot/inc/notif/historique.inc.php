@@ -8,6 +8,7 @@ $listeNotifications = $Thot->listeUserNotification($acronyme);
 
 // liste des pièces jointes liées à ces notifications
 $listePJ = $Thot->getPj4Notifs($listeNotifications, $acronyme);
+
 // liste des accusés de lecture demandés par l'utilisateur courant
 $listeAccuses = $Thot->getAccuses4user($acronyme, Null);
 
