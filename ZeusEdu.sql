@@ -1560,14 +1560,14 @@ CREATE TABLE IF NOT EXISTS `didac_thotJdcCategories` (
 
 INSERT INTO `didac_thotJdcCategories` (`idCategorie`, `ordre`, `urgence`, `categorie`) VALUES
 (1, 1, 'urgence0', 'Devoir'),
-(2, 2, 'urgence1', 'Évaluation TJ'),
-(3, 3, 'urgence0', 'Préparation'),
+(2, 3, 'urgence1', 'Évaluation TJ'),
+(3, 4, 'urgence0', 'Préparation'),
 (4, 6, 'urgence0', 'Document à remettre'),
-(5, 1, 'urgence2', 'Évaluation certificative'),
+(5, 2, 'urgence2', 'Évaluation certificative'),
 (6, 5, 'urgence0', 'Matériel à apporter'),
 (7, 0, 'urgence0', 'Matières vues'),
-(8, 99, 'urgence0', 'Autres'),
-(9, 9, 'urgence0', 'Activité extérieure');
+(8, 8, 'urgence0', 'Autres'),
+(9, 7, 'urgence0', 'Activité extérieure');
 
 ALTER TABLE `didac_thotJdcCategories`
   ADD PRIMARY KEY (`idCategorie`);
@@ -2061,8 +2061,10 @@ CREATE TABLE `didac_thotForumsPosts` (
   `auteur` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Auteur du post (élève ou prof)',
   `userStatus` enum('eleve','prof') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''auteur (prof ou élève)',
   `post` blob COMMENT 'Post dans le fil',
-  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié'
+  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié',
+  `dateModif` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de de dernière modification'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des posts';
+
 
 ALTER TABLE `didac_thotForumsPosts`
   ADD PRIMARY KEY (`postId`);
