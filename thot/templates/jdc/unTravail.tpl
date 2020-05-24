@@ -1,4 +1,3 @@
-
 <div class="panel day-highlight dh-{$travail.class}">
 
     <span id="delClass"></span>

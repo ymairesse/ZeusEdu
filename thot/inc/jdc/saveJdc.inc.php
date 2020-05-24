@@ -24,9 +24,6 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-$enonce = isset($_POST['enonce']) ? $_POST['enonce'] : null;
-$form['enonce'] = $enonce;
-
 $id = isset($form['id']) ? $form['id'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;

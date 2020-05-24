@@ -215,35 +215,9 @@ $(document).ready(function(){
         }
     });
 
-
-
-    // $('#editJdc').validate({
-    //     ignore: ":hidden:not(#summernote),.note-editable.panel-body",
-    // 	highlight: function( label ) {
-    // 		$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
-    // 	},
-    // 	success: function( label ) {
-    // 		$(label).closest('.form-group').removeClass('has-error');
-    // 		label.remove();
-    // 	},
-    // 	errorPlacement: function( error, element ) {
-    // 		var placement = element.closest('.input-group');
-    // 		if (!placement.get(0)) {
-    // 			placement = element;
-    // 		}
-    // 		if (error.text() !== '') {
-    // 			if( placement.attr('id') == 'enonce' ) {
-    // 				placement.next().after(error);
-    // 			} else {
-    // 				placement.after(error);
-    // 			}
-    // 		}
-    // 	}
-    // })
-
     $("#editJdc").validate({
         // pour faire valider aussi le champ caché "textarea" couvert par Summernote
-        ignore: [],
+        // ignore: [],
         errorPlacement: function( error, element ) {
             var placement = element.closest('.input-group');
             if (!placement.get(0)) {

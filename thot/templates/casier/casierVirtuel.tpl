@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div class="container-fluid">
 
     <div class="row">
@@ -316,11 +314,8 @@
 
         $("#zoneEdition").on('click', "#saveEval", function() {
             var formulaire = $("#evalTravail").serialize();
-            // récupérer le contenu actuel du CKEditor
-            // var evaluation = CKEDITOR.instances.editeurEvaluation.getData();
             $.post('inc/casier/postEvaluation.inc.php', {
-                formulaire: formulaire,
-                // evaluation: evaluation
+                formulaire: formulaire
             }, function(date) {
                 bootbox.alert({
                     message: "Évaluation enregistrée le "+date
