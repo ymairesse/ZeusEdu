@@ -110,7 +110,7 @@
                         size: 'small'
                     });
                     // récupérer le contenu de la zone "travail" à droite
-                    $.post('inc/jdc/getJdcEdit.inc.php', {
+                    $.post('inc/jdc/getTravail.inc.php', {
                         id: idJdc,
                         editable: true
                         }, function(resultat){
