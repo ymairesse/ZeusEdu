@@ -2648,7 +2648,7 @@ class Files
     /**
      * renvoie les path/fileName des fichiers liés à un JDC dont on fournit le $idJdc
      *
-     * @param int $idJdc : identifiant du
+     * @param int $idJdc : identifiant du jdc
      * @param string $acronyme : identifiant du propriétaire
      *
      * @return array
@@ -2978,10 +2978,12 @@ class Files
         $requete->bindParam(':idJdc', $idJdc, PDO::PARAM_INT);
 
         $nb = $requete->execute();
+        // combien de suppressions?
+        $n = $requete->rowCount();
 
         Application::DeconnexionPDO($connexion);
 
-        return $nb;
+        return $n;
     }
 
     /**
