@@ -1,4 +1,30 @@
-<div class="container-fluid">
+<?php /* Smarty version Smarty-3.1.13, created on 2020-05-27 15:42:10
+         compiled from "./templates/editSignature.tpl" */ ?>
+<?php /*%%SmartyHeaderCode:19741944045ece6d3c13be21-89342905%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    '99f1f8edb455e326b251d25581efb2bc3db0015c' => 
+    array (
+      0 => './templates/editSignature.tpl',
+      1 => 1590586926,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '19741944045ece6d3c13be21-89342905',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.13',
+  'unifunc' => 'content_5ece6d3c13fd15_59469927',
+  'variables' => 
+  array (
+    'action' => 0,
+    'signature' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_5ece6d3c13fd15_59469927')) {function content_5ece6d3c13fd15_59469927($_smarty_tpl) {?><div class="container-fluid">
 
 	<div class="row">
 
@@ -11,9 +37,11 @@
 				</div>
 
 				<form role="form" name="editeur" method="POST" action="index.php">
-					<input type="hidden" name="action" value="{$action}">
+					<input type="hidden" name="action" value="<?php echo $_smarty_tpl->tpl_vars['action']->value;?>
+">
 					<input type="hidden" name="mode" value="enregistrer">
-					<textarea id="texte" name="signature" class="summernote" placeholder="Frappez votre texte ici" autofocus="true">{$signature}</textarea>
+					<textarea id="texte" name="signature" class="summernote" placeholder="Frappez votre texte ici" autofocus="true"><?php echo $_smarty_tpl->tpl_vars['signature']->value;?>
+</textarea>
 
 					<button type="submit" class="btn btn-primary pull-right" name="submit">Enregistrer</button>
 
@@ -103,3 +131,4 @@
 
 	})
 </script>
+<?php }} ?>

@@ -1,4 +1,5 @@
 <?php
+
 require_once("../config.inc.php");
 include (INSTALL_DIR.'/inc/entetes.inc.php');
 

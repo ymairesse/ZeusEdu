@@ -1,4 +1,40 @@
-<div class="container-fluid">
+<?php /* Smarty version Smarty-3.1.13, created on 2020-05-27 14:26:27
+         compiled from "./templates/envoiMail.tpl" */ ?>
+<?php /*%%SmartyHeaderCode:16128563975e32f36362d5a5-86886140%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    'fb690bcbe6523ccda6999be1efecc01b3d48ae6c' => 
+    array (
+      0 => './templates/envoiMail.tpl',
+      1 => 1590512061,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '16128563975e32f36362d5a5-86886140',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.13',
+  'unifunc' => 'content_5e32f36363a697_46371460',
+  'variables' => 
+  array (
+    'userStatus' => 0,
+    'NOREPLY' => 0,
+    'NOMNOREPLY' => 0,
+    'listeDirection' => 0,
+    'someone' => 0,
+    'acronyme' => 0,
+    'acro' => 0,
+    'identite' => 0,
+    'nbPJ' => 0,
+    'n' => 0,
+    'mode' => 0,
+    'action' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_5e32f36363a697_46371460')) {function content_5e32f36363a697_46371460($_smarty_tpl) {?><div class="container-fluid">
 
 	<form enctype="multipart/form-data" name="mailing" id="mailing" method="POST" action="index.php" role="form" class="form-vertical">
 
@@ -6,7 +42,8 @@
 
 		<div class="col-md-3 col-xs-12 selectMail">
 
-				{include file="destinataires.tpl"}
+				<?php echo $_smarty_tpl->getSubTemplate ("destinataires.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, null, null, array(), 0);?>
+
 
 		</div>  <!-- col-md-... -->
 
@@ -21,17 +58,30 @@
 				<div class="panel-body">
 					<div class="form-group">
 						<label for="expediteur">Expéditeur</label>
-						{if $userStatus == 'direction' || $userStatus == 'admin'}
+						<?php if ($_smarty_tpl->tpl_vars['userStatus']->value=='direction'||$_smarty_tpl->tpl_vars['userStatus']->value=='admin'){?>
 							<select name="mailExpediteur" id="expediteur" class="form-control">
-								<option value="{$NOREPLY}">{$NOMNOREPLY}</option>
-								{foreach from=$listeDirection key=acro item=someone}
-									<option value="{$someone.mail}"{if $acronyme == $acro} selected="selected"{/if}>{$someone.nom}</option>
-								{/foreach}
+								<option value="<?php echo $_smarty_tpl->tpl_vars['NOREPLY']->value;?>
+"><?php echo $_smarty_tpl->tpl_vars['NOMNOREPLY']->value;?>
+</option>
+								<?php  $_smarty_tpl->tpl_vars['someone'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['someone']->_loop = false;
+ $_smarty_tpl->tpl_vars['acro'] = new Smarty_Variable;
+ $_from = $_smarty_tpl->tpl_vars['listeDirection']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
+foreach ($_from as $_smarty_tpl->tpl_vars['someone']->key => $_smarty_tpl->tpl_vars['someone']->value){
+$_smarty_tpl->tpl_vars['someone']->_loop = true;
+ $_smarty_tpl->tpl_vars['acro']->value = $_smarty_tpl->tpl_vars['someone']->key;
+?>
+									<option value="<?php echo $_smarty_tpl->tpl_vars['someone']->value['mail'];?>
+"<?php if ($_smarty_tpl->tpl_vars['acronyme']->value==$_smarty_tpl->tpl_vars['acro']->value){?> selected="selected"<?php }?>><?php echo $_smarty_tpl->tpl_vars['someone']->value['nom'];?>
+</option>
+								<?php } ?>
 							</select>
-						{else}
-							<input type="hidden" name="mailExpediteur" value="{$identite.mail}">
-							<p class="form-control-static" style="font-weight:bold">{$identite.prenom} {$identite.nom}</p>
-						{/if}
+						<?php }else{ ?>
+							<input type="hidden" name="mailExpediteur" value="<?php echo $_smarty_tpl->tpl_vars['identite']->value['mail'];?>
+">
+							<p class="form-control-static" style="font-weight:bold"><?php echo $_smarty_tpl->tpl_vars['identite']->value['prenom'];?>
+ <?php echo $_smarty_tpl->tpl_vars['identite']->value['nom'];?>
+</p>
+						<?php }?>
 					</div>  <!-- form-group -->
 
 					<div class="form-group">
@@ -61,14 +111,27 @@
 						<input type="checkbox" name="disclaimer" id='disclaimer' value="1" checked="checked">
 						</span>
 					<div class="clearfix"></div>
-					{foreach from=$nbPJ key=n item=wtf}
-						<p class="labelpj" id="pj{$n}"><span style="float:left">Pièce jointe</span> <input class="pj" type="file" name="PJ_{$n}" id="PJ_{$n}"></p>
-					{/foreach}
+					<?php  $_smarty_tpl->tpl_vars['wtf'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['wtf']->_loop = false;
+ $_smarty_tpl->tpl_vars['n'] = new Smarty_Variable;
+ $_from = $_smarty_tpl->tpl_vars['nbPJ']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
+foreach ($_from as $_smarty_tpl->tpl_vars['wtf']->key => $_smarty_tpl->tpl_vars['wtf']->value){
+$_smarty_tpl->tpl_vars['wtf']->_loop = true;
+ $_smarty_tpl->tpl_vars['n']->value = $_smarty_tpl->tpl_vars['wtf']->key;
+?>
+						<p class="labelpj" id="pj<?php echo $_smarty_tpl->tpl_vars['n']->value;?>
+"><span style="float:left">Pièce jointe</span> <input class="pj" type="file" name="PJ_<?php echo $_smarty_tpl->tpl_vars['n']->value;?>
+" id="PJ_<?php echo $_smarty_tpl->tpl_vars['n']->value;?>
+"></p>
+					<?php } ?>
 
 					<input type="hidden" name="MAX_FILE_SIZE" value="10000000">
-					<input type="hidden" id="nomExpediteur" name="nomExpediteur" value="{$identite.prenom} {$identite.nom}">
-					<input type="hidden" name="mode" value="{$mode}">
-					<input type="hidden" name="action" value="{$action}">
+					<input type="hidden" id="nomExpediteur" name="nomExpediteur" value="<?php echo $_smarty_tpl->tpl_vars['identite']->value['prenom'];?>
+ <?php echo $_smarty_tpl->tpl_vars['identite']->value['nom'];?>
+">
+					<input type="hidden" name="mode" value="<?php echo $_smarty_tpl->tpl_vars['mode']->value;?>
+">
+					<input type="hidden" name="action" value="<?php echo $_smarty_tpl->tpl_vars['action']->value;?>
+">
 
 				</div>  <!-- panel-body -->
 
@@ -231,3 +294,4 @@ $(document).ready(function(){
 	})
 
 </script>
+<?php }} ?>
