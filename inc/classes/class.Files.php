@@ -2543,8 +2543,11 @@ class Files
         //     [0] => 1993|//|/|//|10349351_300_451.jpg
         //     [1] => -1|//|/|//|blackhat.png   (nouveau document car s$hareId = -1)
 
-        // recherche des fichiers liés à ce JDC $idJdc avant l'édition
+        //Application::afficher($post);
+
+        // recherche des fichiers déjà liés à ce JDC $idJdc avant l'édition
         $linkedFiles = $this->getFileNames4jdc($idJdc, $acronyme);
+// Application::afficher($linkedFiles);
         // Exemple: avec [$shareId] => $path |//| $fileName
         // [1993] => /|//|10349351_300_451.jpg
         // [1997] => /|//|20140808_144404.jpg
@@ -2562,6 +2565,18 @@ class Files
         // à la fin, il ne reste que les fichiers qui n'étaient pas dans le $post
         $this->unlinkShares4Jdc($idJdc, $toUnShare);
 
+        // supprimer de $post['files'] toutes les PJ qui sont déjà liées
+        foreach ($files as $n => $fileName) {
+            $fileName = explode("|//|", $fileName);
+            // suppression du shareId: on ne conserver que le nom du fichier
+            unset($fileName[0]);
+            $fileName = implode('|//|', $fileName);
+            // si le fichier est déjà partagé, on le retire des futures demandes de shareIds
+            if (in_array($fileName, $linkedFiles)) {
+                unset($files[$n]);
+            }
+        }
+
         // rechercher les fileIds pour les fichiers restants à lier ou les créer s'ils n'existent pas encore
         $fileIds = $this->findFileId4FileList($files, $acronyme);
         // Exemple de $fileIds:
@@ -2569,16 +2584,12 @@ class Files
         // [1] => 993
         // [2] => 974
 
-        // Application::afficher($fileIds);
-
         $type = $post['type']; // coursGrp, cours, classe, niveau, ecole...
         $groupe = $post['destinataire'];
         $shareIds = array();
 
         // établir la liste des shareIds pour les fichiers relatifs à la notification $idJdc
         $shareIds = $this->setShareIds4FileIds($fileIds, $type, $groupe, 'all', 'jdc', $post['date']);
-
-        // Application::afficher($shareIds);
 
         // Exemple de $shareIds
         //     [994] => 2003
@@ -2760,6 +2771,15 @@ class Files
 
         $requete->bindParam(':idJdc', $idJdc, PDO::PARAM_INT);
         $nb = 0;
+        foreach ($toUnShare as $shareId => $wtf){
+            $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+            $nb += $requete->execute();
+        }
+        $nb = 0;
+        // suppression des fichiers partagés
+        $sql = 'DELETE FROM '.PFX.'thotShares ';
+        $sql .= 'WHERE shareId = :shareId ';
+        $requete = $connexion->prepare($sql);
         foreach ($toUnShare as $shareId => $wtf){
             $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
             $nb += $requete->execute();
