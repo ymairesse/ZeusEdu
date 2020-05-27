@@ -92,7 +92,7 @@ class thot
             $notification = $requete->fetch();
             $notification['dateDebut'] = Application::datePHP($notification['dateDebut']);
             $notification['dateFin'] = Application::datePHP($notification['dateFin']);
-            $notification['niveau'] = SUBSTR($notification['destinataire'], 0, 1);
+            // $notification['niveau'] = SUBSTR($notification['destinataire'], 0, 1);
         }
         Application::deconnexionPDO($connexion);
 
@@ -148,6 +148,122 @@ class thot
     }
 
     /**
+     * renvoie le type ('eleves', 'classe', 'coursGrp',...) de la notification $notifId
+     *
+     * @param int $notifId
+     *
+     * @return string
+     */
+    public function getType4notif($notifId){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT type FROM '.PFX.'thotNotifications ';
+        $sql .= 'WHERE id = :notifId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+
+        $type = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $ligne = $requete->fetch();
+            $type = $ligne['type'];
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $type;
+    }
+
+     /**
+     * enregistre une notification à attribuer à un ou plusieurs élèves, classe, cours, niveau, école
+     * et renvoie la liste des identifiants de ces notifications
+     * Array (
+     *      [groupe | matricule] => $id 1
+     *      [groupe | matricule] => $id 2
+     *      ......
+     *  )
+     *
+     * @param array $post : informations provenant du formulaire ad-hoc
+     * @param string $acronyme de l'utilisateur
+     *
+     * @return int $id : l'id de la notification qui vient d'être enregistrée dans la BD
+     */
+     public function enregistrerNotification($post, $acronyme)
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+         // est-ce une édition ($notifId existe) ou une nouvelle notification (Null) ?
+         $id = isset($post['id']) ? $post['id'] : Null;
+
+         if ($id == Null) {
+             // c'est une nouvelle notification
+             $sql = 'INSERT INTO '.PFX.'thotNotifications ';
+             $sql .= 'SET type=:type, destinataire = :destinataire, proprietaire = :proprietaire, objet = :objet, texte = :texte, ';
+             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, eleve = :eleve, ';
+             $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent, dateEnvoi = NOW() ';
+         } else {
+             // c'est une mise à jour
+             $sql = 'UPDATE '.PFX.'thotNotifications ';
+             $sql .= 'SET type = :type, destinataire = :destinataire, proprietaire = :proprietaire, objet = :objet, texte = :texte, ';
+             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, eleve = :eleve, ';
+             $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent, dateEnvoi = NOW() ';
+             $sql .= 'WHERE id = :id AND proprietaire = :proprietaire ';
+         }
+         $requete = $connexion->prepare($sql);
+
+         if ($id != Null)
+             $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+         $requete->bindParam(':proprietaire', $acronyme, PDO::PARAM_STR, 7);
+         $requete->bindParam(':objet', $post['objet'], PDO::PARAM_STR, 80);
+         $requete->bindParam(':texte', $post['texte'], PDO::PARAM_STR);
+         $dateDebut = Application::dateMysql($post['dateDebut']);
+         $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
+         $dateFin = Application::dateMysql($post['dateFin']);
+         $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
+         $requete->bindParam(':eleve', $post['eleve'], PDO::PARAM_INT);
+         $mail = isset($post['mail']) ? 1 : 0;
+         $accuse = isset($post['accuse']) ? 1 : 0;
+         $freeze = isset($post['freeze']) ? 1 : 0;
+         $parent = isset($post['parent']) ? 1 : 0;
+         $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
+         $requete->bindParam(':accuse', $accuse, PDO::PARAM_INT);
+         $requete->bindParam(':freeze', $freeze, PDO::PARAM_INT);
+         $requete->bindParam(':parent', $parent, PDO::PARAM_INT);
+         $requete->bindParam(':type', $post['type'], PDO::PARAM_STR, 7);
+
+         $listeNotifId = array();
+
+         if (isset($post['TOUS']) && ($post['TOUS'] == '')) {
+             // annonce pour un ou plusieurs élèves isolés
+             $eleve = 1;
+             $requete->bindParam(':eleve', $eleve, PDO::PARAM_INT);
+             // envoi dispatché vers chacun des élèves du groupe
+             foreach ($post['matricules'] AS $wtf => $matricule) {
+                 $requete->bindParam(':destinataire', $matricule, PDO::PARAM_INT);
+                 $resultat = $requete->execute();
+                 $id = $connexion->lastInsertId();
+                 $listeNotifId[$matricule] = $id;
+             }
+         }
+         else {
+             // envoi pour le groupe $post['type'] dans son ensemble
+             $eleve = 0;
+             $requete->bindParam(':eleve', $eleve, PDO::PARAM_INT);
+             $destinataire = $post['destinataire'];
+             $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+             $resultat = $requete->execute();
+             $id = ($id != Null) ? $id : $connexion->lastInsertId();
+             $listeNotifId[$destinataire] = $id;
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $listeNotifId;
+     }
+
+    /**
+     * REMPLACE ENREGISTRERNOTIFICATION (VOIR JUSTE AU-DESSOUS)
      * enregistre une notification à attribuer à un ou plusieurs élèves, classe, cours, niveau, école
      * et renvoie la liste des identifiants de ces notifications
      * Array (
@@ -162,7 +278,7 @@ class thot
      *
      * @return int $id : l'id de la notification qui vient d'être enregistrée dans la BD
      */
-    public function saveNotification($post, $type, $acronyme) {
+   public function saveNotification($post, $type, $acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // est-ce une édition ($notifId existe) ou une nouvelle notification (Null) ?
         $notifId = isset($post['id']) ? $post['id'] : Null;
@@ -206,7 +322,6 @@ class thot
         if ($notifId != Null) {
             // c'est une édition; il n'y a donc qu'un seul enregistrement à prévoir
             $destinataire = $post['destinataire'];
-
             $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
             $resultat = $requete->execute();
             $listeNotifId[$destinataire] = $notifId;
@@ -279,6 +394,42 @@ class thot
         return $nb;
     }
 
+     /**
+     * retourne un titre human-readable pour un $type de notification donné
+     *
+     * @param string $type
+     *
+     * @return string
+     */
+    public function getHRtitle4type($type){
+        $stringType = Null;
+        switch ($type) {
+            case 'ecole':
+                $stringType = 'Tous les élèves';
+                break;
+            case 'niveau':
+                $stringType = 'Élèves d\'un niveau';
+                break;
+            case 'classes':
+                $stringType = 'Elèves d\'une classe';
+                break;
+            case 'coursGrp':
+                $stringType = 'Élèves d\'un cours';
+                break;
+            case 'cours':
+                $stringType = 'Élèves pour une matière';
+                break;
+            case 'groupe':
+                $stringType = 'Élèves d\'un groupe';
+                break;
+            case 'eleves':
+                $stringType = 'Un élève';
+                break;
+        }
+
+        return $stringType;
+    }
+
     /**
      * Enregistre le résultat de l'édition d'une notification.
      *
@@ -321,7 +472,7 @@ class thot
         }
     }
 
-    /**
+ /**
      * liste des notifications de l'utilisateur dont on fournit l'acronyme.
      *
      * @param string $acronyme
@@ -373,6 +524,54 @@ class thot
     }
 
     /**
+     * retrouve le véritable destinataire d'une notification dont on fournit
+     * le $type et le $destinataire pour la notification donnée
+     *
+     * @param string $type
+     * @param string $destinataire
+     * @param array $uneNotification
+     *
+     * @return string
+     */
+    public function getTrueDestinataire($type, $destinataire){
+        switch ($type) {
+            case 'ecole':
+                $destinataire = 'Tous les élèves';
+                break;
+            case 'niveau':
+                $niveau = $destinataire;
+                $destinataire = sprintf('Élèves de %de année', $niveau);
+                break;
+            case 'classes':
+                $classe = $destinataire;
+                $destinataire = sprintf('Élèves de %s', $classe);
+                break;
+            case 'cours':
+                $cours = $destinataire;
+                $details = $this->getDetailsMatiere($cours);
+                $destinataire = sprintf('[%s] %s %dh', $details['cours'], $details['libelle'], $details['nbheures']);
+                break;
+            case 'coursGrp':
+                $coursGrp = $destinataire;
+                $details = $this->detailsCours($coursGrp);
+                $destinataire = sprintf('[%s] %s %s %dh', $coursGrp, $details['statut'], $details['libelle'], $details['nbheures']);
+                break;
+            case 'groupe':
+                $groupe = $destinataire;
+                $details = $this->getData4groupe($groupe);
+                $destinataire = sprintf('[%s] %s', $groupe, $details['intitule']);
+                break;
+            case 'eleves':
+                $matricule = $destinataire;
+                $details = $this->getMinDetailsEleve($matricule);
+                $destinataire = sprintf('%s %s %s', $details['nom'], $details['prenom'], $details['classe']);
+                break;
+        }
+
+        return $destinataire;
+    }
+
+    /**
      * retourne la liste des id's des notifications pour un user donné.
      *
      * @param $acronyme
@@ -399,6 +598,101 @@ class thot
         return $liste;
     }
 
+	 /**
+     * renvoie les $id des notifications dédiées à une entité donnée (classe, groupe, coursGrp,...)
+     * pour l'utilisateur $acronyme
+     *
+     * @param string $entite : 'groupe', 'classe', 'coursGrp', 'niveau', 'ecole', 'cours'
+     * @param string $name : nom de l'entité (Ex: 3CA, 2C:MATH5-02),...
+     *
+     * @return array
+     */
+    public function listeNotifs4entite($entite, $name, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, type, proprietaire ';
+        $sql .= 'FROM '.PFX.'thotNotifications ';
+        $sql .= 'WHERE proprietaire = :acronyme AND type = :entite AND destinataire = :name ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':name', $name, PDO::PARAM_STR, 15);
+        $requete->bindParam(':entite', $entite, PDO::PARAM_STR, 8);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['id'];
+                $liste[$id] = $ligne;
+                }
+            }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+
+      /**
+     * recherche le nom de la matière dont on fournit l'abréviation
+     * Exemple: "2C:INFO2"
+     *
+     * @param string $matiere
+     *
+     * @return string
+     */
+     private function nomMatiere($matiere){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT libelle ';
+         $sql .= 'FROM '.PFX.'cours ';
+         $sql .= 'WHERE cours = :matiere ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matiere', $matiere, PDO::PARAM_STR, 15);
+
+         $libelle = Null;
+         $resultat = $requete->execute();
+         if ($resultat) {
+             $ligne = $requete->fetch();
+             $libelle = $ligne['libelle'];
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $libelle;
+     }
+
+    /**
+     * recherche le vrai nom du cours dont on fournit l'abréviation administrative
+     * Exeemple: "2C:INFO2-01"
+     *
+     * @param string $coursGrp
+     *
+     * @return string
+     */
+    private function nomCours($coursGrp){
+        $cours = explode('-', $coursGrp)[0];
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT libelle ';
+        $sql .= 'FROM '.PFX.'cours ';
+        $sql .= 'WHERE cours = :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 15);
+
+        $libelle = Null;
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            $libelle = $ligne['libelle'];
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $libelle;
+    }
+
     /**
      * détermine la nature précise du destinataire d'une annonce
      *
@@ -418,11 +712,17 @@ class thot
                     case 'niveau':
                         return sprintf('Élèves de %de année', $destinataire);
                         break;
-                    case ('coursGrp'):
-                        return sprintf('Les élèves du cours %s', self::nomCours($destinataire));
+                    case 'coursGrp':
+                        return sprintf('Les élèves du cours %s [%s]', self::nomCours($destinataire), $destinataire);
                         break;
-                    case ('classes'):
+                    case 'classes':
                         return sprintf('Les élèves de %s', $destinataire);
+                        break;
+                    case 'cours':
+                        return sprintf('Les élèves du la matière %s', self::nomMatiere($destinataire));
+                        break;
+                    default:
+                        return "$type $destinataire";
                         break;
                     }
             }
@@ -431,47 +731,58 @@ class thot
     /**
      * retourne la liste structurée des annonces destinées à l'élève dont on donne le matricule, la classe, la liste des cours.
      *
-     * @param $matricule
-     * @param $classe
+     * @param int $matricule
+     * @param string $classe
+     * @param array $listeMatieres
+     * @param array $listeCoursGrp
+     * @param string $nomEleve
+     *
      *
      * @return array
      */
-    public function listeAnnonces($matricule, $classe, $listeCours, $nomEleve)
-    {
-        $niveau = substr($classe, 0, 1);
-        $listeCoursString = "'".implode('\',\'', $listeCours)."'";
+      public function listeLesAnnonces($matricule, $classe, $listeMatieres, $listeCoursGrp, $nomEleve){
+   		$niveau = substr($classe, 0, 1);
+   		$listeMatieresString = "'".implode("','", $listeMatieres)."'";
+   		$listeCoursGrpString = "'".implode("','", $listeCoursGrp)."'";
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dtn.id, type, proprietaire, destinataire, objet, texte, dateDebut, dateFin, dtn.mail, accuse, dp.nom, dp.sexe, dateEnvoi ';
+   		$sql = 'SELECT dtn.id, type, proprietaire, destinataire, objet, texte, dateDebut, dateFin, dtn.mail, accuse, dp.nom, dp.sexe, dateEnvoi ';
         $sql .= 'FROM '.PFX.'thotNotifications AS dtn ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = dtn.proprietaire ';
-        $sql .= "WHERE destinataire IN ('$matricule', '$classe', '$niveau', 'ecole', $listeCoursString) ";
+        $sql .= 'WHERE destinataire IN (:matricule, :classe, :niveau, "ecole", '.$listeMatieresString.', '.$listeCoursGrpString.') ';
         $sql .= 'AND (dateFin > NOW() AND dateDebut <= NOW()) ';
         $sql .= 'ORDER BY dateEnvoi DESC, dateDebut DESC ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 7);
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
         $listeAnnonces = array();
+        $resultat = $requete->execute();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $id = $ligne['id'];
-                $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
-                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
-                $ligne['dateEnvoi'] = Application::dateTimeFr($ligne['dateEnvoi']);
-                $ligne['pourQui'] = $this->pourQui($ligne['type'], $ligne['destinataire'], $matricule, $nomEleve);
-                if ($ligne['nom'] != '') {
-                    switch ($ligne['sexe']) {
-                        case 'M':
-                            $ligne['proprietaire'] = 'M. '.$ligne['nom'];
-                            break;
-                        case 'F':
-                            $ligne['proprietaire'] = 'Mme '.$ligne['nom'];
-                            break;
-                    }
-                }
-                $listeAnnonces[$id] = $ligne;
+        	$requete->setFetchMode(PDO::FETCH_ASSOC);
+        	while ($ligne = $requete->fetch()) {
+        		$id = $ligne['id'];
+           $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
+           $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
+           $ligne['dateEnvoi'] = Application::dateTimeFr($ligne['dateEnvoi']);
+           $ligne['pourQui'] = $this->pourQui($ligne['type'], $ligne['destinataire'], $matricule, $nomEleve);
+           if ($ligne['nom'] != '') {
+               switch ($ligne['sexe']) {
+                   case 'M':
+                       $ligne['proprietaire'] = 'M. '.$ligne['nom'];
+                       break;
+                   case 'F':
+                       $ligne['proprietaire'] = 'Mme '.$ligne['nom'];
+                       break;
+                   }
+               }
+              $listeAnnonces[$id] = $ligne;
             }
         }
-        Application::DeconnexionPDO($connexion);
+
+   		Application::DeconnexionPDO($connexion);
 
         return $listeAnnonces;
     }
@@ -489,7 +800,6 @@ class thot
         if (!(is_array($listeNotifications))){
             $listeNotifications = array('type' => array($listeNotifications => 'wtf'));
         }
-
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT dtnp.shareId, path, fileName ';
         $sql .= 'FROM '.PFX.'thotNotifPJ AS dtnp ';
@@ -520,7 +830,7 @@ class thot
         return $liste;
     }
 
-    /**
+        /**
      * renvoie la liste des PJ associées à chacune des notifications
      * de la liste $listeNotifications passée
      *
@@ -771,7 +1081,7 @@ class thot
         $dateDebut = Application::dateMysql(Application::dateNow());
         $dateFin = Application::dateMysql(Application::dateUnMois());
         $sql = 'INSERT INTO '.PFX.'thotNotifications ';
-        $sql .= "SET type='classes', proprietaire='$acronyme', destinataire=:matricule, objet='Décision du Conseil de Classe', ";
+        $sql .= "SET type='eleves', proprietaire='$acronyme', destinataire=:matricule, objet='Décision du Conseil de Classe', ";
         $sql .= "texte=:texte, dateDebut='$dateDebut', dateFin='$dateFin', ";
         $sql .= "urgence='2', mail='1', accuse='1' ";
         $requete = $connexion->prepare($sql);
@@ -1068,13 +1378,17 @@ class thot
         $sql = 'SELECT de.matricule, bulletin, nom, prenom ';
         $sql .= 'FROM '.PFX.'eleves AS de ';
         $sql .= 'LEFT JOIN '.PFX.'thotBulletin AS dtb ON de.matricule = dtb.matricule ';
-        $sql .= "WHERE de.groupe = '$classe' ";
+        $sql .= 'WHERE de.groupe = :classe ';
+        $sql .= 'ORDER BY nom, prenom ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
         $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $liste[$matricule] = $ligne;
             }
@@ -1095,17 +1409,19 @@ class thot
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'thotBulletin ';
-        $sql .= 'SET bulletin=:bulletin, matricule=:matricule ';
-        $sql .= 'ON DUPLICATE KEY UPDATE bulletin=:bulletin ';
+        $sql .= 'SET bulletin = :bulletin, matricule = :matricule ';
+        $sql .= 'ON DUPLICATE KEY UPDATE bulletin = :bulletin ';
         $requete = $connexion->prepare($sql);
+
         $nb = 0;
         foreach ($post as $fieldName => $value) {
             if (SUBSTR($fieldName, 0, 9) == 'bulletin_') {
                 $matricule = explode('_', $fieldName);
                 $matricule = $matricule[1];
                 $bulletin = $value;
-                $data = array(':matricule' => $matricule, ':bulletin' => $bulletin);
-                $resultat = $requete->execute($data);
+                $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+                $resultat = $requete->execute();
 
                 if ($resultat > 0) {
                     ++$nb;
@@ -1124,35 +1440,35 @@ class thot
      *
      * @return array
      */
-     public function listeParents($listeClasses)
-     {
-         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    public function listeParents($listeClasses)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
-         foreach ($listeClasses as $uneClasse) {
-             $sql = 'SELECT dtp.matricule, de.nom AS nomEleve, de.prenom AS prenomEleve, lien, dtp.nom, dtp.prenom, dtp.mail ';
-             $sql .= 'FROM '.PFX.'thotParents AS dtp ';
-             $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
-             $sql .= 'WHERE dtp.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe LIKE :uneClasse) ';
-             $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(de.nom," ",""),"-",""),"\'",""), de.prenom ';
-             $requete = $connexion->prepare($sql);
+        foreach ($listeClasses as $uneClasse) {
+            $sql = 'SELECT dtp.matricule, de.nom AS nomEleve, de.prenom AS prenomEleve, lien, dtp.nom, dtp.prenom, dtp.mail ';
+            $sql .= 'FROM '.PFX.'thotParents AS dtp ';
+            $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
+            $sql .= 'WHERE dtp.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe LIKE :uneClasse) ';
+            $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(de.nom," ",""),"-",""),"\'",""), de.prenom ';
+            $requete = $connexion->prepare($sql);
 
-             $requete->bindParam(':uneClasse', $uneClasse, PDO::PARAM_STR, 6);
+            $requete->bindParam(':uneClasse', $uneClasse, PDO::PARAM_STR, 6);
 
-             $resultat = $requete->execute();;
+            $resultat = $requete->execute();;
 
- 			$liste = array();
-             if ($resultat) {
-                 $requete->setFetchMode(PDO::FETCH_ASSOC);
-                 while ($ligne = $requete->fetch()) {
-                     $matricule = $ligne['matricule'];
-                     $liste[$uneClasse][$matricule][] = $ligne;
-                 }
-             }
-         }
-         Application::deconnexionPDO($connexion);
+			$liste = array();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                while ($ligne = $requete->fetch()) {
+                    $matricule = $ligne['matricule'];
+                    $liste[$uneClasse][$matricule][] = $ligne;
+                }
+            }
+        }
+        Application::deconnexionPDO($connexion);
 
-         return $liste;
-     }
+        return $liste;
+    }
 
     /**
      * renvoie la liste des parents non inscrits sur la plate-forme pour la liste des classes donnée
@@ -2333,7 +2649,7 @@ class thot
         $dateDebut = Application::dateMysql($dateDebut);
         $dateFin = Application::dateMysql($dateFin);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT user, groupe, eleves.nom, eleves.prenom, formule, ';
+        $sql = 'SELECT user, groupe, eleves.nom, eleves.prenom, formule, eleves.matricule, ';
         $sql .= 'parents.nom AS nomParent, parents.prenom AS prenomParent, COUNT(user) AS nb ';
         $sql .= 'FROM '.PFX.'thotLogins AS logins ';
         $sql .= 'JOIN '.PFX.'thotParents AS parents ON parents.userName = logins.user ';
@@ -2361,6 +2677,7 @@ class thot
 
         return $liste;
     }
+
     /**
      * renvoie les statistiques de connexions des élèves d'une classe donnée entre deux dates
      *
@@ -2374,7 +2691,7 @@ class thot
         $dateDebut = Application::dateMysql($dateDebut);
         $dateFin = Application::dateMysql($dateFin);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT logins.user, COUNT(logins.user) AS nb, groupe, nom, prenom ';
+        $sql = 'SELECT logins.user, COUNT(logins.user) AS nb, groupe, nom, prenom, eleves.matricule ';
         $sql .= 'FROM '.PFX.'thotLogins AS logins ';
         $sql .= 'JOIN '.PFX.'passwd AS pwd ON pwd.user = logins.user ';
         $sql .= 'JOIN '.PFX.'eleves AS eleves ON eleves.matricule = SUBSTR(logins.user, -4, length(eleves.matricule)) ';
@@ -2402,6 +2719,8 @@ class thot
 
         return $liste;
     }
+
+
 
     /**
      * sélection des matricules des élèves dont les parents ne se sont pas inscrits eux-mêmes à la RP
@@ -2986,26 +3305,34 @@ class thot
     }
 
     /**
-     * renvoie la liste des groupes existants associés à l'utilisateur $acronyme
+     * ------------------------------------------------------------------------
+     * procédures liées aux groupes arbitraires
+     * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+     */
+
+    /**
+     * renvoie la liste des groupes existants dont l'utilisateur $acronyme a le statut $statut
      *
      * @param string $acronyme
+     * @param array $statuts : liste des statuts qui peuvent accéder aux groupes
      *
      * @return array
      *
      */
-    public function getListeProprioGroupes ($acronyme) {
+    public function getListeGroupes4User($acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT nomGroupe, intitule, description, type, proprio, maxMembres ';
-        $sql .= 'FROM '.PFX.'groupes ';
-        $sql .= 'WHERE proprio = :acronyme ';
-        $sql .= 'ORDER BY intitule ';
-        $requete = $connexion->prepare ($sql);
+        $sql = 'SELECT groupes.nomGroupe, intitule, description, statut, type, acronyme ';
+        $sql .= 'FROM '.PFX.'groupes AS groupes ';
+        $sql .= 'LEFT JOIN '.PFX.'groupesMembres AS membres ON membres.nomGroupe = groupes.nomGroupe ';
+        $sql .= 'WHERE membres.acronyme = :acronyme ';
+        $sql .= 'ORDER BY groupes.nomGroupe ';
+        $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
 
         $liste = array();
         $resultat = $requete->execute();
-        if ($resultat){
+        if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $nomGroupe = $ligne['nomGroupe'];
@@ -3013,8 +3340,442 @@ class thot
             }
         }
 
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie les informations relatives au groupe $groupe
+     *
+     * @param string $groupe
+     * @param string $acronyme : le propriétaire pour sécurité
+     *
+     * @return array
+     */
+    public function getData4groupe($nomGroupe) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT groupes.nomGroupe, intitule, description, type, proprio, maxMembres ';
+        $sql .= 'FROM '.PFX.'groupes AS groupes ';
+        $sql .= 'JOIN '.PFX.'groupesMembres AS membres ON membres.nomGroupe = groupes.nomGroupe ';
+        $sql .= 'WHERE groupes.nomGroupe = :nomGroupe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+
+        $ligne = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
+    /**
+     * Enregistre les informations relatives aux caractèristiques d'un groupe
+     *
+     * @param array $form : le formulaire d'édition du groupe
+     *
+     * @return int : nombre d'enregistrements réussis (0 ou 1)
+     */
+    public function saveData4groupe($form, $acronyme) {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $edition = $form['edition'];
+
+         $sql = 'INSERT INTO '.PFX.'groupes ';
+         $sql .= 'SET nomGroupe = :nomGroupe, intitule = :intitule, description = :description, proprio = :acronyme, ';
+         $sql .= 'type = :type, maxMembres = :maxMembres ';
+         if ($edition == 1){
+             $sql .= 'ON DUPLICATE KEY UPDATE intitule = :intitule, description = :description, type = :type, maxMembres = :maxMembres ';
+             }
+         $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $form['nomGroupe'], PDO::PARAM_STR, 8);
+        $requete->bindParam(':intitule', $form['intitule'], PDO::PARAM_STR, 20);
+        $requete->bindParam(':description', $form['description'], PDO::PARAM_STR);
+        $requete->bindParam(':type', $form['type'], PDO::PARAM_STR, 10);
+        $requete->bindParam(':maxMembres', $form['maxMembres'], PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        $nb = $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * vérifie si un groupe existe déjà
+     *
+     * @param string $nomGroupe
+     *
+     * @return bool
+     */
+    public function groupeExiste($nomGroupe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT * FROM '.PFX.'groupes ';
+        $sql .= 'WHERE nomGroupe = :nomGroupe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+
+        $nb = 0;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $ligne = $requete->fetch();
+            $nb = $requete->rowCount();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb > 0;
+    }
+
+    /**
+     * enregistre les informations relatives au propriétaire d'un nouveau groupe
+     * dans la liste des membres
+     *
+     * @param string $nomGroupe
+     * @param string $acronyme
+     */
+    public function saveProprioGroupe($nomGroupe, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'groupesMembres ';
+        $sql .= 'SET nomGroupe = :nomGroupe, acronyme = :acronyme, statut = "proprio" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * retourne la liste des membres d'un groupe donné
+     * @param string $nomGroupe
+     * @param string $acronyme : vérifiaction du proprio pour la sécurité
+     *
+     * @return array
+     */
+
+    public function getListeMembresGroupe($nomGroupe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT nomGroupe, membres.statut, profs.nom AS nomProf, profs.prenom AS prenomProf, ';
+        $sql .= 'eleves.nom AS nomEleve, eleves.prenom as prenomEleve, eleves.groupe, ';
+        $sql .= 'membres.matricule, membres.acronyme ';
+        $sql .= 'FROM '.PFX.'groupesMembres AS membres ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = membres.acronyme ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS eleves ON eleves.matricule = membres.matricule ';
+        $sql .= 'WHERE nomGroupe = :nomGroupe ';
+        $sql .= 'ORDER BY nomEleve, prenomEleve, nomProf, prenomProf ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $acroProf = $ligne['acronyme'];
+                if ($matricule > 0)
+                    $liste['eleves'][$matricule] = $ligne;
+                    else $liste['profs'][$acroProf] = $ligne;
+            }
+        }
+
         Application::DeconnexionPDO($connexion);
 
         return $liste;
     }
+
+    /**
+     * Ajout des élèves de la liste $listeEleves fournie au groupe $nomGroupe
+     *
+     * @param string $nomGroupe
+     * @param array $listeEleves
+     *
+     * @return int : nombre d'enregistrements réalisés
+     */
+    public function addMembresElevesGroupe($nomGroupe, $listeEleves){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'groupesMembres ';
+        $sql .= 'SET matricule = :matricule, nomGroupe = :nomGroupe, statut = "membre" ';
+        $requete = $connexion->prepare($sql);
+
+        $nb = 0;
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+        foreach ($listeEleves AS $wtf => $matricule) {
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * Ajout des profs de la liste $listeProfs fournie au groupe $nomGroupe
+     *
+     * @param string $nomGroupe
+     * @param array $listeProfs
+     *
+     * @return int : nombre d'enregistrements réalisés
+     */
+    public function addMembresProfsGroupe($nomGroupe, $listeProfs){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'groupesMembres ';
+        $sql .= 'SET acronyme = :acronyme, nomGroupe = :nomGroupe, statut = "membre" ';
+        $requete = $connexion->prepare($sql);
+
+        $nb = 0;
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+        foreach ($listeProfs AS $wtf => $acronyme) {
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * Suppression de la liste des membres $listeEleves fournie du groupe $nomGroupe
+     *
+     * @param string $nomGroupe
+     * @param string $type : 'eleves' ou 'profs'
+     * @param array $listeEleves
+     *
+     * @return int
+     */
+    public function delMembresGroupe($nomGroupe, $type, $listeMembres){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'groupesMembres ';
+        switch ($type) {
+            case 'eleves':
+                $sql .= 'WHERE matricule = :matricule ';
+                break;
+            case 'profs':
+                $sql .= 'WHERE acronyme = :acronyme ';
+                break;
+            default:
+                die();
+                break;
+        }
+        $sql .= 'AND nomGroupe = :nomGroupe ';
+        $requete = $connexion->prepare($sql);
+
+        $nb = 0;
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 8);
+        foreach ($listeMembres AS $wtf => $identifiant) {
+            if ($type == 'eleves') {
+                $matricule = $identifiant;
+                $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            }
+            else {
+                $acronyme = $identifiant;
+                $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            }
+            $nb += $requete->execute();
+            }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * change le statut 'admin' ou 'membre' d'un prof dans un groupe
+     *
+     * @param string $acronyme
+     * @param string $nomGroupe
+     * @param string $statut (admin ou membre)
+     *
+     * @return int nombre d'enregistrements (0 ou 1)
+     */
+    public function changeStatutMembreGroupe($acronyme, $nomGroupe, $statut){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'groupesMembres ';
+        $sql .= 'SET statut = :statut ';
+        $sql .= 'WHERE nomGroupe = :nomGroupe AND acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 20);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 6);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+
+    /**
+     * Suppression totale d'un groupe arbitraire et clôture de ses membres
+     *
+     * @param string $nomGroupe
+     * @param string $proprio
+     *
+     * @return bool
+     */
+    public function supprGroupeEtMembres($nomGroupe, $proprio){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // vérifier que le groupe appartient bien à $proprio
+        $sql = 'SELECT nomGroupe, proprio ';
+        $sql .= 'FROM '.PFX.'groupes ';
+        $sql .= 'WHERE nomGroupe = :nomGroupe AND proprio = :proprio ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 20);
+        $requete->bindParam(':proprio', $proprio, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        if ($resultat){
+            $ligne = $requete->fetch();
+            if ($ligne['proprio'] == $proprio) {
+                // c'est bon, on peut supprimer les membres
+                $sql = 'DELETE FROM '.PFX.'groupesMembres ';
+                $sql .= 'WHERE nomGroupe = :nomGroupe ';
+                $requete = $connexion->prepare($sql);
+                $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 20);
+                $requete->execute();
+                // et on peut supprimer le groupe
+                $sql = 'DELETE FROM '.PFX.'groupes ';
+                $sql .= 'WHERE nomGroupe = :nomGroupe ';
+                $requete = $connexion->prepare($sql);
+                $requete->bindParam(':nomGroupe', $nomGroupe, PDO::PARAM_STR, 20);
+                $requete->execute();
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     * fin des procédures liées aux groupes arbitraires
+     * ------------------------------------------------------------------------
+     */
+
+
+    /**
+     * retourne les informations détaillées sur un cours/groupe donné ou le cours correspondant
+     * s'il s'agit d'un coursGrp, on ne prend que la partie avant le "-".
+     *
+     * @param string $coursGrp/$cours
+     *
+     * @return array
+     */
+    public function detailsCours($coursGrp)
+    {
+        $pattern = '/([0-9])( {0,1}[A-Z]*):([A-Z]*)[0-9a-z]*/';
+        $ligne = array();
+        if (preg_match($pattern, $coursGrp, $matches)) {
+            $cours = $matches[0];
+            $annee = $matches[1];
+            $forme = $matches[2];
+            $code = $matches[3];
+
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
+            $sql .= 'FROM '.PFX.'cours AS c ';
+            $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = c.cadre) ';
+            $sql .= 'WHERE cours = :cours ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+            $ligne = array();
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $ligne = $requete->fetch();
+                $ligne['forme'] = $forme;
+                $ligne['annee'] = $annee;
+                $ligne['code'] = $code;
+            }
+            Application::DeconnexionPDO($connexion);
+        }
+
+        return $ligne;
+    }
+
+    /**
+     * retourne les détails concernant la matière $cours indiquée (ne pas confondre avec coursGrp)
+     *
+     * @param string $cours
+     *
+     * @return array
+     */
+    public function getDetailsMatiere($cours){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
+        $sql .= 'FROM '.PFX.'cours AS c ';
+        $sql .= 'JOIN '.PFX.'statutCours AS statut ON (statut.cadre = c.cadre) ';
+        $sql .= 'WHERE cours = :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+        $details = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $details = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $details;
+    }
+
+    /**
+     * retourne les informations essentielles concernant un élève: nom, prenom, classe
+     *
+     * @param int $matricule
+     *
+     * @return array
+     */
+    public function getMinDetailsEleve($matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, nom, prenom, classe, groupe ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $npc = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $npc = $requete->fetch();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $npc;
+    }
+
 }
