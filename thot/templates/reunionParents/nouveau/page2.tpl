@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div class="row">
 
     <div class="col-md-10 col-sm-12">
@@ -22,8 +20,8 @@
 
                 <div class="col-md-9 col-sm-12">
                     <div class="form-group">
-                        <label for="Note">Note aux parents</label>
-                        <textarea name="notice" rows="6" cols="80" class="form-control ckeditor" placeholder="Rédigez votre note aux parents ici">{$infoRp.generalites.notice|default:''}</textarea>
+                        <label for="texte">Note aux parents</label>
+                        <textarea name="notice" id="texte" class="form-control summernote" placeholder="Rédigez votre note aux parents ici">{$infoRp.generalites.notice|default:''}</textarea>
                         <p class="help-block">Notice destinée aux parents pour l'inscription à la réunion</p>
                     </div>
                 </div>  <!-- col-md-... -->

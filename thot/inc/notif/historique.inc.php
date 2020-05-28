@@ -32,6 +32,10 @@ $listeCours = $user->getListeCours();
 // valeur à déterminer ensuite
 $destinataire = Null;
 
+// effacement des notifications périmées
+$listePerimees = $Thot->getNotifsPerimees();
+$nb = $Thot->delListeNotifs($listePerimees);
+
 // ------------------------------------------------------------------------------
 // la liste de toutes les notifications est ventilée par groupe destinataire
 foreach ($listeNotifications as $type => $lesNotifications) {

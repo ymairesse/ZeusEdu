@@ -1079,6 +1079,27 @@ class Jdc
     }
 
     /**
+     * suppression des PJ liées au journal de classe mais qui ne sont plus partagées
+     *
+     * @param void
+     *
+     * @return int : le nombre de suppressions
+     */
+    public function delUnSharedPJ(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotJdcPJ ';
+        $sql .= 'WHERE shareId NOT IN (SELECT shareId FROM '.PFX.'thotShares) ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        $nb = $requete->rowCount();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $nb;
+        }
+
+    /**
      * enregistre une notification au JDC.
      *
      * @param array $post : tout le contenu du formulaire

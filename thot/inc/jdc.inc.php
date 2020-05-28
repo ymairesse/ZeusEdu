@@ -10,6 +10,9 @@ $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
 
+// effacement préventif des PJ qui ne sont plus partagées
+$nb = $Jdc->delUnSharedPJ();
+
 // le sélecteur éventuel revient avec un $type qui va permettre de définir un "destinataire"
 switch ($type) {
     case 'eleve':

@@ -16,24 +16,19 @@
         		</tr>
         		{foreach from=$listeAnnonces key=id item=dataAnnonce name=n}
 
-<!--
-<pre>
-{$id|print_r}
-</pre>
--->        			<tr
-        				data-id="{$id}"
-        				data-accuse="
-        					{if ($dataAnnonce.accuse == 1)}
-        					 	{if $dataAnnonce.flags.dateHeure == Null}
-        						1
-        						{else}
-        						0
-        						{/if}
-        					{else}
-        					0
-        					{/if}"
-
+     			<tr data-id="{$id}"
+    				data-accuse="
+    					{if ($dataAnnonce.accuse == 1)}
+    					 	{if $dataAnnonce.flags.dateHeure == Null}
+    						1
+    						{else}
+    						0
+    						{/if}
+    					{else}
+    					0
+    					{/if}"
         				class="notification {$dataAnnonce.type}{if !(isset($listeFlags.$id.lu)) || ($listeFlags.$id.lu == 0 )} nonLu{/if}">
+                        
         				<td>{$smarty.foreach.n.iteration}</td>
         				<td>{$dataAnnonce.dateDebut}</td>
         				<td class="texteAnnonce">{$dataAnnonce.objet}</td>
