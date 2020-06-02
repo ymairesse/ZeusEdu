@@ -1,8 +1,8 @@
 <?php
 
 require INSTALL_DIR.'/fpdf181/fpdf.php';
-require INSTALL_DIR.'/inc/classes/class.pdf.php';
 require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
+require INSTALL_DIR.'/inc/classes/class.pdf.php';
 
 
 /*
