@@ -767,4 +767,40 @@ class padEleve
         return $nb;
     }
 
+
+    /**
+     * retourne l'image en base64 de l'horaire de l'élève $matricule depuis le répertoire $directory
+     *
+     * @param string $directory : le répertoire où se trouve l'image
+     * @param int $matricule
+     *
+     * @return string
+     */
+     public function getHoraire($directory, $matricule){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT nomImage, nomSimple ';
+        $sql .= 'FROM '.PFX.'EDTeleves ';
+        $sql .= 'WHERE matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+        $src = '';
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            if (isset($ligne['nomImage']) && $ligne['nomImage'] != '') {
+				$image = $directory.'/'.$ligne['nomImage'];
+				if (file_exists($image)) {
+					$imageData = base64_encode(file_get_contents($image));
+					$src = 'data: '.mime_content_type($image).';base64,'.$imageData;
+					}
+				}
+			}
+
+        Application::deconnexionPDO($connexion);
+
+        return $src;
+    }
+
 }
