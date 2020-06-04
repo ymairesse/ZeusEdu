@@ -74,7 +74,9 @@ if (isset($matricule) && ($matricule != '')
     $smarty->assign('ceb', $Bulletin->getCEB($matricule));
 
     // recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
-    $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule)[$matricule];
+    $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
+    if ($listeCoursActuelle != Null)
+        $listeCoursActuelle = $listeCoursActuelle[$matricule];
     $smarty->assign('listeCoursGrp', $listeCoursActuelle);
 
     // recherche des correspondances entre acronyme et nom des profs
@@ -118,18 +120,24 @@ if (isset($matricule) && ($matricule != '')
 
     // détermination du nombre max de période de délibé
     $maxPeriodes = 0;
-    foreach ($mentions[$matricule] AS $anScol => $dataAnnee) {
-        foreach ($dataAnnee AS $annee => $data) {
-            if (count($data) > $maxPeriodes)
-                $maxPeriodes = count($data);
+    if ($mentions != Null) {
+        foreach ($mentions[$matricule] AS $anScol => $dataAnnee) {
+            foreach ($dataAnnee AS $annee => $data) {
+                if (count($data) > $maxPeriodes)
+                    $maxPeriodes = count($data);
+                }
             }
         }
     $smarty->assign('maxPeriodes', $maxPeriodes);
 
+
     // affichage de l'horaire EDT
     $directory = INSTALL_DIR.'/edt/eleves/';
-    $horaireEDT = $padEleve->getHoraire($directory, $matricule);
-    $smarty->assign('horaireEDT', $horaireEDT);
+    if (is_dir($directory)) {
+        $horaireEDT = $padEleve->getHoraire($directory, $matricule);
+        }
+        else $horeaireEDT = Null;
+        $smarty->assign('horaireEDT', $horaireEDT);
 
     // affectation de la liste doublement liée d'élèves
     $prevNext = $Bulletin->prevNext($matricule, $listeEleves);
