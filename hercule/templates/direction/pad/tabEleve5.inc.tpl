@@ -2,6 +2,11 @@
 
 	<div class="col-xs-12">
 
+		<span id="ajaxLoader" class="hidden">
+			<img src="images/ajax-loader.gif" alt="loading">
+		</span>
+		<button type="button" class="btn btn-success pull-right" id="btnPrintTab5"><i class="fa fa-print"></i> Imprimer</button>
+
 		<table class="table table-condensed">
 
 		    <thead>
@@ -27,7 +32,7 @@
 		            </td>
 		            {assign var=id value=$unItem.id}
 		            <td>{$listeSuivi.$id.proprietaire}</td>
-		            <td>{if $unItem.absent == 1}<i class="fa fa-question <fa-lg></fa-lg> text-danger" title="Ne s'est pas présenté"></i>{else}-{/if}</td>
+		            <td>{if $unItem.absent == 1}<i class="fa fa-question fa-lg> text-danger" title="Ne s'est pas présenté"></i>{else}-{/if}</td>
 		            {assign var=leProf value=$unItem.envoyePar}
 		            <td>{if isset($dicoProfs.$leProf)}{$dicoProfs.$leProf}{else}{$unItem.envoyePar} (?){/if}</td>
 		            <td data-date="{$unItem.date}">{$unItem.date}</td>
@@ -78,3 +83,29 @@
 
 </div>
 <!-- row -->
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		$(document).ajaxStart(function() {
+			$('#ajaxLoader').removeClass('hidden');
+		}).ajaxComplete(function() {
+			$('#ajaxLoader').addClass('hidden');
+		});
+
+		$('#btnPrintTab5').click(function(){
+			var matricule = $('#selectEleve').val();
+			$.post('inc/printPad/printPadAthena.inc.php', {
+				matricule: matricule
+			}, function(resultat){
+				bootbox.alert({
+					title: 'Le document est prêt',
+					message: 'Veuillez cliquer sur <a href="inc/download.php?type=pfN&amp;f='+resultat+'"><i class="fa fa fa-file-pdf-o fa-2x"></i></a> pour le télécharger<br>Ce document personnel dans l\'application Thot'
+				})
+			})
+		})
+
+	})
+
+</script>

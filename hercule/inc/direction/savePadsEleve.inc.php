@@ -19,16 +19,18 @@ $acronyme = $User->getAcronyme();
 // retrouver le nom du module actif
 $module = $Application->getModule(3);
 
+$pad = isset($_POST['pad']) ? $_POST['pad'] : Null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$instanceName = isset($_POST['id']) ? $_POST['id'] : Null;
-$texte = isset($_POST['texte']) ? $_POST['texte'] : Null;
-
-$padId = explode('_', $instanceName)[1];
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.'inc/classes/classPad.inc.php';
 $padEleve = new padEleve($matricule, $acronyme);
 
-$nb = $padEleve->updatePadEleve($padId, $matricule, $texte);
+$nb = 0;
+foreach ($pad as $unPad) {
+    $id = explode('_', $unPad['id'])[1];
+    $texte = $unPad['texte'];
+    $nb += $padEleve->updatePadEleve($id, $matricule, $texte);
+}
 
 echo $nb;

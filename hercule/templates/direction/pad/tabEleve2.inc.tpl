@@ -1,3 +1,10 @@
+<div>
+	<span id="ajaxLoader" class="hidden">
+        <img src="images/ajax-loader.gif" alt="loading">
+    </span>
+	<button type="button" class="btn btn-success pull-right" id="btnPrintTab2"><i class="fa fa-print"></i> Imprimer</button>
+</div>
+
 {if isset($degre) && ($degre == 1)}
 
 <h3>Résultats du CEB</h3>
@@ -146,6 +153,7 @@
 	</div>  <!-- table-responsive -->
 	{/foreach}
 {/foreach}
+
 {include file="tableauMentions.tpl"}
 
 
@@ -165,3 +173,30 @@
 	{/foreach}
 </table>
 {/if}
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+
+		$(document).ajaxStart(function() {
+			$('#ajaxLoader').removeClass('hidden');
+		}).ajaxComplete(function() {
+			$('#ajaxLoader').addClass('hidden');
+		});
+
+		$('#btnPrintTab2').click(function(){
+			var matricule = $('#selectEleve').val();
+			$.post('inc/printPad/printPadScolaire.inc.php', {
+				matricule: matricule
+			}, function(resultat){
+				bootbox.alert({
+					title: 'Le document est prêt',
+					message: 'Veuillez cliquer sur <a href="inc/download.php?type=pfN&amp;f='+resultat+'"><i class="fa fa fa-file-pdf-o fa-2x"></i></a> pour le télécharger<br>Ce document restera disponible dans votre répertoire personnel dans l\'application Thot' 
+				})
+			})
+
+		})
+
+	})
+
+</script>

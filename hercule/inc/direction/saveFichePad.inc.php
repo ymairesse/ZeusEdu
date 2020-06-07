@@ -17,8 +17,6 @@ if (!(isset($_SESSION[APPLICATION]))) {
 // retrouver le nom du module actif
 $module = $Application->getModule(3);
 $ds = DIRECTORY_SEPARATOR;
-// require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classBulletin.inc.php';
-// $Bulletin = new Bulletin();
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();

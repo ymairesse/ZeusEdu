@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div class="container-fluid">
 
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
@@ -17,6 +15,11 @@
 				<li><a href="#tabs-6" data-toggle="tab">Ades {if $nbFaits > 0}<span class="badge" style="color:red; background-color: white">{$nbFaits}</span>{/if}</a></li>
 				<li><a href="#tabs-7" data-toggle="tab">Présences {if $listePresences|@count > 0}<span class="badge" style="color:red; background-color: white">{$listePresences|@count}</span>{/if}</a></li>
 				<li><a href="#tabs-8" data-toggle="tab">Horaire EDT</a></li>
+				<li><a data-toggle="tab" href="#tabs-10">Médical <i style="color: red;" class="fa fa-medkit fa-lg"></i>  <span class="badge" style="color:red; background: white">{$consultEleve|@count}</span>
+				{if $medicEleve.info != ''}
+					<i class="fa fa-heartbeat faa-pulse animated" style="font-size:1.2em; color: red"></i>
+				{/if}
+				</a></li>
 			</ul>
 
 			<div class="tab-content">
@@ -58,6 +61,11 @@
 				<div class="tab-pane" id="tabs-8">
 					{include file="direction/pad/tabEleve8.inc.tpl"}
 				</div>
+
+				<div class="tab-pane" id="tabs-10">
+					{include file="direction/pad/visitesInfirmerie.tpl"}
+				</div>
+
 
 			</div>
 			<!-- my-tab-content -->
@@ -120,7 +128,7 @@
 			var coursGrp = $(this).data('coursgrp');
 			var anScol = $(this).data('anscol');
 			var periode = $(this).data('periode');
-			var matricule = $('#matricule').val();
+			var matricule = $('#selectEleve').val();
 			bootbox.confirm({
 				title: 'Confirmation',
 				message: 'Veuillez confirmer la suppression des notes pour le cours ' + coursGrp,

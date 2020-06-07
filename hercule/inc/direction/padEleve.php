@@ -23,6 +23,13 @@ if (isset($matricule) && ($matricule != '')
     $listeSuivi = $Athena->getSuiviEleve($matricule);
     $smarty->assign('listeSuivi', $listeSuivi);
 
+    // informations médicales
+    require_once INSTALL_DIR.'/infirmerie/inc/classes/classInfirmerie.inc.php';
+    $infirmerie = new eleveInfirmerie($matricule);
+    $smarty->assign('medicEleve', $infirmerie->getMedicEleve($matricule));
+    $smarty->assign('consultEleve', $infirmerie->getVisitesEleve($matricule));
+
+
     // initialisation des données ADES dans le bloc-notes
     require_once INSTALL_DIR.'/ades/inc/classes/classEleveAdes.inc.php';
     $EleveAdes = new EleveAdes();
@@ -61,6 +68,7 @@ if (isset($matricule) && ($matricule != '')
     $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
 
     // affectation de tous les textes libres pour l'élève
+    // s'il n'existe pas, un pad est créé pour l'utilisateur $acronyme et l'élève $matricule
     $smarty->assign('padsEleve', $padEleve->getPads());
 
     // recherche des infos personnelles de l'élève

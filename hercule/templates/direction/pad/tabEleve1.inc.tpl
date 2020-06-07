@@ -68,7 +68,7 @@
         <li class="active"><a href="#tab{$idProprio}" data-toggle="tab">{$padsEleve.proprio.$idProprio.proprio}</a></li>
         {foreach from=$padsEleve.guest key=id item=unPad}
         <li><a href="#tab{$id}" data-toggle="tab">{$unPad.proprio}
-            {if $unPad.mode == 'rw'}<img src="images/padIco.png" alt=";o)">{/if}
+            {if $unPad.mode == 'rw'}<img src="images/padIco.png" alt=";o)" title="Droits d'écriture">{/if}
             </a></li>
         {/foreach}
     </ul>
@@ -79,8 +79,7 @@
             <textarea
                 name="texte_{$idProprio}"
                 id="texte_{$idProprio}"
-                rows="20"
-                class="ckeditor form-control"
+                class="summernote form-control"
                 placeholder="Frappez votre texte ici"
                 >{$padsEleve.proprio.$idProprio.texte}</textarea>
         </div>
@@ -91,8 +90,7 @@
                 name="texte_{$id}"
                 id="texte_{$id}"
                 data-anscol="{$anScol}"
-                rows="20"
-                class="ckeditor form-control"
+                class="summernote form-control"
                 placeholder="Frappez votre texte ici"
                 autofocus="true"
                 {if $unPad.mode !='rw' } disabled="disabled" {/if}
@@ -163,6 +161,12 @@
     							Poursuite de parcours
     						</div>
     						<div class="panel-body">
+                                <div class="checkbox-inline">
+                                    <label><input type="checkbox" name="cbMeritant" value="1" {if isset($suivi4pad.$anScol.$periode.pp1) && $suivi4pad.$anScol.$periode.pp1 == 1}checked{/if}>Méritant</label>
+                                </div>
+                                <div class="checkbox-inline">
+                                    <label><input type="checkbox" name="cbFacilite" value="1" {if isset($suivi4pad.$anScol.$periode.pp2) && $suivi4pad.$anScol.$periode.pp2 == 1}checked{/if}>Facilités</label>
+                                </div>
 	                            <textarea data-anscol="{$anScol}"
                                     class="form-control"
                                     rows="2"
@@ -437,7 +441,71 @@
 
 <script type="text/javascript">
 
+    function sendFile(file, el) {
+    	var form_data = new FormData();
+    	form_data.append('file', file);
+    	$.ajax({
+    		data: form_data,
+    		type: "POST",
+    		url: 'editor-upload.php',
+    		cache: false,
+    		contentType: false,
+    		processData: false,
+    		success: function(url) {
+    			$(el).summernote('editor.insertImage', url);
+    		}
+    	});
+    }
+
+    function deleteFile(src) {
+    	console.log(src);
+    	$.ajax({
+    		data: { src : src },
+    		type: "POST",
+    		url: 'inc/deleteImage.inc.php',
+    		cache: false,
+    		success: function(resultat) {
+    			console.log(resultat);
+    			}
+    	} );
+    	}
+
 	$(document).ready(function(){
+
+        $('.summernote').summernote({
+    		lang: 'fr-FR', // default: 'en-US'
+    		height: 250, // set editor height
+    		minHeight: 150, // set minimum height of editor
+    		focus: true, // set focus to editable area after initializing summernote
+    		toolbar: [
+    		  ['style', ['style']],
+    		  ['font', ['bold', 'underline', 'clear']],
+    		  ['font', ['strikethrough', 'superscript', 'subscript']],
+    		  ['color', ['color']],
+    		  ['para', ['ul', 'ol', 'paragraph']],
+    		  ['table', ['table']],
+    		  ['insert', ['link', 'picture', 'video']],
+    		  ['view', ['fullscreen', 'codeview', 'help']],
+    		],
+    		maximumImageFileSize: 2097152,
+    		dialogsInBody: true,
+    		callbacks: {
+    			onImageUpload: function(files, editor, welEditable) {
+    				for (var i = files.length - 1; i >= 0; i--) {
+    					sendFile(files[i], this);
+    				}
+    			},
+    			onMediaDelete : function(target) {
+    				deleteFile(target[0].src);
+    			}
+    		}
+    	});
+
+        // désactivation des pads sans droits d'écriture
+        $('.summernote').each(function(){
+            if ($(this).prop('disabled'))
+                $(this).summernote('disable');
+        })
 
         $('input:text, textarea').attr('maxlength', 256);
 
@@ -471,45 +539,40 @@
             var anScol = $(this).data('anscol');
             var periode = $(this).data('periode');
             var formulaire = $(this).closest('form').serialize();
+            var matricule = $('#selectEleve').val();
             // enregistrement de l'ensemble du formulaire: général + matières
             $.post('inc/direction/saveFichePad.inc.php', {
                 formulaire: formulaire
-            }, function(nbPads){
-                // nbPads revient avec le nombre de pads enregistrés
-                // enregistrement des ckEditors
-                var texte;
-                var disabled;
-                var nb;
-                var matricule = $('#matricule').val();
-                for (var instanceName in CKEDITOR.instances){
-                    disabled = $('#' + instanceName).attr('disabled');
-                    if (disabled != 'disabled') {
-                        // si "disabled", ne pas enregistrer
-                        texte = CKEDITOR.instances[instanceName].getData();
-                        $.post('inc/direction/savePadEleve.inc.php', {
-                            instanceName: instanceName,
-                            matricule: matricule,
-                            texte: texte
-                        }, function(nb){
-                            // nb revient avec le nombre d'items autre que le pad enregistrés
-                            $('.nav-tabs li a').find('i').remove();
-                            isModified = false;
-                            $(window).unbind('beforeunload');
-                            bootbox.alert({
-                                title: 'Enregistrement',
-                                message: parseInt(nbPads) + parseInt(nb) + " modification(s) apportée(s)"
-                            })
-                            })
-                        }
+            }, function(nbItems){
+                // nbPads revient avec le nombre d'items enregistrés
+                var summerLength = $('.summernote').length;
+                var nbText = 0;
+                var pad = [];
+                $('.summernote').each(function(i){
+                    if (!$(this).prop('disabled')) {
+                        var texte = $(this).summernote('code');
+                        var id = $(this).attr('id');
+                        pad.push({ 'id':id, 'texte':texte });
                     }
+                });
+                $.post('inc/direction/savePadsEleve.inc.php', {
+                    pad: pad,
+                    matricule: matricule
+                }, function(nbText){
+                    bootbox.alert({
+                           title: 'Enregistrement',
+                           message: parseInt(nbItems) + parseInt(nbText) + " modification(s) apportée(s)"
+                       });
+                })
+
                 // raffraichissement des matières
                 $.post('inc/direction/refreshListeMatieres.inc.php', {
                     matricule: matricule,
                     anScol: anScol,
                     periode: periode
-                }, function(resultat){
-                    $('.listeMatieres_' + anScol + '_' + periode).html(resultat);
-                })
+                    }, function(resultat){
+                        $('.listeMatieres_' + anScol + '_' + periode).html(resultat);
+                    })
                 }
             )
         })
