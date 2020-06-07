@@ -344,7 +344,8 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('agenda', 'Agenda ISND', 'agenda', 'agenda.png', 1, 9),
 ('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
 ('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8),
-('thot', 'THOT: élèves & parents', 'thot', 'thot.png', 1, 5);
+('thot', 'THOT: élèves & parents', 'thot', 'thot.png', 1, 5),
+('hercule', 'Hercule', 'hercule', 'hercule.png', 1, 16);
 
 
 CREATE TABLE IF NOT EXISTS didac_appliTables (
@@ -843,7 +844,8 @@ INSERT INTO `didac_config` (`ordre`, `parametre`, `label`, `size`, `valeur`, `si
 (3, 'COMMUNE', 'Commune', 45, 'Commune', 'Commune de l''école'),
 (7, 'COTEABS', 'Mentions d''absence', 40, 'ne,NE,abs,cm,ABS,CM,EXC,exc', 'Cote valant pour absence justifiée au carnet de cotes'),
 (8, 'COTENULLE', 'Mentions nulles', 40, 'nr,NR', 'Cote valant pour 0 au carnet de cotes'),
-(6, 'DIRECTION', 'Direction', 30, 'Nom du directeur/directrice', 'Nom et titre de la direction (rapport de compétences)'),
+(9, 'MENTIONSTEXTE', 'Mentions textuelles', 40, 'TI,I,D,S,AB,B,TB,E', 'Mentions textuelles sans calcul pour bullet et carnet de cotes'),
+(10, 'DIRECTION', 'Direction', 30, 'Nom du directeur/directrice', 'Nom et titre de la direction (rapport de compétences)'),
 (1, 'ECOLE', 'Nom de l''école', 30, 'École', 'Nom de l''école'),
 (5, 'LISTENIVEAUX', 'Niveaux d''étude', 20, '1,2,3,4,5,6', 'Liste des niveaux d''études existants'),
 (9, 'MAXIMAGESIZE', 'Images', 9, '200000', 'Taille maximale (en Ko) des image en upload (trombinoscopes)'),
@@ -858,7 +860,8 @@ INSERT INTO `didac_config` (`ordre`, `parametre`, `label`, `size`, `valeur`, `si
 (18, 'NOREPLY', 'Adresse No Reply', 40, 'ne_pas_repondre@ecole.org', 'Adresse pour la diffusion de mails "no reply"'),
 (18, 'NOMNOREPLY', 'Nom adresse No Reply', 30, 'Merci de ne pas ''répondre''', 'Nom de l''adresse pour la diffusion de mails "no reply"'),
 (20, 'DISCLAIMER', 'Disclaimer', 80, 'http://www.ecole.org/disclaimer.html', 'Clause de non responsabilité pour les mails sortants'),
-(21, 'ANNEEDEGRE', 'Années de fin de degré', 20, '2', 'Années d''études avec évaluation par degré (séparées par des virgules)');
+(21, 'ANNEEDEGRE', 'Années de fin de degré', 20, '2', 'Années d''études avec évaluation par degré (séparées par des virgules)'),
+(25, 'ADRESSETHOT', 'Adresse Thot', 60, 'http://isnd.be/thot', 'Adresse de la plate-forme Thot adossée');
 
 
 CREATE TABLE IF NOT EXISTS didac_cours (
@@ -2061,10 +2064,8 @@ CREATE TABLE `didac_thotForumsPosts` (
   `auteur` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Auteur du post (élève ou prof)',
   `userStatus` enum('eleve','prof') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''auteur (prof ou élève)',
   `post` blob COMMENT 'Post dans le fil',
-  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié',
-  `dateModif` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de de dernière modification'
+  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des posts';
-
 
 ALTER TABLE `didac_thotForumsPosts`
   ADD PRIMARY KEY (`postId`);
