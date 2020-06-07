@@ -57,6 +57,7 @@
                         <option value='GT' {if $eleve.section=='GT' } selected{/if}>GT</option>
                         <option value='TT' {if $eleve.section=='TT' } selected{/if}>TT</option>
                         <option value='S' {if $eleve.section=='S' } selected{/if}>S</option>
+                        <option value='P' {if $eleve.section=='P' } selected{/if}>P</option>
                         <option value='PARTI' {if $eleve.section=='PARTI' } selected{/if}>PARTI</option>
                     </select>
                 </div>
