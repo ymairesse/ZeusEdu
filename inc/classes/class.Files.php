@@ -1421,7 +1421,7 @@ class Files
                     $idCompetence = $ligne['idCompetence'];
                     unset($ligne['idCompetence']);
                     $competences[$idCompetence] = $ligne;
-                    $dataTravail['max'] += $ligne['max'];
+                    $dataTravail['max'] += (float) $ligne['max'];
                 }
             }
 
@@ -1480,7 +1480,7 @@ class Files
      */
     public function getStatutsTravail () {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SHOW COLUMNS FROM didac_thotTravaux WHERE Field = 'statut' ";
+        $sql = "SHOW COLUMNS FROM '.PFX.'thotTravaux WHERE Field = 'statut' ";
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -1769,16 +1769,16 @@ class Files
         foreach ($liste as $matricule => $data) {
             foreach ($data['competences'] as $idCompetence => $cotation) {
                 if (!(isset($liste[$matricule]['total']))) {
-                    $liste[$matricule]['total'] = array('cote' => '', 'max' => '');
+                    $liste[$matricule]['total'] = array('cote' => Null, 'max' => Null);
                     }
                 if (is_numeric($cotation['max'])) {
                     if (is_numeric($cotation['cote'])){
-                        $liste[$matricule]['total']['cote'] += $cotation['cote'];
-                        $liste[$matricule]['total']['max'] += $cotation['max'];
+                        $liste[$matricule]['total']['cote'] += (float) $cotation['cote'];
+                        $liste[$matricule]['total']['max'] += (float) $cotation['max'];
                         }
                     else if (in_array($cotation['cote'], $coteNulle)) {
                         $liste[$matricule]['total']['cote'] += 0;
-                        $liste[$matricule]['total']['max'] += $cotation['max'];
+                        $liste[$matricule]['total']['max'] += (float) $cotation['max'];
                         }
                     }
                 }
@@ -2543,11 +2543,9 @@ class Files
         //     [0] => 1993|//|/|//|10349351_300_451.jpg
         //     [1] => -1|//|/|//|blackhat.png   (nouveau document car s$hareId = -1)
 
-        //Application::afficher($post);
-
         // recherche des fichiers déjà liés à ce JDC $idJdc avant l'édition
         $linkedFiles = $this->getFileNames4jdc($idJdc, $acronyme);
-// Application::afficher($linkedFiles);
+
         // Exemple: avec [$shareId] => $path |//| $fileName
         // [1993] => /|//|10349351_300_451.jpg
         // [1997] => /|//|20140808_144404.jpg
@@ -2616,25 +2614,29 @@ class Files
         // la liste des documents joints
         $files = $post['files'];
 
-        // recheche la liste des fichiers actuellement liés à cette notification
+        // recherche la liste des fichiers actuellement liés à cette notification
         // on peut prendre la première notification de la série; toutes les autres
         // ont les mêmes PJ
         $notifId = current($listeNotifsIds);
+
         // recherche des PJ *avant* l'édition de la notification $notifId
         $linkedFiles = $this->getFileNames4notifId($notifId, $acronyme);
         // recherche des fichiers qui ne sont plus liés
         $toUnShare = $linkedFiles;
+
+        // suppression, dans la liste des "files" des fichiers pas dans le $post['files']
         foreach ($files as $oneFile) {
             // chaque file est défini sous la forme $shareId|//|$path|//|$fileName
             // le premier élément séparé par |//| est le $shareId
             $shareId = explode('|//|', $oneFile)[0];
+            // si le fichier est dans la liste postée, on le retire de la liste $toUnShare
             if (in_array($shareId, array_keys($linkedFiles))) {
                 unset($toUnShare[$shareId]);
                 }
         }
         // à la fin, il ne reste que les fichiers qui n'étaient pas dans le $post
-        $this->unlinkSharedFiles($notifId, $toUnShare);  // rupture du lien
-
+        // on clôture le lien
+        $this->unlinkSharedFiles($notifId, $toUnShare);
 
         // rechercher les fileIds pour les fichiers à lier
         // ou les créer s'ils n'existent pas encore
@@ -2643,8 +2645,8 @@ class Files
         $type = $post['leType']; // groupe, coursGrp, cours, classe, niveau, ecole...
         $groupe = $post['destinataire'];
         // l'annonce est-elle dédiée à un élève en particulier ou à un groupe?
-        if (($post['matricule'] != ''))
-            $destinataire = ($post['matricule'] != '') ? $post['matricule'] : $post['destinataire'];
+        $destinataire = ($post['matricule'] != '') ? $post['matricule'] : $post['destinataire'];
+
         $shareIds = array();
         foreach ($listeNotifsIds as $destinataire => $notifId) {
             // établir la liste des shareIds pour les fichiers relatifs à ces notifications $listeNotifsIds
@@ -2807,11 +2809,15 @@ class Files
         $fileIds = array();
         foreach ($fileList as $pathFileName) {
             $pathFileName = explode('|//|', $pathFileName);
-            $path = $pathFileName[1];
-            $fileName = $pathFileName[2];
-            // retrouver le fileId existant ou définir un fileId -paramètre "true"
-            $fileIds[] = $this->findFileId($path, $fileName, 'file', $acronyme, true);
+            // si le fichier n'a pas encore de $fileId
+            if ($pathFileName[0] == -1) {
+                $path = $pathFileName[1];
+                $fileName = $pathFileName[2];
+                // retrouver le fileId existant ou définir un fileId -paramètre "true"
+                $fileIds[] = $this->findFileId($path, $fileName, 'file', $acronyme, true);
             }
+            else $fileIds[] = $pathFileName[0];
+        }
 
         return $fileIds;
     }
@@ -2847,11 +2853,13 @@ class Files
         $sql = 'SELECT fileId, shareId, type, groupe, destinataire ';
         $sql .= 'FROM '.PFX.'thotShares ';
         $sql .= 'WHERE fileId = :fileId AND type = :type AND groupe = :groupe AND destinataire = :destinataire ';
+
         $requete = $connexion->prepare($sql);
         $shareIds = array();
         $requete->bindParam(':type', $type, PDO::PARAM_STR, 15);
         $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 15);
         $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
+
         foreach ($fileIds as $fileId) {
             $requete->bindParam(':fileId', $fileId, PDO::PARAM_INT);
             $shareIds[$fileId] = Null;
