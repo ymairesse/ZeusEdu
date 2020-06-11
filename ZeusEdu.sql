@@ -1846,7 +1846,7 @@ MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id du fichier';
 
 CREATE TABLE `didac_thotShares` (
   `fileId` int(11) NOT NULL COMMENT 'id dans la table des Files',
-  `type` enum('ecole','niveau','classes','eleve','prof','coursGrp') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
+  `type` enum('ecole','niveau','classes','eleves','prof','coursGrp') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
   `groupe` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
   `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `commentaire` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
@@ -2024,7 +2024,7 @@ CREATE TABLE `didac_thotForumsAccess` (
     `idSujet` int(11) NOT NULL COMMENT 'Identifiant numérique du sujet',
     `idCategorie` int(11) NOT NULL COMMENT 'Identifiant numérique de la catégorie',
     `type` set('prof','ecole','niveau','matiere','coursGrp','classe','groupe','all') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type de cible précisé dans le champ "cible"',
-    `cible` varchar(13) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Identifiant de la cible (acronyme, classe, cours, userEleve,...)'
+    `cible` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Identifiant de la cible (acronyme, classe, cours, userEleve,...)'
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Gestion de l''accessibilité des sujets aux cibles';
 
 ALTER TABLE `didac_thotForumsAccess`
