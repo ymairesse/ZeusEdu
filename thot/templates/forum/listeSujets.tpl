@@ -7,7 +7,8 @@
     {foreach from=$lesSujets key=idSujet item=unSujet}
 
             <button type="button"
-                class="btn btn-info btn-block btn-sujet {$unSujet.userStatus}"
+                class="btn btn-info btn-block btn-sujet {$unSujet.userStatus}
+                {if $unSujet.forumActif == 1}forumActif{else}forumInactif{/if}"
                 data-idsujet="{$idSujet}"
                 data-sujet="{$unSujet.sujet}"
                 data-idcategorie="{$idCategorie}">
@@ -34,7 +35,8 @@
 
     {foreach from=$lesSujets key=idSujet item=unSujet}
         <button type="button"
-            class="btn btn-info btn-block btn-sujet {$unSujet.userStatus}"
+            class="btn btn-info btn-block btn-sujet {$unSujet.userStatus}
+            {if $unSujet.forumActif == 1}forumActif{else}forumInactif{/if}"
             data-idsujet="{$idSujet}"
             data-sujet="{$unSujet.sujet}"
             data-idcategorie="{$idCategorie}">

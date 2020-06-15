@@ -27,6 +27,7 @@ $idCategorie = isset($form['modalIdCategorie']) ? $form['modalIdCategorie'] : Nu
 $idSujet = isset($form['modalIdSujet']) ? $form['modalIdSujet'] : Null;
 $sujet = isset($form['modalSubject']) ? $form['modalSubject'] : Null;
 $fbLike = isset($form['fbLike']) ? $form['fbLike'] : 0;
+$forumActif = isset($form['forumActif']) ? $form['forumActif'] : 1;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
@@ -36,11 +37,11 @@ $categorie = $Forum->getInfoCategorie($idCategorie);
 
 if ($idSujet == Null) {
     // enregistrement du nouveau sujet
-    $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme);
+    $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme,  $forumActif);
     }
     else {
         // modification du sujet existant
-        $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $idSujet);
+        $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $forumActif, $idSujet);
     }
 
 // enregistrement des accès pour ce sujet
@@ -52,6 +53,7 @@ if ($idSujet != 0) {
     $listeNiveaux = isset($form['niveau']) ? $form['niveau'] : Null;
     $listeClasses = isset($form['classe']) ? $form['classe'] : Null;
     $listeCoursGrp = isset($form['coursGrp']) ? $form['coursGrp'] : Null;
+
     $nb = $Forum->saveForumAcces($idSujet, $idCategorie, $tous, $listeProfs, $listeNiveaux, $listeClasses, $listeCoursGrp);
 }
 

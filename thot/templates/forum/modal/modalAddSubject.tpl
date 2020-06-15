@@ -22,9 +22,36 @@
                   <span class="help-block">Thème de ce nouveau sujet (80 caractères max)</span>
               </div>
 
-            <div class="checkbox">
-                <label><input type="checkbox" name="fbLike" id="fbLike" value="1" {if $fbLike|default:1 == 1} checked{/if}>Bouton <img src="images/defaultFB.png" alt="like" style="width:28px;height:28px;"> sur ce sujet (les contributeurs peuvent "liker" les posts)</label>
-            </div>
+              <div class="row">
+
+                  <div class="col-xs-6">
+                     <div class="checkbox">
+                         <label><input type="checkbox" name="fbLike" id="fbLike" value="1" {if $fbLike|default:1 == 1} checked{/if}>Bouton <img src="images/defaultFB.png" alt="like" style="width:28px;height:28px;"> sur ce sujet (les contributeurs peuvent "liker" les posts)</label>
+                     </div>
+                 </div>
+
+                 <div class="col-xs-6">
+                     <h4>Sujet pour</h4>
+                     <p>{if $categorie.userStatus == 'eleves'}<strong class="eleves">Élèves et professeurs{else}<strong class="profs">Professeurs{/if}</strong></p>
+
+                     <label class="radio">
+                         <input type="radio" name="forumActif" value="1" {if $forumActif|default:1 == 1}checked{/if}>
+                         <i class="fa fa-ghost"></i> Visible pour tous les invités
+                     </label>
+
+                     <label class="radio">
+                         <input type="radio" name="forumActif" value="2" {if $categorie.userStatus == 'profs'} disabled{/if}{if $forumActif|default:1 == 2}checked{/if}>
+                         <i class="fa fa-ghost"></i> Invisible pour les élèves / visible pour les profs
+                     </label>
+
+                     <label class="radio">
+                         <input type="radio" name="forumActif" value="0" {if $forumActif|default:1 == 0}checked{/if}>
+                         <i class="fa fa-ghost"></i> Invisible pour tous les invités
+                     </label>
+
+                 </div>
+
+              </div>
 
               <div id="selecteurCible">
                 {if $categorie.userStatus == 'eleves'}

@@ -175,7 +175,7 @@ class ThotForum
      */
     public function getInfoSujet($idCategorie, $idSujet){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT sujets.idCategorie, idsujet, sujet, sujets.acronyme, dateCreation, libelle, fbLike, ';
+        $sql = 'SELECT sujets.idCategorie, idsujet, sujet, sujets.acronyme, dateCreation, libelle, fbLike, forumActif, ';
         $sql .= 'DATE_FORMAT(dateCreation, "%d/%m/%Y") AS ladate, DATE_FORMAT(dateCreation, "%H:%i") AS heure, ';
         $sql .= 'sexe, nom, prenom ';
         $sql .= 'FROM '.PFX.'thotForumsSujets AS sujets ';
@@ -611,7 +611,7 @@ class ThotForum
     public function getSubjects4category($idCategorie){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT idSujet, sujet, sujets.acronyme, DATE_FORMAT(dateCreation, "%d/%m") AS ladate, ';
-        $sql .= 'DATE_FORMAT(dateCreation, "%H:%i") AS heure, dateCreation, sexe, nom, prenom, userStatus, fbLike ';
+        $sql .= 'DATE_FORMAT(dateCreation, "%H:%i") AS heure, dateCreation, sexe, nom, prenom, userStatus, fbLike, forumActif ';
         $sql .= 'FROM '.PFX.'thotForumsSujets AS sujets ';
         $sql .= 'JOIN '.PFX.'thotForums AS forums ON forums.idCategorie = sujets.idCategorie ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = sujets.acronyme ';
@@ -649,20 +649,21 @@ class ThotForum
      * @param string $sujet
      * @param string $acronyme
      * @param int $fbLike
+     * @param int $forumActif
      * @param int $idSujet (en cas d'édition)
      *
      * @return int idSujet
      */
-    public function saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $idSujet = Null){
+    public function saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $forumActif, $idSujet = Null){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($idSujet == Null) {
             $sql = 'INSERT INTO '.PFX.'thotForumsSujets ';
-            $sql .= 'SET idCategorie = :idCategorie, sujet = :sujet, acronyme = :acronyme, fbLike = :fbLike, dateCreation = Now() ';
+            $sql .= 'SET idCategorie = :idCategorie, sujet = :sujet, acronyme = :acronyme, fbLike = :fbLike, forumActif = :forumActif, dateCreation = Now() ';
             $requete = $connexion->prepare($sql);
             }
             else {
                 $sql = 'UPDATE '.PFX.'thotForumsSujets ';
-                $sql .= 'SET sujet = :sujet, fbLike = :fbLike ';
+                $sql .= 'SET sujet = :sujet, fbLike = :fbLike, forumActif = :forumActif ';
                 $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND acronyme = :acronyme ';
                 $requete = $connexion->prepare($sql);
 
@@ -673,6 +674,7 @@ class ThotForum
         $requete->bindParam(':sujet', $sujet, PDO::PARAM_STR, 80);
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
         $requete->bindParam(':fbLike', $fbLike, PDO::PARAM_INT);
+        $requete->bindParam(':forumActif', $forumActif, PDO::PARAM_INT);
 
         $resultat = $requete->execute();
 
@@ -1042,7 +1044,7 @@ class ThotForum
     public function getSubjects4user($acronyme){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT access.idCategorie, access.idSujet, cible AS abonne, sujets.sujet, ';
-        $sql .= 'forums.libelle, dateCreation, userStatus, nom, prenom, sexe, fbLike, ';
+        $sql .= 'forums.libelle, dateCreation, userStatus, nom, prenom, sexe, fbLike, forumActif, ';
         $sql .= 'DATE_FORMAT(dateCreation, "%d/%m") AS ladate, DATE_FORMAT(dateCreation, "%H:%i") AS heure ';
         $sql .= 'FROM '.PFX.'thotForumsAccess AS access ';
         $sql .= 'JOIN '.PFX.'thotForumsSujets AS sujets ON (sujets.idSujet = access.idSujet AND sujets.idCategorie = access.idCategorie) ';
@@ -1085,14 +1087,14 @@ class ThotForum
      */
     public function getSubjects4Abonne($acronyme){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT access.idSujet, access.idCategorie, libelle, sujet, cible, userStatus, ';
+        $sql = 'SELECT access.idSujet, access.idCategorie, libelle, sujet, cible, userStatus, fbLike, forumActif, ';
         $sql .= 'sujets.acronyme, dateCreation, nom, prenom, sexe, ';
         $sql .= 'DATE_FORMAT(dateCreation, "%d/%m") AS ladate, DATE_FORMAT(dateCreation, "%H:%i") AS heure ';
         $sql .= 'FROM '.PFX.'thotForumsAccess AS access ';
         $sql .= 'JOIN '.PFX.'thotForumsSujets AS sujets ON (sujets.idSujet = access.idSujet AND sujets.idCategorie = access.idCategorie) ';
         $sql .= 'JOIN '.PFX.'thotForums AS forums ON forums.idCategorie = access.idCategorie ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = sujets.acronyme ';
-        $sql .= 'WHERE cible = :acronyme ';
+        $sql .= 'WHERE cible = :acronyme AND forumActif > 0 ';  // 0 => fermé à tous; 1 => élèves & profs ; 2 => profs
         $sql .= 'ORDER BY dateCreation, libelle, sujet ';
         $requete = $connexion->prepare($sql);
 
@@ -1139,12 +1141,12 @@ class ThotForum
         $sql .= 'WHERE postId = :postId AND posts.idCategorie = :idCategorie AND posts.idSujet = :idSujet ';
         $sql .= 'AND (posts.auteur = :acronyme OR sujets.acronyme = :acronyme) ';
         $requete = $connexion->prepare($sql);
-// echo $sql;
+
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
         $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-// Application::afficher(array($idCategorie, $idSujet, $postId, $acronyme), true);
+
         $ligne = Null;
         $resultat = $requete->execute();
         if ($resultat){
@@ -1274,12 +1276,12 @@ class ThotForum
         $sql .= 'AND idSujet = :idSujet ';
         $sql .= 'AND (auteur = :acronyme OR :acronyme IN (SELECT acronyme FROM '.PFX.'thotForumsSujets WHERE idCategorie = :idCategorie AND idSujet = :idSujet)) ';
         $requete = $connexion->prepare($sql);
-// echo $sql;
+
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
         $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 15);
-// Application::afficher(array($idCategorie, $idSujet, $postId, $acronyme), true);
+
         $ligne = Null;
         $resultat = $requete->execute();
 
@@ -1335,7 +1337,7 @@ class ThotForum
     public function getSubject4proprio($acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT sujets.idCategorie, sujets.idSujet, sujets.acronyme, sujets.sujet, ';
-        $sql .= 'libelle, userStatus, dateCreation, sexe, nom, prenom, fbLike, ';
+        $sql .= 'libelle, userStatus, dateCreation, sexe, nom, prenom, fbLike, forumActif, ';
         $sql .= 'DATE_FORMAT(dateCreation, "%d/%m") AS ladate, DATE_FORMAT(dateCreation, "%H:%i") AS heure ';
         $sql .= 'FROM '.PFX.'thotForumsSujets AS sujets ';
         $sql .= 'JOIN '.PFX.'thotForums AS forums ON forums.idCategorie = sujets.idCategorie ';
@@ -1622,10 +1624,10 @@ class ThotForum
         $sql .= 'WHERE likes.idCategorie = :idCategorie AND likes.idSujet = :idSujet ';
         $sql .= 'ORDER BY likelevel, nomEleve, nomProf ';
         $requete = $connexion->prepare($sql);
-// echo $sql;
+
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-// Application::afficher(array($idCategorie, $idSujet), true);
+
         $liste = Null;
         $resultat = $requete->execute();
         if ($resultat){
@@ -1638,7 +1640,7 @@ class ThotForum
                         $ligne['nom'] = sprintf('%s %s [%s]', $ligne['prenomEleve'], $ligne['nomEleve'], $ligne['groupe']);
                         }
                         else {
-    //                         Application::afficher($ligne, true);
+
                             $ligne['nom'] = $this->nomProf($ligne['sexe'], $ligne['prenomProf'], $ligne['nomProf']);
                             // $ligne['nom'] = 'bidouille';
                         }

@@ -44,7 +44,6 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-
 $smarty->assign('listeProfs', $listeProfs);
 $smarty->assign('listeNiveaux', $listeNiveaux);
 $smarty->assign('listeClasses', $listeClasses);
@@ -57,5 +56,6 @@ $smarty->assign('categorie', $categorie);
 $smarty->assign('idSujet', $idSujet);
 $smarty->assign('sujet', $infoSujet['sujet']);
 $smarty->assign('fbLike', $infoSujet['fbLike']);
+$smarty->assign('forumActif', $infoSujet['forumActif']);
 
 $smarty->display('forum/modal/modalAddSubject.tpl');
