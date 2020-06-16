@@ -537,16 +537,19 @@ ALTER TABLE `didac_bullCompetences`
   MODIFY `id` int(6) NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide';
 
 
-CREATE TABLE IF NOT EXISTS `didac_bullDecisions` (
-  `matricule` int(6) NOT NULL,
-  `decision` enum('Réussite','Échec','Ajournement','Restriction','TEST') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `restriction` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
-  `mail` smallint(1) NOT NULL DEFAULT '1',
-  `notification` tinyint(1) NOT NULL DEFAULT '1',
-  `adresseMail` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `quand` datetime DEFAULT NULL,
-  PRIMARY KEY (`matricule`)
+CREATE TABLE `didac_bullDecisions` (
+    `matricule` int(6) NOT NULL,
+    `periode` smallint(6) DEFAULT NULL COMMENT 'Période de l''année scolaire concernée',
+    `decision` enum('Réussite','Échec','Ajournement','Restriction','TEST') COLLATE utf8_unicode_ci DEFAULT NULL,
+    `restriction` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
+    `mail` smallint(1) NOT NULL DEFAULT '1',
+    `notification` tinyint(1) NOT NULL DEFAULT '1',
+    `adresseMail` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `quand` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_bullDecisions`
+    ADD PRIMARY KEY (`matricule`);
 
 
 CREATE TABLE `didac_bullCoursPrincipaux` (
