@@ -3,10 +3,12 @@
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 
 		<div class="input-group">
-			<select name="classe" id="selectClasse" class="form-control-inline form-control">
-				<option value="">Classe</option>
-				{foreach from=$listeClasses item=uneClasse}
-					<option value="{$uneClasse}"{if isset($classe) && ($uneClasse == $classe)} selected{/if}>{$uneClasse}</option>
+			<select name="coursGrp" id="selectCoursGrp" class="form-control-inline form-control">
+				<option value="">Sélection d'un cours</option>
+				{foreach from=$listeCoursGrp key=unCoursGrp item=data}
+					<option value="{$unCoursGrp}"{if isset($coursGrp) && ($unCoursGrp == $coursGrp)} selected{/if}>
+					{if $data.nomCours != ''}{$data.nomCours} || {else}{$data.libelle}{/if} {$data.statut} {$unCoursGrp} {$data.nbheures}h
+					</option>
 				{/foreach}
 			</select>
 		</div>
@@ -35,13 +37,13 @@ $(document).ready (function() {
 		})
 
 
-	$("#selectClasse").change(function(){
+	$("#selectCoursGrp").change(function(){
 		// on a choisi une classe dans la liste déroulante
-		var classe = $(this).val();
-		if (classe != '') $("#envoi").show();
-		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
-		$.post("inc/listeEleves.inc.php",{
-			'classe': classe
+		var coursGrp = $(this).val();
+		// if (classe != '') $("#envoi").show();
+		// la fonction listeElevesCoursGrp.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
+		$.post("inc/listeElevesCoursGrp.inc.php",{
+			'coursGrp': coursGrp
 			},
 			function (resultat){
 				$('#choixEleve').html(resultat)

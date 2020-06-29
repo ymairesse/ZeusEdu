@@ -1,6 +1,5 @@
 <?php
 
-
 require_once '../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
@@ -20,20 +19,23 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
-// définition de la class Ecole
-require_once (INSTALL_DIR."/inc/classes/classEcole.inc.php");
-$Ecole = new Ecole();
+// récupérer le formulaire d'encodage des cours
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$form = array();
+parse_str($formulaire, $form);
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
-if ($classe == Null) die();
-$partis = isset($_POST['partis'])?$_POST['partis']:false;
+$listeProfs = $form['profs'];
+$listeEleves = $form['eleves'];
+$moderw = $form['moderw'];
 
-$listeEleves = $Ecole->listeEleves($classe, 'groupe', $partis);
+require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
+$padEleve = new padEleve(Null, null);
 
-require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+$nb = $padEleve->savePartages($acronyme, $moderw, $listeEleves, $listeProfs);
+
+require_once INSTALL_DIR."/smarty/Smarty.class.php";
 $smarty = new Smarty();
 $smarty->template_dir = "../templates";
 $smarty->compile_dir = "../templates_c";
-$smarty->assign('listeEleves', $listeEleves);
 
-$smarty->display('listeEleves.tpl');
+echo $nb;

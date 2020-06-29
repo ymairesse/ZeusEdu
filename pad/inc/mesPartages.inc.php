@@ -32,7 +32,7 @@ switch ($mode) {
 
 		// un cours a été choisi, listons les élèves
 		if (isset($coursGrp)) {
-			$listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha',false);
+			$listeEleves = $Ecole->listeElevesCours($coursGrp, 'alpha');
 			$acronyme = $user->acronyme();
 			$listePartages = PadEleve::listePartages($acronyme, $listeEleves);
 			$smarty->assign('listeEleves',$listeEleves);

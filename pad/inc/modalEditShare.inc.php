@@ -1,6 +1,5 @@
 <?php
 
-
 require_once '../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
@@ -20,20 +19,28 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
-// définition de la class Ecole
-require_once (INSTALL_DIR."/inc/classes/classEcole.inc.php");
+// récupérer le formulaire d'encodage des cours
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$id = isset($_POST['id']) ? $_POST['id'] : Null;
+$guest = isset($_POST['guest']) ? $_POST['guest'] : Null;
+$mode = isset($_POST['mode']) ? $_POST['mode'] : Null;
+
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
-if ($classe == Null) die();
-$partis = isset($_POST['partis'])?$_POST['partis']:false;
+require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 
-$listeEleves = $Ecole->listeEleves($classe, 'groupe', $partis);
+$listeProfs = $Ecole->listeProfs();
+$listeEleves = $Ecole->getInfoListeEleves(array($matricule));
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
 $smarty->template_dir = "../templates";
 $smarty->compile_dir = "../templates_c";
-$smarty->assign('listeEleves', $listeEleves);
 
-$smarty->display('listeEleves.tpl');
+$smarty->assign('listeProfs', $listeProfs);
+$smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('guest', $guest);
+$smarty->assign('mode', $mode);
+
+$smarty->display('modal/modalAddShare.tpl');

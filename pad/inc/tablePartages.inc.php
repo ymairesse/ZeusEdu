@@ -1,6 +1,5 @@
 <?php
 
-
 require_once '../../config.inc.php';
 
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
@@ -20,20 +19,32 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
-// définition de la class Ecole
-require_once (INSTALL_DIR."/inc/classes/classEcole.inc.php");
+$mode = isset($_POST['mode']) ? $_POST['mode'] : Null;
+$groupe = isset($_POST['groupe']) ? $_POST['groupe'] : Null;
+
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
-if ($classe == Null) die();
-$partis = isset($_POST['partis'])?$_POST['partis']:false;
+require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
 
-$listeEleves = $Ecole->listeEleves($classe, 'groupe', $partis);
+if ($mode == 'parClasse') {
+    $listeEleves = $Ecole->listeEleves($groupe, 'groupe');
+    }
+    else {
+        $listeEleves = $Ecole->listeElevesCours($groupe, 'alpha');
+    }
+
+$listePartages = PadEleve::listePartages($acronyme, $listeEleves);
+
+$listeProfs = $Ecole->listeProfs();
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
 $smarty->template_dir = "../templates";
 $smarty->compile_dir = "../templates_c";
-$smarty->assign('listeEleves', $listeEleves);
 
-$smarty->display('listeEleves.tpl');
+$smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('listePartages', $listePartages);
+$smarty->assign('listeProfs',$listeProfs);  
+
+$smarty->display('tableauPartages.tpl');

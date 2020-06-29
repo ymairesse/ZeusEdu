@@ -97,7 +97,6 @@ class padEleve
     public function savePadEleve($post)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $matricule = $post['matricule'];
         $nb = 0;
         foreach ($post as $field => $value) {
             // on enregistre les champs nommés "texte_"
@@ -106,11 +105,15 @@ class padEleve
                 $id = $id[1];
                 $texte = $value;
                 $sql = 'UPDATE '.PFX.'pad ';
-                $sql .= 'SET texte =:texte ';
-                $sql .= 'WHERE id=:id ';
+                $sql .= 'SET texte = :texte ';
+                $sql .= 'WHERE id = :id ';
                 $requete = $connexion->prepare($sql);
-                $data = array(':id' => $id, ':texte' => $texte);
-                $nb += $requete->execute($data);
+
+                $requete->bindParam(':id', $id, PDO::PARAM_INT);
+                $requete->bindParam(':texte', $texte, PDO::PARAM_STR);
+
+                $nb += $requete->execute();
+                
                 $this->texte = $texte;
             }
         }
@@ -128,7 +131,7 @@ class padEleve
      *
      * @return int : nombre d'enregistrements réussis (0 ou 1)
      */
-    public static function updatePadEleve($idPad, $matricule, $texte){
+    public function updatePadEleve($idPad, $matricule, $texte){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'UPDATE '.PFX.'pad ';
         $sql .= 'SET texte = :texte ';
@@ -151,12 +154,12 @@ class padEleve
     /**
      * enregistrement des partages des fiches "élèves" entre utilisateurs.
      *
-     * @param $acronyme
-     * @param $moderw : mode de partage ('r','rw','release')
-     * @param $listeEleves : liste des élèves
-     * @param $listeProfs : liste des profs
+     * @param string $acronyme
+     * @param string $moderw : mode de partage ('r','rw','')
+     * @param array $listeEleves : liste des élèves
+     * @param array $listeProfs : liste des profs
      *
-     * @return nb : nombre de modifications dans la BD
+     * @return int : nombre de modifications dans la BD
      */
     public static function savePartages($acronyme, $moderw, $listeEleves, $listeProfs)
     {
@@ -164,10 +167,12 @@ class padEleve
         if ((count($listeEleves) != 0) && (count($listeProfs) != 0)) {
             $listeAcronymes = "'".implode("','", $listeProfs)."'";
             $listeMatricules = implode(',', $listeEleves);
+
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
             // on traite d'abord le cas des autorisations de partage, on verra les "releases" après
             if (in_array($moderw, array('r', 'rw'))) {
+
                 foreach ($listeEleves as $matricule) {
                     // on s'assure qu'il existe une fiche ou on la crée pour le couple acronyme/matricule
                     $sql = 'INSERT IGNORE INTO '.PFX.'pad ';
@@ -541,7 +546,7 @@ class padEleve
         $pp1 = isset($form['cbMeritant']) ? 1 : 0;
         $pp2 = isset($form['cbFacilite']) ? 1 : 0;
         $ppa = $form['meritant'];   // texte libre
-        $ppb = $form['facilite'];   // texte libre
+        // $ppb = $form['facilite'];   // texte libre
         $requete->bindParam(':pp1', $pp1, PDO::PARAM_INT);
         $requete->bindParam(':pp2', $pp2, PDO::PARAM_INT);
         $requete->bindParam(':ppa', $ppa, PDO::PARAM_STR, 256);
