@@ -1,4 +1,3 @@
-{debug}
 <div id="modalAddPartage" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddPartageLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
