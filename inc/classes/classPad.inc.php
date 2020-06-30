@@ -26,25 +26,34 @@ class padEleve
     /**
      * recherche les informations sur l'élève dans la BD en limitant celles qui appartiennent à $proprio.
      *
-     * @param $proprio
+     * @param void
      */
     private function setPadsEleve()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // création d'un pad pour l'utilisateur et le matricule donné si celui-ci n'existe pas encore
         $sql = 'INSERT IGNORE INTO '.PFX.'pad ';
-        $sql .= "SET matricule='$this->matricule', proprio='$this->proprio' ";
-        $resultat = $connexion->exec($sql);
+        $sql .= 'SET matricule = :matricule, proprio= :proprio ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $this->matricule, PDO::PARAM_INT);
+        $requete->bindParam(':proprio', $this->proprio, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
 
         // sélection du pad propriétaire (y compris celui qui vient éventuellement d'être créé)
         $sql = 'SELECT id, proprio, texte ';
         $sql .= 'FROM '.PFX.'pad ';
-        $sql .= "WHERE proprio = '$this->proprio' AND matricule = '$this->matricule' ";
+        $sql .= "WHERE proprio = :proprio AND matricule = :matricule ";
+        $requete = $connexion->prepare($sql);
+        $requete->bindParam(':matricule', $this->matricule, PDO::PARAM_INT);
+        $requete->bindParam(':proprio', $this->proprio, PDO::PARAM_STR, 7);
 
-        $resultat = $connexion->query($sql);
-        $resultat->setFetchMode(PDO::FETCH_ASSOC);
+        $resultat = $requete->execute();
 
-        $ligneProprio = $resultat->fetch();
+        $requete->setFetchMode(PDO::FETCH_ASSOC);
+
+        $ligneProprio = $requete->fetch();
         $id = $ligneProprio['id'];
         $texte = $ligneProprio['texte'];
         $this->pads['proprio'][$id] = array('proprio' => $this->proprio, 'mode' => 'rw', 'texte' => $texte);
@@ -53,14 +62,18 @@ class padEleve
         $sql = 'SELECT dpg.id, proprio, mode, texte ';
         $sql .= 'FROM '.PFX.'padGuest AS dpg ';
         $sql .= 'JOIN '.PFX.'pad AS dp ON dp.id = dpg.id ';
-        $sql .= 'WHERE dpg.id IN (SELECT id FROM '.PFX."pad WHERE matricule='$this->matricule') AND guest='$this->proprio' ";
+        $sql .= 'WHERE dpg.id IN (SELECT id FROM '.PFX."pad WHERE matricule = :matricule AND guest = :proprio) ";
         $sql .= 'ORDER BY proprio ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':matricule', $this->matricule, PDO::PARAM_INT);
+        $requete->bindParam(':proprio', $this->proprio, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
         $guest = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $id = $ligne['id'];
                 $mode = $ligne['mode'];
                 $texte = stripslashes($ligne['texte']);
@@ -68,6 +81,7 @@ class padEleve
                 $this->pads['guest'][$id] = array('proprio' => $proprio, 'mode' => $mode, 'texte' => $texte);
             }
         }
+
         Application::DeconnexionPDO($connexion);
     }
 
@@ -87,10 +101,9 @@ class padEleve
      * enregistrement des données élèves
      * $POST provient du $_POST de la fiche et peut contenir diverses données
      * on en extrait:
-     *  - le matricule de l'élève concerné
      *  - le champ texte_ID dont le nom comtient l'ID du texte éventuellement existant.
      *
-     * @param $post
+     * @param array $post
      *
      * @return int
      */
@@ -113,7 +126,7 @@ class padEleve
                 $requete->bindParam(':texte', $texte, PDO::PARAM_STR);
 
                 $nb += $requete->execute();
-                
+
                 $this->texte = $texte;
             }
         }
@@ -256,7 +269,6 @@ class padEleve
 
         return $liste;
     }
-
 
     /**
      * Création d'une nouvelle matière dans le pad "coordinateur"
@@ -771,7 +783,6 @@ class padEleve
 
         return $nb;
     }
-
 
     /**
      * retourne l'image en base64 de l'horaire de l'élève $matricule depuis le répertoire $directory
