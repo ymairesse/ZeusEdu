@@ -444,6 +444,13 @@ ALTER TABLE `didac_archiveClassesEleves`
   ADD PRIMARY KEY (`lematricule`,`annee`),
   ADD KEY `classe` (`classe`);
 
+  CREATE TABLE `didac_bullPeriodes4anscol` (
+    `anscol` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+    `nbPeriodes` tinyint(4) NOT NULL
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Nombre de périodes de bulletin pour l''année scolaire';
+
+  ALTER TABLE `didac_bullPeriodes4anscol`
+    ADD PRIMARY KEY (`anscol`);
 
 CREATE TABLE IF NOT EXISTS didac_bullAttitudes (
   matricule int(6) NOT NULL,
