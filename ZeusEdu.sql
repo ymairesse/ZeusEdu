@@ -605,13 +605,15 @@ ALTER TABLE `didac_bullEducs`
   ADD PRIMARY KEY (`matricule`,`bulletin`,`acronyme`);
 
 
-CREATE TABLE IF NOT EXISTS `didac_bullEprExterne` (
-  `matricule` int(6) NOT NULL,
-  `anscol` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
-  `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  `coteExterne` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`matricule`,`coursGrp`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
+CREATE TABLE `didac_bullEprExterne` (
+    `matricule` int(6) NOT NULL,
+    `anscol` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+    `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+    `coteExterne` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL
+  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Cotes obtenues aux épreuves externes';
+
+ALTER TABLE `didac_bullEprExterne`
+    ADD PRIMARY KEY (`matricule`,`coursGrp`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullExterneArchives (
