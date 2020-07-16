@@ -793,7 +793,7 @@ class Files
     /**
      * renvoie un dictionnaire en "français" des noms des différents groupes de partages de documents
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */
