@@ -26,6 +26,4 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeCours', $listeCours);
 
-$texte = $smarty->fetch('files/listeCours.tpl');
-
-echo $texte;
+$smarty->display('files/listeCours.tpl');

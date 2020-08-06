@@ -45,5 +45,5 @@ if (in_array($shareId, array_keys($listeSharedFiles))) {
     $smarty->assign('path', $path);
     $smarty->assign('shareId', $shareId);
 
-    echo $smarty->fetch('files/treeviewDownload.tpl');
+    $smarty->display('files/treeviewDownload.tpl');
 }

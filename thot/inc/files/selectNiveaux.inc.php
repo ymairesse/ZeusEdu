@@ -24,4 +24,4 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeNiveaux',$listeNiveaux);
 
-echo $smarty->fetch('files/listeNiveaux.tpl');
+$smarty->display('files/listeNiveaux.tpl');

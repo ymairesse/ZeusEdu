@@ -1,13 +1,20 @@
-<input type="checkbox" id="checkListe" name="TOUS" value="tous" checked>
-<strong class="clickable teteListe" title="Cliquer pour ouvrir"> TOUS </strong>
+<div class="btn-group btn-group-justified">
+    <a href="#" class="btn btn-primary btn-xs" id="btn-tous">Tous</a>
+    <a href="#" class="btn btn-success btn-xs" id="btn-invert">Inverser</a>
+    <a href="#" class="btn btn-danger btn-xs" id="btn-none">Aucun</a>
+</div>
 
-<ul class="listeMembres list-unstyled">
-{foreach from=$listeEleves key=matricule item=unEleve}
-    <li>
-        <label class="checkbox-inline">
-        <input type="checkbox" class="cb" name="membres[]" value="{$matricule}" checked>
-        {$unEleve.classe|default:''} {$unEleve.nom|truncate:15:'...'} {$unEleve.prenom}
-        </label>
-    </li>
-{/foreach}
-</ul>
+<div style="height:20em; overflow:auto;">
+
+    <ul class="listeMembres list-unstyled">
+    {foreach from=$listeEleves key=matricule item=unEleve}
+        <li class="checkbox">
+              <label>
+                  <input type="checkbox" class="cb" name="membres[]" value="{$matricule}" checked>
+                  {$unEleve.classe|default:''} {$unEleve.nom|truncate:15:'...'} {$unEleve.prenom}
+              </label>
+        </li>
+    {/foreach}
+    </ul>
+
+</div>

@@ -22,19 +22,24 @@ $Files = new Files();
 $fileName = isset($_POST['fileName'])?$_POST['fileName']:Null;
 $arborescence = isset($_POST['arborescence'])?$_POST['arborescence']:Null;
 
-$listShares = $Files->listShares($arborescence, $fileName, $acronyme);
-
 $resultat = false;
 $ds = DIRECTORY_SEPARATOR;
 
 if ($fileName != Null) {
     $file = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$arborescence.$ds.$fileName;
+    // suppression des doubles // dans le nom du fichier
+    $file = preg_replace('~/+~', '/', $file);
     $resultat = @unlink($file);
     if ($resultat) {
-        // supprimer les références au fichier, dans la BD
+        // supprimer les éventuels espions de téléchargement
+        $listeShareIds = $Files->getSharesByFileName($arborescence, $fileName, 'file', $acronyme);
+        foreach ($listeShareIds as $shareId => $wtf) {
+            $nb = $Files->delSpy4ShareId($shareId, $acronyme);
+        }
+        // supprimer les références au fichier, dans la table didac_files
         $Files->clearBD($arborescence, $fileName, $acronyme);
-        // supprimer tous les partages du fichier dans la BD
-        $Files->delAllShares($arborescence, $fileName, $acronyme);
+        // supprimer tous les partages du fichier dans la teble didac_shares
+        $Files->delAllShares($arborescence, $fileName, 'file', $acronyme);
     }
 }
 

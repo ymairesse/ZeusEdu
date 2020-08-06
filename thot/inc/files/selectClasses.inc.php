@@ -17,4 +17,4 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeClasses',$listeClasses);
 
-echo $smarty->fetch('files/listeClasses.tpl');
+$smarty->display('files/listeClasses.tpl');

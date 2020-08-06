@@ -42,7 +42,7 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('shareList', $shareList);
 if ($simple == true) {
-    echo $smarty->fetch('files/simpleShareList.tpl');
+    $smarty->display('files/simpleShareList.tpl');
 } else {
-        echo $smarty->fetch('files/shareList.tpl');
+        $smarty->display('files/shareList.tpl');
     }

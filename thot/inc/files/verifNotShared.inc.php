@@ -19,14 +19,11 @@ $acronyme = $User->getAcronyme();
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-$shareId = isset($_POST['shareId']) ? $_POST['shareId'] : Null;
+$arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : null;
+$fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
+$type = isset($_POST['type']) ? $_POST['type'] : Null;
 
-$shareDetails = $Files->getFileInfoByShareId($shareId, $acronyme);
+// recherche des shareIds pour ce fichier
+$shares = $Files->getSharesByFileName($arborescence, $fileName, $type, $acronyme);
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
-
-$smarty->assign('shareDetails', $shareDetails);
-$smarty->display('files/modalUnshareFile.inc.tpl');
+echo count($shares);

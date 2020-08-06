@@ -42,6 +42,5 @@ $smarty->compile_dir = "../../templates_c";
 $smarty->assign('tree', $treeview);
 $smarty->assign('root', $root);
 $smarty->assign('path', $path);
-// $smarty->assign('shareId', $shareId);
 
-echo $smarty->fetch('files/treeview4Owner.tpl');
+$smarty->display('files/treeview4Owner.tpl');

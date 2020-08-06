@@ -8,7 +8,7 @@
             <h2>Les documents et dossiers que je partage</h2>
 
             <div id="listePartages">
-
+                {* Onglets pour chaque groupe de partage *}
                 <ul class="nav nav-tabs">
                     {foreach from=$sharesList key=groupe item=groupShares name=onglets}
                     <li {if ($smarty.foreach.onglets.index == 0)}class="active"{/if}>
@@ -17,6 +17,7 @@
                     {/foreach}
                 </ul>
 
+                {* Panneaux correspondant aux onglets *}
                 <div class="tab-content">
 
                     {foreach from=$sharesList key=groupe item=groupShares name=onglets}
@@ -126,13 +127,17 @@
                 <i class="fa fa-share-alt"></i>
             </button> Clôture du partage: les autres utilisateurs n'auront plus accès au document. Le document n'est pas effacé. Si un document est partagé plusieurs fois avec divers utilisateurs, il faut dé-partager chacune des occurrences du partage.</p>
 
+            <p style="border: 1px solid #333; padding: 0.5em"><button type="button" title="Placer/retirer un espion" class="btn btn-xs btn-default btn-spy">
+                <i class="fa fa-eye"></i>
+            </button> Permet d'activer / désactiver l'option de suivi de téléchargement. Chaque téléchargement par un élève est enregistré. Seule le dernier téléchargement en date est conservé. Les téléchargements des fichiers par les collègues ne sont pas enregistrés.<br>
+            Cliquer sur le bouton pour activer le suivi, pour prendre connaissance du suivi ou pour désactiver le suivi.
+            </p>
+
         </div>
 
     </div>
 
 </div>
-
-
 
 {include file="files/modal/modalEditShare.tpl"}
 {include file="files/modal/modalUnshareFile.tpl"}
@@ -256,9 +261,8 @@
                 shareId: shareId,
                 commentaire: commentaire
             },
-            function(resultat) {
-                var resultatJS = JSON.parse(resultat);
-                $('#listePartages tr[data-shareid="' + shareId + '"] td.commentaire').text(resultatJS.commentaire);
+            function(commentaire) {
+                $('#listePartages tr[data-shareid="' + shareId + '"] td.commentaire').text(commentaire);
                 $("#modalShareEdit").modal('hide');
             })
     })

@@ -20,5 +20,3 @@
     </div>
 
 </div>
-
-<input type="hidden" name="groupe" value="profs">

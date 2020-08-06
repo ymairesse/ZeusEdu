@@ -8,12 +8,19 @@
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <i class="fa fa-warning fa-2x pull-right text-danger"></i>
-                    <p>Veuillez confirmer l'effacement définitif du fichier <strong id="delFileName"></strong>
-                        <br> dans le dossier <strong id="delPath"></strong></p>
+                    <p>Veuillez confirmer l'effacement définitif du fichier <strong id="delFileName">{$fileName}</strong>
+                        <br> dans le dossier <strong id="delPath">{$arborescence}</strong></p>
                 </div>
-                <div id="modalDelShareList">
 
-                </div>
+                <p>
+                    <strong><i class="fa fa-warning fa-2x text-danger"></i> Attention!
+                        <ul>
+                            <li>tous les partages du document et </li>
+                            <li>tous les suivis de téléchargement seront supprimés.</li>
+                        </ul>
+                    </strong>
+                </p>
+
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-danger" id="confirmDelFile">Confirmer</button>
@@ -25,26 +32,3 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-
-        $("#confirmDelFile").click(function() {
-            var fileName = $('#delFileName').text();
-            var arborescence = $('#delPath').text();
-            $.post('inc/files/delFile.inc.php', {
-                    fileName: fileName,
-                    arborescence: arborescence
-                },
-                function(resultat) {
-                    if (resultat == 1) {
-                        $('tr.active').remove();
-                        $('#listePartages').html('-');
-                    }
-                    else alert('Impossible de supprimer ce fichier');
-                });
-            $("#modalDelFile").modal('hide');
-
-        })
-    })
-</script>

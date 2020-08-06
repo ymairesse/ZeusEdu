@@ -7,4 +7,4 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-echo $smarty->fetch('files/ecole.tpl');
+$smarty->display('files/ecole.tpl');

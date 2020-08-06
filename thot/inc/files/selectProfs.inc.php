@@ -21,4 +21,4 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeProfs',$listeProfs);
 
-echo $smarty->fetch('files/listeProfs.tpl');
+$smarty->display('files/listeProfs.tpl');

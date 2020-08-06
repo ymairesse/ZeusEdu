@@ -8,11 +8,10 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
-                    <p>
-                        <i class="fa fa-share-alt-square fa-2x"></i> Veuillez confirmer l'arrêt du partage du <strong id="modalFileType"></strong> <strong id="modalUnShareFileName"></strong>
-                        <br> Actuellement partagé avec <strong id="modalUnShareWith"></strong>
-                        <p><i class="fa fa-user-secret fa-2x"></i> S'ils existent, les suivis de téléchargement seront également supprimés.</p>
-                    </p>
+                    <i class="fa fa-share-alt-square fa-2x"></i> Veuillez confirmer l'arrêt du partage du
+                    {if $fileInfos.fileType == 'dir'} dossier{else}fichier{/if} <strong id="modalUnShareFileName">{$fileInfos.fileName}</strong>
+                    <br> Actuellement partagé avec <strong>{$libelle}</strong>
+                    <p><i class="fa fa-user-secret fa-2x"></i> S'ils existent, les suivis de téléchargement seront également supprimés.</p>
                 </div>
                 <div class="notice">
                     Le fichier est conservé. Seul le partage est interrompu.<br>
@@ -23,7 +22,7 @@
             <div class="modal-footer">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="button" data-shareid="" id="btnUnShareFile" class="btn btn-primary">Confirmer</button>
+                    <button type="button" data-shareid="{$shareId}" id="btnUnShareFile" class="btn btn-primary">Confirmer</button>
                 </div>
             </div>
         </div>

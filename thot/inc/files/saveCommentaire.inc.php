@@ -27,10 +27,4 @@ if ($Files->verifProprietaireShare($shareId, $acronyme)) {
     $commentaire = $Files->saveEditedComment($commentaire, $shareId);
 }
 
-$fileInfos = $Files->getFileInfoByShareId($shareId, $acronyme);
-
-$ds = DIRECTORY_SEPARATOR;
-$file = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$fileInfos['path'].$ds.$fileInfos['fileName'];
-$fileInfos['fileType'] = is_dir($file) ? 'dir' : 'file';
-
-echo json_encode($fileInfos);
+echo $commentaire;

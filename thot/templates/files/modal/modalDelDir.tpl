@@ -9,13 +9,31 @@
                 <div class="alert alert-danger">
                     <i class="fa fa-warning fa-2x pull-right text-danger"></i>
                     <p>Veuillez confirmer la suppression définititve du dossier
-                        <br><strong id="delRep"></strong>
+                        <br><strong id="delRep" data-filename="{$fileName}">{$fileName}</strong>
                         <br> qui fait partie du dossier
                         <br>
-                        <strong id="rootRep"></strong></p>
+                        <strong id="rootRep" data-arborescence="{$arborescence}">{$arborescence}</strong></p>
+
+                        <p><strong><i class="fa fa-warning fa-2x text-danger"></i> Attention! Tous les partages du dossier et des documents qu'il contient seront supprimés.</strong></p>
                 </div>
                 <div id="listFiles">
-                    {include file="files/listFiles.tpl"}
+                    {if $listFiles|count > 0}
+                    <div class="alert alert-warning">
+                        <p>Ce dossier contient les fichiers suivants:</p>
+                        <ul class="list-unstyled" style="height:5em; overflow: auto">
+                    		{if isset($listFiles)}
+                    			{foreach from=$listFiles item=file}
+                    				<li>
+                    				{if $file.type == 'dir'}<i class="fa fa-folder-open-o"></i>{else}<i class="fa fa-file-o"></i>{/if}
+                    				{$file.fileName} {$file.size}
+                    				</li>
+                    			{/foreach}
+                            {/if}
+                        </ul>
+                    </div>
+                    {else}
+                        <p>Ce dossier est vide</p>
+                    {/if}
                 </div>
 
             </div>
@@ -28,33 +46,3 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-
-        $("#btnConfirmDelDir").click(function() {
-            var arborescence = $('#rootRep').data('arborescence');
-            var directory = $('#delRep').data('filename');
-
-            $.post('inc/files/delDir.inc.php', {
-                    arborescence: arborescence,
-                    directory: directory
-                },
-                function(resultat) {
-                    var resultatJS = JSON.parse(resultat);
-                    var nbDir = parseInt(resultatJS.nbDir);
-                    var nbFiles = parseInt(resultatJS.nbFiles);
-                    if (nbDir > 0) {
-                        bootbox.alert({
-                                title: "Effacement d'un dossier",
-                                message: '<strong>1</strong> dossier contenant <strong>' + resultatJS.nbFiles + '</strong> fichier(s) supprimé(s)'
-                            });
-                    } else alert('Houston, We\'ve Got a Problem. Ce dossier ne peut être supprimé');
-                });
-            // supprimer la ligne du tableau des fichiers
-            $('#listeFichiers tr.active').remove();
-            $("#modalDelDir").modal('hide');
-        })
-
-    })
-</script>

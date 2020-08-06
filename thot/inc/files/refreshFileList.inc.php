@@ -33,4 +33,5 @@ $smarty->compile_dir = '../../templates_c';
 $smarty->assign('arborescence', $arborescence);
 $smarty->assign('directory', $directory);
 $smarty->assign('dir', $Files->flatDirectory($root.$ds.$arborescence.$ds.$directory));
-echo $smarty->display('files/listeFichiers.tpl');
+
+$smarty->display('files/listeFichiers.tpl');

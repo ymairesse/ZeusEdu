@@ -16,24 +16,17 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-require_once INSTALL_DIR.'/inc/classes/class.Files.php';
-$Files = new Files();
-
-$arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : Null;
-$fileName = substr($arborescence, strrpos($arborescence, '/')+1);
-$arborescence = substr($arborescence, 0, strrpos($arborescence, '/'));
-$dirOrFile = 'dir';
-
-$listePartages = $Files->getSharesByFileName($arborescence, $fileName, $dirOrFile, $acronyme);
+$path = isset($_POST['path']) ? $_POST['path'] : null;
+$fileName = isset($_POST['fileName']) ? $_POST['fileName'] : null;
+$dirOrFile = isset($_POST['dirOrFile']) ? $_POST['dirOrFile'] : null;
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listePartages', $listePartages);
+$smarty->assign('path', $path);
 $smarty->assign('fileName', $fileName);
-$smarty->assign('arborescence', $arborescence);
 $smarty->assign('dirOrFile', $dirOrFile);
 
-$smarty->display('files/listePartages.tpl');
+$smarty->display('files/modal/modalShare.tpl');

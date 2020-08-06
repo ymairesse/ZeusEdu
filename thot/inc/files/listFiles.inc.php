@@ -33,7 +33,10 @@ if (count($listFiles) > 0) {
     $smarty->template_dir = '../../templates';
     $smarty->compile_dir = '../../templates_c';
 
+    $smarty->assign('arborescence', $arborescence);
+    $smarty->assign('fileName', $fileName);
     $smarty->assign('listFiles', $listFiles);
+
     $smarty->display('files/listFiles.tpl');
 }
 else echo Null;

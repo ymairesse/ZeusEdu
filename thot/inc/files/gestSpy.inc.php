@@ -30,4 +30,4 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeSpied', $listeSpied);
 
-echo $smarty->display('files/listSpied.inc.tpl');
+$smarty->display('files/listSpied.inc.tpl');

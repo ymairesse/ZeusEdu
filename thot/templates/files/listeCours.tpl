@@ -1,6 +1,6 @@
 <div class="row">
 
-    <div class="col-sm-12" style="height:10em; overflow:auto">
+    <div class="col-xs-5" style="height:20em; overflow:auto">
 
     <ul class="listeCours list-unstyled">
         {foreach from=$listeCours key=coursGrp item=unCours}
@@ -13,23 +13,17 @@
         {/foreach}
     </ul>
 
-    </div> <!-- col-sm-12 -->
+</div> <!-- col-sm-6 -->
 
-  <div class="col-sm-12" id="listeEleves"  style="height:15em; overflow:auto">
+  <div class="col-xs-4" id="listeEleves">
 
   </div>
 
-</div>  <!-- row -->
-
-
-
-  {* <div class="col-sm-5">
+  <div class="col-xs-3">
       <div class="alert alert-info">
           <i class="fa fa-info-circle fa-2x" style="float:left; padding:0 5px 5px"></i>
-          <p>Sélectionnez d'abord un cours. La liste des élèves apparaît au dessous.</p>
-          <p>Pour sélectionner ou désélectionner tous les élèves, cochez la case "TOUS".</p>
-          <p>Vous pouvez aussi sélectionner les membres de la liste un à un.</p>
+          <p>Sélection d'un cours puis des élèves</p>
       </div>
-  </div> *}
+  </div>
 
-<input type="hidden" name="groupe" value="cours">
+</div>  <!-- row -->

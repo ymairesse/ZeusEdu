@@ -21,9 +21,9 @@ $Files = new Files();
 
 $fileName = isset($_POST['fileName']) ? $_POST['fileName'] : '';
 $arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : Null;
-$type = isset($_POST['type']) ? $_POST['type'] : Null;
+$dirOrFile = isset($_POST['dirOrFile']) ? $_POST['dirOrFile'] : Null;
 
-$listePartages = $Files->getSharesByFileName($arborescence, $fileName, $acronyme);
+$listePartages = $Files->getSharesByFileName($arborescence, $fileName, $dirOrFile,  $acronyme);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
@@ -33,6 +33,6 @@ $smarty->compile_dir = '../../templates_c';
 $smarty->assign('listePartages', $listePartages);
 $smarty->assign('fileName', $fileName);
 $smarty->assign('arborescence', $arborescence);
-$smarty->assign('type', $type);
+$smarty->assign('dirOrFile', $dirOrFile);
 
-echo $smarty->display('files/listePartages.tpl');
+$smarty->display('files/listePartages.tpl');

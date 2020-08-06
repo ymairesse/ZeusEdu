@@ -1,6 +1,6 @@
 <div class="modal fade" id="modalShare" tabindex="-1" role="dialog" aria-labelledby="titleModalShare" aria-hidden="true">
 
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -8,10 +8,12 @@
             </div>
             <div class="modal-body">
 
-                <form id="formShare" action="index.php" method="POST" class="form-vertical" role="form">
-                    <p>Dossier: <i class="fa fa-folder-open-o"></i> <strong id="shareDirName"></strong> Fichier:&nbsp;<i class="fa fa-file-o"></i>&nbsp;<strong id="shareFileName"></strong></p>
+                <form id="formShare">
+                    <p>Dossier: <i class="fa fa-folder-open-o"></i> <strong id="shareDirName">{$path}</strong> Fichier:&nbsp;<i class="fa fa-file-o"></i>&nbsp;<strong id="shareFileName">{$fileName}</strong></p>
 
-                    <p id="forDirOnly" class="help-text"><i class="fa fa-info-circle"></i> Tous les fichiers actuels et futurs des <strong>dossiers partagés</strong> sont automatiquement accessibles aux destinataires</p>
+                    {if $dirOrFile == 'dir'}
+                        <p id="forDirOnly" class="help-text"><i class="fa fa-info-circle"></i> Tous les fichiers actuels et futurs des <strong>dossiers partagés</strong> sont automatiquement accessibles aux destinataires</p>
+                    {/if}
 
                     <div class="form-group">
                         <label for="Commentaire">Veuillez commenter ce partage</label>
@@ -43,7 +45,7 @@
                         </fieldset>
                     </div>
 
-                    <div id="selection" style="height:25em; overflow:auto">
+                    <div id="selection">
 
                         <!-- la sélection des destinataires ici -->
 
@@ -53,10 +55,10 @@
                         <p>Veuillez préciser avec qui vous souhaitez partager</p>
                     </div>
 
-                    <input type="hidden" name="fileName" id="inputFileName" value="">
-                    <input type="hidden" name="path" id="inputPath" value="">
+                    <input type="hidden" name="fileName" id="inputFileName" value="{$fileName}">
+                    <input type="hidden" name="path" id="inputPath" value="{$path}">
                     <input type="hidden" name="type" id="inputType" value="">
-                    <input type="hidden" name="dirOrFile" id="dirOrFile" value="">
+                    <input type="hidden" name="dirOrFile" id="dirOrFile" value="{$dirOrFile}">
                     <input type="hidden" name="groupe" id="inputGroupe" value="">
                     <div class="btn-group pull-right">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
@@ -97,28 +99,37 @@
             }
             // donc, tout va bien: on poursuit
             if (erreur == false) {
-                var post = $("#formShare").serialize();
+                // désactivation des cb si tous les membres sont sélectionnés
+                // de manière à n'avoir qu'un seul partage pour tous
+                var nbChecked = $('.cb:checked').length;
+                var nbCb = $('.cb').length;
+                if (nbChecked == nbCb){
+                    $('.cb').prop('disabled', true);
+                }
+                var formulaire = $("#formShare").serialize();
                 $.post('inc/files/share.inc.php', {
-                        post: post
+                        formulaire: formulaire
                     },
-                    function(resultat) {
+                    function(wtf) {
                         $("#modalShare").modal('hide');
                         var fileName = $("#inputFileName").val();
                         var arborescence = $("#inputPath").val();
                         var type = $('#dirOrFile').val();
-
+                        // reconstitution de la liste des partages
                         $.post('inc/files/getSharesForFile.inc.php', {
                             fileName: fileName,
                             arborescence: arborescence,
                             type: type
                         },
                         function(resultat){
+                            // réactivation des .cb de la liste des destinataires
+                            // profs ou élèves
+                            $('.cb').prop('disabled', false);
                             $("#partages").html(resultat);
                         })
-
                     })
-            }
-        })
+                }
+            })
 
         $(".typePartage").click(function() {
             $("#partagesvp").addClass('hidden');
@@ -127,13 +138,20 @@
             $("#commentairesvp").addClass('hidden');
         })
 
-        $("#selection").on('change', '#checkListe', function() {
-            var checked = $(this).prop('checked');
-            $(".cb").prop('checked', checked);
+        $('#selection').on('click', '#btn-tous', function(){
+            $('.cb').prop('checked', true);
         })
 
-        $("#selection").on('change', '.cb', function() {
-            $("#checkListe").prop('checked', false);
+        $('#selection').on('click', '#btn-none', function(){
+            $('.cb').prop('checked', false);
+        })
+
+        $('#selection').on('click', '#btn-invert', function(){
+            var checked;
+            $('.cb').each(function(){
+                checked = $(this).prop('checked');
+                $(this).prop('checked', !checked);
+            })
         })
 
         $("#selection").on('change', '.classe', function() {

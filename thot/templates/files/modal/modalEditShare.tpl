@@ -6,18 +6,21 @@
                 <h4 class="modal-title" id="shareEditTitle">Modifier le commentaire d'un document</h4>
             </div>
             <div class="modal-body">
+                <p>Nom du fichier: <strong id="shareEditFileName">{$fileInfos.fileName}</strong></p>
+                <p>Répertoire: <strong id="shareEditPath">{$fileInfos.path}</strong></p>
+                <div class="form-groupe">
+                    <label for="shareEditCommentaire">Votre commentaire pour ce partage</label>
+                    <input type="text" name="commentaire" value="{$fileInfos.commentaire}" class="form-control" id="shareEditCommentaire">
+                </div>
 
-                <p>Nom du fichier: <strong id="shareEditFileName"></strong></p>
-                <p>Répertoire: <strong id="shareEditPath"></strong></p>
-                <p>Commentaire: <strong id="shareEditSharedWith"></strong></p>
+            </div>
 
-                <input type="text" name="commentaire" value="" class="form-control" id="shareEditCommentaire">
-                <input type="hidden" name="shareId" id="shareEditId" value="">
+            <div class="modal-footer">
+                <input type="hidden" name="shareId" id="shareEditId" value="{$fileInfos.shareId}">
                 <div class="btn-group pull-right">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-primary" id="saveComment">Enregistrer</button>
                 </div>
-                <div class="clearfix"></div>
             </div>
 
         </div>

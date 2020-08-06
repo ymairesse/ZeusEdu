@@ -16,14 +16,14 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$post = isset($_POST['post']) ? $_POST['post'] : null;
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 
 // retour du contenu du formulaire qui a été serializé
-$formulaire = array();
-parse_str($post, $formulaire);
+$form = array();
+parse_str($formulaire, $form);
 
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-// retourne le shareId du fichier partagé
-echo  $Files->share($formulaire, $acronyme);
+// On postule que tout s'est bien passé :o)
+$wtf = $Files->share($form, $acronyme);

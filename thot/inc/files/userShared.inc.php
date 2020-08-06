@@ -28,4 +28,5 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('sharedFiles', $sharedFiles);
-echo $smarty->fetch('files/userSharedList.tpl');
+
+$smarty->display('files/userSharedList.tpl');

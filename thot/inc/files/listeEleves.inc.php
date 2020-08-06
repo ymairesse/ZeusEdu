@@ -34,4 +34,4 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeEleves', $listeEleves);
 
-echo $smarty->fetch('files/listeEleves.tpl');
+$smarty->display('files/listeEleves.tpl');

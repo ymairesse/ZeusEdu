@@ -30,4 +30,4 @@ $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
 $smarty->assign('tree', $tree->getTree());
 
-echo $smarty->fetch('files/treeview.tpl');
+$smarty->display('files/treeview.tpl');
