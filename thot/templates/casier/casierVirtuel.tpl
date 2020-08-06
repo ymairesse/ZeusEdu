@@ -42,6 +42,9 @@
 
 </div>
 
+<div id="modal"></div>
+
+
 {include file="casier/modal/modalDelTravail.tpl"}
 
 {include file="casier/modal/modalDelCompetence.tpl"}
@@ -374,5 +377,27 @@
             $("#modalDelTravail").modal('hide');
         })
 
+        $('#zoneEdition').on('click', '#btn-showRemis', function(){
+            var idTravail = $(this).data('idtravail');
+            if (idTravail != '') {
+                var coursGrp = $("#selectCours :selected").val();
+                $.post('inc/casier/getReceptionTravail.inc.php', {
+                    idTravail: idTravail,
+                    coursGrp: coursGrp
+                }, function(resultat){
+                    $('#modal').html(resultat);
+                    $('#modalTravauxRemis').modal('show');
+                })
+            }
+            else {
+                bootbox.alert({
+                    title: 'Avertissement',
+                    message: 'Sélectionnez d\'abord un travail'
+                })
+            }
+
+        })
+
     })
+
 </script>

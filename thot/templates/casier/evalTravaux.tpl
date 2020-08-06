@@ -1,6 +1,7 @@
 <div class="box">
 
     <div class="row">
+
         <div class="col-sm-3">
             <button
                 type="button"
@@ -11,7 +12,7 @@
             </button>
         </div>
 
-        <div class="col-sm-9">
+        <div class="col-sm-7">
             <select class="form-control" id="selectEleve">
                 <option value="">Sélectionnez un élève</option>
                 {foreach from=$listeTravauxRemis key=leMatricule item=dataTravail}
@@ -25,6 +26,14 @@
                 </option>
                 {/foreach}
             </select>
+        </div>
+        <div class="col-sm-2">
+            <button type="button"
+                class="btn btn-success pull-right"
+                id="btn-showRemis"
+                data-idtravail="{$infoTravail.idTravail}">
+                <i class="fa fa-eye"></i> Contrôle
+            </button>
         </div>
 
     </div>

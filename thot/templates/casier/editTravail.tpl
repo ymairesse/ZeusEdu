@@ -1,8 +1,8 @@
-<form class="form-vertical" id="formTravail" name="formTravail" action="index.php" method="POST">
+<form class="form-vertical" id="formTravail">
 
     <div class="row">
 
-        <div class="col-xs-5">
+        <div class="col-xs-4">
             <label for="titre">Titre du travail</label>
             <input type="text" name="titre" maxlength="40" tabindex="1" value="{$dataTravail.titre|default:''}" id="titre" class="form-control" placeholder="Titre du travail">
         </div>
@@ -21,10 +21,17 @@
             </div>
         </div>
 
-        <div class="col-xs-3">
-            <div class="form-group">
+        <div class="col-xs-2">
+            <div class="form-group" title="Nombre de documents attendus">
+                <label for="nbPJ">Nb Docs</label>
+                <input type="text" name="nbPJ" id="nbPJ" tabindex="5" value="{$dataTravail.nbPJ|default:'1'}" class="form-control">
+            </div>
+        </div>
+
+        <div class="col-xs-2">
+            <div class="form-group" title="Statut de ce travail">
                 <label for="statutForm">Statut</label>
-                <select class="form-control" name="statut" id="statut" tabindex="5">
+                <select class="form-control" name="statut" id="statut" tabindex="6">
                     {foreach from=$listeStatuts key=unStatut item=libelle}
                     <option value="{$unStatut}" {if $dataTravail.statut == $unStatut} selected{/if}>{$libelle}</option>
                     {/foreach}
@@ -50,8 +57,8 @@
             <thead>
                 <tr>
                     <th style="width:5%">&nbsp;</th>
-                    <th style="width:60%">Competence</th>
-                    <th style="width:20%">Form. / Cert.</th>
+                    <th style="width:45%">Competence</th>
+                    <th style="width:40%">Form. / Cert.</th>
                     <th style="width:10%">Max</th>
                 </tr>
             </thead>
@@ -191,7 +198,8 @@
                     minlength: 20
                 },
                 dateDebut: 'required',
-                dateFin: 'required'
+                dateFin: 'required',
+                nbPJ: 'required'
             }
         })
 

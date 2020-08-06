@@ -38,20 +38,19 @@ foreach ($form as $field => $value) {
         $listeCotes[$id]['max'] = Application::sansVirg($value);
     }
 }
-Application::afficher($listeCotes);
 
 // totalisation des cotes par compétence pour le travail
-$total = array('cote'=> '', 'max' => '');
+$total = array('cote'=> Null, 'max' => Null);
 foreach ($listeCotes as $id => $evaluation) {
     if (is_numeric($evaluation['max'])) {
         if (is_numeric($evaluation['cote'])) {
-            $total['cote'] += $evaluation['cote'];
-            $total['max'] += $evaluation['max'];
+            $total['cote'] += (float) $evaluation['cote'];
+            $total['max'] += (float) $evaluation['max'];
         }
         else if (in_array($evaluation['cote'], $coteNulle)){
-            // juste pour ne plus avoir une chaîne vide dans $total['cote']
+            // juste pour ne plus avoir Null dans $total['cote']
             $total['cote'] += 0;
-            $total['max'] += $evaluation['max'];
+            $total['max'] += (float) $evaluation['max'];
         }
     }
 }

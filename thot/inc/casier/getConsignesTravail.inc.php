@@ -46,5 +46,5 @@ if (($showArchive == 'hide') && ($dataTravail['statut'] == 'archive')) {
         $smarty->assign('listeCompetences', $listeCompetences);
         $smarty->assign('listeStatuts', $listeStatuts);
 
-        echo $smarty->fetch('casier/editTravail.tpl');
+        $smarty->display('casier/editTravail.tpl');
     }

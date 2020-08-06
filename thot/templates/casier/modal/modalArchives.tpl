@@ -7,7 +7,7 @@
         </button>
         <h4 class="modal-title" id="modalArchivesLabel">Statut des travaux archivés</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="max-height:35em; overflow:auto;">
 
 
       </div>
