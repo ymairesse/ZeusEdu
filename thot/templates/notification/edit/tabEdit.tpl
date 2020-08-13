@@ -1,4 +1,4 @@
-<form name="notification" id="notification" role="form" class="form-vertical">
+<form name="notification" id="notification" role="form" class="form-vertical"> 
 
 	<div class="row">
 
