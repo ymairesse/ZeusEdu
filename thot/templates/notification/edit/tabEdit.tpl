@@ -1,3 +1,4 @@
+{debug}
 <form name="notification" id="notification" role="form" class="form-vertical">
 
 	<div class="row">
@@ -14,9 +15,7 @@
 					<option value="">Choisir le/les destinataire(s)</option>
 					{foreach from=$selectTypes key=leType item=dataType}
 					{if ($dataType.droits == Null) || in_array($userStatus, $dataType.droits)}
-						<option value="{$leType}"
-							{if $leType == $type} selected{/if} 
-							{if $dataType.editOnly == true}disabled{/if}>
+						<option value="{$leType}" {if $leType == $type} selected{/if}>
 							{$dataType.texte}
 						</option>
 					{/if}
