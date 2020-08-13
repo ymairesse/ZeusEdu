@@ -69,7 +69,11 @@
     </div>
     <!-- row -->
 
-    {include file="reunionParents/modal/modalDelRV.tpl"} {include file="reunionParents/modal/modalMaxRV.tpl"} {include file="reunionParents/modal/modalDoublonRV.tpl"} {include file="reunionParents/modal/modalAttente.tpl"} {include file="reunionParents/modal/modalHeureRvPlz.tpl"}
+    {include file="reunionParents/modal/modalDelRV.tpl"}
+    {include file="reunionParents/modal/modalMaxRV.tpl"}
+    {include file="reunionParents/modal/modalDoublonRV.tpl"}
+    {include file="reunionParents/modal/modalAttente.tpl"}
+    {include file="reunionParents/modal/modalHeureRvPlz.tpl"}
 
 </div>
 <!-- container -->
@@ -82,12 +86,12 @@
         $(".uneClasse").click(function() {
             $(".popover").popover('hide');
             var classe = $(this).data('classe');
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
             $(".uneClasse").removeClass('btn-primary');
             $(this).addClass('btn-primary');
             $.post('inc/reunionParents/listeElevesDeployee.inc.php', {
                     classe: classe,
-                    date: date
+                    idRP: idRP
                 },
                 function(resultat) {
                     $('#listeEleves').html(resultat);
@@ -100,10 +104,11 @@
         // sélection d'un élève
         $(document).on('click', '.btn-eleve', function() {
             var matricule = $(this).data('matricule');
+            var idRP = $('#idRP').val();
             $(".btn-eleve").removeClass('btn-primary');
             $(this).addClass('btn-primary');
-            $.post('inc/reunionParents/listeProfsEleve.inc.php', {
-                    matricule: matricule
+            $.post('inc/reunionParents/listeProfsRPcible.inc.php', {
+                    idRP: idRP
                 },
                 function(resultat) {
                     $("#listeProfs").html(resultat);
@@ -118,21 +123,21 @@
         // sélection d'un prof
         $("#listeProfs").on('change', '#selectProf', function() {
             var acronyme = $(this).val();
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
             var nomProf = $(this).find(':selected').data('nomprof');
             $("#attenteAcronyme").val(acronyme);
             $("#selectProf").attr('size', 1);
             $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                     userStatus: 'admin',
                     acronyme: acronyme,
-                    date: date,
+                    idRP: idRP,
                     nomProf: nomProf
                 },
                 function(resultat) {
                     $("#listeRV").html(resultat);
                 });
             $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                    date: date,
+                    idRP: idRP,
                     acronyme: acronyme
                 },
                 function(resultat) {
@@ -142,13 +147,17 @@
 
         // attribution d'un RV à un élève
         $("#listeRV").on('click', '.lien', function() {
-            var id = $(this).data('id');
+            var idRV = $(this).data('idrv');
             var matricule = $('.btn-eleve.btn-primary').data('matricule');
-            var date = $("#date").val();
-            if ((id > 0) && (matricule > 0)) {
+            var acronyme = $('#selectProf').val();
+            var idRP = $("#idRP").val();
+
+            if ((idRV > 0) && (matricule > 0)) {
                 $.post('inc/reunionParents/inscriptionEleve.inc.php', {
                         matricule: matricule,
-                        id: id
+                        idRV: idRV,
+                        idRP: idRP,
+                        acronyme: acronyme
                     },
                     function(resultat) {
                         switch (resultat) {
@@ -159,7 +168,7 @@
                                 // Mise à jour du popover
                                 $.post('inc/reunionParents/ulRvEleves.inc.php', {
                                         matricule: matricule,
-                                        date: date
+                                        idRP: idRP
                                     },
                                     function(resultat) {
                                         var btnEleve = $('#listeEleves').find('[data-matricule=' + matricule + ']');
@@ -189,14 +198,15 @@
 
         // suppression d'un RV établi
         $("#listeRV").on('click', '.unlink', function() {
-            var id = $(this).data('id');
+            var idRV = $(this).data('idrv');
             var matricule = $(this).data('matricule');
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
             var mail = $(this).data('mail');
             if (mail == '') {
                 // il ne s'agit pas d'un RV pris par les parents
                 $.post('inc/reunionParents/delRV.inc.php', {
-                        id: id
+                        idRV: idRV,
+                        idRP: idRP
                     },
                     function(resultat) {
                         if (resultat == 1) {
@@ -205,7 +215,7 @@
                             // Mise à jour du popover
                             $.post('inc/reunionParents/ulRvEleves.inc.php', {
                                     matricule: matricule,
-                                    date: date
+                                    idRP: idRP
                                 },
                                 function(resultat) {
                                     var btnEleve = $('#listeEleves').find('[data-matricule=' + matricule + ']');
@@ -222,32 +232,31 @@
             } else {
                 // il s'agit d'une réservation prise par les parents, il faut réaliser la procédure complète
                 var nomEleve = $(this).data('nomEleve');
-                $("#modalId").val(id);
+                $("#modalId").val(idRV);
                 $("#modalNomEleve").html(nomEleve);
                 $("#modalDelRV").modal('show');
             }
-
         })
 
         // attribution d'un RV à un élève qui se trouve en liste d'attente
         $(document).on('click','.unlinkAttente', function() {
-
             var matricule = $(this).data('matricule');
             var acronyme = $(this).data('acronyme');
             var periode = $(this).data('periode');
-            var id = $('.idRV:checked').val();
+            var idRP = $('#idRP').val();
+            // quelle est l'heure de RV cochée?
+            var idRV = $('.idRV:checked').val();
             var userName = $(this).data('userName');
-            var date = $(this).data('date');
-            var type = $('#type').val();
+            var typeGestion = $("#typeGestion").val();
 
-            if (id > 0) {
+            if (idRV > 0) {
                 $.post('inc/reunionParents/inscriptionEleve.inc.php', {
                     matricule: matricule,
-                    date: date,
+                    idRP: idRP,
+                    idRV: idRV,
                     acronyme: acronyme,
                     periode: periode,
                     userName: userName,
-                    id: id
                     },
                     function(resultat){
                         switch (resultat) {
@@ -261,7 +270,7 @@
                                 break;
                             default:
                                 // si le mode est "adminEleves", il faut mettre à jour le "badge" et le "popover" des RV de l'élève
-                                if (type == 'eleve') {
+                                if (typeGestion == 'eleve') {
                                     // mise à jour du badge -nombre de RV- près du nom de l'élève
                                     var badge = parseInt($('#listeEleves').find('[data-matricule='+matricule+']').closest('li').find('.badge').text());
                                     $('#listeEleves').find('[data-matricule='+matricule+']').closest('li').find('.badge').text(badge+1);
@@ -306,12 +315,12 @@
     // effacement de la liste d'attente
     $(document).on('click','.delAttente', function() {
         var matricule = $(this).data('matricule');
-        var date = $(this).data('date');
+        var idRP = $('#idRP').val();
         var acronyme = $(this).data('acronyme');
         var periode = $(this).data('periode');
 
         $.post('inc/reunionParents/delAttente.inc.php', {
-            date: date,
+            idRP: idRP,
             acronyme: acronyme,
             matricule: matricule,
             periode: periode

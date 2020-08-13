@@ -13,15 +13,13 @@ if (!(isset($_SESSION[APPLICATION]))) {
 }
 
 $acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
-$date = isset($_POST['date']) ? $_POST['date'] : Null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
+$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
-$thot = new Thot();
+$Thot = new Thot();
 
 // récupérer la liste d'attente complète
-$listeAttente = $thot->getListeAttenteProf($date, $acronyme);
+$listeAttente = $Thot->getListeAttenteProf($idRP, $acronyme);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
@@ -30,6 +28,6 @@ $smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('listeAttente', $listeAttente);
 $smarty->assign('acronyme', $acronyme);
-$smarty->assign('date', $date);
-$smarty->assign('periode', $periode);
+$smarty->assign('idRP', $idRP);
+
 $smarty->display('reunionParents/listeAttenteAdmin.tpl');

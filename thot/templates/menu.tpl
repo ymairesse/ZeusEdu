@@ -19,7 +19,9 @@
 		<ul class="nav navbar-nav">
 
 			<li><a href="index.php"><button class="btn btn-primary">THOT <img src="images/thotIco.png" alt="THOT" title="Page d'accueil de THOT"></button></a></li>
-			<li class="dropdown"><a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Annonces <b class="caret"></b></a>
+
+			<li class="dropdown">
+				<a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Annonces <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=notification&amp;etape=notif">Annonces et historique des annonces</a></li>
 					<li><a href="index.php?action=notification&amp;etape=subjectif">Vue subjective des annonces</a></li>
@@ -97,7 +99,6 @@
 					<li><a href="index.php?action=reunionParents&amp;mode=periodesProfs">Gestion des périodes de rendez-vous</a></li>
 					{/if}
 
-
 					{if $userStatus == 'admin'}
 					<li><a href="index.php?action=reunionParents&amp;mode=printEleves">Imprimer les fiches "parents"</a></li>
 					{/if}
@@ -113,15 +114,6 @@
 					<li><a href="index.php?action=bib&amp;mode=emprunt">Emprunt de livre</a></li>
 				</ul>
 			</li>
-
-			{* if ($userStatus == 'admin')}
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Formulaires <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					<li><a href="index.php?action=formulaires&amp;mode=edit">Création/modification d'un formulaire</a></li>
-					<li><a href="index.php?action=formulaires&amp;mode=voir">Consulter mes formulaires</a></li>
-				</ul>
-			</li>
-			{/if*}
 
 			{if ($userStatus == 'admin') || ($userStatus == 'direction')}
 				<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Admin <b class="caret"></b></a>
@@ -144,8 +136,10 @@
 			{if isset($alias)}
 			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>
 			{/if}
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{$identite.prenom} {$identite.nom}
-			{if $titulaire}[{','|implode:$titulaire}]{/if}<b class="caret"></b></a>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">{$identite.prenom} {$identite.nom}
+			{if $titulaire}[{','|implode:$titulaire}]{/if}
+			<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="../profil/index.php"><span class="glyphicon glyphicon-user"></span> Modifiez votre profil</a></li>
 					<li><a href="../logout.php"><span class="glyphicon glyphicon-off"></span> Déconnexion</a></li>

@@ -4,15 +4,14 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Attribution des locaux {$date}</h3>
+                    <h3 class="panel-title">Attribution des locaux {$infoRp.date}</h3>
                 </div>
-
 
                 <div class="panel-body">
 
                     {if isset($locaux)}
 
-                    <form action="index.php" method="POST" class="form-vertical" role="form">
+                    <form id="formDetails3">
                         <div style="height:30em; overflow:auto">
                             <table class="table table-condensed">
                                 <thead>
@@ -28,7 +27,7 @@
                                         <td>{$acronyme}</td>
                                         <td>{$data.nom} {$data.prenom}</td>
                                         <td>
-                                            <input type="text" name="local_{$acronyme}" value="{$data.local}" class="form-control">
+                                            <input type="text" name="local_{$acronyme}" value="{$data.local}" class="form-control" maxlength="12">
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-default down" title="recopier vers le bas">
@@ -45,15 +44,9 @@
 
                         <div class="btn-group pull-right">
                             <button type="reset" class="btn btn-default">Annuler</button>
-                            <button class="btn btn-primary" type="submit">Enregistrer</button>
+                            <button class="btn btn-primary" type="button" id="btn-page3" data-idrp="{$idRP|default:''}">Enregistrer</button>
                         </div>
 
-                        <div class="clearfix"></div>
-                        <input type="hidden" name="date" value="{$date}">
-                        <input type="hidden" name="action" value="{$action}">
-                        <input type="hidden" name="mode" value="enregistrer">
-                        <input type="hidden" name="etape" value="locaux">
-                        <input type="hidden" name="onglet" class="onglet" value="{$onglet}">
                     </form>
                 {else}
                 <div class="alert alert-info">

@@ -7,6 +7,7 @@
             {($data.sexe=='F')?'Mme':'M.'} {$data.nom} {$data.prenom} => {$data.libelle} {$data.nbheures}h
         </option>
     {/foreach}
+    
     {foreach from=$listeStatutsSpeciaux key=acronyme item=data}
         <option class="statutSpecial"
             value="{$acronyme}"

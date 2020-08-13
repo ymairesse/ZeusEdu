@@ -18,10 +18,9 @@
                 <strong id="sharedFileName" data-filename="{$fileName}" title="{$fileName}">
                     {$fileName|truncate:40:'...'}
                 </strong>
-                {if $listePartages|@count > 0} (partagé {$listePartages|@count}x){/if}
 
                 <button type="button"
-                    class="btn btn-xs pull-right btn-primary"
+                    class="btn btn-xs pull-right btn-primary {$shareEnabled|default:'disabled'}"
                     id="btn-share"
                     data-filename="{$fileName}"
                     data-dirorfile="{$dirOrFile}"
@@ -45,15 +44,7 @@
                             <i class="fa fa-edit"></i>
                         </button>
                     </td>
-                    <td title="Commentaire"
-                        data-shareid='{$share.shareId}'
-                        data-toggle="popover"
-                        data-content="{$share.commentaire}"
-                        data-placement="top"
-                        data-trigger='hover'
-                        data-container='body'
-                        data-html='true'
-                        style="cursor:pointer">
+                    <td data-shareid='{$share.shareId}'>
                         {if $share.type == 'eleves'}
                             <i class="fa fa-user"></i>
                             {$share.prenomEleve} {$share.nomEleve} [{$share.classe}]
@@ -72,7 +63,7 @@
                         {elseif $share.type == 'classes'}
                             <i class="fa fa-users"></i>
                             Élèves de {$share.groupe}
-                        {elseif $share.type == 'groupeAny'}
+                        {elseif $share.type == 'groupeArbitraire'}
                             <i class="fa fa-star"></i>
                             Élèves de {$share.groupe}
                         {elseif $share.type == 'prof'}
@@ -83,7 +74,7 @@
                                 Tous les collègues
                             {/if}
                         {/if}
-
+                        &nbsp;[<span data-shareid="{$share.shareId}">{$share.commentaire}</span>]
                     </td>
                     <td style="width:2em;">
                         <button type="button"
@@ -101,6 +92,8 @@
             </table>
 
         {/if}
+        
+        </div>
     </div>
 
     <div class="panel-footer">
@@ -111,13 +104,3 @@
     </div>
 
 </div>
-
-</div>
-
-<script type="text/javascript">
-
-    $(document).ready(function(){
-        $('[data-toggle="popover"]').popover();
-    })
-
-</script>

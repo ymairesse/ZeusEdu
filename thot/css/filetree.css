@@ -65,26 +65,6 @@ ul.filetree a.dirLink {
 .infoFile, .file, .share, .unShare, .delDir {
     cursor: pointer;
 }
-/*
-.prof {
-    background: #ddd;
-}
-
-.cours {
-    background: #99f;
-}
-
-.classe {
-    background: #7f7
-}
-
-.niveau {
-    background: pink;
-}
-
-.ecole {
-    background: yellow;
-}*/
 
 .filetree li.folder {
     background: url(images/folder.png) no-repeat left top;
@@ -679,4 +659,9 @@ td.ext_odg {
 td.ext_odp {
     background: url(images/odp.png) no-repeat left top;
     background-size: 24px;
+}
+
+.conteneur.ext_pdf {
+    background: url(images/odp.png) no-repeat left top !important;
+    background-size: 48px;
 }

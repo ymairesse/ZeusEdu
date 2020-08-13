@@ -8,7 +8,6 @@ $listeNotifications = $Thot->listeUserNotification($acronyme);
 
 // liste des pièces jointes liées à ces notifications
 $listePJ = $Thot->getPj4Notifs($listeNotifications, $acronyme);
-
 // liste des accusés de lecture demandés par l'utilisateur courant
 $listeAccuses = $Thot->getAccuses4user($acronyme, Null);
 
@@ -31,10 +30,6 @@ $listeCours = $user->getListeCours();
 
 // valeur à déterminer ensuite
 $destinataire = Null;
-
-// effacement des notifications périmées
-$listePerimees = $Thot->getNotifsPerimees();
-$nb = $Thot->delListeNotifs($listePerimees);
 
 // ------------------------------------------------------------------------------
 // la liste de toutes les notifications est ventilée par groupe destinataire
@@ -93,5 +88,7 @@ $smarty->assign('selectTypes', $selectTypes);
 $smarty->assign('listeNiveaux', $listeNiveaux);
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('listeCours', $listeCours);
+
+$smarty->clearAllCache();
 
 $smarty->assign('corpsPage', 'notification/historique');

@@ -19,7 +19,7 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$date = isset($_POST['date']) ? $_POST['date'] : Null;
+$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
 $mode = isset($_POST['mode']) ? $_POST['mode'] : Null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
 
@@ -32,14 +32,17 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
-$listeRV = $thot->listeRVParents($date, $mode, $niveau);
-$listeAttente = $thot->listeAttenteParents($date, $mode, $niveau);
-$listeLocaux = $thot->getLocauxRp($date);
+$listeRV = $thot->listeRVParents($idRP, $mode, $niveau);
+$listeAttente = $thot->listeAttenteParents($idRP, $mode, $niveau);
+$listeLocaux = $thot->getLocauxRp($idRP);
+$infoRP = $thot->getInfoRp($idRP);
+$date = $infoRP['date'];
 
 // établir une liste complete de tous les élèves qui figurent dans l'une ou dans l'autre liste
 $fullListe = array_unique(array_merge(array_keys($listeRV), array_keys($listeAttente)));
 $listeEleves = $thot->listeElevesMatricules($fullListe);
 
+$smarty->assign('idRP', $idRP);
 $smarty->assign('date', $date);
 $smarty->assign('listeRV', $listeRV);
 $smarty->assign('listeLocaux', $listeLocaux);
@@ -49,12 +52,16 @@ $smarty->assign('fullListe', $fullListe);
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('listeProfsEleves', $thot->listeCoursListeEleves($listeEleves));
 
-$smarty->assign('listePeriodes', $thot->getListePeriodes($date));
+$smarty->assign('listePeriodes', $thot->getListePeriodes($idRP));
 $smarty->assign('entete', sprintf('%s <br> %s <br> %s <br>',ECOLE, ADRESSE, VILLE));
+
 $rv4PDF =  $smarty->fetch('reunionParents/RVParents2pdf.tpl');
 
-require_once(INSTALL_DIR."/html2pdf/html2pdf.class.php");
-$html2pdf = new HTML2PDF('P','A4','fr');
+
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 $html2pdf->WriteHTML($rv4PDF);
 

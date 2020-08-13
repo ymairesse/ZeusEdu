@@ -30,4 +30,5 @@ $smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('destinataire', $classe);
 $smarty->assign('listeEleves', $listeEleves);
-$smarty->display('notification/listeEleves.tpl');
+
+$smarty->display('notification/edit/listeEleves.tpl');

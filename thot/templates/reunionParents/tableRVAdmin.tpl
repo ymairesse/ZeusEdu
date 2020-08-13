@@ -19,14 +19,13 @@
                 </tr>
             </thead>
             <tbody>
-                {foreach from=$listeRV key=id item=data}
-                <tr
-                    class="{if $data.heure >= $listePeriodes[3].min}attente3
+                {foreach from=$listeRV key=idRV item=data}
+                <tr class="{if $data.heure >= $listePeriodes[3].min}attente3
                             {elseif $data.heure >= $listePeriodes[2].min}attente2
                             {else}attente1
                             {/if}
                             {if $data.dispo==0} indisponible{/if}"
-                    data-nomparent="{$data.formule|default:''} {$data.nomParent|default:''} {$data.prenomParent|default:''}" data-id="{$data.id}">
+                    data-nomparent="{$data.formule|default:''} {$data.nomParent|default:''} {$data.prenomParent|default:''}" data-idrv="{$data.idRV}">
                     <td>{$data.heure}</td>
                     <td {if ($data.matricule !=Null)}
                         class="pop"
@@ -38,9 +37,9 @@
                         {/if}>
                         {$data.groupe|default:''} {$data.nom|default:''} {$data.prenom|default:''}</td>
                     <td><a title="{$data.mail}" href="mailto:{$data.mail}">{$data.formule} {$data.nomParent} {$data.prenomParent}</a></td>
-                    <td class="td_{$id}">
+                    <td class="td_{$idRV}">
                         {if ($data.matricule == Null)}
-                        <button type="button" data-id="{$id}" class="btn btn-default btn-xs dispo pull-right">
+                        <button type="button" data-idrv="{$idRV}" class="btn btn-default btn-xs dispo pull-right">
                             <i class="fa {if $data.dispo == 0}fa-toggle-on switchOff{else}fa-toggle-off switchOn{/if}"></i>
                         </button>
                         {/if}
@@ -50,7 +49,7 @@
                         <button
                             type="button"
                             class="btn btn-danger btn-xs unlink"
-                            data-id="{$id}"
+                            data-idrv="{$idRV}"
                             data-eleve="{$data.prenom} {$data.nom}"
                             data-matricule="{$data.matricule}"
                             data-mail="{$data.mail}"
@@ -61,13 +60,13 @@
                     </td>
 
                     <td>
-                        <input type="radio" name="idRV[]" class="idRV" value="{$id}"{if ($data.dispo == 0)} disabled{/if}>
+                        <input type="radio" name="idRV[]" class="idRV" value="{$idRV}"{if ($data.dispo == 0)} disabled{/if}>
                     </td>
                     <td>
                         <button
                             type="button"
                             class="btn btn-success btn-xs lien"
-                            data-id="{$id}"
+                            data-idrv="{$idRV}"
                             style="display: none">
                             <i class="fa fa-arrow-left"></i>
                         </button>
@@ -99,10 +98,9 @@
 
     $(document).ready(function() {
 
-        $(".dispo").attr('title', dispo)
-
         $(".dispo").click(function() {
-            var id = $(this).data('id');
+            var idRV = $(this).data('idrv');
+            var idRP = $('#idRP').val();
             var btnIcon = $(this).find('i');
             // cacher un éventuel bouton d'attribution du RV
             $(this).closest('tr').find('.lien').hide();
@@ -111,7 +109,8 @@
             else
                 $(this).find('i').removeClass('fa-toggle-off switchOn').addClass('fa-toggle-on switchOff');
             $.post('inc/reunionParents/toggleDispo.inc.php', {
-                    id: id
+                    idRV: idRV,
+                    idRP: idRP
                 },
                 function(resultat) {
                     var ligne = btnIcon.closest('tr');

@@ -1,22 +1,35 @@
 <?php
-require_once("../../../config.inc.php");
 
+require_once '../../../config.inc.php';
+
+require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
+$Application = new Application();
+
+// définition de la class USER utilisée en variable de SESSION
+require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 session_start();
+
+if (!(isset($_SESSION[APPLICATION]))) {
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
+}
+
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
+$module = $Application->getModule(3);
 
 $matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
 $acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
-$date = isset($_POST['date'])?$_POST['date']:Null;
+$idRP = isset($_POST['idRP'])?$_POST['idRP']:Null;
 $periode = isset($_POST['periode'])?$_POST['periode']:Null;
-
-require_once(INSTALL_DIR.'/inc/classes/classApplication.inc.php');
-$Application = new Application();
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
 $thot = new Thot();
-$nb = $thot->delListeAttenteProf($matricule, $acronyme, $date, $periode);
+$nb = $thot->delListeAttenteProf($matricule, $acronyme, $idRP, $periode);
 
 // récupérer la liste d'attente restante
-$listeAttente = $thot->getListeAttenteProf($date, $acronyme);
+$listeAttente = $thot->getListeAttenteProf($idRP, $acronyme);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
@@ -25,6 +38,7 @@ $smarty->compile_dir = "../templates_c";
 
 $smarty->assign('listeAttente',$listeAttente);
 $smarty->assign('acronyme',$acronyme);
-$smarty->assign('date',$date);
+$smarty->assign('idRP',$idRP);
 $smarty->assign('periode',$periode);
+
 $smarty->display('../../templates/reunionParents/listeAttenteAdmin.tpl');

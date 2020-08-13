@@ -1,28 +1,22 @@
 <div id="selecteur" class="selecteur noprint" style="clear:both">
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
-
 		{if $userStatus == 'admin'}
-		<select name="typeGestion" id="type">
-			<option
-				value="eleve"
-				{if isset($type) && ($type == 'eleve')} selected{/if}
-				{if isset($type) && ($type == 'titulaires')} disabled{/if}>
-				Par élève
-			</option>
-			<option id="optProf"
-				value="prof"
-				{if isset($type) && ($type == 'prof')} selected{/if}>Par enseignant</option>
-		</select>
+			<select class="form-control" name="typeGestion" id="typeGestion">
+				<option value="eleve" {if ($typeGestion == 'eleve')}selected{/if}>Par élève</option>
+				<option value="prof"  {if ($typeGestion == 'prof')}selected{/if}>Par enseignant</option>
+			</select>
 		{/if}
 
-		<select name="date" id="date">
-			<option value="">Date de réunion de parents</option>
-			{foreach from=$listeDates item=uneDate}
-				<option value="{$uneDate}"{if isset($date) && ($uneDate == $date)} selected="selected"{/if}>
-					{$uneDate}
+		<select name="idRP" id="idRP" class="form-control">
+			<option value="">Choisir une date</option>
+			{if isset($listeDates)}
+				{foreach from=$listeDates item=uneDate}
+				<option value="{$uneDate.idRP}" {if isset($idRP) && ($uneDate.idRP==$idRP)} selected="selected" {/if}>
+					Réunion du {$uneDate.date}
 				</option>
-			{/foreach}
+				{/foreach}
+			{/if}
 		</select>
 
 		<button type="submit" class="btn btn-primary btn-sm">OK</button>

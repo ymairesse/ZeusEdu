@@ -25,6 +25,8 @@
 </div>
 <!-- container -->
 
+<div id="modal"></div>
+
 <script type="text/javascript">
 
     function sendFile(file, el) {
@@ -177,6 +179,34 @@
             }
         })
 
+        $('#formDetails2').on('click', '#btn-page2', function(){
+            var formulaire = $('#formDetails2').serialize();
+            var idRP = $(this).data('idrp');
+            $.post('inc/reunionParents/savePage2.inc.php', {
+                formulaire: formulaire,
+                idRP: idRP
+            }, function(resultat){
+                bootbox.alert({
+                    title: 'Enregistrement',
+                    message: resultat
+                })
+            })
+        })
+
+        $('#formDetails3').on('click', '#btn-page3', function(){
+            var formulaire = $('#formDetails3').serialize();
+            var idRP = $(this).data('idrp');
+            $.post('inc/reunionParents/savePage3.inc.php', {
+                formulaire: formulaire,
+                idRP: idRP
+            }, function(resultat){
+                bootbox.alert({
+                    title: 'Enregistrement',
+                    message: resultat
+                })
+            })
+        })
+
         $("#datepicker").datepicker({
             format: 'dd/mm/yyyy',
             clearBtn: true,
@@ -254,8 +284,25 @@
         $("#maxPer2").val($(this).val());
     })
 
-    $("#btnDelRp").click(function(){
-        $("#modalDel").modal('show');
+    $("#btn-DelRp").click(function(){
+        var idRP = $(this).data('idrp');
+        $.post('inc/reunionParents/modalDelRP.inc.php', {
+            idRP: idRP
+        }, function(resultat){
+            $('#modal').html(resultat);
+            $('#modalDel').modal('show');
+        })
+    })
+
+    $('#modal').on('click', '#btn-modalDel', function(){
+        var idRP = $(this).data('idrp');
+        $.post('inc/reunionParents/confirmDelRP.inc.php', {
+            idRP: idRP
+        }, function(resultat){
+            $('#selecteur').html(resultat);
+            $('#modalDel').modal('hide');
+            $('#formSelecteur').trigger('submit');
+        })
     })
 
     })

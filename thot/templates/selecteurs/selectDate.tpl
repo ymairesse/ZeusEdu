@@ -2,12 +2,12 @@
 
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 
-		<select name="date" id="date" class="form-control">
-			<option value="">Sélectionnez une date</option>
+		<select name="idRP" id="idRP" class="form-control">
+			<option value="">Nouvelle date</option>
 			{if isset($listeDates)}
 				{foreach from=$listeDates item=uneDate}
-				<option value="{$uneDate}" {if isset($date) && ($uneDate==$date)} selected="selected" {/if}>
-					Réunion du {$uneDate}
+				<option value="{$uneDate.idRP}" {if isset($idRP) && ($uneDate.idRP==$idRP)} selected="selected" {/if}>
+					Réunion du {$uneDate.date}
 				</option>
 				{/foreach}
 			{/if}
@@ -24,8 +24,6 @@
 
 	</form>
 
-
-
 </div>
 
 <script type="text/javascript">
@@ -36,7 +34,7 @@
 				return false;
 		})
 
-		$("#date").change(function() {
+		$("#idRP").change(function() {
 			if ($(this).val() != '') {
 				$("#wait").show();
 				$.blockUI();

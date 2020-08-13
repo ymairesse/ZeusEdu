@@ -8,13 +8,13 @@
             </div>
 
              <div class="panel-body">
-                {if ($date == '')}
+                {if ($idRP == '')}
                 <div class="alert alert-info">
                     Définissez d'abord l'horaire et la liste des enseignants concernés à la page 1.
                 </div>
                 {/if}
 
-            <form action="index.php" method="POST" role="form" class="form-inline">
+            <form id="formDetails2">
 
             <div class="row">
 
@@ -25,24 +25,29 @@
                         <p class="help-block">Notice destinée aux parents pour l'inscription à la réunion</p>
                     </div>
                 </div>  <!-- col-md-... -->
+
                 <div class="col-md-3 col-sm-12">
-                    <div class="form-group">
-                        <label for="activation">Activation</label>
-                        <input type="checkbox" id="active" name="active" value="1"
-                            {if isset($infoRp.generalites.active) && ($infoRp.generalites.active==1)}checked{/if}
-                            {if ($date== '')} disabled{/if}>
-                        <p class="help-block">La réunion de parents est-elle activée</p>
+                    <div class="checkbox">
+                      <label>
+                          <input type="checkbox" id="active" name="active" value="1"
+                          {if isset($infoRp.generalites.active) && ($infoRp.generalites.active==1)}checked{/if}
+                          {if ($idRP == '')} disabled{/if}>
+                          Activation
+                     </label>
+                     <p class="help-block">La réunion de parents est-elle activée</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="activation">Ouverture</label>
-                        <input type="checkbox" id="ouvert" name="ouvert" value="1"
-                        {if isset($infoRp.generalites.ouvert) && ($infoRp.generalites.ouvert==1)}checked{/if}
-                        {if ($date == '')} disabled{/if}>
-                        <p class="help-block">La réunion de parents est-elle ouverte à l'inscription</p>
+                    <div class="checkbox">
+                      <label>
+                          <input type="checkbox" id="ouvert" name="ouvert" value="1"
+                          {if isset($infoRp.generalites.ouvert) && ($infoRp.generalites.ouvert==1)}checked{/if}
+                          {if ($idRP == '')} disabled{/if}>
+                          Ouverture
+                     </label>
+                     <p class="help-block">La réunion de parents est-elle ouverte à l'inscription</p>
                     </div>
 
-                    <fieldset {if ($date == '')}disabled{/if}>
+                    <fieldset {if ($idRP == '')}disabled{/if}>
                         <legend>Listes d'attente</legend>
                         <table class="table table-condensed">
                             <tr>
@@ -96,26 +101,15 @@
 
                     </fieldset>
 
-                    <div class="btn-group-vertical pull-right">
-                        <button type="submit" class="btn btn-primary" {if ($date == '')}disabled{/if}>Enregistrer</button>
-                        <button type="reset" class="btn btn-default" {if ($date == '')}disabled{/if}>Annuler</button>
+                    <div class="btn-group pull-right">
+                        <button type="button" id="btn-page2" class="btn btn-primary" {if ($idRP == '')}disabled{/if} data-idrp="{$idRP|default:''}">Enregistrer</button>
+                        <button type="reset" class="btn btn-default" {if ($idRP == '')}disabled{/if}>Annuler</button>
                     </div>
-
-                    <input type="hidden" name="date" value="{$date|default:''}">
-                    <input type="hidden" name="action" value="{$action}">
-                    <input type="hidden" name="mode" value="enregistrer">
-                    <input type="hidden" name="etape" value="etape2">
-                    <input type="hidden" name="onglet" class="onglet" value="{$onglet}">
 
                 </div>
 
-            </div>  <!-- row -->
-
+                </div>  <!-- row -->
               </form>
-
-          </div>
-          <div class="panel-footer">
-
           </div>
         </div>
 

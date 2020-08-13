@@ -26,11 +26,12 @@ $ds = DIRECTORY_SEPARATOR;
 $root = INSTALL_DIR.$ds.'upload'.$ds.$acronyme;
 
 $arborescence = $arborescence.$ds.$fileName;
+
 // rustine: suppression des éventuelles occurrences multiples de "/"
-$arborescence = preg_replace('~/+~', '/', $arborescence);
+$completeFileName = preg_replace('~/+~', '/', $root.$ds.$arborescence);
 
 // impossible d'effacer un répertoire dont le nom commence par #
-if (substr($arborescence, 0, 1) != '#') {
+if ((substr($arborescence, 0, 1) != '#') && (file_exists($completeFileName))) {
     // liste l'ensemble des fichiers dans l'arborescence de l'utilisateur,
     // dans un tableau linéaire
     // n => {'path' => ... , 'fileName' => ... , 'dirOrFile' => 'dir'|'file'}
@@ -57,7 +58,7 @@ if (substr($arborescence, 0, 1) != '#') {
 
     // effacement effectif du répertoire et des fichiers contenus
     $nbDir = $Files->delTree(INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$arborescence);
-    echo json_encode(array('nbFiles' => count($allFiles), 'nbDir' => $nbDir));
+    echo json_encode(array('nbFiles' => count($allFiles)-1, 'nbDir' => $nbDir));
     }
 else {
      exit;

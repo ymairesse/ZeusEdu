@@ -1,3 +1,5 @@
+ADMINPROF.tpl
+
 <div class="container-fluid">
 
     <div class="row">
@@ -94,7 +96,7 @@ var typeRP="{$typeRP}"
         // sélection d'un prof
         $(document).on('click', '.btn-prof', function() {
             var acronyme = $(this).data('abreviation');
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
             var nomProf = $(this).data('nomprof');
             var statut = $(this).data('statut');
             $(".btn-prof").removeClass('btn-primary');
@@ -102,7 +104,7 @@ var typeRP="{$typeRP}"
             // produire la liste des RV pour le prof désigné
             $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                         acronyme: acronyme,
-                        date: date,
+                        idRP: idRP,
                     },
                     function(resultat) {
                         $("#listeRV").html(resultat);
@@ -110,7 +112,7 @@ var typeRP="{$typeRP}"
                 )
             // produire la liste d'attente admin pour ce prof
             $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                        date: date,
+                        idRP: idRP,
                         acronyme: acronyme
                     },
                     function(resultat) {
@@ -131,15 +133,16 @@ var typeRP="{$typeRP}"
 
         // attribution d'un RV à un élève
         $("#listeRV").on('click', '.lien', function() {
-            var id = $(this).data('id');
+            var idRV = $(this).data('idrv');
             var matricule = $('.btn-eleve.btn-primary').data('matricule');
             var acronyme = $('.btn-prof.btn-primary').data('abreviation');
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
 
-            if ((id > 0) && (matricule > 0)) {
+            if ((idRV > 0) && (matricule > 0)) {
                 $.post('inc/reunionParents/inscriptionEleve.inc.php', {
                         matricule: matricule,
-                        id: id
+                        idRV: idRV,
+                        idRP: idRP
                     },
                     function(resultat) {
                         switch (resultat) {
@@ -147,7 +150,7 @@ var typeRP="{$typeRP}"
                                 // visualisation du changement pour la zone des RV
                                 $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                                         acronyme: acronyme,
-                                        date: date
+                                        idRP: idRP
                                     },
                                     function(resultat) {
                                         $("#listeRV").html(resultat);
@@ -156,9 +159,8 @@ var typeRP="{$typeRP}"
                                 // régénérer la liste d'attente
                                 $.post('inc/reunionParents/listeAttente.inc.php', {
                                     acronyme: acronyme,
-                                    date: date,
-                                    matricule: matricule,
-                                    periode: perode
+                                    idRP: idRP,
+                                    matricule: matricule
                                 },
                                 function(resultat){
                                     $("#listeAttenteProf").html(resultat);
@@ -182,14 +184,16 @@ var typeRP="{$typeRP}"
 
         // effacement d'un RV
         $("#listeRV").on('click', '.unlink', function() {
-            var id = $(this).data('id');
-            var eleve = $(this).data('eleve');
+            var idRV = $(this).data('idrv');
+            var matricule = $(this).data('matricule');
             var mail = $(this).data('mail');
             var acronyme = $('.btn-prof.btn-primary').data('abreviation');
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
             if (mail == '') {
+                // on n'a pas l'adresse mail des parents (c'est donc une inscription par un admin)
                 $.post('inc/reunionParents/delRV.inc.php', {
-                        id: id
+                        idRV: idRV,
+                        idRP: idRP
                     },
                     function(resultat) {
                         switch (resultat) {
@@ -197,18 +201,16 @@ var typeRP="{$typeRP}"
                                 // visualisation du changement pour la zone des RV
                                 $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                                         acronyme: acronyme,
-                                        date: date,
+                                        idRP: idRP,
                                     },
                                     function(resultat) {
                                         $("#listeRV").html(resultat);
                                     }
                                 );
                                 // régénérer la liste d'attente
-                                $.post('inc/reunionParents/listeAttente.inc.php', {
+                                $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
                                     acronyme: acronyme,
-                                    date: date,
-                                    matricule: matricule,
-                                    periode: perode
+                                    idRP: idRP,
                                     },
                                     function(resultat){
                                         $("#listeAttenteProf").html(resultat);
@@ -222,8 +224,8 @@ var typeRP="{$typeRP}"
                     }
                 )
             } else {
-                $("#modalId").val(id);
-                $("#modalNomEleve").html(eleve);
+                $("#modalId").val(idRV);
+                $("#modalNomEleve").html(MATRICULE);
                 $("#modalDelRV").modal('show');
             }
         })
@@ -231,8 +233,8 @@ var typeRP="{$typeRP}"
         $(document).on('click', '#listeAttente', function() {
             var matricule = $('.btn-eleve.btn-primary').data('matricule');
             var acronyme = $('.btn-prof.btn-primary').data('abreviation');
+            var idRP = $('#idRP').val();
             if (matricule !== undefined) {
-                var date = $('#date').val();
                 $('#attenteMatricule').val(matricule);
                 $('#attenteAcronyme').val(acronyme);
                 $('#modalAttente').modal('show');
@@ -241,23 +243,25 @@ var typeRP="{$typeRP}"
 
         // attribution d'un RV à un élève qui se trouve en liste d'attente
         $(document).on('click','.unlinkAttente', function() {
-
             var matricule = $(this).data('matricule');
             var acronyme = $(this).data('acronyme');
             var periode = $(this).data('periode');
-            var id = $('.idRV:checked').val();
+            var idRP = $('#idRP').val();
+            // quelle est l'heure de RV cochée?
+            var idRV = $('.idRV:checked').val();
             var userName = $(this).data('userName');
-            var date = $(this).data('date');
-            var type = $("#type").val();
+            var typeGestion = $("#typeGestion").val();
 
-            if (id > 0) {
+            // On envoie l'élève dans la RP $idRP
+            if (idRV > 0) {
+                // AJOUTER L'ÉLÈVES DANS LA TABLE DÉJÀ INITIALISÉE
                 $.post('inc/reunionParents/inscriptionEleve.inc.php', {
                     matricule: matricule,
-                    date: date,
+                    idRP: idRP,
+                    idRV: idRV,
                     acronyme: acronyme,
                     periode: periode,
-                    userName: userName,
-                    id: id
+                    userName: userName
                     },
                     function(resultat){
                         switch (resultat) {
@@ -270,8 +274,8 @@ var typeRP="{$typeRP}"
                                 $("#modalDoublonRV").modal('show');
                                 break;
                             default:
-                                // si le mode est "adminEleves", il faut mettre à jour le "badge" et le "popover" des RV de l'élève
-                                if (type == 'eleve') {
+                                // si le type de gestion est "eleve", il faut mettre à jour le "badge" et le "popover" des RV de l'élève
+                                if (typeGestion == 'eleve') {
                                     // mise à jour du badge -nombre de RV- près du nom de l'élève
                                     var badge = parseInt($("#listeEleves").find('[data-matricule='+matricule+']').closest('li').find('.badge').text());
                                     $("#listeEleves").find('[data-matricule='+matricule+']').closest('li').find('.badge').text(badge+1);
@@ -279,7 +283,7 @@ var typeRP="{$typeRP}"
                                     // Mise à jour du popover de la liste de RV
                                     $.post('inc/reunionParents/ulRvEleves.inc.php', {
                                             matricule: matricule,
-                                            date: date
+                                            idRP: idRP
                                         },
                                         function(resultat) {
                                             var btnEleve = $("#listeEleves").find('[data-matricule=' + matricule + ']');
@@ -287,18 +291,20 @@ var typeRP="{$typeRP}"
                                             btnEleve.data('bs.popover').setContent();
                                         })
                                     }
+
                                 // reconstruire la liste des RV mise à jour pour le prof désigné
                                 $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                                             acronyme: acronyme,
-                                            date: date
+                                            idRP: idRP
                                         },
                                         function(resultat) {
                                             $("#listeRV").html(resultat);
                                         }
                                     )
+
                                 // reconstruire la liste d'attente
                                 $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                                    date: date,
+                                    idRP: idRP,
                                     acronyme: acronyme,
                                     matricule: matricule,
                                     periode: periode
@@ -316,12 +322,12 @@ var typeRP="{$typeRP}"
         // effacement de la liste d'attente
         $(document).on('click','.delAttente', function() {
             var matricule = $(this).data('matricule');
-            var date = $(this).data('date');
+            var idRP = $('#idRP').val();
             var acronyme = $(this).data('acronyme');
             var periode = $(this).data('periode');
 
             $.post('inc/reunionParents/delAttente.inc.php', {
-                date: date,
+                idRP: idRP,
                 acronyme: acronyme,
                 matricule: matricule,
                 periode: periode

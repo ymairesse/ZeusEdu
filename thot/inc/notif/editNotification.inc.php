@@ -68,6 +68,8 @@ if (isset($notification['matricule']) && ($notification['matricule'] != '')) {
         }
     }
 
+$niveau = Null;
+
 $stringDestinataire = Null;
 switch ($type) {
     case 'ecole':
@@ -75,30 +77,23 @@ switch ($type) {
         break;
     case 'niveau':
         $stringDestinataire = sprintf('%de année', $notification['destinataire']);
+        $niveau = $notification['destinataire'];
         break;
     case 'cours':
         $stringDestinataire = $notification['destinataire'];
+        $niveau = SUBSTR($notification['destinataire'], 0, 1);
         break;
     case 'coursGrp':
-        // le destinataire est-il un matricule (numérique entier, donc) ?
-        if (preg_match('#^[\d\s]*$#', $notification['destinataire'])){
-            $stringDestinataire = sprintf('%s %s', current($listeEleves)['prenom'], current($listeEleves)['nom']);
-            }
-            else $stringDestinataire = $notification['destinataire'];
+        $stringDestinataire = $notification['destinataire'];
+        $niveau = SUBSTR($notification['destinataire'], 0, 1);
         break;
     case 'groupe':
-        // le destinataire est-il un matricule (numérique entier, donc) ?
-        if (preg_match('#^[\d\s]*$#', $notification['destinataire'])){
-            $stringDestinataire = sprintf('%s %s', current($listeEleves)['prenom'], current($listeEleves)['nom']);
-            }
-            else $stringDestinataire = $notification['destinataire'];
+        $stringDestinataire = $notification['destinataire'];
+        $niveau = SUBSTR($notification['destinataire'], 0, 1);
         break;
     case 'classes':
-        // le destinataire est-il un matricule (numérique entier, donc) ?
-        if (preg_match('#^[\d\s]*$#', $notification['destinataire'])){
-            $stringDestinataire = sprintf('%s %s', current($listeEleves)['prenom'], current($listeEleves)['nom']);
-            }
-            else $stringDestinataire = $notification['destinataire'];
+        $stringDestinataire = $notification['destinataire'];
+        $niveau = SUBSTR($notification['destinataire'], 0, 1);
         break;
     case 'eleves':
         $stringDestinataire = 'Un·e élève';
@@ -129,7 +124,6 @@ $smarty->assign('type', $type);
 $smarty->assign('edition', true);
 $smarty->assign('destinataire', $notification['destinataire']);
 $smarty->assign('stringDestinataire', $stringDestinataire);
-$smarty->assign('niveau', $notification['niveau']);
 $smarty->assign('notification', $notification);
 $smarty->assign('listeEleves', $listeEleves);
 $smarty->assign('id', $id);
@@ -139,6 +133,7 @@ $smarty->assign('pjFiles', $pjFiles);
 $smarty->assign('selectedFiles', $selectedFiles);
 $smarty->assign('selectTypes', $selectTypes);
 $smarty->assign('listeNiveaux', $listeNiveaux);
+$smarty->assign('niveau', $niveau);
 $smarty->assign('listeCours', $listeCours);
 $smarty->assign('userStatus', $userStatus);
 

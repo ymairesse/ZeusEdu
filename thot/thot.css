@@ -706,12 +706,12 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
     padding: 0 1em 0 0;
 }
 
-#treeviewCategories .eleves {
+#treeviewCategories .eleves, .modal .eleves {
     background-color: #8ee5ff;
     color:  black;
 }
 
-#treeviewCategories .profs {
+#treeviewCategories .profs, .modal .profs {
 	background-color: #ff9c99;
 	color: #333;
 }
@@ -785,4 +785,17 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
 	padding: .2em 0.5em;
 	border: 1px solid #e1dcdc;
 	background: #cdfb88;
+}
+
+#ficheEleve tr {
+    cursor: pointer;
+}
+
+
+.forumActif {
+    border: 2px solid black;
+    font-weight: bolder;
+}
+.forumInactif {
+    color: #888 !important;
 }

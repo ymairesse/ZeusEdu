@@ -26,6 +26,11 @@ $Thot = new Thot();
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 
 $type = isset($_POST['type']) ? $_POST['type'] : null;
+// la liste $listeNotifId arrive avec un ou pluisuers couples
+// destinataire -> notifId
+$listeNotifId = isset($_POST['listeNotifId']) ? $_POST['listeNotifId'] : Null;
+// inversion key => value et on ne conserve que les keys
+$listeNotifId = array_keys(array_flip($listeNotifId));
 
 // lecture de toutes les notifications pour l'utilisateur courant
 // mais seulement pour le type qui doit être rafraîchit
@@ -85,5 +90,6 @@ $smarty->assign('listeAccuses', $listeAccuses);
 $smarty->assign('listeAttendus', $listeAttendus);
 $smarty->assign('listePJ', $listePJ);
 $smarty->assign('type', $type);
+$smarty->assign('listeNotifId', $listeNotifId);
 
 $smarty->display('notification/edit/notification4Type.tpl');

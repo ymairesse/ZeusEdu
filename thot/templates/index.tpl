@@ -12,6 +12,67 @@
 
 <script src="js/fbLike/facebook-reactions.js"></script>
 <link rel="stylesheet" href="js/fbLike/stylesheet.css" media="screen">
+<link rel="stylesheet" href="css/filetree.css" type="text/css">
+
+<style type="text/css">
+
+#listeFichiers .conteneur {
+	float: left;
+	padding: 0 1em;
+	margin: 0.5em;
+	cursor: pointer;
+	word-wrap: break-word;
+	width: 8em;
+	height: 8em;
+	overflow: auto;
+	}
+
+#listeFichiers .nomFichier {
+	font-size: 9pt;
+	width: 10em;
+	}
+
+.conteneur a {
+	font-weight: normal;
+	color: #00f;
+}
+
+#listeFichiers .fileImage {
+	background-image: url('images/file.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 4em;
+	width: 4em;
+	}
+
+/* .conteneur .ext_pdf {
+	background-image: url('css/images/pdf.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100%;
+	height: 4em;
+	width: 4em;
+} */
+
+#listeFichiers .folderImage {
+	background-image: url('images/folder.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 4em;
+	width: 4em;
+	}
+
+#listeFichiers .fileName {
+	width: 8em;
+	font-size: 8pt;
+
+}
+
+#listeFichiers .conteneur.active {
+	background-color: #cce;
+}
+
+</style>
 
 </head>
 <body>

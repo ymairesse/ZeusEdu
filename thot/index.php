@@ -24,7 +24,6 @@ $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 
-
 $module = $Application->getModule(1);
 
 $listeCours = $user->listeCoursProf();
@@ -53,7 +52,7 @@ switch ($action) {
         }
         break;
     case 'files':
-        include_once 'inc/gestFiles.inc.php';
+        include_once 'inc/files/gestFiles.php';
         break;
     case 'gestion':
         include_once 'inc/parents/gestion.inc.php';
@@ -86,17 +85,9 @@ switch ($action) {
 		require_once 'inc/forum/gestForums.php';
 		break;
     default:
-        // include_once 'inc/manAtWork.php';
+        require_once 'inc/news.php';
         break;
 }
-
-require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
-$FlashInfo = new FlashInfo();
-
-$smarty->assign('module', $module);
-$listeFlashInfos = $FlashInfo->listeFlashInfos($module);
-$smarty->assign('userStatus', $userStatus);
-$smarty->assign('listeFlashInfos', $listeFlashInfos);
 
 //
 // ----------------------------------------------------------------------------

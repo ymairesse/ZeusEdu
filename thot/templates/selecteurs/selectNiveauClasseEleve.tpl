@@ -35,7 +35,7 @@
 	$(document).ready(function(){
 
 		$('#listeNiveaux').change(function(){
-			alert('test');
+
 		})
 
 	})

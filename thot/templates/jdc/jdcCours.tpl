@@ -161,8 +161,15 @@
 
         $('#printJDC').click(function(){
 			var coursGrp = $(this).data('coursgrp');
+            var currentTime = new Date();
+            var currentYear = currentTime.getFullYear();
+            var currentMonth = currentTime.getMonth()+1;
+            if (currentMonth > 8 && currentMonth <= 12)
+                var dateDepuis = '01/09/' + currentYear
+                else var dateDepuis = '01/09/' + String(currentYear - 1);
+            $('#modalPrintJDC input#from').datepicker('setDate', dateDepuis);
 			$.post('inc/jdc/listeCoursProfs.inc.php', {
-				coursGrp: coursGrp
+				coursGrp: coursGrp,
 			}, function(resultat){
 				$('#modalListeCours').html(resultat);
 			})

@@ -14,7 +14,7 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label for="modalDepuis">Depuis</label>
-							<input type="text" name="from" class="datepicker form-control" value="">
+							<input type="text" name="from" id="from" class="datepicker form-control" value="">
 							<div class="helpBlock">
 								Date de début d'impression
 							</div>

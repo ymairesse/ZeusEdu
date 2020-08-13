@@ -19,6 +19,8 @@ $acronyme = $User->getAcronyme();
 $directory = isset($_POST['directory']) ? $_POST['directory'] : '';
 $arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : Null;
 
+$viewMode = isset($_COOKIE['viewMode']) ? $_COOKIE['viewMode'] : 'grille';
+
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
@@ -32,6 +34,7 @@ $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('arborescence', $arborescence);
 $smarty->assign('directory', $directory);
+$smarty->assign('viewMode', $viewMode);
 $smarty->assign('dir', $Files->flatDirectory($root.$ds.$arborescence.$ds.$directory));
 
 $smarty->display('files/listeFichiers.tpl');

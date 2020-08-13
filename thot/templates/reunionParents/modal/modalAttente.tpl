@@ -7,7 +7,7 @@
                 <h3 class="modal-title">Liste d'attente</h3>
             </div>
             <div class="modal-body">
-                <h4>Choix d'une liste d'attente pour le <strong>{$date}</strong></h4>
+                <h4>Choix d'une liste d'attente pour la réunion de parents</h4>
 
                 <form action="index.php" method="POST" role="form" class="form-vertical" id="formListeAttente" name="formListeAttente">
 
@@ -54,10 +54,10 @@
             var periode = $(this).data('periode');
             var matricule = $("#attenteMatricule").val();
             var acronyme = $("#attenteAcronyme").val();
-            var date = $("#date").val();
+            var idRP = $("#idRP").val();
             // introduire en liste d'attente
             $.post('inc/reunionParents/setListeAttente.inc.php', {
-                date: date,
+                idRP: idRP,
                 acronyme: acronyme,
                 matricule: matricule,
                 periode: periode
@@ -67,14 +67,14 @@
             // recomposer la liste des RV du prof "acronyme"
             $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                 acronyme: acronyme,
-                date: date
+                idRP: idRP
                 },
                 function(resultat){
                     $("#listeRV").html(resultat);
                 })
             // retrouver les éléments de la liste d'attente
             $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                date: date,
+                idRP: idRP,
                 acronyme: acronyme,
                 matricule: matricule,
                 periode: periode

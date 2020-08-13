@@ -1,9 +1,15 @@
 <div class="row">
+    <div class="col-xs-12">
+        {if isset($infoRp.idRP)}
+
+        <button class="btn btn-block btn-danger" id="btn-DelRp" data-idrp="{$idRP|default:''}">Supprimer la RP du {$infoRp.date}</button>
+
+        {/if}
+    </div>
+
+    <form action="index.php" method="POST" role="form" name="table" class="form-inline">
 
     <div class="col-md-3 col-sm-4">
-        {if $date != ''}
-        <button class="btn btn-block btn-danger" id="btnDelRp">Supprimer la RP du {$date}</button>
-        {/if}
 
         <div class="panel panel-default">
 
@@ -13,68 +19,87 @@
 
             <div class="panel-body">
 
-                <form action="" id="setCanevas" method="" class="form-vertical disabled" role="form">
+                <div class="form-group">
+                  <p><strong>Type de Réunion de Parents</strong></p>
 
-                    <div class="form-group">
-                      <p><strong>Type de Réunion de Parents</strong></p>
-                      <label class="radio-inline">
-                          {if $date != ''}
-                              {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'profs')}
-                              <i class="fa fa-check-circle-o"></i>
-                              {else}
-                                <i class="fa fa-circle-o"></i>
-                              {/if}
+                  <label class="radio-inline">
+                      {if $idRP != ''}
+                          {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'profs')}
+                          <i class="fa fa-check-circle-o"></i>
                           {else}
-                          <input type="radio" name="leType" value="profs"
-                            {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'profs')}checked{/if}>
+                            <i class="fa fa-circle-o"></i>
                           {/if}
-                          Tous
-                      </label>
-                      <label class="radio-inline">
-                          {if $date != ''}
-                              {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'titulaires')}
-                                <i class="fa fa-check-circle-o"></i>
-                              {else}
-                                <i class="fa fa-circle-o"></i>
-                              {/if}
+                      {else}
+                      <input type="radio" name="leType" value="profs"
+                        {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'profs')}checked{/if}>
+                      {/if}
+                      Tous
+                  </label>
+
+                  <label class="radio-inline">
+                      {if $idRP != ''}
+                          {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'titulaires')}
+                            <i class="fa fa-check-circle-o"></i>
                           {else}
-                          <input type="radio" name="leType" value="titulaires"
-                          {if isset($infoRp) && $infoRp.typeRP == 'titulaires'}checked{/if}>
+                            <i class="fa fa-circle-o"></i>
                           {/if}
-                        Titulaires
-                      </label>
-                        <p class="help-block">Concerne tous les enseignants ou seulement les titulaires</p>
-                    </div>
+                      {else}
+                      <input type="radio" name="leType" value="titulaires"
+                      {if isset($infoRp) && $infoRp.typeRP == 'titulaires'}checked{/if}>
+                      {/if}
+                    Titulaires
+                  </label>
 
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="text" class="form-control" id="datepicker" placeholder="Date" value="{$date|default:''}" {if $date != ''}disabled{/if}>
-                        <p class="help-block">Date de la réunion</p>
-                    </div>
+                  <label class="radio-inline">
+                      {if $idRP != ''}
+                          {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'cible')}
+                          <i class="fa fa-check-circle-o"></i>
+                          {else}
+                            <i class="fa fa-circle-o"></i>
+                          {/if}
+                      {else}
+                      <input type="radio" name="leType" value="cible"
+                        {if !(isset($infoRp)) || (isset($infoRp) && $infoRp.typeRP == 'cible')}checked{/if}>
+                      {/if}
+                      Ciblé
+                  </label>
 
-                    <div class="form-group">
-                        <label for="debut" class="sr-only">Heure de début</label>
-                        <input type="text" class="form-control heure" id="debut" name="debut" placeholder="Heure de début" {if $date != ''} value='{$infoRp.heuresLimites.min}' disabled{/if}>
-                        <p class="help-block">Heure de début</p>
-                    </div>
+                    <p class="help-block">Concerne tous les enseignants ou seulement les titulaires</p>
+                </div>
 
-                    <div class="form-group">
-                        <label for="debut" class="sr-only">Heure de fin</label>
-                        <input type="text" class="form-control heure" id="fin" name="fin" placeholder="Heure de fin" {if $date != ''} value='{$infoRp.heuresLimites.max}' disabled{/if}>
-                        <p class="help-block">Heure de fin</p>
-                    </div>
+                <div class="form-group">
+                    <label for="date" class="sr-only">Date</label>
+                    <input type="text" class="form-control" id="datepicker" placeholder="Date"
+                    value="{$infoRp.date|default:''}" {if isset($infoRp) && $infoRp.date != ''} disabled{/if}>
+                    <p class="help-block">Date de la réunion</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="debut" class="sr-only">Heure de début</label>
+                    <input type="text" class="form-control heure" id="debut" name="debut" placeholder="Heure de début"
+                    {if isset($infoRp) && $infoRp.date != Null} value="{$infoRp.heuresLimites.min|default:''}" disabled{/if}>
+                    <p class="help-block">Heure de début</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="debut" class="sr-only">Heure de fin</label>
+                    <input type="text" class="form-control heure" id="fin" name="fin" placeholder="Heure de fin"
+                    {if isset($infoRp) && $infoRp.date != ''} value='{$infoRp.heuresLimites.max}' disabled{/if}>
+                    <p class="help-block">Heure de fin</p>
+                </div>
 
 
-                    <div class="form-group">
-                        <label for="intervalle" class="sr-only">Intervalle</label>
-                        <input type="text" class="form-control" id="intervalle" name="intervalle" placeholder="Durée" {if $date != ''} value='-' disabled{/if}>
-                        <p class="help-block">Durée d'un entretien (en minutes)</p>
-                    </div>
+                <div class="form-group">
+                    <label for="intervalle" class="sr-only">Intervalle</label>
+                    <input type="text" class="form-control" id="intervalle" name="intervalle" placeholder="Durée"
+                    {if isset($infoRp) && $infoRp.date != ''} value='-' disabled{/if}>
+                    <p class="help-block">Durée d'un entretien (en minutes)</p>
+                </div>
 
-                    <button type="button" class="btn btn-primary pull-right{if $date != ''} disabled{/if}" id="creation">Création <i class="fa fa-arrow-right"></i></button>
-                    <div class="clearfix"></div>
+                <div class="clearfix"></div>
 
-                </form>
+                {* le bouton "Création" donne accès à l'étape suivante: création des heures de RV et des profs *}
+                <button type="button" class="btn btn-primary pull-right{if $infoRp.date != ''} disabled{/if}" id="creation">Création <i class="fa fa-arrow-right"></i></button>
 
             </div>  <!-- panel-body -->
 
@@ -102,48 +127,41 @@
 
             <div class="panel-body">
 
-                <form action="index.php" method="POST" role="form" name="table" class="form-inline">
+                <div class="col-md-4 col-sm-6">
 
-                    <div class="row">
+                    <div style="height:30em; overflow:auto;" id='tableHoraire'>
 
-                        <div class="col-md-4 col-sm-6">
+                        {if isset($listeHeuresRP)}
+                            {include file='reunionParents/nouveau/listeHeures.tpl'}
+                        {else}
+                            {include file='reunionParents/nouveau/listeHeuresVide.tpl'}
+                        {/if}
 
-                            <div style="height:30em; overflow:auto;" id='tableHoraire'>
+                    </div>
 
-                                {if isset($listeHeuresRP)}
-                                    {include file='reunionParents/nouveau/listeHeures.tpl'}
-                                {else}
-                                    {include file='reunionParents/nouveau/listeHeuresVide.tpl'}
-                                {/if}
+                </div>  <!-- col-md-... -->
 
-                            </div>
+                <div class="col-md-8 col-sm-6">
 
-                        </div>  <!-- col-md-... -->
+                    <div style="height:30em; overflow:auto;" id="listeProfs">
 
-                        <div class="col-md-8 col-sm-6">
+                    {if isset($listeProfs)}
+                    {include file='reunionParents/nouveau/listeProfs.tpl'}
+                    {/if}
 
-                            <div style="height:30em; overflow:auto;" id="listeProfs">
+                    </div>
 
-                            {if isset($listeProfs)}
-                            {include file='reunionParents/nouveau/listeProfs.tpl'}
-                            {/if}
+                </div>  <!-- col-md-... -->
 
-                            </div>
-
-                        </div>  <!-- col-md-... -->
-
-                    </div>  <!-- row -->
-
-                    <input type="hidden" name="action" value="{$action}">
-                    <input type="hidden" name="mode" value="enregistrer">
-                    <input type="hidden" name="etape" value="etape1">
-                    <input type="hidden" name="date" id="ladate" value="">
-                    <input type="hidden" name="typeRP" id="typeRP" value="">
-                    <input type="hidden" name="onglet" class="onglet" value="{$onglet}">
-                    <button type="submit" class="btn btn-primary pull-right" id="submit" style="display:none">Enregistrer</button>
-                    <div class="clearfix"></div>
-
-                </form>
+            <input type="hidden" name="idRP" value="{$idRP|default:Null}">
+            <input type="hidden" name="action" value="{$action}">
+            <input type="hidden" name="mode" value="enregistrer">
+            <input type="hidden" name="etape" value="etape1">
+            <input type="hidden" name="date" id="ladate" value="">
+            <input type="hidden" name="typeRP" id="typeRP" value="">
+            <input type="hidden" name="onglet" class="onglet" value="{$onglet}">
+            <button type="submit" class="btn btn-primary pull-right" id="submit" style="display:none">Enregistrer</button>
+            <div class="clearfix"></div>
 
         </div>  <!-- panel-body -->
 
@@ -184,10 +202,13 @@
     </div>
     <!-- col-md-... -->
 
+    <div class="clearfix"></div>
+
+    </form>
 </div>
 <!-- row -->
 
-{include file='reunionParents/modal/modalDel.tpl'}
+
 
 
 <script type="text/javascript">

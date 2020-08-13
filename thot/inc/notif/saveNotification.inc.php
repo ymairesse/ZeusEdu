@@ -26,9 +26,6 @@ $Thot = new Thot();
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
-
-$type = isset($_POST['type']) ? $_POST['type'] : null;
-
 $listeEleves = Null;
 
 // si c'est une édition (le $id est déjà défini)
@@ -48,29 +45,34 @@ else {
     // les types suivants ne permettent pas le choix d'élèves; on va vérifier
     // si l'on se trouve dans ce cas de figure
     $typeSansChoix = array('ecole', 'niveau', 'cours', 'eleves');
-    if (!in_array($type, $typeSansChoix)){
+    if (!in_array($notification['leType'], $typeSansChoix)){
         // on vérifie si la case "TOUS" a été décochée
         // si c'est le cas, on se trouve devant une notification à un ou plusieurs élèves distincts
         // sinon, on garde le type de notification (coursGrp, classe, groupe,...)
         if (!isset($form['TOUS']))
-            $notification['type'] = 'eleves';
+            $notification['leType'] = 'eleves';
         }
     }
 
 // ----------- enregistrement effectif de la notification
 // $listeNotifId parce que la fonction peut renvoyer les $notifId pour plusieurs élèves
 // ------------------------------------------------------------------------------
-$listeNotifId = $Thot->saveNotification($notification, $type, $acronyme);
+$listeNotifId = $Thot->saveNotification($notification, $notification['leType'], $acronyme);
+$type = $notification['leType'];
 
 $texte[] = sprintf('%d annonce(s) enregistrée(s)', count($listeNotifId));
 
 
 // **************** détermination de la liste des élèves concernés par l'annonce
 // rappel: les annonces à école, niveau et matière ne permettent pas l'envoi de mail
+// les éditions ne permettent pas non plus mail ou accusés de lecture
 // et de demande d'accusé de lecture => wtf
-switch ($type) {
+
+switch ($notification['type']) {
     case 'eleves':
-        $listeEleves = array_flip($form['membres']);
+        // si c'est une édition d'élève, cela ne peut être qu'un élève isolé
+        $matricule = $form['matricule'];
+        $listeEleves = array($matricule => $matricule);
         break;
     case 'classes':
         $listeEleves = $Ecole->listeElevesClasse($form['destinataire']);
@@ -85,7 +87,8 @@ switch ($type) {
         // wtf
         // pas de liste particulière pour les autres types
         break;
-}
+    }
+
 
 // ------------------------------------------------------------------------------
 // ok pour la notification en BD, passons éventuellement à l'envoi de mail
@@ -118,8 +121,8 @@ if (isset($form['mail']) && $form['mail'] == 1) {
 if (isset($form['accuse']) && $form['accuse'] == 1) {
     if (isset($form['TOUS'])) {
         // la même annonce $id pour tous
-        $id = current($listeNotifId);
-        $nbAccuses = $Thot->setAccuse($id, array_keys($listeEleves));
+        $notifId = current($listeNotifId);
+        $nbAccuses = $Thot->setAccuse($notifId, array_keys($listeEleves));
         }
         else {
             // la liste des élèves qui doivent accuser lecture est dans $listeNotifId
@@ -128,20 +131,45 @@ if (isset($form['accuse']) && $form['accuse'] == 1) {
     $texte[] = sprintf("%d demande(s) d'accusé de lecture envoyée(s)", $nbAccuses);
     }
 
+require_once INSTALL_DIR.'/inc/classes/class.Files.php';
+$Files = new Files();
 // ------------------------------------------------------------------------------
 // enregistrement et suppression éventuelles des PJ
 // ------------------------------------------------------------------------------
-require_once INSTALL_DIR.'/inc/classes/class.Files.php';
-$Files = new Files();
-
 if (isset($form['files']) && count($form['files']) > 0) {
     // liaison des PJ existantes et suppression des PJ supprimées
     $nb = $Files->linkFilesNotifications($listeNotifId, $form, $acronyme);
-    $texte[] .= sprintf('%d pièce(s) jointe(s)', count($form['files']));
+    $texte[] = sprintf('%d pièce(s) jointe(s)', count($form['files']));
     }
     else {
         // suppression des PJ encore existantes si plus de PJ à l'annonce
         $nb = $Files->unlinkAllFiles4Notif($listeNotifId);
+        if ($nb > 0)
+            $texte[] = sprintf('%d pièce(s) jointe(s) supprimées', $nb);
     }
+//
+//
+// if (isset($form['files']) && count($form['files']) > 0) {
+//
+//     $files = $post['files'];
+//     // recherche des fichiers déjà liés à ces notifIds avant l'édition
+//     $linkedFiles = $Files->getFileNames4Notif($listeNotifsIds, $acronyme)
+//
+//     // liste des $shareIds des fichiers anciennement liés à cette notificaiton
+//     $listeOldShares = $Files->getListeShares4listeNotifId($listeNotifId);
+//
+//     Application::afficher($listeOldShares);
+//     // liaison des PJ existantes et suppression des PJ supprimées
+//     $listeNewShares = $Files->linkFilesNotifications($listeNotifId, $form, $acronyme);
+//     Application::afficher($listeNewShares);
+//     // Application::afficher($listeNewShares, true);
+//     $texte[] .= sprintf('%d pièce(s) jointe(s)', count($form['files']));
+//     }
+//     else {
+//         // suppression des PJ encore existantes si plus de PJ à l'annonce
+//         $nb = $Files->unlinkAllFiles4Notif($listeNotifId);
+//     }
 
-echo implode('<br>', $texte);
+$texte = implode('<br>', $texte);
+
+echo json_encode(array('texte' => $texte, 'listeNotifId' => $listeNotifId));

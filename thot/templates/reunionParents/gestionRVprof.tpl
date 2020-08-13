@@ -1,3 +1,4 @@
+GESTIONRVPROF.tpl
 <div class="container-fluid">
 
     <div class="row">
@@ -13,7 +14,7 @@
                         id="printProf"
                         title="Imprimer"
                         class="btn btn-primary pull-right btn-sm"
-                        data-date="{$date}"
+                        data-idrp="{$idRP}"
                         data-acronyme="{$acronyme}">
                         <i class="fa fa-print fa-2x"></i></button>
                 </h3>
@@ -78,10 +79,10 @@
     $(document).ready(function() {
 
         $('#printProf').click(function() {
-            var date = $(this).data('date');
+            var idRP = $(this).data('idrp');
             var acronyme = $(this).data('acronyme');
             $.post('inc/reunionParents/RV2pdf.inc.php',{
-                date: date,
+                idRP: idRP,
                 acronyme: acronyme,
                 module: 'thot'
             },

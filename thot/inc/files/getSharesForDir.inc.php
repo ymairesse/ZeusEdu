@@ -20,9 +20,14 @@ require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
 $arborescence = isset($_POST['arborescence']) ? $_POST['arborescence'] : Null;
-$fileName = substr($arborescence, strrpos($arborescence, '/')+1);
+
+// suppression du '/' au début du chemin
 $arborescence = substr($arborescence, 0, strrpos($arborescence, '/'));
+$fileName = substr($arborescence, strrpos($arborescence, '/')+1);
 $dirOrFile = 'dir';
+
+// la racine n'est pas partageable (sécurité) => Null
+$shareEnabled = ($fileName == Null) ? false : true;
 
 $listePartages = $Files->getSharesByFileName($arborescence, $fileName, $dirOrFile, $acronyme);
 
@@ -34,6 +39,7 @@ $smarty->compile_dir = '../../templates_c';
 $smarty->assign('listePartages', $listePartages);
 $smarty->assign('fileName', $fileName);
 $smarty->assign('arborescence', $arborescence);
+$smarty->assign('shareEnabled', $shareEnabled);
 $smarty->assign('dirOrFile', $dirOrFile);
 
 $smarty->display('files/listePartages.tpl');

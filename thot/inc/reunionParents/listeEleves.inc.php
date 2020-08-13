@@ -20,12 +20,19 @@ $Ecole = new Ecole();
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $thot = new Thot();
 
-if ($typeRP == 'profs') {
-    $listeEleves = $thot->getElevesDeProf($acronyme, $statut);
-} else {
-    $listeTitulariats = $Ecole->listeTitulariats($acronyme);
-    $listeEleves = $Ecole->listeElevesMultiClasses($listeTitulariats);
-    }
+switch ($typeRP) {
+    case 'profs':
+        $listeEleves = $thot->getElevesDeProf($acronyme, $statut);
+        break;
+    case 'titus':
+        $listeTitulariats = $Ecole->listeTitulariats($acronyme);
+        $listeEleves = $Ecole->listeElevesMultiClasses($listeTitulariats);
+        break;
+    case 'cible':
+        $listeClasses = array_flip($Ecole->listeClasses());
+        $listeEleves = $Ecole->listeElevesMultiClasses($listeClasses);
+        break;
+}
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();

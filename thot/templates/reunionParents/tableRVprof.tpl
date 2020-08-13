@@ -10,22 +10,30 @@
         </tr>
     </thead>
     <tbody>
-        {foreach from=$listeRV key=id item=data}
-        <tr class="{if $data.heure >= $listePeriodes[3].min} attente3
-                {elseif $data.heure >= $listePeriodes[2].min} attente2
-                {else} attente1
-                {/if}
+{* <pre>
+    {$listeRV|print_r}
+</pre> *}
+        {foreach from=$listeRV key=idRV item=data}
+        <tr class="{if $data.heure >= $listePeriodes[3].min}attente3
+                    {elseif $data.heure >= $listePeriodes[2].min}attente2
+                    {else}attente1
+                    {/if}
                 {if $data.dispo==0} indisponible{/if}"
-             data-nomparent="{$data.formule} {$data.nomParent} {$data.prenomParent}" data-id="{$data.id}">
+             data-nomparent="{$data.formule} {$data.nomParent} {$data.prenomParent}" data-idrv="{$data.idRV}">
             <td>{$data.heure}</td>
-            <td {if ($data.matricule !=Null)} class="pop" data-toggle="popover" data-content="<img src='../photos/{$data.photo}.jpg' alt='{$data.matricule}' style='width:100px'>" data-html="true" data-container="body" data-original-title="{$data.prenom} {$data.nom}" {/if}>
+            <td {if ($data.matricule !=Null)} class="pop" data-toggle="popover"
+                data-content="<img src='../photos/{$data.photo}.jpg' alt='{$data.matricule}' style='width:100px'>"
+                data-html="true"
+                data-container="body"
+                data-original-title="{$data.prenom} {$data.nom}"
+                {/if}>
                 {$data.groupe} {$data.nom} {$data.prenom}</td>
             <td><a title="{$data.mail}" href="mailto:{$data.mail}">{$data.formule} {$data.nomParent} {$data.prenomParent}</a></td>
             <td>
                 {if ($data.matricule == Null)}
                 <button
                     type="button"
-                    data-id="{$data.id}"
+                    data-idrv="{$data.idRV}"
                     data-eleve="{$data.prenom} {$data.nom}"
                     data-mail="{$data.mail}"
                     class="btn btn-default btn-xs dispo pull-right">
@@ -35,7 +43,7 @@
             </td>
             <td>
                 {if (isset($listeAttente) && ($listeAttente != Null))}
-                <input type="radio" name="idRV" class="idRV" value="{$id}"{if ($data.dispo == 0)} disabled{/if}>
+                <input type="radio" name="idRV" class="idRV" value="{$idRV}"{if ($data.dispo == 0)} disabled{/if}>
                 {else}
                 &nbsp;
                 {/if}
@@ -63,7 +71,8 @@
         $(".dispo").attr('title', dispo)
 
         $(".dispo").click(function() {
-            var id = $(this).data('id');
+            var idRV = $(this).data('idrv');
+            var idRP = $('#idRP').val();
             var btnIcon = $(this).find('i');
             if (btnIcon.hasClass('fa-toggle-on'))
                 $(this).find('i').removeClass('fa-toggle-on switchOff').addClass('fa-toggle-off switchOn');
@@ -71,7 +80,8 @@
                 $(this).find('i').removeClass('fa-toggle-off switchOn').addClass('fa-toggle-on switchOff');
                 // modification du statut en base de données
                 $.post('inc/reunionParents/toggleDispo.inc.php', {
-                    id: id
+                    idRV: idRV,
+                    idRP: idRP
                 },
                 function(resultat) {
                     var ligne = btnIcon.closest('tr');

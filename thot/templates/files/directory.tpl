@@ -1,6 +1,5 @@
 <script src="../dropzone/dropzone.js" charset="utf-8"></script>
 <link href="../dropzone/dropzone.css" type="text/css" rel="stylesheet">
-<link href="css/filetree.css" type="text/css" rel="stylesheet">
 
 <div class="container-fluid">
 
@@ -79,7 +78,47 @@ Dropzone.options.myDropZone = {
 
     $(document).ready(function(){
 
-        $('#breadcrumbs').on('click', '#btn-mkdir', function(){
+        $('#modalShare, #modalShareEdit').on('shown.bs.modal', function () {
+           $('#commentaire').focus();
+        });
+        $('#modalNewDir').on('shown.bs.modal', function () {
+           $('#repName').focus();
+        });
+
+
+        // ********************************************************************
+        // Gestion des breadcrumbs
+        // ********************************************************************
+
+        $("#breadcrumbs").on('click', '.btn-crumb', function(){
+            var arborescence = $(this).data('dir');
+            var crumb = $(this);
+            $('#arborescence').val(arborescence);
+             $.post('inc/files/refreshBreadcrumbs.inc.php', {
+                arborescence: arborescence,
+                directory: undefined
+                },
+                function(resultat){
+                    $('#breadcrumbs').html(resultat);
+                    $.post('inc/files/refreshFileList.inc.php', {
+                        arborescence: arborescence,
+                        directory: ''
+                    }, function(resultat){
+                        // liste des fichiers disponibles dans ce répertoire
+                        $("#listeFichiers").html(resultat);
+                        var arborescence = crumb.data('dir');
+                        $.post('inc/files/getSharesForDir.inc.php', {
+                            arborescence: arborescence,
+                        },
+                        function(resultat){
+                            $("#partages").html(resultat);
+                        })
+
+                    })
+                });
+            })
+
+        $('#listeFichiers').on('click', '#btn-mkdir', function(){
             var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
             $.post('inc/files/createNewDir.inc.php', {
                 arborescence: arborescence
@@ -121,140 +160,76 @@ Dropzone.options.myDropZone = {
             $("#modalNewDir").modal('hide');
         })
 
-        $('#breadcrumbs').on('click', '#btn-upload', function() {
-            $('#myDropZone').toggleClass('hidden').slideDown('slow');
+        $('#listeFichiers').on('click', '#btn-upload', function(){
+            $('#myDropZone').toggleClass('hidden');
         })
 
-        function delFile (event, arborescence, fileName){
-            if (event.ctrlKey) {
-                $.post('inc/files/delFile.inc.php', {
-                        fileName: fileName,
-                        arborescence: arborescence
-                    },
-                    function(resultat) {
-                        if (resultat == 1) {
-                            $.post('inc/files/refreshFileList.inc.php', {
-                                arborescence: arborescence,
-                                directory: undefined
-                            }, function(resultat){
-                                $("#listeFichiers").html(resultat);
-                            });
-                            $('#listePartages').html('');
-                        }
-                        else alert('Impossible de supprimer ce fichier');
-                    });
+        // gestion de la vue
+        $('#listeFichiers').on('click', '#btn-grilleOrListe span', function(){
+            if ($(this).hasClass('grille')) {
+                $(this).removeClass('grille').addClass('liste');
+                var viewMode = 'liste';
+            } else {
+                $(this).removeClass('liste').addClass('grille');
+                var viewMode = 'grille';
             }
-            else {
-            $.post('inc/files/shareList.inc.php', {
-                    fileName: fileName,
-                    arborescence: arborescence,
-                    simple: true
-                },
-                function(resultat) {
-                    $('#modalDelShareList').html(resultat);
-                })
-            $('#delFileName').text(fileName);
-            $('#delPath').text(arborescence);
-            $('#modalDelFile').modal('show');
-            }
-        }
-
-        // *******************************************************************************
-        $('#listeFichiers').on('click', '.delete[data-dirorfile="file"]', function(){
-            var fileName= $(this).data('filename');
+            Cookies.set('viewMode', viewMode);
             var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
-
-            $.post('inc/files/getModalDelFile.inc.php', {
-                arborescence: arborescence,
-                fileName: fileName
+            $.post('inc/files/refreshFileList.inc.php', {
+                arborescence: arborescence
             }, function(resultat){
-                $('#modal').html(resultat);
-                $('#modalDelFile').modal('show');
-            })
-        })
-
-        $('#modal').on('click', '#confirmDelFile', function() {
-            var fileName = $('#delFileName').text();
-            var arborescence = $('#delPath').text();
-            $.post('inc/files/delFile.inc.php', {
-                    fileName: fileName,
-                    arborescence: arborescence
-                },
-                function(resultat) {
-                    if (resultat == 1) {
-                        $('tr.active').remove();
-                        $('#listePartages').html('-');
-                        bootbox.alert({
-                            title: 'Suppression d\'un fichier',
-                            message: 'Le fichier et tous ses partages ont été supprimés'
-                        })
-                    }
-                    else alert('Impossible de supprimer ce fichier');
-                });
-            $("#modalDelFile").modal('hide');
-
-        })
-
-        // *******************************************************************************
-        $('#listeFichiers').on('click', '.delete[data-dirorfile="dir"]', function(){
-            var fileName= $(this).data('filename');
-            var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
-            $.post('inc/files/getModalDelDir.inc.php', {
-                arborescence: arborescence,
-                fileName: fileName
-            }, function(resultat){
-                $('#modal').html(resultat);
-                $("#modalDelDir").modal('show');
-            })
-        })
-
-        $('#modal').on('click', "#btnConfirmDelDir", function() {
-            var arborescence = $('#rootRep').data('arborescence');
-            var fileName = $('#delRep').data('filename');
-            $.post('inc/files/delDir.inc.php', {
-                    arborescence: arborescence,
-                    fileName: fileName
-                },
-                function(resultat) {
-                    var resultatJS = JSON.parse(resultat);
-                    var nbDir = parseInt(resultatJS.nbDir);
-                    var nbFiles = parseInt(resultatJS.nbFiles);
-                    if (nbDir > 0) {
-                        bootbox.alert({
-                                title: "Effacement d'un dossier",
-                                message: '<strong>1</strong> dossier contenant <strong>' + resultatJS.nbFiles + '</strong> fichier(s) supprimé(s)'
-                            });
-                    } else alert('Houston, We\'ve Got a Problem. Ce dossier ne peut être supprimé');
-                });
-            // supprimer la ligne du tableau des fichiers
-            $('#listeFichiers tr.active').remove();
-            $("#modalDelDir").modal('hide');
-        })
-
-        // *******************************************************************************
-
-        $('#partages').on('click', '.unShare', function(event) {
-            var shareId = $(this).data('shareid');
-            $.post('inc/files/getModal2unShare.inc.php', {
-                shareId: shareId
-                },
-                function(resultat){
-                    $('#modal').html(resultat);
-                    $('#modalUnShareFile').modal('show');
-                })
+                $("#listeFichiers").html(resultat);
             })
 
-        $('#modal').on('click', "#btnUnShareFile", function() {
-            var shareId = $(this).data('shareid');
-            $.post('inc/files/unShareFile.inc.php', {
-                shareId: shareId
-            }, function(resultat) {
-                $(".unShare[data-shareid='" + shareId + "']").closest('tr').remove();
-            })
-            $("#modalUnShareFile").modal('hide');
         })
 
-        // *******************************************************************************
+        // ********************************************************************
+        // gestion des partages
+        $('#partages').on('click', '#btn-share', function() {
+           // dir ou file?
+           var dirOrFile = $(this).data('dirorfile');
+           var arborescence = $(this).data('arborescence');
+           var fileName = $(this).data('filename');
+           if ((arborescence == '') && (dirOrFile == 'dir')){
+               bootbox.alert({
+                   title: 'Avertissement',
+                   message: 'Le partage de la racine de votre répertoire n\'est pas autorisé.<br>Veuillez choisir un sous-répertoire.'
+               })
+               }
+               else {
+                   $.post('inc/files/getModalShare.inc.php', {
+                       fileName: fileName,
+                       path: arborescence,
+                       dirOrFile: dirOrFile
+                   }, function(resultat){
+                       $('#modal').html(resultat);
+                       $('#modalShare').modal('show');
+                   })
+               }
+       })
+
+       // ********************************************************************
+       $('#partages').on('click', '.unShare', function(event) {
+           var shareId = $(this).data('shareid');
+           $.post('inc/files/getModal2unShare.inc.php', {
+               shareId: shareId
+               },
+               function(resultat){
+                   $('#modal').html(resultat);
+                   $('#modalUnShareFile').modal('show');
+               })
+           })
+
+       $('#modal').on('click', "#btnUnShareFile", function() {
+           var shareId = $(this).data('shareid');
+           $.post('inc/files/unShareFile.inc.php', {
+               shareId: shareId
+           }, function(resultat) {
+               $(".unShare[data-shareid='" + shareId + "']").closest('tr').remove();
+           })
+           $("#modalUnShareFile").modal('hide');
+       })
+        // ********************************************************************
 
         $('#partages').on('click', '.shareEdit', function(){
             var shareId = $(this).data('shareid');
@@ -274,107 +249,37 @@ Dropzone.options.myDropZone = {
                     commentaire: commentaire
                 },
                 function(commentaire) {
-                    $('td[data-shareid="' + shareId +'"]').attr('data-content', commentaire);
+                    $('span[data-shareid="' + shareId + '"]').text(commentaire);
                     $('#modalShareEdit').modal('hide');
                 })
         })
 
-        // ******************************************************************************************
-        $('#listeFichiers').on('click', 'table tr', function() {
-            $("#listeFichiers tr").removeClass('active');
-            $(this).addClass('active');
-            var fileName= $(this).data('filename');
+        // ********************************************************************
+
+        $('#listeFichiers').on('click', '#btn-del', function(){
+            var dirOrFile = $('.conteneur.active').data('dirorfile');
+            var fileName = $('.conteneur.active').data('filename');
             var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
-            var dirOrFile = $(this).data('dirorfile');
 
-            $.post('inc/files/getSharesForFile.inc.php', {
-                fileName: fileName,
-                arborescence: arborescence,
-                dirOrFile: dirOrFile
-            },
-            function(resultat){
-                $("#partages").html(resultat);
-            })
-        })
-        // ******************************************************************************************
-
-        $('#partages').on('click', '#btn-share', function() {
-            // dir ou file?
-            var dirOrFile = $(this).data('dirorfile');
-            var arborescence = $(this).data('arborescence');
-            var fileName = $(this).data('filename');
-            if (arborescence == ''){
-                bootbox.alert({
-                    title: 'Avertissement',
-                    message: 'Le partage de la racine de votre répertoire n\'est pas autorisé.<br>Veuillez choisir un sous-répertoire.'
-                })
-                }
-                else {
-                    $.post('inc/files/getModalShare.inc.php', {
-                        fileName: fileName,
-                        path: arborescence,
-                        dirOrFile: dirOrFile
-                    }, function(resultat){
-                        $('#modal').html(resultat);
-                        $('#modalShare').modal('show');
+            if (dirOrFile == 'file') {
+                $.post('inc/files/getModalDelFile.inc.php', {
+                    arborescence: arborescence,
+                    fileName: fileName
+                }, function(resultat){
+                    $('#modal').html(resultat);
+                    $('#modalDelFile').modal('show');
                     })
                 }
-        })
-
-        $('#modalShare, #modalShareEdit').on('shown.bs.modal', function () {
-           $('#commentaire').focus();
-        });
-        $('#modalNewDir').on('shown.bs.modal', function () {
-           $('#repName').focus();
-        });
-
-        $("#listeFichiers").on('click', '.directory', function(){
-            // l'arborescence se trouve dans breadcrumbs.tpl
-            var arborescence = $('#arborescence').val();
-            var directory = $(this).data('dir');
-            $.post('inc/files/refreshBreadcrumbs.inc.php', {
-                arborescence: arborescence,
-                directory: directory
-                },
-                function(resultat){
-                    $('#breadcrumbs').html(resultat);
-                });
-            $.post('inc/files/refreshFileList.inc.php', {
-                arborescence: arborescence,
-                directory: directory
-            }, function(resultat){
-                $("#listeFichiers").html(resultat);
+                else {
+                    $.post('inc/files/getModalDelDir.inc.php', {
+                        arborescence: arborescence,
+                        fileName: fileName
+                    }, function(resultat){
+                        $('#modal').html(resultat);
+                        $("#modalDelDir").modal('show');
+                    })
+                }
             })
-        })
-
-        $("#breadcrumbs").on('click', '.btn-crumb', function(){
-            var arborescence = $(this).data('dir');
-            var crumb = $(this);
-            $('#arborescence').val(arborescence);
-             $.post('inc/files/refreshBreadcrumbs.inc.php', {
-                arborescence: arborescence,
-                directory: undefined
-                },
-                function(resultat){
-                    $('#breadcrumbs').html(resultat);
-                });
-
-            $.post('inc/files/refreshFileList.inc.php', {
-                arborescence: arborescence,
-                directory: ''
-            }, function(resultat){
-                $("#listeFichiers").html(resultat);
-                var arborescence = crumb.data('dir');
-                $.post('inc/files/getSharesForDir.inc.php', {
-                    arborescence: arborescence,
-                },
-                function(resultat){
-                    $("#partages").html(resultat);
-                })
-            })
-
-        })
-
     })
 
 </script>

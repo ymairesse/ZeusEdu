@@ -33,6 +33,7 @@ $smarty->compile_dir = '../../templates_c';
 $smarty->assign('listePartages', $listePartages);
 $smarty->assign('fileName', $fileName);
 $smarty->assign('arborescence', $arborescence);
+$smarty->assign('shareEnabled', true);
 $smarty->assign('dirOrFile', $dirOrFile);
 
 $smarty->display('files/listePartages.tpl');

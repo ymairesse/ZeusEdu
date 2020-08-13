@@ -1,14 +1,13 @@
+ADMINTITU.tpl
 <!-- bricolage, j'en conviens -->
 <button data-statut="" data-nomprof="" data-abreviation="{$acronyme}" class="btn btn-sm btn-block btn-prof btn-primary hidden" type="button">
 </button>
 
 <div class="container-fluid">
 
-
     <div class="row">
 
         <div class="col-md-9 col-sm-6">
-
 
             <!-- liste des RV et liste d'attente -->
             <div id="listeRV" style="max-height:40em; overflow: auto">
@@ -215,6 +214,7 @@ var typeRP="{$typeRP}"
         })
 
         $("#printProf").click(function() {
+            alert('adminTitu');
             var date = $(this).data('date');
             var acronyme = $(this).data('acronyme');
             $.post('inc/reunionParents/RV2pdf.inc.php',{
@@ -268,7 +268,7 @@ var typeRP="{$typeRP}"
                                     // Mise à jour du popover de la liste de RV
                                     $.post('inc/reunionParents/ulRvEleves.inc.php', {
                                             matricule: matricule,
-                                            date: date
+                                            idRP: idRP
                                         },
                                         function(resultat) {
                                             var btnEleve = $("#listeEleves").find('[data-matricule=' + matricule + ']');

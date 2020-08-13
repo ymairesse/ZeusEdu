@@ -35,12 +35,11 @@
 $(document).ready(function(){
 
     $(".unlinkAttente").click(function(){
-
         var matricule = $(this).data('matricule');
         var date = $(this).data('date');
         var acronyme = $(this).data('acronyme');
         var periode = $(this).data('periode');
-        var id = $('.idRV:checked').val();
+        var idRV = $('.idRV:checked').val();
         var userName = $(this).data('username');
 
         if (id > 0) {
@@ -50,7 +49,7 @@ $(document).ready(function(){
                 acronyme: acronyme,
                 periode: periode,
                 userName: userName,
-                id: id
+                idRV: idRV
                 },
                 function(resultat){
                     switch (resultat) {

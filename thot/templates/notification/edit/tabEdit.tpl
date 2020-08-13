@@ -14,7 +14,11 @@
 					<option value="">Choisir le/les destinataire(s)</option>
 					{foreach from=$selectTypes key=leType item=dataType}
 					{if ($dataType.droits == Null) || in_array($userStatus, $dataType.droits)}
-						<option value="{$leType}">{$dataType.texte}</option>
+						<option value="{$leType}"
+							{if $leType == $type} selected{/if} 
+							{if $dataType.editOnly == true}disabled{/if}>
+							{$dataType.texte}
+						</option>
 					{/if}
 					{/foreach}
 			  	</select>
@@ -56,7 +60,7 @@
 					<select class="form-control" name="niveau4classe" id="niveau4classe">
 						<option value="">Choix du niveau d'étude</option>
 						{foreach from=$listeNiveaux key=wtf item=leNiveau}
-						<option value="{$leNiveau}"{if isset($type) && ($type == 'classes') && ($leNiveau == $notification.niveau)} selected{/if}>{$leNiveau}e année</option>
+						<option value="{$leNiveau}"{if isset($type) && ($type == 'classes') && ($leNiveau == $niveau)} selected{/if}>{$leNiveau}e année</option>
 						{/foreach}
 					</select>
 				</div>
@@ -128,7 +132,7 @@
 			{* situé à gauche de l'écran *}
 			<div class="hidden" id="choixEleves">
 
-				{include file='notification/listeEleves.tpl'}
+				{include file='notification/edit/listeEleves.tpl'}
 
 			</div>
 

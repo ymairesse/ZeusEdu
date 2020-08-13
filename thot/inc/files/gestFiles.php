@@ -17,6 +17,8 @@ $coursGrp = Application::postOrCookie('coursGrp', $unAn);
 $idTravail = Application::postOrCookie('idTravail', $unAn);
 $matricule = Application::postOrCookie('matricule', $unAn);
 
+$viewMode = isset($_COOKIE['viewMode']) ? $_COOKIE['viewMode'] : 'grille';
+
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
@@ -35,6 +37,7 @@ switch ($mode) {
         $smarty->assign('breadcrumbs', Null);
         $smarty->assign('arborescence', Null);
         $smarty->assign('directory', Null);
+        $smarty->assign('viewMode', $viewMode);
         $smarty->assign('dir', $Files->flatDirectory($root));
         $smarty->assign('corpsPage', 'files/directory');
         break;

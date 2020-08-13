@@ -7,10 +7,10 @@ session_start();
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-$debut = isset($_POST['debut'])?$_POST['debut']:Null;
-$fin = isset($_POST['fin'])?$_POST['fin']:Null;
-$duree = isset($_POST['duree'])?$_POST['duree']:Null;
-$readonly = isset($_POST['readonly'])?$_POST['readonly']:Null;
+$debut = isset($_POST['debut']) ? $_POST['debut']:Null;
+$fin = isset($_POST['fin']) ? $_POST['fin']:Null;
+$duree = isset($_POST['duree']) ? $_POST['duree']:Null;
+$readonly = isset($_POST['readonly']) ? $_POST['readonly']:Null;
 
 $listeMoments = array();
 

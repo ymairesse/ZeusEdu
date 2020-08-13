@@ -30,7 +30,7 @@ $fileInfos['fileType'] = is_dir($file) ? 'dir' : 'file';
 // dénomination précise du destinataire
 $type = $fileInfos['type'];
 $groupe = $fileInfos['groupe'];
-
+// Application::afficher($fileInfos);
 switch ($type){
     case 'ecole':
         $libelle = 'Tous les élèves';
@@ -48,13 +48,16 @@ switch ($type){
         $libelle = sprintf('Tous les élèves de la classe %s', $groupe);
         break;
     case 'eleves':
-        $libelle = sprintf('%s %s [%s]', $nom, $prenom, $groupe);
+        $libelle = sprintf('%s %s [%s]', $fileInfos['nom'], $fileInfos['prenom'], $groupe);
         break;
     case 'groupeArbitraire':
-        $libelle = sprintf('%s %s [%s]', $nom, $prenom, $groupe);
+        $libelle = sprintf('%s %s [%s]', $fileInfos['nom'], $fileInfos['prenom'], $groupe);
         break;
     case 'prof':
-        $libelle = sprintf('%s %s', $nomProf, $prenomProf);
+        // echo $fileInfos['destinataire'];
+        if ($fileInfos['destinataire'] == 'all')
+            $libelle = 'Tous les collègues';
+            else $libelle = sprintf('%s %s', $fileInfos['prenomProf'], $fileInfos['nomProf']);
         break;
     default:
         $libelle = 'INCONNU';

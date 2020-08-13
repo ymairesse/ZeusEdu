@@ -15,8 +15,8 @@
 			{/foreach}
 
 			{* un onglet supplémentaire pour l'éditeur d'annonces *}
-			<li class="pull-right onglet">
-				<a data-toggle="tab"  data-type="editeur" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-edit"></i> Éditeur d'annonces</a>
+			<li class="pull-right">
+				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-edit"></i> Éditeur d'annonces</a>
 			</li>
 		</ul>
 
@@ -28,7 +28,9 @@
 					{if isset($listeNotifications.$type)}
 						{assign var=liste value=$listeNotifications.$type}
 						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 0} in active{/if}">
+
 						{include file="notification/edit/notification4Type.tpl"}
+
 						</div>
 						{else}
 						<div id="tabs-{$type}" class="tab-pane fade{if $smarty.foreach.boucle.index == 0} in active{/if}">
@@ -39,7 +41,9 @@
 			{/foreach}
 			{* l'éditeur d'annonces *}
 			<div id="tabs-edit" class="tab-pane fade">
-
+				{* onglet contenant le sélecteur de destinataires et le formulaire de mail
+				reset de la valeur de $type modifié plus haut *}
+				{assign var=type value=''}
 				{include file="notification/edit/tabEdit.tpl"}
 
 			</div>
@@ -65,7 +69,7 @@
 <!-- .......................................................................... -->
 {include file="files/modal/modalTreeView.tpl"}
 <!-- .......................................................................... -->
-<!-- .....formulaire modal pour la lecture des accusés de réception          ..  -->
+<!-- .....formulaire modal pour la lecture des accusés de lecture           ..  -->
 <!-- .......................................................................... -->
 {include file="notification/modal/modalAccuses.tpl"}
 
@@ -85,7 +89,7 @@
 		$('#objet').val('');
 		$('#dateDebut').val(ajd);
 		$('#dateFin').val(dans1mois);
-		$('#notification input[type=checkbox], #notification input[type=text]').prop('readOnly', false);
+		$('#notification input[type=checkbox], #notification input[type=text]').prop('disabled', false);
 		$('#notification input[type=text]').prop('disabled', false);
 		$('#notification input[type=hidden]').val('');
 		$('#PjFiles li').remove();
@@ -117,6 +121,10 @@
 			$('body').removeClass('wait');
 		});
 
+		$('#ficheEleve').on('click', '.tableEdit tbody tr', function(){
+			$(this).toggleClass('selected');
+		})
+
 		$('#ficheEleve').on('click', '#btn-raz', function(){
 			$('#choixEleves').addClass('hidden');
 			$('#submitNotif').attr('disabled', true);
@@ -124,7 +132,10 @@
 			$('#objet').val('');
 			$('#type').val('').trigger('change');
 			$('#dateEnvoi').addClass('hidden').html('');
-			$('#selecteurVertical select').attr('disabled', false)
+			$('#selecteurVertical select').attr('disabled', false);
+			$('#PjFiles').html('<p>Pas de pièce jointe</p>');
+			$('.destinataire').val('');
+			$('#mail, #accuse, #parent, #freeze').prop('disabled', false).prop('checked', false);
 		})
 
 		$('#ficheEleve').on('click', '#reset', function(){
@@ -151,11 +162,10 @@
 		// enregistrement et envoi d'une annonce
 		$('#ficheEleve').on('click', '#submitNotif', function(){
 			var texteAnnonce = $('#texte').summernote('code');
-			// attribuer le texte au formulaire "normal"
-			$('#notification #texte').val(texteAnnonce);
+			// attribuer le texte au textarea
+			// $('#notification #texte').val(texteAnnonce);
 			if ($('#notification').valid()) {
 				var formulaire = $('#notification').serialize();
-
 				// la case à cocher "TOUS"
 				var tous = $('#cbTous').prop('checked');
 
@@ -167,16 +177,26 @@
 					formulaire: formulaire,
 					type: type
 				}, function(resultat){
+					var resultJSON = JSON.parse(resultat);
+					var texte = resultJSON['texte'];
+					var listeNotifId = resultJSON['listeNotifId'];
+
 					var maintenant = moment().format('dddd DD/MM/YYYY hh:mm:ss');
 					$('#dateEnvoi').removeClass('hidden').html('Envoyé le ' + maintenant);
 					bootbox.alert({
 						title: 'Envoi d\'une annonce',
-						message: resultat,
+						message: resultJSON['texte'],
 						callback: function(){
 							// raffraîchissement de l'historique des notifications pour ce type
 							$.post('inc/notif/refreshNotifications.inc.php', {
-								type: type
+								type: type,
+								listeNotifId: listeNotifId
 							}, function(resultat){
+								// reset de l'id pour éviter l'envoi multiple
+								$('#id').val('');
+								// désactivation du bouton Submit pour forcer un nouveau destinataire
+								$('#submitNotif').prop('disabled', true);
+
 								$('#tabs-'+type).html(resultat);
 								// ne pas compter l'entête ni le pied du tableau => -2
 								var lignes = $('#tabs-' + type + ' table tr').length -2;
@@ -195,6 +215,7 @@
 
 		$('#ficheEleve').on('change', '#type', function(){
 			var type = $(this).val();
+			$('.destinataire').val('');
 			$('#typeNotif').val(type);
 			$('.sousType').addClass('hidden');
 			$('#choixEleves').html('');
@@ -204,10 +225,13 @@
 			// tous les champs non cachés sont "disabled"
 			$('#notification input.cb').prop('disabled', true);
 			// $('#objet').prop('disabled', false);
+
 			switch (type) {
 				case 'ecole':
 					$('#divEcole').removeClass('hidden');
 					$('#leType').val(type);
+					// reset de tous les destinataires possibles
+					$('.destinataire').val('');
 					$('#destinataire').val('ecole');
 					$.post('inc/notif/noListeEleves.inc.php', {
 						destinataire: 'École'
@@ -215,7 +239,7 @@
 						// choixEleves revient avec l'avertissement qu'il n'y a pas de choix possible
 						$('#choixEleves').html(resultat).removeClass('hidden');
 
-						$('#mail, #accuse, #parent').prop('disabled', true).prop('checked', false);
+						$('#mail, #accuse, #parent, #titu').prop('disabled', true);
 						// OK, on peut envoyer
 						$('#submitNotif').attr('disabled', false);
 					});
@@ -223,49 +247,74 @@
 				case 'niveau':
 					$('#divNiveau').removeClass('hidden');
 					$('#choixEleves').html('').removeClass('hidden');
-					$('#mail, #accuse, #parent').prop('disabled', true).prop('checked', false);
+					$('#mail, #parent').prop('disabled', true);
+					$('#accuse').prop('disabled', false);
 					$('#niveau4niveau').val('');
+					$('.destinataire').val('');
+					$('#destinataire').val('');
 					$('#leType').val(type);
 					break;
 				case 'classes':
 					$('#divClasse').removeClass('hidden');
-					$('#mail, #accuse, #parent').prop('disabled', false).prop('checked', false);
+					$('#mail, #accuse, #parent').prop('disabled', false);
 					$('#niveau4classe').val('');
 					$('#classe').val('');
+					$('.destinataire').val('');
+					$('#destinataire').val('');
 					$('#leType').val(type);
 					break;
 				case 'cours':
 					$('#divMatiere').removeClass('hidden');
-					$('#mail, #accuse, #parent').prop('disabled', false).prop('checked', false);
+					$('#mail, #parent, #accuse, #titu').prop('disabled', false);
 					$('#niveau4matiere').val('');
 					$('#matiere').val('');
+					$('.destinataire').val('');
+					$('#destinataire').val('');
 					$('#leType').val(type);
 					break;
 				case 'coursGrp':
 					$('#divCoursGrp').removeClass('hidden');
-					$('#mail, #accuse, #parent').prop('disabled', false).prop('checked', false);
+					$('#mail, #accuse, #parent, #titu').prop('disabled', false);
+					$('#selectCoursGrp').val('')
 					$('#choixEleves').html('');
+					$('.destinataire').val('');
+					$('#destinataire').val('');
+					$('#leType').val(type);
+					break;
+				case 'groupe':
+					// $('#divGroupe').removeClass('hidden');
+					$('#mail, #accuse, #parent').prop('disabled', false);
+					//$('#selectGroupe').val('')
+					$('#choixEleves').html('');
+					$('.destinataire').val('');
+					$('#destinataire').val('');
 					$('#leType').val(type);
 					break;
 				default:
+					$('.destinataire').val('');
+					$('#destinataire').val('');
 					$('#leType').val('');
 					break;
 			}
 		})
 
 		$('#ficheEleve').on('change', '#niveau4niveau', function(){
-			// var type = $('#type').val();
 			var niveau = $(this).val();
-			if (niveau != '') {
-				$('.cb').prop('checked', false);
-				$('#accuse').prop('disabled', false);
-				$('#notification input[type!="hidden"]').prop('disabled', false);
-				$('#mail, #parent').prop('disabled', true);
-				$('#accuse').prop('disabled', false);
-				$('#destinataire').val(niveau);
 
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+
+			// attribution au niveau
+			$('#leNiveau').val(niveau);
+			$('#destinataire').val(niveau);
+
+			if (niveau != '') {
 				// OK, on peut envoyer
 				$('#submitNotif').attr('disabled', false);
+				$('#destinataire').val(niveau);
+				// accusé de lecture, mail et mail parents sont impossibles
+				$('#mail, #parent').prop('disabled', true);
+				$('#accuse').prop('disabled', false);
 
 				$.post('inc/notif/noListeEleves.inc.php', {
 					destinataire: 'Niveau '+niveau
@@ -276,14 +325,24 @@
 			else {
 				// ne pas envoyer
 				$('#submitNotif').attr('disabled', true);
+				// pas de liste d'élèves
+				$('#choixEleves').html('').addClass('hidden');
 			}
 		})
 
 		$('#ficheEleve').on('change', '#niveau4classe', function(){
+			var niveau = $(this).val();
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+			$('#destinataire').val('');
+			// rétablir le type si on a fait un envoi "élèves" avant
+			$('#leType').val('niveau');
+			// pas de choix d'élèves
 			$('#choixEleves').html('').addClass('hidden');
+
 			// ne pas envoyer
 			$('#submitNotif').attr('disabled', true);
-			var niveau = $(this).val();
+
 			if (niveau != '') {
 				$.post('inc/notif/selectClasseNiveau.inc.php', {
 					niveau: niveau
@@ -292,108 +351,134 @@
 					$('#classe').val('');
 				})
 			}
-			else {
-				$('#choixEleves').html('').addClass('hidden');
-				// ne pas envoyer
-				$('#submitNotif').attr('disabled', true);
-			}
 		})
 
 		$('#ficheEleve').on('change', '#niveau4matiere', function(){
+			var niveau = $(this).val();
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+			$('#destinataire').val('');
+
+			// pas de choix d'élèves
 			$('#choixEleves').html('').addClass('hidden');
+
 			// ne pas envoyer
 			$('#submitNotif').attr('disabled', true);
-			var niveau = $(this).val();
+
 			if (niveau != '') {
 				$.post('inc/notif/selectMatiereNiveau.inc.php', {
 					niveau: niveau
 				}, function(resultat){
 					$('#divSelectMatiere').html(resultat);
+					$('#cours').val('')
 				});
 			}
-			else {
-				// ne pas envoyer
-				$('#submitNotif').attr('disabled', true);
-			}
 		})
+
 		$('#ficheEleve').on('change', '#matiere', function(){
 			var matiere = $(this).val();
+
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+
+			// attribution au niveau
+			$('#leCours').val(matiere);
+			$('#destinataire').val(matiere);
+
 			if (matiere != '') {
-				$('#notification input[type!="hidden"]').prop('disabled', false);
-				$('.cb').prop('checked', false);
-				$('#accuse').prop('disabled', false);
-				$('#mail, #parent').prop('disabled', false);
 				// OK, on peut envoyer
 				$('#submitNotif').attr('disabled', false);
+
+				// accusé de lecture, mail et mail parents sont possibles
+				$('#accuse, #mail, #parent').prop('disabled', false);
 
 				$.post('inc/notif/noListeEleves.inc.php', {
 					destinataire: matiere
 				}, function(resultat){
 					$('#choixEleves').html(resultat).removeClass('hidden');
-					$('#destinataire').val(matiere);
 				});
 			}
 			else {
 				// ne pas envoyer
 				$('#submitNotif').attr('disabled', true);
+				// accusé de lecture, mail et mail parents sont impossibles
+				$('#accuse, #mail, #parent').prop('disabled', true);
+				// pas de liste d'élèves
+				$('#choixEleves').html('').addClass('hidden');
 			}
 		})
 
 		$('#ficheEleve').on('change', '#classe', function(){
 			var classe = $(this).val();
-			// var type = $('#type').val();
+
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+			$('#laClasse').val(classe);
+			$('#destinataire').val(classe);
+
+			// rétablir le type si on a fait un envoi "élèves" avant
+			$('#leType').val('classes');
+
 			if (classe != '') {
-				$('.cb').prop('checked', false);
-				$('#accuse').prop('disabled', false);
-				$('#mail, #parent').prop('disabled', false);
+				// accusé de lecture, mail et mail parents sont possibles
+				$('#accuse, #mail, #parent').prop('disabled', false);
 				// OK, on peut envoyer
 				$('#submitNotif').attr('disabled', false);
+
 				$.post('inc/notif/listeElevesClasse.inc.php', {
 					classe: classe
 				}, function(resultat){
 					$('#choixEleves').html(resultat).removeClass('hidden');
-					$('.cb').prop('checked', false);
-					$('#destinataire').val(classe);
-					$('#notification input[type!="hidden"]').prop('disabled', false);
-					$('#stringDestinataire').html(classe);
 				});
 			}
 			else {
-				$('#choixEleves').html('').addClass('hidden');
 				// ne pas envoyer
 				$('#submitNotif').attr('disabled', true);
+				// accusé de lecture, mail et mail parents sont impossibles
+				$('#mail, #parent').prop('disabled', true);
+				// pas de liste d'élèves
+				$('#choixEleves').html('').addClass('hidden');
 			}
 		})
 
 		$('#ficheEleve').on('change', '#selectCoursGrp', function(){
 			var coursGrp = $(this).val();
+
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+
+			$('#leCoursGrp').val(coursGrp);
+			$('#destinataire').val(coursGrp);
+
+			// rétablir le type si on a fait un envoi "élèves" avant
+			$('#leType').val('coursGrp');
+
 			if (coursGrp != '') {
-				$('.cb').prop('checked', false);
-				$('#accuse').prop('disabled', false);
+				// accusé de lecture, mail et mail parents sont possibles
 				$('#mail, #parent').prop('disabled', false);
 				// OK, on peut envoyer
 				$('#submitNotif').attr('disabled', false);
+
 				$.post('inc/notif/listeElevesCoursGrp.inc.php', {
 					coursGrp: coursGrp
 				}, function(resultat){
 					$('#choixEleves').html(resultat).removeClass('hidden');
-					$('.cb').prop('checked', false);
-					$('#destinataire').val(coursGrp);
-					$('#notification input[type!="hidden"]').prop('disabled', false);
-					// $('#editorPanel').removeClass('hidden');
-					$('#stringDestinataire').html(coursGrp);
 				})
 			}
 			else {
-				$('#choixEleves').html('').addClass('hidden');
 				// ne pas envoyer
 				$('#submitNotif').attr('disabled', true);
+				// accusé de lecture, mail et mail parents sont possibles
+				$('#mail, #parent').prop('disabled', false);
+				// pas de liste d'élèves
+				$('#choixEleves').html('').addClass('hidden');
 			}
 		})
 
 		$('#ficheEleve').on('change', '#listeEleves .checkbox', function(){
 			var checkedCB = $('#listeEleves li.checkbox :checked').length;
 			var totalCB = $('#listeEleves li.checkbox').length;
+			// $('.destinataire').val('');
 			if (checkedCB == totalCB) {
 				$('#cbTous').prop('checked', true);
 				var type = $('#type').val();
@@ -407,10 +492,9 @@
 
 		// Toutes les fonctions du sélecteur à gauche ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
 		$('#ficheEleve').on('click', '.btnEdit', function(){
 			var id = $(this).data('id');
-			var type = $(this).data('type');
+			// var type = $(this).data('type');
 			$.post('inc/notif/editNotification.inc.php', {
 				id: id
 			}, function(resultat){
@@ -419,7 +503,7 @@
 				$('#selecteur').addClass('hidden');
 				$('#choixEleves').removeClass('hidden');
 				$('#submitNotif').attr('disabled', false);
-				$('#selecteurVertical select').attr('disabled', true)
+				$('#selecteurVertical select').attr('disabled', true);
 			})
 		})
 
@@ -449,7 +533,7 @@
 			$("#modalDelete").modal('show');
 		})
 
-		$('#corpsPage').on('click', '.delPJ', function(){
+		$('#modalDelPjFiles').on('click', '.delPJ', function(){
 			var shareId = $(this).data('shareid');
 			var notifId = $(this).data('notifid');
 			var bouton = $(this);

@@ -2,9 +2,28 @@
 
 		<input type="hidden" name="id" id="id" value="{$notification.id}">
 		<input type="hidden" name="edition" id="edition" value="{if $notification.id != ''}true{/if}">
+
 		<input type="hidden" name="destinataire" id="destinataire" value="{$destinataire|default:''}">
-		<input type="hidden" name="matricule" id="matricule" value="{$notification.matricule|default:''}">
-		<input type="hidden" name="leType" id="leType" value="{$type|default:''}">
+
+		<input type="hidden" name="leType" id="leType" value="{$notification.type|default:''}">
+
+		<input type="hidden" name="matricule" id="matricule"
+			value="{if $notification.type == 'eleves'}{$notification.destinataire}{else}{/if}">
+
+		<input type="hidden" class="destinataire" name="laClasse" id="laClasse"
+			value="{if $notification.type == 'classes'}{$notification.destinataire}{else}{/if}">
+
+		<input type="hidden" class="destinataire" name="leNiveau" id="leNiveau"
+			value="{if $notification.type == 'niveau'}{$notification.destinataire}{else}{/if}">
+
+		<input type="hidden" class="destinataire" name="leGroupe" id="leGroupe"
+			value="{if $notification.type == 'groupe'}{$notification.destinataire}{else}{/if}">
+
+		<input type="hidden" class="destinataire" name="leCoursGrp" id="leCoursGrp"
+			value="{if $notification.type == 'coursGrp'}{$notification.destinataire}{else}{/if}">
+
+		<input type="hidden" class="destinataire" name="leCours" id="leCours"
+			value="{if $notification.type == 'cours'}{$notification.destinataire}{else} {/if}">
 
 		<div class="panel panel-default" id="editorPanel">
 
@@ -56,8 +75,8 @@
 				</div>
 
 				<div class="form-group col-md-2 col-xs-4">
-		            <label for="freeze" title="Notification permanente, reste disponible pour vous après la date de fin">Perma-<br>nent</label>
-		            <input type="checkbox" name="freeze" id="freeze" class="form-control-inline cb" value="1"
+		            <label for="freeze" title="Notification persistante, reste disponible pour vous après la date de fin">Persis-<br>tant</label>
+		            <input type="checkbox" name="freeze" id="freeze" class="form-control-inline" value="1"
 		            {if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
 					{if isset($edition)} disabled{/if}>
 					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
@@ -71,8 +90,15 @@
 					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				{* }</div> *}
 
-				<div class="clearfix">
+				<div class="form-group col-md-2 col-xs-4">
+					<label for="titu" title="Notification par mail au titulaire">Mail<br>Titu.</label>
+					<input type="checkbox" name="titu" id="titu" class="form-control-inline cb" value="1"
+					{if (isset($notification.titu)) && ($notification.titu==1 )} checked{/if}
+					 {if isset($edition)} disabled{/if}>
+					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
+
+				<div class="clearfix"></div>
 
 
 				<textarea id="texte"
@@ -81,7 +107,6 @@
 					placeholder="Frappez votre texte ici"
 					required
 					autofocus="true">{$notification.texte|default:''}</textarea>
-
 
 				{*------------------------------------------------------------------------------*}
 				{include file="../../../widgets/fileTree/templates/treeview4PJ.tpl"}
@@ -207,14 +232,13 @@
 					required: true,
 					minlength: 10
 					},
-				'membres[]': {
+				texte: {
 					required: true,
-					minlength: 1
-					},
+					minlength: 20
+					}
 				},
 			messages: {
 				'objet': 'Veuillez indiquer un objet pour votre annonce',
-				'membres[]': 'Sélectionner au moins un élève',
 				'texte': 'Un texte significatif svp',
 				},
 			errorPlacement: function(error, element) {

@@ -93,17 +93,16 @@
 
         $(".print").click(function() {
             var mode = $(this).data('mode');
-            var date = $("#date").val()
+            var idRP = $("#idRP").val()
             var niveau = $(this).data('niveau');
 
             $("#panneau").removeClass('hidden');
             $.post('inc/reunionParents/RVParents2pdf.inc.php', {
-                    date: date,
+                    idRP: idRP,
                     mode: mode,
                     niveau: niveau
                 },
                 function(resultat) {
-                    alert(resultat);
                     bootbox.alert({
                         title: 'Votre fichier est prêt',
                         message: 'Vous pouvez récupérer le document au format PDF en cliquant ' + resultat

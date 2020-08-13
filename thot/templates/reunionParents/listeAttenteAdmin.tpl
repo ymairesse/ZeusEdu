@@ -39,7 +39,7 @@
                     type="button"
                     class="btn btn-success btn-xs unlinkAttente"
                     data-matricule="{$data.matricule}"
-                    data-date="{$date}"
+                    data-idrp="{$idRP}"
                     data-acronyme="{$acronyme}"
                     data-periode="{$data.periode}"
                     data-userName="{$data.userName}">
@@ -50,7 +50,7 @@
                         type="button"
                         class="btn btn-danger btn-xs delAttente"
                         data-matricule="{$data.matricule}"
-                        data-date="{$date}"
+                        data-idrp="{$idRP}"
                         data-acronyme="{$acronyme}"
                         data-periode="{$data.periode}">
                         <i class="fa fa-trash"></i>
