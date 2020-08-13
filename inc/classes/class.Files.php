@@ -2792,10 +2792,10 @@ class Files
     public function linkFilesNotifications($listeNotifId, $post, $acronyme){
         $notifId = current($listeNotifId);
         // tous les fichiers provenant du formulaire
-        echo "post";
+        // echo "post";
         // la liste des documents joints
         $files = $post['files'];
-        Application::afficher($files);
+        // Application::afficher($files);
         // arrive avec la liste des documents joints (à l'exception de ceux qui ont
         // été dis-joints durant l'édition) et sous la forme $shareId|//|$path|//|$fileName
         // array (
@@ -2807,8 +2807,8 @@ class Files
         // recherche des fichiers déjà liés à cette $notifId *avant* l'édition
         // ils ont déjà un $shareId, c'est OK pour eux.
         $linkedFiles = $this->getFileNames4notifId($notifId, $acronyme);
-        echo "linked";
-        Application::afficher($linkedFiles);
+        // echo "linked";
+        // Application::afficher($linkedFiles);
         // Exemple: $shareId|//|$path|//|$fileName
         // array (
         //   0 => '4877|//|/img/|//|1587981840.gif',
@@ -2817,7 +2817,7 @@ class Files
 
         // tous les fichiers qui étaient liés mais qui ont été enlevés après édition
         // il va falloir supprimer le lien entre le fichier et la notification
-        echo "toUnshare";
+        // echo "toUnshare";
         $toUnshare = array_diff($linkedFiles, $files);
         foreach ($toUnshare as $oneFile) {
             $shareId = explode('|//|', $oneFile)[0];
@@ -2826,9 +2826,9 @@ class Files
 
         // tous les nouveaux fichiers non liés avant l'édition
         // il va falloir leur attribuer un shareId pour la notification
-        echo "newFiles";
+        // echo "newFiles";
         $newFiles = array_diff($files, $linkedFiles);
-        Application::afficher($newFiles,true);
+        // Application::afficher($newFiles,true);
         // dans tous les cas, créer un $shareId pour ce nouveau document lié
 
 
