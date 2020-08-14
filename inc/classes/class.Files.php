@@ -2791,11 +2791,8 @@ class Files
      */
     public function linkFilesNotifications($listeNotifId, $post, $acronyme){
         $notifId = current($listeNotifId);
-        // tous les fichiers provenant du formulaire
-        // echo "post";
-        // la liste des documents joints
+        // la liste des documents joints au formulaire
         $files = $post['files'];
-        // Application::afficher($files);
         // arrive avec la liste des documents joints (à l'exception de ceux qui ont
         // été dis-joints durant l'édition) et sous la forme $shareId|//|$path|//|$fileName
         // array (
@@ -2807,8 +2804,6 @@ class Files
         // recherche des fichiers déjà liés à cette $notifId *avant* l'édition
         // ils ont déjà un $shareId, c'est OK pour eux.
         $linkedFiles = $this->getFileNames4notifId($notifId, $acronyme);
-        // echo "linked";
-        // Application::afficher($linkedFiles);
         // Exemple: $shareId|//|$path|//|$fileName
         // array (
         //   0 => '4877|//|/img/|//|1587981840.gif',
@@ -2817,35 +2812,45 @@ class Files
 
         // tous les fichiers qui étaient liés mais qui ont été enlevés après édition
         // il va falloir supprimer le lien entre le fichier et la notification
-        // echo "toUnshare";
         $toUnshare = array_diff($linkedFiles, $files);
         foreach ($toUnshare as $oneFile) {
             $shareId = explode('|//|', $oneFile)[0];
             $this->unlinkSharedFiles($notifId, $shareId);
         }
 
-        // tous les nouveaux fichiers non liés avant l'édition
+        // on isole tous les nouveaux fichiers non liés avant l'édition
         // il va falloir leur attribuer un shareId pour la notification
-        // echo "newFiles";
         $newFiles = array_diff($files, $linkedFiles);
-        // Application::afficher($newFiles,true);
         // dans tous les cas, créer un $shareId pour ce nouveau document lié
-
-
 
         // rechercher les fileIds pour les fichiers à lier
         // ou les créer s'ils n'existent pas encore
         $fileIds = $this->findFileId4FileList($newFiles, $acronyme);
 
-        $type = $post['leType']; // groupe, coursGrp, cours, classe, niveau, ecole...
+        // où $post['leType'] désigne groupe de destinataires ou, éventuellement, 'eleves' isolés
+        $leType = $post['leType']; // groupe, coursGrp, cours, classe, niveau, ecole...
+        // $groupe désigne l'identité précise du groupe de destination Ex: "1C1", "1C:INFO2-01"
         $groupe = $post['destinataire'];
-        // l'annonce est-elle dédiée à un élève en particulier ou à un groupe?
-        $destinataire = ($post['matricule'] != '') ? $post['matricule'] : $post['destinataire'];
 
         $listeShareIds = array();
-        foreach ($listeNotifsIds as $destinataire => $notifId) {
+        foreach ($listeNotifId as $destinataire => $notifId) {
+            // $listeNotifId se présente sous la forme
+            // array (
+            //   1234 => '17181',
+            //   9999 => '17182',
+            // )
+            // matricule => notifId
+            // ou encore
+            // array (
+            //   '3Z' => '17183',
+            // )
+            // 'groupe' => notifId
+            //
+            // ici, $destinataire est donc soit l'identité du groupe ("3Z", "1C:INFO2-01"),
+            // soit un matricule d'élève
+            //
             // établir la liste des shareIds pour les fichiers relatifs à ces notifications $listeNotifsIds
-            $listeShareIds[$notifId] = $this->setShareIds4FileIds($fileIds, $type, $groupe, $destinataire, 'annonce', $post['dateDebut']);
+            $listeShareIds[$notifId] = $this->setShareIds4FileIds($fileIds, $leType, $groupe, $destinataire, 'annonce', $post['dateDebut']);
         }
 
         $nb = $this->linkFilesNotifInBD($listeShareIds);
@@ -3029,7 +3034,9 @@ class Files
      * @return array la lsite des shareIds pour chaque $fileId
      */
     public function setShareIds4FileIds($fileIds, $type, $groupe, $destinataire, $appli, $date) {
+        // recherche des shareIds existants
         $shareIds = $this->getExistingShares4FileIds($fileIds, $type, $groupe, $destinataire);
+        // ajout des shareIds nouveaux
         $shareIds = $this->setNewShares4FilesIds($shareIds, $type, $groupe, $destinataire, $appli, $date);
         return $shareIds;
     }
