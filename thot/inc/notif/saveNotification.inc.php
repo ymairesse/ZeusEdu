@@ -31,6 +31,7 @@ parse_str($formulaire, $form);
 // soit "eleves" pour l'envoi au détail
 // le "type" passé en paramètre est toujours correctement ciblé
 // alors que le "type" déclaré dans le formulaire est toujours le groupe (classe, coursGrp,...)
+// les deux informations sont nécessaires
 $type = isset($_POST['type']) ? $_POST['type'] : null;
 
 // si c'est une édition (le $id est déjà défini)
@@ -47,8 +48,6 @@ else {
     // toutes les informations viennent du formulaire et c'est une nouvelle notification
     $notification = $form;
     }
-
-// Application::afficher(array($notification, $type), true)    ;
 
 // ----------- enregistrement effectif de la notification
 // $listeNotifId parce que la fonction peut renvoyer les $notifId pour plusieurs élèves
@@ -87,7 +86,6 @@ switch ($form['type']) {  // ici, il faut prendre le type "global"
         // pas de liste particulière pour les autres types
         break;
     }
-// Application::afficher($listeEleves, true);
 
 // ------------------------------------------------------------------------------
 // ok pour la notification en BD, passons éventuellement à l'envoi de mail
@@ -144,8 +142,11 @@ if (isset($form['files']) && count($form['files']) > 0) {
     $texte[] = sprintf('%d pièce(s) jointe(s)', count($form['files']));
     }
     else {
-        // suppression des PJ encore existantes si plus de PJ à l'annonce
-        $nb = $Files->unlinkAllFiles4Notif($listeNotifId);
+        // toutes les pièces jointes ont été enlevées
+        // suppression en BD des PJ encore existantes si plus de PJ à l'annonce
+        // inversion key => value du tableau des $listeNotifId (on a besoin des $notifId seulement)
+        $listeNotifId = array_flip($listeNotifId);
+        $nb = $Files->unlinkAllFiles4Notif($listeNotifId, $acronyme);
         if ($nb > 0)
             $texte[] = sprintf('%d pièce(s) jointe(s) supprimées', $nb);
     }

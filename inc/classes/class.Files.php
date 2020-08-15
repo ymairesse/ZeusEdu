@@ -2783,13 +2783,25 @@ class Files
      * lier les PJ à des annonces
      *
      * @param array $listeNotifsIds : liste des notifications ventilées par $matricule des destinataires
-     * ou lié au groupe (cours, classe, niveau,...)
+     * ou liée au groupe (cours, classe, niveau,...)
      * @param array $post : le formulaire de rédaction de la notification
      * @param string $acronyme : acronyme de l'utilisateur (pour la sécurité)
      *
      * @return array la liste des $shareIds  corresondant aux notifications
      */
     public function linkFilesNotifications($listeNotifId, $post, $acronyme){
+        // $listeNotifId est un array contentant
+        // $matricule => $notifId
+        // $matricule => $notifId
+        // ...                      (s'il s'agit d'une édition, un seul élément)
+        // ou
+        // $groupe => $notifId (dans ce cas, tableau d'un seul élément)
+
+        // on prend le premier élément de la liste des notifIds
+        // suffisant pour examiner les fichiers joints, même à une liste d'Élèves
+        // qui accéderont aux mêmes documents ensuite
+        // s'il s'agit d'une édition, il n'y aura, de toute façon, qu'un seul $notifId
+        // dans la liste
         $notifId = current($listeNotifId);
         // la liste des documents joints au formulaire
         $files = $post['files'];
@@ -2803,6 +2815,7 @@ class Files
 
         // recherche des fichiers déjà liés à cette $notifId *avant* l'édition
         // ils ont déjà un $shareId, c'est OK pour eux.
+        // si ce n'est pas une édition, $linkedFiles revient vide
         $linkedFiles = $this->getFileNames4notifId($notifId, $acronyme);
         // Exemple: $shareId|//|$path|//|$fileName
         // array (
@@ -2814,14 +2827,22 @@ class Files
         // il va falloir supprimer le lien entre le fichier et la notification
         $toUnshare = array_diff($linkedFiles, $files);
         foreach ($toUnshare as $oneFile) {
+            // comme il s'agit d'une édition (la preuve, c'est qu'on a supprimé des PJ),
+            // un seul $notifId est à considérer
             $shareId = explode('|//|', $oneFile)[0];
-            $this->unlinkSharedFiles($notifId, $shareId);
+            // le shareId est propre à cette notification; aucun autre partage n'est supprimé
+            $this->unlinkSharedFiles4Notif($notifId, $shareId);
         }
 
         // on isole tous les nouveaux fichiers non liés avant l'édition
         // il va falloir leur attribuer un shareId pour la notification
         $newFiles = array_diff($files, $linkedFiles);
         // dans tous les cas, créer un $shareId pour ce nouveau document lié
+        // on obtien un tableau du type
+        // array (
+        //   2 => '-1|//|/repertoire/|//|abc.pdf',
+        //   3 => '-1|//|/repertoire/|//|def.pdf',
+        // )
 
         // rechercher les fileIds pour les fichiers à lier
         // ou les créer s'ils n'existent pas encore
@@ -2829,10 +2850,13 @@ class Files
 
         // où $post['leType'] désigne groupe de destinataires ou, éventuellement, 'eleves' isolés
         $leType = $post['leType']; // groupe, coursGrp, cours, classe, niveau, ecole...
-        // $groupe désigne l'identité précise du groupe de destination Ex: "1C1", "1C:INFO2-01"
+
+        // $groupe désigne l'identité précise du groupe de destination Ex: "1C1", "1C:INFO2-01", "1234" (pour un élève)
         $groupe = $post['destinataire'];
 
         $listeShareIds = array();
+        // on s'occupe maintenant de chaque notification (dans le cas d'envoi à plusieurs élèves de la même notif)
+        // sinon, la listeNotifId ne contient qu'un seul élément
         foreach ($listeNotifId as $destinataire => $notifId) {
             // $listeNotifId se présente sous la forme
             // array (
@@ -2938,16 +2962,23 @@ class Files
      *
      * @return void()
      */
-    public function unlinkSharedFiles($notifId, $shares) {
-        if (is_array($shares))
-            $sharesString = implode(',', $shares);
-            else $sharesString = $shares;
+    public function unlinkSharedFiles4Notif($notifId, $shareId) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'DELETE FROM '.PFX.'thotNotifPJ ';
-        $sql .= 'WHERE notifId = :notifId AND shareId IN ('.$sharesString.') ';
+        $sql .= 'WHERE notifId = :notifId AND shareId = :shareId ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        // suppression de la table des partages didac_thotShares
+        $sql = 'DELETE FROM '.PFX.'thotShares ';
+        $sql .= 'WHERE shareId = :shareId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':shareId', $shareId, PDO::PARAM_INT);
 
         $resultat = $requete->execute();
 
@@ -3223,20 +3254,70 @@ class Files
      *
      * @return bool
      */
-    public function unlinkAllFiles4Notif($listeNotifId) {
+    public function unlinkAllFiles4Notif($listeNotifId, $acronyme) {
+        $listeNotifIdString = implode(',', array_keys($listeNotifId));
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'DELETE FROM '.PFX.'thotNotifPJ ';
-        $sql .= 'WHERE notifId = :notifId ';
+
+        // recherche préalable des $shareId pour les fichiers joints à la notification $notifId
+        $sql = 'SELECT shareId FROM '.PFX.'thotNotifPJ ';
+        $sql .= 'WHERE notifId IN ('.$listeNotifIdString.') ';
         $requete = $connexion->prepare($sql);
-        $resultat = Null;
-        foreach ($listeNotifId as $notifId) {
-            $requete->bindParam(':notifId', $notifId, PDO::PARAM_INT);
-            $resultat = $requete->execute();
+
+        $resultat = $requete->execute();
+        $listeShareIds = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $shareId = $ligne['shareId'];
+                $listeShareIds[$shareId] = $shareId;
+            }
         }
+        $listeShareIdsString = implode(',', $listeShareIds);
+
+        // suppression des shares pour la notification $notifId
+        // les $shareIds sont propres aux notifications; aucun autre partage n'est supprimé
+        $sql = 'DELETE FROM '.PFX.'thotShares ';
+        $sql .= 'WHERE shareId IN ('.$listeShareIdsString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        $nb = $requete->rowCount();
+        
+        // suppression des témoins de téléchargement des fichiers joints
+        // recherche des spyIds des fichiers en suivi de téléchargement pour cette notif
+        // la liste des fichiers est dans $listeShareIdsString
+        $sql = 'SELECT spyId FROM '.PFX.'thotSharesSpy ';
+        $sql .= 'WHERE shareId IN ('.$listeShareIdsString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        $listeSpyIds = array();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $spyId = $ligne['spyId'];
+                $listeSpyIds[$shareId] = $spyId;
+            }
+        }
+        $listeSpyIdsString = implode(',', $listeSpyIds);
+
+        // suppression des témoins dans la table thotSharesSpyUsers
+        $sql = 'DELETE FROM '.PFX.'thotSharesSpyUsers ';
+        $sql .= 'WHERE spyId IN ('.$listeSpyIdsString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+
+        // suppression des demandes de témoins
+        $sql = 'DELETE FROM '.PFX.'thotSharesSpy ';
+        $sql .= 'WHERE shareId IN ('.$listeShareIdsString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
 
         Application::DeconnexionPDO($connexion);
 
-        return $resultat;
+        return $nb;
     }
 
     /**
