@@ -23,6 +23,6 @@ $shareId = isset($_POST['shareId']) ? $_POST['shareId'] : null;
 require_once INSTALL_DIR.'/inc/classes/class.Files.php';
 $Files = new Files();
 
-$Files->unlinkSharedFiles($notifId, $shareId);
+$Files->unlinkSharedFiles4Notif($notifId, $shareId);
 
 return true;
