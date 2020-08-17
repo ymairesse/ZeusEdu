@@ -90,13 +90,13 @@
 					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				{* }</div> *}
 
-				<div class="form-group col-md-2 col-xs-4">
+				{* <div class="form-group col-md-2 col-xs-4">
 					<label for="titu" title="Notification par mail au titulaire">Mail<br>Titu.</label>
 					<input type="checkbox" name="titu" id="titu" class="form-control-inline cb" value="1"
 					{if (isset($notification.titu)) && ($notification.titu==1 )} checked{/if}
 					 {if isset($edition)} disabled{/if}>
 					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
-				</div>
+				{* }</div> *}
 
 				<div class="clearfix"></div>
 

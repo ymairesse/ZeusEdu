@@ -14,6 +14,9 @@
 				{/if}
 			{/foreach}
 
+			{if $annoncesPerimees|@count > 0}
+				<a href="#" class="btn btn-danger" id="btn-perime">Périmées: <span class="badge"> {$annoncesPerimees|@count}</span></a>
+			{/if}
 			{* un onglet supplémentaire pour l'éditeur d'annonces *}
 			<li class="pull-right">
 				<a data-toggle="tab" href="#tabs-edit" id="onglet-edit" class="btn-lightBlue"><i class="fa fa-edit"></i> Éditeur d'annonces</a>
@@ -41,6 +44,7 @@
 			{/foreach}
 			{* l'éditeur d'annonces *}
 			<div id="tabs-edit" class="tab-pane fade">
+
 				{* onglet contenant le sélecteur de destinataires et le formulaire de mail
 				reset de la valeur de $type modifié plus haut *}
 				{assign var=type value=''}
@@ -54,6 +58,7 @@
 </div>
 <!-- container -->
 
+<div id="modal"></div>
 <!-- .......................................................................... -->
 <!-- .....formulaire modal pour la  suppression multiple de notifications   ..  -->
 <!-- .......................................................................... -->
@@ -166,11 +171,6 @@
 			// $('#notification #texte').val(texteAnnonce);
 			if ($('#notification').valid()) {
 				var formulaire = $('#notification').serialize();
-				// la case à cocher "TOUS"
-				var tous = $('#cbTous').prop('checked');
-
-				// #type est le sélecteur principal (école, cours, classe,...)
-				// var type = (tous == false) ? 'eleves' : $('#type').val();
 				var type = $('#leType').val();
 
 				$.post('inc/notif/saveNotification.inc.php', {
@@ -240,6 +240,8 @@
 						$('#choixEleves').html(resultat).removeClass('hidden');
 
 						$('#mail, #accuse, #parent, #titu').prop('disabled', true);
+						// reset de tous les sélecteurs
+						$('.selection').val('');
 						// OK, on peut envoyer
 						$('#submitNotif').attr('disabled', false);
 					});
@@ -476,16 +478,16 @@
 		})
 
 		$('#ficheEleve').on('change', '#listeEleves .checkbox', function(){
+			// le "type" peut varier si l'on coche ou décoche un élève de #listeEleves
+			// si toutes les cases sont cochées, on revient au "type" du groupe global
+			// sinon, c'est un envoi élève par élève
 			var checkedCB = $('#listeEleves li.checkbox :checked').length;
 			var totalCB = $('#listeEleves li.checkbox').length;
-			// $('.destinataire').val('');
 			if (checkedCB == totalCB) {
-				$('#cbTous').prop('checked', true);
 				var type = $('#type').val();
 				$('#leType').val(type);
 				}
 				else {
-					$('#cbTous').prop('checked', false);
 					$('#leType').val('eleves');
 				}
 		})
@@ -598,7 +600,6 @@
 
 		$("#corpsPage").on('click', '.showAccuse', function() {
             var id = $(this).data('id');
-            console.log(id);
             $.post('inc/notif/showAccuses.inc.php', {
                     id: id
                 },
@@ -607,6 +608,29 @@
                     $("#modalAccuses").modal('show');
                 });
         })
+
+		$('#btn-perime').click(function(){
+			$.post('inc/notif/showPerime.inc.php', {
+			}, function(resultat){
+				$('#modal').html(resultat);
+				$('#modalPerimees').modal('show');
+			})
+		})
+
+		$('#modal').on('click', '#btn-selectNotif', function(){
+			var lignes = $('#modalPerimees tbody tr');
+			lignes.each(function(index){
+				var notifId = $(this).data('notifid');
+				$('.tableEdit tr[data-id="' + notifId +'"] input').prop('checked', true);
+				$('.tableEdit tr[data-id="' + notifId +'"]').addClass('selected');
+			})
+			$('#modalPerimees').modal('hide');
+			bootbox.alert({
+				title: 'Suppression des annonces périmées',
+				message: 'Les annonces périmées sont sélectionnées dans les différents onglets. Vous avez maintenant la possibilité de vérifier la sélection avant effacement'
+			})
+		})
+
 
 	})
 </script>

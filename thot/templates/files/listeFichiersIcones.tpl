@@ -1,3 +1,5 @@
+<div id="fichiersIcones">
+
 {foreach from=$dir item=oneFile}
 
 {if $oneFile.type == 'dir'}
@@ -35,6 +37,8 @@
 
 {/foreach}
 
+</div>
+
 <script type="text/javascript">
 
     $(document).ready(function(){
@@ -71,9 +75,12 @@
                 },
                 function(resultat) {
                     if (resultat == 1) {
+                        // combien d'éléments dans l'affichage des fichiers?
                         var nbFiles = $('.conteneur').length;
+                        // Si plus de 1, on efface l'élément actif
                         if (nbFiles > 1)
                             $('.conteneur.active').remove();
+                            // sinon, on indique que le répertoire est dorénavant vide
                             else $('.conteneur.active').replaceWith("<p class='avertissement'>Dossier vide</p>");
                         $('#listePartages').html('-');
                         $('.popover').popover('hide');

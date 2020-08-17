@@ -6,9 +6,11 @@
 
             <div id="listeEleves" style="max-height:25em; overflow:auto;">
 
-                <p class="checkbox">
-                    <label><input type="checkbox" name="TOUS" id="cbTous" value="tous" checked {if isset($type)}disabled{/if}><strong>TOUS</strong></label>
-                </p>
+                <div class="btn-group btn-group-justified">
+                    <a href="#" class="btn btn-primary btn-xs" id="btn-tous">Tous</a>
+                    <a href="#" class="btn btn-success btn-xs" id="btn-invert">Inverser</a>
+                    <a href="#" class="btn btn-danger btn-xs" id="btn-none">Aucun</a>
+                </div>
 
                 <ul class="list-unstyled">
                     {foreach from=$listeEleves key=matricule item=eleve}
@@ -43,13 +45,37 @@
 
     $(document).ready(function() {
 
-        $('#cbTous').change(function(){
-            if ($('#cbTous').is(':checked')) {
-                $('#listeEleves input').prop('checked', true);
-            }
-                else {
-                    $('#listeEleves input').prop('checked', false);
+        // sélection du type "groupe" ou "élèves séparés" selon que toutes
+        // les cases sont cochées ou pas
+        function setType() {
+            var checkedCB = $('#listeEleves li.checkbox :checked').length;
+            var totalCB = $('#listeEleves li.checkbox').length;
+            if (checkedCB == totalCB) {
+                var type = $('#type').val();
+                $('#leType').val(type);
                 }
+                else {
+                    $('#leType').val('eleves');
+                }
+        }
+
+        $('#btn-tous').click(function(){
+            $('#listeEleves input').prop('checked', true);
+            setType();
+        })
+
+        $('#btn-none').click(function(){
+            $('#listeEleves input').prop('checked', false);
+            setType();
+        })
+
+        $('#btn-invert').click(function(){
+            var checked;
+            $('#listeEleves input').each(function(){
+                checked = $(this).prop('checked');
+                $(this).prop('checked', !checked);
+            })
+            setType();
         })
 
     })

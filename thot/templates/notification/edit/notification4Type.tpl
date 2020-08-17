@@ -50,12 +50,15 @@
 	</tr>
 	{/foreach}
 	</tbody>
-	
+
 	<tfoot>
 		<tr>
 			<th colspan="10">
 				{if $liste|@count > 0}
-				<input type="checkbox" class="selectAll"> Sélectionner <i class="fa fa-arrow-left"></i>
+				<div class="checkbox pull-left">
+  					<label><input type="checkbox" class="selectAll">Sélectionner <i class="fa fa-arrow-left"></i></label>&nbsp;
+				</div>
+
 				<button class="btn btn-warning delModal" type="button" data-type="{$type}">
 					<i class="fa fa-times text-danger"></i> Effacer
 				</button>

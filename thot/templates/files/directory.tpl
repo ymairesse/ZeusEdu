@@ -14,7 +14,7 @@
             <div class="dropzone hidden clearfix" id="myDropZone">
             </div>
 
-            <div id="listeFichiers" class="clearfix">
+            <div class="clearfix" id="listeFichiers" data-viewmode="{$viewMode}">
                 {include file="files/listeFichiers.tpl"}
             </div>
 
@@ -174,14 +174,44 @@ Dropzone.options.myDropZone = {
                 var viewMode = 'grille';
             }
             Cookies.set('viewMode', viewMode);
+            $('#listeFichiers').data('viewmode', viewMode);
             var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
             $.post('inc/files/refreshFileList.inc.php', {
                 arborescence: arborescence
             }, function(resultat){
                 $("#listeFichiers").html(resultat);
             })
-
         })
+
+        $('#listeFichiers').on('click', '#btn-del', function(){
+            var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
+            if (($('#listeFichiers').data('viewmode')) == 'grille') {
+                var dirOrFile = $('.conteneur.active').data('dirorfile');
+                var fileName = $('.conteneur.active').data('filename');
+            } else {
+                var dirOrFile = $('#fichiersListe tr.active').data('dirorfile');
+                var fileName = $('#fichiersListe tr.active').data('filename');
+            }
+
+            if (dirOrFile == 'file') {
+                $.post('inc/files/getModalDelFile.inc.php', {
+                    arborescence: arborescence,
+                    fileName: fileName
+                }, function(resultat){
+                    $('#modal').html(resultat);
+                    $('#modalDelFile').modal('show');
+                    })
+                }
+                else {
+                    $.post('inc/files/getModalDelDir.inc.php', {
+                        arborescence: arborescence,
+                        fileName: fileName
+                    }, function(resultat){
+                        $('#modal').html(resultat);
+                        $("#modalDelDir").modal('show');
+                    })
+                }
+            })
 
         // ********************************************************************
         // gestion des partages
@@ -255,31 +285,6 @@ Dropzone.options.myDropZone = {
         })
 
         // ********************************************************************
-
-        $('#listeFichiers').on('click', '#btn-del', function(){
-            var dirOrFile = $('.conteneur.active').data('dirorfile');
-            var fileName = $('.conteneur.active').data('filename');
-            var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
-
-            if (dirOrFile == 'file') {
-                $.post('inc/files/getModalDelFile.inc.php', {
-                    arborescence: arborescence,
-                    fileName: fileName
-                }, function(resultat){
-                    $('#modal').html(resultat);
-                    $('#modalDelFile').modal('show');
-                    })
-                }
-                else {
-                    $.post('inc/files/getModalDelDir.inc.php', {
-                        arborescence: arborescence,
-                        fileName: fileName
-                    }, function(resultat){
-                        $('#modal').html(resultat);
-                        $("#modalDelDir").modal('show');
-                    })
-                }
-            })
     })
 
 </script>

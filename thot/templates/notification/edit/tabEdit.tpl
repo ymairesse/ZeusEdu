@@ -1,8 +1,8 @@
-<form name="notification" id="notification" role="form" class="form-vertical"> 
+<form name="notification" id="notification" role="form" class="form-vertical">
 
 	<div class="row">
 
-		<div class="col-md-3 col-sms-12" id="selecteurVertical">
+		<div class="col-md-3 col-sms-12" id="selectionVertical">
 
 			<button type="button" class="btn btn-danger btn-block" id="btn-raz" title="Remise à zéro du formulaire"><i class="fa fa-trash"></i> Remise à zéro</button>
 
@@ -10,7 +10,7 @@
 			{* choix du type de notification *}
 			<div class="form-group" id="divType">
 				<label for="type" class="sr-only">Cible</label>
-				<select class="form-control" name="type" id="type">
+				<select class="form-control selection" name="type" id="type">
 					<option value="">Choisir le/les destinataire(s)</option>
 					{foreach from=$selectTypes key=leType item=dataType}
 					{if ($dataType.droits == Null) || in_array($userStatus, $dataType.droits)}
@@ -27,8 +27,8 @@
 			<div class="sousType {if !(isset($type))|| ($type != 'ecole')}hidden{/if}" id="divEcole">
 				<div class="form-group" id="selectEcole">
 					<label for="tous" class="sr-only">Tous les élèves</label>
-					<select class="form-control hidden" id="tous" name="tous">
-						<option value="ecole">Annonce pour tous les élèves</option>
+					<select class="form-control hidden" id="tous" name="">
+						<option value="">Annonce pour tous les élèves</option>
 					</select>
 				</div>
 			</div>
@@ -39,7 +39,7 @@
 			<div class="sousType {if !(isset($type)) || ($type != 'niveau')}hidden{/if}" id="divNiveau">
 				<div class="form-group" id="niveau">
 					<label for="niveau4niveau" class="sr-only">Niveau d'étude</label>
-					<select class="form-control" name="niveau" id="niveau4niveau">
+					<select class="form-control selection" name="niveau" id="niveau4niveau">
 						<option value="">Choix du niveau d'étude</option>
 						{foreach from=$listeNiveaux key=wtf item=leNiveau}
 						<option value="{$leNiveau}"{if isset($type) && ($type == 'niveau') && ($destinataire == $leNiveau)} selected{/if}>{$leNiveau}e année</option>
@@ -55,7 +55,7 @@
 
 				<div class="form-group">
 					<label for="niveau4classe" class="sr-only">Niveau d'étude</label>
-					<select class="form-control" name="niveau4classe" id="niveau4classe">
+					<select class="form-control selection" name="niveau4classe" id="niveau4classe">
 						<option value="">Choix du niveau d'étude</option>
 						{foreach from=$listeNiveaux key=wtf item=leNiveau}
 						<option value="{$leNiveau}"{if isset($type) && ($type == 'classes') && ($leNiveau == $niveau)} selected{/if}>{$leNiveau}e année</option>
@@ -67,7 +67,7 @@
 					{* select des classes généré après sélection du niveau *}
 					{* notification/inc/selectClasse.tpl  *}
 					<label for="classe" class="sr-only">Classes</label>
-					<select class="form-control" name="classe" id="classe">
+					<select class="form-control selection" name="classe" id="classe">
 						<option value="">Choisir la classe</option>
 						{if isset($type) && $type == 'classes'}<option value="{$destinataire}" selected>{$destinataire}</option>{/if}
 					</select>
@@ -82,7 +82,7 @@
 
 				<div class="form-group">
 					<label for="selectCoursGrp" class="sr-only">Vos cours</label>
-					<select class="form-control" name="coursGrp" id="selectCoursGrp">
+					<select class="form-control selection" name="coursGrp" id="selectCoursGrp">
 					<option value="">Cours</option>
 					{foreach from=$listeCours key=coursGrp item=dataCours}
 					<option value="{$coursGrp}"{if isset($type) && $type == 'coursGrp' && $coursGrp == $destinataire} selected{/if}>
@@ -102,7 +102,7 @@
 
 				<div class="form-group">
 					<label for="niveau4matiere" class="sr-only">Niveau d'étude</label>
-					<select class="form-control" name="niveau4matiere" id="niveau4matiere">
+					<select class="form-control selection" name="niveau4matiere" id="niveau4matiere">
 						<option value="">Choix du niveau d'étude</option>
 						{foreach from=$listeNiveaux key=wtf item=leNiveau}
 						<option value="{$leNiveau}"{if isset($type) && $type == 'cours' && $niveau == $leNiveau} selected{/if}>{$leNiveau}e année</option>
@@ -115,7 +115,7 @@
 					{* select des matières généré après sélection du niveau *}
 					{* notification/inc/selectMatiere.tpl  *}
 					<label for="matiere" class="sr-only">Choisir la matière</label>
-					<select class="form-control" name="cours" id="cours">
+					<select class="form-control selection" name="cours" id="cours">
 						<option value="">Choisir la Matière</option>
 						{if isset($type) && $notification.type == 'cours'}<option value="{$destinataire}" selected>{$destinataire}</option>{/if}
 					</select>

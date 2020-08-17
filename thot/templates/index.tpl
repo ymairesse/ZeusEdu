@@ -16,7 +16,8 @@
 
 <style type="text/css">
 
-#listeFichiers .conteneur {
+
+#fichiersIcones .conteneur {
 	float: left;
 	padding: 0 1em;
 	margin: 0.5em;
@@ -27,17 +28,17 @@
 	overflow: auto;
 	}
 
-#listeFichiers .nomFichier {
+#fichiersIcones  .nomFichier {
 	font-size: 9pt;
 	width: 10em;
 	}
 
-.conteneur a {
+#fichiersIcones .conteneur a {
 	font-weight: normal;
 	color: #00f;
 }
 
-#listeFichiers .fileImage {
+#fichiersIcones  .fileImage {
 	background-image: url('images/file.png');
 	background-repeat: no-repeat;
 	background-position: center;
@@ -45,7 +46,7 @@
 	width: 4em;
 	}
 
-/* .conteneur .ext_pdf {
+/* #fichiersIcones  .conteneur .ext_pdf {
 	background-image: url('css/images/pdf.png');
 	background-repeat: no-repeat;
 	background-position: center;
@@ -54,7 +55,7 @@
 	width: 4em;
 } */
 
-#listeFichiers .folderImage {
+#fichiersIcones  .folderImage {
 	background-image: url('images/folder.png');
 	background-repeat: no-repeat;
 	background-position: center;
@@ -62,13 +63,13 @@
 	width: 4em;
 	}
 
-#listeFichiers .fileName {
+#fichiersIcones  .fileName {
 	width: 8em;
 	font-size: 8pt;
 
 }
 
-#listeFichiers .conteneur.active {
+#fichiersIcones  .conteneur.active {
 	background-color: #cce;
 }
 
