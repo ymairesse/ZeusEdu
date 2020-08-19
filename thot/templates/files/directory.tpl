@@ -11,11 +11,12 @@
                 {include file='files/breadcrumbs.tpl'}
             </div>
 
-            <div class="dropzone hidden clearfix" id="myDropZone">
-            </div>
+            <div class="dropzone hidden clearfix" id="myDropZone"></div>
 
             <div class="clearfix" id="listeFichiers" data-viewmode="{$viewMode}">
+
                 {include file="files/listeFichiers.tpl"}
+
             </div>
 
         </div>
@@ -89,7 +90,6 @@ Dropzone.options.myDropZone = {
         // ********************************************************************
         // Gestion des breadcrumbs
         // ********************************************************************
-
         $("#breadcrumbs").on('click', '.btn-crumb', function(){
             var arborescence = $(this).data('dir');
             var crumb = $(this);
@@ -105,13 +105,17 @@ Dropzone.options.myDropZone = {
                         directory: ''
                     }, function(resultat){
                         // liste des fichiers disponibles dans ce répertoire
-                        $("#listeFichiers").html(resultat);
+                        $("#listeFichiers").empty().html(resultat);
+                        // $("#listeFichiers").empty();
                         var arborescence = crumb.data('dir');
                         $.post('inc/files/getSharesForDir.inc.php', {
                             arborescence: arborescence,
                         },
                         function(resultat){
                             $("#partages").html(resultat);
+                            if (arborescence != '/')
+                                $('#btn-share').removeClass('disabled');
+                                else $('#btn-share').addClass('disabled');
                         })
 
                     })
@@ -164,7 +168,10 @@ Dropzone.options.myDropZone = {
             $('#myDropZone').toggleClass('hidden');
         })
 
+
+        // *****************************************************************
         // gestion de la vue
+        // *****************************************************************
         $('#listeFichiers').on('click', '#btn-grilleOrListe span', function(){
             if ($(this).hasClass('grille')) {
                 $(this).removeClass('grille').addClass('liste');
@@ -179,9 +186,102 @@ Dropzone.options.myDropZone = {
             $.post('inc/files/refreshFileList.inc.php', {
                 arborescence: arborescence
             }, function(resultat){
+                $("#listeFichiers").empty().html(resultat);
+            })
+        })
+
+        // ********************************************************************
+        // marquer le fichier "actif" et
+        // voir les partages d'un fichier ordinaire ou d'un répertoire
+        // en vue "grille"
+        // *****************************************************************
+        $('#listeFichiers').on('click', '.conteneur', function(){
+            $('.conteneur').removeClass('active');
+            $(this).addClass('active');
+            var dirOrFile = $(this).data('dirorfile');
+            var fileName = $(this).data('filename');
+            var arborescence = $('#arborescence').val();
+            $('#btn-del').removeClass('disabled').data('dirorfile',dirOrFile).data('filename', fileName);
+
+            $.post('inc/files/getSharesForFile.inc.php', {
+                fileName: fileName,
+                arborescence: arborescence,
+                dirOrFile: dirOrFile
+            },
+            function(resultat){
+                $("#partages").html(resultat);
+                $('#btn-share').removeClass('disabled');
+            })
+        })
+
+        // ouvrir un répertoire par un clic sur le nom du répertoire en vue "grille"
+        $('#listeFichiers').on('click', '.fileName[data-dirorfile="dir"]', function(){
+            var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
+            var directory = $(this).closest('.conteneur').data('filename');
+            $.post('inc/files/refreshBreadcrumbs.inc.php', {
+                arborescence: arborescence,
+                directory: directory
+                },
+                function(resultat){
+                    $('#breadcrumbs').html(resultat);
+                    $.post('inc/files/refreshFileList.inc.php', {
+                        arborescence: arborescence,
+                        directory: directory
+                    }, function(resultat){
+                        $("#listeFichiers").html(resultat);
+                    })
+                });
+            })
+
+        // ********************************************************************
+        // gestion des fichiers en liste (tableau)
+        // entrer dans un répertoire d'un tableau liste de fichiers
+        // ********************************************************************
+        $("#listeFichiers").on('click', '.directory', function(){
+            // l'arborescence se trouve dans breadcrumbs.tpl
+            var arborescence = $('#arborescence').val();
+            var directory = $(this).data('dir');
+            $.post('inc/files/refreshBreadcrumbs.inc.php', {
+                arborescence: arborescence,
+                directory: directory
+                },
+                function(resultat){
+                    $('#breadcrumbs').html(resultat);
+                });
+            $.post('inc/files/refreshFileList.inc.php', {
+                arborescence: arborescence,
+                directory: directory
+            }, function(resultat){
                 $("#listeFichiers").html(resultat);
             })
         })
+
+        // ********************************************************************
+        // marquer le fichier "actif" et
+        // voir les partages d'un fichier ordinaire ou d'un répertoire
+        // en mode "liste"
+        $('#listeFichiers').on('click', 'table tr', function(){
+            $('#listeFichiers tr').removeClass('active');
+            $(this).addClass('active');
+            var dirOrFile = $(this).data('dirorfile');
+            var fileName = $(this).data('filename');
+            var arborescence = $('#arborescence').val();
+            $('#btn-del').removeClass('disabled').data('dirorfile',dirOrFile).data('filename', fileName);
+
+            $.post('inc/files/getSharesForFile.inc.php', {
+                fileName: fileName,
+                arborescence: arborescence,
+                dirOrFile: dirOrFile
+            },
+            function(resultat){
+                $("#partages").html(resultat);
+                $('#btn-share').removeClass('disabled');
+            })
+        })
+
+
+        // *******************************************************************
+        // Effacement des fichiers et des répertoires
 
         $('#listeFichiers').on('click', '#btn-del', function(){
             var arborescence = ($('#arborescence').val()=='') ? '/' : $('#arborescence').val();
@@ -213,6 +313,73 @@ Dropzone.options.myDropZone = {
                 }
             })
 
+        // gestion des boîtes modales
+        $('#modal').on('click', '#confirmDelFile', function() {
+            var viewMode = ($('#listeFichiers').data('viewmode'));
+            if (viewMode == 'grille')
+                var fileName = $('#listeFichiers .conteneur.active').data('filename');
+                else var fileName = $('#listeFichiers tr.active').data('filename');
+            var arborescence = $('#arborescence').val();
+            $.post('inc/files/delFile.inc.php', {
+                    fileName: fileName,
+                    arborescence: arborescence
+                },
+                function(resultat) {
+                    if (resultat == 1) {
+                        // combien d'éléments dans l'affichage des fichiers?
+                        var nbFiles = (viewMode == 'grille') ? $('.conteneur').length : $('#listeFichiers tr').length;
+                        // Si plus de 1, on efface l'élément actif
+                        if (nbFiles > 1) {
+                            if (viewMode == 'grille')
+                                $('#listeFichiers .conteneur.active').remove();
+                                else $('#listeFichiers tr.active').remove();
+                        }
+
+                            // sinon, on indique que le répertoire est dorénavant vide
+                            else $('.conteneur.active').replaceWith("<p class='avertissement'>Dossier vide</p>");
+                        $('#listePartages').html('-');
+                        $('.popover').popover('hide');
+                        bootbox.alert({
+                            title: 'Suppression d\'un fichier',
+                            message: 'Le fichier <strong>' + fileName + '</strong> et tous ses partages ont été supprimés'
+                        })
+                    }
+
+                });
+            $("#modalDelFile").modal('hide');
+        })
+
+        $('#modal').on('click', "#btnConfirmDelDir", function() {
+            var arborescence = $('#rootRep').data('arborescence');
+            var fileName = $('#delRep').data('filename');
+            $.post('inc/files/delDir.inc.php', {
+                    arborescence: arborescence,
+                    fileName: fileName
+                },
+                function(resultat) {
+                    // rustine
+                    if (resultat != '')
+                        {
+                        var resultatJS = JSON.parse(resultat);
+                        var nbDir = parseInt(resultatJS.nbDir);
+                        var nbFiles = parseInt(resultatJS.nbFiles);
+                        if (nbDir > 0) {
+                            bootbox.alert({
+                                    title: "Effacement d'un dossier",
+                                    message: '<strong>1</strong> dossier contenant <strong>' + resultatJS.nbFiles + '</strong> fichier(s) supprimé(s)'
+                                });
+                            }
+                        // nombre de fichirs résiduels
+                        var nbFiles = $('.conteneur').length;
+                        if (nbFiles > 1)
+                            $('.conteneur.active').remove();
+                            else $('.conteneur.active').replaceWith("<p class='avertissement'>Dossier vide</p>");
+                        }
+                });
+            $("#modalDelDir").modal('hide');
+        })
+
+
         // ********************************************************************
         // gestion des partages
         $('#partages').on('click', '#btn-share', function() {
@@ -238,7 +405,6 @@ Dropzone.options.myDropZone = {
                }
        })
 
-       // ********************************************************************
        $('#partages').on('click', '.unShare', function(event) {
            var shareId = $(this).data('shareid');
            $.post('inc/files/getModal2unShare.inc.php', {
@@ -259,7 +425,7 @@ Dropzone.options.myDropZone = {
            })
            $("#modalUnShareFile").modal('hide');
        })
-        // ********************************************************************
+
 
         $('#partages').on('click', '.shareEdit', function(){
             var shareId = $(this).data('shareid');
@@ -284,7 +450,6 @@ Dropzone.options.myDropZone = {
                 })
         })
 
-        // ********************************************************************
     })
 
 </script>

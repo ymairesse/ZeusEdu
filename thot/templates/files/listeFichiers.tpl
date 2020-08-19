@@ -58,7 +58,7 @@
     </div>
     <div class="panel-body">
 
-        <div style="max-height:20em; overflow: auto;">
+        <div style="max-height:30em; overflow: auto;">
 
                 {if $dir|@count > 0}
                     {if $viewMode == 'grille'}

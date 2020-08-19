@@ -1,4 +1,4 @@
-<input type="hidden" name="arborescence" id="arborescence" value="{$arborescence|default:''}">
+<input type="hidden" name="arborescence" id="arborescence" value="{$arborescence|default:'/'}">
 
 {if $listeDirs == Null}
     <button type="button" class="btn btn-primary btn-sm btn-crumb" data-dir="/" data-dirorfile="dir">
