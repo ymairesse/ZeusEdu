@@ -1447,7 +1447,7 @@ CREATE TABLE IF NOT EXISTS `didac_thotLogins` (
   `user` varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `date` date NOT NULL,
   `heure` time NOT NULL,
-  `ip` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `ip` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `host` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'fournisseur d''accès pour cette connexion',
   PRIMARY KEY (`id`),
   KEY `user` (`user`)
