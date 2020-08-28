@@ -67,7 +67,7 @@ if ($matricule != '') {
     foreach ($historique as $coursGrp => $data) {
         $listeCoursGrp[$coursGrp] = $data;
         }
-    $jdcDe = Eleve::staticGetDetailsEleve($matricule);
+    $jdcDe = sprintf('%s %s %s', $identite['nom'], $identite['prenom'], $identite['classe']);
     $nomFichier = sprintf('JDC %s_%s_%d', $identite['nom'], $identite['prenom'], $identite['matricule']);
     }
     elseif ($classe != '') {
