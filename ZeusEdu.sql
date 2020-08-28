@@ -1506,24 +1506,27 @@ CREATE TABLE IF NOT EXISTS `didac_thotAccuse` (
 CREATE TABLE `didac_groupes` (
   `nomGroupe` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom technique du groupe',
   `Intitule` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom public du groupe',
-  `description` blob NOT NULL COMMENT 'Description du groupe',
+  `description` blob NULL COMMENT 'Description du groupe',
   `type` enum('ouvert','invitation','ferme') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ferme' COMMENT 'Type de groupe',
   `proprio` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Propriétaire du groupe',
   `maxMembres` int(11) NOT NULL DEFAULT '0' COMMENT 'Nombre max de membres du groupe'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Gestion des groupes arbitraires';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Gestion des groupes arbitraires';
 
 ALTER TABLE `didac_groupes`
   ADD PRIMARY KEY (`nomGroupe`);
 
-  CREATE TABLE `didac_groupesMembres` (
-   `nomGroupe` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du groupe',
-   `matricule` int(11) NOT NULL DEFAULT '-1' COMMENT 'Matricule de l''élève membre',
-   `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT ' ' COMMENT 'acronyme du prof membre',
-   `statut` enum('proprio','membre','admin') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'membre' COMMENT 'Statut du membre du groupe'
- ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Membres d''un groupe';
+CREATE TABLE `didac_groupesMembres` (
+  `nomGroupe` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom du groupe',
+  `matricule` int(11) NOT NULL DEFAULT '-1' COMMENT 'Matricule de l''élève membre',
+  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT ' ' COMMENT 'acronyme du prof membre',
+  `statut` enum('proprio','membre','admin') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'membre' COMMENT 'Statut du membre du groupe'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Membres d''un groupe';
 
 ALTER TABLE `didac_groupesMembres`
-   ADD PRIMARY KEY (`nomGroupe`,`matricule`,`acronyme`);
+  ADD PRIMARY KEY (`nomGroupe`,`matricule`,`acronyme`);
+
+ALTER TABLE `didac_groupesMembres`
+  ADD CONSTRAINT `lesGroupes` FOREIGN KEY (`nomGroupe`) REFERENCES `didac_groupes` (`nomGroupe`) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS `didac_thotFratrie` (
   `parent` varchar(25) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Nom d''utilisateur du parent',
@@ -1798,17 +1801,18 @@ ALTER TABLE `didac_thotRpHeures`
 
  ALTER TABLE `didac_thotRpAttente`
   ADD PRIMARY KEY (`date`,`acronyme`,`matricule`,`periode`);
+  
 
-
- CREATE TABLE IF NOT EXISTS `didac_thotTravaux` (
-  `idTravail` int(11) NOT NULL,
+  CREATE TABLE `didac_thotTravaux` (
+    `idTravail` int(11) NOT NULL,
     `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
     `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
     `titre` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Titre du travail',
     `consigne` blob NOT NULL,
     `dateDebut` date NOT NULL,
     `dateFin` date NOT NULL,
-    `statut` enum('hidden','readonly','readwrite','termine','archive') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'readwrite'
+    `statut` enum('hidden','readonly','readwrite','termine','archive') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'readwrite',
+    `nbPJ` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'Nombre max de PJ attendues pour ce travail'
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Travaux à remettre';
 
 ALTER TABLE `didac_thotTravaux`
@@ -1858,12 +1862,12 @@ MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id du fichier';
 
 CREATE TABLE `didac_thotShares` (
   `fileId` int(11) NOT NULL COMMENT 'id dans la table des Files',
-  `type` enum('ecole','niveau','classes','eleves','prof','coursGrp') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
+  `type` enum('ecole','niveau','classes','eleves','prof','coursGrp','groupeAny','cours') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
   `groupe` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
   `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `commentaire` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
   `shareId` int(11) NOT NULL COMMENT 'Identifiant du partage de document'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des partages de fichiers';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des partages de fichiers';
 
 ALTER TABLE `didac_thotShares`
   ADD PRIMARY KEY (`shareId`),
@@ -1872,6 +1876,19 @@ ALTER TABLE `didac_thotShares`
 
 ALTER TABLE `didac_thotShares`
   MODIFY `shareId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du partage de document';
+
+
+CREATE TABLE `didac_thotSharesFav` (
+  `shareId` int(11) NOT NULL COMMENT 'shareId du fichier',
+  `matricule` int(11) NOT NULL COMMENT 'matricule de l''élève'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Fichiers mis en favoris par les élèves';
+
+ALTER TABLE `didac_thotSharesFav`
+  ADD PRIMARY KEY (`shareId`,`matricule`),
+  ADD KEY `shareId` (`shareId`);
+
+ALTER TABLE `didac_thotSharesFav`
+  ADD CONSTRAINT `bidule` FOREIGN KEY (`shareId`) REFERENCES `didac_thotShares` (`shareId`) ON DELETE CASCADE;
 
 
 CREATE TABLE `didac_thotSharesSpy` (
