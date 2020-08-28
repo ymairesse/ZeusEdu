@@ -1657,19 +1657,21 @@ class Jdc
         $listeCategoriesString = is_array($listeCategories) ? implode(',', $listeCategories) : "'".$listeCategories."'";
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT id, categorie, libelle, type, destinataire, title, enonce, proprietaire, startDate, endDate, jdc.idCategorie ';
+        $sql = 'SELECT id, categorie, libelle, type, destinataire, title, enonce, ';
+        $sql .= 'sexe, nom, prenom, proprietaire, startDate, endDate, jdc.idCategorie ';
         $sql .= 'FROM '.PFX.'thotJdc AS jdc ';
         $sql .= 'JOIN '.PFX.'thotJdcCategories AS cat ON cat.idCategorie = jdc.idCategorie ';
         $sql .= 'JOIN '.PFX."cours AS dc ON dc.cours = SUBSTR(destinataire, 1, LOCATE('-', destinataire)-1) ";
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = proprietaire ';
         $sql .= 'WHERE startDate >= :startDate AND endDate <= :endDate ';
-        $sql .= "AND jdc.idCategorie IN (".$listeCategoriesString.") ";
+        $sql .= 'AND jdc.idCategorie IN ('.$listeCategoriesString.') ';
         $sql .= 'AND destinataire IN ('.$listeCoursGrpString.') ';
-        $sql .= 'ORDER BY startDate, jdc.idCategorie ';
+        $sql .= 'ORDER BY destinataire, startDate, jdc.idCategorie ';
         $requete = $connexion->prepare($sql);
-
+// echo $sql;
         $requete->bindParam(':startDate', $startDate, PDO::PARAM_STR, 15);
         $requete->bindParam(':endDate', $endDate, PDO::PARAM_STR, 15);
-
+// Application::afficher(array($startDate, $endDate), true);
         $liste = array();
         $resultat = $requete->execute();
         if ($resultat) {
@@ -1697,6 +1699,7 @@ class Jdc
                 $ligne['endDate'] = Application::datePHP($endDate[0]);
                 $ligne['endHeure'] = $endDate[1];
                 $ligne['enonce'] = strip_tags($ligne['enonce'], '<br><p><a>');
+                $ligne['nomProf'] = $this->nomProf($ligne['sexe'], $ligne['nom'], $ligne['prenom']);
                 $liste[$id] = $ligne;
             }
 
@@ -2473,6 +2476,25 @@ class Jdc
         Application::deconnexionPDO($connexion);
 
         return $nb;
+     }
+
+     /**
+     * construction du nom du prof depuis sexe, nom et prénom
+     * $adresse = ($ligne['sexe'] == 'F') ? 'Mme' : 'M.';
+     * @param string $sexe
+     * @param string $nom
+     * @param string $prenom
+     *
+     * @return string
+     */
+     public function nomProf($sexe, $nom, $prenom){
+         $adresse = ($sexe == 'F') ? 'Mme' : 'M.';
+         $nomProf = '---';
+         if ($prenom != '') {
+           $nomProf = sprintf('%s %s. %s', $adresse, mb_substr($prenom, 0, 1, 'UTF-8'), $nom);
+           }
+
+         return $nomProf;
      }
 
 }

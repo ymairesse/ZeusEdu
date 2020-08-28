@@ -85,14 +85,12 @@
 
                     </div>
 
-                    <div class="form-group" id="categories">
-                        <label for="cbCategories">Catégories</label>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" id="cbCategories" checked>
-                                TOUTES (inv. la sélection)
-                            </label>
-                        </div>
+                    <div class="form-group hidden" id="categories">
+
+                        <button type="button" class="btn btn-success btn-block btn-sm" id="btn-categories" name="button">
+                            Inverser la sélection
+                        </button>
+
                         <ul class="list-unstyled"  style="height:15em; overflow: auto;">
                             {foreach from=$listeCategories key=idCategorie item=categorie}
                             <li>
@@ -114,7 +112,6 @@
             </div>
 
         </div>
-
 
     </div>
 
@@ -208,10 +205,10 @@
 
         $('#generateJdc').click(function(){
             var formulaire = $('#printJdc').serialize();
-            $.post('inc/jdc/jdcEleves4PDF.inc.php', {
+            $.post('inc/jdc/jdcEleves4Txt.inc.php', {
                 formulaire: formulaire
             }, function(resultat){
-                $('#bodyJdc').html(resultat);
+                $('#bodyJdc').append(resultat);
             })
 
         })
@@ -281,17 +278,21 @@
                     niveau: niveau
                 }, function(resultat){
                     $('#classe').html(resultat);
+                    $('#generateJdc').prop('disabled', false);
+                    $('#categories').removeClass('hidden');
+                    $.post('inc/jdc/listeElevesNiveauArchive.inc.php', {
+                        anScol: anScol,
+                        niveau: niveau
+                    }, function(resultat) {
+                        $('#choixEleve').html(resultat);
+                    })
                 });
-                $.post('inc/jdc/listeElevesNiveauArchive.inc.php', {
-                    anScol: anScol,
-                    niveau: niveau
-                }, function(resultat) {
-                    $('#choixEleve').html(resultat);
-                })
             }
             else {
                 $('#choixEleve').html('');
                 $('#classe').html('');
+                $('#generateJdc').prop('disabled', true);
+                $('#categories').addClass('hidden');
             }
         })
 
@@ -317,23 +318,11 @@
             }
         })
 
-        $('#choixEleve').on('change', '#selectEleve', function(){
-            var falseTrue = ($(this).val() == '');
-            $('#generateJdc').attr('disabled', falseTrue);
-            if (falseTrue == false)
-                $('#categories').removeClass('hidden');
-                else $('#categories').addClass('hidden');
-        })
-
-        $('#cbCategories').change(function(){
+        $('#btn-categories').click(function(){
+            // inversion des sélections
             $('.selecteurCategorie').trigger('click');
         })
 
-        $('.selecteurCategorie').change(function(){
-            if ($('.selecteurCategorie').length != $('.selecteurCategorie:checked').length)
-                $('#cbCategories').prop('checked', false);
-                else $('#cbCategories').prop('checked', true);
-        })
     })
 
 </script>
