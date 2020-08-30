@@ -1801,7 +1801,7 @@ ALTER TABLE `didac_thotRpHeures`
 
  ALTER TABLE `didac_thotRpAttente`
   ADD PRIMARY KEY (`date`,`acronyme`,`matricule`,`periode`);
-  
+
 
   CREATE TABLE `didac_thotTravaux` (
     `idTravail` int(11) NOT NULL,
@@ -1836,6 +1836,14 @@ CREATE TABLE IF NOT EXISTS `didac_thotTravauxRemis` (
 
 ALTER TABLE `didac_thotTravauxRemis`
  ADD PRIMARY KEY (`idTravail`,`matricule`);
+
+CREATE TABLE `didac_thotTravauxCompetences` (
+    `idTravail` int(11) NOT NULL,
+    `idCompetence` int(11) NOT NULL,
+    `max` varchar(4) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Note maximale pour la compétence',
+    `idCarnet` int(6) NOT NULL COMMENT 'Identifiant dans le carnet de cotes',
+    `formCert` enum('form','cert') COLLATE utf8_unicode_ci DEFAULT 'form'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Évaluations des travaux par compétences';
 
 
 CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
