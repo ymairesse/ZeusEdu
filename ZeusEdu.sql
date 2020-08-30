@@ -1844,6 +1844,13 @@ CREATE TABLE `didac_thotTravauxCompetences` (
   `formCert` enum('form','cert') CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT 'form'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Évaluations des travaux par compétences';
 
+CREATE TABLE `didac_thotTravauxEvaluations` (
+  `matricule` int NOT NULL,
+  `idTravail` int NOT NULL,
+  `idCompetence` int NOT NULL COMMENT 'Identifiant de la compétence',
+  `cote` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
   `user` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant de l''utilisateur',
