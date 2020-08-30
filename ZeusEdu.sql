@@ -1825,7 +1825,6 @@ ALTER TABLE `didac_thotTravaux`
 CREATE TABLE IF NOT EXISTS `didac_thotTravauxRemis` (
     `idTravail` int(11) NOT NULL,
     `matricule` int(11) NOT NULL,
-    `idCompetence` int(11) NOT NULL COMMENT 'Identifiant de la compétence',
     `cote` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
     `max` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
     `remarque` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
