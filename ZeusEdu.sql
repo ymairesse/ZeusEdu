@@ -1307,9 +1307,9 @@ INSERT INTO `didac_profsApplications` (`application`, `acronyme`, `userStatus`) 
 ('thot', 'ADM', 'admin');
 
 CREATE TABLE `didac_profsCours` (
-  `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 7 lettres max',
-  `coursGrp` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'anff:nom du cours en 5 caractères-groupe Ex: 3:FR5-2',
-  `nomCours` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'rempli par le prof: laisser vide',
+  `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'abréviation du prof. en 7 lettres max',
+  `coursGrp` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'anff:nom du cours en 5 caractères-groupe Ex: 3:FR5-2',
+  `nomCours` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'rempli par le prof: laisser vide',
   `virtuel` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Ce cours est-il virtuel (pas dans le bulletin)?'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Association Profs / cours donnés';
 
@@ -1837,11 +1837,11 @@ ALTER TABLE `didac_thotTravauxRemis`
  ADD PRIMARY KEY (`idTravail`,`matricule`);
 
 CREATE TABLE `didac_thotTravauxCompetences` (
-    `idTravail` int(11) NOT NULL,
-    `idCompetence` int(11) NOT NULL,
-    `max` varchar(4) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Note maximale pour la compétence',
-    `idCarnet` int(6) NOT NULL COMMENT 'Identifiant dans le carnet de cotes',
-    `formCert` enum('form','cert') COLLATE utf8_unicode_ci DEFAULT 'form'
+  `idTravail` int NOT NULL,
+  `idCompetence` int NOT NULL,
+  `max` varchar(4) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Note maximale pour la compétence',
+  `idCarnet` int DEFAULT NULL COMMENT 'Identifiant dans le carnet de cotes',
+  `formCert` enum('form','cert') CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT 'form'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Évaluations des travaux par compétences';
 
 
