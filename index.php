@@ -50,9 +50,9 @@ if (!isset($user)) {
 		// configuration d'un alias éventuel
 		$alias = $user->getAlias();
 		if ($alias != '')
-			$alias = $alias->identite();
+			$alias = $alias->identite()['acronyme'];
 			else $alias = Null;
-		$smarty->assign('alias',$alias['acronyme']);
+		$smarty->assign('alias',$alias);
 
 		$smarty->assign('executionTime', round($chrono->stop(),6));
         $smarty->display('index.tpl');
