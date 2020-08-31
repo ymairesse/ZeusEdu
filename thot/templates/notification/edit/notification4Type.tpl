@@ -13,9 +13,9 @@
 		<td style="width:1em">
 			<input type="checkbox" class="checkDelete" id="check{$nId}" data-id="{$nId}" data-type="{$type}">
 		</td>
-		<td style="width:1em">
-			<button type="button" class="btn btn-default btnEdit btn-xs pop" data-id="{$nId}" data-type="{$type}" data-content="Modifier cette annonce">
-				<i class="fa fa-pencil-square-o fa-lg text-success"></i>
+		<td style="width:1em" class="pop" data-content="Modifier cette annonce" data-container="body">
+			<button type="button" class="btn btn-default btnEdit btn-xs pop" data-id="{$nId}" data-type="{$type}">
+				<i class="fa fa-pencil-square-o fa-lg text-success"	></i>
 			</button>
 		</td>
 		<td>

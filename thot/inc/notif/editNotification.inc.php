@@ -33,7 +33,7 @@ $type = $notification['type'];
 
 $listeTypes = $Thot->getTypes();
 // tous les types de destinataires sauf les élèves isolés
-$selectTypes = $Thot->getTypes(true);
+$selectTypes = $Thot->getTypes();
 
 $listeNiveaux = $Ecole->listeNiveaux();
 $listeClasses = $Ecole->listeClasses();
@@ -69,7 +69,8 @@ if (isset($notification['matricule']) && ($notification['matricule'] != '')) {
     }
 
 $niveau = Null;
-
+$listeClasses = Null;
+$listeMatieres = Null;
 $stringDestinataire = Null;
 switch ($type) {
     case 'ecole':
@@ -82,6 +83,7 @@ switch ($type) {
     case 'cours':
         $stringDestinataire = $notification['destinataire'];
         $niveau = SUBSTR($notification['destinataire'], 0, 1);
+        $listeMatieres = $Ecole->listeMatieresNiveau($niveau);
         break;
     case 'coursGrp':
         $stringDestinataire = $notification['destinataire'];
@@ -94,6 +96,7 @@ switch ($type) {
     case 'classes':
         $stringDestinataire = $notification['destinataire'];
         $niveau = SUBSTR($notification['destinataire'], 0, 1);
+        $listeClasses = $Ecole->listeClassesNiveau($niveau);
         break;
     case 'eleves':
         $stringDestinataire = 'Un·e élève';
@@ -105,6 +108,7 @@ switch ($type) {
 
 // pièces jointes à la notification $id
 $pjFiles = $Thot->getPj4Notifs($id, $acronyme);
+
 // il suffit de prendre les PJ de la première notification (les autres sont les mêmes)
 if ($pjFiles != Null)
     $pjFiles = current($pjFiles);
@@ -133,6 +137,8 @@ $smarty->assign('pjFiles', $pjFiles);
 $smarty->assign('selectedFiles', $selectedFiles);
 $smarty->assign('selectTypes', $selectTypes);
 $smarty->assign('listeNiveaux', $listeNiveaux);
+$smarty->assign('listeClasses', $listeClasses);
+$smarty->assign('$listeMatieres', $listeMatieres);
 $smarty->assign('niveau', $niveau);
 $smarty->assign('listeCours', $listeCours);
 $smarty->assign('userStatus', $userStatus);

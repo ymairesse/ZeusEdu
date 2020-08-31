@@ -135,12 +135,56 @@
 			$('#submitNotif').attr('disabled', true);
 			$('#texte').summernote('code', '');
 			$('#objet').val('');
-			$('#type').val('').trigger('change');
+			$('#id').val('');
+			$('#type').val('').trigger('change').prop('disabled', false);
 			$('#dateEnvoi').addClass('hidden').html('');
 			$('#selecteurVertical select').attr('disabled', false);
 			$('#PjFiles').html('<p>Pas de pièce jointe</p>');
 			$('.destinataire').val('');
 			$('#mail, #accuse, #parent, #freeze').prop('disabled', false).prop('checked', false);
+		})
+
+		$('#ficheEleve').on('click', '#btn-cloner', function(){
+			var id = $('#id').val();
+			// reset de l'identifiant de l'annonce à cloner
+			$('#id').val('');
+			var type = $('#leType').val();
+			switch (type){
+				case 'classes':
+					$('#classes').val('');
+					$('#type').prop('disabled', false);
+					$('#niveau4classe').prop('disabled', false);
+					$('#classe').prop('disabled', false);
+					$('.membres').prop('disabled',false);
+					// $('#choixEleves').addClass('hidden');
+					break;
+				case 'niveau':
+					$('#type').prop('disabled', false);
+					$('#niveau4niveau').val('').prop('disabled', false);
+					break;
+				case 'coursGrp':
+					$('#type').prop('disabled', false);
+					$('#selectCoursGrp').val('');
+					$('.membres').prop('disabled',false);
+					$('.membres').prop('disabled',false);
+					// $('#choixEleves').addClass('hidden');
+					break;
+				case 'cours':
+					$('#type').prop('disabled', false);
+					$('#niveau4matiere').prop('disabled', false);
+					$('#cours').val('').prop('disabled', false);
+					break;
+				case 'groupe':
+					$('#type').prop('disabled', false);
+					$('.membres').prop('disabled',false);
+					// à prévoir
+					break;
+				case 'eleves':
+					$('#type').val('').trigger('change').prop('disabled', false);
+					$('#type option[value="eleves"]').prop('disabled', true);
+					break;
+			}
+
 		})
 
 		$('#ficheEleve').on('click', '#reset', function(){
@@ -251,7 +295,7 @@
 					$('#choixEleves').html('').removeClass('hidden');
 					$('#mail, #parent').prop('disabled', true);
 					$('#accuse').prop('disabled', false);
-					$('#niveau4niveau').val('');
+					$('#niveau4niveau').val('').prop('disabled', false);
 					$('.destinataire').val('');
 					$('#destinataire').val('');
 					$('#leType').val(type);
@@ -259,8 +303,8 @@
 				case 'classes':
 					$('#divClasse').removeClass('hidden');
 					$('#mail, #accuse, #parent').prop('disabled', false);
-					$('#niveau4classe').val('');
-					$('#classe').val('');
+					$('#niveau4classe').val('').prop('disabled', false);
+					$('#classe').val('').prop('disabled', false);;
 					$('.destinataire').val('');
 					$('#destinataire').val('');
 					$('#leType').val(type);
@@ -268,8 +312,8 @@
 				case 'cours':
 					$('#divMatiere').removeClass('hidden');
 					$('#mail, #parent, #accuse, #titu').prop('disabled', false);
-					$('#niveau4matiere').val('');
-					$('#matiere').val('');
+					$('#niveau4matiere').val('').prop('disabled', false);
+					$('#matiere').val('').prop('disabled', false);
 					$('.destinataire').val('');
 					$('#destinataire').val('');
 					$('#leType').val(type);
@@ -506,6 +550,7 @@
 				$('#choixEleves').removeClass('hidden');
 				$('#submitNotif').attr('disabled', false);
 				$('#selecteurVertical select').attr('disabled', true);
+				$('#type').prop('disabled', true);
 			})
 		})
 

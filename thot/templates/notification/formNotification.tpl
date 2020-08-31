@@ -152,7 +152,6 @@
 	}
 
 	function deleteFile(src) {
-		console.log(src);
 		$.ajax({
 			data: { src : src },
 			type: "POST",

@@ -11,6 +11,8 @@ $listePJ = $Thot->getPj4Notifs($listeNotifications, $acronyme);
 // liste des accusés de lecture demandés par l'utilisateur courant
 $listeAccuses = $Thot->getAccuses4user($acronyme, Null);
 
+$annoncesPerimees = $Thot->getAnnoncesPerimees($acronyme);
+
 $smarty->assign('listeAccuses', $listeAccuses);
 $smarty->assign('listePJ', $listePJ);
 
@@ -81,6 +83,7 @@ $smarty->assign('notification', $notification);
 
 $smarty->assign('INSTALL_DIR', INSTALL_DIR);
 $smarty->assign('listeNotifications', $listeNotifications);
+$smarty->assign('annoncesPerimees', $annoncesPerimees);
 $smarty->assign('listeAttendus', $listeAttendus);
 $smarty->assign('onglet', $onglet);
 $smarty->assign('listeTypes', $listeTypes);

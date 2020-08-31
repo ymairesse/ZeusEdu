@@ -17,7 +17,7 @@
 
                         <li class="checkbox">
                             <label>
-                                <input type="checkbox" name="membres[]" value="{$matricule}" checked {if isset($type)}disabled{/if}>
+                                <input type="checkbox" class="membres" name="membres[]" value="{$matricule}" checked {if isset($type)}disabled{/if}>
                                 {$eleve.nom} {$eleve.prenom}
                             </label>
                         </li>
