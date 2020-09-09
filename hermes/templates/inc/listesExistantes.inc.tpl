@@ -6,6 +6,7 @@
     <th>Membres</th>
     </thead>
 </tr>
+<tbody>
 {foreach from=$listesPerso key=idListe item=liste}
 <tr>
     <td class="pop"
@@ -18,4 +19,5 @@
     <td>{$liste.membres|count}</td>
 </tr>
 {/foreach}
+</tbody>
 </table>

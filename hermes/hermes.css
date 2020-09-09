@@ -136,3 +136,7 @@ h4.teteListe {
 .permanent {
     background-color: #f55;
 }
+
+.labelProf {
+    cursor: pointer;
+}

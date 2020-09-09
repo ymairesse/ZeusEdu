@@ -1,3 +1,4 @@
+{$idListe}
 <h3>Création d'une liste</h3>
 
 <form role="form" name="creation" id="creation" method="POST" action="index.php" class="form-vertical" role="form">
@@ -17,8 +18,8 @@
             <th>Membres</th>
             </thead>
         </tr>
-        {foreach from=$listesPerso key=idListe item=liste}
-        <tr>
+        {foreach from=$listesPerso key=unIdListe item=liste}
+        <tr{if $unIdListe == $idListe} class="selected"{/if}>
             <td class="pop"
                 data-container="body"
                 data-original-title="{$liste.nomListe}: {$liste.membres|count|default:0} membres"

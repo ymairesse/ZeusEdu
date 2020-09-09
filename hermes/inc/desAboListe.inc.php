@@ -19,21 +19,12 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
-$nomListe = isset($_POST['nomListe']) ? $_POST['nomListe'] : Null;
+$idListe = isset($_POST['idListe']) ? $_POST['idListe'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classHermes.inc.php';
 $Hermes = New hermes();
 
-$idListe = $Hermes->creerGroupe($acronyme, $nomListe);
+$nb = $Hermes->unCloneListe($acronyme, $idListe);
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
-$smarty->template_dir = '../templates';
-$smarty->compile_dir = '../templates_c';
-
-$listesPerso = $Hermes->listesPerso($acronyme, true);
-
-$smarty->assign('listesPerso', $listesPerso);
-
-$smarty->display('inc/listesPerso.tpl');
+echo $nb;

@@ -146,7 +146,10 @@ $(document).ready(function(){
 	$(".teteListe").click(function(){
 		if ($(this).parent().next().hasClass('listeMails'))
 			$(this).parent().next().toggle();
-			else alert("Cette liste est vide");
+			else bootbox.alert({
+				title: 'Sélection d\'une liste',
+				message: 'Cette liste est vide'
+			});
 		})
 
 	$(".checkListe").click(function(event){

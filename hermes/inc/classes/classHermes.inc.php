@@ -371,17 +371,21 @@ class hermes
       *
       * @return bool
       */
-     public function creerGroupe($acronyme, $groupe, $listeMails = null)
+     public function creerGroupe($acronyme, $nomListe, $listeMails = null)
      {
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // création du groupe
-        if ($groupe != '') {
+        if ($nomListe != '') {
             // requête preparée pour permettre les liste dont le nom contient des guillemets
             $sql = 'INSERT INTO '.PFX.'hermesProprio ';
-            $sql .= "SET proprio=:acronyme, nomListe=:groupe, statut='prive' ";
+            $sql .= "SET proprio = :acronyme, nomListe = :nomListe, statut = 'prive' ";
             $requete = $connexion->prepare($sql);
-            $data = array(':acronyme' => $acronyme, ':groupe' => $groupe);
-            $resultat = $requete->execute($data);
+
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            $requete->bindParam(':nomListe', $nomListe, PDO::PARAM_STR, 32);
+
+            $resultat = $requete->execute();
+
             $id = $connexion->lastInsertId();
         } else {
             die('no mailing list name');
@@ -405,6 +409,111 @@ class hermes
          }
      }
 
+     /**
+      * recopie / appropriation d'une liste de mailing existante $idListe nom $nomListe
+      * pour l'utilisateur $acronyme avec les destinataires de la liste $listeMembres
+      *
+      * @param $acronyme string : propriétaire du groupe
+      * @param $groupe string : nom du groupe
+      * @param $mails array : liste des mails à inclure dans le groupe (provenant de $_POST)
+      *
+      * @return bool
+      */
+     public function appropListe($acronyme, $idListe, $nomListe, $listeMembres) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // création de la liste avec le nom du modèle initial
+        $sql = 'INSERT INTO '.PFX.'hermesProprio ';
+        $sql .= 'SET proprio = :acronyme, nomListe = :nomListe, statut = "prive" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':nomListe', $nomListe, PDO::PARAM_STR, 32);
+
+
+        $resultat = $requete->execute();
+
+        // récupération de l'id de la nouvelle liste créée
+        $newId = $connexion->lastInsertId();
+
+        // introduction des membres de la liste d'origine
+        $sql = 'INSERT INTO '.PFX.'hermesListes ';
+        $sql .= 'SET id = :id, membre = :membre ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $newId, PDO::PARAM_INT);
+        foreach ($listeMembres as $membre) {
+            $requete->bindParam(':membre', $membre, PDO::PARAM_STR, 7);
+            $resultat = $requete ->execute();
+            }
+
+        // suppression de l'abonnement à la liste initiale
+        $sql = 'DELETE FROM '.PFX.'hermesProprio ';
+        $sql .= 'WHERE id = :idListe AND proprio = :acronyme AND statut = "abonne" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+     }
+
+     /**
+      * création d'un groupe de mailing privé pour l'utilisateur indiqué avec les adresses indiquées.
+      *
+      * @param $acronyme string : propriétaire du groupe
+      * @param $groupe string : nom du groupe
+      * @param $mails array : liste des mails à inclure dans le groupe (provenant de $_POST)
+      *
+      * @return bool
+      */
+     public function cloneListe($acronyme, $idListe, $nomListe) {
+        if ($nomListe != '') {
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'INSERT INTO '.PFX.'hermesProprio ';
+            $sql .= "SET id = :idListe, proprio = :acronyme, nomListe = :nomListe, statut = 'abonne' ";
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            $requete->bindParam(':nomListe', $nomListe, PDO::PARAM_STR, 32);
+            $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+
+            Application::DeconnexionPDO($connexion);
+
+            return $resultat;
+         }
+         else return 0;
+     }
+
+     /**
+      * Suppression de l'abonnement à la liste $idListe pour l'utilisateur $acronyme
+      *
+      * @param int $idListe
+      * @param string $acronyme
+      *
+      * @return int
+      */
+     public function unCloneListe($acronyme, $idListe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'hermesProprio ';
+        $sql .= 'WHERE id = :idListe AND proprio = :acronyme AND statut = "abonne" ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+     }
+
     /**
      * renvoie les listes d'adresses personnelles de l'utilisateur $acronyme.
      *
@@ -424,6 +533,7 @@ class hermes
             $sql .= "AND hp.statut != 'abonne' ";
         }
         $sql .= 'ORDER BY nomListe ';
+
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
@@ -468,12 +578,14 @@ class hermes
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             // vérification que les listes sont vides
             $listes = implode(',', $listeId);
-            $sql = 'SELECT id, COUNT(*) AS nbMembres FROM '.PFX.'hermesListes ';
-            $sql .= "WHERE  id IN ($listes) ";
+            $sql = 'SELECT id, COUNT(*) AS nbMembres ';
+            $sql .= 'FROM '.PFX.'hermesListes ';
+            $sql .= 'WHERE  id IN ('.$listes.') ';
+            $requete = $connexion->prepare($sql);
             $listesVides = array();
-            $resultat = $connexion->query($sql);
+            $resultat = $requete->execute();
             if ($resultat) {
-                while ($ligne = $resultat->fetch()) {
+                while ($ligne = $requete->fetch()) {
                     $id = $ligne['id'];
                     $listesVides[] = $id;
                 }
@@ -483,8 +595,10 @@ class hermes
             // effacement, pour les propriétaires respectifs et pour les abonnés
             if (count($listeId) > 0) {
                 $sql = 'DELETE FROM '.PFX.'hermesProprio ';
-                $sql .= "WHERE id IN ($listeId) ";
-                $resultat = $connexion->exec($sql);
+                $sql .= 'WHERE  id IN ('.$listes.') ';
+                $requete = $connexion->prepare($sql);
+
+                $resultat = $requte->execute();
             } else {
                 $resultat = 0;
             }
@@ -493,6 +607,66 @@ class hermes
             return $resultat;
         }
 
+        return 0;
+    }
+
+    /**
+     * vérifier que $acronyme est propriétaire de la liste $idListe
+     *
+     * @param string $acronyme
+     * @param int $idListe
+     *
+     * @return array
+     */
+    public function verifProprio($idListe, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT proprio, id ';
+        $sql .= 'FROM '.PFX.'hermesProprio ';
+        $sql .= 'WHERE proprio = :acronyme AND id = :idListe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+
+        $idListeBD = Null;
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            $idListeBD = $ligne['id'];
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return ($idListe == $idListeBD);
+    }
+
+    /**
+     * suppression complète d'une liste $idListe, y compris les abonnements
+     *
+     * @param int $idListe
+     * @param string $acronyme
+     *
+     * @return int
+     */
+    public function delListe($idListe, $acronyme){
+        if ($this->verifProprio($idListe, $acronyme)){
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'DELETE FROM '.PFX.'hermesProprio ';
+            $sql .= 'WHERE id = :idListe ';
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+            $resultat = $requete->execute();
+
+            $sql = 'DELETE FROM '.PFX.'hermesListes ';
+            $sql .= 'WHERE id = :idListe ';
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+            $resultat = $requete->execute();
+
+            Application::DeconnexionPDO($connexion);
+
+            return 1;
+        }
         return 0;
     }
 
@@ -514,6 +688,33 @@ class hermes
             $unProf = array(':id' => $unProf['id'], ':acronyme' => $unProf['acronyme']);
             $resultat += $requete->execute($unProf);
         }
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * suppression d'un membre $membre de la liste $idListe appartenant à $acronyme
+     *
+     * @param string $membre
+     * @param int $idListe
+     * @param string $listeAcronymes
+     *
+     * @return int
+     */
+    public function delMembre4liste($membre, $idListe, $acronyme){
+        if ($this->verifProprio($idListe, $acronyme)){
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'DELETE FROM '.PFX.'hermesListes ';
+            $sql .= 'WHERE membre = :membre AND id = :idListe ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+            $requete->bindParam(':membre', $membre, PDO::PARAM_STR, 7);
+
+            $resultat = $requete->execute();
+        }
+
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
@@ -701,43 +902,79 @@ class hermes
      *
      * @return int : nombre d'enregistrements dans la BD
      */
-    public function saveListStatus($post, $acronyme)
-    {
-        $listeStatus = array();
-        $listeNoms = array();
-        foreach ($post as $field => $value) {
-            if (substr($field, 0, 6) == 'statut') {
-                $id = explode('_', $field);
-                $id = $id[1];
-                $listeStatus[$id] = $value;
-            }
-            if (substr($field, 0, 8) == 'nomListe') {
-                $id = explode('_', $field);
-                $id = $id[1];
-                $listeNoms[$id] = $value;
-            }
-        }
-        $resultat = 0;
-        if (count($listeStatus) > 0) {
+    // public function saveListStatus($post, $acronyme)
+    // {
+    //     $listeStatus = array();
+    //     $listeNoms = array();
+    //     foreach ($post as $field => $value) {
+    //         if (substr($field, 0, 6) == 'statut') {
+    //             $id = explode('_', $field);
+    //             $id = $id[1];
+    //             $listeStatus[$id] = $value;
+    //         }
+    //         if (substr($field, 0, 8) == 'nomListe') {
+    //             $id = explode('_', $field);
+    //             $id = $id[1];
+    //             $listeNoms[$id] = $value;
+    //         }
+    //     }
+    //     $resultat = 0;
+    //     if (count($listeStatus) > 0) {
+    //         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //         $sql = 'UPDATE '.PFX.'hermesProprio ';
+    //         $sql .= 'SET statut=:statut, nomListe=:nomListe ';
+    //         $sql .= "WHERE id=:id AND proprio='$acronyme' ";
+    //         $requete = $connexion->prepare($sql);
+    //         foreach ($listeStatus as $id => $statut) {
+    //             $newName = $listeNoms[$id];
+    //             $data = array(':statut' => $statut, ':nomListe' => $newName, ':id' => $id);
+    //             $resultat += $requete->execute($data);
+    //         }
+    //         Application::DeconnexionPDO($connexion);
+    //     }
+    //
+    //     return $resultat;
+    // }
+
+    /**
+     * Enregistrement des caractéristiques d'une liste $idListe de nom $nomListe existante
+     * appartenant à $acronyme avec le statut $statut (privé ou publié)
+     *
+     * @param int $idListe
+     * @param string $acronyme
+     * @param string $nomListe
+     * @param string statut
+     *
+     * @@return int : le nombre d'enreigistrements (0 ou 1)
+     */
+    public function saveListe ($idListe, $acronyme, $nomListe, $statut) {
+
+        if ($this->verifProprio($idListe, $acronyme)) {
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'UPDATE '.PFX.'hermesProprio ';
-            $sql .= 'SET statut=:statut, nomListe=:nomListe ';
-            $sql .= "WHERE id=:id AND proprio='$acronyme' ";
+            $sql .= 'SET nomListe = :nomListe, statut = :statut ';
+            $sql .= 'WHERE proprio = :acronyme AND id = :idListe ';
             $requete = $connexion->prepare($sql);
-            foreach ($listeStatus as $id => $statut) {
-                $newName = $listeNoms[$id];
-                $data = array(':statut' => $statut, ':nomListe' => $newName, ':id' => $id);
-                $resultat += $requete->execute($data);
-            }
+
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+            $requete->bindParam(':nomListe', $nomListe, PDO::PARAM_STR, 32);
+            $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 6);
+
+            $resultat = $requete->execute();
+
+            $nb = $requete->rowCount();
+
             Application::DeconnexionPDO($connexion);
         }
+        else $nb = -1;
 
-        return $resultat;
+        return $nb;
     }
 
 
     /**
-     * recherche des listes auxquelles l'utilisateur $acronyme est abonné ou auxquelles il peut s'abonner
+     * recherche des listes auxquelles l'utilisateur $statut est abonné ou auxquelles il peut s'abonner
      * il ne peut pas s'abonner à ses propres listes.
      *
      * @param string : $acronyme
@@ -878,7 +1115,7 @@ class hermes
     }
 
     /**
-     * retourne la liste des abonnés pour chacun des listes d'un utilisateur.
+     * retourne la liste des abonnés pour chacune des listes d'un utilisateur.
      *
      * @param string $acronyme : de l'utilisateur
      *                         return array
@@ -909,9 +1146,41 @@ class hermes
     }
 
     /**
+     * renvoie la liste des abonnées pour la liste $idListe pour l'utilisateur $acronyme
+     *
+     * @param int $idListe
+     *
+     * @return array
+     */
+    public function getAbonnes4liste($idListe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, proprio, nomListe, proprio.statut, nom, prenom ';
+        $sql .= 'FROM '.PFX.'hermesProprio AS proprio ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = proprio ';
+        $sql .= 'WHERE id = :idListe AND proprio.statut = "abonne" ';
+        $sql .= 'ORDER BY nom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $acronyme = $ligne['proprio'];
+                $liste[$acronyme] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
      * nettoyage des listes de membres suite à suppression éventuelle d'un prof.
      *
-     * @param void()
+     * @param void
      *
      * @return int : nombre de suppression de membres de listes
      */
@@ -997,5 +1266,33 @@ class hermes
         Application::DeconnexionPDO($connexion);
 
         return $nb;
+    }
+
+    /**
+     * renvoie les informations relatives à la liste idListe
+     *
+     * @param int $idListe
+     *
+     * @return array
+     */
+    public function getDetailsListe($idListe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, proprio, nomListe, statut ';
+        $sql .= 'FROM '.PFX.'hermesProprio ';
+        $sql .= 'WHERE id = :idListe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idListe', $idListe, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        $ligne = Null;
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne;
     }
 }

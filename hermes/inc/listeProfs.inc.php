@@ -19,21 +19,26 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
-$nomListe = isset($_POST['nomListe']) ? $_POST['nomListe'] : Null;
-
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classHermes.inc.php';
-$Hermes = New hermes();
+$Hermes = new hermes();
 
-$idListe = $Hermes->creerGroupe($acronyme, $nomListe);
+$id = isset($_POST['id']) ? $_POST['id'] : Null;
+
+$listeProfs = $Hermes->listeMailingProfs();
+$listeMembres = array_keys($Hermes->membresListe($id));
+
+foreach ($listeProfs['membres'] AS $acronyme => $data) {
+    if (in_array($acronyme, $listeMembres)){
+        $listeProfs['membres'][$acronyme]['selected'] = true;
+    }
+}
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
-$listesPerso = $Hermes->listesPerso($acronyme, true);
+$smarty->assign('listeProfs', $listeProfs);
 
-$smarty->assign('listesPerso', $listesPerso);
-
-$smarty->display('inc/listesPerso.tpl');
+$smarty->display('inc/listeProfs.tpl');
