@@ -14,4 +14,5 @@ $smarty->assign('action',$action);
 $smarty->assign('mode',$mode);
 $smarty->assign('listeArchives',$listeArchives);
 $smarty->assign('recentArchive', $recentArchive);
+
 $smarty->assign('corpsPage','archives');

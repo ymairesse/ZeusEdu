@@ -26,9 +26,10 @@ $recentArchive = $hermes->getMailById($id, $acronyme);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
+$smarty->template_dir = '../templates';
+$smarty->compile_dir = '../templates_c';
 
 $smarty->assign('acronyme', $acronyme);
 $smarty->assign('recentArchive', $recentArchive);
 
 $smarty->display('../templates/inc/texteMail.tpl');
-
