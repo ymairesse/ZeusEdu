@@ -18,11 +18,20 @@
 		<ul class="nav navbar-nav">
 			<li><a href="index.php"><button class="btn btn-primary">Trombi Élèves <img src="images/trombi.png" alt="T" title="Trombinoscope des élèves" data-placement="bottom"></button></a></li>
 			{if $lesCours != Null}
-			<li class="dropdown"><a href="javascript:void(0)" id="parCours" class="dropdown-toggle" data-toggle="dropdown">Par Cours<b class="caret"></b></a>
+			<li class="dropdown">
+				<a href="javascript:void(0)"
+					id="parCours"
+					class="dropdown-toggle"
+					data-toggle="dropdown">
+					Par Cours<b class="caret"></b>
+				</a>
 				<ul class="dropdown-menu">
 					{foreach from=$lesCours key=option item=unCours}
-						<li ><a href="index.php?action=parCours&amp;cours={$option}">
-							{$unCours.statut} {$unCours.libelle} {$unCours.annee}e {$unCours.nbheures}h ({$unCours.coursGrp})</a>
+						<li >
+							<a href="index.php?action=parCours&amp;cours={$option}">
+							{$unCours.statut} {$unCours.libelle} {$unCours.annee}e {$unCours.nbheures}h ({$unCours.coursGrp})
+							{if $unCours.nomCours != ''}<strong>{$unCours.nomCours}</strong>{/if}
+							</a>
 						</li>
 					{/foreach}
 				</ul>
