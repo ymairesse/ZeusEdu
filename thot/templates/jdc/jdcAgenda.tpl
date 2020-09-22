@@ -1,50 +1,32 @@
-<div class="container-fluid">
+<h2>
+    <span id="cible">{$lblDestinataire}</span>
+</h2>
 
-	<div class="row">
+<div id="calendrier">
 
-		<div class="col-md-6 col-sm-12" id="panneauAgenda">
+    <p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
+    <input type="hidden" name="unlocked" id="unlocked" value="false">
+    <input type="hidden" name="mode" id="mode" value="{$mode}">
 
-			<p class="jdcInfo {$mode} demiOmbre">Voir tous les événements de <strong>{$lblDestinataire}</strong> et écrire dans ce JDC</p>
-			<input type="hidden" name="unlocked" id="unlocked" value="false">
-
-			<div id="calendar"
-				class="{$mode} demiOmbre"
-				data-type="{$type|default:'ecole'}"
-				data-lbldestinataire="{$lblDestinataire|default:''}"
-				data-cible="{$destinataire}"
-				data-coursgrp="{$coursGrp|default:''}"
-				data-niveau="{$niveau|default:''}"
-				data-classe="{$classe|default:''}"
-				data-matricule="{$matricule|default:''}"
-				data-editable="{$editable|default:false}"
-				data-viewstate="">
-			</div>
-
-		</div>
-
-		<div class="col-md-6 col-sm-12" id="panneauEditeur">
-			{* onglet qui contiendra l'éditeur de JDC *}
-			{include file="jdc/selectItem.html"}
-		</div>
-		<!-- col-md-... -->
-
-		<div class="col-xs-12">
-			{* légende et couleurs *}
-			<div class="btn-group" id="legend">
-				{foreach from=$categories key=cat item=travail}
-				<button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
-				{/foreach}
-			</div>
-		</div>
-
-	</div>
-	<!-- row -->
+    <div id="calendar"
+        class="{$mode} demiOmbre"
+        data-type="{$type|default:''}"
+        data-destinataire="{$destinataire}"
+        data-lbldestinataire="{$lblDestinataire|default:''}"
+        data-editable="{$editable|default:false}"
+        data-viewstate="agendaWeek">
+    </div>
 
 </div>
 
+<div class="btn-group" id="legend">
+    {foreach from=$categories key=cat item=travail}
+        <button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
+    {/foreach}
+</div>
 
+<div id="zoneDel"></div>
 <div id="zoneClone"></div>
-<div id="modal"></div>
 
 <style media="screen">
     .popover {
@@ -52,75 +34,23 @@
     }
 </style>
 
-{include file="jdc/modal/modalPrint.tpl"}
-
 <script type="text/javascript">
 
+    function dateFromFr(uneDate) {
+        var laDate = uneDate.split('/');
+        return laDate[2] + '-' + laDate[1] + '-' + laDate[0];
+    }
 
-	var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
-	var error = 'Une erreur s\'est produite';
+    var readonly = 'Dans ce mode, seule la consultation est possible';
+    var error = 'Erreur';
 
-	// function dateFromFr(uneDate) {
-	// 	var laDate = uneDate.split('/');
-	// 	return laDate[2] + '-' + laDate[1] + '-' + laDate[0];
-	// }
+    var fcView = Cookies.get('fc-view');
 
-	var fcView = Cookies.get('fc-view');
+    var views = ['month', 'agendaWeek', 'agendaDay', 'listMonth', 'listWeek'];
+    if (!(views.includes(fcView)))
+        fcView = 'month';
 
-	var views = ['month', 'agendaWeek', 'agendaDay', 'listMonth', 'listWeek'];
-	if (!(views.includes(fcView)))
-		fcView = 'month';
-
-	function lockUnlock(){
-		var lockState = $('#unlocked').val();
-		if (lockState == "true") {
-			$('#unlocked').val('false');
-			$('#panneauEditeur .btn-edit').addClass('disabled');
-			$('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
-			}
-			else {
-				$('#unlocked').val('true');
-				$('#panneauEditeur .btn-edit').removeClass('disabled');
-				$('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>');
-			}
-		}
-
-	$(document).ready(function() {
-
-		$(document).ajaxStart(function() {
-			$('body').addClass('wait');
-		}).ajaxComplete(function() {
-			$('body').removeClass('wait');
-		});
-
-		$('#panneauEditeur').on('click', '#saveJDC', function(){
-			var enonce = $('#enonce').val();
-			$('#editJdc #enonce').val(enonce);
-
-	        if ($('#editJdc').valid()) {
-	            var formulaire = $('#editJdc').serialize();
-
-	            $.post('inc/jdc/saveJdc.inc.php', {
-	                formulaire: formulaire,
-	                enonce: enonce
-	            }, function(resultat) {
-					var resultJSON = JSON.parse(resultat);
-					var idJdc = resultJSON.idJdc;
-                    bootbox.alert({
-                        message: resultJSON.texte,
-                        size: 'small'
-                    });
-                    // récupérer le contenu de la zone "travail" à droite
-                    $.post('inc/jdc/getTravail.inc.php', {
-                        id: idJdc,
-                        editable: true
-                        }, function(resultat){
-                            $('#unTravail').html(resultat);
-                        })
-                    $('#calendar').fullCalendar('refetchEvents');
-	            });
-	        }
-	    })
+    $(document).ready(function(){
 
 		$('.datepicker').datepicker({
             format: "dd/mm/yyyy",
@@ -132,58 +62,41 @@
 			daysOfWeekDisabled: [0,6],
             });
 
-		var editable = $('#calendar').data('editable');
 
-		$('#panneauEditeur').on('click', '#delete', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/getModalDel.inc.php', {
-					id: id,
-				},
-				function(resultat) {
-					$("#modal").html(resultat);
-					$("#modalDel").modal('show');
-				}
-			)
-		})
-		$('#modal').on('click', '#btn-modalDel', function(){
-            var id = $('#id').val();
-            $.post('inc/jdc/delJdc.inc.php', {
-                id: id
-            }, function(resultat){
-                if (resultat > 0) {
-                    $('#panneauEditeur').load('templates/jdc/selectItem.html');
-                    bootbox.alert({
-                        message: "Événement supprimé",
-                        size: 'small'
-                    });
+        var editable = $('#calendar').data('editable');
+
+		// $('#unTravail').on('click', '#btn-clone', function() {
+		//     var idTravail = $(this).data('id');
+		// 	var pastIsOpen = $('#unlocked').val();
+        //     $.post('inc/jdc/editCible.inc.php', {
+        //         idTravail: idTravail,
+		// 		pastIsOpen: pastIsOpen
+        //     }, function(resultat) {
+        //         $('#zoneClone').html(resultat);
+        //         $('#modalEditCible').modal('show');
+        //     	})
+		// 	})
+
+        // cookie sur le type de vue retenu pour le JDC
+        $('#calendar').on('click', '.fc-button', function(){
+            if ($(this).hasClass('fc-month-button')) {
+                Cookies.set('fc-view', 'month', { expires: 7, path: 'thot/' });
                 }
-                $('#calendar').fullCalendar('refetchEvents');
-                $('#modalDel').modal('hide');
-            })
+                else if ($(this).hasClass('fc-agendaWeek-button')) {
+                    Cookies.set('fc-view', 'agendaWeek', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-agendaDay-button')) {
+                    Cookies.set('fc-view', 'agendaDay', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-listMonth-button')) {
+                    Cookies.set('fc-view', 'listMonth', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-listWeek-button')) {
+                    Cookies.set('fc-view', 'listWeek', { expires: 7, path: 'thot/' });
+                }
         })
 
-		$('#panneauEditeur').on('click', '#modifier', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/getMod.inc.php', {
-				id: id
-			}, function(resultat){
-				$('#panneauEditeur').html(resultat);
-			})
-		})
-
-		$('#panneauEditeur').on('click', '#btn-clone', function() {
-		    var idTravail = $(this).data('id');
-			var pastIsOpen = $('#unlocked').val();
-            $.post('inc/jdc/editCible.inc.php', {
-                idTravail: idTravail,
-				pastIsOpen: pastIsOpen
-            }, function(resultat) {
-                $('#modal').html(resultat);
-                $('#modalEditCible').modal('show');
-            	})
-			})
-
-		$('#calendar').fullCalendar({
+        $('#calendar').fullCalendar({
 			weekends: false,
 			defaultView: fcView,
 			eventLimit: 3,
@@ -257,8 +170,10 @@
                 var today = moment().format('YYYY-MM-DD');
 				var unlockedPast = $('#unlocked').val();
 				var locked = (debut.isBefore(today) && (unlockedPast == "false")) ;
+                var editable = 1;
 				popoverElement = $(jsEvent.currentTarget);
 				var id = calEvent.id; // l'id de l'événement
+
 				$.post('inc/jdc/getTravail.inc.php', {
 					id: id,
 					editable: editable,
@@ -266,7 +181,7 @@
 					},
 					function(resultat) {
 						$('#panneauEditeur').fadeOut(400, function() {
-							$('#panneauEditeur').html(resultat).fadeIn();
+                            $('#panneauEditeur').html(resultat).fadeIn();
 						});
 					}
 				)
@@ -281,10 +196,10 @@
                 if (debut.isBefore(today) && (unlockedPast == "false")) {
                     bootbox.alert({
                         title: error,
-                        message: datePassee
+                        message: datePassee,
+                        size: 'small'
                     })
                 } else {
-
                 var editable = $('#calendar').data('editable');
                 var type = $('#calendar').data('type');
 
@@ -384,19 +299,33 @@
 		}
 		})
 
+        // // suppression d'une note au JDC
+		// $("#unTravail").on('click', '#delete', function() {
+		// 	var id = $(this).data('id');
+		// 	$.post('inc/jdc/getModalDel.inc.php', {
+		// 			id: id,
+		// 		},
+		// 		function(resultat) {
+		// 			$("#zoneDel").html(resultat);
+		// 			$("#modalDel").modal('show');
+		// 		}
+		// 	)
+		// })
+
 		// modification d'une note au JDC
-		$("#panneauEditeur").on('click', '#modifier', function() {
+		$("#unTravail").on('click', '#modifier', function() {
 			var id = $(this).data('id');
 			$.post('inc/jdc/getMod.inc.php', {
 					id: id
 				},
 				function(resultat) {
+					modeEdition();
 					$('#unTravail').html(resultat);
 				}
 			)
 		})
 
-		$("#panneauEditeur").on('click', '#journee', function() {
+        $("#zoneEdit").on('click', '#journee', function() {
 			if ($(this).prop('checked') == true) {
 				$("#duree").prop('disabled', true);
 				$('#heure').prop('disabled', true).val('');
@@ -411,6 +340,8 @@
 		})
 
         $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
+
+		var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
 
 		// http://jsfiddle.net/slyvain/6vmjt9rb/
         var popTemplate = [
@@ -437,13 +368,15 @@
             }
         });
 
-		{if $mode == 'subjectif'}
+        {if $mode == 'subjectif'}
 			$('.fc-unLockButton-button').prop('disabled', true);
 		{/if}
 
-		{if isset($startDate)}
-			$('#calendar').fullCalendar('gotoDate', moment("{$startDate}"));
+        {if isset($travail.startDate)}
+			$('#calendar').fullCalendar('gotoDate', moment("{$travail.startDate}"));
 		{/if}
 
-})
+
+    })
+
 </script>

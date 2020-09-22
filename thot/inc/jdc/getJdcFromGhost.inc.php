@@ -59,14 +59,13 @@ $smarty->assign('listePeriodes', $listePeriodes);
 
 $smarty->assign('categories', $categories);
 
-$smarty->assign('travail', $travail);
-
+// $smarty->assign('travail', $travail);
+//
 $smarty->assign('type', 'coursGrp');
-
 $smarty->assign('editable', true);
-$smarty->assign('mode', Null);
-$smarty->assign('locked', $locked);
+// $smarty->assign('mode', Null);
+// $smarty->assign('locked', $locked);
 
 $smarty->assign('jdcInfo', 'Pour voir votre JDC par cours');
 
-$smarty->display('jdc/jdcCours.tpl');
+$smarty->display('jdc/jdcAgenda.tpl');

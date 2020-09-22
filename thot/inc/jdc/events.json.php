@@ -28,10 +28,9 @@ $module = $Application->getModule(3);
 require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-// Application::afficher(array($start, $end, $coursGrp, $acronyme));
+
 if ($coursGrp == 'synoptique') {
     $eventsList = $Jdc->getSynoptiqueCours($start, $end, $acronyme);
-    // Application::afficher($eventsList);
     }
     else $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
 

@@ -1,50 +1,75 @@
 <div class="container-fluid">
 
-	<div class="row">
+    <div class="row">
 
-		<div class="col-md-6 col-sm-12" id="panneauAgenda">
+        {* <div class="col-md-6 col-xs-10">
 
-			<p class="jdcInfo {$mode} demiOmbre">Voir tous les événements de <strong>{$lblDestinataire}</strong> et écrire dans ce JDC</p>
-			<input type="hidden" name="unlocked" id="unlocked" value="false">
+            <h2>
+            <span id="cible">{$lblDestinataire}</span>
+            </h2>
+        </div>
 
-			<div id="calendar"
-				class="{$mode} demiOmbre"
-				data-type="{$type|default:'ecole'}"
-				data-lbldestinataire="{$lblDestinataire|default:''}"
-				data-cible="{$destinataire}"
-				data-coursgrp="{$coursGrp|default:''}"
-				data-niveau="{$niveau|default:''}"
-				data-classe="{$classe|default:''}"
-				data-matricule="{$matricule|default:''}"
-				data-editable="{$editable|default:false}"
-				data-viewstate="">
+        <div class="col-md-6 col-xs-12">
+            {if $type == 'coursGrp'}
+                <button type="button"
+                        class="btn btn-lightBlue btn-block"
+                        id="printJDC"
+                        style="margin-top:10px;"
+                        title=""
+                        data-original-title="Impression PDF du JDC"
+                        data-coursgrp="{$coursGrp}">
+                    PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i>
+                </button>
+            {/if}
+        </div> *}
+
+        <div class="col-md-6 col-sm-12" id="calendrier">
+
+            <p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
+            <input type="hidden" name="unlocked" id="unlocked" value="false">
+            <input type="hidden" name="mode" id="mode" value="{$mode}">
+
+            <div id="calendar"
+                class="{$mode} demiOmbre"
+                data-type="{$type|default:''}"
+                data-destinataire="{$destinataire}"
+                data-lbldestinataire="{$lblDestinataire|default:''}"
+                data-editable="{$editable|default:false}"
+                data-viewstate="agendaWeek">
+            </div>
+
+        </div>
+
+
+        <div class="col-md-6 col-sm-12" style="max-height:50em; overflow: auto" id="editeur">
+			<p class="notice">En vue synoptique, vous voyez tous les événements liés à l'ensemble de vos cours.<br></p>
+
+			<div id="unTravail">
+				{if isset($travail)}
+					{include file='jdc/jdcEdit.tpl'}
+				{else}
+                    {include file='jdc/selectItem.html'}
+				{/if}
 			</div>
 
-		</div>
-
-		<div class="col-md-6 col-sm-12" id="panneauEditeur">
-			{* onglet qui contiendra l'éditeur de JDC *}
-			{include file="jdc/selectItem.html"}
 		</div>
 		<!-- col-md-... -->
 
-		<div class="col-xs-12">
-			{* légende et couleurs *}
-			<div class="btn-group" id="legend">
-				{foreach from=$categories key=cat item=travail}
-				<button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
-				{/foreach}
-			</div>
-		</div>
+        <div class="col-xs-12">
 
-	</div>
-	<!-- row -->
+            <div class="btn-group" id="legend">
+                {foreach from=$categories key=cat item=travail}
+                <button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
+                {/foreach}
+            </div>
+        </div>
+
+    </div>
 
 </div>
 
-
+<div id="zoneDel"></div>
 <div id="zoneClone"></div>
-<div id="modal"></div>
 
 <style media="screen">
     .popover {
@@ -52,50 +77,64 @@
     }
 </style>
 
-{include file="jdc/modal/modalPrint.tpl"}
-
 <script type="text/javascript">
 
+    function lockUnlock(){
+        var lockState = $('#unlocked').val();
+        if (lockState == "true") {
+            $('#unlocked').val('false');
+            $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
+            $('#unTravail .btn-edit').prop('disabled', true);
+            }
+            else {
+                $('#unlocked').val('true');
+                $('#unTravail .btn-edit').prop('disabled', false);
+                $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
+            }
+    }
 
-	var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
-	var error = 'Une erreur s\'est produite';
+    // calendrier plus étroit, zone d'édition plus grande
+    function modeEdition(){
+        $('#calendrier').removeClass('col-md-9').addClass('col-md-6');
+        $('#editeur').removeClass('col-md-3').addClass('col-md-6');
+    }
+    // calendrier plus large, zone d'édition plus étroite
+    function modeConsultation(){
+        $('#calendrier').addClass('col-md-9').removeClass('col-md-6');
+        $('#editeur').addClass('col-md-3').removeClass('col-md-6');
+    }
 
-	// function dateFromFr(uneDate) {
-	// 	var laDate = uneDate.split('/');
-	// 	return laDate[2] + '-' + laDate[1] + '-' + laDate[0];
-	// }
+    var readonly = 'Dans ce mode, seule la consultation est possible';
+    var error = 'Erreur';
 
-	var fcView = Cookies.get('fc-view');
+    var fcView = Cookies.get('fc-view');
 
-	var views = ['month', 'agendaWeek', 'agendaDay', 'listMonth', 'listWeek'];
-	if (!(views.includes(fcView)))
-		fcView = 'month';
+    var views = ['month', 'agendaWeek', 'agendaDay', 'listMonth', 'listWeek'];
+    if (!(views.includes(fcView)))
+        fcView = 'month';
 
-	function lockUnlock(){
-		var lockState = $('#unlocked').val();
-		if (lockState == "true") {
-			$('#unlocked').val('false');
-			$('#panneauEditeur .btn-edit').addClass('disabled');
-			$('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
-			}
-			else {
-				$('#unlocked').val('true');
-				$('#panneauEditeur .btn-edit').removeClass('disabled');
-				$('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>');
-			}
-		}
+    $(document).ready(function(){
 
-	$(document).ready(function() {
+        $('body').on('click', '#btn-modalDel', function(){
+            var id = $('#id').val();
+            $.post('inc/jdc/delJdc.inc.php', {
+                id: id
+            }, function(resultat){
+                if (resultat > 0) {
+                    $('#unTravail').load('templates/jdc/selectItem.html');
+                    bootbox.alert({
+                        message: "Événement supprimé",
+                        size: 'small'
+                    });
+                }
+                $('#calendar').fullCalendar('refetchEvents');
+                $('#modalDel').modal('hide');
+            })
+        })
 
-		$(document).ajaxStart(function() {
-			$('body').addClass('wait');
-		}).ajaxComplete(function() {
-			$('body').removeClass('wait');
-		});
-
-		$('#panneauEditeur').on('click', '#saveJDC', function(){
-			var enonce = $('#enonce').val();
-			$('#editJdc #enonce').val(enonce);
+        $('#editeur').on('click', '#saveJDC', function(){
+            var enonce = $('#enonce').val();
+            $('#editJdc #enonce').val(enonce);
 
 	        if ($('#editJdc').valid()) {
 	            var formulaire = $('#editJdc').serialize();
@@ -117,10 +156,51 @@
                         }, function(resultat){
                             $('#unTravail').html(resultat);
                         })
-                    $('#calendar').fullCalendar('refetchEvents');
+                $('#calendar').fullCalendar('refetchEvents');
 	            });
+				modeConsultation();
 	        }
 	    })
+
+        $('#printJDC').click(function(){
+			var coursGrp = $(this).data('coursgrp');
+            var currentTime = new Date();
+            var currentYear = currentTime.getFullYear();
+            var currentMonth = currentTime.getMonth()+1;
+            if (currentMonth > 8 && currentMonth <= 12)
+                var dateDepuis = '01/09/' + currentYear
+                else var dateDepuis = '01/09/' + String(currentYear - 1);
+            $('#modalPrintJDC input#from').datepicker('setDate', dateDepuis);
+			$.post('inc/jdc/listeCoursProfs.inc.php', {
+				coursGrp: coursGrp,
+			}, function(resultat){
+				$('#modalListeCours').html(resultat);
+			})
+			$('#modalPrintJDC').modal('show');
+		})
+
+		$('#printForm').validate({
+			rules: {
+				from: {
+					required: true
+				},
+				to: {
+					required: true
+				}
+			}
+		})
+
+		$('#btnModalPrintJDC').click(function(){
+			var formulaire = $('#printForm').serialize();
+			if ($('#printForm').valid()) {
+				$.post('inc/jdc/printJdc.inc.php', {
+					formulaire: formulaire
+				}, function(resultat){
+					$('#modalPrintJDC').modal('hide');
+					bootbox.alert(resultat);
+				})
+			}
+		})
 
 		$('.datepicker').datepicker({
             format: "dd/mm/yyyy",
@@ -132,58 +212,41 @@
 			daysOfWeekDisabled: [0,6],
             });
 
-		var editable = $('#calendar').data('editable');
 
-		$('#panneauEditeur').on('click', '#delete', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/getModalDel.inc.php', {
-					id: id,
-				},
-				function(resultat) {
-					$("#modal").html(resultat);
-					$("#modalDel").modal('show');
-				}
-			)
-		})
-		$('#modal').on('click', '#btn-modalDel', function(){
-            var id = $('#id').val();
-            $.post('inc/jdc/delJdc.inc.php', {
-                id: id
-            }, function(resultat){
-                if (resultat > 0) {
-                    $('#panneauEditeur').load('templates/jdc/selectItem.html');
-                    bootbox.alert({
-                        message: "Événement supprimé",
-                        size: 'small'
-                    });
-                }
-                $('#calendar').fullCalendar('refetchEvents');
-                $('#modalDel').modal('hide');
-            })
-        })
+        var editable = $('#calendar').data('editable');
 
-		$('#panneauEditeur').on('click', '#modifier', function(){
-			var id = $(this).data('id');
-			$.post('inc/jdc/getMod.inc.php', {
-				id: id
-			}, function(resultat){
-				$('#panneauEditeur').html(resultat);
-			})
-		})
-
-		$('#panneauEditeur').on('click', '#btn-clone', function() {
+		$('#unTravail').on('click', '#btn-clone', function() {
 		    var idTravail = $(this).data('id');
 			var pastIsOpen = $('#unlocked').val();
             $.post('inc/jdc/editCible.inc.php', {
                 idTravail: idTravail,
 				pastIsOpen: pastIsOpen
             }, function(resultat) {
-                $('#modal').html(resultat);
+                $('#zoneClone').html(resultat);
                 $('#modalEditCible').modal('show');
             	})
 			})
 
-		$('#calendar').fullCalendar({
+        // cookie sur le type de vue retenu pour le JDC
+        $('#calendar').on('click', '.fc-button', function(){
+            if ($(this).hasClass('fc-month-button')) {
+                Cookies.set('fc-view', 'month', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-agendaWeek-button')) {
+                    Cookies.set('fc-view', 'agendaWeek', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-agendaDay-button')) {
+                    Cookies.set('fc-view', 'agendaDay', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-listMonth-button')) {
+                    Cookies.set('fc-view', 'listMonth', { expires: 7, path: 'thot/' });
+                }
+                else if ($(this).hasClass('fc-listWeek-button')) {
+                    Cookies.set('fc-view', 'listWeek', { expires: 7, path: 'thot/' });
+                }
+        })
+
+        $('#calendar').fullCalendar({
 			weekends: false,
 			defaultView: fcView,
 			eventLimit: 3,
@@ -234,7 +297,7 @@
 				}
 			],
 			eventRender: function(event, element, view) {
-				element.html( event.destinataire + ' ' + event.title),
+				element.find('.fc-title').html('<div>'+event.destinataire+'</div>');
 				element.popover({
 					title: event.destinataire,
 					content: event.enonce,
@@ -265,8 +328,8 @@
 					locked: locked
 					},
 					function(resultat) {
-						$('#panneauEditeur').fadeOut(400, function() {
-							$('#panneauEditeur').html(resultat).fadeIn();
+						$('#unTravail').fadeOut(400, function() {
+						$('#unTravail').html(resultat).fadeIn();
 						});
 					}
 				)
@@ -281,7 +344,8 @@
                 if (debut.isBefore(today) && (unlockedPast == "false")) {
                     bootbox.alert({
                         title: error,
-                        message: datePassee
+                        message: datePassee,
+                        size: 'small'
                     })
                 } else {
 
@@ -305,7 +369,8 @@
 							lblDestinataire: lblDestinataire
 							},
 							function(resultat){
-								$('#panneauEditeur').html(resultat);
+								modeEdition();
+								$('#unTravail').html(resultat);
 							})
 						}
 					else {
@@ -384,19 +449,33 @@
 		}
 		})
 
+        // suppression d'une note au JDC
+		$("#unTravail").on('click', '#delete', function() {
+			var id = $(this).data('id');
+			$.post('inc/jdc/getModalDel.inc.php', {
+					id: id,
+				},
+				function(resultat) {
+					$("#zoneDel").html(resultat);
+					$("#modalDel").modal('show');
+				}
+			)
+		})
+
 		// modification d'une note au JDC
-		$("#panneauEditeur").on('click', '#modifier', function() {
+		$("#unTravail").on('click', '#modifier', function() {
 			var id = $(this).data('id');
 			$.post('inc/jdc/getMod.inc.php', {
 					id: id
 				},
 				function(resultat) {
+					modeEdition();
 					$('#unTravail').html(resultat);
 				}
 			)
 		})
 
-		$("#panneauEditeur").on('click', '#journee', function() {
+        $("#zoneEdit").on('click', '#journee', function() {
 			if ($(this).prop('checked') == true) {
 				$("#duree").prop('disabled', true);
 				$('#heure').prop('disabled', true).val('');
@@ -412,12 +491,12 @@
 
         $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
 
+		var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
+
 		// http://jsfiddle.net/slyvain/6vmjt9rb/
         var popTemplate = [
             '<div class="popover" style="max-width:600px;" >',
-            '<div class="arrow down"></div>',
             '<div class="popover-header">',
-            '<button id="closepopover" type="button" class="close" aria-hidden="true">&times;</button>',
             '<h3 class="popover-title"></h3>',
             '</div>',
             '<div class="popover-content"></div>',
@@ -437,13 +516,15 @@
             }
         });
 
-		{if $mode == 'subjectif'}
+        {if $mode == 'subjectif'}
 			$('.fc-unLockButton-button').prop('disabled', true);
 		{/if}
 
-		{if isset($startDate)}
-			$('#calendar').fullCalendar('gotoDate', moment("{$startDate}"));
+        {if isset($travail.startDate)}
+			$('#calendar').fullCalendar('gotoDate', moment("{$travail.startDate}"));
 		{/if}
 
-})
+
+    })
+
 </script>

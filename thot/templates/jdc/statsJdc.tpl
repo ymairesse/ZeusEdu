@@ -1,5 +1,3 @@
-
-
     <div class="col-md-3 col-sm-6">
 
         <form id="formStats">

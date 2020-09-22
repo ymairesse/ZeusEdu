@@ -326,6 +326,7 @@ class Jdc
                 $requete = $connexion->prepare($sql);
                 $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
                 $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 20);
+
                 $resultat = $requete->execute();
                 if ($resultat){
                     $ligne = $requete->fetch();
@@ -1151,6 +1152,8 @@ class Jdc
             $sql = 'INSERT INTO '.PFX.'thotJdc ';
             $sql .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
             $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay, lastModif = NOW() ';
+
+
         } else {
             // simple mise à jour
             $sql = 'UPDATE '.PFX.'thotJdc ';
@@ -1172,6 +1175,7 @@ class Jdc
         if ($id != Null) {
             $requete->bindParam(':id', $id, PDO::PARAM_INT);
         }
+
 
         $resultat = $requete->execute();
         if ($id == null) {
@@ -1668,10 +1672,10 @@ class Jdc
         $sql .= 'AND destinataire IN ('.$listeCoursGrpString.') ';
         $sql .= 'ORDER BY destinataire, startDate, jdc.idCategorie ';
         $requete = $connexion->prepare($sql);
-// echo $sql;
+
         $requete->bindParam(':startDate', $startDate, PDO::PARAM_STR, 15);
         $requete->bindParam(':endDate', $endDate, PDO::PARAM_STR, 15);
-// Application::afficher(array($startDate, $endDate), true);
+
         $liste = array();
         $resultat = $requete->execute();
         if ($resultat) {

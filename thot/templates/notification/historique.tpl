@@ -1,6 +1,6 @@
 <div class="container-fluid">
 
-	<h2>Historique et Annonces</h2>
+	<h2>Historique des Annonces</h2>
 
 		{* les différents onglets pour les différents destinataires possibles *}
 		<ul class="nav nav-tabs">
@@ -142,6 +142,7 @@
 			$('#PjFiles').html('<p>Pas de pièce jointe</p>');
 			$('.destinataire').val('');
 			$('#mail, #accuse, #parent, #freeze').prop('disabled', false).prop('checked', false);
+			$('#type option[value="eleves"]').prop('disabled', true).text('Un élève [choisir dans "classe", "cours", "groupe"]');
 		})
 
 		$('#ficheEleve').on('click', '#btn-cloner', function(){
@@ -149,6 +150,7 @@
 			// reset de l'identifiant de l'annonce à cloner
 			$('#id').val('');
 			var type = $('#leType').val();
+			$('#type option[value="eleves"]').prop('disabled', true).text('Un élève [choisir dans "classe", "cours", "groupe"]');
 			switch (type){
 				case 'classes':
 					$('#classes').val('');
@@ -156,7 +158,6 @@
 					$('#niveau4classe').prop('disabled', false);
 					$('#classe').prop('disabled', false);
 					$('.membres').prop('disabled',false);
-					// $('#choixEleves').addClass('hidden');
 					break;
 				case 'niveau':
 					$('#type').prop('disabled', false);

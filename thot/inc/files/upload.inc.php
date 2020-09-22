@@ -23,8 +23,10 @@ $ds = DIRECTORY_SEPARATOR;
 if (!empty($_FILES)) {
     $tempFile = $_FILES['file']['tmp_name'];
     $targetPath = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$arborescence;
+
     setlocale(LC_ALL,'fr_FR.UTF-8');
     $_FILES['file']['name'] = iconv('UTF-8', 'ASCII//TRANSLIT', $_FILES['file']['name']);
+    error_log($_FILES['file']['name'], true);
     // $_FILES['file']['name'] =  preg_replace("/[^A-Za-z0-9 \_\-\.]/", '_', basename($_FILES['file']['name']));
     $targetFile = $targetPath.$ds.$_FILES['file']['name'];
 

@@ -17,11 +17,13 @@
 
         <div class="col-md-6 col-sm-12">
 
-            <p>Pour <strong>{$lblDestinataire}</strong></p>
+            <h2 class="pull-right" style="padding: 0 1em; margin: 0;"><strong>{$lblDestinataire}</strong></h2>
 
         </div>  <!-- col-md-... -->
 
     </div>  <!-- row -->
+
+
 
     <div class="row">
 
@@ -74,7 +76,7 @@
 
         </div>  <!-- col-md-4... -->
 
-        <div class="col-md-1 col-sm-12">
+        <div class="col-md-2 col-sm-12">
 
             <div class="form-group">
                 <label for="journee" class="sr-only">Journée</label>
@@ -83,8 +85,11 @@
             </div>
 
         </div>
+</div>
 
-        <div class="col-xs-8">
+<div class="row">
+
+        <div class="col-md-7 col-xs-8">
             <div class="form-group">
                 <label for="titre" class="sr-only">Titre</label>
                 {assign var=idFirst value=$categories|key}
@@ -101,14 +106,13 @@
             </div>
         </div>
 
-        <div class="col-xs-4">
+        <div class="col-md-5 col-xs-4">
             <div class="btn-group pull-right">
                 <button type="reset" class="btn btn-default">Annuler</button>
                 <button type="button" class="btn btn-primary" id="saveJDC"><i class="fa fa-floppy-o"></i> Enregistrer</button>
             </div>
         </div>
-
-    </div>  <!-- row -->
+</div>
 
 
     <div class="form-group">
@@ -186,11 +190,13 @@ jQuery.validator.addMethod(
 
 
 $(document).ready(function(){
-
+    // $('#enonce').summernote({})
+    //
     $('#enonce').summernote({
         lang: 'fr-FR', // default: 'en-US'
         height: null, // set editor height
         minHeight: 250, // set minimum height of editor
+        height: 350,
         focus: true, // set focus to editable area after initializing summernote
         styleTags: [
            'p',

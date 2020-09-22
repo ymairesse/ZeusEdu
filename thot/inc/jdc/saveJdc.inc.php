@@ -27,7 +27,7 @@ parse_str($formulaire, $form);
 $id = isset($form['id']) ? $form['id'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
 
 $texte = array();

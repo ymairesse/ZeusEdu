@@ -1,5 +1,6 @@
 <?php
 
+
 $listeArchives = $Jdc->getAnneesArchivesJdc();
 $smarty->assign('listeArchives', $listeArchives);
 

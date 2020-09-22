@@ -26,7 +26,9 @@
                         <ul class="nav nav-tabs">
                         {foreach from=$groupShares key=leGroupe item=shareData name=groupe}
                             <li {if $smarty.foreach.groupe.index == 0}class="active"{/if}>
-                                <a data-toggle="tab" href="#id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}">{$leGroupe}</a>
+                                <a data-toggle="tab" href="#id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}">
+                                    {$leGroupe}
+                                </a>
                             </li>
                         {/foreach}
                         </ul>
@@ -35,7 +37,7 @@
                             {foreach from=$groupShares key=leGroupe item=shareData name=groupe}
                                 <div id="id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}"
                                     class="tab-pane fade in {if $smarty.foreach.groupe.index == 0} active{/if}"
-                                    style="height:30em; overflow: auto">
+                                    style="height:30em; overflow: auto" data-groupe="{$leGroupe}">
 
                                     <table class="table table-condensed shareGroup">
                                         <tr>
@@ -45,7 +47,14 @@
                                             <th style="width:2em">&nbsp;</th>
                                             <th>Commentaire</th>
                                             <th>Partagé avec</th>
-                                            <th style="width:2em">&nbsp;</th>
+                                            <th style="width:2em">
+                                                <button type="button"
+                                                    class="btn btn-danger btn-xs btn-unShare"
+                                                    data-id="id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}"
+                                                    title="Supprimer tous les partages de cette page">
+                                                    <i class="fa fa-share-alt"></i> <i class="fa fa-arrow-down"></i>
+                                                </button>
+                                            </th>
                                         </tr>
                                         {foreach from=$shareData key=shareId item=file}
                                         <tr data-shareid="{$shareId}" data-fileid="{$file.fileId}" class="{$file.dirOrFile}">
@@ -84,7 +93,7 @@
                                             <td>{$file.libelle}</td>
                                             <td><button
                                                     type="button"
-                                                    class="btn btn-danger btn-xs unShare"
+                                                    class="btn btn-danger btn-xs unShare pull-right"
                                                     data-fileid="{$file.fileId}"
                                                     data-shareId="{$file.shareId}"
                                                     data-filename="{$file.fileName}"
@@ -252,6 +261,31 @@
         $('#modalShareEdit').on('shown.bs.modal', function () {
            $('#shareEditCommentaire').focus();
         });
+    })
+
+    $('.btn-unShare').click(function(){
+        var unShareFiles = $(this).closest('table').find('.unShare');
+        var listeFichiers = [];
+        var listeShareId = []
+        unShareFiles.each(function(index){
+            listeFichiers.push($(this).data('filename')+'<br>');
+            listeShareId.push($(this).data('shareid'));
+        })
+        bootbox.confirm({
+            'title': 'Arrêt du partage',
+            'message': 'Confirmez l\'arrêt du partage des fichiers <br>' + listeFichiers,
+            callback: function (result){
+                if (result == true) {
+                    $.post('inc/files/unShareSeries.inc.php', {
+                        listeShareId: listeShareId
+                    }, function(resultat){
+                        alert(resultat);
+                    })
+                }
+            }
+        })
+            // alert(listeFichiers);
+            // alert(listeShareId);
     })
 
     $("#saveComment").click(function() {

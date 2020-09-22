@@ -34,7 +34,7 @@ if (in_array($shareId, array_keys($listeSharedFiles))) {
     $originalPath = $path.$ds.$fileName;
 
     $treeview = $Files->treeview($root, $path, $fileName, $originalPath);
-
+Application::afficher($treeview, true);
     require_once(INSTALL_DIR."/smarty/Smarty.class.php");
     $smarty = new Smarty();
     $smarty->template_dir = "../../templates";

@@ -799,3 +799,16 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
 .forumInactif {
     color: #888 !important;
 }
+
+
+.groupe.ouvert, .btn.ouvert {
+    background-color: #9f9;
+}
+
+.groupe.ferme, .btn.ferme {
+    background-color: #f99;
+}
+
+.groupe.invitation, .btn.invitation {
+    background-color: #99f;
+}

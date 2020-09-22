@@ -19,29 +19,24 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
+$dateDepuis = isset($_POST['dateDepuis']) ? $_POST['dateDepuis'] : Null;
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
+
+$listeCoursProf = $User->listeCoursProf();
+
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
+
+$categories = $Jdc->categoriesTravaux();
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-$categories = $Jdc->categoriesTravaux();
 $smarty->assign('categories', $categories);
+$smarty->assign('listeCoursProf', $listeCoursProf);
+$smarty->assign('dateDepuis', $dateDepuis);
 
-$type = 'synoptique';
-$smarty->assign('type', $type);
-// "mode" pourrait être "subjectif" (dans ce cas, pas moyen de déverrouiller)
-$smarty->assign('mode', 'synoptique');
-$smarty->assign('destinataire', 'synoptique');
-
-$smarty->assign('lblDestinataire', 'Vue synoptique');
-$smarty->assign('coursGrp', 'synoptique');
-
-$smarty->assign('editable', true);
-
-$smarty->assign('jdcInfo', 'Pour voir l\'ensemble de vos cours');
-
-$smarty->display('jdc/jdcSynoptique.tpl');
+$smarty->display('jdc/modal/modalPrint.tpl');

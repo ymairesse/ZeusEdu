@@ -36,7 +36,7 @@ if ($id != null) {
     $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
     $travail = $Jdc->getTravail($id);
-        $smarty->assign('travail', $travail);
+    $smarty->assign('travail', $travail);
 
     $type = $travail['type'];
     $smarty->assign('type', $type);
@@ -45,7 +45,6 @@ if ($id != null) {
     $categories = $Jdc->categoriesTravaux();
     $smarty->assign('categories', $categories);
 
-    // $lblDestinataire = $Jdc->getLabel($type, $travail['destinataire']);
     $lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, $type, $destinataire);
 
     $smarty->assign('lblDestinataire', $lblDestinataire);
@@ -63,5 +62,4 @@ if ($id != null) {
     $smarty->assign('listePJ', $listePJ);
 
     $smarty->display('jdc/unTravail.tpl');
-
 }

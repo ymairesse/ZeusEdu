@@ -19,29 +19,36 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
+$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
+
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
 $Jdc = new Jdc();
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+require_once INSTALL_DIR.$ds.'smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-$categories = $Jdc->categoriesTravaux();
-$smarty->assign('categories', $categories);
+$smarty->assign('coursGrp', $coursGrp);
 
-$type = 'synoptique';
+$type = 'coursGrp';
 $smarty->assign('type', $type);
-// "mode" pourrait être "subjectif" (dans ce cas, pas moyen de déverrouiller)
-$smarty->assign('mode', 'synoptique');
-$smarty->assign('destinataire', 'synoptique');
+// // $mode pourrait être "subjectif"
+// $smarty->assign('mode', 'coursGrp');
 
-$smarty->assign('lblDestinataire', 'Vue synoptique');
-$smarty->assign('coursGrp', 'synoptique');
+$lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, $type, $coursGrp);
 
-$smarty->assign('editable', true);
+$smarty->assign('lblDestinataire', $lblDestinataire);
+$smarty->assign('destinataire', $coursGrp);
 
-$smarty->assign('jdcInfo', 'Pour voir l\'ensemble de vos cours');
+$smarty->assign('editable', 1);
 
-$smarty->display('jdc/jdcSynoptique.tpl');
+$smarty->assign('synoptique', false);
+//
+// $listeCategories = $Jdc->getListeCategoriesJDC();
+// $smarty->assign('listeCategories', $listeCategories);
+
+$smarty->assign('jdcInfo', 'Pour voir votre JDC par cours');
+
+$smarty->display('jdc/jdcAgenda.tpl');

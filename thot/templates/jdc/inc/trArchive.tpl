@@ -1,5 +1,5 @@
 <tr data-matricule="{$matricule}">
-    <td>{$jdcDe}</td>
+    <td>{$nomPrenomClasse}</td>
     <td><a href="inc/download.php?type=pfN&amp;f=/{$module}/{$nomFichier}">{$nomFichier}</a></td>
     <td><button type="button"
             class="btn btn-xs btn-danger btn-delFile"

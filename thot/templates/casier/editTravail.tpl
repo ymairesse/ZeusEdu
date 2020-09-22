@@ -175,7 +175,6 @@
             var competences = $(".idCompetence:checked").map(function() {
                 return ($(this).val());
             }).get();
-
             var idTravail = $(this).data('idtravail');
             var coursGrp = $(this).data('coursgrp');
             $.post('inc/casier/addCompetence.inc.php', {
