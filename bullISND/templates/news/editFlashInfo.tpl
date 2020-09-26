@@ -1,44 +1,42 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div class="container">
-	
+
 <form name="editFlash" id="editFlash" method="POST" action="index.php" style="clear:both" role="form" class="form-vertical">
 
 	<div class="row">
-		
+
 		<div class="col-md-5 col-sm-4">
-		
+
 			<div class="form-group">
 			<label for="date">Date</label>
 				<input type="text" name="date" id="datepicker" value="{$flashInfo.date}" class="datepicker form-control" required>
 			</div>
-		
+
 		</div>
-		
+
 		<div class="col-md-5 col-sm-4">
-		
+
 			<div class="form-group">
 				<label for="heure">Heure</label>
 				<input type="text" name="heure" id="timepicker" value="{$flashInfo.heure}" class="timepicker form-control" required>
 			</div>
-	
+
 		</div>
-		
+
 		<div class="col-md-2 col-sm-4">
-			
+
 			<div class="btn-group-vertical">
-				<button class="btn btn-primary type="submit" id="submit"><span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer</button>
+				<button class="btn btn-primary" type="submit" id="submit"><span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer</button>
 				<a type="button" href="index.php" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-remove"></span>Annuler</a>
 			</div>
 		</div>
-		
+
 	</div>  <!-- row -->
-	
+
 	<div class="form-group">
 		<label for="titre">Titre</label>
 		<input type="text" name="titre" id="titre" value="{$flashInfo.titre}" class="form-control" required>
 	</div>
-	
+
 	<div class="form-group">
 	<textarea name="texte" cols="90" rows="20" class="ckeditor">{$flashInfo.texte}</textarea>
 	</div>
@@ -68,7 +66,7 @@
 		showSeconds: false,
 		showMeridian: false
 		});
-	
+
 	$("#editFlash").validate({
 			rules: {
 				datepicker: {

@@ -35,6 +35,8 @@ $(document).ready (function() {
 		})
 
 	$("#classe").change (function(){
+		var classe = $(this).val();
+		Cookies.set('classe', classe);
 		$("#formSelecteur").submit();
 	})
 

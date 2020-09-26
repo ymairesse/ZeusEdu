@@ -1,10 +1,8 @@
-<div class="container">
+<div class="container-fluid">
 
 	<h3 style="clear:both" title="{$infoPerso.matricule}">
 		{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}
 	</h3>
-
-	<button type="button" class="btn btn-success pull-right" id="couleur"><i class="fa fa-lightbulb-o" style="color:yellow; font-size: 1.2em;"></i> <span>Désactiver la couleur</span></button>
 
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#tabs-1">Cotes de situation</a></li>
@@ -52,27 +50,35 @@
 
 		<div class="col-md-10 col-sm-8">
 
-			<form name="avisTitu" id="avisTitu" action="index.php" method="POST" class="form-vertical" role="form">
+			<form name="avisTitu" id="avisTitu" class="form-vertical" role="form">
+				<div class="col-md-6 col-sm-12">
 
-				<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin}</h4>
+					<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin}</h4>
 
-				{if isset($mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin) && ($mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin != '')}
-				<h5>Mention accordée: <strong>{$mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</strong></h5>
-				{/if}
-				<button type="submit" class="btn btn-primary pull-right" id="enregistrer">Enregistrer</button>
+					{if isset($mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin) && ($mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin != '')}
+					<h5>Mention accordée: <strong>{$mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</strong></h5>
+					{/if}
 
-				<input type="hidden" name="action" value="titu">
-				<input type="hidden" name="mode" value="remarques">
-				<input type="hidden" name="etape" value="enregistrer">
+					{if isset($mentions.$matricule.$annee.$bulletin) && ($mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin != '')}
+						<h4>Mention accordée <strong>{$mentions.$matricule.$annee.$bulletin|default:'-'}</strong>.</h4>
+					{/if}
+					<textarea name="commentaire" id="commentaire" rows="5" class="form-control">{$remarqueTitu.$bulletin|default:'&nbsp;'}</textarea>
+			 	</div>
+
+				<div class="col-md-6 col-sm-12">
+					<h4>Poursuite du parcours scolaire</h4>
+					<textarea name="parcours" id="parcours" rows="5" class="form-control">{$noticeParcours|default:''}</textarea>
+			 	</div>
+
 				<input type="hidden" name="bulletin" value="{$bulletin}">
+				<input type="hidden" name="annee" value="{$annee}">
 				<input type="hidden" name="matricule" value="{$matricule}">
 				<input type="hidden" name="classe" value="{$classe}">
 				<input type="hidden" name="onglet" class="onglet" value="{$onglet}">
 
-				{if isset($mentions.$matricule.$annee.$bulletin) && ($mentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin != '')}
-					<h4>Mention accordée <strong>{$mentions.$matricule.$annee.$bulletin|default:'-'}</strong>.</h4>
-				{/if}
-				 <textarea name="commentaire" id="commentaire" rows="7" class="ckeditor form-control">{$remarqueTitu.$bulletin|default:'&nbsp;'}</textarea>
+				<button type="button" class="btn btn-primary pull-right" id="btn-enregistrer">Enregistrer</button>
+
+				<div class="clearfix"></div>
 
 			</form>
 
@@ -107,33 +113,18 @@ $(document).ready(function(){
 		$(".onglet").val(ref);
 		});
 
-	 $("#avisTitu").submit(function(){
-		$.blockUI();
-		$("#wait").show();
+$('#btn-enregistrer').click(function(){
+	var formulaire = $('#avisTitu').serialize();
+	$.post('inc/delibe/saveAvisTitu.inc.php', {
+		formulaire: formulaire
+	}, function(resultat){
+		bootbox.alert({
+			title: 'Enregistrement',
+			message: resultat + ' texte(s) enregistré(s)'
 		})
+	})
+})
 
-	$("#couleur").click(function(){
-		if ($(this).find('span').text() == 'Désactiver la couleur') {
-			$(".mentionS").removeClass("mentionS").addClass("xmentionS");
-			$(".mentionAB").removeClass("mentionAB").addClass("xmentionAB");
-			$(".mentionB").removeClass("mentionB").addClass("xmentionB");
-			$(".mentionBplus").removeClass("mentionBplus").addClass("xmentionBplus");
-			$(".mentionTB").removeClass("mentionTB").addClass("xmentionTB");
-			$(".mentionTBplus").removeClass("mentionTBplus").addClass("xmentionTBplus");
-			$(".mentionE").removeClass("mentionE").addClass("xmentionE");
-			$(this).find('span').text("Activer la couleur");
-			}
-			else {
-				$(".xmentionS").removeClass("xmentionS").addClass("mentionS");
-				$(".xmentionAB").removeClass("xmentionAB").addClass("mentionAB");
-				$(".xmentionB").removeClass("xmentionB").addClass("mentionB");
-				$(".xmentionBplus").removeClass("xmentionBplus").addClass("mentionBplus");
-				$(".xmentionTB").removeClass("xmentionTB").addClass("mentionTB");
-				$(".xmentionTBplus").removeClass("xmentionTBplus").addClass("mentionTBplus");
-				$(".xmentionE").removeClass("xmentionE").addClass("mentionE");
-				$(this).find('span').text("Désactiver la couleur");
-				}
-		})
 	})
 
 </script>

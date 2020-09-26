@@ -28,6 +28,7 @@ $smarty->assign('nbBulletins', NBPERIODES);
 $smarty->assign('bulletin', $bulletin);
 $smarty->assign('COTEABS', COTEABS);
 $smarty->assign('COTENULLE', COTENULLE);
+$smarty->assign('MENTIONSTEXTE', MENTIONSTEXTE);
 $smarty->assign('NOMSPERIODES', explode(',', NOMSPERIODES));
 
 $sections = "'G', 'GT', 'TT'";

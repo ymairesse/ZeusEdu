@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 	<h2>Gestion des cotes des épreuves externes</h2>
 

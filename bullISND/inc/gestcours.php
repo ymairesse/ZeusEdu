@@ -79,11 +79,23 @@ switch ($mode) {
 			$smarty->assign('listeMatieres', $listeMatieres);
 			}
 		if (isset($cours)) {
-			$listeCoursGrp = $Ecole->listeCoursGrpDeCours($cours);
-			$listeLinkedCoursGrp = $Ecole->listeLinkedCoursGroup($listeCoursGrp);
+			$listeCoursGrp4Eleves = $Ecole->getListeCoursGrp4elevesCours($cours);
+			$listeCoursGrp4Profs = $Ecole->getListeCoursGrp4profsCours($cours);
+			// pour ce cours, on a donc la liste des coursGrp suivants
+			$listeCoursGrp4cours = array_merge($listeCoursGrp4Eleves, $listeCoursGrp4Profs);
 
-			$smarty->assign('listeCoursGrp', $listeCoursGrp);
+			$listeLinkedCoursGrp = $Ecole->listeLinkedCoursGroup($listeCoursGrp4cours);
+			$listeVirtualCoursGrp = $Ecole->listeVirtualCoursGrp($listeCoursGrp4cours);
+			$listeProfsCoursGrp = $Ecole->listeProfsCoursGrp4cours($listeCoursGrp4cours);
+
+			$listeElevesCoursGrp = $Ecole->listeElevesCoursGrp4cours($listeCoursGrp4cours);
+
+			$smarty->assign('listeCoursGrp', $listeCoursGrp4cours);
 			$smarty->assign('listeLinkedCoursGrp', $listeLinkedCoursGrp);
+			$smarty->assign('listeVirtualCoursGrp', $listeVirtualCoursGrp);
+			$smarty->assign('listeProfsCoursGrp', $listeProfsCoursGrp);
+			$smarty->assign('listeElevesCoursGrp', $listeElevesCoursGrp);
+
 			$smarty->assign('cours', $cours);
 			$smarty->assign('corpsPage','tableauMatieres');
 			}

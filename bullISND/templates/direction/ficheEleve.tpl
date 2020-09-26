@@ -1,5 +1,3 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
 <div class="container-fluid">
 
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>

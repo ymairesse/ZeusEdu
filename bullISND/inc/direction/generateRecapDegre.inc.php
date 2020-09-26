@@ -40,8 +40,10 @@ $anneeEtudePrecedente = $Ecole->anneePrecedenteDeClasse($classe);
 // année scolaire en cours (du type "2016-2017")
 $anneeScolaire = ANNEESCOLAIRE;
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new HTML2PDF('L', 'A4', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('L', 'A4', 'fr');
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();

@@ -122,65 +122,13 @@
 </form>
 
 {if !(empty($listeCoursGrp))}
+
 <h3>Action sur les cours</h3>
 
-<table class="tableauBull">
-	<tr>
-		<th>Cours</th>
-		<th>Libellé</th>
-		<th>Statut</th>
-		<th>Cadre</th>
-		<th>Virtuel</th>
-		<th>Cours liés</th>
-		<th>Professeur</th>
-		<th>Nombre d'élèves</th>
-	</tr>
-{foreach from=$listeCoursGrp key=coursGrp item=data}
-	<tr>
-		<td>{$coursGrp}</td>
-		<td>{$data.libelle}</td>
-		<td>{$data.statut}</td>
-		<td>{$data.cadre}</td>
-		<td>{if $data.virtuel == 1}
-			<button type="button" class="btn btn-danger btn-sm btn-virtuel" data-coursgrp="{$coursGrp}">Virtuel</button>
-			{else}
-			&nbsp;
-			{/if}
-		</td>
-		<td>{if $data.virtuel ==1}
-			<select class="form-control" name="wtf{$courGrp}">
-				{foreach from=$listeLinkedCoursGrp[$coursGrp] key=wtf item=linked}
-				<option value="{$linked}">{$linked}</option>
-				{/foreach}
-			</select>
-			 {else}&nbsp;{/if}
-		</td>
-		<td><form name="modProfs_{$coursGrp}" action="index.php" method="POST" class="microForm">
-		{if $data.acronyme != ''}
-			{$data.nomProf} ({$data.acronyme})
-		{/if}
-			<input type="hidden" name="acronyme" value="{$data.acronyme}">
-			<input type="hidden" name="coursGrp" value="{$data.coursGrp}">
-			<input type="hidden" name="niveau" value="{$niveau}">
-			<input type="hidden" name="action" value="admin">
-			<input type="hidden" name="etape" value="show">
-			<input type="hidden" name="mode" value="attributionsProfs">
-			<input type="submit" name="Mod+" value="+/-">
-			</form>
-		</td>
-		<td><form name="modEleves_{$coursGrp}" action="index.php" method="POST" class="microForm">
-			{$data.nbEleves}
-				<input type="hidden" name="cours" value="{$data.cours}">
-				<input type="hidden" name="coursGrp" value="{$coursGrp}">
-				<input type="hidden" name="action" value="admin">
-				<input type="hidden" name="mode" value="attributionsEleves">
-				<input type="submit" name="Mod+" value="+/-">
-			</form>
-		</td>
+	<div id="panneauGestCours">
+			{include file="admin/tableauGestCours.tpl"}
+	</div>
 
-	</tr>
-{/foreach}
-</table>
 {/if}
 
 {if empty($listeCoursGrp)}
@@ -197,6 +145,7 @@
 
 </div>
 
+<div id="modal"></div>
 
 <script type="text/javascript">
 
@@ -204,6 +153,97 @@
 	texteVirtuel += 'Les élèves restent inscrits.'
 
 	$(document).ready(function(){
+
+		$('#panneauGestCours').on('click', '.btn-addEleves', function(){
+			var coursGrp = $(this).data('coursgrp');
+			$.post('inc/admin/getModalAddEleves.inc.php', {
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#modal').html(resultat);
+				$('#modalSelectEleves').modal('show');
+			})
+		})
+		$('#modal').on('click', '#ajoutEleves', function(){
+			var coursGrp = $(this).data('coursgrp');
+			var listeEleves = $('#modal #listeEleves option:selected');
+			var formulaire = $('#formEleves').serialize();
+			$.post('inc/admin/addEleves2cours.inc.php', {
+				formulaire: formulaire,
+				coursGrp: coursGrp
+			}, function(){
+				$.post('inc/admin/getListeEleves4coursGrp.inc.php', {
+					coursGrp: coursGrp
+				}, function(resultat){
+					$('#modal #listeElevesCours').html(resultat);
+					$.post('inc/admin/tableauGestCours.inc.php', {
+						coursGrp: coursGrp
+					}, function(resultat){
+						$('#panneauGestCours').html(resultat);
+					})
+				})
+			})
+		})
+		$('#modal').on('click', '#supprEleves', function(){
+			var coursGrp = $(this).data('coursgrp');
+			var formulaire = $('#formElevesCours').serialize();
+			$.post('inc/admin/delElevesFromCoursGrp.inc.php', {
+				formulaire: formulaire,
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#modal #listeElevesCours').html(resultat);
+				$.post('inc/admin/tableauGestCours.inc.php', {
+					coursGrp: coursGrp
+				}, function(resultat){
+					$('#panneauGestCours').html(resultat);
+				})
+			})
+		})
+
+
+		$('#panneauGestCours').on('click', '.btn-addProf', function(){
+			var coursGrp = $(this).data('coursgrp');
+			$.post('inc/admin/getModalAddProfs.inc.php', {
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#modal').html(resultat);
+				$('#modalSelectProf').modal('show');
+			})
+		})
+		$('#modal').on('click', '#ajoutProfs', function(){
+            var coursGrp = $(this).data('coursgrp');
+			var formulaire = $('#formProfs').serialize();
+			$.post('inc/admin/addProfs2cours.inc.php', {
+				formulaire: formulaire,
+				coursGrp: coursGrp
+			}, function(resultat){
+				$.post('inc/admin/getListeProfs4coursGrp.inc.php',{
+					coursGrp: coursGrp
+				}, function(resultat){
+					$('#modal #listeProfsCours').html(resultat);
+					$.post('inc/admin/tableauGestCours.inc.php', {
+						coursGrp: coursGrp
+					}, function(resultat){
+						$('#panneauGestCours').html(resultat);
+					})
+				})
+			})
+        })
+		$('#modal').on('click', '#supprProfs', function(){
+			var coursGrp = $(this).data('coursgrp');
+			var formulaire = $('#listeProfCours').serialize();
+			$.post('inc/admin/delProfsFromCoursGrp.inc.php', {
+				formulaire: formulaire,
+				coursGrp: coursGrp
+			}, function(resultat){
+				// restaurer la liste dans la boîte modale
+				$('#modal #listeProfsCours').html(resultat);
+				$.post('inc/admin/tableauGestCours.inc.php', {
+					coursGrp: coursGrp
+				}, function(resultat){
+					$('#panneauGestCours').html(resultat);
+				})
+			})
+		})
 
 		$('#cbVirtuel').change(function(){
 			var matiere = $('#matiere').val();

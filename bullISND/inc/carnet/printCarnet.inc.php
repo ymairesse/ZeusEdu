@@ -53,7 +53,9 @@ $smarty->assign('nomProf',$nomProf);
 $smarty->assign('date', Application::dateNow());
 $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
 
-require_once(INSTALL_DIR."/html2pdf/html2pdf.class.php");
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
 $html2pdf = new HTML2PDF('L','A4','fr');
 
 foreach ($periodes as $unePeriode) {

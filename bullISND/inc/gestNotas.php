@@ -12,40 +12,25 @@ if (isset($_POST['niveau'])) {
     }
 $smarty->assign('niveau', $niveau);
 
-$notice = isset($_POST['notice']) ? $_POST['notice'] : null;
+// $notice = isset($_POST['notice']) ? $_POST['notice'] : null;
 
 $listeNiveaux = $Ecole->listeNiveaux();
 $smarty->assign('listeNiveaux', $listeNiveaux);
 $smarty->assign('nbBulletins', NBPERIODES);
 
-switch ($etape) {
-    case 'enregistrer':
-        if ($niveau && $bulletin) {
-            $nb = $Bulletin->saveNoticeCoordinateurs($niveau, $bulletin, $notice);
-            $smarty->assign('bulletin', $bulletin);
-            $smarty->assign('message', array(
-                    'title' => 'Enregistrement',
-                    'texte' => "$nb modification(s) enregistrée(s)",
-                    'urgence' => 'success',
-                    ));
+if ($etape == 'showNiveau') {
+    // $smarty->assign('selecteur', 'selectBulletinNiveau');
+    // $smarty->assign('bulletin', $bulletin);
+    // $smarty->assign('action', 'nota');
+    if ($niveau && $bulletin) {
+        $notice = $Bulletin->noticeCoordinateurs($bulletin, $niveau);
+        $smarty->assign('notice', $notice);
+        $smarty->assign('corpsPage', 'formNotas');
         }
-        // pas de break
-    case 'showNiveau':
-        $smarty->assign('selecteur', 'selectBulletinNiveau');
-        $smarty->assign('bulletin', $bulletin);
-        $smarty->assign('action', 'nota');
-        if ($niveau && $bulletin) {
-            $notice = $Bulletin->noticeCoordinateurs($bulletin, $niveau);
-            $smarty->assign('notice', $notice);
-            $smarty->assign('corpsPage', 'formNotas');
-        }
-        break;
-
-    default:
-        $listeNiveaux = $Ecole->listeNiveaux();
-        $smarty->assign('selecteur', 'selectBulletinNiveau');
-        $smarty->assign('bulletin', $bulletin);
-        $smarty->assign('action', 'nota');
-        $smarty->assign('mode', 'redaction');
-        break;
     }
+
+$listeNiveaux = $Ecole->listeNiveaux();
+$smarty->assign('bulletin', $bulletin);
+// $smarty->assign('action', 'nota');
+// $smarty->assign('mode', 'redaction');
+$smarty->assign('selecteur', 'selectBulletinNiveau');

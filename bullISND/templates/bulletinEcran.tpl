@@ -1,5 +1,5 @@
 {if isset($infoPerso)}
-<div class="container">
+<div class="container-fluid">
 
 	<h1 style="clear:both" title="{$infoPerso.matricule}">{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}</h1>
 	<img src="../photos/{$infoPerso.matricule}.jpg" title="{$infoPerso.matricule}" alt="{$infoPerso.matricule}"
@@ -175,6 +175,7 @@
 		{/if}
 
 		{assign var=laMention value=$mention.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:Null}
+
 		<div class="col-md-6 col-sm-12">
 			<div class="alert alert-info"
 				{if $laMention != Null}
@@ -184,32 +185,43 @@
 				{/if}>
 				<strong><i class="fa fa-graduation-cap fa-lg"></i> Mention: {$laMention|default:''}</strong>
 			</div>
+
 			{if isset($remTitu) && ($remTitu != Null)}
-			<table class="table table-condensed">
-				<tr>
-					<thead>
-					<th><h3>Avis du titulaire ou du Conseil de Classe</h3></th>
-					</thead>
-				</tr>
-				<tr>
-					<td>{$remTitu}</td>
-				</tr>
-			</table>
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					Avis du titulaire ou du Conseil de Classe
+				</div>
+				<div class="panel-body">
+					{$remTitu}
+				</div>
+			</div>
 			{/if}
 
 			{if isset($noticeDirection)}
-			<table class="table">
-				<tr>
-					<thead>
-					<th><h3>Informations de la direction et des coordinateurs</h3></th>
-					</thead>
-				</tr>
-				<tr>
-					<td>{$noticeDirection}</td>
-				</tr>
-			</table>
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					Informations de la direction et des coordinateurs
+				</div>
+				<div class="panel-body">
+					{$noticeDirection}
+				</div>
+			</div>
 			{/if}
+
 		</div>
+
+		<div class="col-md-6 col-sm-12">
+
+			{if $noticeParcours != Null}
+			<div class="panel panel-default">
+				<div class="panel-header">
+					Poursuite des études
+				</div>
+				<div class="panel-body">
+					{$noticeParcours}
+				</div>
+			{/if}
+			</div>
 		</div>
 	</div>  <!-- row -->
 

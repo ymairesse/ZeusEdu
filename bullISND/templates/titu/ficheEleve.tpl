@@ -1,6 +1,4 @@
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-
-<div class="container">
+<div class="container-fluid">
 
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
@@ -18,22 +16,22 @@
 			<div class="tab-content">
 
 				<div class="tab-pane active" id="tabs-1">
-					{include file="direction/pad/tabEleve1.inc.tpl"}
+					{include file="titu/pad/tabEleve1.inc.tpl"}
 				</div>
 				<!-- tabs-1 -->
 
 				<div class="tab-pane" id="tabs-2">
-					{include file="direction/pad/tabEleve2.inc.tpl"}
+					{include file="titu/pad/tabEleve2.inc.tpl"}
 				</div>
 				<!-- tabs-2 -->
 
 				<div class="tab-pane" id="tabs-3">
-					{include file="direction/pad/tabEleve3.inc.tpl"}
+					{include file="titu/pad/tabEleve3.inc.tpl"}
 				</div>
 				<!-- tabs-3 -->
 
 				<div class="tab-pane" id="tabs-4">
-					{include file="direction/pad/tabEleve4.inc.tpl"}
+					{include file="titu/pad/tabEleve4.inc.tpl"}
 				</div>
 				<!-- tabs-4 -->
 

@@ -32,11 +32,22 @@
 
 	<button type="submit" class="btn btn-primary btn-sm" id="envoi">OK</button>
 
-	<button type="button"
-		class="btn pull-right {if $mentionsSelect != Null}btn-danger{else}btn-primary{/if}"
-		title="{if $mentionsSelect != Null}Mentions filtrées: {$mentionsSelect|implode:', '}{else}Aucun filtre{/if}"
-		id="filtre">
-		<i class="fa fa-filter"></i> Filtrer{if $mentionsSelect != Null} Période {$periodeSelect} [{$mentionsSelect|implode:', '}]{/if}</button>
+	<div class="btn-group pull-right">
+		<button type="button"
+			class="btn btn-info"
+			title="Sélection de périodes supplémentaires"
+		 	id="plusPeriode">
+			<i class="fa fa-plus"></i> Périodes suppl.
+		</button>
+
+		<button type="button"
+			class="btn pull-right {if $mentionsSelect != Null}btn-danger{else}btn-primary{/if}"
+			title="{if $mentionsSelect != Null}Mentions filtrées: {$mentionsSelect|implode:', '}{else}Aucun filtre{/if}"
+			id="filtre">
+			<i class="fa fa-filter"></i> Filtrer{if $mentionsSelect != Null} Période {$periodeSelect} [{$mentionsSelect|implode:', '}]{/if}
+		</button>
+	</div>
+
 
 	<input type="hidden" name="action" value="{$action}">
 	<input type="hidden" name="mode" value="{$mode}">
@@ -64,6 +75,24 @@ $(document).ready (function() {
 			$.blockUI();
 			}
 			else return false;
+	})
+
+	$('#plusPeriode').click(function(){
+		$.post('inc/delibe/modalAddPeriodes.inc.php', {
+		}, function(resultat){
+			$('#modal').html(resultat);
+			$('#modalAddPeriode').modal('show');
+		})
+	})
+
+	$('#modal').on('click', '#btn-addPeriodes', function(){
+		var formulaire = $('#formAddPeriodes').serialize();
+		$.post('inc/delibe/addPeriodes.inc.php', {
+			formulaire: formulaire
+		}, function(resultat){
+			$('#modalAddPeriode').modal('hide');
+			location.reload();
+		})
 	})
 
 	$('#filtre').click(function(){

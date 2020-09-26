@@ -80,7 +80,7 @@
                 name="texte_{$idProprio}"
                 id="texte_{$idProprio}"
                 rows="20"
-                class="ckeditor form-control"
+                class="summernote form-control"
                 placeholder="Frappez votre texte ici"
                 >{$padsEleve.proprio.$idProprio.texte}</textarea>
         </div>
@@ -92,7 +92,7 @@
                 id="texte_{$id}"
                 data-anscol="{$anScol}"
                 rows="20"
-                class="ckeditor form-control"
+                class="summernote form-control"
                 placeholder="Frappez votre texte ici"
                 autofocus="true"
                 {if $unPad.mode !='rw' } disabled="disabled" {/if}

@@ -35,20 +35,24 @@ switch ($mode) {
             die('get out of here');
         }
         // sélection d'un cours pour lequel il faut initialiser la table des épreuves externes
+        // Sélection du niveau d'étude pour ce cours...
         $smarty->assign('action', $action);
         $smarty->assign('mode', $mode);
         $smarty->assign('listeNiveaux', Ecole::listeNiveaux());
         $smarty->assign('niveau', $niveau);
         $smarty->assign('selecteur', 'selectNiveau');
-
+        // établir la liste de tous les cours possibles pour ce niveau d'étude
         if (($niveau != null)) {
             // liste de tous les cours suivis par des élèves à ce niveau
             $smarty->assign('listeCoursNiveau', $Bulletin->listeCoursSuivisNiveau($niveau));
 
             $smarty->assign('etape', 'enregistrement');
+
             // recherche de tous les coursGrp pour le cours sélectionné	et initialisation de la table pour le cours choisi
             if (isset($cours) && ($etape == 'enregistrement')) {
                 $listeElevesCoursGrp = $Bulletin->elevesCoursGrpDeCours($cours);
+                // initisalisation de la table dans laquelle les profs pourront rapporter les
+                // résultats des épreuves externes
                 $nb = $Bulletin->initEpreuvesExternes($listeElevesCoursGrp, ANNEESCOLAIRE);
                 $smarty->assign('message', array(
                                 'title' => 'Enregistrement',
@@ -498,7 +502,7 @@ switch ($mode) {
             case 'ajouter':
                 if (isset($_POST['listeAcronymes'])) {
                     $listeAcronymes = $_POST['listeAcronymes'];
-                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, 'GT');
+                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, Null);
                     $smarty->assign('message', array(
                                 'title' => 'Ajouts',
                                 'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),

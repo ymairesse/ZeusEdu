@@ -1,5 +1,7 @@
 <?php
 
+// établissement des rapports de compétences
+
 $date = isset($_POST['date']) ? $_POST['date'] : null;
 $signature = isset($_POST['signature']) ? $_POST['signature'] : null;
 $classes = isset($_POST['classes']) ? $_POST['classes'] : null;

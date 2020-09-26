@@ -37,7 +37,8 @@ switch ($mode) {
             $nomEleve = isset($_POST['nomEleve']) ? $_POST['nomEleve'] : null;
             $smarty->assign('nomEleve', $nomEleve);
             $classeArchive = $Ecole->classeArchiveEleve($matricule, $anneeScolaire);
-            $smarty->assign('periodes', $Bulletin->listePeriodes(NBPERIODES));
+            $smarty->assign('periodes', $Bulletin->listePeriodes4anScol($anneeScolaire));
+
             $smarty->assign('classeArchive', $classeArchive);
             $smarty->assign('corpsPage', 'bulletinsArchive');
             }

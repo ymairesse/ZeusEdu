@@ -2,7 +2,7 @@
 
 require INSTALL_DIR.'/fpdf181/fpdf.php';
 require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
-// require INSTALL_DIR.'/inc/classes/class.pdf.php';
+require INSTALL_DIR.'/inc/classes/class.pdf.php';
 require INSTALL_DIR.'/inc/classes/class.pdfHTML.php';
 
 class Bulletin
@@ -25,6 +25,36 @@ class Bulletin
     public function listePeriodes($nbBulletins, $debut = 1)
     {
         return range($debut, $nbBulletins);
+    }
+
+    /**
+     * retourne un array contenant la liste des périodes pour une année scolaire donnée
+     *
+     * @param string $anscol : l'année scolaire sous la forme 'XXXX-YYYY'
+     *
+     * @return array de 1 à nbPpériodes
+     */
+    public function listePeriodes4anScol ($anscol){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT nbPeriodes ';
+        $sql .= 'FROM '.PFX.'bullPeriodes4anscol ';
+        $sql .= 'WHERE anscol = :anscol ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':anscol', $anscol, PDO::PARAM_STR, 9);
+
+        $resultat = $requete->execute();
+
+        $nb = 0;
+        if ($resultat){
+            $ligne = $requete->fetch();
+            $nb = $ligne['nbPeriodes'];
+        }
+        $listePeriodes = range(1, $nb);
+
+        Application::deconnexionPDO($connexion);
+
+        return $listePeriodes;
     }
 
     /**
@@ -89,27 +119,27 @@ class Bulletin
      *
      * @return array : tableau des pondérations prévues pour chaque période, respectivement en formatif et en certificatif
      */
-    public function sommesPonderations($coursGrp)
-    {
-        $listePonderations = current(self::getPonderations($coursGrp));
-        $liste = array();
-        if ($listePonderations != null) {
-            foreach ($listePonderations as $key => $lesPonderations) {
-                foreach ($lesPonderations as $periode => $ponderation) {
-                    if (!(isset($liste[$periode]))) {
-                        $liste[$periode] = array('form' => 0, 'cert' => 0);
-                    }
+	public function sommesPonderations($coursGrp)
+		{
+			$listePonderations = current(self::getPonderations($coursGrp));
+			$liste = array();
+			if ($listePonderations != null) {
+				foreach ($listePonderations as $key => $lesPonderations) {
+					foreach ($lesPonderations as $periode => $ponderation) {
+						if (!(isset($liste[$periode]))) {
+							$liste[$periode] = array('form' => 0, 'cert' => 0);
+						}
 
-                    if (is_numeric($this->sansVirg($ponderation['form'])))
-                        $liste[$periode]['form'] += $ponderation['form'];
-                    if (is_numeric($this->sansVirg($ponderation['cert'])))
-                        $liste[$periode]['cert'] += $ponderation['cert'];
-                }
-            }
-        }
+						if (is_numeric($this->sansVirg($ponderation['form'])))
+							$liste[$periode]['form'] += $ponderation['form'];
+						if (is_numeric($this->sansVirg($ponderation['cert'])))
+							$liste[$periode]['cert'] += $ponderation['cert'];
+					}
+				}
+			}
 
-        return $liste;
-    }
+			return $liste;
+		}
 
     /**
      * introduction d'une pondération vide lors du premier accès
@@ -1233,8 +1263,8 @@ class Bulletin
         $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
 
         $cotesVides = array(
-                    'form' => array('cote' => '', 'max' => ''),
-                    'cert' => array('cote' => '', 'max' => ''),
+                    'form' => array('cote' => Null, 'max' => Null),
+                    'cert' => array('cote' => Null, 'max' => Null),
                     );
         $listeCotes = array();
         $resultat = $requete->execute();
@@ -1334,8 +1364,8 @@ class Bulletin
                 if (($ligne['form'] != '') && ($ligne['maxForm'] != '')) {
                     $listeCotes[$matricule][$coursGrp][$idComp]['form']['cote'] = $this->sansVirg($ligne['form']);
                     $listeCotes[$matricule][$coursGrp][$idComp]['form']['maxForm'] = $this->sansVirg($ligne['maxForm']);
-                    if ($ligne['maxForm'] > 0) {
-                        if (($ligne['form'] / $ligne['maxForm']) < 0.5) {
+                    if (floatval($ligne['maxForm']) > 0) {
+                        if ((floatval($ligne['form']) / floatval($ligne['maxForm'])) < 0.5) {
                             $listeCotes[$matricule][$coursGrp][$idComp]['form']['echec'] = 'echec';
                         }
                     }
@@ -1361,8 +1391,8 @@ class Bulletin
                 if (($ligne['cert'] != '') && ($ligne['maxCert'] != '')) {
                     $listeCotes[$matricule][$coursGrp][$idComp]['cert']['cote'] = $this->sansVirg($ligne['cert']);
                     $listeCotes[$matricule][$coursGrp][$idComp]['cert']['maxCert'] = $this->sansVirg($ligne['maxCert']);
-                    if ($ligne['maxCert'] > 0) {
-                        if (($ligne['cert'] / $ligne['maxCert']) < 0.5) {
+                    if (floatval($ligne['maxCert']) > 0) {
+                        if (floatval($ligne['cert']) / floatval($ligne['maxCert']) < 0.5) {
                             $listeCotes[$matricule][$coursGrp][$idComp]['cert']['echec'] = 'echec';
                         }
                     }
@@ -1449,14 +1479,12 @@ class Bulletin
                 $coteCert = 0;
                 $maxCert = 0;
                 foreach ($lesCompetences as $idComp => $lesCotes) {
-                    $coteForm += floatval($this->sansVirg($lesCotes['form']['cote']));
-
+                    $coteForm += $this->sansVirg(floatval($lesCotes['form']['cote']));
                     if (($lesCotes['form']['cote'] != '') && (is_numeric($this->sansVirg($lesCotes['form']['cote'])))) {
                         $maxForm += $this->sansVirg($lesCotes['form']['maxForm']);
                     }
 
-                    $coteCert += floatval($this->sansVirg($lesCotes['cert']['cote']));
-
+                    $coteCert += $this->sansVirg(floatval($lesCotes['cert']['cote']));
                     if (($lesCotes['cert']['cote'] != '') && (is_numeric($this->sansVirg($lesCotes['cert']['cote'])))) {
                         $maxCert += $this->sansVirg($lesCotes['cert']['maxCert']);
                     }
@@ -1983,8 +2011,6 @@ class Bulletin
                  $sql .= "SET matricule='$matricule', coursGrp='$coursGrp', bulletin='$bulletin', ";
                  $sql .= "situation='$situation', maxSituation = '$maxSituation' ";
                  $sql .= "ON DUPLICATE KEY UPDATE situation='$situation', maxSituation='$maxSituation'";
-                 if ($matricule == 8022)
-                    die($sql);
                  $resultat = $connexion->exec($sql);
              }
          }
@@ -2743,8 +2769,8 @@ class Bulletin
             }
         }
 
-        // on ajoute tous les cours qui ont été ajoutés un jour... (même s'ils ont été supprimés ensuite)
-        $sql = 'SELECT '.PFX.'histo.coursGrp, acronyme, nom, prenom, cours, libelle, nbheures, statut, section, rang ';
+		// on ajoute tous les cours qui ont été ajoutés un jour... (même s'ils ont été supprimés ensuite)
+		$sql = 'SELECT '.PFX.'histo.coursGrp, acronyme, nom, prenom, cours, libelle, nbheures, statut, section, rang ';
         $sql .= 'FROM '.PFX.'bullHistoCours AS histo ';
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON (pc.coursGrp = histo.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs AS profs ON (pc.acronyme = profs.acronyme) ';
@@ -2760,11 +2786,11 @@ class Bulletin
                 $matricule = $ligne['matricule'];
                 $coursGrp = $ligne['coursGrp'];
                 $listeCours[$matricule][$coursGrp] = array(
-                            'coursGrp' => $coursGrp,            'cours' => $ligne['cours'],
-                            'libelle' => $ligne['libelle'],     'nbheures' => $ligne['nbheures'],
-                            'statut' => $ligne['statut'],       'section' => $ligne['section'],
-                            'rang' => $ligne['rang'],           'matricule' => $matricule,
-                            'nom' => $ligne['nom'],             'prenom' => $ligne['prenom'],
+                            'coursGrp' => $coursGrp,                    'cours' => $ligne['cours'],
+                            'libelle' => $ligne['libelle'],            'nbheures' => $ligne['nbheures'],
+                            'statut' => $ligne['statut'],                'section' => $ligne['section'],
+                            'rang' => $ligne['rang'],                'matricule' => $matricule,
+                            'nom' => $ligne['nom'],                    'prenom' => $ligne['prenom'],
                             'acronyme' => $ligne['acronyme'],
                             );
             }
@@ -2885,42 +2911,7 @@ class Bulletin
  *
  * @return array
  */
-    // public function listeDecisions($listeEleves)
-    // {
-    //     if (is_array($listeEleves)) {
-    //         $listeElevesString = implode(',', array_keys($listeEleves));
-    //     } else {
-    //         $listeElevesString = $listeEleves;
-    //     }
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //
-    //     $sql = 'SELECT dp.matricule, periode, user, mailDomain, decision, restriction, notification, mail, adresseMail, ';
-    //     $sql .= "DATE_FORMAT(quand, '%d/%m %H:%i') AS quand, prenom, nom ";
-    //     $sql .= 'FROM '.PFX.'passwd AS dp ';
-    //     $sql .= 'LEFT JOIN '.PFX.'bullDecisions AS dbd ON dbd.matricule = dp.matricule ';
-    //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dp.matricule ';
-    //     $sql .= "WHERE dp.matricule IN ($listeElevesString) ";
-    //     $resultat = $connexion->query($sql);
-    //     $listeDecisions = array();
-    //     if ($resultat) {
-    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
-    //         while ($ligne = $resultat->fetch()) {
-    //             $matricule = $ligne['matricule'];
-    //             // vérifier si l'on peut encore envoyer la décision ou si c'est déjà fait
-    //             $ligne['okEnvoi'] = ($ligne['quand'] == '') ? true : false;
-    //             // l'adresse d'envoi est-elle définie (cas où les parents ont demandé le mail à la place de l'enfant)
-    //             // sinon, l'adresse d'envoi est celle de l'élève
-    //             if ($ligne['mail'] == '') {
-    //                 $ligne['adresseMail'] = $ligne['user'].'@'.$ligne['mailDomain'];
-    //             }
-    //             $listeDecisions[$matricule] = $ligne;
-    //         }
-    //     }
-    //     Application::DeconnexionPDO($connexion);
-    //
-    //     return $listeDecisions;
-    // }
-    public function listeDecisions($listeEleves)
+  public function listeDecisions($listeEleves)
     {
         if (is_array($listeEleves)) {
             $listeElevesString = implode(',', array_keys($listeEleves));
@@ -3448,11 +3439,13 @@ class Bulletin
                 $resultat += $connexion->exec($sql);
             }
         }
+
         foreach ($dataNew as $libelle) {
             $libelle = addslashes($libelle);
             if ($libelle != '') {
                 $sql = 'INSERT INTO '.PFX.'bullCompetences ';
                 $sql .= "SET libelle='$libelle', cours='$cours'";
+
                 $resultat += $connexion->exec($sql);
             }
         }
@@ -3610,6 +3603,9 @@ class Bulletin
                 $ligne['pourcent'] = $pourcent;
                 $attribut = $ligne['attributDelibe'];
                 $coursGrp = $ligne['coursGrp'];
+                // raccourcissement du nom du cours sans l'année (Ex: "5 GT" est supprimé)
+                $coursLong = $ligne['cours'];
+                $ligne['cours'] = ($ligne['cours'] != Null) ? explode(':', $coursLong)[1] : '???';
                 $synthese[$anScolaire][$annee]['resultats'][$bulletin][$coursGrp] = $ligne;
             }
         }
@@ -3626,6 +3622,7 @@ class Bulletin
                             $coursGrp = $details['coursGrp'];
                             if (!isset($listeCours[$coursGrp])) {
                                 $listeCours[$coursGrp] = array(
+                                    // 'cours' => $details['cours'],
                                     'cours' => $details['cours'],
                                     'libelle' => $details['libelle'],
                                     'nbheures' => $details['nbheures'],
@@ -3742,14 +3739,100 @@ class Bulletin
     public function enregistrerRemarque($remarque, $matricule, $bulletin)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $remarque = addslashes(self::corrigeWord($remarque));
-        $sql = 'INSERT INTO '.PFX."bullTitus SET remarque = '$remarque',";
-        $sql .= "matricule ='$matricule', bulletin='$bulletin' ";
-        $sql .= "ON DUPLICATE KEY UPDATE remarque = '$remarque'";
-        $resultat = $connexion->exec($sql);
-        Application::DeconnexionPDO($connexion);
+        $remarque = self::corrigeWord($remarque);
 
-        return $resultat;
+        $sql = 'INSERT INTO '.PFX.'bullTitus SET remarque = :remarque, ';
+        $sql .= 'matricule = :matricule, bulletin = :bulletin ';
+        $sql .= 'ON DUPLICATE KEY UPDATE remarque = :remarque ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+        $requete->bindParam(':remarque', $remarque, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+        if ($nb == 2)
+            $nb = 1; // pour le cas du Update
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * renvoie les informations de remarques sur le parcours scolaire pour un élève
+     * dont on founit le matricule pour l'année d'étude en cours (si précisé)
+     * ou pour toutes les années scolaires
+     *
+     * @param int $matricule
+     * @param int Null | $anScol : année d'étude en cours ou rien
+     *
+     * @return array : pour chaque année scolaire, la notice "parcours"
+     */
+    public function getNoticesParcours($matricule, $annee = Null){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT parcours, annee ';
+        $sql .= 'FROM '.PFX.'bullParcours ';
+        $sql .= 'WHERE matricule = :matricule ';
+        if ($annee != Null) {
+            $sql .= 'AND annee = :annee ';
+            $sql .= 'ORDER BY annee DESC ';
+        }
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        if ($annee != Null) {
+            $requete->bindParam(':annee', $annee, PDO::PARAM_INT);
+        }
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            while ($ligne = $requete->fetch()) {
+                $annee = $ligne['annee'];
+                $liste[$annee] = $ligne['parcours'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * Enregistre la notice de conseil de parcours scolaire $parcours pour l'élève $matricule
+     * dans l'année d'étude $annee
+     *
+     * @param int $matricule
+     * @param string $parcours : texte du conseil
+     * @param int $annee : année d'étude
+     *
+     * @return int : nombre d'enregistrements (0 ou 1)
+     */
+    public function setNoticesParcours($matricule, $annee, $parcours)
+        {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $parcours = self::corrigeWord($parcours);
+
+        $sql = 'INSERT INTO '.PFX.'bullParcours ';
+        $sql .= 'SET matricule = :matricule, annee = :annee, parcours = :parcours ';
+        $sql .= 'ON DUPLICATE KEY update parcours = :parcours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':annee', $annee, PDO::PARAM_INT);
+        $requete->bindParam(':parcours', $parcours, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+        if ($nb == 2)
+            $nb = 1; // pour le cas du UPDATE
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
     }
 
     /**
@@ -3835,20 +3918,20 @@ class Bulletin
                 case 10: $mention = 'E'; break;
                 case 9: $mention = 'E'; break;
                 case 8: if ($moyenne >= 85) {
-     $mention = 'TB+';
- } else {
-     $mention = 'TB';
- } break;
+                     $mention = 'TB+';
+                 } else {
+                     $mention = 'TB';
+                 } break;
                 case 7: if ($moyenne >= 75) {
-     $mention = 'B+';
- } else {
-     $mention = 'B';
- } break;
+                     $mention = 'B+';
+                 } else {
+                     $mention = 'B';
+                 } break;
                 case 6: if ($moyenne >= 65) {
-     $mention = 'AB';
- } else {
-     $mention = 'S';
- } break;
+                     $mention = 'AB';
+                 } else {
+                     $mention = 'S';
+                 } break;
                 case 5: $mention = 'F'; break;
                 default: $mention = 'I';
                 }
@@ -3893,9 +3976,9 @@ class Bulletin
         return $listeSituations100;
     }
 
-    /**
+     /**
      * retourne les moyennes par élèves pour la liste des situations par cours
-     * passée en argument
+     * passée en argument (getSituations100 juste au-dessus)
      *
      * @param array $listeSituations100
      *
@@ -3908,7 +3991,8 @@ class Bulletin
             $somme = 0;
             foreach ($data as $cours => $detailsCours){
                 $sit100 = $detailsCours['sit100'];
-                $somme += $sit100;
+                if (is_numeric($sit100))
+                    $somme += $sit100;
                 $n++;
             }
             $moyenne = ($n > 0) ? round($somme / $n, 1) : '-';
@@ -3918,6 +4002,7 @@ class Bulletin
 
         return $listeMoyennes;
     }
+
 
     /*
      *
@@ -4004,6 +4089,12 @@ class Bulletin
                         $ligne['echec'] = false;
                     }
                 }
+
+                //if (($ligne['max'] > 0) && ($ligne['cote'] != '') && (!in_array($ligne['cote'], explode(',', COTEABS)))) {
+                    //$ligne['echec'] = ($ligne['cote'] / $ligne['max']) < 0.5;
+                //} else {
+                    //$ligne['echec'] = false;
+                //}
                 $liste[$coursGrp][$bulletin][] = $ligne;
             }
         }
@@ -4067,29 +4158,43 @@ class Bulletin
 
         $resultat = $requete->execute();
         $listeCotes = array();
+
+        $texteLicite = array_merge(explode(',', COTEABS), explode(',', COTENULLE), explode(',', MENTIONSTEXTE));
+        $texteNonEchec = array_merge(explode(',', COTEABS), explode(',', MENTIONSTEXTE));
+
         if ($resultat) {
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $idCarnet = $ligne['idCarnet'];
-                $cote = $ligne['cote'];
-                $trimCote = trim($cote, '!');
+                $cote = strtoupper($ligne['cote']);
+                $trimCote = strtoupper($this->sansVirg(trim($cote, '!')));
                 $remarque = $ligne['remarque'];
                 $neutralise = $ligne['neutralise'];
-                $max = $ligne['max'];
+                $max = strtoupper(trim($this->sansVirg($ligne['max'])));
 
+                // ------------------------------------------------------------
+                // est-ce une erreur d'encodage?
                 if (is_numeric($this->sansVirg($trimCote))) {
                     $erreur = (($max < $trimCote) || ($trimCote < 0));
-                } else {
-                    if (in_array($cote, explode(',', COTEABS)) || in_array($cote, explode(',', COTENULLE)) || $trimCote == '')
-                        $erreur = false;
-                        else $erreur = true;
-                }
-                if (($max > 0) && ($cote != '') && (!in_array($cote, explode(',', COTEABS)))) {
-                    $echec = $this->estCoteNulle($cote) || ($cote / $max) < 0.5;
-                } else {
-                    $echec = false;
-                }
+                    } else {
+                        if (in_array($trimCote, $texteLicite) || $trimCote == '')
+                            $erreur = false;
+                            else $erreur = true;
+                    }
+                // ------------------------------------------------------------
+                // est-ce une cote en échec?
+                if (is_numeric($this->sansVirg($trimCote)) && is_numeric($this->sansVirg($max))) {
+                    if (($max > 0) && ($trimCote != '')){
+                        $echec = $this->estCoteNulle($trimCote) || ($trimCote / $max) < 0.5;
+                        }
+                        else $echec = false;
+                    }
+                    else {
+                        $echec = (!in_array($trimCote, $texteNonEchec));
+                    }
+                // ------------------------------------------------------------
+
                 $listeCotes[$matricule][$idCarnet] = array(
                                     'cote' => $cote,
                                     'remarque' => $remarque,
@@ -4129,7 +4234,7 @@ class Bulletin
       * retourne la liste des moyennes des cotes correspondant à la liste des cotes
       * passée en paramètre.
       *
-      * @param $listeCotesCarnet
+      * @param array $listeCotesCarnet
       *
       * @return array
       */
@@ -4137,15 +4242,17 @@ class Bulletin
      {
          $moyennes = array();
          $sommes = array();
+         $texteLicite = array_merge(explode(',', COTEABS), explode(',', MENTIONSTEXTE));
          if ($listeCotesCarnet) {
              foreach ($listeCotesCarnet as $matricule => $listeCotes) {
                  foreach ($listeCotes as $noCarnet => $data) {
+                     $data['cote'] = strtoupper($data['cote']);
                      // on additionne pour la moyenne
-                     // conversion d'une cote nulle en zéro
+					 // conversion d'une cote nulle en zéro
                      if ($this->estCoteNulle($data['cote']))
                         $data['cote'] = 0;
-                    // s'il y a une cote et que ce n'est pas une mention d'absence (constante COTEABS)
-                    if (($data['cote'] != '') && (!in_array($data['cote'], explode(',', COTEABS)))) {
+                    // s'il y a une cote et que ce n'est pas une mention d'absence (COTEABS) ou une (MENTIONTEXTUELLE)
+                    if (($data['cote'] != '') && (!in_array($data['cote'], $texteLicite))) {
                         if (isset($sommes[$noCarnet])) {
                             $sommes[$noCarnet]['total'] += $data['cote'];
                             ++$sommes[$noCarnet]['nbCotes'];
@@ -4302,18 +4409,19 @@ class Bulletin
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'bullCarnetEleves ';
-        $sql .= 'SET idCarnet=:idCarnet, matricule=:matricule, cote=:cote ';
-        $sql .= 'ON DUPLICATE KEY UPDATE cote=:cote ';
+        $sql .= 'SET idCarnet = :idCarnet, matricule = :matricule, cote = :cote ';
+        $sql .= 'ON DUPLICATE KEY UPDATE cote = :cote ';
         $requete = $connexion->prepare($sql);
         $nbResultats = 0;
         $listeErreurs = array();
-        $texteLicite = array_merge(explode(',', COTEABS), explode(',', COTENULLE));
+        $texteLicite = array_merge(explode(',', COTEABS), explode(',', COTENULLE), explode(',', MENTIONSTEXTE));
 
         foreach ($post as $champ => $value) {
             // on s'intéresse aux champs dont le nom commence par 'cote'
             if (preg_match('/^cote/', $champ)) {
                 // supprimer les blancs, la virgule et l'éventuel point d'exclamation
-                $value = trim(strtolower($this->sansVirg(str_replace(' ', '', $value))), '!');
+                $value = trim(strtoupper($this->sansVirg(str_replace(' ', '', $value))), '!');
+
                 $data = explode('_', $champ);
                 $idCarnet = explode('-', $data[0]);
                 $idCarnet = $idCarnet[1];
@@ -4339,8 +4447,11 @@ class Bulletin
                     $listeErreurs[$idCarnet][$matricule] = true;
                 }
 
-                $data = array(':idCarnet' => $idCarnet, ':matricule' => $matricule, ':cote' => $value);
-                $nbResultats += $requete->execute($data);
+                $requete->bindParam(':idCarnet', $idCarnet, PDO::PARAM_INT);
+                $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                $requete->bindParam(':cote', $value, PDO::PARAM_STR, 6);
+
+                $nbResultats += $requete->execute();
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -4580,7 +4691,13 @@ class Bulletin
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'TRUNCATE TABLE '.PFX.'bullCommentProfs ';
-        $resultat = $connexion->exec($sql);
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+
+        $sql = 'TRUNCATE TABLE '.PFX.'didac_bullParcours ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+
         Application::DeconnexionPDO($connexion);
         if ($resultat) {
             return true;
@@ -4696,8 +4813,7 @@ class Bulletin
     /**
      * Archivage vers la table bullSitArchives des cotes de situation des élèves pour l'année scolaire indiquée.
      *
-     * @param $anneeScolaire
-     * @param $listeEleves
+     * @param string $anneeScolaire
      *
      * @return true : si l'opération s'est bien passée
      */
@@ -4717,7 +4833,7 @@ class Bulletin
     /**
      * vide la table des situations après archivage.
      *
-     * @param
+     * @param void
      *
      * @return true si tout s'est bien passé
      */
@@ -4735,7 +4851,7 @@ class Bulletin
     /**
      * vide les tables profs/cours et eleves/cours en début d'année scolaire.
      *
-     * @param void()
+     * @param void
      *
      * @return true si tout s'est bien passé
      */
@@ -4755,7 +4871,7 @@ class Bulletin
     /**
      * Archivage vers la table bullExterneArchives des cotes d'épreuves externes de la table bullEprExterne.
      *
-     * @param void()
+     * @param void
      *
      * @return true : si l'opération s'est bien passée
      */
@@ -4774,7 +4890,7 @@ class Bulletin
     /**
      * vide la table des épreuves externes après archivage.
      *
-     * @param void()
+     * @param void
      *
      * @return true si tout s'est bien passé
      */
@@ -4792,7 +4908,7 @@ class Bulletin
     /**
      * effacement de tous les historiques des mouvements de cours.
      *
-     * @param void()
+     * @param void
      *
      * @return integer: nombre de suppressions
      */
@@ -4809,7 +4925,7 @@ class Bulletin
     /**
      * retourne la liste des écoles fréquentées anciennement par les élèves du niveau indiqué.
      *
-     * @param $niveau
+     * @param int $niveau
      *
      * @return array
      */
@@ -4835,11 +4951,12 @@ class Bulletin
         return $listeEcoles;
     }
 
-    /*
-     * function ecole
-     * @param $identifiant
-     *
+    /**
      * retourne le nom de l'école dont on fournit l'identifiant
+     *
+     * @param string $identifiant
+     *
+     * @return string
      * */
     public function ecole($identifiant)
     {
@@ -4860,8 +4977,8 @@ class Bulletin
     /**
      * liste simple de tous les élèves d'un niveau provenant d'une école.
      *
-     * @param $niveau : niveau d'étude
-     * @param $ecole: identifiant de l'école d'origine de l'élève
+     * @param int $niveau : niveau d'étude
+     * @param string $ecole: identifiant de l'école d'origine de l'élève
      *
      * @return array
      */
@@ -4892,8 +5009,8 @@ class Bulletin
      * retourne la liste des colonnes de cotes à additionner
      * en séparant par compétence et form ou cert.
      *
-     * @param coursGrp
-     * @param bulletin
+     * @param string  $coursGrp
+     * @param int $bulletin
      *
      * @return array
      */
@@ -4903,7 +5020,7 @@ class Bulletin
         $sql = 'SELECT idCarnet, idComp, formCert, max, '.PFX.'bullCompetences.libelle ';
         $sql .= 'FROM '.PFX.'bullCarnetCotes ';
         $sql .= 'JOIN '.PFX.'bullCompetences ON ('.PFX.'bullCompetences.id = '.PFX.'bullCarnetCotes.idComp) ';
-        $sql .= "WHERE coursGrp = '$coursGrp' AND bulletin = $bulletin AND neutralise = 0";
+        $sql .= "WHERE coursGrp = '$coursGrp' AND bulletin = $bulletin AND neutralise = 0 ";
 
         $resultat = $connexion->query($sql);
         $listeEvaluations = array();
@@ -4926,8 +5043,8 @@ class Bulletin
      * retourne l'entête de la liste des colonnes de cotes à additionner
      * en séparant par compétence et form ou cert.
      *
-     * @param coursGrp
-     * @param bulletin
+     * @param string $coursGrp
+     * @param int $bulletin
      *
      * @return array
      */
@@ -4960,7 +5077,7 @@ class Bulletin
      * renvoie un tableau de toutes les cotes dont les entêtes sonf passées
      * dans $listeColonnes.
      *
-     * @param $listeColonnes
+     * @param array $listeColonnes
      *
      * @return array
      */
@@ -4994,7 +5111,7 @@ class Bulletin
      * vérifie qu'une cote passée en argument vaut pour "0"
      * la liste des cotes valant pour "0" se trouve dans la constante COTENULLE.
      *
-     * @param $cote
+     * @param string $cote
      *
      * @return bool
      */
@@ -5008,13 +5125,13 @@ class Bulletin
      * il faut qu'elle soit numérique et non vide
      * ou qu'elle soit équivalent à un "0" (cote nulle).
      *
-     * @param $cote
+     * @param  string $cote
      *
      * @return bool
      * */
     private function estLicite($cote)
     {
-        return (is_numeric($cote) && ($cote != '')) || ($this->estCoteNulle($cote));
+        return (is_numeric($cote) && ($cote != '')) || (self::estCoteNulle($cote));
     }
 
     /**
@@ -5038,7 +5155,7 @@ class Bulletin
                         $cote = $this->sansVirg($uneCote['cote']);
                         $max = $this->sansVirg($uneCote['max']);
                         if ($this->estLicite($cote)) {
-                            if ($this->estCoteNulle($cote))
+							if ($this->estCoteNulle($cote))
                                 $cote = 0;
                             if (isset($listeSommes[$matricule][$unType][$idComp]['cote'])) {
                                 $listeSommes[$matricule][$unType][$idComp]['cote'] += $cote;
@@ -5062,8 +5179,8 @@ class Bulletin
     /**
      * retourne la liste des poids attribués à chaque compétence, dans le bulletin.
      *
-     * @param coursGrp
-     * @param bulletin
+     * @param string $coursGrp
+     * @param int $bulletin
      *
      * @return array
      */
@@ -5090,7 +5207,7 @@ class Bulletin
     /**
      * retourne les cotes calculées prêtes pour le bulletin depuis le carnet de cotes.
      *
-     * @param $listeCotes
+     * @param $sommesBrutesCotes
      * @param $listePoids
      *
      * @return array
@@ -5438,50 +5555,59 @@ class Bulletin
         return $resultat;
     }
 
-        /**
-         * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle.
-         *
-         * @param $post
-         *
-         * @return int : normalement, 1
-         */
-        public function enregistrerDecision($post)
-        {
-            $matricule = $post['matricule'];
-            $decision = $post['decision'];
-            $periode = $post['bulletin'];
-            if ($decision == 'Restriction') {
-                $restriction = $post['restriction'];
-            } else {
-                $restriction = '';
-            }
-            $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
-            $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
-            $mailEleve = $post['mailEleve'];
-            // il se peut que l'adresse mail d'envoi soit différente de l'adresse mail élève
-            $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'INSERT INTO '.PFX.'bullDecisions ';
-            $sql .= 'SET matricule=:matricule, decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
-            $sql .= 'adresseMail=:adresseMail, periode=:periode ';
-            $sql .= 'ON DUPLICATE KEY UPDATE ';
-            $sql .= 'decision=:decision, restriction=:restriction, mail=:mail, notification=:notification, ';
-            $sql .= 'adresseMail=:adresseMail, periode=:periode ';
+    /**
+     * enregistrement de la décision du Conseil de Classe provenant de la feuille de délibé individuelle.
+     *
+     * @param $post
+     *
+     * @return int : normalement, 1
+     */
+     public function enregistrerDecision($post)
+     {
+         $matricule = $post['matricule'];
+         $decision = ($post['decision'] == '') ? Null : $post['decision'];
 
-            $requete = $connexion->prepare($sql);
-            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-            $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 30);
-            $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
-            $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
-            $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
-            $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
-            $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+         if ($decision == 'Restriction') {
+             $restriction = $post['restriction'];
+         } else {
+             $restriction = '';
+         }
+         if ($decision != Null) {
+             $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
+             $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
+             }
+             else {
+                 $mail = 0;
+                 $notification = 0;
+             }
 
-            $resultat = $requete->execute();
-            Application::DeconnexionPDO($connexion);
+         $mailEleve = $post['mailEleve'];
 
-            return $resultat;
-        }
+         $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
+
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'INSERT INTO '.PFX.'bullDecisions ';
+         $sql .= 'SET matricule = :matricule, decision = :decision, restriction = :restriction, ';
+         $sql .= 'mail = :mail, notification = :notification, ';
+         $sql .= 'adresseMail = :adresseMail ';
+         $sql .= 'ON DUPLICATE KEY UPDATE ';
+         $sql .= 'decision = :decision, restriction = :restriction, mail = :mail, notification = :notification, ';
+         $sql .= 'adresseMail = :adresseMail ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 20);
+         $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
+         $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
+         $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
+         $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
+
+         $resultat = $requete->execute();
+
+         Application::DeconnexionPDO($connexion);
+
+         return $resultat;
+     }
 
     /**
      * retourne la notice "coordinateurs" pour le bulletin donné au niveau donné.
@@ -5511,26 +5637,32 @@ class Bulletin
     /**
      * enregistrement de la notice "coordinateurs" pour un bulletin et un niveau donné.
      *
-     * @param $annee
-     * @param $bulletin
-     * @param $notice
+     * @param int $annee
+     * @param int $noBulletin
+     * @param string $notice
      *
-     * @return integer: nombre d'enregistrements
+     * @return integer: nombre d'enregistrements 0 ou 1
      */
-    public function saveNoticeCoordinateurs($annee, $bulletin, $remarque)
+    public function saveNoticeCoordinateurs($annee, $noBulletin, $remarque)
     {
-        if ($bulletin && $annee) {
+        if ($noBulletin && $annee) {
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'INSERT INTO '.PFX.'bullNotesDirection ';
-            $sql .= 'SET bulletin=:bulletin, annee=:annee, remarque=:remarque ';
-            $sql .= 'ON DUPLICATE KEY UPDATE remarque=:remarque ';
+            $sql .= 'SET bulletin = :noBulletin, annee = :annee, remarque = :remarque ';
+            $sql .= 'ON DUPLICATE KEY UPDATE remarque = :remarque ';
             $requete = $connexion->prepare($sql);
-            $data = array(':bulletin' => $bulletin, ':annee' => $annee, ':remarque' => $remarque);
-            $resultat = $requete->execute($data);
+
+            $requete->bindParam(':annee', $annee, PDO::PARAM_INT);
+            $requete->bindParam(':noBulletin', $noBulletin, PDO::PARAM_INT);
+            $requete->bindParam(':remarque', $remarque, PDO::PARAM_STR);
+
+            $resultat = $requete->execute();
+            // si update => 2 modifications...
+            $nb = $requete->rowCount() == 2 ? 1 : 0;
 
             Application::DeconnexionPDO($connexion);
 
-            return $resultat;
+            return $nb;
         }
     }
 
@@ -5579,6 +5711,7 @@ class Bulletin
 
         $requete->bindParam(':annee', $annee, PDO::PARAM_STR,9);
         $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
         $resultat = $requete->execute();
         $listeEleves = array();
         if ($resultat) {
@@ -5724,12 +5857,10 @@ class Bulletin
 
          $resultat = $connexion->query($sql);
          $listeCotes = array();
-         $n = 0;
          while ($ligne = $resultat->fetch()) {
              $matricule = $ligne['matricule'];
              $cours = $ligne['cours'];
              $idComp = $ligne['idComp'];
-             // Application::afficher(array($matricule, $cours, $idComp));
              $form = isset($ligne['form']) ? $this->sansVirg(trim($ligne['form'])) : null;
              $maxForm = isset($ligne['maxForm']) ? $this->sansVirg(trim($ligne['maxForm'])) : null;
              $cert = isset($ligne['cert']) ? $this->sansVirg(trim($ligne['cert'])) : null;
@@ -5747,6 +5878,7 @@ class Bulletin
                      $listeCotes[$matricule][$cours][$idComp]['max'] = $maxForm;
                  }
              }
+
              if (($cert != Null) && (is_numeric($cert))) {
                  if (isset($listeCotes[$matricule][$cours][$idComp]['cote'])) {
                      $listeCotes[$matricule][$cours][$idComp]['cote'] += $cert;
@@ -5759,7 +5891,6 @@ class Bulletin
                      $listeCotes[$matricule][$cours][$idComp]['max'] = $maxCert;
                  }
              }
-
          }
          Application::DeconnexionPDO($connexion);
 
@@ -7706,8 +7837,7 @@ class Bulletin
             }
 
         }
-
-        Application::deconnexionPDO($connexion);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 
         return $liste;
         }
@@ -7791,5 +7921,4 @@ class Bulletin
 
             return $liste;
         }
-
 }

@@ -39,6 +39,7 @@ if ($typeDoc == 'pia') {
 $listeCours = $Ecole->listeCoursClasse($classe);
 $listeCompetences = $Bulletin->listeCompetencesListeCours($listeCours);
 $sommeCotes = $Bulletin->sommeToutesCotes($listeEleves, $listeCours, $listeCompetences);
+
 $listeAcquis = $Bulletin->listeAcquis($sommeCotes);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -63,8 +64,10 @@ $smarty->assign('ECOLE', ECOLE);
 $smarty->assign('ADRESSE', ADRESSE);
 $smarty->assign('VILLE', VILLE);
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new HTML2PDF('P', 'A4', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 foreach ($listeEleves as $matricule => $unEleve) {
     $smarty->assign('matricule', $matricule);

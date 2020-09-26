@@ -18,7 +18,7 @@ class ecole
     /**
      * retourne une liste des profs ou des membres du personnel.
      *
-     * @param bool $donneCours : si "false", demande la liste de tous les membres du personnel; si "true", demande seulement les enseignants
+     * @param $donneCours boolean  si "false", demande la liste de tous les membres du personnel; si "true", demande seulement les enseignants
      *
      * @return array liste de tous les profs de l'école
      */
@@ -337,7 +337,6 @@ class ecole
         if ($sections) {
             $sections = "'".implode("','", $sections)."'";
         }
-
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT DISTINCT groupe ';
         $sql .= 'FROM '.PFX.'eleves ';
@@ -743,7 +742,7 @@ class ecole
     public function listeElevesCours($coursGrp, $tri = null, $parti = false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT '.PFX.'elevesCours.matricule, nom, prenom, classe, groupe, user, mailDomain ';
+        $sql = 'SELECT '.PFX.'elevesCours.matricule, nom, prenom, classe, user, mailDomain ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'eleves.matricule = '.PFX.'elevesCours.matricule) ';
         $sql .= 'LEFT JOIN '.PFX.'passwd ON ('.PFX.'eleves.matricule = '.PFX.'passwd.matricule) ';
@@ -770,7 +769,6 @@ class ecole
                         'nom' => $ligne['nom'],
                         'prenom' => $ligne['prenom'],
                         'classe' => $ligne['classe'],
-                        'groupe' => $ligne['groupe'],
                         'mail' => $mail,
                         'photo' => self::photo($matricule),
                     );
@@ -861,6 +859,7 @@ class ecole
          return $liste;
      }
 
+
      /**
       * renvoie la liste des élèves affiliés à un groupe donné
       *
@@ -934,6 +933,7 @@ class ecole
         } else {
             $listeCoursGrpString = "'".$listeCoursGrp."'";
         }
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT coursGrp, nom, prenom, sexe, '.PFX.'profsCours.acronyme ';
         $sql .= 'FROM '.PFX.'profsCours ';
@@ -976,7 +976,242 @@ class ecole
     }
 
     /**
-     * retourne la liste de tous les cours qui se donnent dans une coursGrp
+     * renvoie la liste des profs associés à un $coursGrp donné
+     *
+     * @param string $coursGrp
+     *
+     * @return array
+     */
+    public function getListeProfs4coursGrp($coursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT coursGrp, nom, prenom, sexe, pc.acronyme ';
+        $sql .= 'FROM '.PFX.'profsCours AS pc ';
+        $sql .= 'JOIN '.PFX.'profs AS profs ON (pc.acronyme = profs.acronyme) ';
+        $sql .= 'WHERE coursGrp = :coursGrp ';
+        $sql .= 'ORDER BY nom, prenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $acronyme = $ligne['acronyme'];
+                $ligne['initiale'] = mb_substr($ligne['prenom'], 0, 1, 'UTF-8').'.';
+                $ligne['formule'] = ($ligne['sexe'] == 'M') ? 'M. ' : 'Mme';
+                $liste[$acronyme] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des élèves associés à un $coursGrp donné
+     *
+     * @param string $coursGrp
+     *
+     * @return array
+     */
+    public function getListeEleves4coursGrp($coursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT coursGrp, ec.matricule, nom, prenom, groupe ';
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON (ec.matricule = de.matricule) ';
+        $sql .= 'WHERE coursGrp = :coursGrp ';
+        $sql .= 'ORDER BY groupe, nom, prenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * Recherche la liste des coursGrp de la table didac_elevesCours pour un cours donné
+     *
+     * @param string $cours
+     *
+     * @return array
+     */
+    public function getListeCoursGrp4elevesCours($cours){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // recherche de la liste des cours basée sur la table des élèves/cours
+        $sql = 'SELECT DISTINCT coursGrp,  libelle, nbheures, sc.cadre, statut ';
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'JOIN '.PFX.'cours AS cours ON SUBSTR(ec.coursGrp, 1, LOCATE("-", ec.coursGrp)-1) = cours.cours ';
+        $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
+        $sql .= 'WHERE SUBSTR(ec.coursGrp, 1, LOCATE("-", ec.coursGrp)-1) LIKE :cours ';
+        $sql .= 'ORDER BY coursGrp ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 15);
+
+        $listeCoursGrp = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $listeCoursGrp[$coursGrp] = $ligne;
+                }
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $listeCoursGrp;
+        }
+
+    /**
+     * recherche la liste des coursGrp de la table didac_profsCours pour un cours donné
+     *
+     * @param string $cours
+     *
+     * @return array
+     */
+    public function getListeCoursGrp4profsCours($cours){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT coursGrp, libelle, nbheures, cours.cadre, statut ';
+        $sql .= 'FROM '.PFX.'profsCours AS pc ';
+        $sql .= 'JOIN '.PFX.'cours AS cours ON cours.cours = SUBSTR(pc.coursGrp, 1, LOCATE("-", pc.coursGrp)-1) ';
+        $sql .= 'JOIN '.PFX.'statutCours AS sc ON sc.cadre = cours.cadre ';
+        $sql .= 'WHERE cours = :cours ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 15);
+
+        $listeCoursGrp = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $listeCoursGrp[$coursGrp] = $ligne;
+                }
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $listeCoursGrp;
+    }
+
+    /**
+     * renvoie le satut de virtualité pour la liste des coursGrp passés en argument
+     *
+     * @param array $listeCoursGrp
+     *
+     * @return array
+     */
+    public function listeVirtualCoursGrp($listeCoursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
+        $sql = 'SELECT coursGrp, virtuel ';
+        $sql .= 'FROM '.PFX.'profsCours ';
+        $sql .= 'WHERE coursGrp IN ('.$listeCoursGrpString.') ';
+        $sql .= 'ORDER BY coursGrp ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $coursGrp = $ligne['coursGrp'];
+                $liste[$coursGrp] = $ligne['virtuel'];
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des profs pour la liste des coursGrp fournie
+     *
+     * @param array $listeCoursGrp
+     *
+     * @return array
+     */
+    public function listeProfsCoursGrp4cours($listeCoursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
+        $sql = 'SELECT coursGrp, pc.acronyme, sexe, nom, prenom ';
+        $sql .= 'FROM '.PFX.'profsCours AS pc ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = pc.acronyme ';
+        $sql .= 'WHERE coursGrp IN ('.$listeCoursGrpString.') ';
+        $sql .= 'ORDER BY coursGrp ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $coursGrp = $ligne['coursGrp'];
+                $acronyme = $ligne['acronyme'];
+                $liste[$coursGrp][$acronyme] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des élèves pour la liste des $coursGrp fournie
+     *
+     * @param array $listeCoursGrp
+     *
+     * @return array
+     */
+    public function listeElevesCoursGrp4cours($listeCoursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $listeCoursGrpString = "'".implode("','", array_keys($listeCoursGrp))."'";
+        $sql = 'SELECT coursGrp, ec.matricule, groupe, nom, prenom ';
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'LEFT JOIN didac_eleves AS de ON de.matricule = ec.matricule ';
+        $sql .= 'WHERE coursGrp IN ('.$listeCoursGrpString.') ';
+        $sql .= 'ORDER BY coursGrp, nom, prenom ';
+
+        $requete = $connexion->prepare($sql);
+
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $coursGrp = $ligne['coursGrp'];
+                $matricule = $ligne['matricule'];
+                $liste[$coursGrp][$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * retourne la liste de tous les cours qui se donnent dans une classe
      * chaque ligne contient
      *  - le cours
      *  - le coursGrp
@@ -1039,7 +1274,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'cours ON ('.PFX."cours.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1 )) ";
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
-        $sql .= 'ORDER BY nbheures DESC, statut, cours ';
+        $sql .= 'ORDER BY nbheures DESC, statut, coursGrp ';
         $resultat = $connexion->query($sql);
         $listeCours = array();
         if ($resultat) {
@@ -1054,6 +1289,61 @@ class ecole
 
         return $listeCours;
     }
+
+        /**
+     * renvoie la liste des matières suivies par un élève dont on fournit
+     * la liste des cours
+     *
+     * @param array $listeCours
+     *
+     * @return array
+     */
+    public function getListeMatieresEleve($listeCours){
+        $listeMatieres = array();
+        foreach ($listeCours as $unCours) {
+            $matiere = explode('-', $unCours)[0];
+            $listeMatieres[] = $matiere;
+        }
+        return $listeMatieres;
+    }
+
+    /**
+     * retourne la vraie liste des coursGrp (la procédure précédente renvoie les matières et pas les cours)
+     * pour un groupe d'élèves dont on fournit la liste des matricules
+     *
+     * @param array $listeEleves
+     *
+     * @return array : la liste des coursGrp
+     */
+    public function listeRealCoursGrpEleves($listeEleves) {
+		if (is_array($listeEleves)) {
+            $listeElevesString = implode(',', array_keys($listeEleves));
+        } else {
+            $listeElevesString = $listeEleves;
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT coursGrp, statut, libelle, nbheures ';
+        $sql .= 'FROM '.PFX.'elevesCours AS ec ';
+        $sql .= 'JOIN '.PFX.'cours AS dc ON dc.cours = SUBSTR(ec.coursGrp, 1, LOCATE("-",ec.coursGrp)-1 ) ';
+        $sql .= 'JOIN '.PFX.'statutCours as statut ON (statut.cadre = dc.cadre) ';
+        $sql .= 'WHERE matricule IN ('.$listeElevesString.') ';
+        $sql .= 'ORDER BY nbheures DESC, statut, cours ';
+        $requete = $connexion->prepare($sql);
+
+        $listeCoursGrp = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $listeCoursGrp[$coursGrp] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeCoursGrp;
+		}
+
 
     /**
      * retourne la liste des abréviations des cours (Ex: 5 GT:SC3-02 devient SC3) dont on fournit la liste
@@ -1095,21 +1385,19 @@ class ecole
         $sql .= 'JOIN '.PFX.'profsCours ON ('.PFX.'profsCours.coursGrp = '.PFX.'elevesCours.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ( '.PFX.'statutCours.cadre = '.PFX.'cours.cadre ) ';
-        $sql .= "WHERE groupe LIKE '$classe' ";
-        $sql .= 'ORDER BY statut DESC, nbheures DESC, libelle';
+        $sql .= "WHERE groupe LIKE '$classe' AND virtuel != true ";
+        $sql .= 'ORDER BY statut DESC, nbheures DESC, libelle ';
 
         $resultat = $connexion->query($sql);
         $liste = array();
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
-                if ($ligne['virtuel'] == 0) {
-                    $cours = $ligne['cours'];
-                    $liste[$cours]['cours'] = array('nbheures' => $ligne['nbheures'], 'libelle' => $ligne['libelle'], 'statut' => $ligne['statut']);
-                    $coursGrp = $ligne['coursGrp'];
-                    $acronyme = $ligne['acronyme'];
-                    $liste[$cours][$coursGrp]['profs'][$acronyme] = $ligne['nom'].' '.$ligne['prenom'];
-                }
+                $cours = $ligne['cours'];
+                $liste[$cours]['cours'] = array('nbheures' => $ligne['nbheures'], 'libelle' => $ligne['libelle'], 'statut' => $ligne['statut']);
+                $coursGrp = $ligne['coursGrp'];
+                $acronyme = $ligne['acronyme'];
+                $liste[$cours][$coursGrp]['profs'][$acronyme] = $ligne['nom'].' '.$ligne['prenom'];
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -1250,7 +1538,7 @@ class ecole
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, rang, libelle, nbheures, '.PFX.'statutCours.statut, ';
-        $sql .= PFX.'profs.acronyme, '.PFX.'profs.nom, '.PFX.'profs.prenom, virtuel ';
+        $sql .= PFX.'profs.acronyme, '.PFX.'profs.nom, '.PFX.'profs.prenom ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'eleves ON ('.PFX.'elevesCours.matricule = '.PFX.'eleves.matricule) ';
         $sql .= 'JOIN '.PFX.'cours ON ('.PFX.'cours.cours = SUBSTR('.PFX."elevesCours.coursGrp, 1,LOCATE('-',coursGrp)-1)) ";
@@ -1258,9 +1546,10 @@ class ecole
         $sql .= 'JOIN '.PFX.'profs ON ('.PFX.'profs.acronyme = '.PFX.'profsCours.acronyme) ';
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= 'WHERE groupe = :classe ';
-        if ($virtuel == false)
-            $sql .= 'AND virtuel = false ';
+        if ($virtuel == true)
+			$sql .= 'AND virtuel = false ';
         $sql .= 'ORDER BY rang, nbheures DESC, libelle';
+
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
@@ -1572,6 +1861,7 @@ class ecole
          return strtolower($passwd);
      }
 
+
      /**
       * supprime le mot de passe d'un élève dont on fournit la matricule
       *
@@ -1610,8 +1900,7 @@ class ecole
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-        $requete->bindParam(':passwd', $passwd, PDO::PARAM_STR, 20);
-        $requete->bindParam(':md5pwd', $md5pwd, PDO::PARAM_STR, 40);
+        $requete->bindParam(':md5pwd', $md5pwd, PDO::PARAM_INT);
 
         $resultat = $requete->execute();
 
@@ -1619,6 +1908,7 @@ class ecole
 
         return $passwd;
      }
+
 
     /**
      * création d'un nom d'utilisateur pour un élève dont on fournit les infos personnelles.
@@ -1670,8 +1960,8 @@ class ecole
         $sql .= 'ON DUPLICATE KEY UPDATE ';
         $sql .= 'passwd=:passwd, md5pwd=:md5pwd ';
         $requete = $connexion->prepare($sql);
-
         $resultat = 0;
+
         foreach ($listeElevesSansPasswd as $matricule => $unEleve) {
             $user = $this->userNameEleve($unEleve['nom'], $unEleve['prenom'], $matricule);
             $passwd = $this->randomPasswdEleve($longueur);
@@ -2203,33 +2493,33 @@ class ecole
     }
 
     /**
-     * retourne les détails concernant la matière $cours indiquée (ne pas confondre avec coursGrp)
-     *
-     * @param string $cours
-     *
-     * @return array
-     */
-    public function getDetailsMatiere($cours){
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
-        $sql .= 'FROM '.PFX.'cours AS c ';
-        $sql .= 'JOIN '.PFX.'statutCours AS statut ON (statut.cadre = c.cadre) ';
-        $sql .= 'WHERE cours = :cours ';
-        $requete = $connexion->prepare($sql);
+         * retourne les détails concernant la matière $cours indiquée (ne pas confondre avec coursGrp)
+         *
+         * @param string $cours
+         *
+         * @return array
+         */
+        public function getDetailsMatiere($cours){
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
+            $sql .= 'FROM '.PFX.'cours AS c ';
+            $sql .= 'JOIN '.PFX.'statutCours AS statut ON (statut.cadre = c.cadre) ';
+            $sql .= 'WHERE cours = :cours ';
+            $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+            $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
 
-        $details = array();
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            $details = $requete->fetch();
+            $details = array();
+            $resultat = $requete->execute();
+            if ($resultat) {
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $details = $requete->fetch();
+            }
+
+            Application::DeconnexionPDO($connexion);
+
+            return $details;
         }
-
-        Application::DeconnexionPDO($connexion);
-
-        return $details;
-    }
 
     /**
      * retourne les détails d'une liste de coursGrp passée en arguments
@@ -2346,7 +2636,7 @@ class ecole
      *
      * @return int : nombre d'insertions
      */
-    public function ajouterProfsCoursGrp($listeProfs, $coursGrp, $virtuel, $linkedCoursGrp = Null)
+	public function ajouterProfsCoursGrp($listeProfs, $coursGrp, $virtuel, $linkedCoursGrp = Null)
     {
         $nbResultats = 0;
         if ($listeProfs) {
@@ -2356,6 +2646,7 @@ class ecole
             $requete = $connexion->prepare($sql);
 
             $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+
             $requete->bindParam(':virtuel', $virtuel, PDO::PARAM_INT);
             foreach ($listeProfs as $acronyme) {
                 $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
@@ -2383,6 +2674,90 @@ class ecole
     }
 
     /**
+    * affecter la liste de eleves passée en argument au coursGrp indiqué.
+    *
+    * @param array $listeMatricules
+    * @param string $coursGrp
+    *
+    * @return int : nombre d'insertions
+     */
+    public function ajouterElevesCoursGrp($listeMatricules, $coursGrp) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'elevesCours ';
+        $sql .= 'SET matricule = :matricule, coursGrp = :coursGrp ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);;
+        $nbResultats = 0;
+        foreach ($listeMatricules as $matricule) {
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+            $nbResultats += $requete->execute();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nbResultats;
+    }
+
+    /**
+     * retirer le titulariat d'un coursGrp à un prof dont on fournit l'acronyme
+     *
+     * @param array $listeProfs
+     * @param string $coursGrp
+     *
+     * @return int
+     */
+    public function delProfFromCoursGrp($listeProfs, $coursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'profsCours ';
+        $sql .= 'WHERE coursGrp = :coursGrp AND acronyme = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+        $nb = 0;
+        foreach ($listeProfs as $acronyme) {
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * retirer les élèves de la liste $listeMatricules du cours $coursGrp
+     *
+     * @param array $listeMatricules
+     * @param string $coursGrp
+     *
+     * @return int
+     */
+    public function delElevesFromCoursGrp($listeMatricules, $coursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'elevesCours ';
+        $sql .= 'WHERE coursGrp = :coursGrp AND matricule = :matricule ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+        $nb = 0;
+
+        foreach ($listeMatricules as $matricule) {
+            $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+
+
+     /**
      * retourne la liste des cours réels liés aux cours virtuels éventuels de la liste des
      * coursGrp passés en argument
      *
@@ -2399,7 +2774,7 @@ class ecole
 
         $linkList = array();
         foreach ($listeCoursGrp as $coursGrp => $data) {
-            if ($data['virtuel'] == 1) {
+            if (isset($data['virtuel']) && $data['virtuel'] == 1) {
                 $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
                 $resultat = $requete->execute();
                 if ($resultat) {
@@ -3216,7 +3591,8 @@ class ecole
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
-                $listeEBS[$matricule]['troubles'][] = $ligne['trouble'];
+                // remplacer les guillemets par des &quot;
+                $listeEBS[$matricule]['troubles'][] = str_replace('"', '&quot;', $ligne['trouble']);
             }
         }
 
@@ -3232,7 +3608,8 @@ class ecole
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
-                $listeEBS[$matricule]['amenagements'][] = str_replace('"', '&quot;', $ligne['amenagement']);
+                // remplacer les guillemets par des &quot;
+				$listeEBS[$matricule]['amenagements'][] = str_replace('"', '&quot;', $ligne['amenagement']);
             }
         }
 
@@ -3347,7 +3724,7 @@ class ecole
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'archiveClassesEleves ';
-        $sql .= "SET lematricule = :matricule, nomPrenom = :nomPrenom, classe = :classe, annee = :anneeScolaire ";
+        $sql .= 'SET lematricule = :matricule, nomPrenom = :nomPrenom, classe = :classe, annee = :anneeScolaire ';
         $sql .= 'ON DUPLICATE KEY UPDATE classe=:classe ';
         $requete = $connexion->prepare($sql);
         $nb = 0;
@@ -3357,7 +3734,6 @@ class ecole
             $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
             $requete->bindParam(':nomPrenom', $nomPrenom, PDO::PARAM_STR, 60);
             $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
-            // $eleve = array(':matricule' => $matricule, ':nomPrenom' => $nomPrenom, ':classe' => $classe);
             $resultat = $requete->execute();
             if ($resultat) {
                 ++$nb;
@@ -3445,8 +3821,7 @@ class ecole
      *
      * @return int : nombre de références archivées
      */
-    public function archiveEleves($anneeScolaire, $listeEleves)
-    {
+	public function archiveEleves($anneeScolaire, $listeEleves){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'archiveClassesEleves ';
         $sql .= 'SET lematricule = :matricule, nomPrenom = :nomPrenom, classe = :classe, annee = :anneeScolaire ';
@@ -3464,7 +3839,7 @@ class ecole
 
             $resultat = $requete->execute();
             if ($resultat) {
-                $nb++;
+                ++$nb;
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -3472,7 +3847,7 @@ class ecole
         return $nb;
     }
 
-    /**
+/**
      * retourne la liste des années d'archives disponibles dans la table des archives.
      *
      * @param
@@ -3483,6 +3858,7 @@ class ecole
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT DISTINCT annee ';
         $sql .= 'FROM '.PFX.'archiveClassesEleves ';
+        $sql .= 'ORDER BY annee ';
         $requete = $connexion->prepare($sql);
         $resultat = $requete->execute();
 
@@ -3560,6 +3936,38 @@ class ecole
         Application::DeconnexionPDO($connexion);
 
         return $classe;
+    }
+
+    /**
+     * renvoie les informations générales sur la liste des élèves
+     * dont on passe la liste des matricules
+     *
+     * @param array $listeMatricules
+     *
+     * @return array
+     */
+    public function getInfoListeEleves($listeMatricules){
+        $listeMatriculesString = implode(',', $listeMatricules);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, nom, prenom, sexe, groupe ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $sql .= 'WHERE matricule IN ('.$listeMatriculesString.') ';
+        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
 }

@@ -61,6 +61,7 @@ $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $smarty->assign('COTEABS', COTEABS);
 $smarty->assign('COTENULLE', COTENULLE);
+$smarty->assign('MENTIONSTEXTE', MENTIONSTEXTE);
 
 $smarty->assign('coursGrp', $coursGrp);
 $smarty->assign('bulletin', $bulletin);

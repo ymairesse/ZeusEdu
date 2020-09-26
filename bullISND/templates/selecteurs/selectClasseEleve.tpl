@@ -40,6 +40,7 @@
 	<input type="hidden" name="etape" value="showEleve">
 	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
 	</form>
+
 </div>
 
 <script type="text/javascript">
@@ -49,7 +50,6 @@ $(document).ready (function() {
 	$("#formSelecteur").submit(function(){
 		if ($("#selectEleve").val() != '') {
 			$("#wait").show();
-			// $.blockUI();
 			}
 			else return false;
 	})
@@ -75,8 +75,7 @@ $(document).ready (function() {
 			// si la liste de sélection des élèves renvoie une valeur significative, le formulaire est soumis
 			$("#formSelecteur").submit();
 			$("#envoi").show();
-		}
-			// else $("#envoi").hide();
+			}
 		})
 
 	$("#prev").click(function(){

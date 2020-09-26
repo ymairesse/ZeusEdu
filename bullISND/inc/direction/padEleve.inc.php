@@ -112,7 +112,7 @@ if (isset($matricule) && ($matricule != '')
 
     $smarty->assign('prevNext', $prevNext);
     $smarty->assign('etape', 'enregistrer');
-    $smarty->assign('corpsPage', 'direction/ficheEleve');
+    $smarty->assign('corpsPage', 'titu/ficheEleve');
 }
 
 $smarty->assign('selecteur', 'selecteurs/selectClasseEleve');

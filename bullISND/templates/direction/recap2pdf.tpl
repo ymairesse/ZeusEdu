@@ -11,7 +11,7 @@
         margin:auto;
         width:100%;
         margin-top: 5px;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
     }
 
     table.cours td {
@@ -24,12 +24,12 @@
         width: 100%;
         font-size: 12px;
         text-align:center;
-        margin-top: 15px;
+        margin-top: 10px;
         margin-bottom: 5px;
     }
 
     table.eprExt th {
-        font-size:14px;
+        font-size:12px;
         background-color: #ccc;
     }
 
@@ -110,7 +110,7 @@
 
     </table>
 {/if}
-    <p class="mentions" style="margin-top:60px;">Mention finale: <strong>{$infoMention}</strong></p>
+    <p class="mentions" style="margin-top:40px;">Mention finale: <strong>{$infoMention}</strong></p>
 
     <p class="mentions">Obtention du CE1D: <strong>{$decision}</strong></p>
 

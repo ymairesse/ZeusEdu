@@ -70,6 +70,7 @@ $(document).ready (function() {
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
+		Cookies.set('classe', classe);
 		if (classe != '') $("#envoi").show();
 			else $("#envoi").hide();
 		// la fonction listeEleves.inc.php renvoie la liste déroulante
@@ -84,6 +85,8 @@ $(document).ready (function() {
 
 	$("#choixEleve").on("change","#selectEleve", function(){
 		if ($(this).val() > 0) {
+			var matricule =$('#selectEleve').val()
+			Cookies.set('matricule', matricule);
 			// si la liste de sélection des élèves renvoie une valeur significative
 			// le formulaire est soumis
 			$("#formSelecteur").submit();

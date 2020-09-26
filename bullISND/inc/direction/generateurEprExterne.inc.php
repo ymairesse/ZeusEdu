@@ -45,8 +45,10 @@ $smarty->assign('DIRECTION', DIRECTION);
 $smarty->assign('signature', $signature);
 $smarty->assign('pathImages','../../');
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new HTML2PDF('P', 'A4', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 $resultatsExternes = $Bulletin->getResultatsExternes($classe, ANNEESCOLAIRE);
 
