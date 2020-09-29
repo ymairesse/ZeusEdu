@@ -2078,27 +2078,26 @@ CREATE TABLE `didac_thotForumsAccess` (
 ALTER TABLE `didac_thotForumsAccess`
     ADD PRIMARY KEY (`idSujet`,`idCategorie`,`cible`);
 
-    --
-    -- Structure de la table `didac_thotForumsSujets`
-    --
+--
+-- Structure de la table `didac_thotForumsSujets`
+--
+CREATE TABLE `didac_thotForumsSujets` (
+  `idCategorie` int NOT NULL COMMENT 'Sujet faisant partie de la catégorie',
+  `idSujet` int NOT NULL COMMENT 'Identifiant du sujet',
+  `sujet` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Sujet de la convesation',
+  `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Propriétaire',
+  `dateCreation` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de création du sujet',
+  `modifParAuteur` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Le post est modifiable par l''auteur du sujet (le prof)',
+  `modifParEleve` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post est modifiable par l''élève',
+  `fbLike` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Bouton Like apparent ou non',
+  `forumActif` tinyint DEFAULT '1' COMMENT 'Le forum est-il visible par les élèves'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des sujets de discussion';
 
-    CREATE TABLE `didac_thotForumsSujets` (
-      `idCategorie` int(11) NOT NULL COMMENT 'Sujet faisant partie de la catégorie',
-      `idSujet` int(11) NOT NULL COMMENT 'Identifiant du sujet',
-      `sujet` varchar(80) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Sujet de la convesation',
-      `acronyme` varchar(7) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Propriétaire',
-      `dateCreation` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de création du sujet',
-      `modifParAuteur` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Le post est modifiable par l''auteur du sujet (le prof)',
-      `modifParEleve` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post est modifiable par l''élève',
-      `fbLike` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Bouton Like apparent ou non'
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des sujets de discussion';
+ALTER TABLE `didac_thotForumsSujets`
+  ADD PRIMARY KEY (`idCategorie`,`idSujet`);
 
-
-    ALTER TABLE `didac_thotForumsSujets`
-      ADD PRIMARY KEY (`idCategorie`,`idSujet`);
-
-      ALTER TABLE `didac_thotForumsSujets`
-        MODIFY `idSujet` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du sujet';
+  ALTER TABLE `didac_thotForumsSujets`
+    MODIFY `idSujet` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du sujet';
 
 --
 -- Structure de la table `didac_thotForumsPosts`
