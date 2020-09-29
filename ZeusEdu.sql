@@ -687,23 +687,25 @@ CREATE TABLE IF NOT EXISTS didac_bullPonderations (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Pondérations par périodes';
 
 
-CREATE TABLE IF NOT EXISTS didac_bullSitArchives (
-  annee varchar(12) COLLATE utf8_unicode_ci NOT NULL,
-  matricule int(6) NOT NULL,
-  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  bulletin tinyint(2) NOT NULL,
-  situation varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  maxSituation varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  sitDelibe varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation en pourcents',
-  star tinyint(1) NOT NULL DEFAULT '0' COMMENT 'cote étoilée (remplace d''autorité toute autre cote)',
-  hook tinyint(1) NOT NULL DEFAULT '0' COMMENT 'cotes entre crochets (à négliger)',
-  degre tinyint(1) NOT NULL DEFAULT '0',
-  attribut enum('star','hook','degre','reussite50','magique') COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (annee,matricule,coursGrp,bulletin),
-  KEY annee (annee),
-  KEY coursGrp (coursGrp),
-  KEY matricule (matricule)
+CREATE TABLE `didac_bullSitArchives` (
+  `annee` varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `matricule` int NOT NULL,
+  `coursGrp` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `bulletin` tinyint NOT NULL,
+  `situation` varchar(6) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `maxSituation` varchar(6) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `sitDelibe` varchar(6) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Situation en pourcents',
+  `star` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'cote étoilée (remplace d''autorité toute autre cote)',
+  `hook` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'cotes entre crochets (à négliger)',
+  `degre` tinyint(1) NOT NULL DEFAULT '0',
+  `attributDelibe` enum('','star','hook','degre','reussite50','magique','externe') CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_bullSitArchives`
+  ADD PRIMARY KEY (`annee`,`matricule`,`coursGrp`,`bulletin`),
+  ADD KEY `annee` (`annee`),
+  ADD KEY `coursGrp` (`coursGrp`),
+  ADD KEY `matricule` (`matricule`);
 
 CREATE TABLE `didac_bullSituations` (
   `matricule` int(6) NOT NULL,
