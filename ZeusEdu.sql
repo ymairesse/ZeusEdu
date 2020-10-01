@@ -2103,16 +2103,17 @@ ALTER TABLE `didac_thotForumsSujets`
 -- Structure de la table `didac_thotForumsPosts`
 --
 CREATE TABLE `didac_thotForumsPosts` (
-  `postId` int(11) NOT NULL COMMENT 'Identifiant numérique du post',
-  `idCategorie` int(11) NOT NULL COMMENT 'Catégorie numérique du sujet',
-  `idSujet` int(11) NOT NULL COMMENT 'Identifiant numérique du sujet',
-  `parentId` int(11) NOT NULL COMMENT 'En réponse à...',
+  `postId` int NOT NULL COMMENT 'Identifiant numérique du post',
+  `idCategorie` int NOT NULL COMMENT 'Catégorie numérique du sujet',
+  `idSujet` int NOT NULL COMMENT 'Identifiant numérique du sujet',
+  `parentId` int NOT NULL COMMENT 'En réponse à...',
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date du post',
-  `auteur` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Auteur du post (élève ou prof)',
-  `userStatus` enum('eleve','prof') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''auteur (prof ou élève)',
+  `auteur` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Auteur du post (élève ou prof)',
+  `userStatus` enum('eleve','prof') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''auteur (prof ou élève)',
   `post` blob COMMENT 'Post dans le fil',
-  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des posts';
+  `modifie` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le post a été modifié',
+  `dateModif` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de dernière modification'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste des posts';
 
 ALTER TABLE `didac_thotForumsPosts`
   ADD PRIMARY KEY (`postId`);
@@ -2123,16 +2124,27 @@ ALTER TABLE `didac_thotForumsPosts`
   --
   -- Structure de la table `didac_thotForumsLikes`
   --
+CREATE TABLE `didac_thotForumsLikes` (
+`postId` int(11) NOT NULL COMMENT 'Identifiant numérique du post',
+`idSujet` int(11) NOT NULL COMMENT 'Identifiant du sujet',
+`idCategorie` int(11) NOT NULL COMMENT 'Identifiant numérique de la catégorie',
+`likeLevel` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mention du like',
+`user` varchar(13) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Utilisateur qui like',
+`userStatus` enum('eleve','prof') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''utilisateur'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des likes sur les posts';
 
-  CREATE TABLE `didac_thotForumsLikes` (
-    `postId` int(11) NOT NULL COMMENT 'Identifiant numérique du post',
-    `idSujet` int(11) NOT NULL COMMENT 'Identifiant du sujet',
-    `idCategorie` int(11) NOT NULL COMMENT 'Identifiant numérique de la catégorie',
-    `likeLevel` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Mention du like',
-    `user` varchar(13) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Utilisateur qui like',
-    `userStatus` enum('eleve','prof') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Statut de l''utilisateur'
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des likes sur les posts';
 
+ALTER TABLE `didac_thotForumsLikes`
+ADD PRIMARY KEY (`postId`,`idSujet`,`idCategorie`,`user`);
 
-  ALTER TABLE `didac_thotForumsLikes`
-    ADD PRIMARY KEY (`postId`,`idSujet`,`idCategorie`,`user`);
+--
+-- Structure de la table `didac_thotForumsSubscribe`
+--
+CREATE TABLE `didac_thotForumsSubscribe` (
+  `idCategorie` int NOT NULL COMMENT 'Identifiant de la categorie',
+  `idSujet` int NOT NULL COMMENT 'Identifiant du Sujet',
+  `user` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme ou matricule'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Abonnements aux post';
+
+ALTER TABLE `didac_thotForumsSubscribe`
+  ADD PRIMARY KEY (`idCategorie`,`idSujet`,`user`);
