@@ -71,16 +71,14 @@ $smarty->assign('acronyme', $acronyme);
 $html = $smarty->fetch('retards/syntheseRetards4PDF.tpl');
 
 $ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.'html2PDF/vendor/autoload.php';
 
+require INSTALL_DIR.'/vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
-use Spipu\Html2Pdf\Exception\Html2PdfException;
-use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-$html2PDF = new Html2Pdf('P', 'A4', 'fr');
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
-$html2PDF->writeHTML($html);
+$html2pdf->writeHTML($html);
 
 $date = date("d-m-Y H i");
 
-$html2PDF->output('syntheseRetards_'.$date.'.pdf');
+$html2pdf->Output('syntheseRetards_'.$date.'.pdf');

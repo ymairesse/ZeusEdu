@@ -103,7 +103,6 @@ $(document).ready(function(){
 				}
 			},
 			onMediaDelete : function(target) {
-				console.log(target[0].src);
 				deleteFile(target[0].src);
 			}
 		}

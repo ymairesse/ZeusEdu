@@ -1,7 +1,6 @@
-<script type="text/javascript" src="../dropzone/dropzone.js"></script>
-<link rel="stylesheet" href="../dropzone/dropzone.css">
+<script type="text/javascript" src="../widgets/fileTree/dropzone.js"></script>
+<link rel="stylesheet" href="../widgets/fileTree/css/dropzone.css">
 <link rel="stylesheet" href="../widgets/fileTree/css/filetree.css">
-
 
 <div id="modalAddPj" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddPjLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -33,16 +32,14 @@
   </div>
 </div>
 
-
-
-<div class="row">
+<div class="row" id="FTwidget">
     <div class="col-sm-9 col-xs-12">
         <ul id="PjFiles" class="PjFiles list-unstyled" style="min-height: 2em;">
 
             {if isset($pjFiles) && ($pjFiles|@count > 0)}
                 {foreach from=$pjFiles key=shareId item=data}
                 <li>
-                    <button type="button" class="btn btn-danger btn-xs delPJ" data-path="{$data.path}" data-filename="{$data.fileName}"><i class="fa fa-times delPJ" title="Supprimer"></i></button>
+                    <button type="button" class="btn btn-danger btn-xs FTdelPJ" data-path="{$data.path}" data-filename="{$data.fileName}"><i class="fa fa-times" title="Supprimer"></i></button>
                     <a
                     href="../widgets/fileTree/inc/download.php?type=pfN&f={$data.path}{$data.fileName}"
                     data-path="{$data.path}"
@@ -72,12 +69,13 @@
 
         var nbFichiersMax = 5;
         var maxFileSize = 25;
+        var acceptedFiles = "image/jpeg,image/png,image/gif,image/svg+xml,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.mp3";
 
         Dropzone.options.myDropZone = {
             maxFilesize: maxFileSize,
             maxFiles: nbFichiersMax,
             url: "../widgets/fileTree/inc/upload.inc.php",
-            acceptedFiles: "image/jpeg,image/png,image/gif,application/pdf,.psd,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.odg,.csv,.txt,.pdf,.zip,.7z,.ggb,.mm,.xcf,.xmind,.rtf,.bz2,.mp3,.svg",
+            acceptedFiles: acceptedFiles,
             queuecomplete: function() {
                 var activeDir = $('#activeDir').data('path');
                 activeDir = (activeDir == undefined) ? '/' : activeDir;
@@ -129,7 +127,7 @@
             }
         };
 
-        $('#myDropZone').dropzone();
+        // $('#myDropZone').dropzone();
 
         $('#btn-addPJ').click(function(){
             $('#modalAddPj').modal('show');
@@ -171,7 +169,7 @@
 			var path = $(this).closest('li').data('path');
 
 			if ($(this).prop('checked') == true) {
-				$('#PjFiles').append('<li><button type="button" class="btn btn-danger delPJ btn-xs"><i class="fa fa-times delPJ" title="Supprimer"></i></button> <a href="../widgets/fileTree/inc/download.php?type=pfN&f='+path + fileName+'" data-path="' + path + '" data-filename="' + fileName + '" data-shareid="-1" title="' + path + fileName +'"> ' + path + fileName + '</a> <input type="hidden" name="files[]" value="-1|//|' + path + '|//|' + fileName + '"></li>');
+				$('#PjFiles').append('<li><button type="button" class="btn btn-danger FTdelPJ btn-xs"><i class="fa fa-times" title="Supprimer"></i></button> <a href="../widgets/fileTree/inc/download.php?type=pfN&f='+path + fileName+'" data-path="' + path + '" data-filename="' + fileName + '" data-shareid="-1" title="' + path + fileName +'"> ' + path + fileName + '</a> <input type="hidden" name="files[]" value="-1|//|' + path + '|//|' + fileName + '"></li>');
 			}
 			else {
                 var shareId = $('#PjFiles').find('[data-path="' + path + '"][data-filename="' + fileName + '"]').data('shareid');
@@ -185,10 +183,9 @@
             e.stopPropagation();
 		})
 
-        $('#PjFiles').on('click', '.delPJ', function(e){
+        $('#FTwidget').on('click', '.FTdelPJ', function(){
             var path = $(this).data('path');
             var fileName = $(this).data('filename');
-            $('#repertoire').find('input:checkbox[data-path="' + path + '"][data-filename="' + fileName +'"]').prop('checked', false);
             $(this).closest('li').remove();
             // la PJ sera effectivement supprimée au moment de l'enregistrement
         })

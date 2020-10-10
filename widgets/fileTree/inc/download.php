@@ -177,14 +177,16 @@ if ($download_hook['download'] == true) {
 
     /* You can write your logic before proceeding to download */
 
-    // enregistrement du suivi de téléchargement pour le document
-    $spyInfo = $Files->getSpyInfo4ShareId($shareId);
-    // il y a un espion sur le fichier ou le répertoire
-    if (!(empty($spyInfo))) {
-        $spyId = $spyInfo['spyId'];
-        $path = (isset($downloadedFileInfo['path'])) ? $downloadedFileInfo['path'] : Null;
-        $fileName = (isset($downloadedFileInfo['fileName'])) ? $downloadedFileInfo['fileName'] : Null;
-        $Files->setSpiedDownload ($acronyme, $spyId, $path, $fileName);
+    if (isset($shareId)) {
+        // enregistrement du suivi de téléchargement pour le document
+        $spyInfo = $Files->getSpyInfo4ShareId($shareId);
+        // il y a un espion sur le fichier ou le répertoire
+        if (!(empty($spyInfo))) {
+            $spyId = $spyInfo['spyId'];
+            $path = (isset($downloadedFileInfo['path'])) ? $downloadedFileInfo['path'] : Null;
+            $fileName = (isset($downloadedFileInfo['fileName'])) ? $downloadedFileInfo['fileName'] : Null;
+            $Files->setSpiedDownload ($acronyme, $spyId, $path, $fileName);
+        }
     }
 
     /* Let's download file */

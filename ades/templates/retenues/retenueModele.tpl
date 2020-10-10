@@ -1,7 +1,7 @@
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<td style="text-align:left; width:30%"><p><img style="width: 110px;" src="http://localhost/peda/ades/./img-uploads/1588754506.png"><br></p></td>
+			<td style="text-align:left; width:30%"><p><br></p></td>
 			<td style="text-align:right; width:70%">
 			<h3>##ECOLE##</h3>
 			<strong>##ADRESSE##<br>
