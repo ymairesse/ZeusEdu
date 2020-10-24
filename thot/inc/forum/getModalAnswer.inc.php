@@ -19,7 +19,6 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-
 $idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : Null;
 $idSujet = isset($_POST['idSujet']) ? $_POST['idSujet'] : Null;
 $postId = isset($_POST['postId']) ? $_POST['postId'] : Null;
@@ -28,6 +27,8 @@ $postId = isset($_POST['postId']) ? $_POST['postId'] : Null;
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new ThotForum();
+
+$isAbonne = $Forum->getAbonnement($acronyme, $idCategorie, $idSujet);
 
 if ($postId != 0) {
     // c'est une réponse à un post précédent
@@ -38,7 +39,7 @@ if ($postId != 0) {
         $postAncien = array(
             'idCategorie' => $idCategorie,
             'idSujet' => $idSujet,
-            'postId' => $postId
+            'postId' => $postId,
             );
     }
 
@@ -48,4 +49,6 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('postAncien', $postAncien);
+$smarty->assign('isAbonne', $isAbonne);
+
 $smarty->display('forum/modal/modalAnswerPost.tpl');

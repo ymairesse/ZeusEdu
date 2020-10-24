@@ -33,10 +33,21 @@ $idCategorie = isset($form['idCategorie']) ? $form['idCategorie'] : Null;
 // postId du post parent qui a été cliqué
 $parentId = isset($form['postId']) ? $form['postId'] : Null;
 
+// abonnement ou désabonnement à ce sujet
+$subscribe = isset($form['subscribe']) ? $form['subscribe'] : Null;
+
 // convertir les balises http(s) en vrais liens cliquables
 $post = preg_replace('$(\s|^)(https?://[a-z0-9_./?=&-]+)(?![^<>]*>)$i', ' <a href="$2" target="_blank">$2</a>', $post." ");
 
 $postId = $Forum->saveNewPost($post, $idSujet, $idCategorie, $parentId, $acronyme);
+
+// enregistrement éventuel de l'abonnement
+if ($subscribe != Null){
+    $Forum->setAbonnement($acronyme, $idCategorie, $idSujet);
+    }
+    else {
+        $Forum->desAbonnement($acronyme, $idCategorie, $idSujet);
+    }
 
 // rafraîchissement de la liste des contributions
 $listePosts = $Forum->getPosts4subject($idCategorie, $idSujet);

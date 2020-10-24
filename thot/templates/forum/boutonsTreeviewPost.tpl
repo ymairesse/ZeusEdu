@@ -7,7 +7,7 @@
     data-container="body"
     data-placement="top">
 
-    <button type="button" class="btn btn-primary btn-xs initiales" title="{$post.user}" style="float:left">
+    <button type="button" class="btn btn-lightBlue btn-xs initiales" title="{$post.user}" style="float:left">
         {if $post.userStatus == 'prof'}<i class="fa fa-graduation-cap"></i>
         {else}<i class="fa fa-user"></i>
         {/if}
@@ -25,7 +25,7 @@
 
     <button type="button"
         style="color:#11036f"
-        class="btn btn-success btn-xs btn-forum btn-repondre"
+        class="btn btn-green btn-xs btn-forum btn-repondre"
         data-postid="{$post.postId}"
         data-idcategorie="{$post.idCategorie}"
         data-idsujet="{$post.idSujet}"
@@ -37,7 +37,7 @@
         {if ($acronyme == $post.auteur)}
             <button type="button"
                 style="color:black"
-                class="btn btn-warning btn-xs btn-forum btn-edit"
+                class="btn btn-lightPink btn-xs btn-forum btn-edit"
                 data-postid="{$post.postId}"
                 data-idcategorie="{$post.idCategorie}"
                 data-idsujet="{$post.idSujet}"
@@ -45,7 +45,7 @@
                 Modifier <i class="fa fa-arrow-up"></i>
             </button>
             <button type="button"
-                class="btn btn-danger btn-xs btn-forum btn-delPost"
+                class="btn btn-pink btn-xs btn-forum btn-delPost"
                 data-postid="{$post.postId}"
                 data-idcategorie="{$post.idCategorie}"
                 data-idsujet="{$post.idSujet}"
@@ -56,7 +56,7 @@
         {* Si l'utilisateur courant est le propriétaire du post *}
         {elseif ($acronyme == $post.acronyme)}
             <button type="button"
-                class="btn btn-warning btn-xs btn-forum btn-edit"
+                class="btn btn-lightPink btn-xs btn-forum btn-edit"
                 data-postid="{$post.postId}"
                 data-idcategorie="{$post.idCategorie}"
                 data-idsujet="{$post.idSujet}"
@@ -64,7 +64,7 @@
                 <i class="fa fa-mortar-board"></i> Modifier <i class="fa fa-arrow-up"></i>
             </button>
             <button type="button"
-                class="btn btn-danger btn-xs btn-forum btn-delPost"
+                class="btn btn-pink btn-xs btn-forum btn-delPost"
                 data-postid="{$post.postId}"
                 data-idcategorie="{$post.idCategorie}"
                 data-idsujet="{$post.idSujet}"

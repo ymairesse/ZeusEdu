@@ -21,23 +21,17 @@ $module = $Application->getModule(3);
 
 $idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : Null;
 $idSujet = isset($_POST['idSujet']) ? $_POST['idSujet'] : Null;
-$postId = isset($_POST['postId']) ? $_POST['postId'] : Null;
+$checked = isset($_POST['checked']) ? $_POST['checked'] : Null;
 
-// définition de la class Forum
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
-$Forum = new ThotForum();
+$Forum = new thotForum();
 
-$postAncien = $Forum->getPostById($postId);
-$isAbonne = $Forum->getAbonnement($acronyme, $idCategorie, $idSujet);
-
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
-
-$smarty->assign('postAncien', $postAncien);
-$smarty->assign('isAbonne', $isAbonne);
-$smarty->assign('acronyme', $acronyme);
-
-$smarty->display('forum/modal/modalModifyPost.tpl');
+if ($checked == 'true') {
+    $Forum->setAbonnement($acronyme, $idCategorie, $idSujet);
+    echo "abonné·e à";
+    }
+    else {
+        $Forum->desAbonnement($acronyme, $idCategorie, $idSujet);
+        echo "<strong>dés</strong>abonné·e de";
+    }

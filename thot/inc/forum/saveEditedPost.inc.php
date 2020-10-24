@@ -33,9 +33,10 @@ $postId = isset($form['postId']) ? $form['postId'] : Null;
 $idCategorie = isset($form['idCategorie']) ? $form['idCategorie'] : Null;
 $idSujet = isset($form['idSujet']) ? $form['idSujet'] : Null;
 
+$subscribe = isset($form['subscribe']) ? $form['subscribe'] : Null;
+
 $infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
 $infoPost = $Forum->getInfoPost($idCategorie, $idSujet, $postId);
-
 $auteur = $infoPost['auteur'];
 
 // convertir les balises http en vrais liens
@@ -43,6 +44,14 @@ $post = preg_replace('$(\s|^)(https?://[a-z0-9_./?=&-]+)(?![^<>]*>)$i', ' <a hre
 
 // enregistrement de la contribution $postId modifiée
 $postId = $Forum->saveEditedPost($post, $postId, $auteur);
+
+// enregistrement éventuel de l'abonnement
+if ($subscribe != Null){
+    $Forum->setAbonnement($acronyme, $idCategorie, $idSujet);
+    }
+    else {
+        $Forum->desAbonnement($acronyme, $idCategorie, $idSujet);
+    }
 
 // rafraîchissement de la liste des contributions
 $listePosts = $Forum->getPosts4subject($idCategorie, $idSujet);

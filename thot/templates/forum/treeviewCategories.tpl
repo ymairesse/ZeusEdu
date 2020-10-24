@@ -30,7 +30,7 @@
 {/function}
 
 <ul class="treeview">
-
+{if $userStatus == 'admin'}
     <li>
         <a class="active"
             href="javascript:void(0)"
@@ -39,7 +39,7 @@
             Racine
         </a>
     </li>
-
+{/if}
     {repertoire data=$listeCategories}
 
 </ul>

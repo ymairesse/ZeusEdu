@@ -27,7 +27,7 @@
     <div class="row">
 
         <div class="col-md-4 col-sm-12">
-            <div class="panel panel-default">
+            <div class="panel panel-success">
                 <div class="panel-heading">
                     Liste des catégories
                     {if $userStatus == 'admin'}
@@ -40,7 +40,7 @@
 
                 </div>
 
-                <div class="panel-body" id="treeviewCategories" style="max-height:20em;overflow:auto;">
+                <div class="panel-body" id="treeviewCategories" style="max-height:10em;overflow:auto;">
 
                     <div id="ajaxLoader" class="hidden">
                         <img src="images/ajax-loader.gif" alt="loading" class="center-block">
@@ -61,11 +61,7 @@
 
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <div class="btn-group btn-group-justified">
-                        <a href="javascript:void(0)" type="button" class="btn btn-success btn-xs" id="modifSubject" title="Modifier le sujet" data-container="body" data-idsujet="" data-idcategorie="" disabled><i class="fa fa-edit"></i></a>
-                        <a href="javascript:void(0)" type="button" class="btn btn-danger btn-xs " id="delSubject" title="Supprimer un sujet" data-container="body" data-idsujet="" data-idcategorie="" disabled><i class="fa fa-times"></i></a>
-                        <a href="javascript:void(0)" type="button" class="btn btn-warning btn-xs" id="infoSubject" title="Informations" data-container="body" data-idsujet="" data-idcategorie="" disabled><i class="fa fa-info"></i></a>
-                    </div>
+                    Liste des sujets
                 </div>
                 <div class="panel-body" id="listeSujets" style="max-height:20em; overflow:auto;">
 
@@ -74,7 +70,11 @@
                 </div>
 
                 <div class="panel-footer">
-
+                    <div class="btn-group btn-group-justified">
+                        <a href="javascript:void(0)" type="button" class="btn btn-success btn-xs" id="modifSubject" title="Modifier le sujet" data-container="body" data-idsujet="" data-idcategorie="" disabled><i class="fa fa-edit"></i></a>
+                        <a href="javascript:void(0)" type="button" class="btn btn-danger btn-xs " id="delSubject" title="Supprimer un sujet" data-container="body" data-idsujet="" data-idcategorie="" disabled><i class="fa fa-times"></i></a>
+                        <a href="javascript:void(0)" type="button" class="btn btn-warning btn-xs" id="infoSubject" title="Informations" data-container="body" data-idsujet="" data-idcategorie="" disabled><i class="fa fa-info"></i></a>
+                    </div>
                 </div>
             </div>
 
@@ -236,6 +236,10 @@
                 var resultatJS = JSON.parse(resultat);
                 var postId = parseInt(resultatJS.postId);
                 $('#listePosts').html(resultatJS.html);
+                $.post('inc/forum/mail4NewPost.inc.php', {
+                    formulaire: formulaire
+                }, function(){
+                });
                 $('#modalAnswerPost').modal('hide');
                 goToByScroll("post_" + postId);
             })
