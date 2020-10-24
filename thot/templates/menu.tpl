@@ -87,6 +87,7 @@
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Forums <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=forum&amp;mode=categories">Accès aux forums</a></li>
+					<li><a href="index.php?action=forum&amp;mode=gestion">Gestion de vos abonnements</a></li>
 				</ul>
 			</li>
 

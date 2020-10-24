@@ -31,10 +31,19 @@
                     </label>
                     <textarea name="myPost" id="myPost" rows="5" class="form-control"></textarea>
 
+                    <div class="col-xs-4">
+                        <div class="checkbox pull-left">
+                            <label><input type="checkbox" name="subscribe" value="1"{if $isAbonne} checked{/if}>Je m'abonne à ce sujet</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <p class="discret"><i class="fa fa-info-circle"></i> Abonnez-vous pour recevoir un avertissement sur votre adresse mail à chaque contribution à ce sujet.</p>
+                    </div>
+
                     <input type="hidden" name="postId" id="postId" value="{$postAncien.postId}">
                     <input type="hidden" name="idSujet" id="idSujet" value="{$postAncien.idSujet}">
                     <input type="hidden" name="idCategorie" id="idCategorie" value="{$postAncien.idCategorie}">
-
+                    <div class="clearfix"></div>
                 </form>
             </div>
             <div class="modal-footer">
