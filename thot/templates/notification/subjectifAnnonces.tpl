@@ -28,7 +28,7 @@
     					0
     					{/if}"
         				class="notification {$dataAnnonce.type}{if !(isset($listeFlags.$id.lu)) || ($listeFlags.$id.lu == 0 )} nonLu{/if}">
-                        
+
         				<td>{$smarty.foreach.n.iteration}</td>
         				<td>{$dataAnnonce.dateDebut}</td>
         				<td class="texteAnnonce">{$dataAnnonce.objet}</td>
@@ -87,3 +87,27 @@
     </div>
 
 </div>
+
+<div id="modal"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+		{if in_array($userStatus, ['direction', 'admin', 'educ'])}
+
+			$('tr.notification').click(function(){
+				var id = $(this).data('id');
+				$.post('inc/notif/getTextNotif.inc.php', {
+					id: id
+				}, function(resultat){
+					$('#modal').html(resultat);
+					$('#modalShowNotif').modal('show');
+				})
+			})
+
+        {/if}
+
+    })
+
+</script>

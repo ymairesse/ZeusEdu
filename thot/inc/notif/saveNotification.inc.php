@@ -65,10 +65,10 @@ $texte[] = sprintf('%d annonce(s) enregistrée(s)', count($listeNotifId));
 // et de demande d'accusé de lecture => wtf
 $listeEleves = Null;
 
-switch ($form['type']) {  // ici, il faut prendre le type "global"
+// $form['leType'] == 'eleves' si l'envoi est élève par élève, même si
+// form['type'] == 'classes', par exemple
+switch ($form['leType']) {  // ici, il faut prendre le type "global"
     case 'eleves':
-        // si c'est une édition d'élève, cela ne peut être qu'un élève isolé
-        // dans tous les autres cas, ils viennent par "groupe"
         $membres = $form['membres'];
         $listeEleves = array($membres => $membres);
         break;
@@ -91,6 +91,13 @@ switch ($form['type']) {  // ici, il faut prendre le type "global"
 // ok pour la notification en BD, passons éventuellement à l'envoi de mail
 // si c'est une édition, le champ 'mail' est désactivé => !(isset)
 // ------------------------------------------------------------------------------
+
+// identification de l'expéditeur
+$identite = $User->identiteProf($acronyme);
+$formule = ($identite['sexe'] == 'M') ? 'Monsieur' : 'Madame';
+$initiale = mb_substr($identite['prenom'], 0, 1);
+$nomProf = sprintf('%s %s. %s', $formule, $initiale, $identite['nom']);
+
 if (isset($form['mail']) && $form['mail'] == 1) {
     require_once INSTALL_DIR."/smarty/Smarty.class.php";
     $smarty = new Smarty();
@@ -104,6 +111,7 @@ if (isset($form['mail']) && $form['mail'] == 1) {
     $smarty->assign('VILLE', VILLE);
     $smarty->assign('ADRESSE', ADRESSE);
     $smarty->assign('objet', $form['objet']);
+    $smarty->assign('nomProf', $nomProf);
     $objetMail = $smarty->fetch('notification/objetMail.tpl');
     $texteMail = $smarty->fetch('notification/texteMail.tpl');
     $signatureMail = $smarty->fetch('notification/signatureMail.tpl');
