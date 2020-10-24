@@ -2,25 +2,31 @@
     <span id="cible">{$lblDestinataire}</span>
 </h2>
 
-<p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
-<input type="hidden" name="unlocked" id="unlocked" value="false">
-<input type="hidden" name="mode" id="mode" value="{$mode}">
+<div id="calendrier">
 
-<div id="calendar"
-    class="{$mode} demiOmbre"
-    data-type="{$type|default:''}"
-    data-destinataire="{$destinataire}"
-    data-lbldestinataire="{$lblDestinataire|default:''}"
-    data-editable="{$editable|default:false}"
-    data-viewstate="agendaWeek">
+    <p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
+    <input type="hidden" name="unlocked" id="unlocked" value="false">
+    <input type="hidden" name="mode" id="mode" value="{$mode}">
+
+    <div id="calendar"
+        class="{$mode} demiOmbre"
+        data-type="{$type|default:''}"
+        data-destinataire="{$destinataire}"
+        data-lbldestinataire="{$lblDestinataire|default:''}"
+        data-editable="{$editable|default:false}"
+        data-viewstate="agendaWeek">
+    </div>
+
 </div>
-
 
 <div class="btn-group" id="legend">
     {foreach from=$categories key=cat item=travail}
         <button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
     {/foreach}
 </div>
+
+<div id="zoneDel"></div>
+<div id="zoneClone"></div>
 
 <style media="screen">
     .popover {
@@ -113,7 +119,7 @@
 				}
 			],
 			eventRender: function(event, element, view) {
-				element.html( event.destinataire + ' ' + event.title),
+				element.find('.fc-title').html('<div>'+event.destinataire+'</div>');
 				element.popover({
 					title: event.destinataire,
 					content: event.enonce,
@@ -166,6 +172,7 @@
                         size: 'small'
                     })
                 } else {
+
                 var editable = $('#calendar').data('editable');
                 var type = $('#calendar').data('type');
 
@@ -186,7 +193,8 @@
 							lblDestinataire: lblDestinataire
 							},
 							function(resultat){
-								$('#panneauEditeur').html(resultat);
+								modeEdition();
+								$('#unTravail').html(resultat);
 							})
 						}
 					else {
@@ -265,7 +273,20 @@
 		}
 		})
 
-
+        // $("#zoneEdit").on('click', '#journee', function() {
+		// 	if ($(this).prop('checked') == true) {
+		// 		$("#duree").prop('disabled', true);
+		// 		$('#heure').prop('disabled', true).val('');
+		// 		$("#timepicker").prop('disabled', true);
+		// 		$("#listeDurees").addClass('disabled');
+		// 	} else {
+		// 		$("#duree").prop('disabled', false);
+		// 		$('#heure').prop('disabled', false);
+		// 		$("#timepicker").prop('disabled', false);
+		// 		$("#listeDurees").removeClass('disabled');
+		// 	}
+		// })
+        //
         $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
 
 		var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
@@ -273,9 +294,7 @@
 		// http://jsfiddle.net/slyvain/6vmjt9rb/
         var popTemplate = [
             '<div class="popover" style="max-width:600px;" >',
-            '<div class="arrow down"></div>',
             '<div class="popover-header">',
-            '<button id="closepopover" type="button" class="close" aria-hidden="true">&times;</button>',
             '<h3 class="popover-title"></h3>',
             '</div>',
             '<div class="popover-content"></div>',

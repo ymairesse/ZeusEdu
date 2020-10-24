@@ -12,7 +12,7 @@
 			<div class="col-md-9">
 
 				<div id="weekCalendar">
-					{* emplacment du semainier type *}
+					{* emplacement du semainier type *}
 				</div>
 
 			</div>
@@ -20,6 +20,7 @@
 			<div class="col-md-3">
 				{* boutons donnant accès aud différents cours de l'utlisateur actif *}
 				<div class="btn-group btn-group-vertical btn-block" id="listeCours">
+
 					<button type="button"
 						id="synoptique"
 						class="btn btn-danger"
@@ -42,9 +43,12 @@
 			</div>
 		</div>
 
+
+
 		<div id="jdc" class="tab-pane fade">
 
 			<div class="col-md-6 col-sm-12" id="panneauAgenda">
+				<p class="avertissement">Panneau agenda</p>
 				{* onglet qui contiendra la grille JDC *}
 			</div>
 
@@ -54,6 +58,7 @@
 			</div>
 
 		</div>
+
 
 	</div>
 
@@ -156,6 +161,16 @@
 			})
 
 		// ----------------------------------------------------------------
+		$('#printForm').validate({
+			rules: {
+				from: {
+					required: true
+				},
+				to: {
+					required: true
+				}
+			}
+		})
 		$('#printJDC').click(function(){
 			var currentTime = new Date();
 			var currentYear = currentTime.getFullYear();
@@ -185,6 +200,7 @@
 
 		$('#listeCours').on('click', '.btn-selectCours', function() {
 			$('.nav-tabs a:eq(1)').removeClass('disabled').tab('show');
+			$('#panneauAgenda').html('');
 			var coursGrp = $(this).data('coursgrp');
 			$.post('inc/jdc/getAgendaCours.inc.php', {
 				coursGrp: coursGrp
@@ -201,9 +217,10 @@
 
 		$('#synoptique').click(function(){
 			$('.nav-tabs a:eq(1)').removeClass('disabled').tab('show');
-			$.post('inc/jdc/jdcSynoptique.inc.php', {
+			$.post('inc/jdc/getAgendaSynoptique.inc.php', {
 			}, function(resultat){
-				$('#jdc').html(resultat);
+				$('#panneauAgenda').html(resultat);
+				$('#panneauEditeur').load('templates/jdc/selectItem.html')
 				// IMPORTANT: mise à jour du semainier après ouverture de l'onglet qui le contient
 				// souci entre jquery et fullCalendar
 				$('#tabJdc').on('shown.bs.tab', function (e) {

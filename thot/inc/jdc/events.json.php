@@ -25,7 +25,7 @@ $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 $module = $Application->getModule(3);
-require_once INSTALL_DIR.$ds.$module.$ds."inc/classes/classJdc.inc.php";
+require_once INSTALL_DIR.$ds.$module."/inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
 

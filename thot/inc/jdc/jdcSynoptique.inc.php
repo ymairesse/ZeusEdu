@@ -44,4 +44,4 @@ $smarty->assign('editable', true);
 
 $smarty->assign('jdcInfo', 'Pour voir l\'ensemble de vos cours');
 
-$smarty->display('jdc/jdcSynoptique.tpl');
+$smarty->display('jdc/jdcAgenda.tpl');

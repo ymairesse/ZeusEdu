@@ -19,7 +19,7 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
+
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
@@ -30,20 +30,20 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-$smarty->assign('coursGrp', $coursGrp);
 
-$type = 'coursGrp';
+
+$type = 'synoptique';
 $smarty->assign('type', $type);
 
 $lblDestinataire = $Jdc->getRealDestinataire(Null, $acronyme, $type, $coursGrp);
 
 $smarty->assign('lblDestinataire', $lblDestinataire);
-$smarty->assign('destinataire', $coursGrp);
+$smarty->assign('destinataire', 'synoptique');
 
 $smarty->assign('editable', 1);
 
-$smarty->assign('synoptique', false);
+$smarty->assign('synoptique', true);
 
-$smarty->assign('jdcInfo', 'Pour voir votre JDC par cours');
+$smarty->assign('jdcInfo', 'Pour voir l\'ensemble de vos cours');
 
 $smarty->display('jdc/jdcAgenda.tpl');

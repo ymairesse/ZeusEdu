@@ -1,26 +1,54 @@
-<h2>
-    <span id="cible">{$lblDestinataire}</span>
-</h2>
+<div class="container-fluid">
 
-<p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
-<input type="hidden" name="unlocked" id="unlocked" value="false">
-<input type="hidden" name="mode" id="mode" value="{$mode}">
+    <div class="row">
 
-<div id="calendar"
-    class="{$mode} demiOmbre"
-    data-type="{$type|default:''}"
-    data-destinataire="{$destinataire}"
-    data-lbldestinataire="{$lblDestinataire|default:''}"
-    data-editable="{$editable|default:false}"
-    data-viewstate="agendaWeek">
+        <div class="col-md-6 col-sm-12" id="calendrier">
+
+            <p class="jdcInfo {$mode} demiOmbre">{$jdcInfo}</p>
+            <input type="hidden" name="unlocked" id="unlocked" value="false">
+            <input type="hidden" name="mode" id="mode" value="{$mode}">
+
+            <div id="calendar"
+                class="{$mode} demiOmbre"
+                data-type="{$type|default:''}"
+                data-destinataire="{$destinataire}"
+                data-lbldestinataire="{$lblDestinataire|default:''}"
+                data-editable="{$editable|default:false}"
+                data-viewstate="agendaWeek">
+            </div>
+
+        </div>
+
+
+        <div class="col-md-6 col-sm-12" style="max-height:50em; overflow: auto" id="editeur">
+			<p class="notice">En vue synoptique, vous voyez tous les événements liés à l'ensemble de vos cours.<br></p>
+
+			<div id="unTravail">
+				{if isset($travail)}
+					{include file='jdc/jdcEdit.tpl'}
+				{else}
+                    {include file='jdc/selectItem.html'}
+				{/if}
+			</div>
+
+		</div>
+		<!-- col-md-... -->
+
+        <div class="col-xs-12">
+
+            <div class="btn-group" id="legend">
+                {foreach from=$categories key=cat item=travail}
+                <button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
+                {/foreach}
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
-
-<div class="btn-group" id="legend">
-    {foreach from=$categories key=cat item=travail}
-        <button type="button" class="btn btn-default cat_{$cat} voir" data-categorie="{$cat}" title="{$travail.categorie}">{$travail.categorie}</button>
-    {/foreach}
-</div>
+<div id="zoneDel"></div>
+<div id="zoneClone"></div>
 
 <style media="screen">
     .popover {
@@ -29,6 +57,31 @@
 </style>
 
 <script type="text/javascript">
+
+    function lockUnlock(){
+        var lockState = $('#unlocked').val();
+        if (lockState == "true") {
+            $('#unlocked').val('false');
+            $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>');
+            $('#unTravail .btn-edit').prop('disabled', true);
+            }
+            else {
+                $('#unlocked').val('true');
+                $('#unTravail .btn-edit').prop('disabled', false);
+                $('.fc-unLockButton-button').html('<i class="fa fa-unlock fa-2x"></i>')
+            }
+    }
+
+    // calendrier plus étroit, zone d'édition plus grande
+    function modeEdition(){
+        $('#calendrier').removeClass('col-md-9').addClass('col-md-6');
+        $('#editeur').removeClass('col-md-3').addClass('col-md-6');
+    }
+    // calendrier plus large, zone d'édition plus étroite
+    function modeConsultation(){
+        $('#calendrier').addClass('col-md-9').removeClass('col-md-6');
+        $('#editeur').addClass('col-md-3').removeClass('col-md-6');
+    }
 
     var readonly = 'Dans ce mode, seule la consultation est possible';
     var error = 'Erreur';
@@ -41,7 +94,117 @@
 
     $(document).ready(function(){
 
+        $('body').on('click', '#btn-modalDel', function(){
+            var id = $('#id').val();
+            $.post('inc/jdc/delJdc.inc.php', {
+                id: id
+            }, function(resultat){
+                if (resultat > 0) {
+                    $('#unTravail').load('templates/jdc/selectItem.html');
+                    bootbox.alert({
+                        message: "Événement supprimé",
+                        size: 'small'
+                    });
+                }
+                $('#calendar').fullCalendar('refetchEvents');
+                $('#modalDel').modal('hide');
+            })
+        })
+
+        $('#editeur').on('click', '#saveJDC', function(){
+            var enonce = $('#enonce').val();
+            $('#editJdc #enonce').val(enonce);
+
+	        if ($('#editJdc').valid()) {
+	            var formulaire = $('#editJdc').serialize();
+
+	            $.post('inc/jdc/saveJdc.inc.php', {
+	                formulaire: formulaire,
+	                enonce: enonce
+	            }, function(resultat) {
+					var resultJSON = JSON.parse(resultat);
+					var idJdc = resultJSON.idJdc;
+                    bootbox.alert({
+                        message: resultJSON.texte,
+                        size: 'small'
+                    });
+                    // récupérer le contenu de la zone "travail" à droite
+                    $.post('inc/jdc/getTravail.inc.php', {
+                        id: idJdc,
+                        editable: true
+                        }, function(resultat){
+                            $('#unTravail').html(resultat);
+                        })
+                $('#calendar').fullCalendar('refetchEvents');
+	            });
+				modeConsultation();
+	        }
+	    })
+
+        $('#printJDC').click(function(){
+			var coursGrp = $(this).data('coursgrp');
+            var currentTime = new Date();
+            var currentYear = currentTime.getFullYear();
+            var currentMonth = currentTime.getMonth()+1;
+            if (currentMonth > 8 && currentMonth <= 12)
+                var dateDepuis = '01/09/' + currentYear
+                else var dateDepuis = '01/09/' + String(currentYear - 1);
+            $('#modalPrintJDC input#from').datepicker('setDate', dateDepuis);
+			$.post('inc/jdc/listeCoursProfs.inc.php', {
+				coursGrp: coursGrp,
+			}, function(resultat){
+				$('#modalListeCours').html(resultat);
+			})
+			$('#modalPrintJDC').modal('show');
+		})
+
+		$('#printForm').validate({
+			rules: {
+				from: {
+					required: true
+				},
+				to: {
+					required: true
+				}
+			}
+		})
+
+		$('#btnModalPrintJDC').click(function(){
+			var formulaire = $('#printForm').serialize();
+			if ($('#printForm').valid()) {
+				$.post('inc/jdc/printJdc.inc.php', {
+					formulaire: formulaire
+				}, function(resultat){
+					$('#modalPrintJDC').modal('hide');
+					bootbox.alert(resultat);
+				})
+			}
+		})
+
+		$('.datepicker').datepicker({
+            format: "dd/mm/yyyy",
+            clearBtn: true,
+            language: "fr",
+            calendarWeeks: true,
+            autoclose: true,
+            todayHighlight: true,
+			daysOfWeekDisabled: [0,6],
+            });
+
+
         var editable = $('#calendar').data('editable');
+
+		$('#unTravail').on('click', '#btn-clone', function() {
+		    var idTravail = $(this).data('id');
+			var pastIsOpen = $('#unlocked').val();
+            $.post('inc/jdc/editCible.inc.php', {
+                idTravail: idTravail,
+				pastIsOpen: pastIsOpen
+            }, function(resultat) {
+                $('#zoneClone').html(resultat);
+                $('#modalEditCible').modal('show');
+            	})
+			})
 
         // cookie sur le type de vue retenu pour le JDC
         $('#calendar').on('click', '.fc-button', function(){
@@ -113,7 +276,7 @@
 				}
 			],
 			eventRender: function(event, element, view) {
-				element.html( event.destinataire + ' ' + event.title),
+				element.find('.fc-title').html('<div>'+event.destinataire+'</div>');
 				element.popover({
 					title: event.destinataire,
 					content: event.enonce,
@@ -136,18 +299,16 @@
                 var today = moment().format('YYYY-MM-DD');
 				var unlockedPast = $('#unlocked').val();
 				var locked = (debut.isBefore(today) && (unlockedPast == "false")) ;
-                var editable = 1;
 				popoverElement = $(jsEvent.currentTarget);
 				var id = calEvent.id; // l'id de l'événement
-
 				$.post('inc/jdc/getTravail.inc.php', {
 					id: id,
 					editable: editable,
 					locked: locked
 					},
 					function(resultat) {
-						$('#panneauEditeur').fadeOut(400, function() {
-                            $('#panneauEditeur').html(resultat).fadeIn();
+						$('#unTravail').fadeOut(400, function() {
+						$('#unTravail').html(resultat).fadeIn();
 						});
 					}
 				)
@@ -166,6 +327,7 @@
                         size: 'small'
                     })
                 } else {
+
                 var editable = $('#calendar').data('editable');
                 var type = $('#calendar').data('type');
 
@@ -186,7 +348,8 @@
 							lblDestinataire: lblDestinataire
 							},
 							function(resultat){
-								$('#panneauEditeur').html(resultat);
+								modeEdition();
+								$('#unTravail').html(resultat);
 							})
 						}
 					else {
@@ -265,6 +428,45 @@
 		}
 		})
 
+        // suppression d'une note au JDC
+		$("#unTravail").on('click', '#delete', function() {
+			var id = $(this).data('id');
+			$.post('inc/jdc/getModalDel.inc.php', {
+					id: id,
+				},
+				function(resultat) {
+					$("#zoneDel").html(resultat);
+					$("#modalDel").modal('show');
+				}
+			)
+		})
+
+		// modification d'une note au JDC
+		$("#unTravail").on('click', '#modifier', function() {
+			var id = $(this).data('id');
+			$.post('inc/jdc/getMod.inc.php', {
+					id: id
+				},
+				function(resultat) {
+					modeEdition();
+					$('#unTravail').html(resultat);
+				}
+			)
+		})
+
+        $("#zoneEdit").on('click', '#journee', function() {
+			if ($(this).prop('checked') == true) {
+				$("#duree").prop('disabled', true);
+				$('#heure').prop('disabled', true).val('');
+				$("#timepicker").prop('disabled', true);
+				$("#listeDurees").addClass('disabled');
+			} else {
+				$("#duree").prop('disabled', false);
+				$('#heure').prop('disabled', false);
+				$("#timepicker").prop('disabled', false);
+				$("#listeDurees").removeClass('disabled');
+			}
+		})
 
         $('.fc-unLockButton-button').html('<i class="fa fa-lock fa-2x"></i>').addClass('btn btn-primary').prop('title', '(Dé)-verrouiller les dates passées');
 
@@ -273,9 +475,7 @@
 		// http://jsfiddle.net/slyvain/6vmjt9rb/
         var popTemplate = [
             '<div class="popover" style="max-width:600px;" >',
-            '<div class="arrow down"></div>',
             '<div class="popover-header">',
-            '<button id="closepopover" type="button" class="close" aria-hidden="true">&times;</button>',
             '<h3 class="popover-title"></h3>',
             '</div>',
             '<div class="popover-content"></div>',
