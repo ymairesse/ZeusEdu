@@ -885,4 +885,44 @@ class athena
 
         return $liste;
     }
+
+    /**
+     * recherche toutes les remédiations pour un niveau d'étude donné
+     * entre deux dates données
+     *
+     * @param int $niveau
+     * @param string $dateFrom
+     * @param string $dateTo
+     *
+     * @return array
+     */
+    public function getRemed4niveauDates($niveau, $dateFrom, $dateTo){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT offre.idOffre, offre.acronyme, title, nom, prenom, sexe, startDate, endDate ';
+        $sql .= 'FROM '.PFX.'remediationOffre AS offre ';
+        $sql .= 'JOIN '.PFX.'profs AS profs ON profs.acronyme = offre.acronyme ';
+        $sql .= 'JOIN '.PFX.'remediationCibles AS cible ON cible.idOffre = offre.idOffre ';
+        $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo AND cible = :niveau ';
+        $sql .= 'ORDER BY nom, prenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 10);
+        $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 10);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $idOffre = $ligne['idOffre'];
+                // $ligne['startDate'] = Application::datePHP($ligne['startDate']);
+                $liste[$idOffre] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
 }

@@ -791,7 +791,7 @@ class user
     /**
     * retourne la formule M. ou Mme pour l'utilisateur courant
     *
-    * @param void()
+    * @param void
     *
     * @return string
     */
@@ -903,7 +903,7 @@ class user
     /**
      * renvoie la liste des cours de l'utilisateur actif.
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */

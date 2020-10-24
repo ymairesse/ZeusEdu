@@ -1895,6 +1895,7 @@ class Files
         $requete = $connexion->prepare($sql);
 
         $data = array(':idTravail' => $idTravail, 'acronyme' => $acronyme, 'coursGrp' => $coursGrp);
+
         $resultat = $requete->execute($data);
         $liste = array();
         if ($resultat) {
@@ -3282,7 +3283,7 @@ class Files
 
         $resultat = $requete->execute();
         $nb = $requete->rowCount();
-        
+
         // suppression des témoins de téléchargement des fichiers joints
         // recherche des spyIds des fichiers en suivi de téléchargement pour cette notif
         // la liste des fichiers est dans $listeShareIdsString

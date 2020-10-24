@@ -4,6 +4,1210 @@ require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 
 class thot
 {
+
+
+            /**
+            * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+            * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+            * FONCTONS LIÉES AUX RÉUNIONS DE PARENTS =================================
+            * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+            * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+             */
+                /**
+                 * retourne la liste des profs auxquels une possibilité de RV est fixée.
+                 *
+                 * @param $date : date de la RP
+                 *
+                 * @return array
+                 */
+                public function listeProfsAvecRv($idRP) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT DISTINCT rp.acronyme, nom, prenom, rp.statut ';
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rp ';
+                    $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rp.acronyme ';
+                    $sql .= "WHERE idRP = :idRP AND rp.acronyme IN ";
+                    $sql .= '(SELECT DISTINCT acronyme FROM '.PFX.'thotRpRv WHERE dispo = 1) ';
+                    $sql .= 'ORDER BY nom, prenom ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $liste = array();
+                    $resultat = $requete->execute();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $acronyme = $ligne['acronyme'];
+                            $liste[$acronyme] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                public function initialListe($listeProfs) {
+                    $liste = array();
+                    foreach ($listeProfs as $acronyme => $data) {
+                        $initiale = substr($data['nom'], 0, 1);
+                        $liste[$initiale][] = $data;
+                    }
+
+                    return $liste;
+                }
+
+                /**
+                 * renvoie la liste des profs concernés par une RP ciblée sur quelques enseignants
+                 * pour la RP identifiée $idRP
+                 *
+                 * @param int $idRP
+                 *
+                 * @return array
+                 */
+                public function getListeProfsRPcible($idRP){
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT DISTINCT rprv.acronyme, nom, prenom, sexe, titre ';
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rprv ';
+                    $sql .= 'JOIN '.PFX.'profs AS profs ON rprv.acronyme = profs.acronyme ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $sql .= 'ORDER BY nom, prenom ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $liste = array();
+                    $resultat = $requete->execute();
+                    if ($resultat){
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()){
+                            $acronyme = $ligne['acronyme'];
+                            $liste[$acronyme] = $ligne;
+                        }
+                    }
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * retourne la liste des profs en prévision d'une réunion de parents;
+                 * y compris les membres du personnel à "statut spécial" (direction,...).
+                 * les profs sont groupés sur base de l'initiale de leur nom de famille.
+                 *
+                 * @param void
+                 *
+                 * @return array
+                 */
+                public function listeProfsRP()
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT DISTINCT rp.acronyme, rp.statut, sexe, nom, prenom ';
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rp ';
+                    $sql .= 'JOIN '.PFX.'profs AS dp ON rp.acronyme = dp.acronyme ';
+                    $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+                    $resultat = $connexion->query($sql);
+                    $listeProfs = array();
+                    if ($resultat) {
+                        $resultat->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $resultat->fetch()) {
+                            $initiale = substr($ligne['nom'], 0, 1);
+                            $acronyme = $ligne['acronyme'];
+                            $listeProfs[$initiale][$acronyme] = $ligne;
+                        }
+                    }
+                    Application::DeconnexionPDO($connexion);
+
+                    return $listeProfs;
+                }
+
+                /**
+                 * Renvoie la liste des dates de réunions de parents prévues.
+                 *
+                 * @param $active : la réunion de parents est active et donc visible
+                 * @param $ouvert : la réunion de parents est ouverte à l'inscription
+                 *
+                 * @return array
+                 */
+                public function listeDatesReunion($active = null, $ouvert = null)
+                {
+                    // une réunion de parents inactive n'est certainement pas ouverte
+                    if ($active == false) {
+                        $ouvert = false;
+                    }
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = "SELECT idRP, DATE_FORMAT(date,'%d/%m/%Y') AS date ";
+                    $sql .= 'FROM '.PFX.'thotRp ';
+                    if ($ouvert != null && $active != null) {
+                        $sql .= 'WHERE active = :active AND ouvert = :ouvert ';
+                    } elseif ($active != null) {
+                        $sql .= 'WHERE active = :active ';
+                    } elseif ($ouvert != null) {
+                        $sql .= 'WHERE ouvert = :ouvert ';
+                    }
+                    $requete = $connexion->prepare($sql);
+
+                    if ($active != Null)
+                        $requete->bindParam(':active', $active, PDO::PARAM_INT);
+                    if ($ouvert != Null)
+                        $requete->bindParam(':ouvert', $ouvert, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    $liste = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $liste[] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * enregistrement d'une nouvelle date de réunion de parents.
+                 *
+                 * @param $post : formulaire de création d'une nouvelle RP
+                 *
+                 * @return int
+                 */
+                public function saveNewRpDate($post) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+                    $idRP = isset($post['idRP']) ? $post['idRP'] : Null;
+
+                    if ($idRP == Null) {
+                        $sql = 'INSERT INTO '.PFX.'thotRp ';
+                        $sql .= 'SET date = :date, active = 0, ouvert = 0, notice = "", typeRP = :typeRP ';
+                    }
+                    else {
+                        $sql = 'UPDATE '.PFX.'thotRP ';
+                        $sql .= 'SET SET date = :date, active = :active, ouvert = :ouvert, notice = :notice, typeRP = :typeRP ';
+                        $sql .= 'WHERE idRP = :idRP ';
+                    }
+                    $requete = $connexion->prepare($sql);
+
+                    $date = isset($post['date']) ? Application::dateMysql($post['date']) : Null;
+                    $typeRP = isset($post['typeRP']) ? $post['typeRP'] : Null;
+
+                    $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+                    $requete->bindParam(':typeRP', $typeRP, PDO::PARAM_STR, 10);
+
+                    if ($idRP != Null){
+                        $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                        $requete->bindParam(':ouvert', $ouvert, PDO::PARAM_INT);
+                        $requete->bindParam(':active', $active, PDO::PARAM_INT);
+                        $requete->bindParam(':notice', $notice, PDO::PARAM_STR);
+                    }
+
+                    $resultat = $requete->execute();
+
+                    if ($idRP == Null)
+                        $idRP = $connexion->lastInsertId();
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $idRP;
+                }
+
+                /**
+                 * enregistrement du canevas de réunion de parents initialisé par les admins.
+                 *
+                 * @param $post : les données provenant du formulaire
+                 *
+                 * @return int : le nombre d'enregistrements réalisés
+                 */
+                public function saveRPinit($idRP, $post) {
+                    if (isset($post['prof'])) {
+                        // des profs ont été sélectionnés, on peut enregistre
+                        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                        $sql = 'INSERT INTO '.PFX.'thotRpRv ';
+                        $sql .= 'SET idRP = :idRP, acronyme = :acronyme, heure = :heure, dispo = :dispo, statut = :statut ';
+                        $sql .= 'ON DUPLICATE KEY UPDATE acronyme = :acronyme, heure = :heure, dispo = :dispo, statut = :statut ';
+                        $requete = $connexion->prepare($sql);
+
+                        $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                        $resultat = 0;
+                        // passer tous les champs provenant du formulaire en revue
+                        foreach ($post as $key => $heure) {
+                            // dissection du nom du champ
+                            $clef = explode('_', $key);
+                            // est-ce un champ "heure_x"?
+                            if ($clef[0] == 'heure') {
+                                // récupérer le numéro de l'heure
+                                $i = $clef[1];
+                                // voir si cette heure est "publiée"
+                                $dispo = (isset($post['publie_'.$i])) ? 1 : 0;
+                                foreach ($post['prof'] as $acronyme) {
+                                    $statut = (isset($post['dir'][$acronyme])) ? 'dir' : 'prof';
+
+                                    $requete->bindParam(':statut', $statut, PDO::PARAM_STR, 4);
+                                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+                                    $requete->bindParam(':dispo', $dispo, PDO::PARAM_INT);
+                                    $requete->bindParam(':heure', $heure, PDO::PARAM_STR, 5);
+
+                                    $resultat += $requete->execute();
+                                }
+                            }
+                        }
+
+                        Application::deconnexionPDO($connexion);
+
+                        return $resultat;
+                    } else {
+                        return;
+                    }
+                }
+
+                /**
+                 * Enregistrement des informations complémentaires pourla réunion de parents.
+                 *
+                 * @param $post: les données provenant du deuxième formulaire
+                 *
+                 * @return string : message de succès ou d'erreur
+                 */
+                public function saveRPinit2($post) {
+                    $minPer1 = date('H:i', strtotime($post['minPer1']));
+                    $maxPer1 = date('H:i', strtotime($post['maxPer1']));
+                    $minPer2 = date('H:i', strtotime($post['minPer2']));
+                    $maxPer2 = date('H:i', strtotime($post['maxPer2']));
+                    $minPer3 = date('H:i', strtotime($post['minPer3']));
+                    $maxPer3 = date('H:i', strtotime($post['maxPer3']));
+
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $idRP = $post['idRP'];
+                    if ($idRP != '') {
+                        $sql = 'UPDATE '.PFX.'thotRp ';
+                        $sql .= 'SET notice = :notice, ouvert = :ouvert, active = :active ';
+                        $sql .= 'WHERE idRP = :idRP ';
+                        $requete = $connexion->prepare($sql);
+
+                        $notice = $post['notice'];
+                        $active = isset($post['active']) ? 1 : 0;
+                        $ouvert = isset($post['ouvert']) ? 1 : 0;
+
+                        $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                        $requete->bindParam(':ouvert', $ouvert, PDO::PARAM_INT);
+                        $requete->bindParam(':active', $active, PDO::PARAM_INT);
+                        $requete->bindParam(':notice', $notice, PDO::PARAM_STR);
+
+                        $resultat = $requete->execute();
+                    }
+
+                    if (($minPer1 < $maxPer1) && ($minPer2 >= $maxPer1) && ($minPer2 < $maxPer2) && ($minPer3 >= $maxPer2) && ($minPer3 < $maxPer3)) {
+                        if ($idRP != '') {
+                            // enregistrement des périodes possibles pour les listes d'attente
+                            $sql = 'INSERT INTO '.PFX.'thotRpHeures ';
+                            $sql .= 'SET idRP = :idRP, minPer1 = :minPer1, maxPer1 = :maxPer1, ';
+                            $sql .= 'minPer2 = :minPer2, maxPer2 = :maxPer2, minPer3 = :minPer3, maxPer3 = :maxPer3 ';
+                            $sql .= 'ON DUPLICATE KEY UPDATE ';
+                            $sql .= 'minPer1 = :minPer1, maxPer1 = :maxPer1, minPer2 = :minPer2, maxPer2 = :maxPer2, ';
+                            $sql .= 'minPer3 = :minPer3, maxPer3 = :maxPer3 ';
+                            $requete = $connexion->prepare($sql);
+
+                            $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                            $requete->bindParam(':minPer1', $minPer1, PDO::PARAM_STR);
+                            $requete->bindParam(':maxPer1', $maxPer1, PDO::PARAM_STR);
+                            $requete->bindParam(':minPer2', $minPer2, PDO::PARAM_STR);
+                            $requete->bindParam(':maxPer2', $maxPer2, PDO::PARAM_STR);
+                            $requete->bindParam(':minPer3', $minPer3, PDO::PARAM_STR);
+                            $requete->bindParam(':maxPer3', $maxPer3, PDO::PARAM_STR);
+
+                            $resultat = $requete->execute();
+
+                            $message = 'Enregistrement OK';
+                            }
+                            else {
+                                $message = 'Données inconnues';
+                            }
+                        } else {
+                        $message = 'Les heures des périodes semblent mal définies';
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $message;
+                }
+
+                /**
+                 * Inverse le caractère "disponible" d'un moment de RV dans une réunion de parents.
+                 *
+                 * @param int $idRP : identifiant de la RP
+                 * @param int $idRV : l'identifiant du moment de réunion
+                 *
+                 * @return integer: 1 si le RV est disponible, 0 si pas disponible
+                 */
+                public function toggleDispo($idRP, $idRV)
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    // inverser la valeur du champ 'dispo'
+                    $sql = 'UPDATE '.PFX.'thotRpRv ';
+                    $sql .= 'SET dispo = IF(dispo=1, 0, 1) ';
+                    $sql .= 'WHERE idRV = :idRV AND idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRV', $idRV, PDO::PARAM_INT);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    if ($resultat) {
+                        // rechercher la valeur du champ 'dispo' après l'inversion
+                        $sql = 'SELECT dispo FROM '.PFX.'thotRpRv ';
+                        $sql .= 'WHERE idRV = :idRV AND idRP = :idRP ';
+                        $requete = $connexion->prepare($sql);
+
+                        $requete->bindParam(':idRV', $idRV, PDO::PARAM_INT);
+                        $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                        $resultat = $requete->execute();
+                        $ligne = $requete->fetch();
+                        $resultat = $ligne['dispo'];
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $resultat;
+                }
+
+                /**
+                 * retourne le nombre de RV déjà pris pour la RP de la date donnée.
+                 *
+                 * @param $date : la date de la RP
+                 *
+                 * @return int
+                 */
+                public function nbRv($idRP)
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT COUNT(*) AS nb ';
+                    $sql .= 'FROM '.PFX."thotRpRv WHERE matricule != '' AND idRP = :idRP ";
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    if ($resultat) {
+                        $ligne = $requete->fetch();
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $ligne['nb'];
+                }
+
+                /**
+                 * retourne la liste des nom, prenom et classe des élèves dont on passe la liste des matricules.
+                 *
+                 * @param $matricules : array|integer
+                 *
+                 * @return array : trié sur les matricules
+                 */
+                public function listeElevesMatricules($listeEleves)
+                {
+                    if (is_array($listeEleves)) {
+                        $listeMatricules = implode(',', $listeEleves);
+                    } else {
+                        $listeMatricules = $listeEleves;
+                    }
+
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT matricule, groupe, nom, prenom ';
+                    $sql .= 'FROM '.PFX.'eleves ';
+                    $sql .= "WHERE matricule IN ($listeMatricules) ";
+                    $sql .= 'ORDER BY groupe ';
+
+                    $resultat = $connexion->query($sql);
+                    $listeEleves = array();
+                    if ($resultat) {
+                        $resultat->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $resultat->fetch()) {
+                            $matricule = $ligne['matricule'];
+                            $listeEleves[$matricule] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $listeEleves;
+                }
+
+                /**
+                 * retourne la liste des nom, prenom, mail des parents dont on fournit la liste des userNames.
+                 *
+                 * @param array (ou pas) de la liste des userNames
+                 *
+                 * @return array
+                 */
+                public function listeParentsUserNames($listeUserNames)
+                {
+                    if (is_array($listeUserNames)) {
+                        $listeUserNamesString = "'".implode("','", $listeUserNames)."'";
+                    } else {
+                        $listeUserNamesString = "'".$listeUserNames."'";
+                    }
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT formule, nom, prenom, mail, lien, userName ';
+                    $sql .= 'FROM '.PFX.'thotParents ';
+                    $sql .= "WHERE userName IN ($listeUserNamesString) ";
+
+                    $resultat = $connexion->query($sql);
+                    $listeParents = array();
+                    if ($resultat) {
+                        $resultat->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $resultat->fetch()) {
+                            $userName = $ligne['userName'];
+                            $listeParents[$userName] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $listeParents;
+                }
+
+                /**
+                 * renvoie la liste des RV pris pour un prof donné et pour une date donnée.
+                 *
+                 * @param $acronyme : l'acronyme du profs
+                 * @param $date : la date de la réunion de parents
+                 *
+                 * @return array
+                 */
+                public function getRVprof($acronyme, $idRP) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = "SELECT idRV, rv.matricule, userParent, TIME_FORMAT(heure,'%H:%i') AS heure, dispo, ";
+                    $sql .= "'' AS formule, '' AS nomParent, '' AS prenomParent, '' AS userName, '' AS mail, '' AS lien, ";
+                    $sql .= "'' AS nom, '' AS prenom, '' AS groupe ";
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+                    $sql .= 'WHERE acronyme = :acronyme AND idRP = :idRP ';
+                    $sql .= 'ORDER BY heure ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+                    $listeBrute = array();
+                    $resultat = $requete->execute();
+
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $idRV = $ligne['idRV'];
+                            $matricule = $ligne['matricule'];
+                            $ligne['photo'] = Ecole::photo($matricule);
+                            $listeBrute[$idRV] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    // retrouver les caractéristiques des élèves qui figurent dans le tableau des RV
+                    $listeMatricules = array_filter(array_column($listeBrute, 'matricule'));
+                    $listeEleves = $this->listeElevesMatricules($listeMatricules);
+
+                    // retrouver les caractéristiques des parents qui figurent dans le tableau des RV
+                    $listeUserParents = array_filter(array_column($listeBrute, 'userParent'));
+                    $listeParents = $this->listeParentsUserNames($listeUserParents);
+
+                    // recombinaison des trois listes
+                    foreach ($listeBrute as $id => $data) {
+                        if ($data['matricule'] != '') {
+                            $matricule = $data['matricule'];
+                            $eleve = $listeEleves[$matricule];
+                            $listeBrute[$id]['nom'] = $eleve['nom'];
+                            $listeBrute[$id]['prenom'] = $eleve['prenom'];
+                            $listeBrute[$id]['groupe'] = $eleve['groupe'];
+                        }
+                        if ($data['userParent'] != '') {
+                            $userName = $data['userParent'];
+                            // précaution au cas où le parent ne figurerait plus dans la table des parents après la prise de RV
+                            if (isset($listeParents[$userName])) {
+                                $parent = $listeParents[$userName];
+                                $listeBrute[$id]['formule'] = $parent['formule'];
+                                $listeBrute[$id]['nomParent'] = $parent['nom'];
+                                $listeBrute[$id]['prenomParent'] = $parent['prenom'];
+                                $listeBrute[$id]['mail'] = $parent['mail'];
+                                $listeBrute[$id]['lien'] = $parent['lien'];
+                                $listeBrute[$id]['userName'] = $parent['userName'];
+                            }
+                        }
+                    }
+
+                    return $listeBrute;
+                }
+
+                /**
+                 * renvoie la liste des RV pris pour un élève donné et pour une RP donnée.
+                 *
+                 * @param $matricule : le matricule de l'élève
+                 * @param $date : la date de la réunion de parents
+                 *
+                 * @return array
+                 */
+                public function getRVeleve($listeMatricules, $idRP) {
+                    if (is_array($listeMatricules)) {
+                        $listeMatriculesString = implode(',', $listeMatricules);
+                    } else {
+                        $listeMatriculesString = $listeMatricules;
+                    }
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = "SELECT rv.matricule, DATE_FORMAT(heure,'%H:%i') AS heure, rv.acronyme, nom, prenom ";
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+                    $sql .= 'JOIN '.PFX.'profs AS dp ON rv.acronyme = dp.acronyme ';
+                    $sql .= 'WHERE matricule IN ('.$listeMatriculesString.') AND idRP = :idRP ';
+                    $sql .= 'ORDER BY heure ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $liste = array();
+                    $resultat = $requete->execute();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $matricule = $ligne['matricule'];
+                            $heure = $ligne['heure'];
+                            // on suppose qu'il n'y a pas deux RV à la même période
+                            $liste[$matricule][$heure] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * Effacement d'un RV parent dans la base de données.
+                 *
+                 * @param $id : l'identifiant du RV
+                 *
+                 * @return int : nombre d'enregistrements supprimés (normalement, 1)
+                 */
+                public function delRV($idRP, $idRV)
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'UPDATE '.PFX.'thotRpRv ';
+                    $sql .= 'SET matricule=Null, userParent=Null, dispo=1 ';
+                    $sql .= 'WHERE idRV = :idRV AND idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRV', $idRV, PDO::PARAM_INT);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $resultat;
+                }
+
+                /**
+                 * recherche les informations d'un RV dont on fournit l'id.
+                 *
+                 * @param $idRV : l'identifiant du RV
+                 *
+                 * @return array
+                 */
+                public function getInfoRV($idRV) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT acronyme, rv.matricule, formule, nom, prenom, userParent, ';
+                    $sql .= "DATE_FORMAT( date, '%d/%m/%Y' ) AS date, DATE_FORMAT(heure,'%Hh%i') AS heure, dispo, mail ";
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+                    $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = rv.matricule ';
+                    $sql .= 'WHERE id = :idRV ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRV', $idRV, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+
+                    $ligne = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        $ligne = $requete->fetch();
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $ligne;
+                }
+
+                /**
+                 * retourne la liste des élèves avec leurs parents pour un prof donné.
+                 *
+                 * @param $acronyme : le prof
+                 *
+                 * @return array : la liste des élèves triés par classe
+                 */
+                public function getElevesDeProf($acronyme, $statut = null)
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    switch ($statut) {
+                        case 'dir':
+                            $sql = 'SELECT matricule, nom, prenom, groupe ';
+                            $sql .= 'FROM '.PFX.'eleves ';
+                            break;
+                        default:
+                            $sql = 'SELECT dpc.coursGrp, ec.matricule, nom, prenom, groupe ';
+                            $sql .= 'FROM '.PFX.'profsCours AS dpc ';
+                            $sql .= 'JOIN '.PFX.'elevesCours AS ec ON ec.coursGrp = dpc.coursGrp ';
+                            $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = ec.matricule ';
+                            $sql .= "WHERE acronyme='$acronyme' ";
+                            break;
+                        }
+                    $sql .= 'ORDER BY groupe, nom, prenom ';
+                    $resultat = $connexion->query($sql);
+                    $liste = array();
+                    if ($resultat) {
+                        $resultat->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $resultat->fetch()) {
+                            $classe = $ligne['groupe'];
+                            $matricule = $ligne['matricule'];
+                            $liste[$classe][$matricule] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * inscription à un RV donné des parents d'un élève dont on fournit le amtricule
+                 * procédure pour l'admin afin d'inscrire un parent dont on a reçu une demande de RV "papier".
+                 * le nombre maximum de rendez-vous est passé en paramètre.
+                 *
+                 * @param $idRP : l'identifiant de la RP
+                 * @param $matricule : le matricule de l'élève dont on inscrit un parent
+                 * @param $max : le nombre max de RV
+                 *
+                 * @return int : -1  si inscription over quota ($max), 0 si écriture impossible dans la BD, 1 si tout OK
+                 */
+                public function inscriptionEleve($idRP, $idRV, $matricule, $max, $userParent = Null){
+                    // rechercher les heures de RV déjà existantes pour la RP d'identifaint $idRP
+                    $listeRV = $this->getRVeleve($matricule, $idRP);
+                    $listeHeures = "'".implode("','", array_keys((isset($listeRV[$matricule])) ? $listeRV[$matricule] : $listeRV))."'";
+
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    // compter le nombre de RV
+                    $sql = 'SELECT count(*) AS nb ';
+                    $sql .= 'FROM '.PFX.'thotRpRv ';
+                    $sql .= 'WHERE matricule = :matricule AND idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+            // echo $sql;
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+            // Application::afficher(array($matricule, $idRP), true);
+                    $resultat = $requete->execute();
+
+                    if ($resultat) {
+                        $ligne = $requete->fetch();
+                        if ($ligne['nb'] >= $max) {
+                            return -1;
+                        }
+                    }
+
+                    // l'élève a-t-il déjà un autre RV à cette RP à cette heure-là
+                    // (auquel cas, il faut refuser une nouvelle inscription)
+                    $sql = 'SELECT heure ';
+                    $sql .= 'FROM '.PFX.'thotRpRv ';
+                    $sql .= 'WHERE idRV = :idRV AND heure IN ('.$listeHeures.') ';
+                    $requete = $connexion->prepare($sql);
+            // echo $sql;
+                    $requete->bindParam(':idRV', $idRV, PDO::PARAM_INT);
+            // die($idRV);
+                    $resultat = $requete->execute();
+
+                    if ($resultat) {
+                        $ligne = $requete->fetch();
+                        if (isset($ligne['heure'])) {
+                            return -2;
+                        }
+                    }
+
+                    // tout va bien, on peut l'inscrire dans la table des RV existants (voir l'initialisation)
+                    $sql = 'UPDATE '.PFX.'thotRpRv ';
+                    $sql .= 'SET matricule = :matricule, userParent = :userParent, dispo = 0 ';
+                    $sql .= 'WHERE idRV = :idRV ';
+                    $requete = $connexion->prepare($sql);
+            // echo $sql;
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requete->bindParam(':userParent', $userParent, PDO::PARAM_STR,25);
+                    $requete->bindParam(':idRV', $idRV, PDO::PARAM_INT);
+            // Application::afficher(array($matricule, $userParent, $idRV), true);
+                    $resultat = $requete->execute();
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $resultat;
+                }
+
+                /**
+                 * retourne la liste des membres du peresonnel à statut spécial (direction, PMS,...)
+                 * qui doivent apparaître dans liste des RV possibles.
+                 *
+                 * @param void()
+                 *
+                 * @return array
+                 */
+                public function listeStatutsSpeciaux()
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT DISTINCT rv.acronyme,  nom, prenom, sexe, titre ';
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+                    $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rv.acronyme ';
+                    $sql .= "WHERE rv.statut = 'dir' ";
+                    $resultat = $connexion->query($sql);
+                    $liste = array();
+                    if ($resultat) {
+                        $resultat->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $resultat->fetch()) {
+                            $acronyme = $ligne['acronyme'];
+                            $liste[$acronyme] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * retourne la liste des périodes de RV d'une RP dont on fournit l'identifiant
+                 *
+                 * @param int $idRP : date au format php
+                 *
+                 * @return array
+                 */
+                public function getListeHeuresRP($idRP) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = "SELECT DISTINCT DATE_FORMAT(heure,'%H:%i') AS heure ";
+                    $sql .= 'FROM '.PFX.'thotRpRv ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $sql .= 'ORDER BY heure ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    $liste = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $heure = $ligne['heure'];
+                            $liste[$heure] = $heure;
+                        }
+                    }
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * retourne les heures de début et de fin d'une réunion dont on fournit la date.
+                 *
+                 * @param $date
+                 *
+                 * @return array : les deux limites
+                 */
+                public function heuresLimite($idRP) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT MIN(heure) AS min, MAX(heure) AS max ';
+                    $sql .= 'FROM '.PFX.'thotRpRv ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $ligne = array();
+                    $resultat = $requete->execute();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        $ligne = $requete->fetch();
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $ligne;
+                }
+
+                /**
+                 * recherche les caractéristiques d'une réunion de parents dont on fournit l'identifiant.
+                 *
+                 * @param int $idRP
+                 *
+                 * @return array
+                 */
+                public function getInfoRp($idRP) {
+                    $heuresLimites = $this->heuresLimite($idRP);
+
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT rp.idRP, rp.date, ouvert, active, notice, typeRP, ';
+                    $sql .= "DATE_FORMAT(minPer1,'%H:%i') AS minPer1, DATE_FORMAT(maxPer1,'%H:%i') AS maxPer1, ";
+                    $sql .= "DATE_FORMAT(minPer2,'%H:%i') AS minPer2, DATE_FORMAT(maxPer2,'%H:%i') AS maxPer2, ";
+                    $sql .= "DATE_FORMAT(minPer3,'%H:%i') AS minPer3, DATE_FORMAT(maxPer3,'%H:%i') AS maxPer3 ";
+                    $sql .= 'FROM '.PFX.'thotRp AS rp ';
+                    $sql .= 'LEFT JOIN '.PFX.'thotRpHeures AS rh ON rh.idRP = rp.idRP ';
+                    $sql .= 'WHERE rp.idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $ligne = array();
+
+                    $resultat = $requete->execute();
+                    if ($resultat) {
+                        $ligne = $requete->fetch();
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    $tableau = array(
+                        'idRP' => $idRP,
+                        'date' => Application::datePHP($ligne['date']),
+                        'heuresLimites' => $heuresLimites,
+                        'typeRP' => $ligne['typeRP'],
+                        'generalites' => array(
+                            'ouvert' => $ligne['ouvert'],
+                            'active' => $ligne['active'],
+                            'notice' => $ligne['notice'], ),
+                        'heures' => array(
+                            'minPer1' => $ligne['minPer1'],
+                            'minPer2' => $ligne['minPer2'],
+                            'minPer3' => $ligne['minPer3'],
+                            'maxPer1' => $ligne['maxPer1'],
+                            'maxPer2' => $ligne['maxPer2'],
+                            'maxPer3' => $ligne['maxPer3'], ),
+                        );
+
+                    return $tableau;
+                }
+
+                /**
+                 * Effacement définitif d'une réunion de parents dont on fournit la date.
+                 *
+                 * @param $date
+                 */
+                public function delRP($idRP)
+                {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    // suppression de la réunion de parents dans la liste des dates existantes
+                    $sql = 'DELETE FROM '.PFX.'thotRp ';
+                    $sql .= "WHERE idRP = :idRP ";
+                    $requete = $connexion->prepare($sql);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $resultat = $requete->execute();
+
+                    // suppression des RV
+                    $sql = 'DELETE FROM '.PFX.'thotRpRv ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $resultat = $requete->execute();
+
+                    // suppression des heures limites de la liste d'attente
+                    $sql = 'DELETE FROM '.PFX.'thotRpHeures ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $resultat = $requete->execute();
+
+                    // suppression des informations de la liste d'attente
+                    $sql = 'DELETE FROM '.PFX.'thotRpAttente ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $resultat = $requete->execute();
+
+                    // suppression des informations sur les locaux de RV
+                    $sql = 'DELETE FROM '.PFX.'thotRpLocaux ';
+                    $sql .= 'WHERE idRP = :idRP ';
+                    $requete = $connexion->prepare($sql);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $resultat = $requete->execute();
+
+                    Application::deconnexionPDO($connexion);
+                }
+
+                /**
+                 * retourne les périodes pour les listes d'attente pour une RP dont on donne l'identifiant.
+                 *
+                 * @param int $idRP
+                 *
+                 * @return array
+                 */
+                public function getListePeriodes($idRP)
+                {
+                    $infoRp = $this->getInfoRp($idRP);
+                    $liste = $infoRp['heures'];
+                    $listeHeures = array(
+                        '1' => array('min' => $liste['minPer1'], 'max' => $liste['maxPer1']),
+                        '2' => array('min' => $liste['minPer2'], 'max' => $liste['maxPer2']),
+                        '3' => array('min' => $liste['minPer3'], 'max' => $liste['maxPer3']),
+                    );
+
+                    return $listeHeures;
+                }
+
+                /**
+                 * retourne la liste d'attente des demandes de RV pour un prof dont on fournit l'acronyme et la date de la RP.
+                 *
+                 * @param int $idRP
+                 * @param string $acronyme
+                 *
+                 * @return array
+                 */
+                public function getListeAttenteProf($idRP, $acronyme) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT at.matricule, at.userName, periode, de.nom, de.prenom, groupe, formule, ';
+                    $sql .= 'tp.nom AS nomParent, tp.prenom AS prenomParent, tp.mail ';
+                    $sql .= 'FROM '.PFX.'thotRpAttente AS at ';
+                    $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = at.matricule ';
+                    $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = at.matricule ';
+                    $sql .= 'WHERE idRP = :idRP AND acronyme = :acronyme ';
+                    $sql .= 'ORDER BY periode ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    $liste = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $liste[] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    $periodes = $this->getListePeriodes($idRP);
+                    $listeFinale = array();
+                    foreach ($liste as $key => $ligne) {
+                        $t = $ligne['periode'];
+                        $liste[$key]['heures'] = sprintf('%s à %s', $periodes[$t]['min'], $periodes[$t]['max']);
+                    }
+
+                    return $liste;
+                }
+
+                /**
+                 * Envoie en liste d'attente un élève dont on donne le matricule,
+                 * pour le prof dont on indique l'acronyme
+                 * pour la RP dont on indique la date avec la période indiquée (entre 1 et 3).
+                 *
+                 * @param int $matricule: le matricule de l'élève
+                 * @param string $acronyme : l'acronyme du prof
+                 * @param int $idRP : l'identifian' de la RP
+                 * @param int $periode : la période choisie pour un RV éventuel
+                 *
+                 * @return int : le nombre d'insertions (en principe, 1 ou 0 si échec de l'enregistrement)
+                 */
+                public function setListeAttenteProf($matricule, $acronyme, $idRP, $periode) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'INSERT INTO '.PFX.'thotRpAttente     ';
+                    $sql .= 'SET matricule = :matricule, acronyme = :acronyme, idRP = :idRP, periode = :periode ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+
+                    $nb = $requete->rowCount();
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $nb;
+                }
+
+                /**
+                 * Supprime un RV en liste d'attente pour un élève dont on fournit le matricule
+                 * avec le prof dont on indique l'acronyme et pour la réunion $idRP
+                 *
+                 * @param int $matricule
+                 * @param string $acronyme
+                 * @param int $idRP
+                 * @param int $periode
+                 *
+                 * @return int : le nombre d'effacements réalisés (en principe, 1)
+                 */
+                public function delListeAttenteProf($matricule, $acronyme, $idRP, $periode) {
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'DELETE FROM '.PFX.'thotRpAttente ';
+                    $sql .= 'WHERE matricule = :matricule AND acronyme = :acronyme AND idRP = :idRP AND periode = :periode ';
+                    $requete = $connexion->prepare($sql);
+            //echo $sql;
+                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+            // Application::afficher(array($acronyme, $matricule, $idRP, $periode), true);
+                    $resultat = $requete->execute();
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $resultat;
+                    }
+
+                /**
+                 * renvoie la liste des RV pour la RP de date donnée à destination des parents.
+                 *
+                 * @param int $idRP : identifiant de la RP
+                 * @param string $mode : tous les RV si true, seulement les RV inscrits par les admin si false
+                 * @param int $niveau : niveau d'étude des élèves
+                 *
+                 * @return array
+                 */
+                public function listeRVParents($idRP, $mode, $niveau){
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+
+                    $sql = 'SELECT rprv.matricule, rprv.idRP, rprv.idRV, de.nom AS nomEleve, de.prenom as prenomEleve, de.groupe, ';
+                    $sql .= 'DATE_FORMAT(heure,"%H:%i") AS heure, rp.date, ';
+                    $sql .= 'dp.nom AS nomProf, dp.prenom AS prenomProf, dp.sexe, ';
+                    $sql .= 'tp.userName, tp.nom AS nomParent, tp.prenom AS prenomParent, local ';
+                    $sql .= 'FROM didac_thotRpRv AS rprv ';
+                    $sql .= 'JOIN didac_thotRp AS rp ON rp.idRP = rprv.idRP ';
+                    $sql .= 'JOIN didac_eleves AS de ON de.matricule = rprv.matricule ';
+                    $sql .= 'JOIN didac_profs AS dp ON dp.acronyme = rprv.acronyme ';
+                    $sql .= 'JOIN didac_thotParents AS tp ON tp.userName = rprv.userParent ';
+                    $sql .= 'LEFT JOIN didac_thotRpLocaux AS loc ON loc.idRP = rprv.idRP AND dp.acronyme = loc.acronyme ';
+                    $sql .= 'WHERE rprv.idRP = :idRP AND SUBSTR(groupe, 1, 1) = :niveau ';
+                    if ($mode == 'partiel') {
+                        $sql .= 'AND userParent IS Null ';
+                    }
+                    $sql .= 'ORDER BY groupe, heure, de.nom, de.prenom ';
+
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    $liste = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $matricule = $ligne['matricule'];
+                            $liste[$matricule][] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
+                 * renvoie la liste d'attente pour la RP de date donnée à destination des parents.
+                 *
+                 * @param $date
+                 * @param $complet
+                 *
+                 * @return array
+                 */
+                public function listeAttenteParents($date, $mode, $niveau)
+                {
+                    $date = Application::dateMysql($date);
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT dta.matricule, periode, sexe, nom, prenom ';
+                    $sql .= 'FROM '.PFX.'thotRpAttente AS dta ';
+                    $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dta.acronyme ';
+                    $sql .= "WHERE date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ";
+                    if ($mode == 'partiel') {
+                        $sql .= 'AND userParent IS Null ';
+                    }
+                    $sql .= 'ORDER BY matricule, date, periode ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+                    $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+
+                    $resultat = $requete->execute();
+                    $liste = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                            $matricule = $ligne['matricule'];
+                            $liste[$matricule][] = $ligne;
+                        }
+                    }
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                 /**
+                  * Renvoie la liste des locaux attribués aux profs pour la RP dont on fournit la date.
+                  *
+                  * @param $date : la date de la RP
+                  *
+                  * @return array : acronyme => local
+                  */
+                 public function getLocauxRp($idRP)
+                 {
+                     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                     $sql = 'SELECT DISTINCT rprv.acronyme, local, nom, prenom ';
+                     $sql .= 'FROM '.PFX.'thotRpRv AS rprv ';
+                     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rprv.acronyme ';
+                     $sql .= 'LEFT JOIN '.PFX.'thotRpLocaux AS loc ON ((loc.acronyme = rprv.acronyme ) AND (loc.idRP = rprv.idRP)) ';
+                     $sql .= 'WHERE rprv.idRP = :idRP ';
+                     $sql .= 'ORDER BY nom, prenom ';
+                     $requete = $connexion->prepare($sql);
+
+                     $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                     $resultat = $requete->execute();
+                     $liste = array();
+                     if ($resultat) {
+                         $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()) {
+                             $acronyme = $ligne['acronyme'];
+                             $liste[$acronyme] = $ligne;
+                         }
+                     }
+                     Application::deconnexionPDO($connexion);
+
+                     return $liste;
+                 }
+
+                /**
+                 * Enregistre la liste des locaux en provenance du formulaire.
+                 *
+                 * @param array $post
+                 *
+                 * @return int : nombre d'enregistrements réalisés
+                 */
+                public function saveLocaux($post) {
+                    $idRP = isset($post['idRP']) ? $post['idRP'] : null;
+                    if ($idRP != null) {
+                        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                        $sql = 'INSERT INTO '.PFX.'thotRpLocaux ';
+                        $sql .= 'SET idRP = :idRP, acronyme = :acronyme, local = :local ';
+                        $sql .= 'ON DUPLICATE KEY UPDATE local = :local ';
+                        $requete = $connexion->prepare($sql);
+
+                        $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+
+                        $nb = 0;
+                        foreach ($post as $field => $local) {
+                            $field = explode('_', $field);
+                            if ($field[0] == 'local') {
+                                $acronyme = $field[1];
+                                $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+                                $requete->bindParam(':local', $local, PDO::PARAM_STR, 12);
+                                $nb += $requete->execute();
+                            }
+                        }
+                        Application::deconnexionPDO($connexion);
+
+                        return $nb;
+                    } else {
+                        return 0;
+                    }
+                }
+                /**
+                * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                * FONCTONS LIÉES AUX RÉUNIONS DE PARENTS ===============================
+                * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 */
+
+
     /**
      * renvoie la liste de toutes les connexions entre deux dates données.
      *
@@ -74,16 +1278,23 @@ class thot
      *
      * @return array
      */
-    public function getNotification($id, $acronyme)
+    public function getNotification($id, $acronyme = Null)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT de.matricule, id, type, proprietaire, objet, texte, dateDebut, dateFin, destinataire, mail, accuse, freeze ';
         $sql .= 'FROM '.PFX.'thotNotifications ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = destinataire ';
-        $sql .= 'WHERE id= :id AND proprietaire = :acronyme ';
+        $sql .= 'WHERE id= :id ';
+        if ($acronyme != Null) {
+            $sql .= 'AND proprietaire = :acronyme ';
+            }
+
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+        if ($acronyme != Null) {
+            $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+            }
+
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
         $notification = array();
         $resultat = $requete->execute();
@@ -107,16 +1318,28 @@ class thot
      *
      * @return nombre de suppression dans la BD (normalement 0)
      */
-    public function delNotification($id, $acronyme)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'DELETE FROM '.PFX.'thotNotifications ';
-        $sql .= "WHERE id='$id' AND proprietaire='$acronyme' ";
-        $resultat = $connexion->exec($sql);
-        Application::deconnexionPDO($connexion);
+	public function delNotification($id, $acronyme)
+		{
+			// évacuation des PJ
+			$nb = $this->delPJ4notif ($id, $acronyme, Null);
+			// effacement des accusés de lecture
+			$nb = $this->delAccuse($id, $acronyme);
 
-        return $resultat;
-    }
+			$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+			$sql = 'DELETE FROM '.PFX.'thotNotifications ';
+			$sql .= 'WHERE id = :id AND proprietaire = :acronyme ';
+			$requete = $connexion->prepare($sql);
+
+			$requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+			$requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+			$resultat = $requete->execute();
+			$nb = $requete->rowCount();
+
+			Application::deconnexionPDO($connexion);
+
+			return $nb;
+		}
 
     /**
      * suppression d'une série de notifications dont on fournit les id's et le propriétaire.
@@ -145,6 +1368,68 @@ class thot
         }
 
         return $resultat;
+    }
+
+
+    /**
+     * recherche des notifications non freezee dont la date de péremption est inférieure à aujourd'hui
+     *
+     * @param void
+     *
+     * @return int : nombre d'effacements
+     */
+    public function getNotifsPerimees() {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id FROM '.PFX.'thotNotifications ';
+        $sql .= 'WHERE NOW() + 1 > dateFin AND freeze = 0 ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                array_push($liste, $ligne['id']);
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * effacement des notifications dont la liste est passée en argument
+     *
+     * @param array $listeNotifId
+     *
+     * @return int
+     */
+    public function delListeNotifs($listeNotifId){
+        $listeNotifsString = implode(',', $listeNotifId);
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'thotNotifications ';
+        $sql .= 'WHERE id IN ('.$listeNotifsString.') ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+
+        // suppression des PJ qui ne sont plus liées à une notification
+        $sql = 'DELETE FROM '.PFX.'thotNotifPJ ';
+        $sql .= 'WHERE id NOT IN (SELECT id FROM '.PFX.'thotNotifications) ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+
+        // suppression des flags qui ne sont plus liées à une notification
+        $sql = 'DELETE FROM '.PFX.'thotNotifFlags ';
+        $sql .= 'WHERE id NOT IN (SELECT id FROM '.PFX.'thotNotifications) ';
+        $requete = $connexion->prepare($sql);
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
     }
 
     /**
@@ -199,13 +1484,13 @@ class thot
              // c'est une nouvelle notification
              $sql = 'INSERT INTO '.PFX.'thotNotifications ';
              $sql .= 'SET type=:type, destinataire = :destinataire, proprietaire = :proprietaire, objet = :objet, texte = :texte, ';
-             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, eleve = :eleve, ';
+             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, ';
              $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent, dateEnvoi = NOW() ';
          } else {
              // c'est une mise à jour
              $sql = 'UPDATE '.PFX.'thotNotifications ';
              $sql .= 'SET type = :type, destinataire = :destinataire, proprietaire = :proprietaire, objet = :objet, texte = :texte, ';
-             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, eleve = :eleve, ';
+             $sql .= 'dateDebut = :dateDebut, dateFin = :dateFin, ';
              $sql .= 'mail = :mail, accuse = :accuse, freeze = :freeze, parent = :parent, dateEnvoi = NOW() ';
              $sql .= 'WHERE id = :id AND proprietaire = :proprietaire ';
          }
@@ -221,7 +1506,7 @@ class thot
          $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
          $dateFin = Application::dateMysql($post['dateFin']);
          $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
-         $requete->bindParam(':eleve', $post['eleve'], PDO::PARAM_INT);
+         // $requete->bindParam(':eleve', $post['eleve'], PDO::PARAM_INT);
          $mail = isset($post['mail']) ? 1 : 0;
          $accuse = isset($post['accuse']) ? 1 : 0;
          $freeze = isset($post['freeze']) ? 1 : 0;
@@ -235,9 +1520,9 @@ class thot
          $listeNotifId = array();
 
          if (isset($post['TOUS']) && ($post['TOUS'] == '')) {
-             // annonce pour un ou plusieurs élèves isolés
-             $eleve = 1;
-             $requete->bindParam(':eleve', $eleve, PDO::PARAM_INT);
+             // // annonce pour un ou plusieurs élèves isolés
+             // $eleve = 1;
+             // $requete->bindParam(':eleve', $eleve, PDO::PARAM_INT);
              // envoi dispatché vers chacun des élèves du groupe
              foreach ($post['matricules'] AS $wtf => $matricule) {
                  $requete->bindParam(':destinataire', $matricule, PDO::PARAM_INT);
@@ -247,9 +1532,9 @@ class thot
              }
          }
          else {
-             // envoi pour le groupe $post['type'] dans son ensemble
-             $eleve = 0;
-             $requete->bindParam(':eleve', $eleve, PDO::PARAM_INT);
+             // // envoi pour le groupe $post['type'] dans son ensemble
+             // $eleve = 0;
+             // $requete->bindParam(':eleve', $eleve, PDO::PARAM_INT);
              $destinataire = $post['destinataire'];
              $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 15);
              $resultat = $requete->execute();
@@ -299,8 +1584,8 @@ class thot
 
         if ($notifId != Null)
             $requete->bindParam(':id', $notifId, PDO::PARAM_INT);
+        // le "type" est déclaré séparément du formulaire
         $requete->bindParam(':type', $type, PDO::PARAM_STR, 10);
-
         $requete->bindParam(':proprietaire', $acronyme, PDO::PARAM_STR, 7);
         $requete->bindParam(':objet', $post['objet'], PDO::PARAM_STR, 80);
         $requete->bindParam(':texte', $post['texte'], PDO::PARAM_STR);
@@ -572,6 +1857,44 @@ class thot
     }
 
     /**
+     * retourne le type "human readable" pour un type d'annonce donné
+     *
+     * @param string $type
+     *
+     * @return string
+     */
+    public function getHumanReadableType($type){
+        switch ($type) {
+            case 'classes':
+                $leType = 'Une classe';
+                break;
+            case 'coursGrp':
+                $leType = 'Un cours';
+                break;
+            case 'niveau':
+                $leType = 'Niveau d\'étude';
+                break;
+            case 'cours':
+                $leType = 'Une matière';
+                break;
+            case 'groupeArbitraire':
+                $leType = 'Un groupe';
+                break;
+            case 'ecole':
+                $leType = 'Tous les élèves';
+                break;
+            case 'eleves':
+                $leType = 'Un élève';
+                break;
+            default:
+                $leType = 'Inconnu';
+                break;
+        }
+
+        return $leType;
+    }
+
+    /**
      * retourne la liste des id's des notifications pour un user donné.
      *
      * @param $acronyme
@@ -731,12 +2054,57 @@ class thot
     /**
      * retourne la liste structurée des annonces destinées à l'élève dont on donne le matricule, la classe, la liste des cours.
      *
-     * @param int $matricule
-     * @param string $classe
-     * @param array $listeMatieres
-     * @param array $listeCoursGrp
-     * @param string $nomEleve
+     * @param $matricule
+     * @param $classe
      *
+     * @return array
+     */
+    public function listeAnnonces($matricule, $classe, $listeCours, $listeCoursGrp, $nomEleve)
+    {
+        $niveau = substr($classe, 0, 1);
+        $listeCoursString = "'".implode('\',\'', $listeCours)."'";
+        $listeCoursGrpString = "'".implode("','", $listeCours)."'";
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT dtn.id, type, proprietaire, destinataire, objet, texte, dateDebut, dateFin, dtn.mail, accuse, dp.nom, dp.sexe, dateEnvoi ';
+        $sql .= 'FROM '.PFX.'thotNotifications AS dtn ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = dtn.proprietaire ';
+        $sql .= "WHERE destinataire IN ('$matricule', '$classe', '$niveau', 'ecole', $listeCoursString, $listeCoursGrpString) ";
+        $sql .= 'AND (dateFin > NOW() AND dateDebut <= NOW()) ';
+        $sql .= 'ORDER BY dateEnvoi DESC, dateDebut DESC ';
+
+        $resultat = $connexion->query($sql);
+        $listeAnnonces = array();
+        if ($resultat) {
+            $resultat->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $resultat->fetch()) {
+                $id = $ligne['id'];
+                $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
+                $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
+                $ligne['dateEnvoi'] = Application::dateTimeFr($ligne['dateEnvoi']);
+                $ligne['pourQui'] = $this->pourQui($ligne['type'], $ligne['destinataire'], $matricule, $nomEleve);
+                if ($ligne['nom'] != '') {
+                    switch ($ligne['sexe']) {
+                        case 'M':
+                            $ligne['proprietaire'] = 'M. '.$ligne['nom'];
+                            break;
+                        case 'F':
+                            $ligne['proprietaire'] = 'Mme '.$ligne['nom'];
+                            break;
+                    }
+                }
+                $listeAnnonces[$id] = $ligne;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $listeAnnonces;
+    }
+
+    /**
+     * retourne la liste structurée des annonces destinées à l'élève dont on donne le matricule, la classe, la liste des cours.
+     *
+     * @param $matricule
+     * @param $classe
      *
      * @return array
      */
@@ -1083,7 +2451,7 @@ class thot
         $sql = 'INSERT INTO '.PFX.'thotNotifications ';
         $sql .= "SET type='eleves', proprietaire='$acronyme', destinataire=:matricule, objet='Décision du Conseil de Classe', ";
         $sql .= "texte=:texte, dateDebut='$dateDebut', dateFin='$dateFin', ";
-        $sql .= "urgence='2', mail='1', accuse='1' ";
+        $sql .= "mail='1', accuse='1' ";
         $requete = $connexion->prepare($sql);
 
         // préparation de l'enregistrement d'accusé de lecture
@@ -1593,352 +2961,352 @@ class thot
 
         return $liste;
     }
+    //
+    // /**
+    //  * retourne la liste des profs auxquels une possibilité de RV est fixée.
+    //  *
+    //  * @param $date : date de la RP
+    //  *
+    //  * @return array
+    //  */
+    // public function listeProfsAvecRv($date)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT DISTINCT rp.acronyme, nom, prenom ';
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS rp ';
+    //     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rp.acronyme ';
+    //     $sql .= "WHERE date = '$date' AND rp.acronyme IN ";
+    //     $sql .= '(SELECT DISTINCT acronyme FROM '.PFX.'thotRpRv WHERE dispo = 1) ';
+    //     $sql .= 'ORDER BY nom, prenom ';
+    //
+    //     $liste = array();
+    //     $resultat = $connexion->query($sql);
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $acronyme = $ligne['acronyme'];
+    //             $liste[$acronyme] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * retourne la liste des profs en prévision d'une réunion de parents; y compris les membres du personnel à "statut spécial" (direction,...).
+    //  * les profs sont groupés sur base de l'initiale de leur nom de famille.
+    //  *
+    //  * @param void()
+    //  *
+    //  * @return array
+    //  */
+    // public function listeProfsRP()
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT DISTINCT rp.acronyme, rp.statut, sexe, nom, prenom ';
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS rp ';
+    //     $sql .= 'JOIN '.PFX.'profs AS dp ON rp.acronyme = dp.acronyme ';
+    //     $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
+    //     $resultat = $connexion->query($sql);
+    //     $listeProfs = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $initiale = substr($ligne['nom'], 0, 1);
+    //             $acronyme = $ligne['acronyme'];
+    //             $listeProfs[$initiale][$acronyme] = $ligne;
+    //         }
+    //     }
+    //     Application::DeconnexionPDO($connexion);
+    //
+    //     return $listeProfs;
+    // }
+    //
+    // /**
+    //  * Renvoie la liste des dates de réunions de parents prévues.
+    //  *
+    //  * @param $active : la réunion de parents est active et donc visible
+    //  * @param $ouvert : la réunion de parents est ouverte à l'inscription
+    //  *
+    //  * @return array
+    //  */
+    // public function listeDatesReunion($active = null, $ouvert = null)
+    // {
+    //     // une réunion de parents inactive n'est certainement pas ouverte
+    //     if ($active == false) {
+    //         $ouvert = false;
+    //     }
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = "SELECT DISTINCT DATE_FORMAT(date,'%d/%m/%Y') AS date ";
+    //     $sql .= 'FROM '.PFX.'thotRp ';
+    //     if ($ouvert != null && $active != null) {
+    //         $sql .= "WHERE active='$active' AND ouvert='$ouvert' ";
+    //     } elseif ($active != null) {
+    //         $sql .= "WHERE active='$active' ";
+    //     } elseif ($ouvert != null) {
+    //         $sql .= "WHERE ouvert='$ouvert' ";
+    //     }
+    //     $resultat = $connexion->query($sql);
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $liste[] = $ligne['date'];
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * enregistrement d'une nouvelle date de réunion de parents.
+    //  *
+    //  * @param $post : formulaire de création d'une nouvelle RP
+    //  *
+    //  * @return int
+    //  */
+    // public function saveNewRpDate($post)
+    // {
+    //     $date = Application::dateMysql($post['date']);
+    //     $typeRP = isset($post['typeRP']) ? $post['typeRP'] : 'profs';
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'INSERT IGNORE INTO '.PFX.'thotRp ';
+    //     $sql .= "SET date =:date, active='0', ouvert='0', notice='', typeRP=:typeRP ";
+    //     $requete = $connexion->prepare($sql);
+    //     $data = array(':date' => $date, ':typeRP' => $typeRP);
+    //     $resultat = $requete->execute($data);
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $resultat;
+    // }
+    //
+    // /**
+    //  * enregistrement du canevas de réunion de parents initialisé par les admins.
+    //  *
+    //  * @param $post : les données provenant du formulaire
+    //  *
+    //  * @return int : le nombre d'enregistrements réalisés
+    //  */
+    // public function saveRPinit($post)
+    // {
+    //     if (isset($post['prof'])) {
+    //         // des profs ont été sélectionnés, on peut enregistre
+    //         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //         $sql = 'INSERT IGNORE INTO '.PFX.'thotRpRv ';
+    //         $sql .= 'SET acronyme=:acronyme, date=:date, heure=:heure, dispo=:dispo, statut=:statut ';
+    //         $requete = $connexion->prepare($sql);
+    //         $date = Application::dateMysql($post['date']);
+    //         $resultat = 0;
+    //         // passer tous les champs provenant du formulaire en revue
+    //         foreach ($post as $key => $heure) {
+    //             // dissection du nom du champ
+    //             $clef = explode('_', $key);
+    //             // est-ce un champ "heure_x"?
+    //             if ($clef[0] == 'heure') {
+    //                 // récupérer le numéro de l'heure
+    //                 $i = $clef[1];
+    //                 // voir si cette heure est "publiée"
+    //                 $dispo = (isset($post['publie_'.$i])) ? 1 : 0;
+    //                 foreach ($post['prof'] as $acronyme) {
+    //                     $statut = (isset($post['dir'][$acronyme])) ? 'dir' : 'prof';
+    //                     $data = array(
+    //                             ':acronyme' => $acronyme,
+    //                             ':date' => $date,
+    //                             ':heure' => $heure,
+    //                             ':dispo' => $dispo,
+    //                             ':statut' => $statut,
+    //                         );
+    //                     $resultat += $requete->execute($data);
+    //                 }
+    //             }
+    //         }
+    //
+    //         Application::deconnexionPDO($connexion);
+    //
+    //         return $resultat;
+    //     } else {
+    //         return;
+    //     }
+    // }
+    //
+    // /**
+    //  * Enregistrement des informations complémentaires pourla réunion de parents.
+    //  *
+    //  * @param $post: les données provenant du deuxième formulaire
+    //  *
+    //  * @return string : message de succès ou d'erreur
+    //  */
+    // public function saveRPinit2($post)
+    // {
+    //     $minPer1 = date('H:i', strtotime($post['minPer1']));
+    //     $maxPer1 = date('H:i', strtotime($post['maxPer1']));
+    //     $minPer2 = date('H:i', strtotime($post['minPer2']));
+    //     $maxPer2 = date('H:i', strtotime($post['maxPer2']));
+    //     $minPer3 = date('H:i', strtotime($post['minPer3']));
+    //     $maxPer3 = date('H:i', strtotime($post['maxPer3']));
+    //
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $date = Application::dateMysql($post['date']);
+    //     if ($date != '') {
+    //         $sql = 'INSERT INTO '.PFX.'thotRp ';
+    //         $sql .= 'SET date=:date, notice=:notice, ouvert=:ouvert, active=:active ';
+    //         $sql .= 'ON DUPLICATE KEY UPDATE ';
+    //         $sql .= 'notice=:notice, ouvert=:ouvert, active=:active ';
+    //         $requete = $connexion->prepare($sql);
+    //         // enregistrement des caractéristiques de la réunion de parents
+    //         $notice = $post['notice'];
+    //         $active = isset($post['active']) ? 1 : 0;
+    //         $ouvert = isset($post['ouvert']) ? 1 : 0;
+    //         $data = array(':date' => $date, ':notice' => $notice, ':ouvert' => $ouvert, ':active' => $active);
+    //         $resultat = $requete->execute($data);
+    //     }
+    //
+    //     if (($minPer1 < $maxPer1) && ($minPer2 >= $maxPer1) && ($minPer2 < $maxPer2) && ($minPer3 >= $maxPer2) && ($minPer3 < $maxPer3)) {
+    //         if ($date != '') {
+    //             // enregistrement des périodes possibles pour les listes d'attente
+    //             $sql = 'INSERT INTO '.PFX.'thotRpHeures ';
+    //             $sql .= "SET date='$date', minPer1='$minPer1', maxPer1='$maxPer1', ";
+    //             $sql .= "minPer2='$minPer2', maxPer2='$maxPer2', minPer3='$minPer3', maxPer3='$maxPer3' ";
+    //             $sql .= 'ON DUPLICATE KEY UPDATE ';
+    //             $sql .= "minPer1='$minPer1', maxPer1='$maxPer1', minPer2='$minPer2', maxPer2='$maxPer2', ";
+    //             $sql .= "minPer3='$minPer3', maxPer3='$maxPer3' ";
+    //             $resultat = $connexion->exec($sql);
+    //             $message = array('title' => SAVE, 'texte' => 'Enregistrement OK', 'urgence' => 'success');
+    //         } else {
+    //             $message = array('title' => NOSAVE, 'texte' => 'La date est manquante', 'urgence' => 'warning');
+    //         }
+    //     } else {
+    //         $message = array('title' => NOSAVE, 'texte' => 'Les heures des périodes semblent mal définies', 'urgence' => 'danger');
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $message;
+    // }
+    //
+    // /**
+    //  * Inverse le caractère "disponible" d'un moment de RV dans une réunion de parents.
+    //  *
+    //  * @param $id : l'identifiant du moment de réunion
+    //  *
+    //  * @return integer: 1 si le RV est disponible, 0 si pas disponible
+    //  */
+    // public function toggleDispo($id)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     // inverser la valeur du champ 'dispo'
+    //     $sql = 'UPDATE '.PFX.'thotRpRv ';
+    //     $sql .= 'SET dispo = IF(dispo=1, 0, 1) ';
+    //     $sql .= "WHERE id='$id' ";
+    //     $resultat = $connexion->exec($sql);
+    //     if ($resultat) {
+    //         // rechercher la valeur du champ 'dispo' après l'inversion
+    //         $sql = 'SELECT dispo FROM '.PFX.'thotRpRv ';
+    //         $sql .= "WHERE id='$id' ";
+    //         $resultat = $connexion->query($sql);
+    //         $ligne = $resultat->fetch();
+    //         $resultat = $ligne['dispo'];
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $resultat;
+    // }
 
-    /**
-     * retourne la liste des profs auxquels une possibilité de RV est fixée.
-     *
-     * @param $date : date de la RP
-     *
-     * @return array
-     */
-    public function listeProfsAvecRv($date)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT rp.acronyme, nom, prenom ';
-        $sql .= 'FROM '.PFX.'thotRpRv AS rp ';
-        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rp.acronyme ';
-        $sql .= "WHERE date = '$date' AND rp.acronyme IN ";
-        $sql .= '(SELECT DISTINCT acronyme FROM '.PFX.'thotRpRv WHERE dispo = 1) ';
-        $sql .= 'ORDER BY nom, prenom ';
-
-        $liste = array();
-        $resultat = $connexion->query($sql);
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $acronyme = $ligne['acronyme'];
-                $liste[$acronyme] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne la liste des profs en prévision d'une réunion de parents; y compris les membres du personnel à "statut spécial" (direction,...).
-     * les profs sont groupés sur base de l'initiale de leur nom de famille.
-     *
-     * @param void()
-     *
-     * @return array
-     */
-    public function listeProfsRP()
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT rp.acronyme, rp.statut, sexe, nom, prenom ';
-        $sql .= 'FROM '.PFX.'thotRpRv AS rp ';
-        $sql .= 'JOIN '.PFX.'profs AS dp ON rp.acronyme = dp.acronyme ';
-        $sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom, ' ', ''),'''',''),'-',''), prenom ";
-        $resultat = $connexion->query($sql);
-        $listeProfs = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $initiale = substr($ligne['nom'], 0, 1);
-                $acronyme = $ligne['acronyme'];
-                $listeProfs[$initiale][$acronyme] = $ligne;
-            }
-        }
-        Application::DeconnexionPDO($connexion);
-
-        return $listeProfs;
-    }
-
-    /**
-     * Renvoie la liste des dates de réunions de parents prévues.
-     *
-     * @param $active : la réunion de parents est active et donc visible
-     * @param $ouvert : la réunion de parents est ouverte à l'inscription
-     *
-     * @return array
-     */
-    public function listeDatesReunion($active = null, $ouvert = null)
-    {
-        // une réunion de parents inactive n'est certainement pas ouverte
-        if ($active == false) {
-            $ouvert = false;
-        }
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT DISTINCT DATE_FORMAT(date,'%d/%m/%Y') AS date ";
-        $sql .= 'FROM '.PFX.'thotRp ';
-        if ($ouvert != null && $active != null) {
-            $sql .= "WHERE active='$active' AND ouvert='$ouvert' ";
-        } elseif ($active != null) {
-            $sql .= "WHERE active='$active' ";
-        } elseif ($ouvert != null) {
-            $sql .= "WHERE ouvert='$ouvert' ";
-        }
-        $resultat = $connexion->query($sql);
-        $liste = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $liste[] = $ligne['date'];
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * enregistrement d'une nouvelle date de réunion de parents.
-     *
-     * @param $post : formulaire de création d'une nouvelle RP
-     *
-     * @return int
-     */
-    public function saveNewRpDate($post)
-    {
-        $date = Application::dateMysql($post['date']);
-        $typeRP = isset($post['typeRP']) ? $post['typeRP'] : 'profs';
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT IGNORE INTO '.PFX.'thotRp ';
-        $sql .= "SET date =:date, active='0', ouvert='0', notice='', typeRP=:typeRP ";
-        $requete = $connexion->prepare($sql);
-        $data = array(':date' => $date, ':typeRP' => $typeRP);
-        $resultat = $requete->execute($data);
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * enregistrement du canevas de réunion de parents initialisé par les admins.
-     *
-     * @param $post : les données provenant du formulaire
-     *
-     * @return int : le nombre d'enregistrements réalisés
-     */
-    public function saveRPinit($post)
-    {
-        if (isset($post['prof'])) {
-            // des profs ont été sélectionnés, on peut enregistre
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'INSERT IGNORE INTO '.PFX.'thotRpRv ';
-            $sql .= 'SET acronyme=:acronyme, date=:date, heure=:heure, dispo=:dispo, statut=:statut ';
-            $requete = $connexion->prepare($sql);
-            $date = Application::dateMysql($post['date']);
-            $resultat = 0;
-            // passer tous les champs provenant du formulaire en revue
-            foreach ($post as $key => $heure) {
-                // dissection du nom du champ
-                $clef = explode('_', $key);
-                // est-ce un champ "heure_x"?
-                if ($clef[0] == 'heure') {
-                    // récupérer le numéro de l'heure
-                    $i = $clef[1];
-                    // voir si cette heure est "publiée"
-                    $dispo = (isset($post['publie_'.$i])) ? 1 : 0;
-                    foreach ($post['prof'] as $acronyme) {
-                        $statut = (isset($post['dir'][$acronyme])) ? 'dir' : 'prof';
-                        $data = array(
-                                ':acronyme' => $acronyme,
-                                ':date' => $date,
-                                ':heure' => $heure,
-                                ':dispo' => $dispo,
-                                ':statut' => $statut,
-                            );
-                        $resultat += $requete->execute($data);
-                    }
-                }
-            }
-
-            Application::deconnexionPDO($connexion);
-
-            return $resultat;
-        } else {
-            return;
-        }
-    }
-
-    /**
-     * Enregistrement des informations complémentaires pourla réunion de parents.
-     *
-     * @param $post: les données provenant du deuxième formulaire
-     *
-     * @return string : message de succès ou d'erreur
-     */
-    public function saveRPinit2($post)
-    {
-        $minPer1 = date('H:i', strtotime($post['minPer1']));
-        $maxPer1 = date('H:i', strtotime($post['maxPer1']));
-        $minPer2 = date('H:i', strtotime($post['minPer2']));
-        $maxPer2 = date('H:i', strtotime($post['maxPer2']));
-        $minPer3 = date('H:i', strtotime($post['minPer3']));
-        $maxPer3 = date('H:i', strtotime($post['maxPer3']));
-
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $date = Application::dateMysql($post['date']);
-        if ($date != '') {
-            $sql = 'INSERT INTO '.PFX.'thotRp ';
-            $sql .= 'SET date=:date, notice=:notice, ouvert=:ouvert, active=:active ';
-            $sql .= 'ON DUPLICATE KEY UPDATE ';
-            $sql .= 'notice=:notice, ouvert=:ouvert, active=:active ';
-            $requete = $connexion->prepare($sql);
-            // enregistrement des caractéristiques de la réunion de parents
-            $notice = $post['notice'];
-            $active = isset($post['active']) ? 1 : 0;
-            $ouvert = isset($post['ouvert']) ? 1 : 0;
-            $data = array(':date' => $date, ':notice' => $notice, ':ouvert' => $ouvert, ':active' => $active);
-            $resultat = $requete->execute($data);
-        }
-
-        if (($minPer1 < $maxPer1) && ($minPer2 >= $maxPer1) && ($minPer2 < $maxPer2) && ($minPer3 >= $maxPer2) && ($minPer3 < $maxPer3)) {
-            if ($date != '') {
-                // enregistrement des périodes possibles pour les listes d'attente
-                $sql = 'INSERT INTO '.PFX.'thotRpHeures ';
-                $sql .= "SET date='$date', minPer1='$minPer1', maxPer1='$maxPer1', ";
-                $sql .= "minPer2='$minPer2', maxPer2='$maxPer2', minPer3='$minPer3', maxPer3='$maxPer3' ";
-                $sql .= 'ON DUPLICATE KEY UPDATE ';
-                $sql .= "minPer1='$minPer1', maxPer1='$maxPer1', minPer2='$minPer2', maxPer2='$maxPer2', ";
-                $sql .= "minPer3='$minPer3', maxPer3='$maxPer3' ";
-                $resultat = $connexion->exec($sql);
-                $message = array('title' => SAVE, 'texte' => 'Enregistrement OK', 'urgence' => 'success');
-            } else {
-                $message = array('title' => NOSAVE, 'texte' => 'La date est manquante', 'urgence' => 'warning');
-            }
-        } else {
-            $message = array('title' => NOSAVE, 'texte' => 'Les heures des périodes semblent mal définies', 'urgence' => 'danger');
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $message;
-    }
-
-    /**
-     * Inverse le caractère "disponible" d'un moment de RV dans une réunion de parents.
-     *
-     * @param $id : l'identifiant du moment de réunion
-     *
-     * @return integer: 1 si le RV est disponible, 0 si pas disponible
-     */
-    public function toggleDispo($id)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        // inverser la valeur du champ 'dispo'
-        $sql = 'UPDATE '.PFX.'thotRpRv ';
-        $sql .= 'SET dispo = IF(dispo=1, 0, 1) ';
-        $sql .= "WHERE id='$id' ";
-        $resultat = $connexion->exec($sql);
-        if ($resultat) {
-            // rechercher la valeur du champ 'dispo' après l'inversion
-            $sql = 'SELECT dispo FROM '.PFX.'thotRpRv ';
-            $sql .= "WHERE id='$id' ";
-            $resultat = $connexion->query($sql);
-            $ligne = $resultat->fetch();
-            $resultat = $ligne['dispo'];
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * retourne le nombre de RV déjà pris pour la RP de la date donnée.
-     *
-     * @param $date : la date de la RP
-     *
-     * @return int
-     */
-    public function nbRv($date)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT COUNT(*) AS nb ';
-        $sql .= 'FROM '.PFX."thotRpRv WHERE matricule != '' AND date = :date ";
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':date', $date, PDO::PARAM_STR);
-
-        $resultat = $requete->execute();
-        if ($resultat) {
-            $ligne = $requete->fetch();
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $ligne['nb'];
-    }
-
-    /**
-     * retourne la liste des nom, prenom et classe des élèves dont on passe la liste des matricules.
-     *
-     * @param $matricules : array|integer
-     *
-     * @return array : trié sur les matricules
-     */
-    public function listeElevesMatricules($listeEleves)
-    {
-        if (is_array($listeEleves)) {
-            $listeMatricules = implode(',', $listeEleves);
-        } else {
-            $listeMatricules = $listeEleves;
-        }
-
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, groupe, nom, prenom ';
-        $sql .= 'FROM '.PFX.'eleves ';
-        $sql .= "WHERE matricule IN ($listeMatricules) ";
-        $sql .= 'ORDER BY groupe ';
-
-        $resultat = $connexion->query($sql);
-        $listeEleves = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $matricule = $ligne['matricule'];
-                $listeEleves[$matricule] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $listeEleves;
-    }
-
-    /**
-     * retourne la liste des nom, prenom, mail des parents dont on fournit la liste des userNames.
-     *
-     * @param array (ou pas) de la liste des userNames
-     *
-     * @return array
-     */
-    public function listeParentsUserNames($listeUserNames)
-    {
-        if (is_array($listeUserNames)) {
-            $listeUserNamesString = "'".implode("','", $listeUserNames)."'";
-        } else {
-            $listeUserNamesString = "'".$listeUserNames."'";
-        }
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT formule, nom, prenom, mail, lien, userName ';
-        $sql .= 'FROM '.PFX.'thotParents ';
-        $sql .= "WHERE userName IN ($listeUserNamesString) ";
-
-        $resultat = $connexion->query($sql);
-        $listeParents = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $userName = $ligne['userName'];
-                $listeParents[$userName] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $listeParents;
-    }
+    // /**
+    //  * retourne le nombre de RV déjà pris pour la RP de la date donnée.
+    //  *
+    //  * @param $date : la date de la RP
+    //  *
+    //  * @return int
+    //  */
+    // public function nbRv($date)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT COUNT(*) AS nb ';
+    //     $sql .= 'FROM '.PFX."thotRpRv WHERE matricule != '' AND date = :date ";
+    //     $requete = $connexion->prepare($sql);
+    //
+    //     $requete->bindParam(':date', $date, PDO::PARAM_STR);
+    //
+    //     $resultat = $requete->execute();
+    //     if ($resultat) {
+    //         $ligne = $requete->fetch();
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $ligne['nb'];
+    // }
+    //
+    // /**
+    //  * retourne la liste des nom, prenom et classe des élèves dont on passe la liste des matricules.
+    //  *
+    //  * @param $matricules : array|integer
+    //  *
+    //  * @return array : trié sur les matricules
+    //  */
+    // public function listeElevesMatricules($listeEleves)
+    // {
+    //     if (is_array($listeEleves)) {
+    //         $listeMatricules = implode(',', $listeEleves);
+    //     } else {
+    //         $listeMatricules = $listeEleves;
+    //     }
+    //
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT matricule, groupe, nom, prenom ';
+    //     $sql .= 'FROM '.PFX.'eleves ';
+    //     $sql .= "WHERE matricule IN ($listeMatricules) ";
+    //     $sql .= 'ORDER BY groupe ';
+    //
+    //     $resultat = $connexion->query($sql);
+    //     $listeEleves = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $matricule = $ligne['matricule'];
+    //             $listeEleves[$matricule] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $listeEleves;
+    // }
+    //
+    // /**
+    //  * retourne la liste des nom, prenom, mail des parents dont on fournit la liste des userNames.
+    //  *
+    //  * @param array (ou pas) de la liste des userNames
+    //  *
+    //  * @return array
+    //  */
+    // public function listeParentsUserNames($listeUserNames)
+    // {
+    //     if (is_array($listeUserNames)) {
+    //         $listeUserNamesString = "'".implode("','", $listeUserNames)."'";
+    //     } else {
+    //         $listeUserNamesString = "'".$listeUserNames."'";
+    //     }
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT formule, nom, prenom, mail, lien, userName ';
+    //     $sql .= 'FROM '.PFX.'thotParents ';
+    //     $sql .= "WHERE userName IN ($listeUserNamesString) ";
+    //
+    //     $resultat = $connexion->query($sql);
+    //     $listeParents = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $userName = $ligne['userName'];
+    //             $listeParents[$userName] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $listeParents;
+    // }
 
     /**
      * retourne la liste des parents d'une classe avec le statut de vérification de l'adresse Mailer
@@ -2083,251 +3451,251 @@ class thot
 
         return $liste;
     }
-
-    /**
-     * renvoie la liste des RV pris pour un prof donné et pour une date donnée.
-     *
-     * @param $acronyme : l'acronyme du profs
-     * @param $date : la date de la réunion de parents
-     *
-     * @return array
-     */
-    public function getRVprof($acronyme, $date)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT id, rv.matricule, userParent, TIME_FORMAT(heure,'%H:%i') AS heure, dispo, ";
-        $sql .= "'' AS formule, '' AS nomParent, '' AS prenomParent, '' AS userName, '' AS mail, '' AS lien, ";
-        $sql .= "'' AS nom, '' AS prenom, '' AS groupe ";
-        $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
-        $sql .= "WHERE acronyme = '$acronyme' AND date = '$date' ";
-        $sql .= 'ORDER BY heure ';
-
-        $listeBrute = array();
-        $resultat = $connexion->query($sql);
-
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $id = $ligne['id'];
-                $matricule = $ligne['matricule'];
-                $ligne['photo'] = Ecole::photo($matricule);
-                $listeBrute[$id] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        // retrouver les caractéristiques des élèves qui figurent dans le tableau des RV
-        $listeMatricules = array_filter(array_column($listeBrute, 'matricule'));
-        $listeEleves = $this->listeElevesMatricules($listeMatricules);
-
-        // retrouver les caractéristiques des parents qui figurent dans le tableau des RV
-        $listeUserParents = array_filter(array_column($listeBrute, 'userParent'));
-        $listeParents = $this->listeParentsUserNames($listeUserParents);
-
-        // recombinaison des trois listes
-        foreach ($listeBrute as $id => $data) {
-            if ($data['matricule'] != '') {
-                $matricule = $data['matricule'];
-                $eleve = $listeEleves[$matricule];
-                $listeBrute[$id]['nom'] = $eleve['nom'];
-                $listeBrute[$id]['prenom'] = $eleve['prenom'];
-                $listeBrute[$id]['groupe'] = $eleve['groupe'];
-            }
-            if ($data['userParent'] != '') {
-                $userName = $data['userParent'];
-                // précaution au cas où le parent ne figurerait plus dans la table des parents après la prise de RV
-                if (isset($listeParents[$userName])) {
-                    $parent = $listeParents[$userName];
-                    $listeBrute[$id]['formule'] = $parent['formule'];
-                    $listeBrute[$id]['nomParent'] = $parent['nom'];
-                    $listeBrute[$id]['prenomParent'] = $parent['prenom'];
-                    $listeBrute[$id]['mail'] = $parent['mail'];
-                    $listeBrute[$id]['lien'] = $parent['lien'];
-                    $listeBrute[$id]['userName'] = $parent['userName'];
-                }
-            }
-        }
-
-        return $listeBrute;
-    }
-
-    /**
-     * renvoie la liste des RV pris pour un élève donné et pour une date donnée.
-     *
-     * @param $matricule : le matricule de l'élève
-     * @param $date : la date de la réunion de parents
-     *
-     * @return array
-     */
-    public function getRVeleve($listeMatricules, $date)
-    {
-        if (is_array($listeMatricules)) {
-            $listeMatriculesString = implode(',', $listeMatricules);
-        } else {
-            $listeMatriculesString = $listeMatricules;
-        }
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT rv.matricule, date, DATE_FORMAT(heure,'%H:%i') AS heure, rv.acronyme, nom, prenom ";
-        $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
-        $sql .= 'JOIN '.PFX.'profs AS dp ON rv.acronyme = dp.acronyme ';
-        $sql .= "WHERE matricule IN ($listeMatriculesString) AND date='$date' ";
-        $sql .= 'ORDER BY heure ';
-        $liste = array();
-        $resultat = $connexion->query($sql);
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $matricule = $ligne['matricule'];
-                $heure = $ligne['heure'];
-                // on suppose qu'il n'y a pas deux RV à la même période
-                $liste[$matricule][$heure] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * Effacement d'un RV parent dans la base de données.
-     *
-     * @param $id : l'identifiant du RV
-     *
-     * @return int : nombre d'enregistrements supprimés (normalement, 1)
-     */
-    public function delRV($id)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'UPDATE '.PFX.'thotRpRv ';
-        $sql .= 'SET matricule=Null, userParent=Null, dispo=1 ';
-        $sql .= "WHERE id = '$id' ";
-        $resultat = $connexion->exec($sql);
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * recherche les informations d'un RV dont on fournit l'id.
-     *
-     * @param $id : l'identifiant du RV
-     *
-     * @return array
-     */
-    public function getInfoRV($id)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT acronyme, rv.matricule, formule, nom, prenom, userParent, ';
-        $sql .= "DATE_FORMAT( date, '%d/%m/%Y' ) AS date, DATE_FORMAT(heure,'%Hh%i') AS heure, dispo, mail ";
-        $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
-        $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = rv.matricule ';
-        $sql .= "WHERE id = '$id' ";
-        $resultat = $connexion->query($sql);
-        $ligne = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $ligne = $resultat->fetch();
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $ligne;
-    }
-
-    /**
-     * retourne la liste des élèves avec leurs parents pour un prof donné.
-     *
-     * @param $acronyme : le prof
-     *
-     * @return array : la liste des élèves triés par classe
-     */
-    public function getElevesDeProf($acronyme, $statut = null)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        switch ($statut) {
-            case 'dir':
-                $sql = 'SELECT matricule, nom, prenom, groupe ';
-                $sql .= 'FROM '.PFX.'eleves ';
-                break;
-            default:
-                $sql = 'SELECT dpc.coursGrp, ec.matricule, nom, prenom, groupe ';
-                $sql .= 'FROM '.PFX.'profsCours AS dpc ';
-                $sql .= 'JOIN '.PFX.'elevesCours AS ec ON ec.coursGrp = dpc.coursGrp ';
-                $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = ec.matricule ';
-                $sql .= "WHERE acronyme='$acronyme' ";
-                break;
-            }
-        $sql .= 'ORDER BY groupe, nom, prenom ';
-        $resultat = $connexion->query($sql);
-        $liste = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $classe = $ligne['groupe'];
-                $matricule = $ligne['matricule'];
-                $liste[$classe][$matricule] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * inscription à un RV donné des parents d'un élève dont on fournit le amtricule
-     * procédure pour l'admin afin d'inscrire un parent dont on a reçu une demande de RV "papier".
-     * le nombre maximum de rendez-vous est passé en paramètre.
-     *
-     * @param $id : l'identifiant du RV
-     * @param $matricule : le matricule de l'élève dont on inscrit un parent
-     * @param $max : le nombre max de RV
-     *
-     * @return int : -1  si inscription over quota ($max), 0 si écriture impossible dans la BD, 1 si tout OK
-     */
-    public function inscriptionEleve($id, $matricule, $max, $userParent = null)
-    {
-        // rechercher les heures de RV existantes à la date de la RP pour l'élève
-        $infoRV = $this->getInfoRV($id);
-        $date = Application::dateMysql($infoRV['date']);
-        // on a la date, on peut chercher la liste des heures de RV (entre des guillemets simples)
-        $listeRV = $this->getRVeleve($matricule, $date);
-        $listeHeures = "'".implode("','", array_keys((isset($listeRV[$matricule])) ? $listeRV[$matricule] : $listeRV))."'";
-
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        // compter le nombre de RV
-        $sql = 'SELECT count(*) AS nb ';
-        $sql .= 'FROM '.PFX.'thotRpRv ';
-        $sql .= "WHERE matricule = '$matricule' ";
-        $resultat = $connexion->query($sql);
-        $ligne = $resultat->fetch();
-        if ($resultat) {
-            if ($ligne['nb'] >= $max) {
-                return -1;
-            }
-        }
-
-        // l'élève a-t-il déjà un RV à cette heure-là
-        $sql = 'SELECT heure ';
-        $sql .= 'FROM '.PFX.'thotRpRv ';
-        $sql .= "WHERE id='$id' AND heure IN ($listeHeures) ";
-        $resultat = $connexion->query($sql);
-        if ($resultat) {
-            $ligne = $resultat->fetch();
-            if (isset($ligne['heure'])) {
-                return -2;
-            }
-        }
-        // tout va bien, on peut l'inscrire
-        $sql = 'UPDATE '.PFX.'thotRpRv ';
-        $sql .= 'SET matricule=:matricule, userParent=:userParent, dispo=0 ';
-        $sql .= 'WHERE id=:id ';
-        $requete = $connexion->prepare($sql);
-        $data = array(':matricule' => $matricule, ':userParent' => $userParent, ':id' => $id);
-        $resultat = $requete->execute($data);
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
+    //
+    // /**
+    //  * renvoie la liste des RV pris pour un prof donné et pour une date donnée.
+    //  *
+    //  * @param $acronyme : l'acronyme du profs
+    //  * @param $date : la date de la réunion de parents
+    //  *
+    //  * @return array
+    //  */
+    // public function getRVprof($acronyme, $date)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = "SELECT id, rv.matricule, userParent, TIME_FORMAT(heure,'%H:%i') AS heure, dispo, ";
+    //     $sql .= "'' AS formule, '' AS nomParent, '' AS prenomParent, '' AS userName, '' AS mail, '' AS lien, ";
+    //     $sql .= "'' AS nom, '' AS prenom, '' AS groupe ";
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+    //     $sql .= "WHERE acronyme = '$acronyme' AND date = '$date' ";
+    //     $sql .= 'ORDER BY heure ';
+    //
+    //     $listeBrute = array();
+    //     $resultat = $connexion->query($sql);
+    //
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $id = $ligne['id'];
+    //             $matricule = $ligne['matricule'];
+    //             $ligne['photo'] = Ecole::photo($matricule);
+    //             $listeBrute[$id] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     // retrouver les caractéristiques des élèves qui figurent dans le tableau des RV
+    //     $listeMatricules = array_filter(array_column($listeBrute, 'matricule'));
+    //     $listeEleves = $this->listeElevesMatricules($listeMatricules);
+    //
+    //     // retrouver les caractéristiques des parents qui figurent dans le tableau des RV
+    //     $listeUserParents = array_filter(array_column($listeBrute, 'userParent'));
+    //     $listeParents = $this->listeParentsUserNames($listeUserParents);
+    //
+    //     // recombinaison des trois listes
+    //     foreach ($listeBrute as $id => $data) {
+    //         if ($data['matricule'] != '') {
+    //             $matricule = $data['matricule'];
+    //             $eleve = $listeEleves[$matricule];
+    //             $listeBrute[$id]['nom'] = $eleve['nom'];
+    //             $listeBrute[$id]['prenom'] = $eleve['prenom'];
+    //             $listeBrute[$id]['groupe'] = $eleve['groupe'];
+    //         }
+    //         if ($data['userParent'] != '') {
+    //             $userName = $data['userParent'];
+    //             // précaution au cas où le parent ne figurerait plus dans la table des parents après la prise de RV
+    //             if (isset($listeParents[$userName])) {
+    //                 $parent = $listeParents[$userName];
+    //                 $listeBrute[$id]['formule'] = $parent['formule'];
+    //                 $listeBrute[$id]['nomParent'] = $parent['nom'];
+    //                 $listeBrute[$id]['prenomParent'] = $parent['prenom'];
+    //                 $listeBrute[$id]['mail'] = $parent['mail'];
+    //                 $listeBrute[$id]['lien'] = $parent['lien'];
+    //                 $listeBrute[$id]['userName'] = $parent['userName'];
+    //             }
+    //         }
+    //     }
+    //
+    //     return $listeBrute;
+    // }
+    //
+    // /**
+    //  * renvoie la liste des RV pris pour un élève donné et pour une date donnée.
+    //  *
+    //  * @param $matricule : le matricule de l'élève
+    //  * @param $date : la date de la réunion de parents
+    //  *
+    //  * @return array
+    //  */
+    // public function getRVeleve($listeMatricules, $date)
+    // {
+    //     if (is_array($listeMatricules)) {
+    //         $listeMatriculesString = implode(',', $listeMatricules);
+    //     } else {
+    //         $listeMatriculesString = $listeMatricules;
+    //     }
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = "SELECT rv.matricule, date, DATE_FORMAT(heure,'%H:%i') AS heure, rv.acronyme, nom, prenom ";
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+    //     $sql .= 'JOIN '.PFX.'profs AS dp ON rv.acronyme = dp.acronyme ';
+    //     $sql .= "WHERE matricule IN ($listeMatriculesString) AND date='$date' ";
+    //     $sql .= 'ORDER BY heure ';
+    //     $liste = array();
+    //     $resultat = $connexion->query($sql);
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $matricule = $ligne['matricule'];
+    //             $heure = $ligne['heure'];
+    //             // on suppose qu'il n'y a pas deux RV à la même période
+    //             $liste[$matricule][$heure] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * Effacement d'un RV parent dans la base de données.
+    //  *
+    //  * @param $id : l'identifiant du RV
+    //  *
+    //  * @return int : nombre d'enregistrements supprimés (normalement, 1)
+    //  */
+    // public function delRV($id)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'UPDATE '.PFX.'thotRpRv ';
+    //     $sql .= 'SET matricule=Null, userParent=Null, dispo=1 ';
+    //     $sql .= "WHERE id = '$id' ";
+    //     $resultat = $connexion->exec($sql);
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $resultat;
+    // }
+    //
+    // /**
+    //  * recherche les informations d'un RV dont on fournit l'id.
+    //  *
+    //  * @param $id : l'identifiant du RV
+    //  *
+    //  * @return array
+    //  */
+    // public function getInfoRV($id)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT acronyme, rv.matricule, formule, nom, prenom, userParent, ';
+    //     $sql .= "DATE_FORMAT( date, '%d/%m/%Y' ) AS date, DATE_FORMAT(heure,'%Hh%i') AS heure, dispo, mail ";
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+    //     $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = rv.matricule ';
+    //     $sql .= "WHERE id = '$id' ";
+    //     $resultat = $connexion->query($sql);
+    //     $ligne = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         $ligne = $resultat->fetch();
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $ligne;
+    // }
+    //
+    // /**
+    //  * retourne la liste des élèves avec leurs parents pour un prof donné.
+    //  *
+    //  * @param $acronyme : le prof
+    //  *
+    //  * @return array : la liste des élèves triés par classe
+    //  */
+    // public function getElevesDeProf($acronyme, $statut = null)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     switch ($statut) {
+    //         case 'dir':
+    //             $sql = 'SELECT matricule, nom, prenom, groupe ';
+    //             $sql .= 'FROM '.PFX.'eleves ';
+    //             break;
+    //         default:
+    //             $sql = 'SELECT dpc.coursGrp, ec.matricule, nom, prenom, groupe ';
+    //             $sql .= 'FROM '.PFX.'profsCours AS dpc ';
+    //             $sql .= 'JOIN '.PFX.'elevesCours AS ec ON ec.coursGrp = dpc.coursGrp ';
+    //             $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = ec.matricule ';
+    //             $sql .= "WHERE acronyme='$acronyme' ";
+    //             break;
+    //         }
+    //     $sql .= 'ORDER BY groupe, nom, prenom ';
+    //     $resultat = $connexion->query($sql);
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $classe = $ligne['groupe'];
+    //             $matricule = $ligne['matricule'];
+    //             $liste[$classe][$matricule] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * inscription à un RV donné des parents d'un élève dont on fournit le amtricule
+    //  * procédure pour l'admin afin d'inscrire un parent dont on a reçu une demande de RV "papier".
+    //  * le nombre maximum de rendez-vous est passé en paramètre.
+    //  *
+    //  * @param $id : l'identifiant du RV
+    //  * @param $matricule : le matricule de l'élève dont on inscrit un parent
+    //  * @param $max : le nombre max de RV
+    //  *
+    //  * @return int : -1  si inscription over quota ($max), 0 si écriture impossible dans la BD, 1 si tout OK
+    //  */
+    // public function inscriptionEleve($id, $matricule, $max, $userParent = null)
+    // {
+    //     // rechercher les heures de RV existantes à la date de la RP pour l'élève
+    //     $infoRV = $this->getInfoRV($id);
+    //     $date = Application::dateMysql($infoRV['date']);
+    //     // on a la date, on peut chercher la liste des heures de RV (entre des guillemets simples)
+    //     $listeRV = $this->getRVeleve($matricule, $date);
+    //     $listeHeures = "'".implode("','", array_keys((isset($listeRV[$matricule])) ? $listeRV[$matricule] : $listeRV))."'";
+    //
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     // compter le nombre de RV
+    //     $sql = 'SELECT count(*) AS nb ';
+    //     $sql .= 'FROM '.PFX.'thotRpRv ';
+    //     $sql .= "WHERE matricule = '$matricule' ";
+    //     $resultat = $connexion->query($sql);
+    //     $ligne = $resultat->fetch();
+    //     if ($resultat) {
+    //         if ($ligne['nb'] >= $max) {
+    //             return -1;
+    //         }
+    //     }
+    //
+    //     // l'élève a-t-il déjà un RV à cette heure-là
+    //     $sql = 'SELECT heure ';
+    //     $sql .= 'FROM '.PFX.'thotRpRv ';
+    //     $sql .= "WHERE id='$id' AND heure IN ($listeHeures) ";
+    //     $resultat = $connexion->query($sql);
+    //     if ($resultat) {
+    //         $ligne = $resultat->fetch();
+    //         if (isset($ligne['heure'])) {
+    //             return -2;
+    //         }
+    //     }
+    //     // tout va bien, on peut l'inscrire
+    //     $sql = 'UPDATE '.PFX.'thotRpRv ';
+    //     $sql .= 'SET matricule=:matricule, userParent=:userParent, dispo=0 ';
+    //     $sql .= 'WHERE id=:id ';
+    //     $requete = $connexion->prepare($sql);
+    //     $data = array(':matricule' => $matricule, ':userParent' => $userParent, ':id' => $id);
+    //     $resultat = $requete->execute($data);
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $resultat;
+    // }
 
     /**
      * retourne la liste des cours d'un élève dont on fournit le matricule.
@@ -2361,279 +3729,279 @@ class thot
 
         return $liste;
     }
-
-    /**
-     * retourne la liste des membres du peresonnel à statut spécial (direction, PMS,...)
-     * qui doivent apparaître dans liste des RV possibles.
-     *
-     * @param void()
-     *
-     * @return array
-     */
-    public function listeStatutsSpeciaux()
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT rv.acronyme,  nom, prenom, sexe, titre ';
-        $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
-        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rv.acronyme ';
-        $sql .= "WHERE rv.statut = 'dir' ";
-        $resultat = $connexion->query($sql);
-        $liste = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $acronyme = $ligne['acronyme'];
-                $liste[$acronyme] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne la liste des périodes de RV d'une RP dont on fournit la date.
-     *
-     * @param $date : date au format php
-     *
-     * @return array
-     */
-    public function getListeHeuresRP($date)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT DISTINCT DATE_FORMAT(heure,'%H:%i') AS heure ";
-        $sql .= 'FROM '.PFX.'thotRpRv ';
-        $sql .= "WHERE date = '$date' ";
-        $sql .= 'ORDER BY heure ';
-        $resultat = $connexion->query($sql);
-        $liste = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $heure = $ligne['heure'];
-                $liste[$heure] = $heure;
-            }
-        }
-
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * retourne les heures de début et de fin d'une réunion dont on fournit la date.
-     *
-     * @param $date
-     *
-     * @return array : les deux limites
-     */
-    public function heuresLimite($date)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT MIN(heure) AS min, MAX(heure) AS max ';
-        $sql .= 'FROM '.PFX.'thotRpRv ';
-        $sql .= "WHERE date = '$date' ";
-        $resultat = $connexion->query($sql);
-        $ligne = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $ligne = $resultat->fetch();
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $ligne;
-    }
-
-    /**
-     * recherche les caractéristiques d'une réunion de parents dont on fournit la date.
-     *
-     * @param $date
-     *
-     * @return array
-     */
-    public function getInfoRp($date)
-    {
-        $date = Application::dateMysql($date);
-        $heuresLimites = $this->heuresLimite($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT rp.date, ouvert, active, notice, typeRP, ';
-        $sql .= "DATE_FORMAT(minPer1,'%H:%i') AS minPer1, DATE_FORMAT(maxPer1,'%H:%i') AS maxPer1, ";
-        $sql .= "DATE_FORMAT(minPer2,'%H:%i') AS minPer2, DATE_FORMAT(maxPer2,'%H:%i') AS maxPer2, ";
-        $sql .= "DATE_FORMAT(minPer3,'%H:%i') AS minPer3, DATE_FORMAT(maxPer3,'%H:%i') AS maxPer3 ";
-        $sql .= 'FROM '.PFX.'thotRp AS rp ';
-        $sql .= 'LEFT JOIN '.PFX.'thotRpHeures AS rh ON rh.date = rp.date ';
-        $sql .= "WHERE rp.date = '$date' ";
-
-        $resultat = $connexion->query($sql);
-        $ligne = array();
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            $ligne = $resultat->fetch();
-        }
-        Application::deconnexionPDO($connexion);
-        $tableau = array(
-            'date' => $date,
-            'heuresLimites' => $heuresLimites,
-            'typeRP' => $ligne['typeRP'],
-            'generalites' => array(
-                'ouvert' => $ligne['ouvert'],
-                'active' => $ligne['active'],
-                'notice' => $ligne['notice'], ),
-            'heures' => array(
-                'minPer1' => $ligne['minPer1'],
-                'minPer2' => $ligne['minPer2'],
-                'minPer3' => $ligne['minPer3'],
-                'maxPer1' => $ligne['maxPer1'],
-                'maxPer2' => $ligne['maxPer2'],
-                'maxPer3' => $ligne['maxPer3'], ),
-            );
-
-        return $tableau;
-    }
-
-    /**
-     * Effacement définitif d'une réunion de parents dont on fournit la date.
-     *
-     * @param $date
-     */
-    public function delRP($date)
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $date = Application::dateMysql($date);
-        // suppression de la réunion de parents dans la liste des dates existantes
-        $sql = 'DELETE FROM '.PFX.'thotRp ';
-        $sql .= "WHERE date = '$date' ";
-        $connexion->exec($sql);
-        // suppression des RV
-        $sql = 'DELETE FROM '.PFX.'thotRpRv ';
-        $sql .= "WHERE date = '$date' ";
-        $connexion->exec($sql);
-        // suppression des heures limites de la liste d'attente
-        $sql = 'DELETE FROM '.PFX.'thotRpHeures ';
-        $sql .= "WHERE date = '$date' ";
-        $connexion->exec($sql);
-        // suppression des informations de la liste d'attente
-        $sql = 'DELETE FROM '.PFX.'thotRpAttente ';
-        $sql .= "WHERE date = '$date' ";
-        $connexion->exec($sql);
-        // suppression des informations sur les locaux de RV
-        $sql = 'DELETE FROM '.PFX.'thotRpLocaux ';
-        $sql .= "WHERE date = '$date' ";
-        $connexion->exec($sql);
-
-        Application::deconnexionPDO($connexion);
-    }
-
-    /**
-     * retourne les périodes pour les listes d'attente pour une RP dont on donne la date.
-     *
-     * @param $date
-     *
-     * @return array
-     */
-    public function getListePeriodes($date)
-    {
-        $infoRp = $this->getInfoRp($date);
-        $liste = $infoRp['heures'];
-        $listeHeures = array(
-            '1' => array('min' => $liste['minPer1'], 'max' => $liste['maxPer1']),
-            '2' => array('min' => $liste['minPer2'], 'max' => $liste['maxPer2']),
-            '3' => array('min' => $liste['minPer3'], 'max' => $liste['maxPer3']),
-        );
-
-        return $listeHeures;
-    }
-
-    /**
-     * retourne la liste d'attente des demandes de RV pour un prof dont on fournit l'acronyme et la date de la RP.
-     *
-     * @param $acronyme
-     * @param $date
-     *
-     * @return array()
-     */
-    public function getListeAttenteProf($date, $acronyme)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT at.matricule, at.userName, periode, de.nom, de.prenom, groupe, formule, ';
-        $sql .= 'tp.nom AS nomParent, tp.prenom AS prenomParent, tp.mail ';
-        $sql .= 'FROM '.PFX.'thotRpAttente AS at ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = at.matricule ';
-        $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = at.matricule ';
-        $sql .= "WHERE date = :date AND acronyme = :acronyme ";
-        $sql .= 'ORDER BY periode ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-        $requete->bindParam(':date', $date, PDO::PARAM_STR);
-
-        $resultat = $requete->execute();
-        $liste = array();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $liste[] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-        $periodes = $this->getListePeriodes($date);
-        $listeFinale = array();
-        foreach ($liste as $key => $ligne) {
-            $t = $ligne['periode'];
-            $liste[$key]['heures'] = sprintf('%s à %s', $periodes[$t]['min'], $periodes[$t]['max']);
-        }
-
-        return $liste;
-    }
-
-    /**
-     * Envoie en liste d'attente un élève dont on donne le matricule,
-     * pour le prof dont on indique l'acronyme
-     * pour la RP dont on indique la date avec la période indiquée (entre 1 et 3).
-     *
-     * @param $matricule: le matricule de l'élève
-     * @param $acronyme : l'acronyme du prof
-     * @param $date : la date de la RP
-     * @param $periode : la période choisie pour un RV éventuel
-     *
-     * @return int : le nombre d'insertions (en principe, 1 ou 0 si échec de l'enregistrement)
-     */
-    public function setListeAttenteProf($matricule, $acronyme, $date, $periode)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'INSERT INTO '.PFX.'thotRpAttente     ';
-        $sql .= "SET matricule='$matricule', acronyme='$acronyme', date='$date', periode='$periode' ";
-        $resultat = $connexion->exec($sql);
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
-
-    /**
-     * Supprime un RV en liste d'attente pour un élève dont on fournit le matricule
-     * avec le prof dont on indique l'acronyme et pour la date donnée.
-     *
-     * @param $matricule
-     * @param $acronyme
-     * @param $date
-     * @param $periode
-     *
-     * @return int : le nombre d'effacements réalisés (en principe, 1)
-     */
-    public function delListeAttenteProf($matricule, $acronyme, $date, $periode)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'DELETE FROM '.PFX.'thotRpAttente ';
-        $sql .= "WHERE matricule='$matricule' AND acronyme='$acronyme' AND date='$date' AND periode='$periode' ";
-        $resultat = $connexion->exec($sql);
-        Application::deconnexionPDO($connexion);
-
-        return $resultat;
-    }
+    //
+    // /**
+    //  * retourne la liste des membres du peresonnel à statut spécial (direction, PMS,...)
+    //  * qui doivent apparaître dans liste des RV possibles.
+    //  *
+    //  * @param void()
+    //  *
+    //  * @return array
+    //  */
+    // public function listeStatutsSpeciaux()
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT DISTINCT rv.acronyme,  nom, prenom, sexe, titre ';
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS rv ';
+    //     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rv.acronyme ';
+    //     $sql .= "WHERE rv.statut = 'dir' ";
+    //     $resultat = $connexion->query($sql);
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $acronyme = $ligne['acronyme'];
+    //             $liste[$acronyme] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * retourne la liste des périodes de RV d'une RP dont on fournit la date.
+    //  *
+    //  * @param $date : date au format php
+    //  *
+    //  * @return array
+    //  */
+    // public function getListeHeuresRP($date)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = "SELECT DISTINCT DATE_FORMAT(heure,'%H:%i') AS heure ";
+    //     $sql .= 'FROM '.PFX.'thotRpRv ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $sql .= 'ORDER BY heure ';
+    //     $resultat = $connexion->query($sql);
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $resultat->fetch()) {
+    //             $heure = $ligne['heure'];
+    //             $liste[$heure] = $heure;
+    //         }
+    //     }
+    //
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * retourne les heures de début et de fin d'une réunion dont on fournit la date.
+    //  *
+    //  * @param $date
+    //  *
+    //  * @return array : les deux limites
+    //  */
+    // public function heuresLimite($date)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT MIN(heure) AS min, MAX(heure) AS max ';
+    //     $sql .= 'FROM '.PFX.'thotRpRv ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $resultat = $connexion->query($sql);
+    //     $ligne = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         $ligne = $resultat->fetch();
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $ligne;
+    // }
+    //
+    // /**
+    //  * recherche les caractéristiques d'une réunion de parents dont on fournit la date.
+    //  *
+    //  * @param $date
+    //  *
+    //  * @return array
+    //  */
+    // public function getInfoRp($date)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $heuresLimites = $this->heuresLimite($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT rp.date, ouvert, active, notice, typeRP, ';
+    //     $sql .= "DATE_FORMAT(minPer1,'%H:%i') AS minPer1, DATE_FORMAT(maxPer1,'%H:%i') AS maxPer1, ";
+    //     $sql .= "DATE_FORMAT(minPer2,'%H:%i') AS minPer2, DATE_FORMAT(maxPer2,'%H:%i') AS maxPer2, ";
+    //     $sql .= "DATE_FORMAT(minPer3,'%H:%i') AS minPer3, DATE_FORMAT(maxPer3,'%H:%i') AS maxPer3 ";
+    //     $sql .= 'FROM '.PFX.'thotRp AS rp ';
+    //     $sql .= 'LEFT JOIN '.PFX.'thotRpHeures AS rh ON rh.date = rp.date ';
+    //     $sql .= "WHERE rp.date = '$date' ";
+    //
+    //     $resultat = $connexion->query($sql);
+    //     $ligne = array();
+    //     if ($resultat) {
+    //         $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //         $ligne = $resultat->fetch();
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //     $tableau = array(
+    //         'date' => $date,
+    //         'heuresLimites' => $heuresLimites,
+    //         'typeRP' => $ligne['typeRP'],
+    //         'generalites' => array(
+    //             'ouvert' => $ligne['ouvert'],
+    //             'active' => $ligne['active'],
+    //             'notice' => $ligne['notice'], ),
+    //         'heures' => array(
+    //             'minPer1' => $ligne['minPer1'],
+    //             'minPer2' => $ligne['minPer2'],
+    //             'minPer3' => $ligne['minPer3'],
+    //             'maxPer1' => $ligne['maxPer1'],
+    //             'maxPer2' => $ligne['maxPer2'],
+    //             'maxPer3' => $ligne['maxPer3'], ),
+    //         );
+    //
+    //     return $tableau;
+    // }
+    //
+    // /**
+    //  * Effacement définitif d'une réunion de parents dont on fournit la date.
+    //  *
+    //  * @param $date
+    //  */
+    // public function delRP($date)
+    // {
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $date = Application::dateMysql($date);
+    //     // suppression de la réunion de parents dans la liste des dates existantes
+    //     $sql = 'DELETE FROM '.PFX.'thotRp ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $connexion->exec($sql);
+    //     // suppression des RV
+    //     $sql = 'DELETE FROM '.PFX.'thotRpRv ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $connexion->exec($sql);
+    //     // suppression des heures limites de la liste d'attente
+    //     $sql = 'DELETE FROM '.PFX.'thotRpHeures ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $connexion->exec($sql);
+    //     // suppression des informations de la liste d'attente
+    //     $sql = 'DELETE FROM '.PFX.'thotRpAttente ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $connexion->exec($sql);
+    //     // suppression des informations sur les locaux de RV
+    //     $sql = 'DELETE FROM '.PFX.'thotRpLocaux ';
+    //     $sql .= "WHERE date = '$date' ";
+    //     $connexion->exec($sql);
+    //
+    //     Application::deconnexionPDO($connexion);
+    // }
+    //
+    // /**
+    //  * retourne les périodes pour les listes d'attente pour une RP dont on donne la date.
+    //  *
+    //  * @param $date
+    //  *
+    //  * @return array
+    //  */
+    // public function getListePeriodes($date)
+    // {
+    //     $infoRp = $this->getInfoRp($date);
+    //     $liste = $infoRp['heures'];
+    //     $listeHeures = array(
+    //         '1' => array('min' => $liste['minPer1'], 'max' => $liste['maxPer1']),
+    //         '2' => array('min' => $liste['minPer2'], 'max' => $liste['maxPer2']),
+    //         '3' => array('min' => $liste['minPer3'], 'max' => $liste['maxPer3']),
+    //     );
+    //
+    //     return $listeHeures;
+    // }
+    //
+    // /**
+    //  * retourne la liste d'attente des demandes de RV pour un prof dont on fournit l'acronyme et la date de la RP.
+    //  *
+    //  * @param $acronyme
+    //  * @param $date
+    //  *
+    //  * @return array()
+    //  */
+    // public function getListeAttenteProf($date, $acronyme)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT at.matricule, at.userName, periode, de.nom, de.prenom, groupe, formule, ';
+    //     $sql .= 'tp.nom AS nomParent, tp.prenom AS prenomParent, tp.mail ';
+    //     $sql .= 'FROM '.PFX.'thotRpAttente AS at ';
+    //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = at.matricule ';
+    //     $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = at.matricule ';
+    //     $sql .= "WHERE date = :date AND acronyme = :acronyme ";
+    //     $sql .= 'ORDER BY periode ';
+    //     $requete = $connexion->prepare($sql);
+    //
+    //     $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+    //     $requete->bindParam(':date', $date, PDO::PARAM_STR);
+    //
+    //     $resultat = $requete->execute();
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $requete->fetch()) {
+    //             $liste[] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //     $periodes = $this->getListePeriodes($date);
+    //     $listeFinale = array();
+    //     foreach ($liste as $key => $ligne) {
+    //         $t = $ligne['periode'];
+    //         $liste[$key]['heures'] = sprintf('%s à %s', $periodes[$t]['min'], $periodes[$t]['max']);
+    //     }
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * Envoie en liste d'attente un élève dont on donne le matricule,
+    //  * pour le prof dont on indique l'acronyme
+    //  * pour la RP dont on indique la date avec la période indiquée (entre 1 et 3).
+    //  *
+    //  * @param $matricule: le matricule de l'élève
+    //  * @param $acronyme : l'acronyme du prof
+    //  * @param $date : la date de la RP
+    //  * @param $periode : la période choisie pour un RV éventuel
+    //  *
+    //  * @return int : le nombre d'insertions (en principe, 1 ou 0 si échec de l'enregistrement)
+    //  */
+    // public function setListeAttenteProf($matricule, $acronyme, $date, $periode)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'INSERT INTO '.PFX.'thotRpAttente     ';
+    //     $sql .= "SET matricule='$matricule', acronyme='$acronyme', date='$date', periode='$periode' ";
+    //     $resultat = $connexion->exec($sql);
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $resultat;
+    // }
+    //
+    // /**
+    //  * Supprime un RV en liste d'attente pour un élève dont on fournit le matricule
+    //  * avec le prof dont on indique l'acronyme et pour la date donnée.
+    //  *
+    //  * @param $matricule
+    //  * @param $acronyme
+    //  * @param $date
+    //  * @param $periode
+    //  *
+    //  * @return int : le nombre d'effacements réalisés (en principe, 1)
+    //  */
+    // public function delListeAttenteProf($matricule, $acronyme, $date, $periode)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'DELETE FROM '.PFX.'thotRpAttente ';
+    //     $sql .= "WHERE matricule='$matricule' AND acronyme='$acronyme' AND date='$date' AND periode='$periode' ";
+    //     $resultat = $connexion->exec($sql);
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $resultat;
+    // }
 
     /**
      * renvoie les statistiques sur l'usage de Thot par les parents de la classe donnée
@@ -2767,154 +4135,154 @@ class thot
 
         return $liste;
     }
-
-    /**
-     * renvoie la liste des RV pour la RP de date donnée à destination des parents.
-     *
-     * @param $date
-     * @param $complet : tous les RV si true, seulement les RV inscrits par les admin si false
-     *
-     * @return array
-     */
-    public function listeRVParents($date, $mode, $niveau)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-
-        $sql = "SELECT de.groupe, dtp.matricule, dtp.acronyme, DATE_FORMAT(heure,'%H:%i') AS heure, dp.sexe, dp.nom, dp.prenom  ";
-        $sql .= 'FROM '.PFX.'thotRpRv AS dtp ';
-        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
-        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dtp.acronyme ';
-        $sql .= 'WHERE dtp.matricule IS NOT NULL AND date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ';
-        // si l'inscription est faite par les admin, il n'y a pas de userParent indiqué.
-        if ($mode == 'partiel') {
-            $sql .= 'AND userParent IS Null ';
-        }
-        $sql .= 'ORDER BY matricule, date, heure ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
-        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-        $liste = array();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $matricule = $ligne['matricule'];
-                $liste[$matricule][] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-    /**
-     * renvoie la liste d'attente pour la RP de date donnée à destination des parents.
-     *
-     * @param $date
-     * @param $complet
-     *
-     * @return array
-     */
-    public function listeAttenteParents($date, $mode, $niveau)
-    {
-        $date = Application::dateMysql($date);
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT dta.matricule, periode, sexe, nom, prenom ';
-        $sql .= 'FROM '.PFX.'thotRpAttente AS dta ';
-        $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dta.acronyme ';
-        $sql .= "WHERE date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ";
-        if ($mode == 'partiel') {
-            $sql .= 'AND userParent IS Null ';
-        }
-        $sql .= 'ORDER BY matricule, date, periode ';
-        $requete = $connexion->prepare($sql);
-
-        $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
-        $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-        $liste = array();
-        if ($resultat) {
-            $requete->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $requete->fetch()) {
-                $matricule = $ligne['matricule'];
-                $liste[$matricule][] = $ligne;
-            }
-        }
-        Application::deconnexionPDO($connexion);
-
-        return $liste;
-    }
-
-     /**
-      * Renvoie la liste des locaux attribués aux profs pour la RP dont on fournit la date.
-      *
-      * @param $date : la date de la RP
-      *
-      * @return array : acronyme => local
-      */
-     public function getLocauxRp($date)
-     {
-         $date = Application::dateMysql($date);
-         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-         $sql = 'SELECT DISTINCT rprv.acronyme, local, nom, prenom ';
-         $sql .= 'FROM '.PFX.'thotRpRv AS rprv ';
-         $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rprv.acronyme ';
-         $sql .= 'LEFT JOIN '.PFX.'thotRpLocaux AS loc ON ((loc.acronyme = rprv.acronyme ) AND (loc.date = rprv.date)) ';
-         $sql .= "WHERE rprv.date = '$date' ";
-         $sql .= 'ORDER BY nom, prenom ';
-
-         $resultat = $connexion->query($sql);
-         $liste = array();
-         if ($resultat) {
-             $resultat->setFetchMode(PDO::FETCH_ASSOC);
-             while ($ligne = $resultat->fetch()) {
-                 $acronyme = $ligne['acronyme'];
-                 $liste[$acronyme] = $ligne;
-             }
-         }
-         Application::deconnexionPDO($connexion);
-
-         return $liste;
-     }
-
-    /**
-     * Enregistre la liste des locaux en provenance du formulaire.
-     *
-     * @param $post
-     *
-     * @return int : nombre d'enregistrements réalisés
-     */
-    public function saveLocaux($post)
-    {
-        $date = isset($post['date']) ? $post['date'] : null;
-        if ($date != null) {
-            $date = Application::dateMysql($date);
-            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-            $sql = 'INSERT INTO '.PFX.'thotRpLocaux ';
-            $sql .= 'SET date = :date, acronyme= :acronyme, local=:local ';
-            $sql .= 'ON DUPLICATE KEY UPDATE local=:local ';
-
-            $requete = $connexion->prepare($sql);
-            $nb = 0;
-            foreach ($post as $field => $local) {
-                $field = explode('_', $field);
-                if ($field[0] == 'local') {
-                    $acronyme = $field[1];
-                    $data = array(':acronyme' => $acronyme, ':local' => $local, ':date' => $date);
-                    $nb += $requete->execute($data);
-                }
-            }
-            Application::deconnexionPDO($connexion);
-
-            return $nb;
-        } else {
-            return 0;
-        }
-    }
+    //
+    // /**
+    //  * renvoie la liste des RV pour la RP de date donnée à destination des parents.
+    //  *
+    //  * @param $date
+    //  * @param $complet : tous les RV si true, seulement les RV inscrits par les admin si false
+    //  *
+    //  * @return array
+    //  */
+    // public function listeRVParents($date, $mode, $niveau)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //
+    //     $sql = "SELECT de.groupe, dtp.matricule, dtp.acronyme, DATE_FORMAT(heure,'%H:%i') AS heure, dp.sexe, dp.nom, dp.prenom  ";
+    //     $sql .= 'FROM '.PFX.'thotRpRv AS dtp ';
+    //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
+    //     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dtp.acronyme ';
+    //     $sql .= 'WHERE dtp.matricule IS NOT NULL AND date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ';
+    //     // si l'inscription est faite par les admin, il n'y a pas de userParent indiqué.
+    //     if ($mode == 'partiel') {
+    //         $sql .= 'AND userParent IS Null ';
+    //     }
+    //     $sql .= 'ORDER BY matricule, date, heure ';
+    //     $requete = $connexion->prepare($sql);
+    //
+    //     $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    //     $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+    //
+    //     $resultat = $requete->execute();
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $requete->fetch()) {
+    //             $matricule = $ligne['matricule'];
+    //             $liste[$matricule][] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    // /**
+    //  * renvoie la liste d'attente pour la RP de date donnée à destination des parents.
+    //  *
+    //  * @param $date
+    //  * @param $complet
+    //  *
+    //  * @return array
+    //  */
+    // public function listeAttenteParents($date, $mode, $niveau)
+    // {
+    //     $date = Application::dateMysql($date);
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     $sql = 'SELECT dta.matricule, periode, sexe, nom, prenom ';
+    //     $sql .= 'FROM '.PFX.'thotRpAttente AS dta ';
+    //     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dta.acronyme ';
+    //     $sql .= "WHERE date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ";
+    //     if ($mode == 'partiel') {
+    //         $sql .= 'AND userParent IS Null ';
+    //     }
+    //     $sql .= 'ORDER BY matricule, date, periode ';
+    //     $requete = $connexion->prepare($sql);
+    //
+    //     $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+    //     $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+    //
+    //     $resultat = $requete->execute();
+    //     $liste = array();
+    //     if ($resultat) {
+    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
+    //         while ($ligne = $requete->fetch()) {
+    //             $matricule = $ligne['matricule'];
+    //             $liste[$matricule][] = $ligne;
+    //         }
+    //     }
+    //     Application::deconnexionPDO($connexion);
+    //
+    //     return $liste;
+    // }
+    //
+    //  /**
+    //   * Renvoie la liste des locaux attribués aux profs pour la RP dont on fournit la date.
+    //   *
+    //   * @param $date : la date de la RP
+    //   *
+    //   * @return array : acronyme => local
+    //   */
+    //  public function getLocauxRp($date)
+    //  {
+    //      $date = Application::dateMysql($date);
+    //      $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //      $sql = 'SELECT DISTINCT rprv.acronyme, local, nom, prenom ';
+    //      $sql .= 'FROM '.PFX.'thotRpRv AS rprv ';
+    //      $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rprv.acronyme ';
+    //      $sql .= 'LEFT JOIN '.PFX.'thotRpLocaux AS loc ON ((loc.acronyme = rprv.acronyme ) AND (loc.date = rprv.date)) ';
+    //      $sql .= "WHERE rprv.date = '$date' ";
+    //      $sql .= 'ORDER BY nom, prenom ';
+    //
+    //      $resultat = $connexion->query($sql);
+    //      $liste = array();
+    //      if ($resultat) {
+    //          $resultat->setFetchMode(PDO::FETCH_ASSOC);
+    //          while ($ligne = $resultat->fetch()) {
+    //              $acronyme = $ligne['acronyme'];
+    //              $liste[$acronyme] = $ligne;
+    //          }
+    //      }
+    //      Application::deconnexionPDO($connexion);
+    //
+    //      return $liste;
+    //  }
+    //
+    // /**
+    //  * Enregistre la liste des locaux en provenance du formulaire.
+    //  *
+    //  * @param $post
+    //  *
+    //  * @return int : nombre d'enregistrements réalisés
+    //  */
+    // public function saveLocaux($post)
+    // {
+    //     $date = isset($post['date']) ? $post['date'] : null;
+    //     if ($date != null) {
+    //         $date = Application::dateMysql($date);
+    //         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //         $sql = 'INSERT INTO '.PFX.'thotRpLocaux ';
+    //         $sql .= 'SET date = :date, acronyme= :acronyme, local=:local ';
+    //         $sql .= 'ON DUPLICATE KEY UPDATE local=:local ';
+    //
+    //         $requete = $connexion->prepare($sql);
+    //         $nb = 0;
+    //         foreach ($post as $field => $local) {
+    //             $field = explode('_', $field);
+    //             if ($field[0] == 'local') {
+    //                 $acronyme = $field[1];
+    //                 $data = array(':acronyme' => $acronyme, ':local' => $local, ':date' => $date);
+    //                 $nb += $requete->execute($data);
+    //             }
+    //         }
+    //         Application::deconnexionPDO($connexion);
+    //
+    //         return $nb;
+    //     } else {
+    //         return 0;
+    //     }
+    // }
 
     /**
      * retourne la liste des cours et des profs pour les élèves dont on fournit le matricules.
@@ -3321,11 +4689,11 @@ class thot
      */
     public function getListeGroupes4User($acronyme) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT groupes.nomGroupe, intitule, description, statut, type, acronyme ';
-        $sql .= 'FROM '.PFX.'groupes AS groupes ';
-        $sql .= 'LEFT JOIN '.PFX.'groupesMembres AS membres ON membres.nomGroupe = groupes.nomGroupe ';
-        $sql .= 'WHERE membres.acronyme = :acronyme ';
-        $sql .= 'ORDER BY groupes.nomGroupe ';
+        // groupes dont l'utilisateur $acronyme est propriétaire
+        $sql = 'SELECT nomGroupe, intitule, description, type, proprio ';
+        $sql .= 'FROM '.PFX.'groupes ';
+        $sql .= 'WHERE proprio = :acronyme ';
+        $sql .= 'ORDER BY type, nomGroupe ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
@@ -3336,7 +4704,26 @@ class thot
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $requete->fetch()){
                 $nomGroupe = $ligne['nomGroupe'];
-                $liste[$nomGroupe] = $ligne;
+                $liste['proprio'][$nomGroupe] = $ligne;
+            }
+        }
+
+        // groupes dont l'utilisateur $acronyme fait partie (non propriétaire)
+        $sql = 'SELECT membres.nomGroupe, intitule, description, type, proprio ';
+        $sql .= 'FROM '.PFX.'groupesMembres AS membres ';
+        $sql .= 'JOIN '.PFX.'groupes AS groupes ON groupes.nomGroupe = membres.nomGroupe ';
+        $sql .= 'WHERE acronyme = :acronyme ';
+        $sql .= 'ORDER BY type, groupes.nomGroupe ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $nomGroupe = $ligne['nomGroupe'];
+                $liste['membre'][$nomGroupe] = $ligne;
             }
         }
 
@@ -3357,7 +4744,7 @@ class thot
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT groupes.nomGroupe, intitule, description, type, proprio, maxMembres ';
         $sql .= 'FROM '.PFX.'groupes AS groupes ';
-        $sql .= 'JOIN '.PFX.'groupesMembres AS membres ON membres.nomGroupe = groupes.nomGroupe ';
+        // $sql .= 'JOIN '.PFX.'groupesMembres AS membres ON membres.nomGroupe = groupes.nomGroupe ';
         $sql .= 'WHERE groupes.nomGroupe = :nomGroupe ';
         $requete = $connexion->prepare($sql);
 
@@ -3629,6 +5016,7 @@ class thot
     }
 
 
+
     /**
      * Suppression totale d'un groupe arbitraire et clôture de ses membres
      *
@@ -3671,6 +5059,44 @@ class thot
 
         return $resultat;
     }
+
+    /**
+     * retourne tous les statuts possibles pour les groupes arbitraires
+     *
+     * @param void
+     *
+     * @return array
+     */
+    public function getStatutsMembresGroupes(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SHOW COLUMNS FROM '.PFX.'groupesMembres LIKE "statut" ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        $ligne = $requete->fetch();
+        $type = $ligne['Type'];
+        preg_match('/enum\((.*)\)$/', $type, $matches);
+        $vals = explode(',', $matches[1]);
+
+        Application::DeconnexionPDO($connexion);
+
+        return $vals;
+    }
+
+    /**
+     * retourne la liste avec libelle en clair des statuts possibles pour les groupes
+     *
+     * @param void
+     *
+     * @return array
+     */
+     public function getStatusGroupes(){
+         return array(
+             'ouvert' => 'Groupe Ouvert',
+             'invitation' => 'Groupe sur invitation',
+             'ferme' => 'Groupe Fermé'
+         );
+     }
 
     /**
      * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3776,6 +5202,39 @@ class thot
         Application::deconnexionPDO($connexion);
 
         return $npc;
+    }
+
+    /**
+     * retourne la liste des annonces périmées à la date du jour
+     * pour l'utlisateur $acronyme
+     *
+     * @param string $acronyme
+     *
+     * @return array
+     */
+    public function getAnnoncesPerimees($acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, type, texte, destinataire, dateEnvoi, dateDebut, DATE_FORMAT(dateFin,"%d/%m/%Y") AS dateFin, freeze ';
+        $sql .= 'FROM '.PFX.'thotNotifications ';
+        $sql .= 'WHERE dateFin < CURDATE() AND proprietaire = :acronyme AND freeze = 0 ';
+        $sql .= 'ORDER BY dateFin ASC ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['id'];
+                $liste[$id] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
 }

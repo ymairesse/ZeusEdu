@@ -53,7 +53,7 @@ class eleve
     /**
      * retourne toutes les informations connues sur cet élève.
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */
@@ -709,4 +709,39 @@ class eleve
 
         return $dataPwd;
     }
+
+    /**
+     * renvoie les informations concernant les élèves du groupe $classe
+     * à partir de leur adresse mail dans la table MS
+     *
+     * @param string $groupe
+     *
+     * @return array
+     */
+    public function getInfosEleveFromMail($groupe) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql .= 'SELECT de.matricule, nom, prenom, groupe ';
+        $sql .= 'FROM '.PFX.'eleves AS de ';
+        $sql .= 'JOIN '.PFX.'csvMs AS ms ON SUBSTR(mail, POSITION("@" IN mail)-4, 4) = de.matricule ';
+        $sql .= 'WHERE groupe = :groupe ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(nom," ",""),"-",""),"\",""), prenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR,7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
 }

@@ -1023,7 +1023,7 @@ class ecole
         $sql .= 'FROM '.PFX.'elevesCours AS ec ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON (ec.matricule = de.matricule) ';
         $sql .= 'WHERE coursGrp = :coursGrp ';
-        $sql .= 'ORDER BY groupe, nom, prenom ';
+        $sql .= 'ORDER BY nom, prenom ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
@@ -2754,8 +2754,6 @@ class ecole
 
         return $nb;
     }
-
-
 
      /**
      * retourne la liste des cours réels liés aux cours virtuels éventuels de la liste des

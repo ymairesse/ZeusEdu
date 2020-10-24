@@ -396,7 +396,7 @@ class Application
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT ordre, size, label, parametre, valeur, signification ';
         $sql .= 'FROM '.PFX.'config ';
-        $sql .= 'ORDER BY ordre ';
+        $sql .= 'ORDER BY ordre, label ';
         $resultat = $connexion->query($sql);
         $listeParametres = array();
         if ($resultat) {
