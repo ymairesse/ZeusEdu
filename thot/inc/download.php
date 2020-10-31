@@ -111,8 +111,8 @@ switch ($type) {
         // il s'agit d'un travail d'élève à évaluer
         $matricule = isset($_GET['matricule']) ? $_GET['matricule'] : null;
         $idTravail = isset($_GET['idTravail']) ? $_GET['idTravail'] : null;
-        $fileInfo = $Files->getFileInfos($matricule, $idTravail, $acronyme);
-        $fileName = $fileInfo['fileName'];
+        $fileName = isset($_GET['fileName']) ? $_GET['fileName'] : null;
+        // le $proprio pour connaître le $path exact
         $proprio = $acronyme;
         $path = $ds.'#thot'.$ds.$idTravail.$ds.$matricule.$ds;
         break;

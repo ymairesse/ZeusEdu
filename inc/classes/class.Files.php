@@ -2185,15 +2185,18 @@ class Files
         $ds = DIRECTORY_SEPARATOR;
         $dir = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.'#thot'.$ds.$idTravail.$ds.$matricule;
         $files = @array_diff(scandir($dir), array('..', '.'));
-        // le premier fichier significatif est le numéro 2 (.. et . ont été supprimés)
-        $infos = array('fileName' => null, 'size' => '', 'dateRemise' => 'Non remis');
-        if (isset($files[2])) {
-            $file = $files[2];
-            $infos = array(
-                'fileName' => $file,
-                'size' => $this->unitFilesize(filesize($dir.'/'.$file)),
-                'dateRemise' => strftime('%x %X', filemtime($dir.'/'.$file)),
-            );
+
+        if ($files != NULL){
+            foreach ($files AS $wtf => $oneFile) {
+                $infos[] = array(
+                    'fileName' => $oneFile,
+                    'size' => $this->unitFilesize(filesize($dir.'/'.$oneFile)),
+                    'dateRemise' => strftime('%x %X', filemtime($dir.'/'.$oneFile)),
+                );
+            }
+        }
+        else {
+            $infos = NULL;
         }
 
         return $infos;

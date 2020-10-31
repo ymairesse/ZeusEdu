@@ -43,11 +43,18 @@ $smarty->assign('competencesTravail', $competencesTravail);
 $infoTravail = $Files->getDataTravail($idTravail, $acronyme);
 $smarty->assign('infoTravail', $infoTravail);
 
-// caractéristiques du fichier joint par lélève
+// caractéristiques des fichiers joints par lélève
 $fileInfos = $Files->getFileInfos($matricule, $idTravail, $acronyme);
 $smarty->assign('fileInfos', $fileInfos);
-$smarty->assign('photo', $photo);
+
+$ds = DIRECTORY_SEPARATOR;
+$path = '#thot'.$ds.$idTravail.$ds.$matricule;
+
+$smarty->assign('idTravail', $idTravail);
 $smarty->assign('matricule', $matricule);
+
+$smarty->assign('photo', $photo);
+
 $smarty->assign('BASEDIR', BASEDIR);
 $smarty->assign('COTEABS', COTEABS);
 $smarty->assign('COTENULLE', COTENULLE);

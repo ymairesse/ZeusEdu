@@ -7,16 +7,31 @@
         </div>
 
         <div class="col-sm-10">
-            <button type="button" class="btn btn-info btn-sm pull-right" id="consignes" title="Consignes" data-idtravail="{$infoTravail.idTravail|default:'-'}"><i class="fa fa-graduation-cap"></i></button>
-            <p>
-              <strong id="fileName" class="nomFichier">
-                  <a href="inc/download.php?type=pTrEl&amp;idTravail={$infoTravail.idTravail}&amp;matricule={$matricule}">
-                  {$fileInfos.fileName|default:'-'}
-                  </a>
-              </strong>
-               -> <strong id="fileSize">{$fileInfos.size}</strong><br>
-               Remis le: <strong id="dateRemise">{$fileInfos.dateRemise|default:'-'}</strong>
-           </p>
+            <button type="button"
+                    class="btn btn-info btn-sm pull-right"
+                    id="consignes"
+                    title="Consignes"
+                    data-idtravail="{$infoTravail.idTravail|default:'-'}">
+                <i class="fa fa-graduation-cap"></i>
+            </button>
+
+            {if $fileInfos != NULL}
+                {foreach from=$fileInfos key=wtf item=dataFile}
+                    <div class="fichier">
+                        <a href="inc/download.php?type=pTrEl&amp;idTravail={$idTravail}&amp;matricule={$matricule}&amp;fileName={$dataFile.fileName}">
+                            <span class="fileImage" style="display:block;"></span>
+                            <strong>{$dataFile.fileName}<br></strong>
+                        </a>
+                        <span class="nomFichiers">
+                            {$dataFile.size}<br>
+                            {$dataFile.dateRemise}
+                        </span>
+                    </div>
+                {/foreach}
+                {else}
+                En attente de remise
+            {/if}
+            <div class="clearfix"></div>
 
            <div class="form-group">
              <label for="remarque">Remarque de l'élève</label>
