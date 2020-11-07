@@ -25,9 +25,6 @@ $Forum = new ThotForum();
 
 $idCategorie = isset($_POST['idCategorie']) ? $_POST['idCategorie'] : Null;
 
-// $userStatus = isset($_POST['userStatus']) ? $_POST['userStatus'] : Null;
-// $userStatus = ($userStatus == 'all') ? $userStatus = Null : $userStatus;
-
 $listeCategories = $Forum->getListeCategories();
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';

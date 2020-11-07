@@ -23,6 +23,8 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
+$postId = isset($_POST['postId']) ? $_POST['postId'] : null;
+
 $identite = $User::identiteProf($acronyme);
 
 $ds = DIRECTORY_SEPARATOR;
@@ -42,6 +44,7 @@ $objet = sprintf('[Forum] %s - %s', $categorie, $sujet);
 
 $texte = sprintf('%s %s <br>', $identite['prenom'], $identite['nom']);
 $texte .= sprintf('a posté une contribution dans le forum %s sur le sujet %s <br>auquel vous êtes abonné-e.<br>',$sujet, $categorie);
+$texte .= sprintf('<span style="font-size:8pt">Référence postId: %d</span><br>', $postId);
 $texte .= $post;
 
 $mail = new PHPmailer();

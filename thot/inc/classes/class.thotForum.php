@@ -316,7 +316,7 @@ class ThotForum
         if ($idCategorie != Null) {
             $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         }
-
+// Application::afficher(array($parentId, $libelle, $userStatus, $idCatgorie), true);
         $resultat = $requete->execute();
 
         if ($idCategorie == Null)
@@ -328,6 +328,33 @@ class ThotForum
 
         return $resultat;
     }
+
+        /**
+         * update le libellé de la catégorie $idCategorie
+         *
+         * @param int $idCategorie (seulement s'il s'agit d'une édition)
+         *
+         * @return int : 0 ou l'identifiant de l'enregistrement
+         */
+        public function updateCategorie($idCategorie, $libelle) {
+            $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+            $sql = 'UPDATE '.PFX.'thotForums ';
+            $sql .= 'SET libelle = :libelle ';
+            $sql .= 'WHERE idCategorie = :idCategorie ';
+            $requete = $connexion->prepare($sql);
+
+            $libelle = trim($libelle);
+            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+            $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 40);
+
+            $resultat = $requete->execute();
+
+            $nb = $requete->rowCount();
+
+            Application::deconnexionPDO($connexion);
+
+            return $nb;
+        }
 
     /**
      * renvoie la liste des ascendants jusqu'à la racine pour une catégorie donnée
@@ -347,6 +374,94 @@ class ThotForum
             while ($parentId != 0);
 
         return array_reverse($ancestors);
+    }
+
+    /**
+     * renvoie le parentId direct d'une $idCategorie
+     *
+     * @param int $idCategoie
+     *
+     * @return int
+     */
+     public function getParent4categorie($idCategorie){
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT parentId ';
+         $sql .= 'FROM '.PFX.'thotForums WHERE idCategorie = :idCategorie ';
+         $requete = $connexion->prepare($sql);
+
+         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+
+         $parentId = 0;
+         $resultat = $requete->execute();
+         if ($resultat){
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             $ligne = $requete->fetch();
+             $parentId = $ligne['parentId'];
+         }
+
+         Application::deconnexionPDO($connexion);
+
+         return $parentId;
+     }
+
+     /**
+      * Vérifie si le $newLibelle pour la $categorie descendant de $parentId exite
+      *
+      * @param string $newLibelle
+      * @param int $idCategorie
+      * @param int parentId
+      *
+      * @return bool
+      */
+      public function libelleExiste($newLibelle, $idCategorie, $parentId){
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'SELECT libelle ';
+          $sql .= 'FROM '.PFX.'thotForums ';
+          $sql .= 'WHERE idCategorie = :idCategorie AND parentId = :parentId ';
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+          $requete->bindParam(':parentId', $parentId, PDO::PARAM_INT);
+
+          $libelle = '';
+          $resultat = $requete->execute();
+          if ($resultat){
+              $requete->setFetchMode(PDO::FETCH_ASSOC);
+              $ligne = $requete->fetch();
+              $libelle = $ligne['libelle'];
+          }
+
+          Application::deconnexionPDO($connexion);
+
+          return ($libelle == $newLibelle);
+      }
+
+    /**
+     * renvoie le nombre de posts existants pour une catégorie donnée
+     *
+     * @param int $idCategorie
+     *
+     * @return int : le nombre de posts trouvés
+     */
+    public function getNbPosts4categorie($idCategorie){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT COUNT(*) AS nb ';
+        $sql .= 'FROM '.PFX.'thotForumsPosts WHERE idCategorie = :idCategorie ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+
+        $nb = 0;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+            $nb = $ligne['nb'];
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
     }
 
     /**
@@ -378,40 +493,14 @@ class ThotForum
     }
 
     /**
-     * Effacement de tous les posts, de tous les sujets et de la catégorie $idCategorie
+     * renvoie le nombre de posts existants pour une catégorie donnée
      *
      * @param int $idCategorie
      *
-     * @return array array(nbSujets, nbposts) effacés
+     * @return array array(nbSujets, nbpoposts effacés
      */
     public function delCategorie($idCategorie){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-
-        // suppression de tous les posts liés à cette catégorie
-        $sql = 'DELETE FROM '.PFX.'thotForumsPosts ';
-        $sql .= 'WHERE idCategorie = :idCategorie ';
-        $requete = $connexion->prepare($sql);
-        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-        $nbPosts = $requete->rowCount();
-
-        // suppression de tous les sujets liés à cette catégorie
-        $sql = 'DELETE FROM '.PFX.'thotForumsSujets ';
-        $sql .= 'WHERE idCategorie = :idCategorie ';
-        $requete = $connexion->prepare($sql);
-        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-
-        $resultat = $requete->execute();
-        $nbSujets = $requete->rowCount();
-
-        // suppression de tous les accès liés à cette catégorie
-        $sql = 'DELETE FROM '.PFX.'thotForumsAccess ';
-        $sql .= 'WHERE idCategorie = :idCategorie ';
-        $requete = $connexion->prepare($sql);
-        $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-
-        $nb = $requete->execute();
 
         // suppression de la catégorie
         $sql = 'DELETE FROM '.PFX.'thotForums ';
@@ -419,11 +508,12 @@ class ThotForum
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
 
-        $nb = $requete->execute();
+        $resultat = $requete->execute();
+        $nb = $requete->rowCount();
 
         Application::deconnexionPDO($connexion);
 
-        return array('nbSujets' => $nbSujets, 'nbPosts' => $nbPosts);
+        return $nb;
     }
 
     /**
@@ -657,11 +747,13 @@ class ThotForum
     public function saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $forumActif, $idSujet = Null){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         if ($idSujet == Null) {
+            // nouveau sujet
             $sql = 'INSERT INTO '.PFX.'thotForumsSujets ';
             $sql .= 'SET idCategorie = :idCategorie, sujet = :sujet, acronyme = :acronyme, fbLike = :fbLike, forumActif = :forumActif, dateCreation = Now() ';
             $requete = $connexion->prepare($sql);
             }
             else {
+                // mise à jour
                 $sql = 'UPDATE '.PFX.'thotForumsSujets ';
                 $sql .= 'SET sujet = :sujet, fbLike = :fbLike, forumActif = :forumActif ';
                 $sql .= 'WHERE idCategorie = :idCategorie AND idSujet = :idSujet AND acronyme = :acronyme ';
@@ -669,13 +761,19 @@ class ThotForum
 
                 $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
             }
-
+// echo $sql;
         $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
         $requete->bindParam(':sujet', $sujet, PDO::PARAM_STR, 80);
         $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
         $requete->bindParam(':fbLike', $fbLike, PDO::PARAM_INT);
         $requete->bindParam(':forumActif', $forumActif, PDO::PARAM_INT);
-
+// Application::afficher(array(
+//     'idCategorie' => $idCategorie,
+//     'idSujet' => $idSujet,
+//     'sujet' => $sujet,
+//     'acronyme' => $acronyme,
+//     'fbLike' => $fbLike,
+//     'forumActif' => $forumActif), true);
         $resultat = $requete->execute();
 
         if ($idSujet == Null)
@@ -763,7 +861,7 @@ class ThotForum
      * Enregistre la prise d'abonnement par l'utilisateur $acronyme au $idSujet dans $idCategorie
      *
      * @param string $acronyme
-     * @param int $idCatgorie
+     * @param int $idCategorie
      * @param int $idSujet
      *
      * @return int
@@ -791,7 +889,7 @@ class ThotForum
       * Vérifie la prise d'abonnement par l'utilisateur $acronyme au $idSujet dans $idCategorie
       *
       * @param string $acronyme
-      * @param int $idCatgorie
+      * @param int $idCategorie
       * @param int $idSujet
       *
       * @return int : 0 ou 1 (abonnement existe)
@@ -810,7 +908,7 @@ class ThotForum
           $abonne = Null;
           if ($resultat) {
               $ligne = $requete->fetch();
-              $abonne = $ligne['user'];
+              $abonne = ($ligne != false) ?  $ligne['user'] : Null;
           }
 
           Application::deconnexionPDO($connexion);
@@ -822,7 +920,7 @@ class ThotForum
        * Résilie l'abonnement par l'utilisateur $acronyme au $idSujet dans $idCategorie
        *
        * @param string $acronyme
-       * @param int $idCatgorie
+       * @param int $idCategorie
        * @param int $idSujet
        *
        * @return void
@@ -847,7 +945,7 @@ class ThotForum
        }
 
        /**
-        * renvoie la liste des abonnées au $idSujet de la $idCatgorie
+        * renvoie la liste des abonnées au $idSujet de la $idCategorie
         *
         * @param $idCategorie
         * @param $idSujet
@@ -1102,6 +1200,7 @@ class ThotForum
      * @return int nombre d'accès enregistrés
      */
     public function saveForumAcces($idSujet, $idCategorie, $tous, $listeProfs, $listeNiveaux, $listeClasses, $listeCoursGrp){
+
         // suppression de tous les accès existants
         $this->cleanForumSubject($idCategorie, $idSujet);
 
@@ -1122,51 +1221,8 @@ class ThotForum
             }
         }
 
-        if ($tous != 'TOUS') {
-            // accès par niveau
-            if ($listeNiveaux != Null){
-                $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
-                $sql .= 'SET type = "niveau", cible = :cible, idSujet = :idSujet, idCategorie = :idCategorie ';
-                $requete = $connexion->prepare($sql);
-                $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-                $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-                foreach ($listeNiveaux as $unNiveau){
-                    $requete->bindParam(':cible', $unNiveau, PDO::PARAM_STR, 13);
-                    $resultat = $requete->execute();
-                    $nbAcces += $requete->rowCount();
-                }
-            }
-
-            // accès par classe
-            if ($listeClasses != Null) {
-                $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
-                $sql .= 'SET type = "classe", cible = :cible, idSujet = :idSujet, idCategorie = :idCategorie ';
-                $requete = $connexion->prepare($sql);
-                $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-                $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-                foreach ($listeClasses as $uneClasse){
-                    $requete->bindParam(':cible', $uneClasse, PDO::PARAM_STR, 13);
-                    $resultat = $requete->execute();
-                    $nbAcces += $requete->rowCount();
-                }
-            }
-
-            // accès par coursGrp
-            if ($listeCoursGrp != Null) {
-                $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
-                $sql .= 'SET type = "coursGrp", cible = :cible, idSujet = :idSujet, idCategorie = :idCategorie ';
-                $requete = $connexion->prepare($sql);
-                $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
-                $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
-                foreach ($listeCoursGrp as $unCoursGrp){
-                    $requete->bindParam(':cible', $unCoursGrp, PDO::PARAM_STR, 13);
-                    $resultat = $requete->execute();
-                    $nbAcces += $requete->rowCount();
-                }
-            }
-        }
-        else {
-            // accès à tous les élèves sans distinction
+        // accès à tous les élèves sans distinction
+        if ($tous != Null) {
             $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
             $sql .= 'SET type = "ecole", cible = "all", idSujet = :idSujet, idCategorie = :idCategorie ';
             $requete = $connexion->prepare($sql);
@@ -1174,6 +1230,49 @@ class ThotForum
             $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
             $resultat = $requete->execute();
             $nbAcces += $requete->rowCount();
+            }
+
+        // accès par niveau
+        if ($listeNiveaux != Null){
+            $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
+            $sql .= 'SET type = "niveau", cible = :cible, idSujet = :idSujet, idCategorie = :idCategorie ';
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+            foreach ($listeNiveaux as $unNiveau){
+                $requete->bindParam(':cible', $unNiveau, PDO::PARAM_STR, 13);
+                $resultat = $requete->execute();
+                $nbAcces += $requete->rowCount();
+            }
+        }
+
+        // accès par classe
+        if ($listeClasses != Null) {
+            $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
+            $sql .= 'SET type = "classe", cible = :cible, idSujet = :idSujet, idCategorie = :idCategorie ';
+
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+            foreach ($listeClasses as $uneClasse){
+                $requete->bindParam(':cible', $uneClasse, PDO::PARAM_STR, 13);
+                $resultat = $requete->execute();
+                $nbAcces += $requete->rowCount();
+            }
+        }
+
+        // accès par coursGrp
+        if ($listeCoursGrp != Null) {
+            $sql = 'INSERT INTO '.PFX.'thotForumsAccess ';
+            $sql .= 'SET type = "coursGrp", cible = :cible, idSujet = :idSujet, idCategorie = :idCategorie ';
+            $requete = $connexion->prepare($sql);
+            $requete->bindParam(':idSujet', $idSujet, PDO::PARAM_INT);
+            $requete->bindParam(':idCategorie', $idCategorie, PDO::PARAM_INT);
+            foreach ($listeCoursGrp as $unCoursGrp){
+                $requete->bindParam(':cible', $unCoursGrp, PDO::PARAM_STR, 13);
+                $resultat = $requete->execute();
+                $nbAcces += $requete->rowCount();
+            }
         }
 
         Application::deconnexionPDO($connexion);
@@ -1536,6 +1635,40 @@ class ThotForum
 
         return $liste;
     }
+
+
+    /**
+     * renvoie la $idCatégorie et le $idSujet du post $postId
+     *
+     * @param int $postId
+     *
+     * @return array ($idCategorie, $idSujet)
+    */
+    public function getCatAndSubject($postId){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT idCategorie, idSujet ';
+        $sql .= 'FROM '.PFX.'thotForumsPosts ';
+        $sql .= 'WHERE postId = :postId ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':postId', $postId, PDO::PARAM_INT);
+
+        $liste = Null;
+        $resultat = $requete->execute();
+        if ($resultat){
+            $ligne = $requete->fetch();
+            if ($ligne != Null) {
+                $idCategorie = $ligne['idCategorie'];
+                $idSujet = $ligne['idSujet'];
+            }
+            $liste = array('idCategorie' => $idCategorie, 'idSujet' => $idSujet);
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
 
     // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     // Procédures liées à FBlikes vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

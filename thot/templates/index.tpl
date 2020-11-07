@@ -104,6 +104,7 @@
 
 {* La valeur de $corpsPage est définie dans index.php ou les sous-modules php *}
 <div id="corpsPage">
+
 {if isset($corpsPage)}
 	{include file="$corpsPage.tpl"}
 {else}

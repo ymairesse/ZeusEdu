@@ -7,7 +7,7 @@
     data-container="body"
     data-placement="top">
 
-    <button type="button" class="btn btn-lightBlue btn-xs initiales" title="{$post.user}" style="float:left">
+    <button type="button" class="btn btn-lightBlue btn-xs initiales" title="{$post.user} | positId {$postId}" style="float:left">
         {if $post.userStatus == 'prof'}<i class="fa fa-graduation-cap"></i>
         {else}<i class="fa fa-user"></i>
         {/if}

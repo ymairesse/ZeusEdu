@@ -650,7 +650,7 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
     color: #369;
 }
 .treeview ul, .treeviewPost {
-    margin-left:1em;
+    // margin-left: 1em;
     position:relative
 }
 
@@ -677,12 +677,10 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
 }
 
 .treeview ul li:before, .treeviewPost ul li:before {
-    content:"";
     display:block;
     width:10px;
     height:0;
-    border-top:1px solid;
-    margin-top:-1px;
+    border-top:2px solid;
     position:absolute;
     top:1em;
     left:0

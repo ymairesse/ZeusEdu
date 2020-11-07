@@ -1,16 +1,14 @@
-<div class="checkbox">
-    <label>
-        <input type="checkbox" id="cbProfs" style="float: left; margin-right:0.5em">
-        TOUS
-    </label>
-</div>
+<div class="btn-group  btn-group-justified">
+    <a href="#" type="button" class="btn btn-success btn-xs" id="btn-tous">Tous</a>
+    <a href="#" type="button" class="btn btn-danger btn-xs" id="btn-none">Aucun</a>
+    </div>
 
 <ul class="list-unstyled">
 {foreach from=$listeProfs key=acronyme item=unProf}
     <li>
         <div class="checkbox">
             <label>
-                <input class="selecteurEleve"
+                <input class="selecteurProfs"
                     type="checkbox"
                     name="acronyme[]"
                     value="{$acronyme}"
@@ -26,8 +24,12 @@
 
     $(document).ready(function(){
 
-        $('#cbProfs').change(function(){
-            $('.selecteurEleve').trigger('click');
+        $('#btn-tous').click(function(){
+            $('.selecteurProfs').prop('checked', true);
+        })
+
+        $('#btn-none').click(function(){
+            $('.selecteurProfs').prop('checked', false);
         })
 
     })

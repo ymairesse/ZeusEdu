@@ -1206,14 +1206,16 @@ class Jdc
         $sql .= 'FROM '.PFX.'thotJdcCategories ';
         $sql .= 'ORDER BY ordre ';
         $resultat = $connexion->query($sql);
-        $liste = array();
+        $liste = array('idCategorie' => Null, 'idSujet' => Null);
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
-                $id = $ligne['idCategorie'];
-                $liste[$id] = $ligne;
+                $liste['idCategorie'] = $ligne['idCategorie'];
+                $liste['idSujet'] = $ligne['idSujet'];
             }
+
         }
+        
         Application::DeconnexionPDO($connexion);
 
         return $liste;

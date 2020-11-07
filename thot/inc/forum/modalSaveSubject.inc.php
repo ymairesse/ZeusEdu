@@ -23,9 +23,9 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : Null;
 $form = array();
 parse_str($formulaire, $form);
 
-$idCategorie = isset($form['modalIdCategorie']) ? $form['modalIdCategorie'] : Null;
-$idSujet = isset($form['modalIdSujet']) ? $form['modalIdSujet'] : Null;
-$sujet = isset($form['modalSubject']) ? $form['modalSubject'] : Null;
+$idCategorie = isset($form['idCategorie']) ? $form['idCategorie'] : Null;
+$idSujet = isset($form['idSujet']) ? $form['idSujet'] : Null;
+$sujet = isset($form['sujet']) ? $form['sujet'] : Null;
 $fbLike = isset($form['fbLike']) ? $form['fbLike'] : 0;
 $forumActif = isset($form['forumActif']) ? $form['forumActif'] : 1;
 
@@ -44,17 +44,16 @@ if ($idSujet == Null) {
         $idSujet = $Forum->saveSubject($idCategorie, $sujet, $fbLike, $acronyme, $forumActif, $idSujet);
     }
 
+$nbAcces = 0;
 // enregistrement des accès pour ce sujet
 if ($idSujet != 0) {
     $listeProfs = isset($form['acronyme']) ? $form['acronyme'] : Null;
-    if ($categorie['userStatus'] == 'profs')
-        $tous = Null;
-        else $tous = ($form['choixCibleEleve'] == 'tous') ? 'TOUS' : Null;
+    $tous = isset($form['ecole']) ? $form['ecole'] : Null;
     $listeNiveaux = isset($form['niveau']) ? $form['niveau'] : Null;
     $listeClasses = isset($form['classe']) ? $form['classe'] : Null;
     $listeCoursGrp = isset($form['coursGrp']) ? $form['coursGrp'] : Null;
 
-    $nb = $Forum->saveForumAcces($idSujet, $idCategorie, $tous, $listeProfs, $listeNiveaux, $listeClasses, $listeCoursGrp);
+    $nbAcces = $Forum->saveForumAcces($idSujet, $idCategorie, $tous, $listeProfs, $listeNiveaux, $listeClasses, $listeCoursGrp);
 }
 
-echo $idSujet;
+echo json_encode(array('nbAcces' => $nbAcces, 'idSujet' => $idSujet));

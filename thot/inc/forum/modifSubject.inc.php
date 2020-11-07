@@ -27,8 +27,12 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.thotForum.php';
 $Forum = new thotForum();
 
+// liste des catégories sous forme arborescente
+$listeCategories = $Forum->getListeCategories();
+
 $categorie = $Forum->getInfoCategorie($idCategorie);
 $infoSujet = $Forum->getInfoSujet($idCategorie, $idSujet);
+
 
 require_once INSTALL_DIR.$ds.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -44,6 +48,8 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
+$smarty->assign('listeCategories', $listeCategories);
+
 $smarty->assign('listeProfs', $listeProfs);
 $smarty->assign('listeNiveaux', $listeNiveaux);
 $smarty->assign('listeClasses', $listeClasses);
@@ -53,9 +59,6 @@ $smarty->assign('listeAbonnes', $listeAbonnes);
 // catégorie dans le forum
 $smarty->assign('categorie', $categorie);
 // le sujet dans sa catégorie
-$smarty->assign('idSujet', $idSujet);
-$smarty->assign('sujet', $infoSujet['sujet']);
-$smarty->assign('fbLike', $infoSujet['fbLike']);
-$smarty->assign('forumActif', $infoSujet['forumActif']);
+$smarty->assign('infoSujet', $infoSujet);
 
-$smarty->display('forum/modal/modalAddSubject.tpl');
+$smarty->display('forum/modal/modalGestSujets.tpl');

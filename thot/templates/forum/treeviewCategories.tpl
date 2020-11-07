@@ -1,6 +1,6 @@
 {function name=repertoire level=0}
 
-<ul class="" data-level="{$level}">
+<ul class="{if $level > 0}hidden{/if}" data-level="{$level}">
 
     {foreach $data as $categorie}
         {assign var=idCategorie value=$categorie.idCategorie}
@@ -30,26 +30,14 @@
 {/function}
 
 <ul class="treeview">
-{if $userStatus == 'admin'}
-    <li>
-        <a class="active"
-            href="javascript:void(0)"
-            data-idcategorie="0"
-            data-userstatus="racine">
-            Racine
-        </a>
-    </li>
-{/if}
+
     {repertoire data=$listeCategories}
 
 </ul>
 
-{include file="forum/contextCategorie.tpl"}
-
 <script type="text/javascript" src="js/treeview.js"></script>
 
 <script type="text/javascript">
-
 
     $(document).ready(function(){
 
