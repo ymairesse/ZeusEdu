@@ -189,14 +189,13 @@ $(document).ready(function(){
 			}
 		)
 
-	$(".lock").click(function(event){
+	$('#listeDouble').on('click', '.lock', function(){
 		var periodeActuelle = $("#periode").val();
 		var periode = $(this).data('periode');
 		if (periodeActuelle == periode) {
 			$("#verrou").text($(this).attr('id'));
 			$("#confirmeVerrou").modal('show');
 			}
-		event.stopPropagation();
 		})
 
 	$("#unlock").click(function() {
