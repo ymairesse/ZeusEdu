@@ -1854,8 +1854,8 @@ CREATE TABLE `didac_thotTravauxEvaluations` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `didac_thotTravauxEvaluations`
+  ADD PRIMARY KEY (`matricule`,`idTravail`,`idCompetence`),
   ADD KEY `matricule` (`matricule`);
-
 
 CREATE TABLE IF NOT EXISTS `didac_lostPasswd` (
   `user` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant de l''utilisateur',
