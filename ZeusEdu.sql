@@ -1846,6 +1846,9 @@ CREATE TABLE `didac_thotTravauxCompetences` (
   `formCert` enum('form','cert') CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT 'form'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Évaluations des travaux par compétences';
 
+ALTER TABLE `didac_thotTravauxCompetences`
+  ADD PRIMARY KEY (`idTravail`,`idCompetence`);
+
 CREATE TABLE `didac_thotTravauxEvaluations` (
   `matricule` int NOT NULL,
   `idTravail` int NOT NULL,
