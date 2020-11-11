@@ -22,14 +22,17 @@
               <tbody>
                   {assign var=remis value=0}
                   {foreach from=$travauxRemis key=matricule item=data}
-                  {if $data.remis == 1} {assign var=remis value=$remis+1} {/if}
+                  {if $data.remis == 1}
+                    {assign var=remis value=$remis+1}
+                  {/if}
                   <tr class="{if $data.remis == 1}bg-success{else}bg-danger{/if}" data-matricule="{$matricule}">
                       <td>{$data.groupe}</td>
                       <td>{$data.nom} {$data.prenom}</td>
-                      <td>{if $data.remis == 1}OK{else}&nbsp;{/if}</td>
+                      <td>{if $data.remis > 0}{$data.remis} <i class="fa fa-file-o"></i> {else}&nbsp;{/if}</td>
                       <td>
-                        {if $listeEvaluations.$matricule.total.cote != ''}
-                            {$listeEvaluations.$matricule.total.cote} / {$listeEvaluations.$matricule.total.max}
+                        {assign var=eval value=$listeEvaluations.$matricule.total}
+                        {if $eval.cote|is_numeric}
+                            {$eval.cote} / {$eval.max}
                         {else}
                             &nbsp;
                         {/if}
