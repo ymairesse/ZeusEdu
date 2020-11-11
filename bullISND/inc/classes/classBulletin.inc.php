@@ -3991,9 +3991,10 @@ class Bulletin
             $somme = 0;
             foreach ($data as $cours => $detailsCours){
                 $sit100 = $detailsCours['sit100'];
-                if (is_numeric($sit100))
+                if (is_numeric($sit100)) {
                     $somme += $sit100;
-                $n++;
+                    $n++;
+                    }
             }
             $moyenne = ($n > 0) ? round($somme / $n, 1) : '-';
             $listeMoyennes[$matricule]['cote'] = $moyenne;
@@ -4191,7 +4192,7 @@ class Bulletin
                         else $echec = false;
                     }
                     else {
-                        $echec = (!in_array($trimCote, $texteNonEchec));
+                        $echec = (!in_array($trimCote, $texteNonEchec) && ($trimCote != ''));
                     }
                 // ------------------------------------------------------------
 
