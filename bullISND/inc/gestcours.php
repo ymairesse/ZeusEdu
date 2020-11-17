@@ -76,6 +76,7 @@ switch ($mode) {
 		$smarty->assign('listeProfs', $Ecole->listeProfs());
 		if (isset($niveau)) {
 			$listeMatieres = $Ecole->listeCours($niveau);
+			// Application::afficher($listeMatieres, true);
 			$smarty->assign('listeMatieres', $listeMatieres);
 			}
 		if (isset($cours)) {
