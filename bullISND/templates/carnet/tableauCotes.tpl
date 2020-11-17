@@ -68,8 +68,8 @@
 					data-toggle='popover'
 					data-trigger='hover'
 					class='detailsCote {$travail.formCert}'
-					data-content="Libellé: {$libelle}<br>
-								Remarque: {$remarque}<br>
+					data-content="Libellé: {$libelle|escape:html}<br>
+								Remarque: {$remarque|escape:html}<br>
 								Neutralisé: <strong>{if $travail.neutralise == 1}Oui{else}Non{/if}</strong><br>
 								Form/Cert: {if $travail.formCert == "cert"}Certificatif{else}Formatif{/if}<br>
 								Max: <strong>{$travail.max}</strong><br>
@@ -92,6 +92,7 @@
 			{assign var=nbEleves value=$listeEleves|@count}
 			{assign var=nbTravaux value=$listeTravaux|@count}
 			{foreach from=$listeEleves key=matricule item=unEleve}
+
 			<tr>
 			<td>{$unEleve.classe}</td>
 			{assign var=nomPrenom value=$unEleve.nom|cat:' '|cat:$unEleve.prenom}
