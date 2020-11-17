@@ -363,21 +363,16 @@ switch ($mode) {
             $listeCoursComp = $Bulletin->listeCoursNiveaux($niveau);
             $smarty->assign('listeCoursComp', $listeCoursComp);
         }
-        if ($etape == 'enregistrer') {
-            $nbResultats = $Bulletin->enregistrerCompetences($_POST);
-            $smarty->assign('message', array(
-                        'title' => 'Enregistrement',
-                        'texte' => "$nbResultats compétence(s) modifiée(s)",
-                        'urgence' => 'success', ));
-        }
+
         if (isset($cours)) {
             $listeCompetences = $Bulletin->listeCompetencesListeCours($cours);
+            $listeUsedCompetences = $Bulletin->getUsedCompetences($listeCompetences[$cours]);
             $smarty->assign('cours', $cours);
             $smarty->assign('listeCompetences', $listeCompetences);
+            $smarty->assign('listeUsedCompetences', $listeUsedCompetences);
             $smarty->assign('corpsPage', 'adminCompetences');
         }
-        $smarty->assign('action', $action);
-        $smarty->assign('mode', $mode);
+
         $smarty->assign('selecteur', 'selecteurs/selectNiveauCours');
         break;
 
