@@ -132,15 +132,11 @@
 {/if}
 
 {if empty($listeCoursGrp)}
-<h3>Suppression d'un cours</h3>
-<form name="supprCours" id="supprCours" method="POST" action="index.php">
+
+	<h3>Suppression d'un cours</h3>
 	<p>Le cours <strong>{$cours} {$listeMatieres.$cours.statut} {$listeMatieres.$cours.libelle} {$listeMatieres.$cours.nbheures}h</strong> est orphelin (ni professeur, ni élèves).</p>
-	<input type="submit" name="Submit" value="Supprimer ce cours">
-	<input type="hidden" name="cours" value="{$cours}">
-	<input type="hidden" name="action" value="{$action}">
-	<input type="hidden" name="mode" value="deleteCours">
-	<input type="hidden" name="niveau" value="{$niveau}">
-</form>
+	<button type="button" class="btn btn-danger" id="delOrphanCours" data-cours="{$cours}">Supprimer ce cours</button>
+
 {/if}
 
 </div>
@@ -153,6 +149,37 @@
 	texteVirtuel += 'Les élèves restent inscrits.'
 
 	$(document).ready(function(){
+
+		$('#delOrphanCours').click(function(){
+			var cours = $(this).data('cours');
+			$.post('inc/admin/delOrphanCours.inc.php', {
+				cours: cours
+			}, function(resultat){
+				bootbox.alert({
+					title : 'Effacement',
+					message: 'Le cours '+cours+' a été supprimé',
+					callback: function(){
+						var prevCours = $('#matiere option:selected').prev().val();
+						var nextCours = $('#matiere option:selected').next().val();
+						if (nextCours != undefined) {
+							// si possible, sélection du cours suivant
+							$('#matiere option:selected').next().attr('selected', true);
+							}
+							else {
+								// sinon, si possible sélection du cours précédent
+								if (prevCours != undefined) {
+									$('#matiere option:selected').prev().attr('selected', true);
+								}
+								else {
+									// sinon, aucune sélection
+									$('#matiere').val('');
+								}
+							}
+						$('#envoi').trigger('click');
+					}
+				})
+			})
+		})
 
 		$('#panneauGestCours').on('click', '.btn-addEleves', function(){
 			var coursGrp = $(this).data('coursgrp');
