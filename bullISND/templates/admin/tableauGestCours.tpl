@@ -10,7 +10,7 @@
 		<th style="width:1em"></th>
 		<th style="width:3em">&nbsp;</th>
         <th>Élèves</th>
-		<th styme="width:1em">&nbsp;</th>
+		<th style="width:1em">&nbsp;</th>
         <th style="width:3em;">&nbsp;</th>
 	</tr>
 {foreach from=$listeCoursGrp key=coursGrp item=data}

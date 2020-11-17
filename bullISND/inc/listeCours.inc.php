@@ -21,5 +21,6 @@ $smarty = new Smarty();
 $smarty->template_dir = "../templates";
 $smarty->compile_dir = "../templates_c";
 
-$smarty->assign("listeCoursComp", $listeCours);
-$smarty->display("listeCoursComp.tpl");
+$smarty->assign('listeCoursComp', $listeCours);
+
+$smarty->display('selecteurs/listeCoursComp.tpl');

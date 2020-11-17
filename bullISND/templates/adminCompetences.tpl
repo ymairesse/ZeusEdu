@@ -1,53 +1,61 @@
-<div class="container">
+<div class="container-fluid">
 	<h2>Administration des compétences {$cours}</h2>
 
-	<form name="adminCompetences" id="adminCompetences" method="POST" action="index.php" role="form" class="form-inline">
-		<div class="row">
+			<div class="row">
 
-			<div class="col-md-6 col-sm-12">
+			<div class="col-md-6 col-xs-12">
 				<h3>Compétences actuelles</h3>
+				<form name="formAdminCompetences" id="formAdminCompetences">
 				{if $listeCompetences|@count > 0}
-				{assign var=competences value=$listeCompetences.$cours}
-					{foreach from=$competences key=idComp item=data}
-					<input type="checkBox" name="suppr_{$idComp}" class="supprComp form-control" id="chck_{$idComp}">
-					<input type="text" name="libelle_{$idComp}" value="{$data.libelle}" class="lblComp form-control" id="lbl_{$idComp}" size="40">
-					<input type="text" name="ordre_{$idComp}" value="{$data.ordre}" size="3" class="form-control">
-					<br>
-					{/foreach}
+
+					<table class="table table-condensed" id="tableCompetences">
+						<thead>
+							<tr>
+								<th style="width:1em;">&nbsp;</th>
+								<th>Libellé</th>
+								<th style="width:5em;">Ordre</th>
+							</tr>
+						</thead>
+
+						<tbody>
+
+							{include file="admin/bodyCompetences.tpl"}
+
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="3">
+									<div class="btn-group btn-group-justified">
+										<a href="#" type="button" class="btn btn-success" id="btn-addCompetence">Ajouter une compétence</a>
+										<a href="#" type="button" class="btn btn-primary" id="btn-saveCompetences">Enregistrer</a>
+									</div>
+									<input type="hidden" name="cours" value="{$cours}">
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				{/if}
-				<input type="checkBox" name="toutCocher" id="toutCocher">
-				<label for="toutCocher">Tout Cocher</label>
-				<button type="button" class="btn btn-primary" id="effacer"><i class="fa fa-arrow-up"></i> Effacer</button>
-				<br>
+				</form>
 			</div>
 
-			<div class="col-md-4 col-sm-12">
-				<h3>Nouvelle(s) compétence(s)</h3>
-				<button type="button" class="btn btn-primary" id="ajouter"><i class="fa fa-arrow-down"></i> Ajouter</button>
-				<div id="newComp"></div>
+			<div class="col-md-6 col-xs-12">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						Compétences
+					</div>
+					<div class="panel-body">
+						<p>Pour ajouter une nouvelle compétences, cliquer le bouton "Ajouter une compétence". Un libellé générique est proposé; il suffit de le modifier.</p>
+						<p>Les compétences déjà utilisées dans le bulletin ou dans le carnet de cotes ne peuvent être effacées. Le bouton de suppression est désactivé.</p>
+						<p>Pour changer l'ordre de présentation des compétences dans le bulletin, ajuster le nombre dans la colonne de droite. Les valeurs ne doivent pas être consécutives.</p>
+					</div>
+
+				</div>
 
 			</div>
 			<!-- col-md... -->
 
-			<div class="col-md-2 col-sm-12">
-				<div class="btn-group-vertical pull-right">
-					<button type="submit" class="btn btn-primary">Enregistrer</button>
-					<button type="reset" class="btn btn-default">Annuler</button>
-				</div>
-				<input type="hidden" name="cours" value="{$cours}">
-				<input type="hidden" name="niveau" value="{$niveau}">
-				<input type="hidden" name="action" value="{$action}">
-				<input type="hidden" name="mode" value="{$mode}">
-				<input type="hidden" name="etape" value="enregistrer">
-				<div class="clearfix"></div>
-				<p class="notice">Pour supprimer une compétence, effacer son intitulé et enregistrer</p>
-
-			</div>
-
 		</div>
 		<!-- row -->
-
-	</form>
 
 </div>
 <!-- container -->
@@ -56,44 +64,49 @@
 	$(document).ready(function() {
 		var nbNewComp = 1;
 
-		$("#toutCocher").click(function() {
-			$(".supprComp").click();
+		$('#formAdminCompetences').validate();
+
+		$('#tableCompetences').on('click', '.btn-delCompetence', function(){
+			var cours = $('#cours').val();
+			var idComp = $(this).closest('tr').data('idcomp');
+			var libelle = $('.lblComp[data-idcomp="'+idComp+'"]').val();
+			bootbox.confirm({
+				title: 'Suppression d\'une compétence',
+				message: 'Veuille confirmer la suppression définitive de la compétence <br>' + libelle,
+				callback: function(resultat){
+					if (resultat == true) {
+						$.post('inc/competences/delCompetence.inc.php', {
+							idComp: idComp,
+							cours: cours
+						}, function(resultat){
+							$('#tableCompetences tr[data-idcomp="' + idComp +'"]').remove();
+						})
+					}
+				}
+			});
 		})
 
-		$("#effacer").click(function() {
-			$(".supprComp").each(function(no) {
-				if ($(this).prop("checked")) {
-					$(this).css({
-						'opacity': 0.5
-					});
-					$(this).next().val('').css({
-						'opacity': 0.5
-					});
-				}
+		$('#btn-addCompetence').click(function(){
+			var cours = $('#cours').val();
+			$.post('inc/competences/addCompetence.inc.php', {
+				cours: cours,
+				libelle: 'Nouvelle compétence '+ nbNewComp
+			}, function(resultat){
+				$('#tableCompetences tbody').append(resultat);
+				nbNewComp ++;
 			})
 		})
-		$("#annuler").click(function() {
-			if (confirm("Êtes-vous sûr(e) de vouloir annuler?")) {
-				$(".lblComp").each(function(no) {
-					$(this).css({
-						'opacity': 1
-					});
-					$(".blockNewComp").remove();
-					nbNewComp = 1;
+
+		$('#btn-saveCompetences').click(function(){
+			if ($('#formAdminCompetences').valid()) {
+				var formulaire = $('#formAdminCompetences').serialize();
+				$.post('inc/competences/saveCompetences.inc.php', {
+					formulaire: formulaire
+				}, function(resultat){
+					$('#tableCompetences tbody').html(resultat);
 				})
 			}
 		})
 
-		$("#ajouter").click(function() {
-			$('<div class="blockNewComp"> <input type="text" class="newComp form-control" name="newComp[]" style="width:100%" value=""></div>').fadeIn('slow').appendTo('#newComp');
-			$(".newComp").last().focus();
-			nbNewComp++;
-
-		})
-
-		$("#adminCompetences").submit(function() {
-			$.blockUI();
-			$("#wait").show();
-		})
 	})
 </script>

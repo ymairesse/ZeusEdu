@@ -3402,56 +3402,200 @@ class Bulletin
      */
     public function enregistrerCompetences($post)
     {
+        // $cours = $post['cours'];
+        // $resultat = 0;
+        // // mise en ordre des données reçues
+        // $dataExiste = array();
+        // $dataNew = array();
+        // foreach ($post as $field => $value) {
+        //     $champ = explode('_', $field);
+        //     // mises à jour et suppression des compétences
+        //     if ($champ[0] == 'libelle') {
+        //         $idComp = $champ[1];
+        //         $dataExiste[$idComp]['libelle'] = addslashes($value);
+        //     }
+        //     if ($champ[0] == 'ordre') {
+        //         $idComp = $champ[1];
+        //         $dataExiste[$idComp]['ordre'] = addslashes($value);
+        //     }
+        //
+        //     // nouvelles compétences
+        //     if ($field == 'newComp') {
+        //         $dataNew = $value;
+        //     }
+        // }
+        // $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // foreach ($dataExiste as $idComp => $data) {
+        //     if ($data['libelle'] == '') {
+        //         $sql = 'DELETE FROM '.PFX.'bullCompetences ';
+        //         $sql .= "WHERE id='$idComp'";
+        //         $resultat += $connexion->exec($sql);
+        //     } else {
+        //         $ordre = $data['ordre'];
+        //         $libelle = $data['libelle'];
+        //         $sql = 'UPDATE '.PFX.'bullCompetences ';
+        //         $sql .= "SET ordre='$ordre', libelle='$libelle' ";
+        //         $sql .= "WHERE id = '$idComp'";
+        //         $resultat += $connexion->exec($sql);
+        //     }
+        // }
+        //
+        // foreach ($dataNew as $libelle) {
+        //     $libelle = addslashes($libelle);
+        //     if ($libelle != '') {
+        //         $sql = 'INSERT INTO '.PFX.'bullCompetences ';
+        //         $sql .= "SET libelle='$libelle', cours='$cours'";
+        //
+        //         $resultat += $connexion->exec($sql);
+        //     }
+        // }
+        // Application::DeconnexionPDO($connexion);
+        //
+        // return $resultat;
+    }
+
+    /**
+     * enregistre l'ensemble des informations figurant au formulaire de gestion des compétences
+     *
+     * @param array $post
+     *
+     * @return int
+     */
+    public function saveCompetences($post){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'bullCompetences ';
+        $sql .= 'SET libelle = :libelle, ordre = :ordre ';
+        $sql .= 'WHERE id = :idComp AND cours = :cours ';
+        $requete = $connexion->prepare($sql);
+        // echo $sql;
         $cours = $post['cours'];
-        $resultat = 0;
-        // mise en ordre des données reçues
-        $dataExiste = array();
-        $dataNew = array();
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+        // on n'a plus besoin du cours pour l'analyse des autres champs
+        unset($post['cours']);
+
+        $liste = array();
         foreach ($post as $field => $value) {
             $champ = explode('_', $field);
-            // mises à jour et suppression des compétences
-            if ($champ[0] == 'libelle') {
-                $idComp = $champ[1];
-                $dataExiste[$idComp]['libelle'] = addslashes($value);
-            }
-            if ($champ[0] == 'ordre') {
-                $idComp = $champ[1];
-                $dataExiste[$idComp]['ordre'] = addslashes($value);
+            $idComp = $champ[1];
+            if ($champ[0] == 'libelle')
+                $liste[$idComp]['libelle'] = $value;
+
+            if ($champ[0] == 'ordre')
+                $liste[$idComp]['ordre'] = $value;
             }
 
-            // nouvelles compétences
-            if ($field == 'newComp') {
-                $dataNew = $value;
-            }
+        $nb = 0;
+        foreach ($liste as $idComp => $data) {
+            $libelle = $data['libelle'];
+            $ordre = $data['ordre'];
+            $requete->bindParam(':idComp', $idComp, PDO::PARAM_INT);
+            $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 100);
+            $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+            // Application::afficher(array($cours, $libelle, $ordre, $idComp));
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
         }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * Enregistrement d'une nouvelle compétence dans la table des compétences
+     *
+     * @param string $idComp
+     *
+     * @return int
+     */
+    public function addCompetence($cours, $libelle){
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        foreach ($dataExiste as $idComp => $data) {
-            if ($data['libelle'] == '') {
-                $sql = 'DELETE FROM '.PFX.'bullCompetences ';
-                $sql .= "WHERE id='$idComp'";
-                $resultat += $connexion->exec($sql);
-            } else {
-                $ordre = $data['ordre'];
-                $libelle = $data['libelle'];
-                $sql = 'UPDATE '.PFX.'bullCompetences ';
-                $sql .= "SET ordre='$ordre', libelle='$libelle' ";
-                $sql .= "WHERE id = '$idComp'";
-                $resultat += $connexion->exec($sql);
-            }
-        }
+        $sql = 'INSERT INTO '.PFX.'bullCompetences ';
+        $sql .= 'SET cours = :cours, ordre = 0, libelle = :libelle ';
+        $requete = $connexion->prepare($sql);
 
-        foreach ($dataNew as $libelle) {
-            $libelle = addslashes($libelle);
-            if ($libelle != '') {
-                $sql = 'INSERT INTO '.PFX.'bullCompetences ';
-                $sql .= "SET libelle='$libelle', cours='$cours'";
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+        $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 100);
 
-                $resultat += $connexion->exec($sql);
-            }
-        }
+        $resultat = $requete->execute();
+
+        $idComp = $connexion->lastInsertId();
+
         Application::DeconnexionPDO($connexion);
 
-        return $resultat;
+        return $idComp;
+    }
+
+    /**
+     * Suppression de la compétences $idComp pour le cours $cours
+     *
+     * @param int $idComp
+     * @param string $cours
+     *
+     * @return int
+     */
+    public function delCompetence($idComp, $cours){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'bullCompetences ';
+        $sql .= 'WHERE id = :idComp AND cours = :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+        $requete->bindParam(':idComp', $idComp, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * recherche la liste des compétences utilisées dans la liste des compétences passée en argument
+     *
+     * @param array $listeCompetences
+     *
+     * @return array
+     */
+    public function getUsedCompetences($listeCompetences) {
+        $listeString = implode(",", array_keys($listeCompetences));
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // compétences utilisées dans le bulletin
+        $sql = 'SELECT DISTINCT idComp ';
+        $sql .= 'FROM '.PFX.'bullDetailsCotes ';
+        $sql .= 'WHERE idComp IN ('.$listeString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $idComp = $ligne['idComp'];
+                $liste[$idComp] = $idComp;
+            }
+        }
+
+        $sql = 'SELECT DISTINCT idComp ';
+        $sql .= 'FROM '.PFX.'bullCarnetCotes ';
+        $sql .= 'WHERE idComp IN ('.$listeString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $idComp = $ligne['idComp'];
+                $liste[$idComp] = $idComp;
+            }
+        }
+
+        APPLICATION::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
     /**

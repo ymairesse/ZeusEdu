@@ -7,9 +7,10 @@
 			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)}selected{/if}>{$unNiveau}</option>
 		{/foreach}
 	</select>
+
 	<span id="choixCours">
 	{if $listeNiveaux}
-		{include file="listeCoursComp.tpl"}
+		{include file="selecteurs/listeCoursComp.tpl"}
 	{/if}
 	</span>
 
