@@ -2117,7 +2117,7 @@ class thot
    		$sql = 'SELECT dtn.id, type, proprietaire, destinataire, objet, texte, dateDebut, dateFin, dtn.mail, accuse, dp.nom, dp.sexe, dateEnvoi ';
         $sql .= 'FROM '.PFX.'thotNotifications AS dtn ';
         $sql .= 'LEFT JOIN '.PFX.'profs AS dp ON dp.acronyme = dtn.proprietaire ';
-        $sql .= 'WHERE destinataire IN (:matricule, :classe, :niveau, "ecole", '.$listeMatieresString.', '.$listeCoursGrpString.') ';
+        $sql .= 'WHERE destinataire LIKE :niveau OR destinataire IN (:matricule, :classe, "ecole", '.$listeMatieresString.', '.$listeCoursGrpString.') ';
         $sql .= 'AND (dateFin > NOW() AND dateDebut <= NOW()) ';
         $sql .= 'ORDER BY dateEnvoi DESC, dateDebut DESC ';
         $requete = $connexion->prepare($sql);
@@ -2517,6 +2517,30 @@ class thot
         }
 
         return $liste;
+    }
+
+    /**
+     * rechercher l'adresse mail validée des parents d'élèves dont on passe la liste des $matricules
+     *
+     * @param array $listeMatricules
+     *
+     * @return array
+     */
+    public function getMailParents($listeMatricules){
+        echo "test";
+    }
+
+
+    /**
+     * Ajouter les parents à la liste de mailing $listeMailing
+     *
+     * @param array $listeMailing
+     *
+     * @return array : la même liste avec un champ supplémentaire pour le mail des parents
+     */
+    public function addParentMailing($listeMailing){
+
+        return $listeMailing;
     }
 
     /**
