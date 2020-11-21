@@ -28,9 +28,10 @@ $module = $Application->getModule(3);
 require_once INSTALL_DIR.$ds.$module."/inc/classes/classJdc.inc.php";
 $Jdc = new Jdc();
 
-
 if ($coursGrp == 'synoptique') {
-    $eventsList = $Jdc->getSynoptiqueCours($start, $end, $acronyme);
+    $events4Cours = $Jdc->getSynoptiqueCours($start, $end, $acronyme);
+    $eventsNotCours = $Jdc->getEventsNotCours($start, $end, $acronyme);
+    $eventsList = array_merge($events4Cours, $eventsNotCours);
     }
     else $eventsList = $Jdc->getEvents4Cours($start, $end, $coursGrp, $acronyme);
 

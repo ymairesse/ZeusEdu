@@ -261,48 +261,48 @@ class Jdc
      *
      * @return string $destinataire
      */
-    public function getActualTarget($type, $cible, $acronyme){
-        $destinataire = '';
-        switch ($type) {
-            case 'ecole':
-                $destinataire = 'Tous les élèves';
-                break;
-            case 'niveau':
-                $destinataire = sprintf('Élèves de %s année', $destinataire);
-                break;
-            case 'classe':
-                $destinataire = sprintf('Élèves de la classe %s', $destinataire);
-                break;
-            case 'coursGrp':
-                $sql = 'SELECT nomCours FROM '.PFX.'profsCours ';
-                $sql .= 'WHERE acronyme = :acronyme AND coursGrp = :destinataire ';
-                $requete = $connexion->prepare($sql);
-                $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-                $requete->bindParam(':destinataire', $cible, PDO::PARAM_STR, 15);
-                $resultat = $requete->execute();
-                $nomCours = '';
-                if ($resultat) {
-                    $ligne = $requete->fetch();
-                    $nomCours = $ligne['nomCours'];
-                }
-                $destinataire = sprintf('%s [%s]', $nomCours, $cible);
-                break;
-            case 'eleve':
-                $sql = 'SELECT nom, prenom, groupe FROM '.PFX.'eleves ';
-                $sql .= 'WHERE matricule = :matricule ';
-                $requete = $connexion->prepare($sql);
-                $requete->bindParam(':matricule', $cible, PDO::PARAM_INT);
-                $resultat = $requete->execute();
-                $destinataire = '';
-                if ($resultat) {
-                    $ligne = $requete->fetch();
-                    $destinataire = sprintf('%s %s [%s]', $ligne['prenom'], $ligne['nom'], $ligne['groupe']);
-                }
-                break;
-        }
-
-        return $destinataire;
-    }
+    // public function getActualTarget($type, $cible, $acronyme){
+    //     $destinataire = '';
+    //     switch ($type) {
+    //         case 'ecole':
+    //             $destinataire = 'Tous les élèves';
+    //             break;
+    //         case 'niveau':
+    //             $destinataire = sprintf('Élèves de %s année', $destinataire);
+    //             break;
+    //         case 'classe':
+    //             $destinataire = sprintf('Élèves de la classe %s', $destinataire);
+    //             break;
+    //         case 'coursGrp':
+    //             $sql = 'SELECT nomCours FROM '.PFX.'profsCours ';
+    //             $sql .= 'WHERE acronyme = :acronyme AND coursGrp = :destinataire ';
+    //             $requete = $connexion->prepare($sql);
+    //             $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+    //             $requete->bindParam(':destinataire', $cible, PDO::PARAM_STR, 15);
+    //             $resultat = $requete->execute();
+    //             $nomCours = '';
+    //             if ($resultat) {
+    //                 $ligne = $requete->fetch();
+    //                 $nomCours = $ligne['nomCours'];
+    //             }
+    //             $destinataire = sprintf('%s [%s]', $nomCours, $cible);
+    //             break;
+    //         case 'eleve':
+    //             $sql = 'SELECT nom, prenom, groupe FROM '.PFX.'eleves ';
+    //             $sql .= 'WHERE matricule = :matricule ';
+    //             $requete = $connexion->prepare($sql);
+    //             $requete->bindParam(':matricule', $cible, PDO::PARAM_INT);
+    //             $resultat = $requete->execute();
+    //             $destinataire = '';
+    //             if ($resultat) {
+    //                 $ligne = $requete->fetch();
+    //                 $destinataire = sprintf('%s %s [%s]', $ligne['prenom'], $ligne['nom'], $ligne['groupe']);
+    //             }
+    //             break;
+    //     }
+    //
+    //     return $destinataire;
+    // }
 
     public function getRealDestinataire($connexion=Null, $acronyme, $type, $destinataire){
         if ($connexion == Null) {
@@ -331,6 +331,19 @@ class Jdc
                 if ($resultat){
                     $ligne = $requete->fetch();
                     $cible = sprintf('%s [%s]', $ligne['nomCours'], $destinataire);
+                }
+                break;
+            case 'cours':
+                $sql = 'SELECT libelle, nbheures FROM '.PFX.'cours ';
+                $sql .= 'WHERE cours = :destinataire ';
+                $requete = $connexion->prepare($sql);
+                $requete->bindParam(':destinataire', $destinataire, PDO::PARAM_STR, 17);
+                $resultat = $requete->execute();
+                if ($resultat){
+                    $ligne = $requete->fetch();
+                    $libelle = $ligne['libelle'];
+                    $nbheures = $ligne['nbheures'];
+                    $cible = sprintf('%s %sh [%s]', $libelle, $nbheures, $destinataire);
                 }
                 break;
             case 'eleve':
@@ -365,7 +378,7 @@ class Jdc
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT  * FROM '.PFX.'thotJdc AS jdc ';
         $sql .= 'WHERE proprietaire = :acronyme ';
-        $sql .= 'AND destinataire IN (SELECT DISTINCT coursGrp FROM didac_profsCours WHERE acronyme = :acronyme) ';
+        $sql .= 'AND destinataire IN (SELECT DISTINCT coursGrp FROM '.PFX.'profsCours WHERE acronyme = :acronyme) ';
         $sql .= 'AND startDate BETWEEN :start AND :end ';
         $requete = $connexion->prepare($sql);
 
@@ -396,6 +409,56 @@ class Jdc
             }
         }
 
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * recherche de tous les événements non liés à des cours (école, niveau, matiere, groupe, classe)
+     * pour l'utilisateur $acronyme entre les dates $start et $end
+     *
+     * @param string $start
+     * @param string $end
+     * @param string $acronyme
+     *
+     * @return array
+     */
+    public function getEventsNotCours($start, $end, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT  * FROM '.PFX.'thotJdc AS jdc ';
+        $sql .= 'WHERE proprietaire = :acronyme ';
+        $sql .= 'AND type != "coursGrp" ';
+        $sql .= 'AND startDate BETWEEN :start AND :end ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':start', $start, PDO::PARAM_STR, 20);
+        $requete->bindParam(':end', $end, PDO::PARAM_STR, 20);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $liste = array();
+        $resultat = $requete->execute();
+
+        if ($resultat) {
+            while ($ligne = $requete->fetch()) {
+                $type = $ligne['type'];
+                $destinataire = $ligne['destinataire'];
+                $destin = $this->getRealDestinataire($connexion, $acronyme, $type, $destinataire);
+                $liste[] = array(
+                    'id' => $ligne['id'],
+                    'title' => $ligne['title'],
+                    'enonce' => mb_strimwidth(strip_tags($ligne['enonce'], '<br><p><a>'), 0 , 400, '... [suite]'),
+                    'destinataire' => $destin,
+                    'className' => 'cat_'.$ligne['idCategorie'],
+                    'start' => $ligne['startDate'],
+                    'end' => $ligne['endDate'],
+                    'allDay' => ($ligne['allDay']!=0),
+                    'type' => $ligne['type'],
+                    'editable' => ($ligne['proprietaire'] == $acronyme),
+                    );
+            }
+        }
+        
         Application::DeconnexionPDO($connexion);
 
         return $liste;
@@ -481,7 +544,7 @@ class Jdc
          if ($acronyme != Null)
             $sql .= 'AND acronyme = :acronyme ';
          $sql .= 'AND destinataire LIKE :niveau ';
-         $requete = $connexion->prepare($sql); 
+         $requete = $connexion->prepare($sql);
 
          $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
          $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
