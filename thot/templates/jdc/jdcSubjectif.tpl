@@ -13,7 +13,7 @@
 			&nbsp;
 		</div>
 
-		<div class="col-md-9 col-sm-12" id="calendrier">
+		<div class="col-md-6 col-sm-12" id="calendrier">
 
 			<p class="jdcInfo {$mode} demiOmbre">{$jdcInfo|default:''}</p>
 			<input type="hidden" name="unlocked" id="unlocked" value="false">
@@ -29,7 +29,7 @@
 
 		</div>
 
-		<div class="col-md-3 col-sm-12" style="max-height:50em; overflow: auto">
+		<div class="col-md-6 col-sm-12" style="max-height:50em; overflow: auto">
 
 			<p class="notice">En vue subjective, vous voyez tous les événements dans le JDC d'un élève, quel que soit le propriétaire.<br>
 			<strong>Aucune modification n'est possible</strong>.</p>
@@ -76,7 +76,7 @@
 		}).ajaxComplete(function() {
 			$('body').removeClass('wait');
 		});
-		
+
 		var editable = $('#calendar').data('editable');
 
 		$('#calendar').fullCalendar({

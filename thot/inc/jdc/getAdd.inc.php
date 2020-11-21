@@ -32,8 +32,6 @@ if ($heure != Null) {
 
 $date = isset($_POST['date']) ? $_POST['date'] : Null;
 $type = isset($_POST['type']) ? $_POST['type'] : Null;
-$cible = isset($_POST['cible']) ? $_POST['cible'] : Null;
-
 $destinataire = isset($_POST['destinataire']) ? $_POST['destinataire'] : Null;
 $lblDestinataire = isset($_POST['lblDestinataire']) ? $_POST['lblDestinataire'] : Null;
 

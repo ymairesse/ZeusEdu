@@ -480,8 +480,8 @@ class Jdc
          $sql .= 'WHERE startDate BETWEEN :dateFrom AND :dateTo ';
          if ($acronyme != Null)
             $sql .= 'AND acronyme = :acronyme ';
-         $sql .= 'AND destinataire = :niveau ';
-         $requete = $connexion->prepare($sql);
+         $sql .= 'AND destinataire LIKE :niveau ';
+         $requete = $connexion->prepare($sql); 
 
          $requete->bindParam(':dateFrom', $dateFrom, PDO::PARAM_STR, 15);
          $requete->bindParam(':dateTo', $dateTo, PDO::PARAM_STR, 15);
@@ -1199,27 +1199,27 @@ class Jdc
      *
      * @return array
      */
-    public function categoriesTravaux()
-    {
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT idCategorie, categorie, ordre ';
-        $sql .= 'FROM '.PFX.'thotJdcCategories ';
-        $sql .= 'ORDER BY ordre ';
-        $resultat = $connexion->query($sql);
-        $liste = array('idCategorie' => Null, 'idSujet' => Null);
-        if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
-                $liste['idCategorie'] = $ligne['idCategorie'];
-                $liste['idSujet'] = $ligne['idSujet'];
-            }
+     public function categoriesTravaux()
+     {
+         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+         $sql = 'SELECT idCategorie, categorie, ordre ';
+         $sql .= 'FROM '.PFX.'thotJdcCategories ';
+         $sql .= 'ORDER BY ordre ';
+         $requete = $connexion->prepare($sql);
 
-        }
-        
-        Application::DeconnexionPDO($connexion);
+         $resultat = $requete->execute();
+         $liste = array();
+         if ($resultat) {
+             $requete->setFetchMode(PDO::FETCH_ASSOC);
+             while ($ligne = $requete->fetch()) {
+                 $id = $ligne['idCategorie'];
+                 $liste[$id] = $ligne;
+             }
+         }
+         Application::DeconnexionPDO($connexion);
 
-        return $liste;
-    }
+         return $liste;
+     }
 
     /**
      * renvoie la liste des catégories de travaux déjà utilisées dans le JDC

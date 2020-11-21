@@ -43,14 +43,14 @@ switch ($type) {
         break;
     default:
         $lblDestinataire =  $Jdc->getLabel('ecole','');
-        $destinataire = 'all';
+        $destinataire = 'ecole';
         break;
     }
 
 $smarty->assign('destinataire', $destinataire);
 $smarty->assign('lblDestinataire', $lblDestinataire);
 
-$smarty->assign('selecteur', 'selecteurs/selectCoursPOSTetc');
+$smarty->assign('selecteur', 'selecteurs/selectAnyDestinataire');
 
 if ($type != '')
     $smarty->assign('corpsPage', 'jdc/jdcAny');

@@ -11,7 +11,7 @@
 				class="{$mode} demiOmbre"
 				data-type="{$type|default:'ecole'}"
 				data-lbldestinataire="{$lblDestinataire|default:''}"
-				data-cible="{$destinataire}"
+				data-destinataire="{$destinataire}"
 				data-coursgrp="{$coursGrp|default:''}"
 				data-niveau="{$niveau|default:''}"
 				data-classe="{$classe|default:''}"
@@ -24,6 +24,7 @@
 
 		<div class="col-md-6 col-sm-12" id="panneauEditeur">
 			{* onglet qui contiendra l'éditeur de JDC *}
+			{* selectItem contient une bannière de l'école *}
 			{include file="jdc/selectItem.html"}
 		</div>
 		<!-- col-md-... -->
@@ -59,11 +60,6 @@
 
 	var datePassee = 'Veuillez déverrouiller les dates passées pour modifier un item à cette date';
 	var error = 'Une erreur s\'est produite';
-
-	// function dateFromFr(uneDate) {
-	// 	var laDate = uneDate.split('/');
-	// 	return laDate[2] + '-' + laDate[1] + '-' + laDate[0];
-	// }
 
 	var fcView = Cookies.get('fc-view');
 
@@ -101,8 +97,7 @@
 	            var formulaire = $('#editJdc').serialize();
 
 	            $.post('inc/jdc/saveJdc.inc.php', {
-	                formulaire: formulaire,
-	                enonce: enonce
+	                formulaire: formulaire
 	            }, function(resultat) {
 					var resultJSON = JSON.parse(resultat);
 					var idJdc = resultJSON.idJdc;
@@ -287,12 +282,12 @@
 
                 var editable = $('#calendar').data('editable');
                 var type = $('#calendar').data('type');
+				var destinataire = $('#calendar').data('destinataire');
 
 				if ((editable == 1) && (type != 'synoptique')) {
 					if (view.type == 'agendaDay'){
 						var heure = moment(calEvent).format('HH:mm');
 						var date = moment(calEvent).format('DD/MM/YYYY');
-						var cible = $('#coursGrp').val();
                         var destinataire = $('#calendar').data('destinataire');
 
 						var lblDestinataire = $("#calendar").data('lbldestinataire');
@@ -300,8 +295,7 @@
 							date: date,
 							heure: heure,
 							type: type,
-							cible: cible,
-                            destinataire: destinataire,
+							destinataire: destinataire,
 							lblDestinataire: lblDestinataire
 							},
 							function(resultat){
