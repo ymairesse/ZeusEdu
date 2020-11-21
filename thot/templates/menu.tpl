@@ -23,8 +23,8 @@
 			<li class="dropdown">
 				<a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">Annonces <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					<li><a href="index.php?action=notification&amp;etape=notif">Annonces et historique des annonces</a></li>
-					<li><a href="index.php?action=notification&amp;etape=subjectif">Vue subjective des annonces</a></li>
+					<li><a href="index.php?action=notification&amp;mode=notif">Annonces et historique des annonces</a></li>
+					<li><a href="index.php?action=notification&amp;mode=subjectif">Vue subjective des annonces</a></li>
 				</ul>
 			</li>
 

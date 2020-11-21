@@ -1,10 +1,6 @@
 <?php
 
-$etape = isset($_GET['etape']) ? $_GET['etape'] : Null;
-if ($etape == Null)
-    $etape = isset($_POST['etape']) ? $_POST['etape'] : Null;
-
-switch ($etape) {
+switch ($mode) {
     case 'subjectif':
         require_once 'inc/notif/subjectif.inc.php';
         break;

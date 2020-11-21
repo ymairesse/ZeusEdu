@@ -29,7 +29,7 @@ parse_str($formulaire, $form);
 
 // le "type" est soit le groupe (envoi à tout le groupe),
 // soit "eleves" pour l'envoi au détail
-// le "type" passé en paramètre est toujours correctement ciblé
+// le "type" passé en paramètre hors formulaire est toujours correctement ciblé
 // alors que le "type" déclaré dans le formulaire est toujours le groupe (classe, coursGrp,...)
 // les deux informations sont nécessaires
 $type = isset($_POST['type']) ? $_POST['type'] : null;
@@ -67,16 +67,19 @@ $listeEleves = Null;
 
 // $form['leType'] == 'eleves' si l'envoi est élève par élève, même si
 // form['type'] == 'classes', par exemple
-switch ($form['leType']) {  // ici, il faut prendre le type "global"
+switch ($form['leType']) {  // ici, il faut prendre le type "global" corrigé pour éleves isolés
     case 'eleves':
         $membres = $form['membres'];
-        $listeEleves = array($membres => $membres);
+        $listeEleves = array_flip(array_values($membres));
         break;
     case 'classes':
         $listeEleves = $Ecole->listeElevesClasse($form['destinataire']);
         break;
     case 'coursGrp':
         $listeEleves = $Ecole->listeElevesCours($form['destinataire']);
+        break;
+    case 'cours':
+        $listeEleves = $Ecole->listeElevesMatiere ($form['destinataire']);
         break;
     case 'groupeArbitraire':
         $listeEleves = Null;  // prévoir la procédure pour les groupes arbitraires
@@ -88,7 +91,7 @@ switch ($form['leType']) {  // ici, il faut prendre le type "global"
     }
 
 // ------------------------------------------------------------------------------
-// ok pour la notification en BD, passons éventuellement à l'envoi de mail
+// ok pour la notification en BD, passons éventuellement à l'envoi de mail aux élèves
 // si c'est une édition, le champ 'mail' est désactivé => !(isset)
 // ------------------------------------------------------------------------------
 
@@ -105,6 +108,11 @@ if (isset($form['mail']) && $form['mail'] == 1) {
     $smarty->compile_dir = "../../templates_c";
 
     $listeMailing = $Ecole->detailsDeListeEleves($listeEleves);
+
+    // la "key" de la liste $listeMailing contient les matricules
+    if ($form['parent'] == 1){
+        $listeMailing = $Thot->addParentMailing($listeMailing);
+    }
 
     $smarty->assign('THOTELEVE', THOTELEVE);
     $smarty->assign('ECOLE', ECOLE);

@@ -1,3 +1,5 @@
+{debug}
+<h1>Travaux en cours: désolé pour la perturbation</h1>
 <div class="container-fluid">
 
     <div class="row">
@@ -16,17 +18,17 @@
         		</tr>
         		{foreach from=$listeAnnonces key=id item=dataAnnonce name=n}
 
-     			<tr data-id="{$id}"
-    				data-accuse="
-    					{if ($dataAnnonce.accuse == 1)}
-    					 	{if $dataAnnonce.flags.dateHeure == Null}
-    						1
-    						{else}
-    						0
-    						{/if}
-    					{else}
-    					0
-    					{/if}"
+                    <tr data-id="{$id}"
+    			        data-accuse="
+        					{if ($dataAnnonce.accuse == 1)}
+        					 	{if $dataAnnonce.flags.dateHeure == Null}
+        						1
+        						{else}
+        						0
+        						{/if}
+        					{else}
+        					0
+        					{/if}"
         				class="notification {$dataAnnonce.type}{if !(isset($listeFlags.$id.lu)) || ($listeFlags.$id.lu == 0 )} nonLu{/if}">
 
         				<td>{$smarty.foreach.n.iteration}</td>
@@ -40,6 +42,7 @@
         						{else}
         						<i class="fa fa-users text-info" title="{$dataAnnonce.pourQui}"></i>
         					{/if}
+                            {$dataAnnonce.pourQui}
         				</td>
         				<td class="dateHeure">
         					{if $dataAnnonce.accuse == 1}
@@ -77,8 +80,9 @@
             <h4>Code des couleurs</h4>
             <ul class="list-inline">
             	<li class="ecole">Pour tous les élèves</li>
-            	<li class="niveau">Pour tous les élèves d'un niveau</li>
-            	<li class="cours">Pour un ou plusieurs élèves d'un cours</li>
+            	<li class="niveau">Pour tous les élèves d'un niveau d'étude</li>
+            	<li class="cours">Pour les élèves d'une matière (Ex: 4 GT:MATH5)</li>
+                <li class="coursGrp">Pour les élèves d'un cours (Ex: 4 GT:MATH5-02)</li>
             	<li class="classes">Pour un ou plusieurs élèves de la classe</li>
             </ul>
 

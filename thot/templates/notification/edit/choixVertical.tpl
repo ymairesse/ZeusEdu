@@ -42,7 +42,7 @@
         <select class="form-control selection" name="niveau" id="niveau4niveau" disabled>
             <option value="">Choix du niveau d'étude</option>
             {foreach from=$listeNiveaux key=wtf item=leNiveau}
-            <option value="{$leNiveau}"{if isset($type) && ($type == 'niveau') && ($destinataire == $leNiveau)} selected{/if}>{$leNiveau}e année</option>
+            <option value="{$leNiveau}"{if isset($type) && isset($destinataire) && ($type == 'niveau') && ($destinataire == $leNiveau)} selected{/if}>{$leNiveau}e année</option>
             {/foreach}
         </select>
     </div>
@@ -58,7 +58,7 @@
         <select class="form-control selection" name="niveau4classe" id="niveau4classe" disabled>
             <option value="">Choix du niveau d'étude</option>
             {foreach from=$listeNiveaux key=wtf item=leNiveau}
-            <option value="{$leNiveau}"{if isset($type) && ($type == 'classes') && ($leNiveau == $niveau)} selected{/if}>{$leNiveau}e année</option>
+            <option value="{$leNiveau}"{if isset($type) && isset($destinataire) && ($type == 'classes') && ($leNiveau == $niveau)} selected{/if}>{$leNiveau}e année</option>
             {/foreach}
         </select>
     </div>
@@ -70,7 +70,7 @@
         <select class="form-control selection" name="classe" id="classe" disabled>
             <option value="">Choisir la classe</option>
             {foreach from=$listeClasses item=uneClasse}
-            <option value="{$uneClasse}" {if $uneClasse == $destinataire}selected{/if}>{$uneClasse}</option>
+            <option value="{$uneClasse}" {if isset($destinataire) && $uneClasse == $destinataire}selected{/if}>{$uneClasse}</option>
             {/foreach}
             {* {if isset($type) && $type == 'classes'}<option value="{$destinataire}" selected>{$destinataire}</option>{/if} *}
         </select>
@@ -88,7 +88,7 @@
         <select class="form-control selection" name="coursGrp" id="selectCoursGrp">
         <option value="">Cours</option>
         {foreach from=$listeCours key=coursGrp item=dataCours}
-        <option value="{$coursGrp}"{if isset($type) && $type == 'coursGrp' && $coursGrp == $destinataire} selected{/if}>
+        <option value="{$coursGrp}"{if isset($type) && isset($destinataire) && $type == 'coursGrp' && $coursGrp == $destinataire} selected{/if}>
             {$dataCours.statut} {$coursGrp} {$dataCours.libelle} {$dataCours.nbheures}h
         </option>
         {/foreach}
@@ -116,14 +116,7 @@
     <div class="form-group" id="divSelectMatiere">
         {* select des matières généré après sélection du niveau *}
         {* notification/inc/selectMatiere.tpl  *}
-        <label for="matiere" class="sr-only">Choisir la matière</label>
-        <select class="form-control selection" name="cours" id="cours" disabled>
-            <option value="">Choisir la Matière</option>
-            {foreach from=$listeMatieres key=wtf item=cours}
 
-            {/foreach}
-            {if isset($type) && $notification.type == 'cours'}<option value="{$destinataire}" selected>{$destinataire}</option>{/if}
-        </select>
         {* ce fragment sera remplacé *}
 
     </div>

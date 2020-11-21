@@ -1,4 +1,4 @@
-<label for="classe" class="sr-only">Choisir la matière</label>
+<label for="matiere" class="sr-only">Choisir la matière</label>
 <select class="form-control" name="matiere" id="matiere" required>
     <option value="">Choisir la matière</option>
     {foreach from=$listeMatieres key=matiere item=data}
