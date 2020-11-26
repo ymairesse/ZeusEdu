@@ -458,7 +458,7 @@ class Jdc
                     );
             }
         }
-        
+
         Application::DeconnexionPDO($connexion);
 
         return $liste;

@@ -54,6 +54,4 @@ $eventsList = array_merge(
     $listeCoaching
 );
 
-// $eventsList = array_merge($eventsListEleve, $eventsListCours, $eventsListClasse, $eventsListNiveau, $eventsListEcole, $listeRemediations);
-
 echo json_encode($eventsList);

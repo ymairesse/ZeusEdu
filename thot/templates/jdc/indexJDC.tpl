@@ -18,6 +18,16 @@
 			</div>
 
 			<div class="col-md-3">
+
+				{if ($userStatus == 'educ') || ($userStatus == 'admin')}
+					<div id="listeProfsCours4Educs">
+
+						{include file='jdc/listeProfsEtCours.tpl'}
+
+					</div>
+
+				{/if}
+
 				{* boutons donnant accès aud différents cours de l'utlisateur actif *}
 				<div class="btn-group btn-group-vertical btn-block" id="listeCours">
 
@@ -28,7 +38,9 @@
 						Vue synoptique
 					</button>
 
-					{include file='jdc/listeCoursGrpProf.tpl'}
+					{if ($listeCours != Null)}
+						{include file='jdc/listeCoursGrpProf.tpl'}
+					{/if}
 				</div>
 
 				<button type="button"
@@ -197,6 +209,39 @@
 			}
 		})
 		// ----------------------------------------------------------------
+
+
+		$('#listeProfsCours4Educs').on('change', '#listeProfs', function(){
+            var acronyme = $(this).val();
+            $.post('inc/jdc/getListeCoursProf.inc.php', {
+                acronyme: acronyme
+            }, function(resultat){
+                $('#listeCours4Educs').html(resultat);
+            })
+        })
+
+		$('#listeProfsCours4Educs').on('change', '#listeCoursProf4Educs', function(){
+			var coursGrp = $(this).val();
+			// l'acronyme est celui du prof sélectionné dans la liste déroulante des profs
+			// et non celui de l'éduc actif
+			var acronyme = $('#listeProfs').val();
+			$('.nav-tabs a:eq(1)').removeClass('disabled').tab('show');
+			$('#panneauAgenda').html('');
+			$.post('inc/jdc/getAgendaCours.inc.php', {
+				coursGrp: coursGrp,
+				acronyme: acronyme
+			}, function(resultat) {
+				$('#panneauAgenda').html(resultat);
+				// invitation à cliquer dans l'agenda
+				$('#panneauEditeur').load('templates/jdc/selectItem.html');
+				// IMPORTANT: mise à jour du semainier après ouverture de l'onglet qui le contient
+				// souci entre jquery et fullCalendar
+				$('#tabJdc').on('shown.bs.tab', function (e) {
+					$('#calendar').fullCalendar('render');
+				});
+			})
+		})
+
 
 		$('#listeCours').on('click', '.btn-selectCours', function() {
 			$('.nav-tabs a:eq(1)').removeClass('disabled').tab('show');

@@ -20,6 +20,8 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $coursGrp = isset($_POST['coursGrp']) ? $_POST['coursGrp'] : null;
+// est-ce un acronyme $POSTé ? Dans ce cas, il remplace celui de l'utilisateur actif
+$acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classJdc.inc.php';
