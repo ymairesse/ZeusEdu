@@ -10,8 +10,6 @@ $smarty->assign('action', $action);
 $smarty->assign('etape', $etape);
 $smarty->assign('selecteur', 'selecteurs/selectClasseElevePOST');
 
-
-
 if ($classe != Null) {
     $listeEleves = $Ecole->listeEleves($classe,'groupe');
     $smarty->assign('listeEleves', $listeEleves);
@@ -22,13 +20,13 @@ if ($matricule != Null) {
     $smarty->assign('classe', $classe);
     $niveau = substr($classe, 0, 1);
 
-    // liste des coursGrp 
+    // liste des coursGrp
     $listeCoursGrp = array_keys($Ecole->listeRealCoursGrpEleves($matricule));
 	// liste des matières correspondant à ces coursGrp (on supprime l'extension du numéro du groupe)
     $listeMatieres = $Ecole->getListeMatieresEleve($listeCoursGrp);
-        
+
     $eleve = Eleve::staticGetDetailsEleve($matricule);
-    
+
     $listeAnnonces = $Thot->listeLesAnnonces($matricule, $classe, $listeMatieres, $listeCoursGrp, sprintf('%s %s', $eleve[prenom], $eleve['nom']));
 
     $listePJ = $Thot->getPJ4eleve($listeAnnonces, $matricule);

@@ -1,4 +1,3 @@
-{debug}
 <h1>Travaux en cours: désolé pour la perturbation</h1>
 <div class="container-fluid">
 

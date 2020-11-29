@@ -57,7 +57,7 @@
 					<div class="help-block">Déf:+1mois</div>
 				</div>
 				<div class="form-group col-md-2 col-xs-4">
-					<label for="mail" title="Un mail d'avertissement est envoyé">Envoi<br>mail</label>
+					<label for="mail" title="Un mail d'avertissement est envoyé">Mail<br>élève</label>
 					<input type="checkbox" name="mail" id="mail" class="form-control-inline cb" value="1"
 					{if isset($notification.mail) && $notification.mail==1 } checked='checked' {/if}
 					{if isset($edition)} disabled{/if}>
@@ -75,20 +75,20 @@
 				</div>
 
 				<div class="form-group col-md-2 col-xs-4">
-		            <label for="freeze" title="Notification persistante, reste disponible pour vous après la date de fin">Persis-<br>tant</label>
-		            <input type="checkbox" name="freeze" id="freeze" class="form-control-inline" value="1"
-		            {if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
-					{if isset($edition)} disabled{/if}>
-					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
-		        </div>
-
-				{* <div class="form-group col-md-2 col-xs-4">
-					<label for="parents" title="Notification par mail aux parents (qui ont accepté ces envois)">Mail<br>Parents</label>
+					<label for="parents" title="Notification par mail aux parents">Mail<br>Parents</label>
 					<input type="checkbox" name="parent" id="parent" class="form-control-inline cb" value="1"
 					{if (isset($notification.parents)) && ($notification.parents==1 )} checked{/if}
 					 {if isset($edition)} disabled{/if}>
 					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
-				{* }</div> *}
+				</div>
+
+				<div class="form-group col-md-2 col-xs-4">
+					<label for="freeze" title="Notification persistante, reste disponible pour vous après la date de fin">Persis-<br>tant</label>
+					<input type="checkbox" name="freeze" id="freeze" class="form-control-inline" value="1"
+					{if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
+					{if isset($edition)} disabled{/if}>
+					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
+				</div>
 
 				{* <div class="form-group col-md-2 col-xs-4">
 					<label for="titu" title="Notification par mail au titulaire">Mail<br>Titu.</label>
