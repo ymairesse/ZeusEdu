@@ -3520,7 +3520,9 @@ class Bulletin
 
         $resultat = $requete->execute();
 
-        $idComp = $connexion->lastInsertId();
+        if($resultat)
+            $idComp = $connexion->lastInsertId();
+            else $idComp = -1;
 
         Application::DeconnexionPDO($connexion);
 
@@ -3680,6 +3682,111 @@ class Bulletin
         $listeOrphanCours = array_diff_key($listeCours, $listeElevesCours, $listeProfsCours);
 
         return $listeOrphanCours;
+    }
+
+    /**
+     * vérifie si une matière est sans prof et sans élève
+     *
+     * @param string $cours
+     *
+     * @return array
+     */
+    public function isOrphanMatiere($cours) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // la matière est-elle donnée par un prof?
+        $sql = 'SELECT coursGrp ';
+        $sql .= 'FROM '.PFX.'profsCours ';
+        $sql .= 'WHERE SUBSTR(coursGrp, 1, LOCATE("-", coursGrp)-1) LIKE :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+        $resultat = $requete->execute();
+        $liste = array();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $liste[$coursGrp] = $coursGrp;
+            }
+        }
+
+        // la matière est-elle suivie par des élèves?
+        $sql = 'SELECT DISTINCT coursGrp ';
+        $sql .= 'FROM '.PFX.'elevesCours ';
+        $sql .= 'WHERE SUBSTR(coursGrp, 1, LOCATE("-", coursGrp)-1) LIKE :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $coursGrp = $ligne['coursGrp'];
+                $liste[$coursGrp] = $coursGrp;
+            }
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return count($liste) == 0;
+    }
+
+    /**
+     * enregistrement d'une nouvelle matière (méta-cours) dans la base de données
+     * la fonction retourne le nombre d'enregistrements réalisés (normalement, un seul ou aucun) et le nom du cours enregistrés
+     * cette dernière information est utile si le cours a été édité.
+     *
+     * @param array $post
+     *
+     * @return array (integer, string)
+     */
+    public function enregistrerMatiere($post)
+    {
+        $fullEdition = isset($post['fullEdition']) ? $post['fullEdition'] : null;
+        $libelle = $post['libelle'];
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // s'il s'agit d'une édition d'un cours existant, on ne peut modifier que son libellé
+        if ($fullEdition == 0) {
+            $cours = $post['cours'];
+            $sql = 'UPDATE '.PFX.'cours ';
+            $sql .= 'SET libelle = :libelle ';
+            $sql .= 'WHERE cours = :cours ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+            $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 60);
+            $resultat = $requete->execute();
+
+            $nb = $requete->rowCount();
+        } else {
+            $annee = $post['niveau'];
+            $section = $post['section'];
+            $forme = $post['forme'];
+            $code = $post['code'];
+            $nbheures = $post['nbheures'];
+            $cadre = $post['cadre'];
+            $cours = $annee.$forme.':'.$code.$nbheures;
+            $sql = 'INSERT INTO '.PFX.'cours ';
+            $sql .= 'SET cours = :cours, nbheures = :nbheures, libelle = :libelle, cadre = :cadre, section = :section ';
+            $sql .= 'ON DUPLICATE KEY UPDATE libelle= :libelle ';
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+            $requete->bindParam(':nbheures', $nbheures, PDO::PARAM_INT);
+            $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 60);
+            $requete->bindParam(':cadre', $cadre, PDO::PARAM_INT);
+            $requete->bindParam(':section', $section, PDO::PARAM_STR);
+
+            $resultat = $requete->execute();
+
+            $nb = $requete->rowCount();
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return array('nb' => $nb, 'cours' => $cours);
     }
 
     /**

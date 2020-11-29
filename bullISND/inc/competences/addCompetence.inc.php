@@ -28,11 +28,14 @@ $Bulletin = new Bulletin();
 
 $idComp = $Bulletin->addCompetence($cours, $libelle);
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-$smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
+if ($idComp != -1) {
+    require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+    $smarty = new Smarty();
+    $smarty->template_dir = '../../templates';
+    $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('idComp', $idComp);
-$smarty->assign('libelle', $libelle);
-$smarty->display('admin/liCompetence.tpl');
+    $smarty->assign('idComp', $idComp);
+    $smarty->assign('libelle', $libelle);
+    $smarty->display('admin/liCompetence.tpl');
+    }
+    else echo $idComp;

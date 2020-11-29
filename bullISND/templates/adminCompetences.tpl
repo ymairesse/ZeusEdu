@@ -5,8 +5,9 @@
 
 			<div class="col-md-6 col-xs-12">
 				<h3>Compétences actuelles</h3>
+
 				<form name="formAdminCompetences" id="formAdminCompetences">
-				{if $listeCompetences|@count > 0}
+
 
 					<table class="table table-condensed" id="tableCompetences">
 						<thead>
@@ -34,7 +35,7 @@
 							</tr>
 						</tfoot>
 					</table>
-				{/if}
+
 				</form>
 			</div>
 
@@ -88,12 +89,20 @@
 
 		$('#btn-addCompetence').click(function(){
 			var cours = $('#cours').val();
+			var libelle = 'Nouvelle compétence ' + nbNewComp;
 			$.post('inc/competences/addCompetence.inc.php', {
 				cours: cours,
-				libelle: 'Nouvelle compétence '+ nbNewComp
+				libelle: libelle
 			}, function(resultat){
-				$('#tableCompetences tbody').append(resultat);
-				nbNewComp ++;
+				if (resultat == -1)
+					bootbox.alert({
+						title: 'Erreur',
+						message: 'Renommez et enregistrez d\'abord la compétence <strong>' + libelle + '</strong>'
+					})
+					else {
+						$('#tableCompetences tbody').append(resultat);
+						nbNewComp ++;
+					}
 			})
 		})
 
