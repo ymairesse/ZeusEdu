@@ -41,6 +41,35 @@
 
 <script type="text/javascript">
 
+	function sendFile(file, el) {
+		var form_data = new FormData();
+		form_data.append('file', file);
+		$.ajax({
+			data: form_data,
+			type: "POST",
+			url: 'editor-upload.php',
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function(url) {
+				$(el).summernote('editor.insertImage', url);
+			}
+		});
+	}
+
+	function deleteFile(src) {
+		console.log(src);
+		$.ajax({
+			data: { src : src },
+			type: "POST",
+			url: 'inc/deleteImage.inc.php',
+			cache: false,
+			success: function(resultat) {
+				console.log(resultat);
+				}
+		} );
+		}
+
 	$(document).ready(function(){
 
 		$('#btn-savePad').click(function(){
@@ -72,16 +101,16 @@
 			],
 			maximumImageFileSize: 2097152,
 			dialogsInBody: true,
-			// callbacks: {
-			// 	onImageUpload: function(files, editor, welEditable) {
-			// 		for (var i = files.length - 1; i >= 0; i--) {
-			// 			sendFile(files[i], this);
-			// 		}
-			// 	},
-			// 	onMediaDelete : function(target) {
-			// 		deleteFile(target[0].src);
-			// 	}
-			// }
+			callbacks: {
+				onImageUpload: function(files, editor, welEditable) {
+					for (var i = files.length - 1; i >= 0; i--) {
+						sendFile(files[i], this);
+					}
+				},
+				onMediaDelete : function(target) {
+					deleteFile(target[0].src);
+				}
+			}
 		})
 
 		// désactivation des pads non rw
