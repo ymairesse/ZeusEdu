@@ -39,21 +39,25 @@
             {if isset($pjFiles) && ($pjFiles|@count > 0)}
                 {foreach from=$pjFiles key=shareId item=data}
                 <li>
-                    <button type="button" class="btn btn-danger btn-xs FTdelPJ" data-path="{$data.path}" data-filename="{$data.fileName}"><i class="fa fa-times" title="Supprimer"></i></button>
+                    <button type="button"
+                        class="btn btn-danger btn-xs FTdelPJ"
+                        data-path="{$data.path}"
+                        data-filename="{$data.fileName}">
+                        <i class="fa fa-times" title="Supprimer"></i>
+                    </button>
                     <a
                     href="../widgets/fileTree/inc/download.php?type=pfN&f={$data.path}{$data.fileName}"
                     data-path="{$data.path}"
                     data-filename="{$data.fileName}"
                     data-shareid="{$data.shareId}"
                     data-id="{$data.shareId}"
-                    title="{$data.path}{$data.fileName}">
+                    title="{$data.path}{$data.fileName}"
+                    draggable="false">
                     {$data.path}{$data.fileName}
                     </a>
                     <input type="hidden" name="files[]" class="files" value="{$data.shareId}|//|{$data.path}|//|{$data.fileName}">
                 </li>
                 {/foreach}
-                {else}
-                <p>Pas de pièce jointe</p>
             {/if}
 
         </ul>
@@ -127,7 +131,7 @@
             }
         };
 
-        // $('#myDropZone').dropzone();
+        $('#myDropZone').dropzone();
 
         $('#btn-addPJ').click(function(){
             $('#modalAddPj').modal('show');
@@ -169,7 +173,7 @@
 			var path = $(this).closest('li').data('path');
 
 			if ($(this).prop('checked') == true) {
-				$('#PjFiles').append('<li><button type="button" class="btn btn-danger FTdelPJ btn-xs"><i class="fa fa-times" title="Supprimer"></i></button> <a href="../widgets/fileTree/inc/download.php?type=pfN&f='+path + fileName+'" data-path="' + path + '" data-filename="' + fileName + '" data-shareid="-1" title="' + path + fileName +'"> ' + path + fileName + '</a> <input type="hidden" name="files[]" value="-1|//|' + path + '|//|' + fileName + '"></li>');
+				$('#PjFiles').append('<li><button type="button" class="btn btn-danger FTdelPJ btn-xs"><i class="fa fa-times" title="Supprimer"></i></button> <a href="../widgets/fileTree/inc/download.php?type=pfN&f='+path + fileName+'" data-path="' + path + '" data-filename="' + fileName + '" data-shareid="-1" title="' + path + fileName +'" draggable="false"> ' + path + fileName + '</a> <input type="hidden" name="files[]" value="-1|//|' + path + '|//|' + fileName + '"></li>');
 			}
 			else {
                 var shareId = $('#PjFiles').find('[data-path="' + path + '"][data-filename="' + fileName + '"]').data('shareid');
