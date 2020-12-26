@@ -2092,6 +2092,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE SUBSTR(cours, 1, 1) IN ($listeNiveauxString) ";
         $sql .= 'ORDER BY cours ';
+
         $resultat = $connexion->query($sql);
         $listeCours = array();
         if ($resultat) {
@@ -2457,35 +2458,34 @@ class ecole
      *
      * @return array
      */
-    public function detailsCours($coursGrp)
-    {
+    public function detailsCours($coursGrp) {
         $pattern = '/([0-9])( {0,1}[A-Z]*):([A-Z]*)[0-9a-z]*/';
         $ligne = array();
         if (preg_match($pattern, $coursGrp, $matches)) {
             $cours = $matches[0];
-            $annee = $matches[1];
-            $forme = $matches[2];
+            $annee = trim($matches[1]);
+            $forme = trim($matches[2]);
             $code = $matches[3];
-                /* $posDash = strpos($coursGrp,'-');
-                if ($posDash != 0)
-                    $cours = substr($coursGrp, 0, $posDash);
-                    else $cours = $coursGrp; */
 
             $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
             $sql = 'SELECT cours, nbheures, libelle, statut, c.cadre, section ';
             $sql .= 'FROM '.PFX.'cours AS c ';
             $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = c.cadre) ';
-            $sql .= "WHERE cours = '$cours' ";
+            $sql .= "WHERE cours = :cours ";
+            $requete = $connexion->prepare($sql);
+
+            $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
 
             $ligne = array();
-            $resultat = $connexion->query($sql);
+            $resultat = $requete->execute();
             if ($resultat) {
-                $resultat->setFetchMode(PDO::FETCH_ASSOC);
-                $ligne = $resultat->fetch();
+                $requete->setFetchMode(PDO::FETCH_ASSOC);
+                $ligne = $requete->fetch();
                 $ligne['forme'] = $forme;
                 $ligne['annee'] = $annee;
                 $ligne['code'] = $code;
             }
+
             Application::DeconnexionPDO($connexion);
         }
 
@@ -3310,7 +3310,7 @@ class ecole
     public function listeFormes()
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = "SELECT DISTINCT SUBSTR(coursGrp,2, LOCATE(':',coursGrp)-2) AS section ";
+        $sql = "SELECT DISTINCT SUBSTR(coursGrp, 2, LOCATE(':',coursGrp)-2) AS section ";
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'ORDER BY section ';
         $resultat = $connexion->query($sql);
@@ -3318,7 +3318,8 @@ class ecole
         if ($resultat) {
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             while ($ligne = $resultat->fetch()) {
-                $section = $ligne['section'];
+                $section = trim($ligne['section']);
+                $section = preg_replace('/[0-9] /i', '', $section);
                 $liste[$section] = $section;
             }
         }
@@ -3354,48 +3355,61 @@ class ecole
         return $liste;
     }
 
-    /**
-     * enregistrement d'une nouvelle matière (méta-cours) dans la base de données
-     * la fonction retourne le nombre d'enregistrements réalisés (normalement, un seul ou aucun) et le nom du cours enregistrés
-     * cette dernière information est utile si le cours a été édité.
-     *
-     * @param array $post
-     *
-     * @return array (integer, string)
-     */
-    public function enregistrerMatiere($post)
-    {
-        $fullEdition = isset($post['fullEdition']) ? $post['fullEdition'] : null;
-        $libelle = $post['libelle'];
-        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        // s'il s'agit d'une édition d'un cours existant, on ne peut modifier que son libellé
-        if ($fullEdition == 0) {
-            $cours = $_POST['cours'];
-            $sql = 'UPDATE '.PFX.'cours ';
-            $sql .= 'SET libelle =:libelle ';
-            $sql .= 'WHERE cours =:cours ';
-            $requete = $connexion->prepare($sql);
-            $data = array(':libelle' => $libelle, ':cours' => $cours);
-            $nb = $requete->execute($data);
-        } else {
-            $annee = $post['niveau'];
-            $section = $post['section'];
-            $forme = $post['forme'];
-            $code = $post['code'];
-            $nbheures = $post['nbheures'];
-            $cadre = $post['cadre'];
-            $cours = $annee.$forme.':'.$code.$nbheures;
-            $sql = 'INSERT INTO '.PFX.'cours ';
-            $sql .= 'SET cours = :cours, nbheures=:nbheures, libelle=:libelle, cadre=:cadre, section=:section ';
-            $sql .= 'ON DUPLICATE KEY UPDATE libelle=:libelle ';
-            $requete = $connexion->prepare($sql);
-            $data = array(':cours' => $cours, ':nbheures' => $nbheures, ':libelle' => $libelle, ':cadre' => $cadre, ':section' => $section);
-            $nb = $requete->execute($data);
-        }
-        Application::DeconnexionPDO($connexion);
-
-        return array($nb, $cours);
-    }
+    // /**
+    //  * enregistrement d'une nouvelle matière (méta-cours) dans la base de données
+    //  * la fonction retourne le nombre d'enregistrements réalisés (normalement, un seul ou aucun) et le nom du cours enregistrés
+    //  * cette dernière information est utile si le cours a été édité.
+    //  *
+    //  * @param array $post
+    //  *
+    //  * @return array (integer, string)
+    //  */
+    // public function enregistrerMatiere($post)
+    // {
+    //     $fullEdition = isset($post['fullEdition']) ? $post['fullEdition'] : null;
+    //     $libelle = $post['libelle'];
+    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+    //     // s'il s'agit d'une édition d'un cours existant, on ne peut modifier que son libellé
+    //     if ($fullEdition == 0) {
+    //         $cours = $post['cours'];
+    //         $sql = 'UPDATE '.PFX.'cours ';
+    //         $sql .= 'SET libelle = :libelle ';
+    //         $sql .= 'WHERE cours = :cours ';
+    //         $requete = $connexion->prepare($sql);
+    //
+    //         $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+    //         $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 60);
+    //         $resultat = $requete->execute();
+    //
+    //         $nb = $requete->rowCount();
+    //     } else {
+    //         $annee = $post['niveau'];
+    //         $section = $post['section'];
+    //         $forme = $post['forme'];
+    //         $code = $post['code'];
+    //         $nbheures = $post['nbheures'];
+    //         $cadre = $post['cadre'];
+    //         $cours = $annee.$forme.':'.$code.$nbheures;
+    //         $sql = 'INSERT INTO '.PFX.'cours ';
+    //         $sql .= 'SET cours = :cours, nbheures = :nbheures, libelle = :libelle, cadre = :cadre, section = :section ';
+    //         $sql .= 'ON DUPLICATE KEY UPDATE libelle= :libelle ';
+    //         $requete = $connexion->prepare($sql);
+    //
+    //         $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+    //         $requete->bindParam(':nbheures', $nbheures, PDO::PARAM_INT);
+    //         $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 60);
+    //         $requete->bindParam(':cadre', $cadre, PDO::PARAM_INT);
+    //         $requete->bindParam(':section', $section, PDO::PARAM_STR);
+    //
+    //         $resultat = $requete->execute();
+    //
+    //         $nb = $requete->rowCount();
+    //     }
+    //
+    //     Application::DeconnexionPDO($connexion);
+    //
+    //     return array('nb' => $nb, 'cours' => $cours);
+    // }
 
     /**
      * renvoie la liste des sections organisées à l'école.
@@ -3966,6 +3980,33 @@ class ecole
         Application::deconnexionPDO($connexion);
 
         return $liste;
+    }
+
+    /**
+     * retourne l'acronyme du premier prof titulaire du cours $coursGrp
+     *
+     * @param string $coursGrp
+     *
+     * @return string
+     */
+    public function getProf4coursGrp($coursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT acronyme FROM '.PFX.'profsCours ';
+        $sql .= 'WHERE coursGrp = :coursGrp ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 15);
+
+        $acronyme = '';
+        $resultat = $requete->execute();
+        if ($resultat){
+            $ligne = $requete->fetch();
+            $acronyme = $ligne['acronyme'];
+        }
+
+        Application::DeconnexionPDO($connexion);
+
+        return $acronyme;
     }
 
 }
