@@ -1757,8 +1757,8 @@ class thot
         }
     }
 
- /**
-     * liste des notifications de l'utilisateur dont on fournit l'acronyme.
+    /**
+     * liste des notifications de l'utilisateur dont on fournit l'acronyme pour un éventuel type
      *
      * @param string $acronyme
      * @param string | Null $type
@@ -1769,7 +1769,7 @@ class thot
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT id, type, objet, texte, dtn.destinataire, dateDebut, dateFin, ';
-        $sql .= 'mail, accuse, freeze, parent, nom, prenom, groupe ';
+        $sql .= 'dateEnvoi, mail, accuse, freeze, parent, nom, prenom, groupe ';
         $sql .= 'FROM '.PFX.'thotNotifications  AS dtn ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS de ON de.matricule = dtn.destinataire ';
         $sql .= 'WHERE proprietaire = :acronyme ';
@@ -1795,6 +1795,7 @@ class thot
                 $ligne['texte'] = strip_tags(stripslashes($ligne['texte']));
                 $ligne['dateDebut'] = Application::datePHP($ligne['dateDebut']);
                 $ligne['dateFin'] = Application::datePHP($ligne['dateFin']);
+                $ligne['dateEnvoi'] = Application::dateTimeFr($ligne['dateEnvoi']);
                 $destinataire = $ligne['destinataire'];
                 $liste[$type][$id] = $ligne;
             }
@@ -4686,10 +4687,11 @@ class thot
             'eleves' => array('droits' => Null, 'texte' => 'Un élève'),
             'classes' => array('droits' => Null, 'texte' => 'Une classe'),
             'coursGrp' => array('droits' => Null, 'texte' => 'Un de vos cours'),
-            'niveau' => array('droits' => array('admin', 'direction'), 'texte' => 'Un niveau'),
+            'niveau' => array('droits' => array('admin', 'educ', 'direction'), 'texte' => 'Un niveau'),
             'cours' => array('droits' => Null, 'texte' => 'Une matière'),
             'groupe' => array('droits' => Null, 'texte' => 'Un groupe'),
             'ecole' => array('droits' => array('admin', 'direction'), 'texte' => 'Tous les élèves'),
+            'profsCours' => array('droits' => array('direction', 'educ'), 'texte' => 'Élèves d\'un cours'),
         );
         if ($full != Null)
             unset($types['eleves']);
