@@ -131,18 +131,18 @@
 		})
 
 		$('#ficheEleve').on('click', '#btn-raz', function(){
-			$('#choixEleves').addClass('hidden');
 			$('#submitNotif').attr('disabled', true);
 			$('#texte').summernote('code', '');
 			$('#objet').val('');
 			$('#id').val('');
 			$('#type').val('').trigger('change').prop('disabled', false);
 			$('#dateEnvoi').addClass('hidden').html('');
-			$('#selecteurVertical select').attr('disabled', false);
+			$('#selectionVertical select').val('').attr('disabled', false);
+			$('#choixEleves').addClass('hidden');
 			$('#PjFiles').html('<p>Pas de pièce jointe</p>');
 			$('.destinataire').val('');
 			$('#mail, #accuse, #parent, #freeze').prop('disabled', false).prop('checked', false);
-			$('#type option[value="eleves"]').prop('disabled', true).text('Un élève [choisir dans "classe", "cours", "groupe"]');
+			// $('#type option[value="eleves"]').prop('disabled', true).text('Un élève [choisir dans "classe", "cours", "groupe"]');
 		})
 
 		$('#ficheEleve').on('click', '#btn-cloner', function(){
@@ -150,7 +150,7 @@
 			// reset de l'identifiant de l'annonce à cloner
 			$('#id').val('');
 			var type = $('#leType').val();
-			$('#type option[value="eleves"]').prop('disabled', true).text('Un élève [choisir dans "classe", "cours", "groupe"]');
+			// $('#type option[value="eleves"]').prop('disabled', true).text('Un élève [choisir dans "classe", "cours", "groupe"]');
 			switch (type){
 				case 'classes':
 					$('#classes').val('');
@@ -165,8 +165,7 @@
 					break;
 				case 'coursGrp':
 					$('#type').prop('disabled', false);
-					$('#selectCoursGrp').val('');
-					$('.membres').prop('disabled',false);
+					$('#selectCoursGrp').prop('disabled', false);;
 					$('.membres').prop('disabled',false);
 					// $('#choixEleves').addClass('hidden');
 					break;
@@ -179,6 +178,12 @@
 					$('#type').prop('disabled', false);
 					$('.membres').prop('disabled',false);
 					// à prévoir
+					break;
+				case 'profsCours':
+					$('#type').prop('disabled', false);
+					$('#acronyme').prop('disabled', false);
+					$('#coursGrpProf').prop('disabled', false);
+					$('.membres').prop('disabled',false);
 					break;
 				case 'eleves':
 					$('#type').val('').trigger('change').prop('disabled', false);
@@ -255,9 +260,9 @@
 			}
 		})
 
-
 		// Toutes les fonctions du sélecteur à gauche vvvvvvvvvvvvvvvvvvvvvvvvvv
 
+		// choix d'un type de destinataire (sélecteur principal)
 		$('#ficheEleve').on('change', '#type', function(){
 			var type = $(this).val();
 			$('.destinataire').val('');
@@ -266,10 +271,9 @@
 			$('#choixEleves').html('');
 			// on remet à disabled pour être sûr
 			$('#submitNotif').attr('disabled', true);
-			// $('#leType').val(type);
+
 			// tous les champs non cachés sont "disabled"
-			$('#notification input.cb').prop('disabled', true);
-			// $('#objet').prop('disabled', false);
+			$('#notification input.cb').prop('disabled', true).attr('checked', false);
 
 			switch (type) {
 				case 'ecole':
@@ -332,6 +336,16 @@
 					// $('#divGroupe').removeClass('hidden');
 					$('#mail, #accuse, #parent').prop('disabled', false);
 					//$('#selectGroupe').val('')
+					$('#choixEleves').html('');
+					$('.destinataire').val('');
+					$('#destinataire').val('');
+					$('#leType').val(type);
+					break;
+				case 'profsCours':
+					$('#acronyme').prop('disabled', false);
+					$('#divprofsCours').removeClass('hidden');
+					$('#mail, #accuse, #parent, #titu').prop('disabled', false);
+					$('#selectCoursGrp').val('')
 					$('#choixEleves').html('');
 					$('.destinataire').val('');
 					$('#destinataire').val('');
@@ -421,7 +435,6 @@
 				});
 			}
 		})
-
 		$('#ficheEleve').on('change', '#matiere', function(){
 			var matiere = $(this).val();
 
@@ -453,6 +466,36 @@
 				// pas de liste d'élèves
 				$('#choixEleves').html('').addClass('hidden');
 			}
+		})
+
+		// changement de la sélection du prof dans le choix profsCours
+		$('#ficheEleve').on('change', '#acronyme', function(){
+			var acronyme = $(this).val();
+
+			// reset de tous les destinataires possibles
+			$('.destinataire').val('');
+			$('#destinataire').val('');
+
+			// pas de choix d'Élèves
+			$('#choixEleves').html('').addClass('hidden');
+
+			$.post('inc/notif/listeCoursProf.inc.php', {
+				acronyme: acronyme
+			}, function(resultat){
+				$('#divSelectCoursProf').html(resultat)
+			})
+		})
+		// sélection d'un cours dans le choix profsCours
+		$('#ficheEleve').on('change', '#coursGrpProf', function(){
+			var coursGrp = $(this).val();
+			$('.destinataire').val(coursGrp);
+			$('#destinataire').val(coursGrp);
+			$.post('inc/notif/listeElevesCoursGrp.inc.php', {
+				coursGrp: coursGrp
+			}, function(resultat){
+				$('#choixEleves').html(resultat).removeClass('hidden');
+				$('#submitNotif').attr('disabled', false);
+			})
 		})
 
 		$('#ficheEleve').on('change', '#classe', function(){
@@ -541,7 +584,6 @@
 
 		$('#ficheEleve').on('click', '.btnEdit', function(){
 			var id = $(this).data('id');
-			// var type = $(this).data('type');
 			$.post('inc/notif/editNotification.inc.php', {
 				id: id
 			}, function(resultat){
@@ -550,7 +592,7 @@
 				$('#selecteur').addClass('hidden');
 				$('#choixEleves').removeClass('hidden');
 				$('#submitNotif').attr('disabled', false);
-				$('#selecteurVertical select').attr('disabled', true);
+				$('#selectionVertical select').attr('disabled', true);
 				$('#type').prop('disabled', true);
 			})
 		})

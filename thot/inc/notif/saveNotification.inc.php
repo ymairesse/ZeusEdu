@@ -27,6 +27,8 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
+// Application::afficher(array($form, $type), true);
+
 // le "type" est soit le groupe (envoi à tout le groupe),
 // soit "eleves" pour l'envoi au détail
 // le "type" passé en paramètre hors formulaire est toujours correctement ciblé
@@ -81,8 +83,11 @@ switch ($form['leType']) {  // ici, il faut prendre le type "global" corrigé po
     case 'cours':
         $listeEleves = $Ecole->listeElevesMatiere ($form['destinataire']);
         break;
-    case 'groupeArbitraire':
+    case 'groupe':
         $listeEleves = Null;  // prévoir la procédure pour les groupes arbitraires
+        break;
+    case 'profsCours':
+        $listeEleves = $Ecole->listeElevesCours($form['destinataire']);
         break;
     default:
         // wtf

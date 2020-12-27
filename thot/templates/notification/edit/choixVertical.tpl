@@ -32,10 +32,11 @@
         </select>
     </div>
 </div>
+{* ------------------------------------------------------------------------------ *}
+
 
 {* ------------------------------------------------------------------------------ *}
 {* choix du niveau d'étude quand notification par niveau *}
-
 <div class="sousType {if !(isset($type)) || ($type != 'niveau')}hidden{/if}" id="divNiveau">
     <div class="form-group" id="niveau">
         <label for="niveau4niveau" class="sr-only">Niveau d'étude</label>
@@ -47,10 +48,11 @@
         </select>
     </div>
 </div>
+{* ------------------------------------------------------------------------------ *}
 
 
 {* ------------------------------------------------------------------------------ *}
-{* notifications par classe *}
+{* notifications par niveau puis par classe *}
 <div class="sousType  {if !(isset($type)) || ($type != 'classes') || $notification.matricule != Null}hidden{/if}" id="divClasse">
 
     <div class="form-group">
@@ -64,20 +66,20 @@
     </div>
 
     <div class="form-group" id="divSelectClasse">
-        {* select des classes généré après sélection du niveau *}
-        {* notification/inc/selectClasse.tpl  *}
-        <label for="classe" class="sr-only">Classes</label>
-        <select class="form-control selection" name="classe" id="classe" disabled>
-            <option value="">Choisir la classe</option>
-            {foreach from=$listeClasses item=uneClasse}
-            <option value="{$uneClasse}" {if isset($destinataire) && $uneClasse == $destinataire}selected{/if}>{$uneClasse}</option>
-            {/foreach}
-            {* {if isset($type) && $type == 'classes'}<option value="{$destinataire}" selected>{$destinataire}</option>{/if} *}
-        </select>
-        {* ce fragment sera remplacé en cas de nouvelle notification *}
+        {if isset($destinataire)}
+            <label for="classe" class="sr-only">Classe</label>
+            <select class="form-control selection" name="classe" id="classe">
+                <option value="">Choix d'une classe</option>
+                {foreach from=$listeClasses item=classe}
+                    <option value="{$classe}"{if $classe == $destinataire} selected{/if}>{$classe}</option>
+                {/foreach}
+            </select>
+        {/if}
+        {* ce fragment sera remplacé par selectClasse.tpl en cas de notification par classe *}
     </div>
 </div>
 {* ------------------------------------------------------------------------------ *}
+
 
 {* ------------------------------------------------------------------------------ *}
 {** notification par coursGrp *}
@@ -100,7 +102,7 @@
 
 
 {* ------------------------------------------------------------------------------ *}
-{* notification par matière *}
+{* notification par niveau puis par matière *}
 <div class="sousType{if !(isset($type)) || ($type != 'cours')} hidden{/if}" id="divMatiere">
 
     <div class="form-group">
@@ -116,7 +118,6 @@
     <div class="form-group" id="divSelectMatiere">
         {* select des matières généré après sélection du niveau *}
         {* notification/inc/selectMatiere.tpl  *}
-
         {* ce fragment sera remplacé *}
 
     </div>
@@ -125,7 +126,45 @@
 {* ------------------------------------------------------------------------------ *}
 
 
-{* sélection éventuelle de certains élèves (uniqument pour coursGrp et classe ) *}
+{* ------------------------------------------------------------------------------ *}
+{* notification par profsCours *}
+<div class="sousType{if !(isset($type)) || ($type != 'profsCours')} hidden{/if}" id="divprofsCours">
+    <div class="form-group">
+        <label for="prof" class="sr-only">Professeur</label>
+        <select class="form-control selection" name="acronyme" id="acronyme" disabled>
+            <option value="">Choix du professeur</option>
+            {foreach from=$listeProfs key=acronyme item=data}
+                <option value="{$acronyme}"{if $prof4Cours == $acronyme} selected{/if}>
+                    {$data.nom} {$data.prenom}
+                </option>
+            {/foreach}
+        </select>
+    </div>
+
+    <div class="form-group" id="divSelectCoursProf">
+        {* liste des cours du prof sélectionné*}
+        {if isset($listeCours4prof)}
+            {* Liste des cours pour un prof différent de l'utilisateur courant *}
+            <label for="coursGrpProf" class="sr-only">Cours</label>
+
+            <select class="form-control" name="coursGrpProf" id="coursGrpProf" disabled>
+                <option value="">Choisir le cours</option>
+                {foreach from=$listeCours4prof key=coursGrp item=data}
+                <option value="{$coursGrp}"{if $coursGrp == $destinataire} selected{/if}>
+                    [{$coursGrp}] {$data.statut} {$data.libelle} {$data.nbheures}h {$data.classes}{if $data.virtuel == 1} *{/if}
+                </option>
+                {/foreach}
+            </select>
+            * = cours virtuel
+        {/if}
+    </div>
+
+</div>
+
+
+{* ------------------------------------------------------------------------------ *}
+
+{* sélection éventuelle de certains élèves (uniqument pour coursGrp, profsCours et classe ) *}
 {* situé à gauche de l'écran *}
 <div class="hidden" id="choixEleves">
 

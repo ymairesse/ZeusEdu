@@ -7,24 +7,6 @@
 
 		<input type="hidden" name="leType" id="leType" value="{$notification.type|default:''}">
 
-		<input type="hidden" name="matricule" id="matricule"
-			value="{if $notification.type == 'eleves'}{$notification.destinataire}{else}{/if}">
-
-		<input type="hidden" class="destinataire" name="laClasse" id="laClasse"
-			value="{if $notification.type == 'classes'}{$notification.destinataire}{else}{/if}">
-
-		<input type="hidden" class="destinataire" name="leNiveau" id="leNiveau"
-			value="{if $notification.type == 'niveau'}{$notification.destinataire}{else}{/if}">
-
-		<input type="hidden" class="destinataire" name="leGroupe" id="leGroupe"
-			value="{if $notification.type == 'groupe'}{$notification.destinataire}{else}{/if}">
-
-		<input type="hidden" class="destinataire" name="leCoursGrp" id="leCoursGrp"
-			value="{if $notification.type == 'coursGrp'}{$notification.destinataire}{else}{/if}">
-
-		<input type="hidden" class="destinataire" name="leCours" id="leCours"
-			value="{if $notification.type == 'cours'}{$notification.destinataire}{else} {/if}">
-
 		<div class="panel panel-default" id="editorPanel">
 
 			<div class="panel-body">
@@ -60,7 +42,7 @@
 					<label for="mail" title="Un mail d'avertissement est envoyé">Mail<br>élève</label>
 					<input type="checkbox" name="mail" id="mail" class="form-control-inline cb" value="1"
 					{if isset($notification.mail) && $notification.mail==1 } checked='checked' {/if}
-					{if isset($edition)} disabled{/if}>
+					disabled>
 					{* disabled pour l'envoi de mail à toute l'école ou à tout un niveau afin d'éviter les overquotas d'envois *}
 					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
@@ -69,7 +51,7 @@
 					<label for="accuse" title="Un accusé de lecture est demandé">Accusé<br>lecture</label>
 					<input type="checkbox" name="accuse" id="accuse" class="form-control-inline cb" value="1"
 					{if isset($notification.accuse) && $notification.accuse==1 } checked='checked' {/if}
-					 {if isset($edition)} disabled{/if}>
+					disabled>
 					{* disabled pour toute l'école car ingérable *}
 					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
@@ -78,15 +60,14 @@
 					<label for="parents" title="Notification par mail aux parents">Mail<br>Parents</label>
 					<input type="checkbox" name="parent" id="parent" class="form-control-inline cb" value="1"
 					{if (isset($notification.parents)) && ($notification.parents==1 )} checked{/if}
-					 {if isset($edition)} disabled{/if}>
+					disabled>
 					 {* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
 
 				<div class="form-group col-md-2 col-xs-4">
 					<label for="freeze" title="Notification persistante, reste disponible pour vous après la date de fin">Persis-<br>tant</label>
 					<input type="checkbox" name="freeze" id="freeze" class="form-control-inline" value="1"
-					{if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}
-					{if isset($edition)} disabled{/if}>
+					{if (isset($notification.freeze)) && ($notification.freeze==1 )} checked{/if}>
 					{* disabled en cas d'édition (on ne change pas les règles en cours de route) *}
 				</div>
 

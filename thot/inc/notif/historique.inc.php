@@ -28,6 +28,7 @@ $listeAttendus = array_keys($listeTypes);
 $listeNiveaux = $Ecole->listeNiveaux();
 $listeClasses = $Ecole->listeClasses();
 $listeCours = $user->getListeCours();
+$listeProfs = $Ecole->listeProfs(true);
 // $listeGroupes = $Thot->getListeGroupes($acronyme);
 
 // valeur à déterminer ensuite
@@ -67,6 +68,9 @@ foreach ($listeNotifications as $type => $lesNotifications) {
                     $nb = 1;
                     $listeAttendus[$type][$notifId] = $nb;
                     break;
+                case 'profsCours':
+
+                    break;
                 }
             }
         if (isset($uneNotification['matricule']))
@@ -90,6 +94,7 @@ $smarty->assign('listeTypes', $listeTypes);
 $smarty->assign('selectTypes', $selectTypes);
 $smarty->assign('listeNiveaux', $listeNiveaux);
 $smarty->assign('listeClasses', $listeClasses);
+$smarty->assign('listeProfs', $listeProfs);
 $smarty->assign('listeCours', $listeCours);
 
 $smarty->clearAllCache();

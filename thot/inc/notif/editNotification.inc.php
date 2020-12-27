@@ -23,6 +23,8 @@ require_once INSTALL_DIR."/inc/classes/classThot.inc.php";
 $Thot = new Thot();
 $notification = $Thot->getNotification($id, $acronyme);
 
+// Application::afficher($notification, true);
+
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
@@ -50,8 +52,8 @@ if (isset($notification['matricule']) && ($notification['matricule'] != '')) {
     $listeEleves = $Ecole->detailsDeListeEleves($notification['matricule']);
     }
     else {
-        // pour les entités 'coursGrp', 'classes' et 'eleves', on a besoin des élèves qui figurent dans ces groupes
-        if (in_array($type, array('coursGrp', 'classes', 'groupe'))) {
+        // pour les entités 'coursGrp', 'classes', 'groupe' et 'profsCours', on a besoin des élèves qui figurent dans ces groupes
+        if (in_array($type, array('coursGrp', 'classes', 'groupe', 'profsCours'))) {
             require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
             $Ecole = new Ecole();
             switch ($type) {
@@ -64,14 +66,23 @@ if (isset($notification['matricule']) && ($notification['matricule'] != '')) {
                 case 'groupe':
                     // prévoir la liste des élèves du groupe
                     break;
+                case 'profsCours':
+                    $listeEleves = $Ecole->listeElevesCours($notification['destinataire']);
+                    break;
             }
         }
     }
 
+// initialisation de ce qui pourrait être utilisé
 $niveau = Null;
 $listeClasses = Null;
 $listeMatieres = Null;
 $stringDestinataire = Null;
+$prof4cours = Null;
+$listeCours4prof = Null;
+// liste de tous les profs
+$listeProfs = $Ecole->listeProfs(true);
+
 switch ($type) {
     case 'ecole':
         $stringDestinataire = 'Tous';
@@ -84,6 +95,12 @@ switch ($type) {
         $stringDestinataire = $notification['destinataire'];
         $niveau = SUBSTR($notification['destinataire'], 0, 1);
         $listeMatieres = $Ecole->listeMatieresNiveau($niveau);
+        break;
+    case 'profsCours':
+        $coursGrp = $notification['destinataire'];
+        $stringDestinataire = $coursGrp;
+        $prof4cours = $Ecole->getProf4coursGrp($coursGrp);
+        $listeCours4prof = $Ecole->listeCoursProf($prof4cours, true);
         break;
     case 'coursGrp':
         $stringDestinataire = $notification['destinataire'];
@@ -130,6 +147,10 @@ $smarty->assign('destinataire', $notification['destinataire']);
 $smarty->assign('stringDestinataire', $stringDestinataire);
 $smarty->assign('notification', $notification);
 $smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('listeProfs', $listeProfs);
+$smarty->assign('prof4Cours', $prof4cours);
+$smarty->assign('listeCours4prof', $listeCours4prof);
+
 $smarty->assign('id', $id);
 // à destination du widget fileTree
 $smarty->assign('pjFiles', $pjFiles);

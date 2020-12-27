@@ -26,6 +26,7 @@
 				<i class="fa fa-times"></i>
 			</button>
 		</td>
+		<td>{$uneNote.dateEnvoi}</td>
 		<td><span class="debut">{$uneNote.dateDebut}</span></td>
 		<td><span class="fin">{$uneNote.dateFin}</span></td>
 		<td><span class="objet">{$uneNote.objet}</span></td>

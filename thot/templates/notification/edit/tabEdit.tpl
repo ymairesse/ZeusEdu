@@ -4,7 +4,7 @@
 
 		<div class="col-md-3 col-sms-12" id="selectionVertical">
 
-			{include file="notification/edit/choixVertical.tpl"} 
+			{include file="notification/edit/choixVertical.tpl"}
 
 		</div>
 
