@@ -1883,12 +1883,12 @@ ALTER TABLE `didac_thotFiles`
 MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Id du fichier';
 
 CREATE TABLE `didac_thotShares` (
-  `fileId` int(11) NOT NULL COMMENT 'id dans la table des Files',
-  `type` enum('ecole','niveau','classes','eleves','prof','coursGrp','groupeAny','cours') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
-  `groupe` varchar(15) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
-  `destinataire` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  `commentaire` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
-  `shareId` int(11) NOT NULL COMMENT 'Identifiant du partage de document'
+  `fileId` int NOT NULL COMMENT 'id dans la table des Files',
+  `type` enum('ecole','niveau','classes','eleves','prof','coursGrp','groupe','cours','profsCours') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'ecole' COMMENT 'Type de destinataire',
+  `groupe` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Groupe classe, cours, niveau,... dont fait partie le destinataire',
+  `destinataire` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `commentaire` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Commentaire à propos du document',
+  `shareId` int NOT NULL COMMENT 'Identifiant du partage de document'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des partages de fichiers';
 
 ALTER TABLE `didac_thotShares`
