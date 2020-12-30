@@ -1276,7 +1276,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
         $sql .= 'ORDER BY nbheures DESC, statut, coursGrp ';
-        die($sql);
+        
         $resultat = $connexion->query($sql);
         $listeCours = array();
         if ($resultat) {
