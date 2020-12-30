@@ -1268,13 +1268,15 @@ class ecole
         } else {
             $listeElevesString = $listeEleves;
         }
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT cours, statut, libelle, nbheures ';
+        $sql = 'SELECT DISTINCT cours, statut, libelle, nbheures, coursGrp ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'cours ON ('.PFX."cours.cours = SUBSTR(coursGrp, 1, LOCATE('-',coursGrp)-1 )) ";
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
         $sql .= 'ORDER BY nbheures DESC, statut, coursGrp ';
+        die($sql);
         $resultat = $connexion->query($sql);
         $listeCours = array();
         if ($resultat) {
