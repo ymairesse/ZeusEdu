@@ -497,7 +497,7 @@ switch ($mode) {
             case 'ajouter':
                 if (isset($_POST['listeAcronymes'])) {
                     $listeAcronymes = $_POST['listeAcronymes'];
-                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, Null);
+                    $nb = $Ecole->addTitulariat($classe, $listeAcronymes, 'GT');
                     $smarty->assign('message', array(
                                 'title' => 'Ajouts',
                                 'texte' => sprintf('%d modification(s) enregistrée(s).', $nb),
