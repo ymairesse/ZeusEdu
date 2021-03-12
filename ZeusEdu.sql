@@ -336,8 +336,8 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('trombiProfs', 'Trombinoscope des profs', 'trombiProfs', 'profs.png', 1, 7),
 ('presences', 'Prise de présences', 'presences', 'presences.png', 1, 2),
 ('pad', 'Bloc Notes Élèves', 'pad', 'pad.png', 1, 50),
-('admin', 'Administration de l''application', 'admin', 'admin.png', 1, 99),
-('logout', 'Quitter l''application', 'logout.php', 'close.png', 1, 0),
+('admin', 'Administration de l\'application', 'admin', 'admin.png', 1, 99),
+('logout', 'Quitter l\'application', 'logout.php', 'close.png', 1, 0),
 ('athena', 'Athena: coaching et suivi scolaire', 'athena', 'athena.png', 1, 12),
 ('infirmerie', 'ASCLEPIOS: Infirmerie', 'infirmerie', 'infirmerie.png', 1, 13),
 ('bullISND', 'Bulletin ISND', 'bullISND', 'bullISND.png', 1, 14),
@@ -345,7 +345,8 @@ INSERT INTO `didac_applications` (`nom`, `nomLong`, `URL`, `icone`, `active`, `o
 ('bullTQ', 'Bulletin TQ', 'bullTQ', 'bullTQ.png', 1, 9),
 ('hermes', 'HERMES: messagerie', 'hermes', 'hermes.png', 1, 8),
 ('thot', 'THOT: élèves & parents', 'thot', 'thot.png', 1, 5),
-('hercule', 'Hercule', 'hercule', 'hercule.png', 1, 16);
+('hercule', 'Hercule', 'hercule', 'hercule.png', 1, 16),
+('edt', 'EDT emploi du temps', 'edt/index.php', 'edt.png', 1, 98);
 
 
 CREATE TABLE IF NOT EXISTS didac_appliTables (
@@ -1147,6 +1148,72 @@ CREATE TABLE `didac_EDTeleves` (
 
 ALTER TABLE `didac_EDTeleves`
   ADD PRIMARY KEY (`matricule`);
+
+CREATE TABLE `didac_EDTinfos` (
+    `type` enum('info','retard') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'info' COMMENT 'Type d''information',
+    `proprio` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Qui a encodé',
+    `idEDTinfo` tinyint NOT NULL COMMENT 'Identifiant de l''information',
+    `date` date NOT NULL COMMENT 'Date de l''info',
+    `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Acronyme du prof en retard',
+    `info` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'texte d''information'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Informations pour la journée';
+
+  ALTER TABLE `didac_EDTinfos`
+  ADD PRIMARY KEY (`type`,`idEDTinfo`,`date`),
+  ADD KEY `idEDTinfo` (`idEDTinfo`);
+
+  ALTER TABLE `didac_EDTinfos`
+    MODIFY `idEDTinfo` tinyint NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de l''information';
+
+CREATE TABLE `didac_EDTprofsABS` (
+  `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `startTime` datetime NOT NULL COMMENT 'Jour et Heure de début du cours',
+  `endTime` datetime DEFAULT NULL COMMENT 'Jour et Heure de fin du cours',
+  `date` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Date (from startTime)',
+  `heure` varchar(5) CHARACTER SET utf8 COLLATE utf8_unicode_520_ci NOT NULL COMMENT 'Heure de cours (from startTime)',
+  `local` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'local',
+  `matiere` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Matière enseignée',
+  `profs` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Autres professeurs impliqués',
+  `classes` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Classes impliquées',
+  `parties` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Parties de classes',
+  `eduProf` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'acronyme du prof ou de l''éducateur en charge',
+  `remarque` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_EDTprofsABS`
+  ADD PRIMARY KEY (`acronyme`,`date`,`heure`);
+
+CREATE TABLE `didac_EDTprofsICal` (
+    `id` int NOT NULL COMMENT 'Identifiant de l''event',
+    `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `jour` tinyint NOT NULL COMMENT 'Jour de la semaine (dimanche = 0)',
+    `startTime` time NOT NULL COMMENT 'Heure de début du cours',
+    `endTime` time NOT NULL COMMENT 'Heure de fin du cours',
+    `local` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'local',
+    `matiere` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Matière enseignée',
+    `profs` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Autres professeurs impliqués',
+    `classes` varchar(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Classes impliquées',
+    `parties` varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Parties de classes',
+    `exportDate` datetime NOT NULL COMMENT 'Date de l''exporation depuis EDT'
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_EDTprofsICal`
+  ADD PRIMARY KEY (`id`,`acronyme`);
+
+ALTER TABLE `didac_EDTprofsICal`
+    MODIFY `id` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de l''event';
+
+    CREATE TABLE `didac_EDTprofsStatut` (
+      `statut` enum('repris','licencie','travaux','educ','autre','movedFrom','movedTo') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Liste des statuts possibles',
+      `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+      `date` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Date de l''absence',
+      `heure` varchar(5) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Heure réelle correspondante (si déplacement)',
+      `startTime` datetime NOT NULL COMMENT 'Nécessaire pour la correspondance avec les heures déplacées'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Statut des absences';
+
+ALTER TABLE `didac_EDTprofsStatut`
+    ADD PRIMARY KEY (`statut`,`acronyme`,`date`,`heure`);
+
 
 CREATE TABLE `didac_presencesEleves` (
     `id` int(11) NOT NULL,
