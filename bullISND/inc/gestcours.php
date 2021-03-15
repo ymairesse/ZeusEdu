@@ -12,42 +12,8 @@ $smarty->assign('listeNiveaux', $Ecole::listeNiveaux());
 
 switch ($mode) {
 	case 'matieres':
-		if ($etape == 'enregistrer') {
-			$nb_cours = $Ecole->enregistrerMatiere($_POST);
-			$smarty->assign("message",
-				array(
-					'title'=>SAVE,
-					'texte'=>sprintf(NBSAVE,$nb_cours[0]),
-					'urgence'=>'info')
-				);
-			$cours = $nb_cours[1];
-		}
-		$smarty->assign('cours', $cours);
-		// le cours est-il orphelin? Auquel cas il peut être modifié
-		$smarty->assign('fullEditable', in_array($cours, $Ecole->listOrphanCours()));
-
-		$smarty->assign('detailsCours', $Ecole->detailsCours($cours));
-		$smarty->assign('listeFormes', $Ecole->listeFormes());
-		$smarty->assign('listeSections',$Ecole->listeSections());
-		$smarty->assign('listeNiveaux', $Ecole->listeNiveaux());
-		$listeMatieres = isset($niveau)?$Ecole->listeCours($niveau):Null;
-		$smarty->assign('listeMatieres', $listeMatieres);
-		$smarty->assign('listeCadresStatuts', $Ecole->listeCadresStatuts());
-		$smarty->assign('selecteur', 'selectNiveauMatiere');
 		$smarty->assign('corpsPage','editMatiere');
 		break;
-
-	case 'deleteCours':
-		$nb = $Bulletin->deleteOrphanCours($cours);
-		$smarty->assign('message',
-				array(
-					'title'=>'Suppression',
-					'texte'=>"$nb cours supprimé(s)",
-					'urgence'=>'info')
-					);
-		$cours = Null;
-		$smarty->assign('mode','editCours');
-		// break;  pas de break, on continue sur l'édition
 
 	case 'editCours':
 		if ($etape == 'enregistrer') {

@@ -27,8 +27,6 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-Application::afficher($form);
-
 $listePeriodes = isset($form['listePeriodes']) ? $form['listePeriodes'] : Null;
 
 // Cookies actuels à supprimer
@@ -37,7 +35,7 @@ $periodesSyntheseCookies = isset($_COOKIE['periodesSynthese']) ? $_COOKIE['perio
 // supprimer tous les cookies 'mentionsSelect' existants
 if ($periodesSyntheseCookies != Null) {
     foreach ($periodesSyntheseCookies as $key => $unePeriode) {
-        setcookie('periodesSynthese['.$key.']', $unePeriode, time()-180*24*3600, "/");
+        setcookie('periodesSynthese['.$key.']', $unePeriode, time()-180*24*3600, "/ ");
     }
 }
 

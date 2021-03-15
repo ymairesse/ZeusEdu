@@ -111,18 +111,22 @@
 			<ul class="dropdown-menu">
 				<li><a href="index.php?action=admin&amp;mode=nommerCours">Nommer vos cours</a></li>
 				{if $userStatus eq 'admin'}
-				<li><a href="index.php?action=init">Initialisations</a></li>
+				<li class="divider"></li>
 				<li><a href="index.php?action=admin&amp;mode=remplacants">Profs remplacés</a></li>
 				<li><a href="index.php?action=admin&amp;mode=interim">Intérimaires</a></li>
+				<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats</a></li>
+				<li class="divider"></li>
 				<li><a href="index.php?action=gestCours&amp;mode=matieres">Gestion des matières</a></li>
 				<li><a href="index.php?action=gestCours&amp;mode=editCours">Gestion des cours</a></li>
+				<li><a href="index.php?action=admin&amp;mode=statutCadre">Cadre et statut des cours</a></li>
+				<li class="divider"></li>
 				<li><a href="index.php?action=admin&amp;mode=attributionsProfs">Attrib. cours aux profs</a></li>
 				<li><a href="index.php?action=admin&amp;mode=attributionsEleves">Attrib. élèves aux cours</a></li>
 				<li><a href="index.php?action=admin&amp;mode=programmeEleve">Attrib. cours aux élèves</a></li>
 				<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
+				<li class="divider"></li>
+				<li><a href="index.php?action=init">Initialisations</a></li>
 				<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
-				<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats</a></li>
-				<li><a href="index.php?action=admin&amp;mode=statutCadre">Cadre et statut des cours</a></li>
 				{/if}
 			</ul>
 		</li>

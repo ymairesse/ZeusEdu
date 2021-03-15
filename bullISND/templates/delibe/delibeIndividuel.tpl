@@ -67,11 +67,11 @@
 								{/foreach}
 
 								{foreach from=$listesSyntheses key=unePeriode item=dataSynthese}
-								{assign var=cours value=$coursGrp|substr:0:strpos($coursGrp,'-')}
-								{assign var=points100 value=$listesSyntheses.$unePeriode.$matricule.$cours.sit100|default:'-'}
-								<td class="synthese{if is_numeric($points100) && $points100 < 50} echec{/if}">
-									{$points100}
-								</td>
+									{assign var=cours value=$coursGrp|substr:0:strpos($coursGrp,'-')}
+									{assign var=points100 value=$listesSyntheses.$unePeriode.$matricule.$cours.sit100|default:'-'}
+									<td class="synthese{if is_numeric($points100) && $points100 < 50} echec{/if}">
+										{$points100}
+									</td>
 								{/foreach}
 
 							</tr>

@@ -1,3 +1,4 @@
+<label for="cours">Sélection d'un cours</label>
 <select name="cours" id="cours" class="form-control">
 
 	<option value="">Choisir un cours</option>

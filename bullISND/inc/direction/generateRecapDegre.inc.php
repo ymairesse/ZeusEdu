@@ -53,6 +53,7 @@ $smarty->compile_dir = '../../templates_c';
 $listeEleves = $Ecole->listeElevesClasse($classe);
 
 // informations pour l'année scolaire en cours
+// On prend les résultats de la dernière période de cours de l'année scolaire (= NBPERIODES)
 $infoAnneeScolaire = $Bulletin->resultatsTousCours($listeEleves, NBPERIODES);
 $infoEprExterne = $Bulletin->getResultatsExternes($classe, $anneeScolaire);
 $infoMentions = $Bulletin->listeSimpleMentions($listeEleves, NBPERIODES, $anneeScolaire);

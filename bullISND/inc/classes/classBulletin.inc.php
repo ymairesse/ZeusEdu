@@ -2907,7 +2907,7 @@ class Bulletin
 /**
  * renvoie les décisions de délibération pour la liste d'élèves indiqués.
  *
- * @param $matricule / liste de matricules
+ * @param array $listeEleves (liste des matricules)
  *
  * @return array
  */
@@ -3694,7 +3694,7 @@ class Bulletin
     public function isOrphanMatiere($cours) {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         // la matière est-elle donnée par un prof?
-        $sql = 'SELECT coursGrp ';
+        $sql = 'SELECT DISTINCT coursGrp ';
         $sql .= 'FROM '.PFX.'profsCours ';
         $sql .= 'WHERE SUBSTR(coursGrp, 1, LOCATE("-", coursGrp)-1) LIKE :cours ';
         $requete = $connexion->prepare($sql);
@@ -3742,8 +3742,7 @@ class Bulletin
      *
      * @return array (integer, string)
      */
-    public function enregistrerMatiere($post)
-    {
+    public function enregistrerMatiere($post) {
         $fullEdition = isset($post['fullEdition']) ? $post['fullEdition'] : null;
         $libelle = $post['libelle'];
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
@@ -3772,13 +3771,13 @@ class Bulletin
             $sql .= 'SET cours = :cours, nbheures = :nbheures, libelle = :libelle, cadre = :cadre, section = :section ';
             $sql .= 'ON DUPLICATE KEY UPDATE libelle= :libelle ';
             $requete = $connexion->prepare($sql);
-
+// echo $sql;
             $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
             $requete->bindParam(':nbheures', $nbheures, PDO::PARAM_INT);
             $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 60);
             $requete->bindParam(':cadre', $cadre, PDO::PARAM_INT);
             $requete->bindParam(':section', $section, PDO::PARAM_STR);
-
+// Application::afficher(array($cours, $nbheures, $libelle, $cadre, $section), true);
             $resultat = $requete->execute();
 
             $nb = $requete->rowCount();
@@ -3811,6 +3810,30 @@ class Bulletin
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
+    }
+
+    /**
+     * Supprime une matière $matiere donnée
+     * (il faut d'abord vérifier qu'elle est bien orpheline -pas de prof, pas d'élèves)
+     *
+     * @param string $matiere
+     *
+     * @return int
+     */
+    public function delMatiere ($matiere){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'cours ';
+        $sql .= 'WHERE cours = :matiere ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matiere', $matiere, PDO::PARAM_STR, 17);
+
+        $resultat = $requete->execute();
+        $nb = $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
     }
 
     /**

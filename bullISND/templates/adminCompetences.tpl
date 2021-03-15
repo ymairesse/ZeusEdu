@@ -8,7 +8,6 @@
 
 				<form name="formAdminCompetences" id="formAdminCompetences">
 
-
 					<table class="table table-condensed" id="tableCompetences">
 						<thead>
 							<tr>
@@ -113,6 +112,11 @@
 					formulaire: formulaire
 				}, function(resultat){
 					$('#tableCompetences tbody').html(resultat);
+					var nb = $('#tableCompetences tbody tr').length;
+					bootbox.alert({
+						title: 'Enregistrement',
+						message: nb + ' compétences enregistrées'
+					})
 				})
 			}
 		})

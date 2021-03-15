@@ -1,0 +1,46 @@
+<?php
+
+$date = isset($_POST['date']) ? $_POST['date'] : null;
+$signature = isset($_POST['signature']) ? $_POST['signature'] : null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : null;
+$typeDoc = isset($_POST['typeDoc']) ? $_POST['typeDoc'] : null;
+
+$smarty->assign('typeDoc', $typeDoc);
+
+switch ($etape) {
+    case 'print':
+        if ($classe) {
+            // rapport de compétences ou plan individuel d'apprentissage
+            if ($typeDoc == 'competences') {
+                $listeEleves = $Ecole->listeEleves($classe, 'classe', false, false);
+            } else {
+                $listeEleves = $Ecole->listeEleves($classe, 'classe', false, true);
+            }
+            // liste de tous les cours qui se donnent dans la classe, y compris les détails (prof, nbheures,...)
+            $listeCours = $Ecole->listeCoursClasse($classe);
+            // liste de toutes les compétences pour chaque cours
+            $listeCompetences = $Bulletin->listeCompetencesListeCours($listeCours);
+            // somme de toutes les cotes ventilées par cours et par compétences
+            $sommeCotes = $Bulletin->sommeToutesCotes($listeEleves, $listeCours, $listeCompetences);
+
+            // les compétences sont acquises si cote >= 50%
+            $listeAcquis = $Bulletin->listeAcquis($sommeCotes);
+            $smarty->assign('listeEleves', $listeEleves);
+            $smarty->assign('listeCours', $listeCours);
+            $smarty->assign('listeCompetences', $listeCompetences);
+            $smarty->assign('listeAcquis', $listeAcquis);
+        }
+        // break; pas de break
+
+    default:
+        $listeClasses = $Ecole->listeClasses(array('G', 'TT', 'S'));
+        $smarty->assign('listeClasses', $listeClasses);
+        $smarty->assign('classe', $classe);
+        $smarty->assign('date', $date);
+        $smarty->assign('signature', $signature);
+        $smarty->assign('DIRECTION', DIRECTION);
+        $smarty->assign('etape', 'print');
+        $smarty->assign('selecteur', 'selecteurs/selectClasseDateSignature');
+        $smarty->assign('corpsPage', 'direction/rapportCompetences');
+        break;
+}
