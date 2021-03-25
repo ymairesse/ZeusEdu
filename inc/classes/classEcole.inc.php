@@ -480,8 +480,9 @@ class ecole
     public function listeElevesClasse($groupe, $partis = false)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, nom, prenom, section, groupe, classe ';
-        $sql .= 'FROM '.PFX.'eleves ';
+        $sql = 'SELECT el.matricule, nom, prenom, section, groupe, classe, user ';
+        $sql .= 'FROM '.PFX.'eleves AS el ';
+        $sql .= 'JOIN '.PFX.'passwd AS pwd ON pwd.matricule = el.matricule ';
         $sql .= "WHERE groupe = '$groupe' ";
         if ($partis == false) {
             $sql .= "AND section != 'PARTI' ";
@@ -769,6 +770,7 @@ class ecole
                         'nom' => $ligne['nom'],
                         'prenom' => $ligne['prenom'],
                         'classe' => $ligne['classe'],
+                        'user' => $ligne['user'],
                         'mail' => $mail,
                         'photo' => self::photo($matricule),
                     );
@@ -1276,7 +1278,7 @@ class ecole
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
         $sql .= 'ORDER BY nbheures DESC, statut, coursGrp ';
-        
+
         $resultat = $connexion->query($sql);
         $listeCours = array();
         if ($resultat) {
@@ -3278,22 +3280,29 @@ class ecole
     /**
      * retourne le nom complet du prof dont on fournit l'abréviation.
      *
-     * @param $acronyme
+     * @param string $acronyme
      *
      * @return string : le nom du prof ou une chaîne vide si abréviation pas trouvée
      */
     public function abr2name($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT nom, prenom ';
+        $sql = 'SELECT nom, prenom, sexe ';
         $sql .= 'FROM '.PFX.'profs ';
-        $sql .= "WHERE acronyme LIKE '%$acronyme%' ";
-        $resultat = $connexion->query($sql);
+        $sql .= 'WHERE acronyme LIKE :acronyme ';
+        $requete = $connexion->prepare($sql);
+
         $nomPrenom = $acronyme;
+        $acronyme = '%'.$acronyme.'%';
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 9);
+        $resultat = $requete->execute();
+
         if ($resultat) {
-            $ligne = $resultat->fetch();
+            $ligne = $requete->fetch();
             if ($ligne != '') {
-                $nomPrenom = $ligne['prenom'][0].'. '.$ligne['nom'];
+                $sexe = $ligne['sexe'];
+                $adr = ($sexe == 'F') ? 'Mme' : 'M.';
+                $nomPrenom = sprintf('%s %s. %s', $adr, mb_substr($ligne['prenom'], 0, 1), $ligne['nom']);
             }
         }
         Application::DeconnexionPDO($connexion);
@@ -4009,6 +4018,39 @@ class ecole
         Application::DeconnexionPDO($connexion);
 
         return $acronyme;
+    }
+
+    /**
+     * renvoie la liste des élèves pour une section donnée
+     *
+     * @param string $section
+     *
+     * @return array
+     */
+    public function getEleves4section($section){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT groupe, matricule, nom, prenom ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $sql .= 'WHERE section = :section ';
+        $sql .= 'ORDER BY groupe, nom, prenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':section', $section, PDO::PARAM_STR, 5);
+
+        $liste = array();
+        $resultat = $requete->execute();
+
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $matricule = $ligne['matricule'];
+                $liste[$matricule] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
 }
