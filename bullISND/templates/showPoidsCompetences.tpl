@@ -1,10 +1,10 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2>Poids des compétences par période {$coursGrp}</h2>
 
 <div class="row">
 
-	<div class="col-md-9 col-sm-12">
+	<div class="col-lg-9 col-md-12">
 		<form name="poidsCompetences" method="POST" action="index.php" id="formPoids" role="form" class="form-vertical">
 
 		<div class="btn-group pull-right">
@@ -72,7 +72,7 @@
 
 			</div>  <!-- col-md-... -->
 
-			<div class="col-md-3 col-sm-12">
+			<div class="col-lg-3 col-md-12">
 			{include  file="carnet/noticePoidsCompetences.html"}
 			</div>  <!-- col-md... -->
 	</div>  <!-- row -->
@@ -117,8 +117,6 @@
 				$(this).attr("title", noPonderation);
 			})
 
-		})
-
 		$(".poids").keyup(function(){
 			modifie = true;
 			window.onbeforeunload = function(){
@@ -133,9 +131,8 @@
 
 		$("#submit").click(function(){
 			modifie = false;
-			window.onbeforeunload = function(){};
+			window.onbeforeunload = function(){}
 			})
-
 
 	})
 
