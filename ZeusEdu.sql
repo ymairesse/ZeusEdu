@@ -678,14 +678,16 @@ CREATE TABLE IF NOT EXISTS didac_bullNotesDirection (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS didac_bullPonderations (
-  coursGrp varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  periode tinyint(2) NOT NULL,
-  matricule varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  form varchar(3) COLLATE utf8_unicode_ci NOT NULL,
-  cert varchar(3) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (coursGrp,periode,matricule)
+CREATE TABLE `didac_bullPonderations` (
+  `coursGrp` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `periode` tinyint NOT NULL,
+  `matricule` varchar(6) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `form` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `cert` varchar(3) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Pondérations par périodes';
+
+ALTER TABLE `didac_bullPonderations`
+  ADD PRIMARY KEY (`coursGrp`,`periode`,`matricule`);
 
 
 CREATE TABLE `didac_bullSitArchives` (
