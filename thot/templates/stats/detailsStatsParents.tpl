@@ -16,7 +16,7 @@
             {foreach from=$stats key=user item=data}
             <tr>
                 <td>{$data.groupe}</td>
-                <td>{$data.nom} {$data.prenom}</td>
+                <td>{$data.nomEleve} {$data.prenomEleve}</td>
                 <td>{$data.formule} {$data.nomParent} {$data.prenomParent}</td>
                 <td>{$data.nb}</td>
             </tr>

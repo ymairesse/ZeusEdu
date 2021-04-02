@@ -2506,7 +2506,7 @@ class thot
             $mail->CharSet = 'UTF-8';
             $mail->From = NOREPLY;
             $mail->FromName = NOMNOREPLY;
-            $nomDestinataire = $data['prenom'].' '.$data['nom'];
+            $nomDestinataire = sprintf('%s %s', $data['nom'], $data['prenom']);
             $mailDestinataire = $data['mail'];
             $mail->ClearAddresses();
             $mail->AddAddress($mailDestinataire, $nomDestinataire);
@@ -2521,27 +2521,78 @@ class thot
     }
 
     /**
-     * rechercher l'adresse mail validée des parents d'élèves dont on passe la liste des $matricules
+     * retourne la liste de mailing des élèves dont on fournit la liste des matricules
      *
      * @param array $listeMatricules
      *
      * @return array
      */
-    public function getMailParents($listeMatricules){
-        echo "test";
-    }
+    public function getElevesMailing($listeMatricules){
+        if (is_array($listeMatricules)) {
+            $listeMatriculesString = implode(',', array_keys($listeMatricules));
+        } else {
+            $listeMatriculesString = $listeMatricules;
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT de.matricule, nom, prenom, user, mailDomain ';
+        $sql .= 'FROM '.PFX.'eleves AS de ';
+        $sql .= 'LEFT JOIN '.PFX.'passwd AS dp ON (de.matricule = dp.matricule) ';
+        $sql .= 'WHERE de.matricule IN ('.$listeMatriculesString.') ';
+        $requete = $connexion->prepare($sql);
 
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = array(
+                    'nom' => $ligne['nom'],
+                    'prenom' => $ligne['prenom'],
+                    'mail' => sprintf('%s@%s', $ligne['user'], $ligne['mailDomain'])
+                );
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
 
     /**
      * Ajouter les parents à la liste de mailing $listeMailing
      *
-     * @param array $listeMailing
+     * @param array $listeMatricules
      *
      * @return array : la même liste avec un champ supplémentaire pour le mail des parents
      */
-    public function addParentMailing($listeMailing){
+    public function getParentsMailing($listeMatricules){
+        if (is_array($listeMatricules)) {
+            $listeMatriculesString = implode(',', array_keys($listeMatricules));
+        } else {
+            $listeMatriculesString = $listeMatricules;
+        }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT formule, nom, prenom, mail ';
+        $sql .= 'FROM '.PFX.'thotParents ';
+        $sql .= 'WHERE matricule IN ('.$listeMatriculesString.') AND confirme = 1 AND notifications = 1 ';
+        $requete = $connexion->prepare($sql);
 
-        return $listeMailing;
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = array(
+                    'nom' => sprintf('%s %s', $ligne['formule'], $ligne['nom']),
+                    'prenom' => $ligne['prenom'],
+                    'mail' => $ligne['mail']
+                );
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
     /**
@@ -4042,14 +4093,16 @@ class thot
         $dateDebut = Application::dateMysql($dateDebut);
         $dateFin = Application::dateMysql($dateFin);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT user, groupe, eleves.nom, eleves.prenom, formule, eleves.matricule, ';
-        $sql .= 'parents.nom AS nomParent, parents.prenom AS prenomParent, COUNT(user) AS nb ';
-        $sql .= 'FROM '.PFX.'thotLogins AS logins ';
-        $sql .= 'JOIN '.PFX.'thotParents AS parents ON parents.userName = logins.user ';
-        $sql .= 'JOIN '.PFX.'eleves AS eleves ON eleves.matricule = SUBSTR(user, -4, length(eleves.matricule)) ';
+        $sql = 'SELECT COUNT(login.user) AS nb, date, heure, ip, host, login.user, pwd.matricule, ';
+        $sql .= 'el.nom, el.prenom, el.groupe, parents.nom, parents.prenom, parents.formule ';
+        $sql .= 'FROM '.PFX.'thotLogins AS login ';
+        $sql .= 'LEFT JOIN '.PFX.'passwd AS pwd ON pwd.user = login.user ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON el.matricule = pwd.matricule ';
+        $sql .= 'LEFT JOIN '.PFX.'thotParents AS parents ON parents.userName = login.user ';
         $sql .= 'WHERE date BETWEEN :dateDebut AND :dateFin AND groupe = :classe ';
-        $sql .= 'GROUP BY logins.user ';
-        $sql .= 'ORDER BY groupe, eleves.nom, nb ';
+        $sql .= 'AND login.user IN (SELECT userName FROM didac_thotParents) ';
+        $sql .= 'GROUP BY login.user ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(el.nom," ",""), "-",""), "\'",""), el.prenom ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
@@ -4084,14 +4137,14 @@ class thot
         $dateDebut = Application::dateMysql($dateDebut);
         $dateFin = Application::dateMysql($dateFin);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT logins.user, COUNT(logins.user) AS nb, groupe, nom, prenom, eleves.matricule ';
-        $sql .= 'FROM '.PFX.'thotLogins AS logins ';
-        $sql .= 'JOIN '.PFX.'passwd AS pwd ON pwd.user = logins.user ';
-        $sql .= 'JOIN '.PFX.'eleves AS eleves ON eleves.matricule = SUBSTR(logins.user, -4, length(eleves.matricule)) ';
-        $sql .= 'WHERE date BETWEEN :dateDebut AND :dateFin AND groupe = :classe AND section != "PARTI" ';
-        $sql .= 'GROUP BY user ';
-        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(nom," ",""), "-",""), "\'",""), prenom ';
-
+        $sql = 'SELECT COUNT(login.user), date, heure, ip, host, login.user, pwd.matricule, el.nom, el.prenom, el.groupe ';
+        $sql .= 'FROM '.PFX.'thotLogins AS login ';
+        $sql .= 'LEFT JOIN '.PFX.'passwd AS pwd ON pwd.user = login.user ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON el.matricule = pwd.matricule ';
+        $sql .= 'WHERE date BETWEEN :dateDebut AND :dateFin AND groupe = :classe ';
+        $sql .= 'AND login.user IN (SELECT user FROM '.PFX.'passwd) ';
+        $sql .= 'GROUP BY login.user ';
+        $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(el.nom," ",""), "-",""), "\'",""), el.prenom ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
@@ -4691,7 +4744,7 @@ class thot
             'cours' => array('droits' => Null, 'texte' => 'Une matière'),
             'groupe' => array('droits' => Null, 'texte' => 'Un groupe'),
             'ecole' => array('droits' => array('admin', 'direction'), 'texte' => 'Tous les élèves'),
-            'profsCours' => array('droits' => array('direction', 'educ'), 'texte' => 'Élèves d\'un cours'),
+            'profsCours' => array('droits' => array('admin', 'direction', 'educ'), 'texte' => 'Élèves d\'un cours'),
         );
         if ($full != Null)
             unset($types['eleves']);

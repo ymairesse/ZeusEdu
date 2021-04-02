@@ -21,7 +21,7 @@ $module = $Application->getModule(3);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
-$Thot = new Thot(); 
+$Thot = new Thot();
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -53,7 +53,7 @@ if ($cible == 'parents') {
         foreach ($stats as $user => $dataStats) {
 			$matricule = $dataStats['matricule'];
 			$listeEleves[$matricule]['stats'] = $dataStats['nb'];
-			} 
+			}
 		$smarty->assign('listeEleves', $listeEleves);
         $smarty->assign('dateDebut', $dateDebut);
         $smarty->assign('dateFin', $dateFin);
