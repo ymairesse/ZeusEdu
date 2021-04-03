@@ -17,6 +17,8 @@ switch ($action) {
         require_once 'inc/sendICal.php';
         break;
     default:
+        $module = $Application->getModule(1);
+        $smarty->assign('link', BASEDIR.$module);
         $smarty->assign('corpsPage','main');
         break;
 }
