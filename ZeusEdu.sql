@@ -1780,61 +1780,58 @@ ALTER TABLE `didac_thotParents`
   ADD PRIMARY KEY (`matricule`,`userName`),
   ADD KEY `matricule` (`matricule`);
 
-  CREATE TABLE `didac_thotRp` (
+CREATE TABLE `didac_thotRp` (
     `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
     `date` date NOT NULL COMMENT 'Date de la réunion de parents',
     `ouvert` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La RP est-elle ouverte à l''inscription',
     `active` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'La réunion est-elle activée',
     `notice` blob NOT NULL COMMENT 'Texte d''information sur la réunion de parents',
     `typeRP` enum('profs','titulaires') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'profs' COMMENT 'Réunion de parents pour les titulaires ou tous les profs '
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Date et activité (ou non) d''une réunion de parents';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Date et activité (ou non) d''une réunion de parents';
 
-  ALTER TABLE `didac_thotRp`
+ALTER TABLE `didac_thotRp`
     ADD PRIMARY KEY (`idRP`);
 
-  ALTER TABLE `didac_thotRp`
+ALTER TABLE `didac_thotRp`
     MODIFY `idRP` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique de la RP';
 
 
-  CREATE TABLE `didac_thotRpAttente` (
-    `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
-    `date` date NOT NULL COMMENT 'Date de la réunion de parents',
-    `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme du prof',
-    `matricule` int NOT NULL COMMENT 'matricule de l''élève concerné',
-    `userName` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Nom d''utilisateur du parent',
-    `periode` smallint NOT NULL COMMENT 'Période présélectionnée pour le RV'
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste d''attente pour les réunions de parents';
+CREATE TABLE `didac_thotRpAttente` (
+  `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
+  `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme du prof',
+  `matricule` int NOT NULL COMMENT 'matricule de l''élève concerné',
+  `userName` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Nom d''utilisateur du parent',
+  `periode` smallint NOT NULL COMMENT 'Période présélectionnée pour le RV'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste d''attente pour les réunions de parents';
 
-  ALTER TABLE `didac_thotRpAttente`
-    ADD PRIMARY KEY (`idRP`,`matricule`);
-
-
-  CREATE TABLE `didac_thotRpHeures` (
-    `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
-    `date` date NOT NULL,
-    `minPer1` time NOT NULL,
-    `maxPer1` time NOT NULL,
-    `minPer2` time NOT NULL,
-    `maxPer2` time NOT NULL,
-    `minPer3` time NOT NULL,
-    `maxPer3` time NOT NULL
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Heures limites des périodes de liste d''attente';
-
-  ALTER TABLE `didac_thotRpHeures`
-    ADD PRIMARY KEY (`idRP`);
+ALTER TABLE `didac_thotRpAttente`
+  ADD PRIMARY KEY (`idRP`,`matricule`);
 
 
-  CREATE TABLE `didac_thotRpLocaux` (
+CREATE TABLE `didac_thotRpHeures` (
+  `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
+  `minPer1` time NOT NULL,
+  `maxPer1` time NOT NULL,
+  `minPer2` time NOT NULL,
+  `maxPer2` time NOT NULL,
+  `minPer3` time NOT NULL,
+  `maxPer3` time NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Heures limites des périodes de liste d''attente';
+
+ALTER TABLE `didac_thotRpHeures`
+  ADD PRIMARY KEY (`idRP`);
+
+CREATE TABLE `didac_thotRpLocaux` (
     `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
     `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
     `local` varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Locaux affectés aux profs pour la réunion de parents';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Locaux affectés aux profs pour la réunion de parents';
 
-  ALTER TABLE `didac_thotRpLocaux`
+ALTER TABLE `didac_thotRpLocaux`
     ADD PRIMARY KEY (`idRP`,`acronyme`);
 
 
-  CREATE TABLE `didac_thotRpRv` (
+CREATE TABLE `didac_thotRpRv` (
     `idRP` int NOT NULL COMMENT 'Identifiant numérique de la RP',
     `idRV` int NOT NULL COMMENT 'Identifiant du RV',
     `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'acronyme du propriétaire',
@@ -1843,13 +1840,14 @@ ALTER TABLE `didac_thotParents`
     `userParent` varchar(25) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'userName du parent',
     `heure` time NOT NULL COMMENT 'Heure du RV',
     `dispo` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Le prof est-il libre à ce moment?'
-  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rendez-vous pour la réunion de parents';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Rendez-vous pour la réunion de parents';
 
-  ALTER TABLE `didac_thotRpRv`
+ALTER TABLE `didac_thotRpRv`
     ADD PRIMARY KEY (`idRP`,`idRV`);
 
-  ALTER TABLE `didac_thotRpRv`
+ALTER TABLE `didac_thotRpRv`
     MODIFY `idRV` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du RV';
+
 
 CREATE TABLE IF NOT EXISTS didac_titus (
   acronyme varchar(7) COLLATE utf8_unicode_ci NOT NULL,

@@ -4142,7 +4142,7 @@ class thot
         $sql .= 'LEFT JOIN '.PFX.'passwd AS pwd ON pwd.user = login.user ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON el.matricule = pwd.matricule ';
         $sql .= 'WHERE date BETWEEN :dateDebut AND :dateFin AND groupe = :classe ';
-        $sql .= 'AND login.user IN (SELECT user FROM '.PFX.'passwd) ';
+        $sql .= 'AND login.user IN (SELECT user FROM '.PFX.'passwd) AND section != "PARTI" ';
         $sql .= 'GROUP BY login.user ';
         $sql .= 'ORDER BY REPLACE(REPLACE(REPLACE(el.nom," ",""), "-",""), "\'",""), el.prenom ';
         $requete = $connexion->prepare($sql);
