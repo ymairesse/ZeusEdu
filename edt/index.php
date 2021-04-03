@@ -18,7 +18,13 @@ switch ($action) {
         break;
     default:
         $module = $Application->getModule(1);
-        $smarty->assign('link', BASEDIR.$module);
+        $ds = DIRECTORY_SEPARATOR;
+
+        if (file_exists (INSTALL_DIR.$ds.$module.$ds.'index.html'))
+            $link = BASEDIR.$module.$ds.'index.html';
+            else $link = BASEDIR.$module.$ds.'installEDT.html';
+
+        $smarty->assign('link', $link);
         $smarty->assign('corpsPage','main');
         break;
 }
