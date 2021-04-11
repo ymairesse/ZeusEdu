@@ -1,8 +1,4 @@
-<button class="btn btn-success btn-sm btn-block"
-    type="button"
-    id="cleaner">
-    Nettoyer les infobulles <i class="fa fa-trash fa-2x"></i>
-</button>
+{* listeElevesDeployee.tpl *}
 
 <ul class="list-unstyled">
 {foreach from=$listeEleves key=matricule item=eleve}

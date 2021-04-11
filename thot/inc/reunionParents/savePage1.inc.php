@@ -19,15 +19,15 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
-$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
-$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
-$droit = isset($_POST['droit']) ? $_POST['droit'] : Null;
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+// retour du contenu du formulaire qui a été serializé
+$form = array();
+parse_str($formulaire, $form);
 
-require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
-$thot = new Thot();
+require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
+$Thot = new Thot();
 
-$nb = $thot->delListeAttenteProf($matricule, $abreviation, $idRP, $periode);
+$idRP = $Thot->saveNewRpDate($form);
+$nb = $Thot->saveRPinit($idRP, $form);
 
-echo $nb;
+echo json_encode(array('nb' => $nb, 'idRP' => $idRP));

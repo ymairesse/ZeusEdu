@@ -20,15 +20,16 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $idRP = isset($_POST['idRP'])?$_POST['idRP']:Null;
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
+$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:'';
 
-$nomProf = User::identiteProf($abreviation);
+
+$nomProf = User::identiteProf($acronyme);
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
 $thot = new Thot();
-$listeRV = $thot->getRVprof($abreviation, $idRP);
+$listeRV = $thot->getRVprof($acronyme,$idRP);
 
-$listeAttente = $thot->getListeAttenteProf($idRP, $abreviation);
+$listeAttente = $thot->getListeAttenteProf($idRP, $acronyme);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -40,29 +41,33 @@ $smarty->compile_dir = '../../templates_c';
 $smarty->assign('nomProf', sprintf('%s %s', $nomProf['prenom'], $nomProf['nom']));
 $smarty->assign('entete', sprintf('%s %s %s',ECOLE, ADRESSE, VILLE));
 
-$smarty->assign('listeRV', $listeRV);
-$smarty->assign('listeAttente', $listeAttente);
-$smarty->assign('acronyme', $abreviation);
+$smarty->assign('listeRV',$listeRV);
+$smarty->assign('listeAttente',$listeAttente);
+$smarty->assign('acronyme',$acronyme);
 $smarty->assign('nomProf', $nomProf);
-$smarty->assign('listePeriodes', $thot->getListePeriodes($idRP));
+$smarty->assign('listePeriodes',$thot->getListePeriodes($idRP));
 
 $rv4PDF =  $smarty->fetch('reunionParents/RV2pdf.tpl');
 
+$rv4PDF = '<html><head><title>sans titre</title></head><body>TEST</body></html>';
+// Application::afficher($rv4PDF, true);
 
-$ds = DIRECTORY_SEPARATOR;
-// création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
-if (!(file_exists($chemin)))
-    mkdir ($chemin, 0700, true);
 
-$nomFichier = sprintf('rp_%s%s.pdf', $nomProf['nom'], $nomProf['prenom']);
 
 require INSTALL_DIR.'/vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
 
 $html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
-$html2pdf->WriteHTML($rv4PDF);
+
+$html2pdf->WriteHTML($html2pdf);
+
+
+// création éventuelle du répertoire au nom de l'utlilisateur
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
+if (!(file_exists($chemin)))
+    mkdir ($chemin, 0700, true);
+
 $html2pdf->Output($chemin.$nomFichier, 'F');
 
 echo sprintf('<p>Vous pouvez récupérer le document au format PDF en cliquant <a target="_blank" id="celien" href="inc/download.php?type=pfN&amp;f=/%s/%s">sur ce lien</a></p>', $module, $nomFichier);

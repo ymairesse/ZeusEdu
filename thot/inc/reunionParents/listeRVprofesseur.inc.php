@@ -19,15 +19,29 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
-$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
 $droit = isset($_POST['droit']) ? $_POST['droit'] : Null;
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
-$thot = new Thot();
+$Thot = new Thot();
 
-$nb = $thot->delListeAttenteProf($matricule, $abreviation, $idRP, $periode);
+$nomProf = User::identiteProf($acronyme);
+$listeRV = $Thot->getRVprof($acronyme, $idRP);
 
-echo $nb;
+// Application::afficher($listeRV, true);
+
+require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+$smarty = new Smarty();
+$smarty->template_dir = "../../templates";
+$smarty->compile_dir = "../../templates_c";
+
+$smarty->assign('nomProf', sprintf('%s %s', $nomProf['prenom'], $nomProf['nom']));
+
+$smarty->assign('listeRV', $listeRV);
+$smarty->assign('acronyme', $acronyme);
+$smarty->assign('listePeriodes', $Thot->getListePeriodes($idRP));
+
+
+if ($droit == true)
+    $smarty->display('reunionParents/tableRVAdminDroit.tpl');
+    else $smarty->display('reunionParents/tableRVAdmin.tpl');

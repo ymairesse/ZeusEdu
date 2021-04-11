@@ -2,15 +2,32 @@
 
 require_once '../../../config.inc.php';
 
-session_start();
-
 require_once INSTALL_DIR.'/inc/classes/classApplication.inc.php';
 $Application = new Application();
 
-$debut = isset($_POST['debut']) ? $_POST['debut']:Null;
-$fin = isset($_POST['fin']) ? $_POST['fin']:Null;
-$duree = isset($_POST['duree']) ? $_POST['duree']:Null;
-$readonly = isset($_POST['readonly']) ? $_POST['readonly']:Null;
+// définition de la class USER utilisée en variable de SESSION
+require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
+session_start();
+
+if (!(isset($_SESSION[APPLICATION]))) {
+    echo "<script type='text/javascript'>document.location.replace('".BASEDIR."');</script>";
+    exit;
+}
+
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
+
+$module = $Application->getModule(3);
+
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$form = array();
+parse_str($formulaire, $form);
+
+// INFORMATIONS NÉCESSAIRES POUR LA CRÉATION DU CANEVAS DE LA RP
+$debut = isset($form['debut']) ? $form['debut']:Null;
+$fin = isset($form['fin']) ? $form['fin']:Null;
+$duree = isset($form['duree']) ? $form['duree']:Null;
+
 
 $listeMoments = array();
 
@@ -25,12 +42,13 @@ if ($duree > 0) {
     }
 }
 
+// Application::afficher($listeMoments, true);
+
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeHeuresRP', $listeMoments);
-$smarty->assign('readonly', $readonly);
 
 echo $smarty->fetch('reunionParents/nouveau/listeHeures.tpl');

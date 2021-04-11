@@ -1,12 +1,13 @@
 <div class="panel-group" id="elevesProfs">
 
+
 {foreach from=$listeEleves key=classe item=lesEleves}
 
   <div class="panel panel-default">
 
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#" href="#{$classe}">{$classe} </a>
+        <a data-toggle="collapse" data-parent="#" href="#{$classe}">Élèves de {$classe} </a>
       </h4>
     </div>
 
@@ -36,8 +37,10 @@
 $(document).ready(function(){
 
     $(".btn-eleve").click(function(){
+        $(".btn-eleve").removeClass('btn-success').addClass('btn-default');
+        $(this).toggleClass('btn-success', 'btn-default');
         $(".btn-eleve").removeClass('btn-primary').addClass('btn-default');
-        $(this).addClass('btn-primary').removeClass('btn-default');
+        // $(this).addClass('btn-primary').removeClass('btn-default');
     })
 
 })

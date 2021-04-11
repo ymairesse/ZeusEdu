@@ -1,7 +1,7 @@
-<div class="panel panel-default">
+<div class="panel panel-success">
 
     <div class="panel-heading">
-        <h3 class="panel-title">Les RV de <span id="nomProf">{$nomProf}</span> [{$acronyme}]</button></h3>
+        Les RV de <strong>{$nomProf}</strong> [{$acronyme}]
     </div>
 
     <div class="panel-body">
@@ -9,13 +9,15 @@
         <table class="table table-condensed" style="font-size:10pt">
             <thead>
                 <tr>
-                    <td style="width:1em"><i class="fa fa-calendar-o"></i></td>
-                    <td style="width:2.5em"><i class="fa fa-arrow-right"></i></td>
                     <td>Heure</td>
                     <td>Élève</td>
                     <td>Parent</td>
                     <td style="width:1em">Dispo</td>
-                    <td style="width:2.5em">&nbsp;</td>
+                    <td style="width:2.5em">
+                        <button type="button" class="btn btn-danger btn-xs" id="delAllRV" title="Annuler tous les RV"><i class="fa fa-trash"></i></button>
+                    </td>
+                    <td style="width:1em"><i class="fa fa-calendar-o"></i></td>
+                    <td style="width:2.5em"><i class="fa fa-arrow-left"></i></td>
                 </tr>
             </thead>
             <tbody>
@@ -26,18 +28,7 @@
                             {/if}
                             {if $data.dispo==0} indisponible{/if}"
                     data-nomparent="{$data.formule|default:''} {$data.nomParent|default:''} {$data.prenomParent|default:''}" data-idrv="{$data.idRV}">
-                    <td>
-                        <input type="radio" name="idRV[]" class="idRV" value="{$idRV}"{if ($data.dispo == 0)} disabled{/if}>
-                    </td>
-                    <td>
-                        <button
-                            type="button"
-                            class="btn btn-success btn-xs lien"
-                            data-idrv="{$idRV}"
-                            style="display: none">
-                            <i class="fa fa-arrow-right"></i>
-                        </button>
-                    </td>
+
 
                     <td>{$data.heure}</td>
                     <td {if ($data.matricule !=Null)}
@@ -65,11 +56,25 @@
                             data-idrv="{$idRV}"
                             data-eleve="{$data.prenom} {$data.nom}"
                             data-matricule="{$data.matricule}"
+                            data-acronyme="{$acronyme|default:''}"
                             data-mail="{$data.mail}"
                             title="Annuler ce RV">
                                 <i class="fa fa-trash"></i>
                         </button>
                         {else} &nbsp; {/if}
+                    </td>
+                    <td>
+                        <input type="radio" name="idRV[]" class="idRV" value="{$idRV}"{if ($data.dispo == 0)} disabled{/if}>
+                    </td>
+                    <td>
+                        <button
+                            type="button"
+                            class="btn btn-success btn-xs lien"
+                            data-idrv="{$idRV}"
+                            data-acronyme="{$acronyme|default:''}"
+                            style="display: none">
+                            <i class="fa fa-arrow-left"></i>
+                        </button>
                     </td>
 
                 </tr>

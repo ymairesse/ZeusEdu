@@ -19,27 +19,17 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
-
-$leType = isset($form['leType']) ? $form['leType'] : null;
-$readonly = isset($_form['readonly'])?$_form['readonly']:Null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : null;
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-switch ($leType) {
-    case 'profs':
-        $listeProfs = $Ecole->listeProfs();
-        break;
-    case 'cible':
-        $listeProfs = $Ecole->listeProfs();
-        break;
-    case 'titulaires':
-        $listeProfs = $Ecole->listeProfsTitus(true);
-        break;
-    }
+require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
+$Thot = new Thot();
+
+$listeDirection = $Thot->listeStatutsSpeciaux();
+
+$listeProfs = $Ecole->getListeProfs4classe($classe);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
@@ -47,5 +37,6 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeProfs', $listeProfs);
+$smarty->assign('listeStatutsSpeciaux', $listeDirection);
 
-echo $smarty->fetch('reunionParents/nouveau/listeProfs.tpl');
+$smarty->display('reunionParents/selectProfsCible.tpl');

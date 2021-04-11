@@ -20,17 +20,18 @@ $User = $_SESSION[APPLICATION];
 
 $module = $Application->getModule(3);
 
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 $idRV = isset($_POST['idRV']) ? $_POST['idRV'] : null;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : null;
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-
+// ne pas confondre avec l'acronyme de l'utilisateur!!!!!
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
 $periode = isset($_POST['periode']) ? $_POST['periode'] : null;
 // $userName = isset($_POST['userName']) ? $_POST['userName'] : null;
-// ne pas confondre avec l'acronyme de l'utilisateur!!!!!
-$acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
+
 
 // nombre maximum de RV admissibles pour un élève
 DEFINE ("MAX", 3);
+// nombre maximum de RV admissibles pour un élève
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new Thot();
@@ -40,7 +41,7 @@ $resultat = $Thot->inscriptionEleve($idRP, $idRV, $matricule, MAX);
 
 // le cas échéant, supprimer de la liste d'attente
 if ($resultat > 0) {
-    $Thot->delListeAttenteProf($matricule, $acronyme, $idRP, $periode);
+    $Thot->delListeAttenteProf($matricule, $abreviation, $idRP, $periode);
 }
 
 echo $resultat;

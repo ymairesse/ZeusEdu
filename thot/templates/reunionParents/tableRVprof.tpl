@@ -10,9 +10,7 @@
         </tr>
     </thead>
     <tbody>
-{* <pre>
-    {$listeRV|print_r}
-</pre> *}
+
         {foreach from=$listeRV key=idRV item=data}
         <tr class="{if $data.heure >= $listePeriodes[3].min}attente3
                     {elseif $data.heure >= $listePeriodes[2].min}attente2

@@ -1,19 +1,19 @@
-listeAttenteProf
+{* listeAttenteProfDroit *}
 
 <div class="panel panel-default">
 
     <div class="panel-heading">
         <div class="row">
 
+            <div class="col-md-10 col-sm-8">
+                <h3 class="panel-title">Liste d'attente</h3>
+            </div>
             <div class="col-md-2 col-sm-4">
                 <button class="btn btn-success btn-sm pull-right btn-block"
                     data-idrp="{$idRP}"
                     id="listeAttente"
                     data-acronyme="{$acronyme|default:''}"
                     title="Placer l'élèves sélectionné en liste d'attente"><i class="fa fa-arrow-right"></i> <i class="fa fa-user"></i> <i class="fa fa-user"></i> <i class="fa fa-user-plus"></i>
-            </div>
-            <div class="col-md-10 col-sm-8">
-                <h3 class="panel-title">Liste d'attente</h3>
             </div>
 
         </div>

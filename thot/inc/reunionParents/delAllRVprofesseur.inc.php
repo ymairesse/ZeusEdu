@@ -19,15 +19,26 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
-$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
-$droit = isset($_POST['droit']) ? $_POST['droit'] : Null;
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
-$thot = new Thot();
+$Thot = new Thot();
 
-$nb = $thot->delListeAttenteProf($matricule, $abreviation, $idRP, $periode);
+$liste = $Thot->getRVprof($acronyme, $idRP);
 
-echo $nb;
+$listeRV = array();
+foreach ($liste as $idRV => $data) {
+    if ($data['dispo'] == 0)
+        $listeRV[$idRV] = $data;
+}
+$infoRP = $Thot->getInfoRp($idRP);
+
+require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+$smarty = new Smarty();
+$smarty->template_dir = "../../templates";
+$smarty->compile_dir = "../../templates_c";
+
+$smarty->assign('infoRP', $infoRP);
+$smarty->assign('listeRV', $listeRV);
+
+$smarty->display('reunionParents/modal/modalDelAllRV.tpl');

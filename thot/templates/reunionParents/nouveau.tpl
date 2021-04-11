@@ -46,7 +46,6 @@
     }
 
     function deleteFile(src) {
-    	console.log(src);
     	$.ajax({
     		data: { src : src },
     		type: "POST",
@@ -120,80 +119,97 @@
         })
 
         $("#creation").click(function() {
-            var typeRP = $('input[name=leType]:checked').val();
-            $("#typeRP").val(typeRP);
-
-            var erreur = false;
-
-            var date = $("#datepicker").val();
-            $("#ladate").val(date);
-            if (date == '') {
-                alert('Une date svp');
-                erreur = true;
-                }
-
-            var debut = formatHeure($("#debut").val());
-            if (debut == '') {
-                alert('Une heure de début, svp');
-                erreur = true;
-            }
-
-            var fin = formatHeure($("#fin").val());
-            if (fin == '') {
-                alert('Une heure de fin, svp');
-                erreur = true;
-            }
-
-            if (fin <= debut) {
-                alert('L\'heure de fin doit être après à l\'heure de début');
-                erreur = true;
-            }
-
-            var duree = parseInt($("#intervalle").val());
-            if (isNaN(duree)) {
-                alert('Un temps > 0 svp');
-                erreur = true;
-                }
-
-            if (erreur == false) {
-                // création de la liste des heures de RV
+            if ($('#formPage1').valid() ){
+                var formulaire = $('#formPage1').serialize();
+                var dateFormulaire = $('#datepicker').val();
+                var typeRP = $('.leType').val();
+                var heureDebut = $('#debut').val();
+                var heureFin = $('#fin').val();
+                $('#leType').val(typeRP);
+                $('#dateReunion').val(dateFormulaire);
+                $('.minPer1').val(heureDebut);
+                $('.maxPer2').val(heureFin);
                 $.post('inc/reunionParents/listeHeures.inc.php', {
-                    debut: debut,
-                    fin: fin,
-                    duree: duree,
-                    readonly: false
-                    },
-                    function(resultat){
-                        $("#tableHoraire").html(resultat);
-                        $("#submit").show();
-                    }
-                )
-                // création de la liste des profs
-                $.post('inc/reunionParents/listeProfs.inc.php', {
-                    typeRP: typeRP,
-                    readonly: false
-                    },
-                    function(resultat){
-                        $("#listeProfs").html(resultat);
-                    })
-            }
+                    formulaire: formulaire
+                }, function(resultat){
+                    $("#tableHoraire").html(resultat);
+                    // création de la liste des profs
+                    $.post('inc/reunionParents/listeProfs.inc.php', {
+                        formulaire: formulaire
+                        },
+                        function(resultat){
+                            $("#listeProfs").html(resultat);
+                        })
+                    $("#saveRP").show();
+                })
+            };
         })
 
-        $('#formDetails2').on('click', '#btn-page2', function(){
-            var formulaire = $('#formDetails2').serialize();
-            var idRP = $(this).data('idrp');
-            $.post('inc/reunionParents/savePage2.inc.php', {
-                formulaire: formulaire,
-                idRP: idRP
-            }, function(resultat){
+        $('body').on('click', '#saveRP', function(){
+            var formulaire = $('#formPage1').serialize();
+            $.post('inc/reunionParents/savePage1.inc.php', {
+                formulaire: formulaire
+            }, function(resultatJSON){
+                var resultat = JSON.parse(resultatJSON);
+                var nb = resultat['nb'];
+                var idRP = resultat['idRP'];
                 bootbox.alert({
-                    title: 'Enregistrement',
-                    message: resultat
+                    title: 'Prépartion de la réunion de parents',
+                    message: '<strong>' + nb + ' périodes</strong> de RV enregistrées',
+                    callback: function(){
+                        // création du troisième onglet
+                        $.post('inc/reunionParents/createListeLocaux.inc.php', {
+                            idRP: idRP
+                        }, function(resultat){
+                            $('#page2').html(resultat);
+
+                            $('.nav-tabs a[href="#page1"]').tab('show');
+                            $('#formPage1 .btn').attr('disabled', true);
+                            $('#formPage1 input:checkbox').attr('readonly', true);
+                            $('#formDetails2 .btn').attr('disabled', false);
+                            $('#formDetails2 fieldset').attr('disabled', false);
+                            $('#btn-page2').data('idrp', idRP).attr('disabled', false);
+                            $('#page1 .alert-info').toggleClass('hidden');
+                            $('#formPage1 input').attr('disabled', true);
+                        })
+                    }
                 })
             })
         })
 
-        $('#formDetails3').on('click', '#btn-page3', function(){
+        $('#formDetails2').on('click', '#btn-page2', function(){
+            var minPer1 = $('#minPer1').val();
+            var maxPer1 = $('#maxPer1').val();
+            var minPer2 = $('#minPer2').val();
+            var maxPer2 = $('#maxPer2').val();
+            var minPer3 = $('#minPer3').val();
+            var maxPer3 = $('#maxPer3').val();
+
+            if ((minPer1 < maxPer1) && (maxPer1 == minPer2) && (minPer2 < maxPer2) && (maxPer2 == minPer3) && (minPer3 < maxPer3)) {
+                var formulaire = $('#formDetails2').serialize();
+                var idRP = $(this).data('idrp');
+                $.post('inc/reunionParents/savePage2.inc.php', {
+                    formulaire: formulaire,
+                    idRP: idRP,
+                }, function(resultatJSON){
+                    var resultat = JSON.parse(resultatJSON);
+                    var nb = resultat['nb'];
+                    var heures = resultat['heures'];
+                    bootbox.alert({
+                        title: 'Enregistrement',
+                        message: nb + ' paramètre(s) et ' + heures + ' heure(s) enregistré(s)'
+                    });
+                    $('fieldset').removeClass('erreur');
+                })
+            }
+            else bootbox.alert({
+                title: 'Heures dans la liste d\'attente',
+                message: 'Les heures semblent mal ajustées'
+            })
+
+        })
+
+        $('body').on('click', '#btn-page3', function(){
             var formulaire = $('#formDetails3').serialize();
             var idRP = $(this).data('idrp');
             $.post('inc/reunionParents/savePage3.inc.php', {
@@ -236,42 +252,22 @@
             }
         })
 
+        // -------------------------------------------------
         $("#page0").on('click', '#attribHeures', function() {
             var checked = $(this).is(':checked');
             $(".cbHeure").prop("checked", checked);
         })
-
         $("#page0").on('click', '#attribProfs', function() {
             var checked = $(this).is(':checked');
             $(".cbProf").prop("checked", checked);
         })
-
         $("#page0").on('click', '#attribDir', function() {
             var checked = $(this).is(':checked');
             $(".dir").prop("checked", checked);
         })
+        // -------------------------------------------------
 
-        $("#delete").click(function() {
-            var date = $("#dateOld").val();
-            $("#dateModal").val(date);
-            $("#delDate").html(date);
-            $("#modalDel").modal('show');
-        })
-
-        $(".btnEdit").click(function() {
-            var acronyme = $(this).data('acronyme');
-            var date = $("#date").val();
-            $.post('inc/listeRvAdmin.inc.php', {
-                    acronyme: acronyme,
-                    date: date
-                },
-                function(resultat) {
-                    $("#listeRV").html(resultat);
-                }
-            )
-        })
-
-    $(document).on('click', '.dir', function() {
+    $('body').on('click', '.dir', function() {
         var acronyme = $(this).val();
         $("#prof_" + acronyme).prop('checked', true);
     })
@@ -284,11 +280,12 @@
         $("#maxPer2").val($(this).val());
     })
 
-    $("#btn-DelRp").click(function(){
+    $('body').on('click', '#btn-delRP', function(){
         var idRP = $(this).data('idrp');
         $.post('inc/reunionParents/modalDelRP.inc.php', {
             idRP: idRP
         }, function(resultat){
+            console.log(resultat);
             $('#modal').html(resultat);
             $('#modalDel').modal('show');
         })

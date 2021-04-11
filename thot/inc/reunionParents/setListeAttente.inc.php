@@ -19,15 +19,15 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$acronyme = isset($_POST['acronyme'])?$_POST['acronyme']:Null;
-$idRP = isset($_POST['idRP'])?$_POST['idRP']:Null;
-$periode = isset($_POST['periode'])?$_POST['periode']:Null;
-$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
+$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
+$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
 $Thot = new Thot();
 
 // introduire dans la liste d'attente complète
-$resultat = $Thot->setListeAttenteProf($matricule, $acronyme, $idRP, $periode);
+$nb = $Thot->setListeAttenteProf($matricule, $abreviation, $idRP, $periode);
 
-return $resultat;
+echo $nb;

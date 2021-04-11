@@ -14,7 +14,6 @@ if (!(isset($_SESSION[APPLICATION]))) {
     exit;
 }
 
-
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
@@ -31,11 +30,9 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new Thot();
 
-$retour = $Thot->saveRPinit2($form);
+$nb = $Thot->saveRPinit2data($idRP, $form);
+$message = sprintf('%d informations enregistrées', $nb);
 
-echo $retour;
-//
-// require_once INSTALL_DIR.'/smarty/Smarty.class.php';
-// $smarty = new Smarty();
-// $smarty->template_dir = '../../templates';
-// $smarty->compile_dir = '../../templates_c';
+$heures = $Thot->saveRPinit2heures($idRP, $form);
+
+echo json_encode(array('nb' => $nb, 'heures'=> $heures));

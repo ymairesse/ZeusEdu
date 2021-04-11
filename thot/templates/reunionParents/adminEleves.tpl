@@ -1,46 +1,54 @@
+{* adminEleves.tpl *}
+
 <div class="container-fluid">
 
     <div class="row">
 
-        <div class="col-md-2 col-sm-4">
+        <div class="col-md-3 col-sm-4">
 
-            <div class="panel-group" id="listeClasses">
-                {foreach from=$listeClasses key=niveau item=lesClasses}
-                <div class="panel panel-default">
-
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#listeClasses" href="#niv{$niveau}">
-                            Niveau {$niveau}
-                            </a>
-                        </h4>
-                    </div>
-
-                    <div id="niv{$niveau}" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <ul class="list-unstyled">
-                                {foreach from=$lesClasses item=classe}
-                                <li>
-                                    <button type="button" class="btn btn-default btn-xs btn-block uneClasse" data-classe="{$classe}">{$classe}</button>
-                                </li>
-                                {/foreach}
-                            </ul>
-                        </div>
-                    </div>
-
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Sélection de la classe
                 </div>
-                {/foreach}
+                <div class="panel-body">
+                    <div class="form-group">
+                        <select class="form-control" name="niveau" id="niveau">
+                            <option value="">Niveau d'étude</option>
+                            {foreach from=$listeNiveaux item=leNiveau}
+                                <option value="{$leNiveau}" {if isset($niveau) && ($leNiveau == $niveau)}selected{/if}>{$leNiveau}e année</option>
+                            {/foreach}
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="lesClasses">
+                        {* liste des classes *}
+                    </div>
+                </div>
+
             </div>
+
+
 
         </div>
         <!-- col-md-... -->
 
         <div class="col-md-3 col-sm-8">
 
-            <div id="listeEleves" style="height:40em; overflow:auto">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Sélection de l'élève <button class="btn btn-success btn-sm pull-right"
+                        style="margin: -10px"
+                        type="button"
+                        id="cleaner"
+                        title="Nettoyer les infobulles">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
 
-                <div class="alert alert-info">
-                    Sélectionnez une classe dans la colonne de gauche
+                <div id="listeEleves" style="height:30em; overflow:auto">
+
+                        <p class="avertissement">Sélectionnez une classe dans la colonne de gauche</p>
+
                 </div>
 
             </div>
@@ -48,18 +56,27 @@
         </div>
         <!-- col-md-... -->
 
-        <div class="col-md-7 col-sm-12">
+        <div class="col-md-6 col-sm-12">
 
-            <div id="listeProfs">
+            <div class="panel panel-warning">
 
-            </div>
+                <div class="panel-heading">
+                    Sélection du professeur
+                </div>
+                <div class="panel-body" style="font-size:8pt">
+                    <div id="listeProfs">
+                        <!-- selectProfsCible.tpl -->
+                    </div>
 
-            <!-- liste des RV et liste d'attente -->
-            <div id="listeRV" style="max-height:40em; overflow: auto">
+                    <div id="listeRV" style="max-height:25em; overflow: auto">
+                        <!-- tableRVAdmin.tpl -->
+                    </div>
 
-            </div>
+                    <div id="listeAttenteProf">
+                        <!-- listeAttenteAdmin.tpl -->
+                    </div>
 
-            <div id="listeAttenteProf">
+                </div>
 
             </div>
 
@@ -69,35 +86,42 @@
     </div>
     <!-- row -->
 
-    {include file="reunionParents/modal/modalDelRV.tpl"}
-    {include file="reunionParents/modal/modalMaxRV.tpl"}
-    {include file="reunionParents/modal/modalDoublonRV.tpl"}
-    {include file="reunionParents/modal/modalAttente.tpl"}
-    {include file="reunionParents/modal/modalHeureRvPlz.tpl"}
-
 </div>
 <!-- container -->
 
+<div id="modal"></div>
 
 <script type="text/javascript">
+
     $(document).ready(function() {
 
-        // sélection d'une classe
-        $(".uneClasse").click(function() {
+        $('#niveau').change(function(){
+            var niveau = $(this).val();
+            $.post('inc/selecteurs/selectClasses4niveau.inc.php', {
+                niveau: niveau
+            }, function(resultat){
+                $('#lesClasses').html(resultat);
+            })
+        })
+
+        $('#lesClasses').on('change', '#classe', function(){
+            var classe = $(this).val();
             $(".popover").popover('hide');
-            var classe = $(this).data('classe');
             var idRP = $("#idRP").val();
-            $(".uneClasse").removeClass('btn-primary');
-            $(this).addClass('btn-primary');
             $.post('inc/reunionParents/listeElevesDeployee.inc.php', {
                     classe: classe,
                     idRP: idRP
                 },
                 function(resultat) {
                     $('#listeEleves').html(resultat);
-                    $("#listeProfs").html('');
-                    $("#listeRV").html('');
-                    $("#listeAttenteProf").html('');
+                    $.post('inc/reunionParents/listeProfsClasse.inc.php', {
+                        classe: classe
+                    }, function(resultat){
+                        $('#listeProfs').html(resultat);
+                        // en attente de la sélection du prof
+                        $("#listeRV").html('');
+                        $("#listeAttenteProf").html('');
+                    })
                 })
         })
 
@@ -105,19 +129,19 @@
         $(document).on('click', '.btn-eleve', function() {
             var matricule = $(this).data('matricule');
             var idRP = $('#idRP').val();
-            $(".btn-eleve").removeClass('btn-primary');
-            $(this).addClass('btn-primary');
-            $.post('inc/reunionParents/listeProfsRPcible.inc.php', {
-                    idRP: idRP
-                },
-                function(resultat) {
-                    $("#listeProfs").html(resultat);
-                    var nb = $("#selectProf option").length;
-                    $("#selectProf").attr('size', nb);
-                    $("#listeRV").html('');
-                    $("#listeAttenteProf").html('');
-                }
-            )
+            $(".btn-eleve").removeClass('btn-success');
+            $(this).addClass('btn-success');
+            if ($('#selectProf').length == 0) {
+                $.post('inc/reunionParents/listeProfsRPcible.inc.php', {
+                        idRP: idRP
+                    },
+                    function(resultat) {
+                        $("#listeProfs").html(resultat);
+                        $("#listeRV").html('');
+                        $("#listeAttenteProf").html('');
+                    }
+                )
+            }
         })
 
         // sélection d'un prof
@@ -134,6 +158,7 @@
                     nomProf: nomProf
                 },
                 function(resultat) {
+                    // tableRVAdmin.tpl
                     $("#listeRV").html(resultat);
                 });
             $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
@@ -141,6 +166,7 @@
                     acronyme: acronyme
                 },
                 function(resultat) {
+                    // listeAttenteAdmin.tpl
                     $("#listeAttenteProf").html(resultat);
                 })
         })
@@ -148,7 +174,7 @@
         // attribution d'un RV à un élève
         $("#listeRV").on('click', '.lien', function() {
             var idRV = $(this).data('idrv');
-            var matricule = $('.btn-eleve.btn-primary').data('matricule');
+            var matricule = $('.btn-eleve.btn-success').data('matricule');
             var acronyme = $('#selectProf').val();
             var idRP = $("#idRP").val();
 
@@ -182,13 +208,22 @@
 
                                 break;
                             case '0':
-                                alert("L'enregistrement s'est mal passé...")
+                                bootbox.alert({
+                                    title: title,
+                                    message: "L'enregistrement s'est mal passé..."
+                                })
                                 break;
                             case '-1':
-                                $("#modalMaxRV").modal('show');
+                                bootbox.alert({
+                                    title: title,
+                                    message: "Le nombre maximal de RV pour cet élève a été atteint"
+                                })
                                 break;
                             case '-2':
-                                $("#modalDoublonRV").modal('show');
+                                bootbox.alert({
+                                    title: title,
+                                    message: "Il y a déjà un rendez-vous pour cet·te élève à cette heure-là"
+                                })
                                 break;
                         }
                     }
@@ -239,7 +274,7 @@
         })
 
         // attribution d'un RV à un élève qui se trouve en liste d'attente
-        $(document).on('click','.unlinkAttente', function() {
+        $('body').on('click','.unlinkAttente', function() {
             var matricule = $(this).data('matricule');
             var acronyme = $(this).data('acronyme');
             var periode = $(this).data('periode');
@@ -250,6 +285,8 @@
             var typeGestion = $("#typeGestion").val();
 
             if (idRV > 0) {
+                var title = 'Attribution d\'un RV';
+
                 $.post('inc/reunionParents/inscriptionEleve.inc.php', {
                     matricule: matricule,
                     idRP: idRP,
@@ -262,11 +299,17 @@
                         switch (resultat) {
                             case '-1':
                                 // le nombre max de RV est atteint
-                                $('#modalMaxRV').modal('show');
+                                bootbox.alert({
+                                    title: title,
+                                    message: "Cet(te) élève a déjà le nombre maximum de rendez-vous"
+                                })
                                 break;
                             case '-2':
                                 // il y a déjà un RV à cette heure-là
-                                $('#modalDoublonRV').modal('show');
+                                bootbox.alert({
+                                    title: title,
+                                    message: "Il y a déjà un rendez-vous pour cet-te élève à cette heure-là."
+                                })
                                 break;
                             default:
                                 // si le mode est "adminEleves", il faut mettre à jour le "badge" et le "popover" des RV de l'élève
@@ -278,7 +321,7 @@
                                     // Mise à jour du popover de la liste de RV
                                     $.post('inc/reunionParents/ulRvEleves.inc.php', {
                                             matricule: matricule,
-                                            date: date
+                                            idRP: idRP
                                         },
                                         function(resultat) {
                                             var btnEleve = $('#listeEleves').find('[data-matricule=' + matricule + ']');
@@ -289,31 +332,27 @@
                                 // reconstruire la liste des RV mise à jour pour le prof désigné
                                 $.post('inc/reunionParents/listeRvAdmin.inc.php', {
                                             acronyme: acronyme,
-                                            date: date
+                                            idRP: idRP
                                         },
                                         function(resultat) {
                                             $('#listeRV').html(resultat);
+                                            // SUPPRIMER LA LIGNE CORRESPONDANTE qui a été traitée
+                                            $('#tbl-attente tr[data-matricule="'+matricule+'"][data-periode="'+periode+'"]').remove();
                                         }
                                     )
-                                // reconstruire la liste d'attente
-                                $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                                    date: date,
-                                    acronyme: acronyme,
-                                    matricule: matricule,
-                                    periode: periode
-                                }, function(resultat) {
-                                    $('#listeAttenteProf').html(resultat);
-                                });
                                 break;
                             }
                         });
             }
-            else $("#modalHeureRvPlz").modal('show');
+            else bootbox.alert({
+                    title: title,
+                    message: 'Veuillez choisir une heure de rendez-vous dans la liste des disponibilités'
+                })
 
         })
 
     // effacement de la liste d'attente
-    $(document).on('click','.delAttente', function() {
+    $('body').on('click','.delAttente', function() {
         var matricule = $(this).data('matricule');
         var idRP = $('#idRP').val();
         var acronyme = $(this).data('acronyme');
@@ -326,19 +365,71 @@
             periode: periode
             },
         function (resultat){
-            $("#listeAttenteProf").html(resultat);
+            // SUPPRIMER LA LIGNE CORRESPONDANTE qui a été traitée
+            $('#tbl-attente tr[data-matricule="'+matricule+'"][data-periode="'+periode+'"]').remove();
+            //$("#listeAttenteProf").html(resultat);
         })
     })
 
-    $(document).on('click', '.popover .close', function() {
+    $('body').on('click', '.popover .close', function() {
         $(this).closest('.popover').popover('hide');
     });
 
-    $(document).on('click','#listeAttente', function(){
-        var matricule = $('.btn-eleve.btn-primary').data('matricule');
-        var date = $('#date').val();
-        $('#attenteMatricule').val(matricule);
-        $('#modalAttente').modal('show');
+    $('body').on('click','#listeAttente', function(){
+        var matricule = $('.btn-eleve.btn-success').data('matricule');
+        var idRP = $(this).data('idrp');
+        var acronyme = $('#selectProf').val();
+        $.post('inc/reunionParents/getModalListeAttente.inc.php', {
+            matricule: matricule,
+            acronyme: acronyme,
+            idRP: idRP
+        }, function(resultat){
+            $('#modal').html(resultat);
+            $('#modalAttente').modal('show');
+            })
+        })
+
+    $('#modal').on('click', '.periode', function(){
+        var periode = $(this).data('periode');
+        var matricule = $("#attenteMatricule").val();
+        var acronyme = $("#attenteAcronyme").val();
+        var idRP = $("#idRP").val();
+
+        // introduire en liste d'attente
+        $.post('inc/reunionParents/setListeAttente.inc.php', {
+            idRP: idRP,
+            acronyme: acronyme,
+            matricule: matricule,
+            periode: periode
+        }, function(nbSave) {
+            if (nbSave == 0) {
+                bootbox.alert({
+                    title: 'Problème',
+                    message: 'L\'enregistrement a échoué: cet·te élève est déjà en liste d\'attente pour la période ' + periode
+                    })
+                }
+            else {
+                // recomposer la liste des RV du prof "acronyme"
+                $.post('inc/reunionParents/listeRvAdmin.inc.php', {
+                    acronyme: acronyme,
+                    idRP: idRP
+                    },
+                    function(resultat){
+                        $("#listeRV").html(resultat);
+                        // retrouver les éléments de la liste d'attente
+                        $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
+                            idRP: idRP,
+                            acronyme: acronyme,
+                            matricule: matricule,
+                            periode: periode
+                        }, function(resultat) {
+                            $("#listeAttenteProf").html(resultat);
+                        });
+                        $("#modalAttente").modal('hide');
+                    })
+                }
+            });
+
         })
 
     })

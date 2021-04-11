@@ -19,15 +19,27 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 $abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
-$periode = isset($_POST['periode']) ? $_POST['periode'] : Null;
 $droit = isset($_POST['droit']) ? $_POST['droit'] : Null;
+
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
 $thot = new Thot();
 
-$nb = $thot->delListeAttenteProf($matricule, $abreviation, $idRP, $periode);
+// récupérer la liste d'attente complète
+$listeAttente = $thot->getListeAttenteProf($idRP, $abreviation);
 
-echo $nb;
+require_once(INSTALL_DIR."/smarty/Smarty.class.php");
+$smarty = new Smarty();
+$smarty->template_dir = "../../templates";
+$smarty->compile_dir = "../../templates_c";
+
+$smarty->assign('listeAttente', $listeAttente);
+$smarty->assign('acronyme', $abreviation);
+$smarty->assign('idRP', $idRP);
+$smarty->assign('droit', $droit);
+
+if ($droit == true)
+    $smarty->display('reunionParents/listeAttenteProfDroit.tpl');
+    else $smarty->display('reunionParents/listeAttenteProf.tpl');

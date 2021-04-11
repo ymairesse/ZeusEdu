@@ -1805,7 +1805,7 @@ CREATE TABLE `didac_thotRpAttente` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Liste d''attente pour les réunions de parents';
 
 ALTER TABLE `didac_thotRpAttente`
-  ADD PRIMARY KEY (`idRP`,`matricule`);
+  ADD PRIMARY KEY (`idRP`,`matricule`,`periode`);
 
 
 CREATE TABLE `didac_thotRpHeures` (
