@@ -3,8 +3,8 @@
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" role="form" class="form-inline">
 		{if $userStatus == 'admin'}
 			<select class="form-control" name="typeGestion" id="typeGestion">
-				<option value="eleve" {if ($typeGestion == 'eleve')}selected{/if}>Par élève</option>
-				<option value="prof"  {if ($typeGestion == 'prof')}selected{/if}>Par enseignant</option>
+				<option value="eleve" {if (isset($typeGestion)) && ($typeGestion == 'eleve')}selected{/if}>Par élève</option>
+				<option value="prof"  {if (isset($typeGestion)) && ($typeGestion == 'prof')}selected{/if}>Par enseignant</option>
 			</select>
 		{/if}
 

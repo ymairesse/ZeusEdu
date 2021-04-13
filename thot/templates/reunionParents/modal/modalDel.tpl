@@ -1,10 +1,9 @@
 <div id="modalDel" class="modal fade" role="dialog">
   <div class="modal-dialog">
-
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3 class="modal-title">Suppression d'une réunion de parents</h3>
+        <h4 class="modal-title">Suppression d'une réunion de parents</h4>
       </div>
       <div class="modal-body">
         <h4>Date de la réunion: <span id="delDate">{$infoRP.date}</span></h4>

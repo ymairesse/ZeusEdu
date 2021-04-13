@@ -32,13 +32,14 @@
 				<a class="dropdown-toogle" data-toggle="dropdown" href="javascript:void(0)">J. de classe
 				<b class="caret"></b></a>
 				<ul class="dropdown-menu">
-					{if $listeCours != Null}
+					{if ($listeCours != Null) || ($userStatus == 'educ') || ($userStatus == 'direction')}
 					<li><a href="index.php?action=jdc&amp;mode=coursGrp"><i class="fa fa-mortar-board"></i> Journal de classe par cours</a></li>
 					{/if}
 					{if ($userStatus == 'educ') || ($userStatus == 'direction') || ($userStatus == 'admin')}
 					<li><a href="index.php?action=jdc&amp;mode=jdcAny"><i class="fa fa-globe"></i> Notes au Journal de classe (éducs/direction)</a></li>
 					{/if}
 					<li><a href="index.php?action=jdc&amp;mode=subjectif"><i class="fa fa-eye"></i> Vue subjective par élève</a></li>
+					<li><a href="index.php?action=jdc&amp;mode=quiestla"><i class="fa fa-bullseye"></i> Qui est en ligne?</a></li>
 
 					<li role="separator" class="divider"></li>
 
@@ -60,11 +61,11 @@
 				<ul class="dropdown-menu">
 					<li>
 						<a href="index.php?action=gestion&amp;mode=parents">Liste des parents de {','|implode:$titulaire}</a>
+						<a href="index.php?action=gestion&amp;mode=freqThot">Fréquentation de Thot en {','|implode:$titulaire}</a>
 					</li>
 				</ul>
 			</li>
 			{/if}
-
 
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Gestion <b class="caret"></b></a>
 				<ul class="dropdown-menu">
@@ -107,12 +108,16 @@
 				</ul>
 			</li>
 
-			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Bibliothèque <b class="caret"></b></a>
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Matériel/locaux <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					{if $userStatus == 'educ'}
 					<li><a href="index.php?action=bib">Gestion bibliothèque</a></li>
 					{/if}
-					<li><a href="index.php?action=bib&amp;mode=emprunt">Emprunt de livre</a></li>
+					<li><a href="index.php?action=bib&amp;mode=emprunt">Bibliothèque</a></li>
+					<li><a href="index.php?action=ressources&amp;mode=emprunt">Réservation matériel/local</a></li>
+					{if $userStatus == 'admin'}
+						<li><a href="index.php?action=ressources&amp;mode=admin">Gestion matériel/local</a></li>
+					{/if}
 				</ul>
 			</li>
 

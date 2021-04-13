@@ -42,6 +42,9 @@ foreach ($liste as $idRV => $data) {
 $texte = file_get_contents("../../templates/reunionParents/mail/texteAnnulation.tpl");
 // remplacement du textarea par la mention de la $raison de la suppression du RV
 $texte = preg_replace('#<textarea[^>]*>.*?</textarea>#si', '{$raison}', $texte);
+// ajout du disclaimer
+$disclaimer = "<div style='font-size:small'><a href='".DISCLAIMER."'>Clause de non responsabilité</a></div>";
+$texte .= "<hr> $disclaimer";
 
 $objet = 'Annulation de rendez-vous '.ECOLE;
 
@@ -66,6 +69,7 @@ foreach ($listeRV as $idRV => $infoRV) {
     $texteMail = str_replace('{$infoRV.date}', $info['date'], $texteMail);
     $texteMail = str_replace('{$infoRV.heure}', $info['heure'], $texteMail);
     $texteMail = str_replace('{$raison}', $raison, $texteMail);
+    $texteMail = str_replace('{$signature}', $nomProf, $texteMail);
 
     $mail->AddAddress($mailParent, $nomParent);
 

@@ -27,8 +27,6 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-// Application::afficher(array($form, $type), true);
-
 // le "type" est soit le groupe (envoi à tout le groupe),
 // soit "eleves" pour l'envoi au détail
 // le "type" passé en paramètre hors formulaire est toujours correctement ciblé
@@ -96,28 +94,23 @@ switch ($form['leType']) {  // ici, il faut prendre le type "global" corrigé po
     }
 
 // ------------------------------------------------------------------------------
-// ok pour la notification en BD, passons éventuellement à l'envoi de mail aux élèves
+// ok pour la notification en BD, passons éventuellement à l'envoi de mails
 // si c'est une édition, le champ 'mail' est désactivé => !(isset)
 // ------------------------------------------------------------------------------
+if (isset($form['mail']) || isset($form['parent'])) {
+    $listeMailingEleves = isset($form['mail']) ? $Thot->getElevesMailing($listeEleves) : Null;
+    $listeMailingParents = isset($form['parent']) ? $Thot->getParentsMailing($listeEleves) : Null;
 
-// identification de l'expéditeur
-$identite = $User->identiteProf($acronyme);
-$formule = ($identite['sexe'] == 'M') ? 'Monsieur' : 'Madame';
-$initiale = mb_substr($identite['prenom'], 0, 1);
-$nomProf = sprintf('%s %s. %s', $formule, $initiale, $identite['nom']);
+    // identification de l'expéditeur
+    $identite = $User->identiteProf($acronyme);
+    $formule = ($identite['sexe'] == 'M') ? 'Monsieur' : 'Madame';
+    $initiale = mb_substr($identite['prenom'], 0, 1);
+    $nomProf = sprintf('%s %s. %s', $formule, $initiale, $identite['nom']);
 
-if (isset($form['mail']) && $form['mail'] == 1) {
     require_once INSTALL_DIR."/smarty/Smarty.class.php";
     $smarty = new Smarty();
     $smarty->template_dir = "../../templates";
     $smarty->compile_dir = "../../templates_c";
-
-    $listeMailing = $Ecole->detailsDeListeEleves($listeEleves);
-
-    // la "key" de la liste $listeMailing contient les matricules
-    if ($form['parent'] == 1){
-        $listeMailing = $Thot->addParentMailing($listeMailing);
-    }
 
     $smarty->assign('THOTELEVE', THOTELEVE);
     $smarty->assign('ECOLE', ECOLE);
@@ -128,9 +121,16 @@ if (isset($form['mail']) && $form['mail'] == 1) {
     $objetMail = $smarty->fetch('notification/objetMail.tpl');
     $texteMail = $smarty->fetch('notification/texteMail.tpl');
     $signatureMail = $smarty->fetch('notification/signatureMail.tpl');
-    // la fonction $Thot->mailer() revient avec la liste des matricules des élèves auxquels un mail a été envoyé
-    $listeEnvois = $Thot->mailer($listeMailing, $objetMail, $texteMail, $signatureMail);
-    $texte[] = sprintf('%d mail(s) envoyé(s)', count($listeEnvois));
+
+    // la fonction $Thot->mailer() revient avec la liste des matricules des élèves/parents auxquels un mail a été envoyé
+    if ($listeMailingEleves != Null) {
+        $listeEnvoisEleves = $Thot->mailer($listeMailingEleves, $objetMail, $texteMail, $signatureMail);
+        $texte[] = sprintf('%d mail(s) envoyé(s) aux élèves', count($listeEnvoisEleves));
+        }
+    if ($listeMailingParents != Null) {
+        $listeEnvoisParents = $Thot->mailer($listeMailingParents, $objetMail, $texteMail, $signatureMail);
+        $texte[] = sprintf('%d mail(s) envoyé(s) aux parents', count($listeEnvoisParents));
+    }
 }
 
 // ------------------------------------------------------------------------------

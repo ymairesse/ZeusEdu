@@ -22,6 +22,7 @@
                     title="{$unTravail.titre}"
                     style="overflow: hidden; text-overflow: ellipsis"
                     data-idtravail="{$id}">
+                    <span style="display: block; overflow:hidden; text-overflow: ellipsis;">
                     {if $unTravail.statut == 'termine'}<i class="fa fa-star text-danger"></i>
                         {elseif $unTravail.statut == 'readwrite'}<i class="fa fa-star text-success"></i>
                         {elseif $unTravail.statut == 'readonly'}<i class="fa fa-star-half-empty text-warning"></i>
@@ -29,6 +30,7 @@
                     {/if}
 
                     {$unTravail.dateDebut|truncate:5:''} - {$unTravail.titre}
+                    </span>
                 </button>
 
                 <span class="input-group-addon success btnEdit" style="cursor:pointer">

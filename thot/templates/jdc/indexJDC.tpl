@@ -302,6 +302,7 @@
 				}
 			}],
 			eventRender: function(event, element, view) {
+								console.log(element);
 				element.html(event.coursGrp + ' - ' + event.startTime + '<br> <span style="color:#bb9966">' + event.libelle + '</span>');
 			},
 			eventClick: function(event, jsEvent, view) {

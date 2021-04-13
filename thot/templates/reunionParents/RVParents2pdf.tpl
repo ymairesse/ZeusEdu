@@ -1,12 +1,13 @@
 {foreach from=$listeEleves key=matricule item=dataEleve}
-<page backtop="20mm" backbottom="20mm" backleft="10mm" backright="10mm">
-    <page_header>
 
-    </page_header>
+    <page backtop="20mm" backbottom="20mm" backleft="10mm" backright="10mm">
+        <page_header>
 
-<p><img src="../../../images/logoEcole.png" alt="Logo École" style="float:right; width: 100px">{$entete} </p>
+        </page_header>
 
-<h1>Réunion de parents du {$date}</h1>
+    <p><img src="{$BASEDIR}/images/logoEcole.png" alt="Logo École" style="float:right; width: 100px">{$entete} </p>
+
+    <h1>Réunion de parents du {$date}</h1>
 
     <h2>{$dataEleve.prenom} {$dataEleve.nom} [{$dataEleve.groupe}]</h2>
 
@@ -27,9 +28,9 @@
             <tr>
                 <td style="width:20%">{$dataRV.heure}</td>
                 <td style="width:40%">{if ($dataRV.sexe == 'F')}Mme{else}M.{/if} {$dataRV.prenomProf} {$dataRV.nomProf}</td>
-                {assign var=acronyme value=$dataRV.acronyme}
-                {assign var=local value=$listeLocaux.$acronyme.local}
-                <td style="width:20%">{$local|default:'À définir'}</td>
+
+                {assign var=local value= $dataRV.local}
+                <td style="width:20%">{$dataRV.local|default:'À définir'}</td>
             </tr>
             {/foreach}
         </tbody>

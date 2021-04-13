@@ -84,6 +84,9 @@ switch ($action) {
 	case 'forum':
 		require_once 'inc/forum/gestForums.php';
 		break;
+    case 'ressources':
+        require_once 'inc/ressources/ressources.php';
+        break;
     default:
         require_once 'inc/news.php';
         break;

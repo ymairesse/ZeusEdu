@@ -14,6 +14,9 @@
 <link rel="stylesheet" href="js/fbLike/stylesheet.css" media="screen">
 <link rel="stylesheet" href="css/filetree.css" type="text/css">
 
+<script src="../js/daterangepicker/daterangepicker.js"></script>
+<link rel="stylesheet" href="../js/daterangepicker/daterangepicker.css">
+
 <style type="text/css">
 
 

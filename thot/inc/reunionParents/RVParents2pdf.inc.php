@@ -17,6 +17,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
+
 $module = $Application->getModule(3);
 
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
@@ -24,7 +25,7 @@ $mode = isset($_POST['mode']) ? $_POST['mode'] : Null;
 $niveau = isset($_POST['niveau']) ? $_POST['niveau'] : Null;
 
 require_once(INSTALL_DIR."/inc/classes/classThot.inc.php");
-$thot = new Thot();
+$Thot = new Thot();
 
 $ds = DIRECTORY_SEPARATOR;
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
@@ -32,15 +33,16 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
-$listeRV = $thot->listeRVParents($idRP, $mode, $niveau);
-$listeAttente = $thot->listeAttenteParents($idRP, $mode, $niveau);
-$listeLocaux = $thot->getLocauxRp($idRP);
-$infoRP = $thot->getInfoRp($idRP);
+$listeRV = $Thot->listeRVParents($idRP, $mode, $niveau);
+
+$listeAttente = $Thot->listeAttenteParents($idRP, $mode, $niveau);
+$listeLocaux = $Thot->getLocauxRp($idRP);
+$infoRP = $Thot->getInfoRp($idRP);
 $date = $infoRP['date'];
 
 // établir une liste complete de tous les élèves qui figurent dans l'une ou dans l'autre liste
 $fullListe = array_unique(array_merge(array_keys($listeRV), array_keys($listeAttente)));
-$listeEleves = $thot->listeElevesMatricules($fullListe);
+$listeEleves = $Thot->listeElevesMatricules($fullListe);
 
 $smarty->assign('idRP', $idRP);
 $smarty->assign('date', $date);
@@ -50,10 +52,12 @@ $smarty->assign('listeLocaux', $listeLocaux);
 $smarty->assign('listeAttente', $listeAttente);
 $smarty->assign('fullListe', $fullListe);
 $smarty->assign('listeEleves', $listeEleves);
-$smarty->assign('listeProfsEleves', $thot->listeCoursListeEleves($listeEleves));
+$smarty->assign('listeProfsEleves', $Thot->listeCoursListeEleves($listeEleves));
 
-$smarty->assign('listePeriodes', $thot->getListePeriodes($idRP));
+$smarty->assign('listePeriodes', $Thot->getListePeriodes($idRP));
 $smarty->assign('entete', sprintf('%s <br> %s <br> %s <br>',ECOLE, ADRESSE, VILLE));
+
+$smarty->assign('BASEDIR', BASEDIR);
 
 $rv4PDF =  $smarty->fetch('reunionParents/RVParents2pdf.tpl');
 

@@ -16,20 +16,20 @@ if (!(isset($_SESSION[APPLICATION]))) {
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
-
 $module = $Application->getModule(3);
 
-require_once INSTALL_DIR."/$module/inc/classes/classJdc.inc.php";
-$Jdc = new Jdc();
+$idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
 
-$id = isset($_POST['id']) ? $_POST['id'] : null;
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
+$Reservation = new Reservation();
 
-$liste = $Jdc->listeDislikes($id);
+$listeRessources = $Reservation->getRessourceByType($idType);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeDislikes', $liste);
-$smarty->display('jdc/listeDislikes.tpl');
+$smarty->assign('listeRessources', $listeRessources);
+$smarty->display('ressources/selectRessource.tpl');

@@ -49,6 +49,8 @@ if ($nb == 1) {
     $texte = str_replace('{$nomProf}', $nomProf, $texte);
     $texte = str_replace('{$infoRV.date}', $infoRV['date'], $texte);
     $texte = str_replace('{$infoRV.heure}', $infoRV['heure'], $texte);
+    $texte = str_replace('{$raison}', $raison, $texte);
+    $texte = str_replace('{$signature}', $nomProf, $texte);
 
     $mailExpediteur = $prof['mail'];
 

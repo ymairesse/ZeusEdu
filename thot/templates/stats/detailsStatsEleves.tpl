@@ -1,4 +1,4 @@
-<h2>Connexion des élèves à la plate-forme entre le {$dateDebut} et le {$dateFin}</h2>
+<h2>Connexion des élèves à la plateforme entre le {$dateDebut} et le {$dateFin}</h2>
 
 <div class="overflow35">
 
@@ -13,7 +13,7 @@
         </thead>
 
         <tbody>
-            
+
             {foreach from=$listeEleves key=matricule item=dataEleve name=boucle}
             <tr>
 				<td class="discret">{$smarty.foreach.boucle.iteration}</td>

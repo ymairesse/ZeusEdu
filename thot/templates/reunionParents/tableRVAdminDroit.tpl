@@ -1,3 +1,5 @@
+{* tableRVAdminDroit *}
+
 <div class="panel panel-success">
 
     <div class="panel-heading">
@@ -22,8 +24,8 @@
             </thead>
             <tbody>
                 {foreach from=$listeRV key=idRV item=data}
-                <tr class="{if $data.heure >= $listePeriodes[3].min}attente3
-                            {elseif $data.heure >= $listePeriodes[2].min}attente2
+                <tr class="{if $data.heure > $listePeriodes[3].min}attente3
+                            {elseif $data.heure > $listePeriodes[2].min}attente2
                             {else}attente1
                             {/if}
                             {if $data.dispo==0} indisponible{/if}"

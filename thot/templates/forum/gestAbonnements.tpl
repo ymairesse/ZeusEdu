@@ -2,7 +2,7 @@
 
     <div class="row">
         <div class="col-md-8 col-xs-12">
-            <h2>Liste des sujets auxquels vous êtes abonné·e</h2>
+            <h2>Liste des sujets auxquels tu es abonné·e</h2>
             {foreach from=$listeCategories key=idCategorie item=dataCategorie}
                 <h3>{$dataCategorie.libelle}</h3>
                 <table class="table table-condensed table-striped">
@@ -35,9 +35,9 @@
                     Information sur les abonnements
                 </div>
                 <div class="panel-body">
-                    <p>Pour vous désabonner d'un sujet, décochez la case de la ligne correspondante. Vous ne recevrez plus de mail d'information lors de l'ajout d'une contribution. Le désabonnement est immédiat.</p>
-                    <p>En cas d'erreur, recochez la case pour vous ré-abonner.</p>
-                    <p>Pour vous abonner à un sujet non présenté ici, postez une nouvelle contribution dans un forum ou modifiez une de vos contributions existantes et cochez la case d'abonnement dans le cadre de rédaction de votre contribution.</p>
+                    <p>Pour te désabonner d'un sujet, décoche la case de la ligne correspondante. Tu ne recevras plus de mail d'information lors de l'ajout d'une contribution. Le désabonnement est immédiat.</p>
+                    <p>En cas d'erreur, recoche la case pour te ré-abonner.</p>
+                    <p>Pour t'abonner à un sujet non présenté ici, poste une nouvelle contribution dans un forum ou modifie une de tes contributions existantes et coche la case d'abonnement dans le cadre de rédaction de ta contribution.</p>
                 </div>
             </div>
 

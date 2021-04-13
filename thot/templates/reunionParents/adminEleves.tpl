@@ -97,7 +97,7 @@
 
         $('#niveau').change(function(){
             var niveau = $(this).val();
-            $.post('inc/selecteurs/selectClasses4niveau.inc.php', {
+            $.post('inc/reunionParents/selectClasses4niveau.inc.php', {
                 niveau: niveau
             }, function(resultat){
                 $('#lesClasses').html(resultat);

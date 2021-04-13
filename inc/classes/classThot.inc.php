@@ -473,10 +473,10 @@ class thot
                     $sql .= 'WHERE acronyme = :acronyme AND idRP = :idRP ';
                     $sql .= 'ORDER BY heure ';
                     $requete = $connexion->prepare($sql);
-// echo $sql;
+
                     $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
                     $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-// Application::afficher(array($idRP, $acronyme), true);
+
                     $listeBrute = array();
                     $resultat = $requete->execute();
 
@@ -958,7 +958,7 @@ class thot
                     $sql .= 'tp.nom AS nomParent, tp.prenom AS prenomParent, tp.mail ';
                     $sql .= 'FROM '.PFX.'thotRpAttente AS at ';
                     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = at.matricule ';
-                    $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.matricule = at.matricule ';
+                    $sql .= 'LEFT JOIN '.PFX.'thotParents AS tp ON tp.userName = at.userName ';
                     $sql .= 'WHERE idRP = :idRP AND acronyme = :acronyme ';
                     $sql .= 'ORDER BY periode ';
                     $requete = $connexion->prepare($sql);
@@ -1069,7 +1069,7 @@ class thot
                     $sql .= 'JOIN didac_thotRp AS rp ON rp.idRP = rprv.idRP ';
                     $sql .= 'JOIN didac_eleves AS de ON de.matricule = rprv.matricule ';
                     $sql .= 'JOIN didac_profs AS dp ON dp.acronyme = rprv.acronyme ';
-                    $sql .= 'JOIN didac_thotParents AS tp ON tp.userName = rprv.userParent ';
+                    $sql .= 'LEFT JOIN didac_thotParents AS tp ON tp.userName = rprv.userParent ';
                     $sql .= 'LEFT JOIN didac_thotRpLocaux AS loc ON loc.idRP = rprv.idRP AND dp.acronyme = loc.acronyme ';
                     $sql .= 'WHERE rprv.idRP = :idRP AND SUBSTR(groupe, 1, 1) = :niveau ';
                     if ($mode == 'partiel') {

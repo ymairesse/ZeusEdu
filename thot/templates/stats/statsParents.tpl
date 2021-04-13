@@ -7,7 +7,6 @@
             <form id="formSelection" class="hidden-print">
 
                 <h2>Statistiques des connexions</h2>
-
                 <span id="ajaxLoader" class="hidden">
                     <img src="../images/ajax-loader.gif" alt="loading" class="img-responsive">
                 </span>

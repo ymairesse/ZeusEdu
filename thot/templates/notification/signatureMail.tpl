@@ -4,3 +4,4 @@
 <p style="font-size: 0.8em">Le contenu de ce courrier électronique, est protégé par la loi. Ainsi, si vous n'en êtes pas le destinataire, toute divulgation, reproduction ou usage sont strictement interdits. Si vous avez reçu ce message par erreur, veuillez en informer l’expéditeur et procéder à sa suppression.</p>
 <br>
 <p style="font-size: 0.8em">Ce mail a été généré par un système automatique qui n'a pas été conçu pour recevoir des réponses. Ne tentez pas de "répondre" à ce courriel.</p>
+<p style="font-size: 0.8em; font-weight: bold;">Les parents peuvent désactiver la réception de ces mails d'information dans leur profil sur la plateforme Thot.</p>

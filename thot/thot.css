@@ -215,15 +215,18 @@ form input:disabled {
 }
 
 .attente1 {
-    background-color: rgb(242, 193, 239)
+    background-color: rgb(242, 193, 239);
+    color: black;
 }
 
 .attente2 {
-    background-color: rgb(195, 230, 179)
+    background-color: rgb(195, 230, 179);
+    color: black;
 }
 
 .attente3 {
-    background-color: rgb(174, 218, 224)
+    background-color: rgb(174, 218, 224);
+    color: black;
 }
 
 .btn-eleve, .btn-prof {
@@ -393,6 +396,10 @@ h2.subjectif {
 
 .cours {
     background-color: #fcc !important;
+}
+
+tr.coursGrp {
+    background-color: #aaf !important;
 }
 
 .niveau {

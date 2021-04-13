@@ -43,6 +43,9 @@ $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $listeEleves = $Ecole->listeElevesClasse($classe);
 
+$smarty->assign('dateDebut', $dateDebut);
+$smarty->assign('dateFin', $dateFin);
+
 if ($cible == 'parents') {
     $stats = $Thot->getStatsParents($dateDebut, $dateFin, $classe);
     $smarty->assign('stats', $stats);
@@ -55,7 +58,5 @@ if ($cible == 'parents') {
 			$listeEleves[$matricule]['stats'] = $dataStats['nb'];
 			}
 		$smarty->assign('listeEleves', $listeEleves);
-        $smarty->assign('dateDebut', $dateDebut);
-        $smarty->assign('dateFin', $dateFin);
         $smarty->display('stats/detailsStatsEleves.tpl');
     }

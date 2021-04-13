@@ -110,10 +110,14 @@ class Jdc
      * renvoie la liste d'événements entres deux dates start et end pour un élève donné
      * y compris son tmatricule, son niveau d'étude, sa classe et sa liste de cours
      *
-     * @param int $from : date de début = timestamp Unix en millisecondes
-     * @param int $to   : date de fin = timestamp Unix en millisecondes
+     * @param int $start : date de début au format YYYY-MM-DD HH:MM:SS
+     * @param int $end   : date de fin au format YYYY-MM-DD HH:MM:SS
+     * @param int $niveau : niveau d'étude
+     * @param string $classe : classe de l'élève
+     * @param int $matricule : matricule de l'élève
+     * @param string $listeCoursString : liste des cours de l'élève
      *
-     * @return string liste json
+     * @return array
      */
     public function retreiveEvents4Eleve($start, $end, $niveau, $classe, $matricule, $listeCoursString)
     {
@@ -121,8 +125,9 @@ class Jdc
         $sql = 'SELECT id, destinataire, idCategorie, type, proprietaire, redacteur, title, enonce, class, allDay, startDate, endDate ';
         $sql .= 'FROM '.PFX.'thotJdc ';
         $sql .= 'WHERE startDate BETWEEN :start AND :end ';
-        $sql .= 'AND destinataire in ('.$listeCoursString.') OR destinataire = :classe ';
-        $sql .= 'OR destinataire = :matricule OR destinataire = "all" OR destinataire = :niveau ';
+        $sql .= 'AND destinataire in ('.$listeCoursString.') OR destinataire LIKE :classe ';
+        $sql .= 'OR destinataire LIKE :matricule OR destinataire LIKE "all" OR destinataire LIKE :niveau ';
+        $sql .= 'ORDER BY startDate ';
         $requete = $connexion->prepare($sql);
 
         $requete->bindParam(':classe', $classe, PDO::PARAM_STR, 6);
@@ -139,6 +144,9 @@ class Jdc
                 $liste[] = array(
                     'id' => $ligne['id'],
                     'title' => $ligne['title'],
+                    'categorie' => $ligne['idCategorie'],
+                    'type' => $ligne['type'],
+                    'destinataire' => $ligne['destinataire'],
                     'enonce' => mb_strimwidth(strip_tags(html_entity_decode($ligne['enonce'])), 0, 200,'...'),
                     'className' => 'cat_'.$ligne['idCategorie'],
                     'start' => $ligne['startDate'],
@@ -261,48 +269,6 @@ class Jdc
      *
      * @return string $destinataire
      */
-    // public function getActualTarget($type, $cible, $acronyme){
-    //     $destinataire = '';
-    //     switch ($type) {
-    //         case 'ecole':
-    //             $destinataire = 'Tous les élèves';
-    //             break;
-    //         case 'niveau':
-    //             $destinataire = sprintf('Élèves de %s année', $destinataire);
-    //             break;
-    //         case 'classe':
-    //             $destinataire = sprintf('Élèves de la classe %s', $destinataire);
-    //             break;
-    //         case 'coursGrp':
-    //             $sql = 'SELECT nomCours FROM '.PFX.'profsCours ';
-    //             $sql .= 'WHERE acronyme = :acronyme AND coursGrp = :destinataire ';
-    //             $requete = $connexion->prepare($sql);
-    //             $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
-    //             $requete->bindParam(':destinataire', $cible, PDO::PARAM_STR, 15);
-    //             $resultat = $requete->execute();
-    //             $nomCours = '';
-    //             if ($resultat) {
-    //                 $ligne = $requete->fetch();
-    //                 $nomCours = $ligne['nomCours'];
-    //             }
-    //             $destinataire = sprintf('%s [%s]', $nomCours, $cible);
-    //             break;
-    //         case 'eleve':
-    //             $sql = 'SELECT nom, prenom, groupe FROM '.PFX.'eleves ';
-    //             $sql .= 'WHERE matricule = :matricule ';
-    //             $requete = $connexion->prepare($sql);
-    //             $requete->bindParam(':matricule', $cible, PDO::PARAM_INT);
-    //             $resultat = $requete->execute();
-    //             $destinataire = '';
-    //             if ($resultat) {
-    //                 $ligne = $requete->fetch();
-    //                 $destinataire = sprintf('%s %s [%s]', $ligne['prenom'], $ligne['nom'], $ligne['groupe']);
-    //             }
-    //             break;
-    //     }
-    //
-    //     return $destinataire;
-    // }
 
     public function getRealDestinataire($connexion=Null, $acronyme, $type, $destinataire){
         if ($connexion == Null) {
@@ -792,7 +758,8 @@ class Jdc
     }
 
     /**
-     * retourne la liste de tous les coursGrp d'un élève dont on fournit le matricule
+     * retourne la liste de tous les coursGrp d'une liste d'élèves
+     * dont on fournit les matricules
      *
      * @param array|string $listeEleves liste des matricules des élèves
      *
@@ -811,7 +778,7 @@ class Jdc
          $sql .= "WHERE matricule IN ($listeElevesString) ";
          $requete = $connexion->prepare($sql);
 
-         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT); // ????
          $liste = array();
          $resultat = $requete->execute();
          if ($resultat) {
@@ -825,6 +792,41 @@ class Jdc
 
          return $liste;
      }
+
+     /**
+      * renvoie la liste des coursGrp suivis par chaque élève de la liste
+      * la fonction précédente renvoie seulement la liste des coursGrp
+      * sans les élèves associés
+      * @param array|string $listeEleves liste des matricules des élèves
+      *
+      * @return array
+      */
+      public function getListeCoursGrp4Eleves($listeEleves) {
+          if (is_array($listeEleves)) {
+              $listeElevesString = implode(',', array_keys($listeEleves));
+          } else {
+              $listeElevesString = $listeEleves;
+          }
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT matricule, coursGrp ';
+        $sql .= 'FROM '.PFX.'elevesCours ';
+        $sql .= 'WHERE matricule IN ('.$listeElevesString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $coursGrp = $ligne['coursGrp'];
+                $matricule = $ligne['matricule'];
+                $liste[$matricule][] = $coursGrp;
+            }
+        }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+        }
 
     /**
      * retrouve une notification dont on fournit l'identifiant.
@@ -2565,5 +2567,46 @@ class Jdc
 
          return $nomProf;
      }
+
+     /**
+      * recherche la liste des présences des élèves dont on fournit le $user
+      * pour la date $date entre les heurs $start et $end
+      *
+      * @param array $listeUsers
+      * @param string $date
+      * @param string $start : heure de début
+      * @param string $end : heure de fin
+      *
+      * @return array
+      */
+      public function getPresences($listeUsers, $date, $start, $end) {
+          $listeUsersString = "'".implode("','", $listeUsers)."'";
+          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+          $sql = 'SELECT user, heure FROM '.PFX.'thotLogins ';
+          $sql .= 'WHERE LOWER(user) IN ('.$listeUsersString.') ';
+          $sql .= 'AND date = :date AND heure BETWEEN :start and :end ';
+          $sql .= 'ORDER BY heure ';
+          $requete = $connexion->prepare($sql);
+
+          $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+          $requete->bindParam(':start', $start, PDO::PARAM_STR, 7);
+          $requete->bindParam(':end', $end, PDO::PARAM_STR, 7);
+
+          $listePresences = array();
+          $resultat = $requete->execute();
+          if ($resultat){
+              $requete->setFetchMode(PDO::FETCH_ASSOC);
+              while ($ligne = $requete->fetch()){
+                  $user = $ligne['user'];
+                  $heure = $ligne['heure'];
+                  if (!(isset($listePresences[$user])))
+                    $listePresences[$user] = $ligne['heure'];
+                }
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $listePresences;
+        }
 
 }

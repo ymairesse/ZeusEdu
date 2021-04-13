@@ -1,10 +1,10 @@
 <div class="row">
 
-    <div class="col-md-6 col-sm-12">
+    <div class="col-md-8 col-sm-12">
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Attribution des locaux {$infoRp.date}</h3>
+                    <h3 class="panel-title">Attribution des locaux {$infoRP.date|default:''}</h3>
                 </div>
 
                 <div class="panel-body">
@@ -47,9 +47,11 @@
                             <button class="btn btn-primary" type="button" id="btn-page3" data-idrp="{$idRP|default:''}">Enregistrer</button>
                         </div>
 
+                        <div class="clearfix"></div>
+
                     </form>
                 {else}
-                <div class="alert alert-info">
+                <div class="avertissement alert alert-info">
                     Définissez d'abord l'horaire et la liste des enseignants concernés à la page 1.
                 </div>
 
@@ -62,6 +64,20 @@
 
             </div>
             <!-- col-md-... -->
+
+        </div>
+
+        <div class="col-md-4 col-sm-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Informations
+                </div>
+                <div class="panel-body">
+                    <p>Attribuez un local à chaque enseignant.</p>
+                    <p>Le bouton figurant une flèche vers le bas permet de recopier le contenu d'une zone vers la zone suivante.</p>
+                </div>
+
+            </div>
 
         </div>
 

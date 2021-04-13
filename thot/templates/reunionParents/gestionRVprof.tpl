@@ -1,3 +1,6 @@
+{* Interface d'administration des réunions de parents *}
+{* pour les profs ordinaires *}
+
 <div class="container-fluid">
 
     <div class="row">

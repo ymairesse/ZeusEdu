@@ -6,6 +6,15 @@ $smarty->assign('date', $date);
 $showEdition = false;
 
 switch ($mode) {
+    case 'freqThot':
+        $listeClasses = $user->listeTitulariats();
+        $smarty->assign('listeClasses', $listeClasses);
+
+        $date = strftime('%d/%m/%Y');
+        $smarty->assign('date', $date);
+        $smarty->assign('corpsPage', 'stats/statsParents');
+        break;
+
     case 'bulletin':
         require_once 'inc/gestBulletins.inc.php';
         break;

@@ -13,7 +13,7 @@
 		<input type="hidden" name="etape" value="showClasse">
 		<input type="hidden" name="type" value="cours">
 	</form>
-xxx
+
 </div>
 
 <script type="text/javascript">

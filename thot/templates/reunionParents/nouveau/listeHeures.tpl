@@ -2,25 +2,22 @@
     <tr>
         <th>&nbsp;</th>
         <th>Heure</th>
-        <th>
+        <th style="text-align:center">
             Publié<br>
-            <input id="attribHeures" type="checkbox" title="" data-original-title="Attribuer tout" autocomplete="off"{if $readonly == 1} disabled{/if}>
+            <input id="attribHeures" type="checkbox" title="Attribuer tout">
         </th>
     </tr>
 
-    {assign var=n value=1}
-{foreach from=$listeHeuresRP item=uneHeure}
+{foreach from=$listeHeuresRP item=uneHeure name=boucle}
     <tr>
-        <td>{$n}</td>
+        <td>{$smarty.foreach.boucle.iteration}</td>
         <td>
-            <input id="stuk_{$n}" class="rv form-control" type="text" value="{$uneHeure}" name="heure_{$n}" required="required" time="time" size="3"{if $readonly == 1} disabled{/if}>
+            <input id="stuk_{$smarty.foreach.boucle.iteration}" class="rv form-control" type="text" value="{$uneHeure}" name="heure_{$smarty.foreach.boucle.iteration}" required="required" time="time" size="3">
         </td>
-        <td>
-            <input class="form-control cbHeure" type="checkbox" value="1" name="publie_{$n}"{if $readonly == 1} disabled{/if}>
+        <td style="text-align:center">
+            <input class="cbHeure" type="checkbox" value="1" name="publie_{$smarty.foreach.boucle.iteration}">
         </td>
     </tr>
-
-    {assign var=n value=$n+1}
 {/foreach}
 
 </table>

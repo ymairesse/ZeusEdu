@@ -9,26 +9,40 @@
             </div>
 
             <div class="modal-body">
+                <form id="form-confirmDel">
+                    <p>Voulez vous vraiment supprimer ce RV avec <strong>{$infoRV.formule} {$infoRV.prenomParent} {$infoRV.nomParent}</strong> <br>
+                    parent de <strong>{$infoRV.prenomEleve} {$infoRV.nomEleve} de {$infoRV.groupe}</strong>?</p>
+                    <p>Un mail depuis votre adresse mail professionnelle (<a href="mailto:{$mailExpediteur}">{$mailExpediteur}</a>) confirmant cette suppression sera envoyé à l'adresse <a href="mailto:{$infoRV.mail}">{$infoRV.mail}</a>. Ci-dessous, le texte de ce mail. Veuillez compléter la raison de l'annulation <span style="background:pink">dans le cadre coloré </span>.</p>
+                    <div  style="font-style: italic">
 
-                <p>Voulez vous vraiment supprimer ce RV avec les parents de <strong id="modalNomEleve"></strong>?</p>
+                        {$texte}
 
-                <form name="delRV" id="delRV" class="form-vertical" role="form" method="POST" action="index.php">
-                    <p>Attention, un mail à votre nom confirmant cette annulation sera envoyé à cette personne.</p>
-                    <label for="raison">Raison de l'annulation</label>
-                    <textarea name="raison" id="raison" cols="60" rows="3" placeholder="Votre texte ici" class='required'></textarea>
-
-                    <input type="hidden" name="date" value="{$date}">
-                    <input type="hidden" name="type" value="{$type}">
-                    <input type="hidden" name="id" id="modalId" value="">
-                    <input type="hidden" name="action" value="{$action}">
-                    <input type="hidden" name="mode" value="delRV">
-                    <button type="submit" class="btn btn-danger pull-right" id="confirmDel">Confirmer l'annulation du RV</button>
-                    <div class="clearfix"></div>
+                    </div>
+                    <input type="hidden" name="idRV" id="idRV" value="{$infoRV.idRV}">
+                    <input type="hidden" name="idRP" id="idRP" value="{$infoRV.idRP}">
+                    <input type="hidden" name="matricule" id="matricule" value="{$infoRV.matricule}">
                 </form>
-
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="modalConfirmDelRV">Confirmer</button>
             </div>
         </div>
 
     </div>
 
 </div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        $('#form-confirmDel').validate({
+            rules: {
+                raison: {
+                    required: true
+                }
+            }
+        })
+    })
+
+</script>

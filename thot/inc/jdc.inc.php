@@ -25,6 +25,9 @@ switch ($mode) {
         $smarty->assign('type', 'subjectif');
         require_once 'inc/jdc/subjectifEleve.inc.php';
         break;
+    case 'quiestla':
+        require_once 'inc/jdc/quiestla.php';
+        break;
 
     default:
         // wtf

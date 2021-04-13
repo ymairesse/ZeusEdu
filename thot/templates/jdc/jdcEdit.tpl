@@ -2,7 +2,7 @@
 
     <div class="row">
 
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-4 col-sm-12">
 
             <div class="form-group">
                 <label for="categorie" class="sr-only">Catégorie</label>
@@ -15,9 +15,23 @@
 
         </div>  <!-- col-md-... -->
 
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-8 col-sm-12">
+            <div class="row">
 
-            <h2 class="pull-right" style="padding: 0 1em; margin: 0;"><strong>{$lblDestinataire}</strong></h2>
+            <div class="col-xs-5" style="border:0px solid black">
+                <button type="button"
+                    class="btn btn-block btn-info"
+                    id="btn-check"
+                    title="Vérifier pour les autres cours">
+                    <i class="fa fa-check"></i> Vérifier
+                </button>
+                <img src="../images/ajax-loader.gif" alt="wait" class="hidden" id="ajaxLoader">
+            </div>
+            <div class="col-xs-7" style="border:0px solid black; text-align:center">
+                <h3 style="padding: 0 1em; margin: 0;"><strong>{$lblDestinataire}</strong></h3>
+            </div>
+
+            </div>
 
         </div>  <!-- col-md-... -->
 
@@ -129,7 +143,7 @@
     <input type="hidden" name="id" value="{$travail.id|default:''}">
     <input type="hidden" name="type" value="{$travail.type|default:''}">
     <input type="hidden" name="edition" id="edition" value="false">
-    <input type="hidden" name="destinataire" value="{$travail.destinataire}">
+    <input type="hidden" name="destinataire" id="destinataire" value="{$travail.destinataire}">
 
 </form>
 
@@ -190,8 +204,25 @@ jQuery.validator.addMethod(
 
 
 $(document).ready(function(){
-    // $('#enonce').summernote({})
-    //
+
+    $(document).ajaxStart(function(){
+        $('#ajaxLoader').removeClass('hidden');
+    }).ajaxComplete(function(){
+        $('#ajaxLoader').addClass('hidden');
+    });
+
+    $('#btn-check').click(function(){
+        var coursGrp = $('#destinataire').val();
+        var date = $('#datepicker').val();
+        $.post('inc/jdc/checkOtherWorks.inc.php', {
+            coursGrp: coursGrp,
+            date: date
+        }, function(resultat){
+            $('#modal').html(resultat);
+            $('#modalCheck').modal('show');
+        })
+    })
+
     $('#enonce').summernote({
         lang: 'fr-FR', // default: 'en-US'
         height: null, // set editor height
