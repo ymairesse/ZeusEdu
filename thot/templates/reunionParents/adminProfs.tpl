@@ -308,57 +308,6 @@ if ($('#form-confirmDel').valid()){
                 message: 'Veuillez sélectionner un élève dans sa classe'
             })
         })
-        //
-        // // effacement d'un RV
-        // $("#listeRV").on('click', '.unlink', function() {
-        //     var idRV = $(this).data('idrv');
-        //     var matricule = $(this).data('matricule');
-        //     var mail = $(this).data('mail');
-        //     var acronyme = $('.btn-prof.btn-success').data('abreviation');
-        //     var idRP = $("#idRP").val();
-        //     if (mail == '') {
-        //         // on n'a pas l'adresse mail des parents (c'est donc une inscription par un admin)
-        //         $.post('inc/reunionParents/delRV.inc.php', {
-        //                 idRV: idRV,
-        //                 idRP: idRP
-        //             },
-        //             function(resultat) {
-        //                 switch (resultat) {
-        //                     case '1':
-        //                         // visualisation du changement pour la zone des RV
-        //                         $.post('inc/reunionParents/listeRvAdmin.inc.php', {
-        //                                 acronyme: acronyme,
-        //                                 idRP: idRP,
-        //                                 droit: true
-        //                             },
-        //                             function(resultat) {
-        //                                 $("#listeRV").html(resultat);
-        //                                 // régénérer la liste d'attente
-        //                                 $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-        //                                     acronyme: acronyme,
-        //                                     idRP: idRP,
-        //                                     droit: true
-        //                                     },
-        //                                     function(resultat){
-        //                                         $("#listeAttenteProf").html(resultat);
-        //                                     }
-        //                                 );
-        //                             }
-        //                         );
-        //
-        //                         break;
-        //                     case '0':
-        //                         alert("Rien n'a été effacé")
-        //                         break;
-        //                 }
-        //             }
-        //         )
-        //     } else {
-        //         $("#modalId").val(idRV);
-        //         $("#modalNomEleve").html(resultat);
-        //         $("#modalDelRV").modal('show');
-        //     }
-        // })
 
         $('body').on('click','#listeAttente', function(){
             var matricule = $('.btn-eleve.btn-success').data('matricule');
@@ -401,26 +350,17 @@ if ($('#form-confirmDel').valid()){
                             })
                         }
                     else {
-                        // recomposer la liste des RV du prof "acronyme"
-                        $.post('inc/reunionParents/listeRvAdmin.inc.php', {
-                            acronyme: acronyme,
+                        // retrouver les éléments de la liste d'attente
+                        $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
                             idRP: idRP,
-                            droit
-                            },
-                            function(resultat){
-                                $("#listeRV").html(resultat);
-                                // retrouver les éléments de la liste d'attente
-                                $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                                    idRP: idRP,
-                                    acronyme: acronyme,
-                                    matricule: matricule,
-                                    periode: periode,
-                                    droit: true
-                                }, function(resultat) {
-                                    $("#listeAttenteProf").html(resultat);
-                                });
-                                $("#modalAttente").modal('hide');
-                            })
+                            acronyme: acronyme,
+                            matricule: matricule,
+                            periode: periode,
+                            droit: true
+                        }, function(resultat) {
+                            $("#listeAttenteProf").html(resultat);
+                        });
+                        $("#modalAttente").modal('hide');
                         }
                     });
 
