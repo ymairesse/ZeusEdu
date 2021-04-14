@@ -3890,14 +3890,14 @@ class thot
      * @param string $dateDebut
      * @param string $dateFin
      * @param string $classe
-     *
+     * 
      * @return array
      */
     public function getStatsEleves($dateDebut, $dateFin, $classe){
         $dateDebut = Application::dateMysql($dateDebut);
         $dateFin = Application::dateMysql($dateFin);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT COUNT(login.user), date, heure, ip, host, login.user, pwd.matricule, el.nom, el.prenom, el.groupe ';
+        $sql = 'SELECT COUNT(login.user) AS nb, date, heure, ip, host, login.user, pwd.matricule, el.nom, el.prenom, el.groupe ';
         $sql .= 'FROM '.PFX.'thotLogins AS login ';
         $sql .= 'LEFT JOIN '.PFX.'passwd AS pwd ON pwd.user = login.user ';
         $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON el.matricule = pwd.matricule ';
