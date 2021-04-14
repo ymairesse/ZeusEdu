@@ -97,109 +97,124 @@ var titreErreur = "Erreur";
             })
         })
 
-$('body').on('click', '#delAllRV', function(){
-    var idRP = $('#idRP').val();
-    var acronyme = $('.btn-prof.btn-success').data('abreviation');
-    $.post('inc/reunionParents/delAllRV.inc.php', {
-        idRP: idRP,
-        acronyme: acronyme
-    }, function(resultat){
-        $('#modal').html(resultat);
-        $('#modalDelAllRV').modal('show');
-    })
-})
-
-$('#modal').on('click', '#btn-delAllRV', function(){
-    var idRP = $('#idRP').val();
+    $('body').on('click', '#delAllRV', function(){
+        var idRP = $('#idRP').val();
         var acronyme = $('.btn-prof.btn-success').data('abreviation');
-    if ($('#form-delAllRV').valid()){
-        var raison = $('#modal #raisonDel').val();
-        $.post('inc/reunionParents/delConfirmDelAllRV.inc.php', {
+        $.post('inc/reunionParents/delAllRV.inc.php', {
             idRP: idRP,
-            raison: raison
-        }, function(resultat){
-            alert(resultat);
-        })
-    }
-})
-
-// suppression d'un RV établi
-$("body").on('click', '.unlink', function() {
-    var idRV = $(this).data('idrv');
-    var matricule = $(this).data('matricule');
-    var idRP = $("#idRP").val();
-    var mail = $(this).data('mail');
-    if (mail == '') {
-        // il ne s'agit pas d'un RV pris par les parents
-        $.post('inc/reunionParents/delRV.inc.php', {
-                idRV: idRV,
-                idRP: idRP
-            },
-            function(resultat) {
-                if (resultat == 1) {
-                    var acronyme = $('.btn-prof.btn-success').data('abreviation');
-                    // visualisation du changement pour la zone des RV
-                    $.post('inc/reunionParents/listeRVprof.inc.php', {
-                        idRP: idRP,
-                        acronyme: acronyme,
-                        droit: true
-                    }, function(resultat){
-                        $('#listeRV').html(resultat);
-                    })
-                }
-            }
-        )
-    } else {
-        // il s'agit d'une réservation prise par les parents, il faut réaliser la procédure complète
-        $.post('inc/reunionParents/delRVparent.inc.php', {
-            idRV: idRV,
-            idRP: idRP
+            acronyme: acronyme
         }, function(resultat){
             $('#modal').html(resultat);
-            $('#modalDelRV').modal('show');
+            $('#modalDelAllRV').modal('show');
         })
-    }
-})
+    })
 
-$('#modal').on('click', '#modalConfirmDelRV', function(){
-if ($('#form-confirmDel').valid()){
-    var raison = $('#modal #raisonDel').val();
-    var idRV = $('#modal #idRV').val();
-    var idRP = $('#modal #idRP').val();
-    var matricule = $('#modal #matricule').val();
-    var acronyme = $('.btn-prof.btn-success').data('abreviation');
-    $.post('inc/reunionParents/delConfirmRVparent.inc.php', {
-        raison: raison,
-        idRV: idRV,
-        idRP: idRP,
-        matricule: matricule
-    }, function(resultatJSON){
-        var resultat = JSON.parse(resultatJSON);
-        if (resultat['nb'] == 1)
-            var message = 'Le rendez-vous a été supprimé';
-            else var message = 'Problème';
-        if (resultat['mailOK'] == true)
-            message += '<br> mail envoyé';
-            else message += '<br>Le mail de confirmation n\'a pas pu être envoyé';
-        $('#modalDelRV').modal('hide');
-        $.post('inc/reunionParents/listeRvAdmin.inc.php', {
-            idRV: idRV,
-            idRP: idRP,
-            acronyme: acronyme,
-            droit: true
-            }, function(resultat){
-                $('#listeRV').html(resultat);
+    $('#modal').on('click', '#btn-delAllRV', function(){
+        var idRP = $('#idRP').val();
+        var acronyme = $('.btn-prof.btn-success').data('abreviation');
+        if ($('#form-delAllRV').valid()){
+            var raison = $('#modal #raisonDel').val();
+            $.post('inc/reunionParents/delConfirmDelAllRV.inc.php', {
+                idRP: idRP,
+                raison: raison,
+                acronyme: acronyme
+            }, function(resultatJSON){
+                var resultat = JSON.parse(resultatJSON);
+                var nbDel = resultat.nbDel;
+                var nbMails = resultat.nbMails;
                 bootbox.alert({
-                    title: "Suppression d'un RV",
-                    message: message
-                    })
+                    title: "Suppression des rendez-vous",
+                    message: nbDel + " rendez-vous annulés, " + nbMails + " mails envoyés",
+                    callback: function(){
+                        $('#modalDelAllRV').modal('hide');
+                        // rétabliisement de la zone des RV
+                        $.post('inc/reunionParents/listeRVprof.inc.php', {
+                            idRP: idRP,
+                            acronyme: acronyme,
+                            droit: true
+                        }, function(resultat){
+                            $('#listeRV').html(resultat);
+                        })
+                    }
                 })
             })
         }
     })
 
+    // suppression d'un RV établi
+    $("body").on('click', '.unlink', function() {
+        var idRV = $(this).data('idrv');
+        var matricule = $(this).data('matricule');
+        var idRP = $("#idRP").val();
+        var mail = $(this).data('mail');
+        if (mail == '') {
+            // il ne s'agit pas d'un RV pris par les parents
+            $.post('inc/reunionParents/delRV.inc.php', {
+                    idRV: idRV,
+                    idRP: idRP
+                },
+                function(resultat) {
+                    if (resultat == 1) {
+                        var acronyme = $('.btn-prof.btn-success').data('abreviation');
+                        // visualisation du changement pour la zone des RV
+                        $.post('inc/reunionParents/listeRVprof.inc.php', {
+                            idRP: idRP,
+                            acronyme: acronyme,
+                            droit: true
+                        }, function(resultat){
+                            $('#listeRV').html(resultat);
+                        })
+                    }
+                }
+            )
+        } else {
+            // il s'agit d'une réservation prise par les parents, il faut réaliser la procédure complète
+            $.post('inc/reunionParents/delRVparent.inc.php', {
+                idRV: idRV,
+                idRP: idRP
+            }, function(resultat){
+                $('#modal').html(resultat);
+                $('#modalDelRV').modal('show');
+            })
+        }
+    })
 
-
+    $('#modal').on('click', '#modalConfirmDelRV', function(){
+    if ($('#form-confirmDel').valid()){
+        var raison = $('#modal #raisonDel').val();
+        var idRV = $('#modal #idRV').val();
+        var idRP = $('#modal #idRP').val();
+        var matricule = $('#modal #matricule').val();
+        var acronyme = $('.btn-prof.btn-success').data('abreviation');
+        $.post('inc/reunionParents/delConfirmRVparent.inc.php', {
+            raison: raison,
+            idRV: idRV,
+            idRP: idRP,
+            matricule: matricule
+        }, function(resultatJSON){
+            var resultat = JSON.parse(resultatJSON);
+            if (resultat['nb'] == 1)
+                var message = 'Le rendez-vous a été supprimé';
+                else var message = 'Problème';
+            if (resultat['mailOK'] == true)
+                message += '<br> mail envoyé';
+                else message += '<br>Le mail de confirmation n\'a pas pu être envoyé';
+            $('#modalDelRV').modal('hide');
+            $.post('inc/reunionParents/listeRvAdmin.inc.php', {
+                idRV: idRV,
+                idRP: idRP,
+                acronyme: acronyme,
+                droit: true
+                }, function(resultat){
+                    $('#listeRV').html(resultat);
+                    bootbox.alert({
+                        title: "Suppression d'un RV",
+                        message: message
+                        })
+                    })
+                })
+            }
+        })
 
         // sélection d'un prof
         $('body').on('click', '.btn-prof', function() {
@@ -394,11 +409,17 @@ if ($('#form-confirmDel').valid()){
                         switch (resultat) {
                             case '-1':
                                 // le nombre max de RV est atteint
-                                $("#modalMaxRV").modal('show');
+                                bootbox.alert({
+                                    title: titreErreur,
+                                    message: "Cet(te) élève a déjà le nombre maximum de rendez-vous."
+                                })
                                 break;
                             case '-2':
                                 // il y a déjà un RV à cette heure-là
-                                $("#modalDoublonRV").modal('show');
+                                bootbox.aler({
+                                    title: titreErreur,
+                                    message: "Il y a déjà un rendez-vous pour cet-te élève à cette heure-là."
+                                })
                                 break;
                             default:
                                 // si le type de gestion est "eleve", il faut mettre à jour le "badge" et le "popover" des RV de l'élève

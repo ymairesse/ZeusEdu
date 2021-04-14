@@ -105,6 +105,8 @@
 
     $(document).ready(function() {
 
+        $('.pop').popover();
+
         $(".dispo").click(function() {
             var idRV = $(this).data('idrv');
             var idRP = $('#idRP').val();

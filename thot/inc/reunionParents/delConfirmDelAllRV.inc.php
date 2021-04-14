@@ -21,25 +21,32 @@ $module = $Application->getModule(3);
 
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
 $raison = isset($_POST['raison']) ? $_POST['raison'] : Null;
+// si on n'a pas passé un acronyme en $_POST, c'est que l'utilisateur n'est pas
+// administrateur; il agit bien en son nom $acronyme
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
 $Thot = new Thot();
 
-$prof = User::identiteProf($acronyme);
+$prof = User::identiteProf($abreivation);
 
 $formule = ($prof['sexe'] == 'M') ? 'Monsieur' : 'Madame';
 $initiale = mb_substr($prof['prenom'], 0, 1);
 $nomProf = sprintf('%s %s. %s', $formule, $initiale, $prof['nom']);
 $mailExpediteur = $prof['mail'];
 
-$liste = $Thot->getRVprof($acronyme, $idRP);
+$liste = $Thot->getRVprof($abreviation, $idRP);
+
 $listeRV = array();
 foreach ($liste as $idRV => $data) {
-    if ($data['dispo'] == 0)
+    if ($data['dispo'] == 0) {
         $listeRV[$idRV] = $data;
+        }
     }
 
-$texte = file_get_contents("../../templates/reunionParents/mail/texteAnnulation.tpl");
+$ds = DIRECTORY_SEPARATOR;
+$texte = file_get_contents(INSTALL_DIR.$ds.$module."/templates/reunionParents/mail/texteAnnulation.tpl");
+
 // remplacement du textarea par la mention de la $raison de la suppression du RV
 $texte = preg_replace('#<textarea[^>]*>.*?</textarea>#si', '{$raison}', $texte);
 // ajout du disclaimer
@@ -53,6 +60,7 @@ $mail->IsHTML(true);
 $mail->CharSet = 'UTF-8';
 $mail->From = $mailExpediteur;
 $mail->FromName = $nomProf;
+
 
 $nbMails = 0; $nbDel = 0;
 foreach ($listeRV as $idRV => $infoRV) {
@@ -79,7 +87,7 @@ foreach ($listeRV as $idRV => $infoRV) {
     if ($mail->Send())
         $nbMails++;
 
-    $nbDel = $Thot->delRV($idRP, $idRV);
+    $nbDel += $Thot->delRV($idRP, $idRV);
 
     $mail->ClearAllRecipients();
 }
