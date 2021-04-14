@@ -1,6 +1,7 @@
 {* selectProfsCible *}
 
 <select id="selectProf" name="selectProf" class="form-control">
+    <option value="">Professeur</option>
 
     {foreach from=$listeProfs key=acronyme item=data}
         <option value="{$acronyme}"
