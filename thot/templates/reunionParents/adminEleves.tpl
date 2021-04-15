@@ -1,4 +1,9 @@
-{* adminEleves.tpl *}
+{* ----------------------------------------------------------------------- *}
+{* Interface d'administration des réunions de parents                      *}
+{* Gestion par élève                                                        *}
+{* pour l'administrateur                                                   *}
+{* ----------------------------------------------------------------------- *}
+
 
 <div class="container-fluid">
 
@@ -94,6 +99,8 @@
 <script type="text/javascript">
 
     $(document).ready(function() {
+
+        $('[data-toggle="popover"]').popover();
 
         $('#niveau').change(function(){
             var niveau = $(this).val();

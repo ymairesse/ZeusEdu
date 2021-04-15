@@ -29,12 +29,16 @@ $Thot = new Thot();
 // récupérer la liste d'attente complète
 $listeAttente = $Thot->getListeAttenteProf($idRP, $abreviation);
 
+// liste des élèves du prof qui ont des RV et lesquels
+$rv4eleves = $Thot->getRVeleves($idRP, $abreviation);
+
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
 $smarty->template_dir = "../../templates";
 $smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('listeAttente', $listeAttente);
+$smarty->assign('rv4eleves', $rv4eleves);
 $smarty->assign('acronyme', $abreviation);
 $smarty->assign('idRP', $idRP);
 

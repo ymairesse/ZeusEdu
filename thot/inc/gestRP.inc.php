@@ -63,8 +63,6 @@ switch ($mode) {
                         $smarty->assign('listeNiveaux', $listeNiveaux);
 
                         $smarty->assign('idRP', $idRP);
-
-                        // $smarty->assign('listeClasses', $Ecole->listeClasses(null, true));
                         $smarty->assign('corpsPage', 'reunionParents/adminEleves');
                         break;
                     // attribution des RV par prof
@@ -124,12 +122,18 @@ switch ($mode) {
                     $nomProf = User::identiteProf($acronyme);
                     $smarty->assign('nomProf', sprintf('%s %s', $nomProf['prenom'], $nomProf['nom']));
 
+                    // liste des plages de RV (éventuellement occupées) pour le prof $acronyme
                     $listeRV = $Thot->getRVprof($acronyme, $idRP);
                     $smarty->assign('listeRV', $listeRV);
 
+                    // liste des élèves en attente de RV
                     $listeAttente = $Thot->getListeAttenteProf($idRP, $acronyme);
                     $smarty->assign('listeAttente', $listeAttente);
 
+                    $rv4eleves = $Thot->getRVeleves($idRP, $acronyme);
+                    $smarty->assign('rv4eleves', $rv4eleves);
+
+                    // liste des élèves groupés par classe pour le sélecteur d'élèves à droite
                     $listeEleves = $Thot->getElevesDeProf($acronyme);
                     $smarty->assign('listeEleves', $listeEleves);
 

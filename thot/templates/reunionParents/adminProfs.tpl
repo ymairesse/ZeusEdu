@@ -1,3 +1,9 @@
+{* ----------------------------------------------------------------------- *}
+{* Interface d'administration des réunions de parents                      *}
+{* Gestion par prof                                                        *}
+{* pour l'administrateur                                                   *}
+{* ----------------------------------------------------------------------- *}
+
 <div class="container-fluid">
 
     <div class="row">
@@ -80,6 +86,8 @@ var typeRP="{$typeRP}"
 var titreErreur = "Erreur";
 
     $(document).ready(function() {
+
+        $('[data-toggle="popover"]').popover();
 
         $('#printProf').click(function() {
             var idRP = $(this).data('idrp');

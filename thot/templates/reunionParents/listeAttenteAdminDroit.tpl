@@ -36,10 +36,21 @@
         </thead>
         <tbody>
             {foreach from=$listeAttente key=wtf item=data}
+            {assign var=matricule value=$data.matricule}
             <tr class="attente{$data.periode}" data-matricule="{$data.matricule}" data-periode="{$data.periode}">
 
                 <td>{$data.heures}</td>
-                <td>{$data.groupe} {$data.nom} {$data.prenom}</td>
+                <td
+                {if isset($rv4eleves.$matricule)}
+                data-trigger="hover"
+                data-toggle="popover"
+                data-placement="left"
+                data-content="<ul class = 'list-unstyled'>{foreach from=$rv4eleves.$matricule key=heure item=d}<li>{$heure|truncate:5:''} {$d.acronyme}</li>{/foreach}</ul>"
+                data-original-title="Autres RV"
+                data-html="true"
+                data-container="body"
+                {/if}>
+                <span class="badge pull-left">{$rv4eleves.$matricule|count|default:0}</span>&nbsp; {$data.groupe} {$data.nom} {$data.prenom}</td>
                 <td>{if $data.mail != ''}
                     <a href="mailto:{$data.mail}">{$data.formule} {$data.nomParent} {$data.prenomParent}</a>
                     {else}
@@ -78,3 +89,13 @@
     </div>  <!-- panel-body -->
 
 </div>  <!-- panel-default -->
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        $('[data-toggle="popover"]').popover();
+        
+    })
+
+</script>

@@ -987,6 +987,49 @@ class thot
                 }
 
                 /**
+                 * recherche la liste des RV à la $RP déjà pris pour les élèves
+                 * du prof $acronyme
+                 *
+                 * @param int $idRP
+                 * @param string $acronyme
+                 *
+                 * @return array
+                 */
+                public function getRVeleves($idRP, $acronyme){
+                    $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+                    $sql = 'SELECT  DISTINCT matricule, heure, rprv.acronyme, nom, prenom ';
+                    $sql .= 'FROM '.PFX.'thotRpRv AS rprv ';
+                    $sql .= 'LEFT JOIN '.PFX.'profs AS pr ON pr.acronyme = rprv.acronyme ';
+                    $sql .= 'WHERE matricule IN (SELECT matricule FROM '.PFX.'thotRpAttente WHERE idRP = :idRP AND acronyme = :acronyme) ';
+                    $sql .= 'AND idRP = :idRP ';
+                    $sql .= 'ORDER BY heure ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+                    $requete->bindParam(':idRP', $idRP, PDO::PARAM_INT);
+                    $resultat = $requete->execute();
+
+                    $liste = array();
+                    if ($resultat) {
+                        $requete->setFetchMode(PDO::FETCH_ASSOC);
+                        while ($ligne = $requete->fetch()){
+                            $matricule = $ligne['matricule'];
+                            $heure = $ligne['heure'];
+                            $liste[$matricule][$heure] = array(
+                                'heure' => $heure,
+                                'acronyme' => $ligne['acronyme'],
+                                'nom' => sprintf('%s %s', $ligne['prenom'], $ligne['nom'])
+                            );
+                        }
+                    }
+
+
+                    Application::deconnexionPDO($connexion);
+
+                    return $liste;
+                }
+
+                /**
                  * Envoie en liste d'attente un élève dont on donne le matricule,
                  * pour le prof dont on indique l'acronyme
                  * pour la RP dont on indique la date avec la période indiquée (entre 1 et 3).
@@ -3890,7 +3933,7 @@ class thot
      * @param string $dateDebut
      * @param string $dateFin
      * @param string $classe
-     * 
+     *
      * @return array
      */
     public function getStatsEleves($dateDebut, $dateFin, $classe){
@@ -3973,154 +4016,6 @@ class thot
 
         return $liste;
     }
-    //
-    // /**
-    //  * renvoie la liste des RV pour la RP de date donnée à destination des parents.
-    //  *
-    //  * @param $date
-    //  * @param $complet : tous les RV si true, seulement les RV inscrits par les admin si false
-    //  *
-    //  * @return array
-    //  */
-    // public function listeRVParents($date, $mode, $niveau)
-    // {
-    //     $date = Application::dateMysql($date);
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //
-    //     $sql = "SELECT de.groupe, dtp.matricule, dtp.acronyme, DATE_FORMAT(heure,'%H:%i') AS heure, dp.sexe, dp.nom, dp.prenom  ";
-    //     $sql .= 'FROM '.PFX.'thotRpRv AS dtp ';
-    //     $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dtp.matricule ';
-    //     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dtp.acronyme ';
-    //     $sql .= 'WHERE dtp.matricule IS NOT NULL AND date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ';
-    //     // si l'inscription est faite par les admin, il n'y a pas de userParent indiqué.
-    //     if ($mode == 'partiel') {
-    //         $sql .= 'AND userParent IS Null ';
-    //     }
-    //     $sql .= 'ORDER BY matricule, date, heure ';
-    //     $requete = $connexion->prepare($sql);
-    //
-    //     $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
-    //     $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
-    //
-    //     $resultat = $requete->execute();
-    //     $liste = array();
-    //     if ($resultat) {
-    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
-    //         while ($ligne = $requete->fetch()) {
-    //             $matricule = $ligne['matricule'];
-    //             $liste[$matricule][] = $ligne;
-    //         }
-    //     }
-    //     Application::deconnexionPDO($connexion);
-    //
-    //     return $liste;
-    // }
-    //
-    // /**
-    //  * renvoie la liste d'attente pour la RP de date donnée à destination des parents.
-    //  *
-    //  * @param $date
-    //  * @param $complet
-    //  *
-    //  * @return array
-    //  */
-    // public function listeAttenteParents($date, $mode, $niveau)
-    // {
-    //     $date = Application::dateMysql($date);
-    //     $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //     $sql = 'SELECT dta.matricule, periode, sexe, nom, prenom ';
-    //     $sql .= 'FROM '.PFX.'thotRpAttente AS dta ';
-    //     $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = dta.acronyme ';
-    //     $sql .= "WHERE date = :date AND SUBSTR(de.groupe,1,1) LIKE :niveau ";
-    //     if ($mode == 'partiel') {
-    //         $sql .= 'AND userParent IS Null ';
-    //     }
-    //     $sql .= 'ORDER BY matricule, date, periode ';
-    //     $requete = $connexion->prepare($sql);
-    //
-    //     $requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
-    //     $requete->bindParam(':niveau', $niveau, PDO::PARAM_INT);
-    //
-    //     $resultat = $requete->execute();
-    //     $liste = array();
-    //     if ($resultat) {
-    //         $requete->setFetchMode(PDO::FETCH_ASSOC);
-    //         while ($ligne = $requete->fetch()) {
-    //             $matricule = $ligne['matricule'];
-    //             $liste[$matricule][] = $ligne;
-    //         }
-    //     }
-    //     Application::deconnexionPDO($connexion);
-    //
-    //     return $liste;
-    // }
-    //
-    //  /**
-    //   * Renvoie la liste des locaux attribués aux profs pour la RP dont on fournit la date.
-    //   *
-    //   * @param $date : la date de la RP
-    //   *
-    //   * @return array : acronyme => local
-    //   */
-    //  public function getLocauxRp($date)
-    //  {
-    //      $date = Application::dateMysql($date);
-    //      $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //      $sql = 'SELECT DISTINCT rprv.acronyme, local, nom, prenom ';
-    //      $sql .= 'FROM '.PFX.'thotRpRv AS rprv ';
-    //      $sql .= 'JOIN '.PFX.'profs AS dp ON dp.acronyme = rprv.acronyme ';
-    //      $sql .= 'LEFT JOIN '.PFX.'thotRpLocaux AS loc ON ((loc.acronyme = rprv.acronyme ) AND (loc.date = rprv.date)) ';
-    //      $sql .= "WHERE rprv.date = '$date' ";
-    //      $sql .= 'ORDER BY nom, prenom ';
-    //
-    //      $resultat = $connexion->query($sql);
-    //      $liste = array();
-    //      if ($resultat) {
-    //          $resultat->setFetchMode(PDO::FETCH_ASSOC);
-    //          while ($ligne = $resultat->fetch()) {
-    //              $acronyme = $ligne['acronyme'];
-    //              $liste[$acronyme] = $ligne;
-    //          }
-    //      }
-    //      Application::deconnexionPDO($connexion);
-    //
-    //      return $liste;
-    //  }
-    //
-    // /**
-    //  * Enregistre la liste des locaux en provenance du formulaire.
-    //  *
-    //  * @param $post
-    //  *
-    //  * @return int : nombre d'enregistrements réalisés
-    //  */
-    // public function saveLocaux($post)
-    // {
-    //     $date = isset($post['date']) ? $post['date'] : null;
-    //     if ($date != null) {
-    //         $date = Application::dateMysql($date);
-    //         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    //         $sql = 'INSERT INTO '.PFX.'thotRpLocaux ';
-    //         $sql .= 'SET date = :date, acronyme= :acronyme, local=:local ';
-    //         $sql .= 'ON DUPLICATE KEY UPDATE local=:local ';
-    //
-    //         $requete = $connexion->prepare($sql);
-    //         $nb = 0;
-    //         foreach ($post as $field => $local) {
-    //             $field = explode('_', $field);
-    //             if ($field[0] == 'local') {
-    //                 $acronyme = $field[1];
-    //                 $data = array(':acronyme' => $acronyme, ':local' => $local, ':date' => $date);
-    //                 $nb += $requete->execute($data);
-    //             }
-    //         }
-    //         Application::deconnexionPDO($connexion);
-    //
-    //         return $nb;
-    //     } else {
-    //         return 0;
-    //     }
-    // }
 
     /**
      * retourne la liste des cours et des profs pour les élèves dont on fournit le matricules.

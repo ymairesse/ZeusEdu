@@ -1,4 +1,7 @@
-{* tableRVAdminDroit *}
+{*                                                    *}
+{* tableRVAdminDroit                                  *}
+{* tableau des RV des élèves à la RP                  *}
+{*                                                    *}
 
 <div class="panel panel-success">
 
@@ -29,18 +32,20 @@
                             {else}attente1
                             {/if}
                             {if $data.dispo==0} indisponible{/if}"
-                    data-nomparent="{$data.formule|default:''} {$data.nomParent|default:''} {$data.prenomParent|default:''}" data-idrv="{$data.idRV}">
-
+                    data-nomparent="{$data.formule|default:''} {$data.nomParent|default:''} {$data.prenomParent|default:''}" data-idrv="{$data.idRV}"
+                    {if ($data.matricule !=Null)}
+                       data-trigger="hover"
+                       data-toggle="popover"
+                       data-placement="bottom"
+                       data-content="<img src='../photos/{$data.photo}.jpg' alt='{$data.matricule}' style='width:100px'>"
+                       data-html="true"
+                       data-container="body"
+                       data-original-title="{$data.photo}"
+                       {/if}>
 
                     <td>{$data.heure}</td>
-                    <td {if ($data.matricule !=Null)}
-                        class="pop"
-                        data-toggle="popover"
-                        data-content="<img src='../photos/{$data.photo}.jpg' alt='{$data.matricule}' style='width:100px'>"
-                        data-html="true"
-                        data-container="body"
-                        data-original-title="{$data.photo}"
-                        {/if}>
+
+                    <td>
                         {$data.groupe|default:''} {$data.nom|default:''} {$data.prenom|default:''}</td>
                     <td><a title="{$data.mail}" href="mailto:{$data.mail}">{$data.formule} {$data.nomParent} {$data.prenomParent}</a></td>
                     <td class="td_{$idRV}">
@@ -97,15 +102,15 @@
 
     var dispo = 'Disponible/indisponible';
 
-    $(document).ajaxStart(function(){
-        $('body').addClass("wait");
-    }).ajaxComplete(function(){
-        $('body').removeClass("wait");
-    });
-
     $(document).ready(function() {
 
-        $('.pop').popover();
+        $('[data-toggle="popover"]').popover();
+
+        $(document).ajaxStart(function(){
+            $('body').addClass("wait");
+        }).ajaxComplete(function(){
+            $('body').removeClass("wait");
+        });
 
         $(".dispo").click(function() {
             var idRV = $(this).data('idrv');

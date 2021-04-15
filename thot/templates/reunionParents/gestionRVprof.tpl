@@ -1,5 +1,7 @@
-{* Interface d'administration des réunions de parents *}
-{* pour les profs ordinaires *}
+{* ----------------------------------------------------------------------- *}
+{* Interface d'administration des réunions de parents                      *}
+{* pour les profs ordinaires                                               *}
+{* ----------------------------------------------------------------------- *}
 
 <div class="container-fluid">
 
@@ -46,6 +48,8 @@
     var titreErreur = "Erreur";
 
     $(document).ready(function() {
+
+        $('[data-toggle="popover"]').popover();
 
         $('body').on('click', ".unlinkAttente", function(){
             var matricule = $(this).data('matricule');

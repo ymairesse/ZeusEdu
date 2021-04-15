@@ -1,4 +1,4 @@
-{* listeAttenteAdmin *}
+{listeAttenteAdmin}
 
 <div class="panel panel-default">
 
@@ -11,6 +11,7 @@
                     id="listeAttente"
                     data-acronyme="{$acronyme|default:''}"
                     title="Placer l'élèves sélectionné en liste d'attente"><i class="fa fa-arrow-right"></i> <i class="fa fa-user"></i> <i class="fa fa-user"></i> <i class="fa fa-user-plus"></i>
+                </button>
             </div>
             <div class="col-md-10 col-sm-8">
                 <h3 class="panel-title">Liste d'attente</h3>
@@ -34,9 +35,21 @@
         </thead>
         <tbody>
             {foreach from=$listeAttente key=wtf item=data}
+            {assign var=matricule value=$data.matricule}
             <tr class="attente{$data.periode}" data-matricule="{$data.matricule}" data-periode="{$data.periode}">
 
-                <td><button
+                <td
+                {if isset($rv4eleves.$matricule)}
+                    data-trigger="hover"
+                    data-toggle="popover"
+                    data-placement="left"
+                    data-content="<ul class = 'list-unstyled'>{foreach from=$rv4eleves.$matricule key=heure item=d}<li>{$heure|truncate:5:''} {$d.acronyme}</li>{/foreach}</ul>"
+                    data-original-title="Autres RV"
+                    data-html="true"
+                    data-container="body"
+                {/if}
+
+                ><button
                     type="button"
                     class="btn btn-success btn-xs unlinkAttente"
                     data-matricule="{$data.matricule}"

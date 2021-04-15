@@ -11,6 +11,7 @@ listeAttenteProf
                     id="listeAttente"
                     data-acronyme="{$acronyme|default:''}"
                     title="Placer l'élèves sélectionné en liste d'attente"><i class="fa fa-arrow-right"></i> <i class="fa fa-user"></i> <i class="fa fa-user"></i> <i class="fa fa-user-plus"></i>
+                </button>
             </div>
             <div class="col-md-10 col-sm-8">
                 <h3 class="panel-title">Liste d'attente</h3>

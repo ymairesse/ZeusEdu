@@ -1,5 +1,7 @@
 {* listeAttenteProfDroit *}
 
+
+
 <div class="panel panel-default">
 
     <div class="panel-heading">
@@ -14,6 +16,7 @@
                     id="listeAttente"
                     data-acronyme="{$acronyme|default:''}"
                     title="Placer l'élèves sélectionné en liste d'attente"><i class="fa fa-arrow-right"></i> <i class="fa fa-user"></i> <i class="fa fa-user"></i> <i class="fa fa-user-plus"></i>
+                </button>
             </div>
 
         </div>
@@ -35,9 +38,22 @@
         </thead>
         <tbody>
             {foreach from=$listeAttente key=wtf item=data}
+            {assign var=matricule value=$data.matricule}
             <tr class="attente{$data.periode}" data-matricule="{$data.matricule}" data-periode="{$data.periode}">
                 <td>{$data.heures}</td>
-                <td>{$data.groupe} {$data.nom} {$data.prenom}</td>
+                <td><span class="badge pull-left">{$rv4eleves.$matricule|count|default:0}</span>
+                    <span {if isset($rv4eleves.$matricule)}
+                            data-trigger="hover"
+                            data-toggle="popover"
+                            data-placement="left"
+                            data-content="<ul class = 'list-unstyled'>{foreach from=$rv4eleves.$matricule key=heure item=d}<li>{$heure|truncate:5:''} {$d.nom}</li>{/foreach}</ul>"
+                            data-original-title="Autres RV"
+                            data-html="true"
+                            data-container="body"
+                            {/if}>
+                        &nbsp; {$data.groupe} {$data.nom} {$data.prenom}
+                    </span>
+                </td>
                 <td>{if $data.mail != ''}
                     <a href="mailto:{$data.mail}">{$data.formule} {$data.nomParent} {$data.prenomParent}</a>
                     {else}
@@ -75,3 +91,10 @@
     </div>  <!-- panel-body -->
 
 </div>  <!-- panel-default -->
+
+<style media="screen">
+    .bulle {
+        list-style-type: liste-unstyled;
+        padding: 0
+    }
+</style>
