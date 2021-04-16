@@ -424,7 +424,7 @@ var titreErreur = "Erreur";
                                 break;
                             case '-2':
                                 // il y a déjà un RV à cette heure-là
-                                bootbox.aler({
+                                bootbox.alert({
                                     title: titreErreur,
                                     message: "Il y a déjà un rendez-vous pour cet-te élève à cette heure-là."
                                 })
