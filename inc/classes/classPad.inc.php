@@ -174,8 +174,7 @@ class padEleve
      *
      * @return int : nombre de modifications dans la BD
      */
-    public static function savePartages($acronyme, $moderw, $listeEleves, $listeProfs)
-    {
+    public static function savePartages($acronyme, $moderw, $listeEleves, $listeProfs) {
         $nbAjouts = 0;
         if ((count($listeEleves) != 0) && (count($listeProfs) != 0)) {
             $listeAcronymes = "'".implode("','", $listeProfs)."'";
@@ -189,41 +188,78 @@ class padEleve
                 foreach ($listeEleves as $matricule) {
                     // on s'assure qu'il existe une fiche ou on la crée pour le couple acronyme/matricule
                     $sql = 'INSERT IGNORE INTO '.PFX.'pad ';
-                    $sql .= "SET matricule='$matricule', proprio='$acronyme', texte=Null ";
-                    $resultat = $connexion->exec($sql);
+                    $sql .= 'SET matricule= :matricule, proprio = :acronyme ';
+                    $requete = $connexion->prepare($sql);
+
+                    $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+                    $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+                    $resultat = $requete->execute();
                 }
 
-                // on recherche les id's des fiches pour les couples acronyme/matricules à partager ou dé-partager
+                // on recherche les id's des fiches pour les couples acronyme/matricules à partager
                 $sql = 'SELECT id FROM '.PFX.'pad ';
-                $sql .= "WHERE proprio ='$acronyme' AND matricule IN ($listeMatricules) ";
-                $resultat = $connexion->query($sql);
-                $resultat->setFetchMode(PDO::FETCH_ASSOC);
-                $listeIds = $resultat->fetchAll();
+                $sql .= 'WHERE proprio = :acronyme AND matricule IN ('.$listeMatricules.') ';
+                $requete = $connexion->prepare($sql);
+
+                $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+                $resultat = $requete->execute();
+                $listeIds = array();
+                if ($resultat) {
+                    $requete->setFetchMode(PDO::FETCH_ASSOC);
+                    while ($ligne = $requete->fetch()){
+                        $listeIds[] = $ligne['id'];
+                    }
+                }
 
                 // on crée les guests dans la table padGuest
+                $sql = 'INSERT INTO '.PFX.'padGuest ';
+                $sql .= 'SET id = :id, guest = :acronyme, mode = :moderw ';
+                $sql .= 'ON DUPLICATE KEY UPDATE mode = :moderw ';
+                $requete = $connexion->prepare($sql);
+
+                $requete->bindParam(':moderw', $moderw, PDO::PARAM_STR);
+
                 foreach ($listeProfs as $unAcronyme) {
-                    foreach ($listeIds as $wtf => $idArray) {
-                        $id = $idArray['id'];
-                        $sql = 'INSERT INTO '.PFX.'padGuest ';
-                        $sql .= "SET id='$id', guest='$unAcronyme', mode='$moderw' ";
-                        $sql .= "ON DUPLICATE KEY UPDATE mode='$moderw' ";
-                        $nbAjouts += $connexion->exec($sql);
+                    foreach ($listeIds as $wtf => $id) {
+                        $requete->bindParam(':acronyme', $unAcronyme, PDO::PARAM_STR, 7);
+                        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+                        $resultat = $requete->execute();
+
+                        if ($requete->rowCount() > 0)
+                            $nbAjouts ++;
                     }
                 }
             } else {
                 // on recherche les id's des fiches pour les couples acronymes/matricules à partager ou dé-partager
                 $sql = 'SELECT id FROM '.PFX.'pad ';
-                $sql .= "WHERE proprio = '$acronyme' AND matricule IN ($listeMatricules) ";
-                $resultat = $connexion->query($sql);
-                $resultat->setFetchMode(PDO::FETCH_ASSOC);
-                $listeIds = $resultat->fetchAll();
+                $sql .= 'WHERE proprio = :acronyme AND matricule IN ('.$listeMatricules.') ';
+                $requete = $connexion->prepare($sql);
+
+                $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+                $resultat = $requete->execute();
+                $listeIds = array();
+                if ($resultat) {
+                    $requete->setFetchMode(PDO::FETCH_ASSOC);
+                    while ($ligne = $requete->fetch()){
+                        $id = $ligne['id'];
+                        $listeIds[] = $id;
+                    }
+                }
+
+                $sql = 'DELETE FROM '.PFX.'padGuest ';
+                $sql .= 'WHERE id= :id AND guest = :acronyme ';
+                $requete = $connexion->prepare($sql);
                 // il s'agit de supprimer des guests => release
                 foreach ($listeProfs as $unAcronyme) {
-                    foreach ($listeIds as $wtf => $idArray) {
-                        $id = $idArray['id'];
-                        $sql = 'DELETE FROM '.PFX.'padGuest ';
-                        $sql .= "WHERE id='$id' AND guest='$unAcronyme' ";
-                        $nbAjouts -= $connexion->exec($sql);
+                    foreach ($listeIds as $wtf => $id) {
+                        $requete->bindParam(':acronyme', $unAcronyme, PDO::PARAM_STR, 7);
+                        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+                        $resultat = $requete->execute();
+
+                        $nbAjouts -= $requete->rowCount();
                     }
                 }
             }
