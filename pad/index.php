@@ -19,9 +19,6 @@ $acronyme = $user->getAcronyme();
 
 require_once(INSTALL_DIR."/inc/classes/classPad.inc.php");
 
-$listeClasses = $Ecole->listeGroupes();
-$smarty->assign('listeClasses', $listeClasses);
-
 $listeCours = $user->listeCoursProf();
 $smarty->assign('listeCours',$listeCours);
 
@@ -54,4 +51,3 @@ switch ($action) {
 
 $smarty->assign('executionTime', round($chrono->stop(),6));
 $smarty->display ('index.tpl');
-?>

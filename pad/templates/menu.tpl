@@ -33,6 +33,9 @@
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=partager&amp;mode=parCours">Partager par cours</a></li>
 					<li><a href="index.php?action=partager&amp;mode=parClasse">Partager par classe</a></li>
+					{if ($userStatus == 'direction') || ($userStatus == 'admin')}
+					<li><a href="index.php?action=partager&amp;mode=parNiveau">Par niveau d'étude</li>
+					{/if}
 					<li class="divider"></li>
 					<li><a href="index.php?action=mesPartages&amp;mode=parCours">Mes partages par cours</a></li>
 					<li><a href="index.php?action=mesPartages&amp;mode=parClasse">Mes partages par classe</a></li>

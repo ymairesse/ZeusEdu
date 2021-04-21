@@ -19,9 +19,9 @@
     -moz-border-radius-bottomright: 20px;
     -moz-border-radius-bottomleft: 20px;
   }
-  
+
 .legendePhoto {
-	background-color: #aaa; 
+	background-color: #aaa;
 	color:white;
 	padding: 5px 2px 5px 2px;
 	display: block;
@@ -53,11 +53,11 @@
 }
 
 fieldset p {
-	background-color: #eee; 
-	padding: 0.5em; 
+	background-color: #eee;
+	padding: 0.5em;
 	margin:0
 	}
-	
+
 .tableauTitu {
 	border-collapse: collapse
 	}
@@ -118,7 +118,16 @@ fieldset p {
 	background-color: #4444ff;
 	color: yellow;
 	}
-	
+
 .rw {background-color: #44ff44;
 	color: black;
 	}
+
+.a {
+    background-color: #ff0000;
+    color: white;
+}
+
+.radio-inline.r, .radio-inline.rw, radio-inline.a {
+    margin: 0 1em !important
+}
