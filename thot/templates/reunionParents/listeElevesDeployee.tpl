@@ -1,5 +1,11 @@
 {* listeElevesDeployee.tpl *}
 
+<style media="screen">
+    .popover {
+        min-width: 300px;
+    }
+</style>
+
 <ul class="list-unstyled">
 {foreach from=$listeEleves key=matricule item=eleve}
 

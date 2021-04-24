@@ -6,7 +6,6 @@ $Thot = new Thot();
 $listeReunions = $Thot->listeDatesReunion();
 $smarty->assign('listeDates', $listeReunions);
 
-
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
 $typeRP = Null;
 
@@ -22,7 +21,7 @@ if ($idRP != Null) {
     $typeRP = $infoRP['typeRP'];
     $smarty->assign('typeRP', $infoRP['typeRP']);
 
-    // gestion des RV par élève ou par prof
+    // gestion des RV par élève ou par enseignant
     $typeGestion = isset($_POST['typeGestion']) ? $_POST['typeGestion'] : null;
     $smarty->assign('typeGestion', $typeGestion);
 }
@@ -42,8 +41,9 @@ switch ($mode) {
 
         // recherche des dates de réunions de parents existantes
         $listeReunions = $Thot->listeDatesReunion();
+
         $smarty->assign('listeDates', $listeReunions);
-        $smarty->assign('selecteur', 'selecteurs/selectDate');
+        $smarty->assign('selecteur', 'reunionParents/selecteurs/selectDateRP');
         $smarty->assign('corpsPage', 'reunionParents/nouveau');
         break;
 
@@ -53,8 +53,11 @@ switch ($mode) {
         if ($userStatus == 'admin') {
             // une réunion de parents a été sélectionnée
             if ($idRP != '') {
+                $infoRP = $Thot->getInfoRp($idRP);
+                $typeRP = $infoRP['typeRP'];
                 // rechercher la liste des périodes pour la liste d'attente éventuelle
-                $smarty->assign('listePeriodes', $Thot->getListePeriodes($idRP));
+                $listePeriodes = $Thot->getListePeriodes($idRP);
+                // $smarty->assign('listePeriodes', $listePeriodes);
 
                 switch ($typeGestion) {
                     // attribution des RV par élève
@@ -81,7 +84,7 @@ switch ($mode) {
                         break;
                     }
             }
-        $smarty->assign('selecteur', 'selecteurs/selectDateType');
+        $smarty->assign('selecteur', 'reunionParents/selecteurs/selectDateType');
         }
         break;
 
@@ -90,7 +93,7 @@ switch ($mode) {
         switch ($typeRP) {
             // gestion de ses périodes de RV par un prof titulaire de classe
             // pour une RP "titulaires"
-            case 'titus':
+            case 'titulaires':
                 if($idRP != '') {
                     $smarty->assign('acronyme',$acronyme);
                     $smarty->assign('listePeriodes', $Thot->getListePeriodes($idRP));
@@ -116,7 +119,7 @@ switch ($mode) {
             // pour une RP "TOUS LES PROFS"
             case 'profs':
                 if ($idRP != '') {
-                    $smarty->assign('acronyme', $acronyme);
+                    // $smarty->assign('acronyme', $acronyme);
                     $smarty->assign('listePeriodes', $Thot->getListePeriodes($idRP));
 
                     $nomProf = User::identiteProf($acronyme);
@@ -141,7 +144,7 @@ switch ($mode) {
                     }
                 break;
             }
-        $smarty->assign('selecteur', 'selecteurs/selectDateType');
+        $smarty->assign('selecteur', 'reunionParents/selecteurs/selectDateType');
         break;
 
     case 'printEleves':
@@ -152,8 +155,8 @@ switch ($mode) {
 
             $smarty->assign('corpsPage', 'reunionParents/choixRVParents2pdf');
         }
-        $smarty->assign('firstLine', 'Choisir une date');
-        $smarty->assign('selecteur', 'selecteurs/selectDate');
+        // $smarty->assign('firstLine', 'Choisir une date');
+        $smarty->assign('selecteur', 'reunionParents/selecteurs/selectDateRP');
 
         break;
     default:

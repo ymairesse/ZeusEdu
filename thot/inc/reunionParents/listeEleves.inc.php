@@ -24,13 +24,9 @@ switch ($typeRP) {
     case 'profs':
         $listeEleves = $thot->getElevesDeProf($acronyme, $statut);
         break;
-    case 'titus':
+    case 'titulaires':
         $listeTitulariats = $Ecole->listeTitulariats($acronyme);
         $listeEleves = $Ecole->listeElevesMultiClasses($listeTitulariats);
-        break;
-    case 'cible':
-        $listeClasses = array_flip($Ecole->listeClasses());
-        $listeEleves = $Ecole->listeElevesMultiClasses($listeClasses);
         break;
 }
 

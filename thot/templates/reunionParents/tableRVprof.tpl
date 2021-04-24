@@ -92,10 +92,8 @@
                         ligne.attr('title', 'Période indisponible');
                         ligne.find('input:radio.idRV').attr('disabled',true).attr('checked',false);
                     }
-
                 }
             )
-
         })
 
     })

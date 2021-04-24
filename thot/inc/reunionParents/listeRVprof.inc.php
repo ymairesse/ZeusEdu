@@ -19,7 +19,7 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
 $droit = isset($_POST['droit']) ? $_POST['droit'] : Null;
 

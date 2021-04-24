@@ -1,3 +1,4 @@
+{* adminProfs.tpl *}
 {* ----------------------------------------------------------------------- *}
 {* Interface d'administration des réunions de parents                      *}
 {* Gestion par prof                                                        *}
@@ -155,7 +156,7 @@ var titreErreur = "Erreur";
         var matricule = $(this).data('matricule');
         var idRP = $("#idRP").val();
         var mail = $(this).data('mail');
-        
+
         // suppression du popover éventuellement resté ouvert
         $(".popover").popover('hide');
 
@@ -238,35 +239,34 @@ var titreErreur = "Erreur";
             $(this).addClass('btn-success');
             // produire la liste des RV pour le prof désigné
             $.post('inc/reunionParents/listeRvAdmin.inc.php', {
-                        acronyme: acronyme,
-                        idRP: idRP,
-                        droit: true
-                    },
-                    function(resultat) {
-                        $("#listeRV").html(resultat);
-                        // produire la liste d'attente admin pour ce prof
-                        $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
-                                    idRP: idRP,
-                                    acronyme: acronyme,
-                                    droit: true
-                                },
-                                function(resultat) {
-                                    $("#listeAttenteProf").html(resultat);
-                                    // produire la liste des élèves possibles pour un prof donné
-                                    $.post('inc/reunionParents/listeEleves.inc.php', {
-                                            acronyme: acronyme,
-                                            statut: statut,
-                                            typeRP: typeRP
-                                        },
-                                        function(resultat) {
-                                            $("#listeEleves").html(resultat);
-                                        }
-                                    )
-                                }
-                            )
+                    acronyme: acronyme,
+                    idRP: idRP,
+                    droit: true
+                }, function(resultat) {
+                    $("#listeRV").html(resultat);
+                    // produire la liste d'attente admin pour ce prof
+                    $.post('inc/reunionParents/listeAttenteAdmin.inc.php', {
+                                idRP: idRP,
+                                acronyme: acronyme,
+                                droit: true
+                            },
+                            function(resultat) {
+                                $("#listeAttenteProf").html(resultat);
+                                // produire la liste des élèves possibles pour un prof donné
+                                $.post('inc/reunionParents/listeEleves.inc.php', {
+                                        acronyme: acronyme,
+                                        statut: statut,
+                                        typeRP: typeRP
+                                    },
+                                    function(resultat) {
+                                        $("#listeEleves").html(resultat);
+                                    }
+                                )
+                            }
+                        )
                     }
                 )
-        })
+            })
 
         // attribution d'un RV à un élève
         $("#listeRV").on('click', '.lien', function() {
@@ -294,17 +294,6 @@ var titreErreur = "Erreur";
                                     },
                                     function(resultat) {
                                         $("#listeRV").html(resultat);
-                                        // régénérer la liste d'attente
-                                        $.post('inc/reunionParents/listeAttenteProf.inc.php', {
-                                            acronyme: acronyme,
-                                            idRP: idRP,
-                                            matricule: matricule,
-                                            droit: true
-                                        },
-                                        function(resultat){
-                                            $("#listeAttenteProf").html(resultat);
-                                            }
-                                        )
                                     }
                                 )
                                 break;

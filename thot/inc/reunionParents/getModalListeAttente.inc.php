@@ -16,9 +16,9 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
-$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : null;
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
+$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new Thot();

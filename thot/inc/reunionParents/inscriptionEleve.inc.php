@@ -24,7 +24,8 @@ $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 $idRV = isset($_POST['idRV']) ? $_POST['idRV'] : null;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : null;
 // ne pas confondre avec l'acronyme de l'utilisateur!!!!!
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : null;
+// 
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
 $periode = isset($_POST['periode']) ? $_POST['periode'] : null;
 // $userName = isset($_POST['userName']) ? $_POST['userName'] : null;
 

@@ -145,6 +145,7 @@
             };
         })
 
+        // enregistrement de la page 1 du formulaire
         $('body').on('click', '#saveRP', function(){
             var formulaire = $('#formPage1').serialize();
             $.post('inc/reunionParents/savePage1.inc.php', {

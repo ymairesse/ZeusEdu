@@ -20,9 +20,7 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
-$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
-
-
+$abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
 
 require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
 $Thot = new Thot();

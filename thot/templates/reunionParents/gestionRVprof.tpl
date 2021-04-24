@@ -139,6 +139,10 @@
                 var matricule = $(this).data('matricule');
                 var idRP = $("#idRP").val();
                 var mail = $(this).data('mail');
+
+                // suppression du popover éventuellement resté ouvert
+                $(".popover").popover('hide');
+                
                 if (mail == '') {
                     // il ne s'agit pas d'un RV pris par les parents
                     $.post('inc/reunionParents/delRV.inc.php', {

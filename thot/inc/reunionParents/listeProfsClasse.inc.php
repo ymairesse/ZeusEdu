@@ -19,7 +19,8 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$classe = isset($_POST['classe']) ? $_POST['classe'] : null;
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
+$typeRP = isset($_POST['typeRP']) ? $_POST['typeRP'] : Null;
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -29,7 +30,9 @@ $Thot = new Thot();
 
 $listeDirection = $Thot->listeStatutsSpeciaux();
 
-$listeProfs = $Ecole->getListeProfs4classe($classe);
+if ($typeRP == 'profs')
+    $listeProfs = $Ecole->getListeProfs4classe($classe);
+    else $listeProfs = $Ecole->getListeTitulaires4classe($classe);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();

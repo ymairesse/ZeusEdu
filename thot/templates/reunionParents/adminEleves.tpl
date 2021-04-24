@@ -1,9 +1,9 @@
+{* adminEleves.tpl *}
 {* ----------------------------------------------------------------------- *}
 {* Interface d'administration des réunions de parents                      *}
 {* Gestion par élève                                                        *}
 {* pour l'administrateur                                                   *}
 {* ----------------------------------------------------------------------- *}
-
 
 <div class="container-fluid">
 
@@ -98,6 +98,8 @@
 
 <script type="text/javascript">
 
+    var typeRP = "{$typeRP}"
+
     $(document).ready(function() {
 
         $('[data-toggle="popover"]').popover();
@@ -122,7 +124,8 @@
                 function(resultat) {
                     $('#listeEleves').html(resultat);
                     $.post('inc/reunionParents/listeProfsClasse.inc.php', {
-                        classe: classe
+                        classe: classe,
+                        typeRP: typeRP
                     }, function(resultat){
                         $('#listeProfs').html(resultat);
                         // en attente de la sélection du prof
@@ -133,7 +136,7 @@
         })
 
         // sélection d'un élève
-        $(document).on('click', '.btn-eleve', function() {
+        $('body').on('click', '.btn-eleve', function() {
             var matricule = $(this).data('matricule');
             var idRP = $('#idRP').val();
             $(".btn-eleve").removeClass('btn-success');
@@ -368,13 +371,11 @@
         $.post('inc/reunionParents/delAttente.inc.php', {
             idRP: idRP,
             acronyme: acronyme,
-            matricule: matricule,
-            periode: periode
+            matricule: matricule
             },
         function (resultat){
             // SUPPRIMER LA LIGNE CORRESPONDANTE qui a été traitée
             $('#tbl-attente tr[data-matricule="'+matricule+'"][data-periode="'+periode+'"]').remove();
-            //$("#listeAttenteProf").html(resultat);
         })
     })
 

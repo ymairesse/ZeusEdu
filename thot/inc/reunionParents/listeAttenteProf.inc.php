@@ -38,6 +38,7 @@ $smarty->compile_dir = "../../templates_c";
 $smarty->assign('listeAttente', $listeAttente);
 $smarty->assign('acronyme', $abreviation);
 $smarty->assign('idRP', $idRP);
-$smarty->assign('droit', $droit);
 
-$smarty->display('reunionParents/listeAttenteAdmin.tpl');
+if ($droit == true)
+    $smarty->display('reunionParents/listeAttenteAdminDroit.tpl');
+    else $smarty->display('reunionParents/listeAttenteAdmin.tpl');

@@ -14,7 +14,7 @@ switch ($mode) {
     case 'itemsAgenda':
         require_once 'inc/agenda/itemsAgenda.php';
         break;
-        
+
     case 'gestGroupes':
         require_once 'inc/groupes/gestGroupes.php';
         break;
@@ -31,45 +31,47 @@ switch ($mode) {
         require_once 'inc/parents/searchByMail.inc.php';
         break;
 
-    case 'reunionParents':
-        if ($etape == 'enregistrer') {
-            $canevas = $thot->getCanevas($_POST);
-            $attribProfs = $thot->getAttribProfs($_POST);
-            $nb = $thot->saveCanevasProfs($date, $canevas, $attribProfs);
-            $message = array(
-                'title' => SAVE,
-                'texte' => sprintf('%d modification(s) enregistrée(s)', $nb),
-                'urgence' => 'warning',
-                );
-            $smarty->assign('message', $message);
-        }
-        if ($etape == 'delete') {
-            if (isset($date)) {
-                $nb = $thot->deleteRP($date);
-                $message = array(
-                    'title' => DELETE,
-                    'texte' => sprintf('%d suppressions(s) enregistrée(s)', $nb),
-                    'urgence' => 'warning',
-                    );
-                $smarty->assign('message', $message);
-            }
-            $date = null;  // cette date n'existe plus
-        }
-
-        $listeReunions = $thot->listeDatesReunion();
-        $smarty->assign('listeDates', $listeReunions);
-        $listeProfs = $Ecole->listeProfs(true);
-        $smarty->assign('listeProfs',$listeProfs);
-
-        $smarty->assign('corpsPage', 'reunionParents/prepaRP');
-        $smarty->assign('selecteur', 'selecteurs/selectDateType');
-        break;
+    // case 'reunionParents':
+    //     if ($etape == 'enregistrer') {
+    //         $canevas = $thot->getCanevas($_POST);
+    //         $attribProfs = $thot->getAttribProfs($_POST);
+    //         $nb = $thot->saveCanevasProfs($date, $canevas, $attribProfs);
+    //         $message = array(
+    //             'title' => SAVE,
+    //             'texte' => sprintf('%d modification(s) enregistrée(s)', $nb),
+    //             'urgence' => 'warning',
+    //             );
+    //         $smarty->assign('message', $message);
+    //     }
+    //     if ($etape == 'delete') {
+    //         if (isset($date)) {
+    //             $nb = $thot->deleteRP($date);
+    //             $message = array(
+    //                 'title' => DELETE,
+    //                 'texte' => sprintf('%d suppressions(s) enregistrée(s)', $nb),
+    //                 'urgence' => 'warning',
+    //                 );
+    //             $smarty->assign('message', $message);
+    //         }
+    //         $date = null;  // cette date n'existe plus
+    //     }
+    //
+    //     $listeReunions = $thot->listeDatesReunion();
+    //     $smarty->assign('listeDates', $listeReunions);
+    //     $listeProfs = $Ecole->listeProfs(true);
+    //     $smarty->assign('listeProfs',$listeProfs);
+    //
+    //     $smarty->assign('corpsPage', 'reunionParents/prepaRP');
+    //     $smarty->assign('selecteur', 'reunionParents/selecteurs/selectDateType');
+    //     break;
 
     case 'modele':
+        // gestion du modèle de semaine pour le JDC et pour la prise de présences
         require_once 'inc/jdc/gestModele.inc.php';
         break;
 
     case 'printJdc':
+        // impression PDF du JDC
         require_once 'inc/jdc/printJdcProfs.inc.php';
         break;
 
