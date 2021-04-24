@@ -173,7 +173,7 @@ class ecole
      * @param string $groupe
      * @param array $listeAcronymes
      *
-     * @return nombre de suppressions
+     * @return int nombre de suppressions
      */
     public function supprTitulariat($groupe, $listeAcronymes)
     {
@@ -2644,8 +2644,41 @@ class ecole
         $sql .= 'FROM '.PFX.'elevesCours AS ec ';
         $sql .= 'JOIN '.PFX.'eleves AS el ON el.matricule = ec.matricule ';
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON pc.coursGrp = ec.coursGrp ';
-        $sql .= 'LEFT JOIN '.PFX.'profs AS pr ON pr.acronyme = pc.acronyme ';
+        $sql .= 'JOIN '.PFX.'profs AS pr ON pr.acronyme = pc.acronyme ';
         $sql .= 'WHERE groupe = :groupe ';
+        $sql .= 'ORDER BY nom, prenom ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':groupe', $groupe, PDO::PARAM_STR, 10);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $acronyme = $ligne['acronyme'];
+                $liste[$acronyme] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * recherche la liste des profs titulaires d'une classe donnée
+     *
+     * @param string $groupe (groupe classe)
+     *
+     * @return array
+     */
+    public function getListeTitulaires4classe($groupe){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT titus.acronyme, nom, prenom, titre ';
+        $sql .= 'FROM '.PFX.'titus AS titus ';
+        $sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = titus.acronyme ';
+        $sql .= 'WHERE titus.classe = :groupe ';
         $sql .= 'ORDER BY nom, prenom ';
         $requete = $connexion->prepare($sql);
 
