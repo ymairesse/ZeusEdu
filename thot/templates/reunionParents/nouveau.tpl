@@ -172,6 +172,7 @@
                             $('#btn-page2').data('idrp', idRP).attr('disabled', false);
                             $('#page1 .alert-info').toggleClass('hidden');
                             $('#formPage1 input').attr('disabled', true);
+                            $('#btn-page3').data('idrp', idRP).attr('disabled', false);
                         })
                     }
                 })
