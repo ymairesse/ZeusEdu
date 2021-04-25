@@ -180,12 +180,12 @@
         })
 
         $('#formDetails2').on('click', '#btn-page2', function(){
-            var minPer1 = $('#minPer1').val();
-            var maxPer1 = $('#maxPer1').val();
-            var minPer2 = $('#minPer2').val();
-            var maxPer2 = $('#maxPer2').val();
-            var minPer3 = $('#minPer3').val();
-            var maxPer3 = $('#maxPer3').val();
+            var minPer1 = $('#minPer1').val(); minPer1 = (minPer1.length == 4) ? "0" + minPer1: minPer1;
+            var maxPer1 = $('#maxPer1').val(); maxPer1 = (maxPer1.length == 4) ? "0" + maxPer1: maxPer1;
+            var minPer2 = $('#minPer2').val(); minPer2 = (minPer2.length == 4) ? "0" + minPer2: minPer2;
+            var maxPer2 = $('#maxPer2').val(); maxPer2 = (maxPer2.length == 4) ? "0" + maxPer2: maxPer2;
+            var minPer3 = $('#minPer3').val(); minPer3 = (minPer3.length == 4) ? "0" + minPer3: minPer3;
+            var maxPer3 = $('#maxPer3').val(); maxPer3 = (maxPer3.length == 4) ? "0" + maxPer3: maxPer3;
 
             if ((minPer1 < maxPer1) && (maxPer1 == minPer2) && (minPer2 < maxPer2) && (maxPer2 == minPer3) && (minPer3 < maxPer3)) {
                 var formulaire = $('#formDetails2').serialize();
