@@ -208,7 +208,6 @@
                 title: 'Heures dans la liste d\'attente',
                 message: 'Les heures semblent mal ajustées'
             })
-
         })
 
         $('body').on('click', '#btn-page3', function(){
@@ -263,15 +262,24 @@
             var checked = $(this).is(':checked');
             $(".cbProf").prop("checked", checked);
         })
-        $("#page0").on('click', '#attribDir', function() {
-            var checked = $(this).is(':checked');
-            $(".dir").prop("checked", checked);
-        })
         // -------------------------------------------------
 
     $('body').on('click', '.dir', function() {
+        var ceci = $(this);
         var acronyme = $(this).val();
-        $("#prof_" + acronyme).prop('checked', true);
+        var checked = $(this).prop('checked');
+        // vérifier que la case .cbProf correspondante est bien cochée
+        if (checked == true)
+            $(this).closest('tr').find('.cbProf').prop('checked', true);
+    })
+
+    $('body').on('click', '.cbProf', function(){
+        var ceci = $(this);
+        var acronyme = ceci.data('acronyme');
+        var checked = ceci.prop('checked');
+        // décocher aussi, si nécessaire, la case .dir
+        if (checked == false)
+            $(this).closest('tr').find('.dir').prop('checked', false);
     })
 
     $("#maxPer1").change(function(){
@@ -287,7 +295,6 @@
         $.post('inc/reunionParents/modalDelRP.inc.php', {
             idRP: idRP
         }, function(resultat){
-            console.log(resultat);
             $('#modal').html(resultat);
             $('#modalDel').modal('show');
         })
