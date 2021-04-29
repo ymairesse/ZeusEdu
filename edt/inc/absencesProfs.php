@@ -7,7 +7,8 @@ $Ecole = new Ecole();
 
 $listeProfs = $Ecole->listeProfs(true);
 
-require_once 'inc/classes/classEDT.inc.php';
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
 $Edt = new Edt();
 
 // si date du week-end, on passe au lundi suivant
@@ -30,10 +31,23 @@ foreach ($absences4day as $abreaviation => $data) {
     $listeNomsProfs[$abreaviation] = $Ecole->abr2name($abreaviation);
     }
 
+// infos complémentaires en haut de page
+$listeInfos = $Edt->getInfos4date('info', $dateSQL);
+$listeRetards = $Edt->getInfos4date('retard', $dateSQL);
+
+$size = count($listeInfos);
+$mid = intdiv($size, 2);
+$listeInfos1 = array_slice($listeInfos, 0, $mid+1);
+$listeInfos2 = array_slice($listeInfos, $mid+1);
+
 // détermination des statuts pour chaque absence
 $listeStatuts = array();
 foreach ($absences4day as $abreviation => $dataJour){
     foreach ($dataJour as $heure => $dataHeure){
+        // on retient le statut d'absence de la période de cours pour statut global
+        // pour cette absence du jour (ABS ou indisponible)
+        $absences4day[$abreviation]['statutAbs'] = $dataHeure['statutAbs'];
+        // $statuts élèves: licencie,...
         $statuts = $Edt->getStatuts4periode($abreviation, $dateSQL, $heure);
         // réorganisation des statuts 'move' et "normal"
         foreach ($statuts AS $unStatut) {
@@ -44,18 +58,17 @@ foreach ($absences4day as $abreviation => $dataJour){
         }
     }
 
-// infos complémentaires en haut de page
-$listeInfos = $Edt->getInfos4date('info', $dateSQL);
-$listeRetards = $Edt->getInfos4date('retard', $dateSQL);
-
-$size = count($listeInfos);
-$mid = intdiv($size, 2);
-$listeInfos1 = array_slice($listeInfos, 0, $mid+1);
-$listeInfos2 = array_slice($listeInfos, $mid+1);
-
 $smarty->assign('listeInfos1', $listeInfos1);
 $smarty->assign('listeInfos2', $listeInfos2);
 $smarty->assign('listeRetards', $listeRetards);
+
+$listeEducs = $Edt->getEducs4date($dateSQL);
+$smarty->assign('listeEducs', $listeEducs);
+
+$nbPeriodes = count($periodes);
+// 6% de la page pour les acronymes, 94% de la page pour les périodes
+$periodeWidth = round(94/$nbPeriodes);
+$smarty->assign('periodeWidth', $periodeWidth);
 
 // l'ensemble des profs pour le sélecteur
 $smarty->assign('listeProfs', $listeProfs);
@@ -64,7 +77,6 @@ $smarty->assign('listeNomsProfs', $listeNomsProfs);
 $smarty->assign('absences4day', $absences4day);
 $smarty->assign('listeStatuts', $listeStatuts);
 $smarty->assign('periodes', $periodes);
-$smarty->assign('dateSQL', $dateSQL);
 $smarty->assign('laDate', $laDate);
 
 $smarty->assign('corpsPage', 'absencesProfs');

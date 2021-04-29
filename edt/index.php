@@ -13,6 +13,9 @@ switch ($action) {
     case 'absencesProfs':
         require_once 'inc/absencesProfs.php';
         break;
+    case 'test':
+        require_once 'inc/test.php';
+        break;
     case 'sendICal':
         require_once 'inc/sendICal.php';
         break;

@@ -1,4 +1,4 @@
-<td style="width:33%" class="td-edit" data-type="info">
+<td style="width:33%;" class="td-edit" data-type="info">
     <ul class="list-unstyled">
         {foreach from=$listeInfos1 key=idEDTinfo item=data}
             <li title="{$data.proprio}" data-id="{$data.idEDTinfo}">
@@ -6,7 +6,7 @@
             </li>
         {/foreach}
     </ul>
-
+    <div class="space" style="height:30px">{* espacement supplémentaire*}</div>
 </td>
 
 <td style="width:33%" class="td-edit" data-type="info">
@@ -17,7 +17,7 @@
             </li>
         {/foreach}
     </ul>
-
+    <div class="space" style="height:30px">{* espacement supplémentaire*}</div>
 </td>
 
 <td style="max-height:5em; overflow: auto; width:33%" class="td-edit" data-type="retard">
@@ -28,4 +28,11 @@
         </li>
         {/foreach}
     </ul>
+    <div class="space" style="height:30px">{* espacement supplémentaire*}</div>
 </td>
+
+<style media="screen">
+    .space {
+        display: none
+    }
+</style>

@@ -19,12 +19,18 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
-$laDate = isset($_POST['laDate']) ? $_POST['laDate'] : strftime("%d/%m/%Y");
-$dateSQL = Application::dateMySQL($laDate);
+$userStatus = $User->userStatus($module);
+
+$date = isset($_GET['date']) ? $_GET['date'] : Null;
+$dateSQL = Application::dateMySQL($date);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
 $Edt = new Edt();
+
+// date avec nom du jour en français (locale)
+$unixTime = strtotime($dateSQL);
+$laDate = strftime("%A %d/%m/%Y", $unixTime);
 
 // la liste des périodes de cours avec début et fin des cours
 $periodes = $Edt->getPeriodesCours(true, true);
@@ -34,10 +40,6 @@ $absences4day = $Edt->getAbsences4date($dateSQL, $periodes);
 $listeStatuts = array();
 foreach ($absences4day as $abreviation => $dataJour){
     foreach ($dataJour as $heure => $dataHeure){
-        // on retient le statut d'absence de la période de cours pour statut global
-        // pour cette absence du jour (ABS ou indisponible)
-        $absences4day[$abreviation]['statutAbs'] = $dataHeure['statutAbs'];
-        // $statuts élèves: licencie,...
         $statuts = $Edt->getStatuts4periode($abreviation, $dateSQL, $heure);
         // réorganisation des statuts 'move' et "normal"
         foreach ($statuts AS $unStatut) {
@@ -53,8 +55,8 @@ $Ecole = new ecole();
 
 // retrouver l'identité du prof
 $listeNomsProfs = array();
-foreach ($absences4day as $acronyme => $data) {
-    $listeNomsProfs[$acronyme] = $Ecole->abr2name($acronyme);
+foreach ($absences4day as $abreviation => $data) {
+    $listeNomsProfs[$abreviation] = $Ecole->abr2name($abreviation);
     }
 
 // infos complémentaires en haut de page
@@ -67,28 +69,47 @@ $mid = intdiv($size, 2);
 $listeInfos1 = array_slice($listeInfos, 0, $mid+1);
 $listeInfos2 = array_slice($listeInfos, $mid+1);
 
+$nbPeriodes = count($periodes);
+// 6% de la page pour les acronymes, 94% de la page pour les périodes
+$periodeWidth = round(94/$nbPeriodes);
+
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty;
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
+$smarty->assign('absences4day', $absences4day);
+$smarty->assign('listeStatuts', $listeStatuts);
+$smarty->assign('listeNomsProfs', $listeNomsProfs);
 $smarty->assign('listeInfos1', $listeInfos1);
 $smarty->assign('listeInfos2', $listeInfos2);
 $smarty->assign('listeRetards', $listeRetards);
 
-$listeEducs = $Edt->getEducs4date($dateSQL);
-$smarty->assign('listeEducs', $listeEducs);
-
-$nbPeriodes = count($periodes);
-// 6% de la page pour les acronymes, 94% de la page pour les périodes
-$periodeWidth = round(94/$nbPeriodes);
-$smarty->assign('periodeWidth', $periodeWidth);
-
-$smarty->assign('listeNomsProfs', $listeNomsProfs);
-$smarty->assign('absences4day', $absences4day);
-$smarty->assign('listeStatuts', $listeStatuts);
 $smarty->assign('periodes', $periodes);
+$smarty->assign('nbPeriodes', $nbPeriodes);
+$smarty->assign('periodeWidth', $periodeWidth);
 $smarty->assign('laDate', $laDate);
 
-$smarty->display('ABScalendar.tpl');
+$abs4PDF =  $smarty->fetch('ABScalendarPDF.tpl');
+
+
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('L', 'A4', 'fr');
+
+$html2pdf->WriteHTML($abs4PDF);
+
+$f_date = str_replace('/', '-', $date);
+$nomFichier = sprintf('abs_%s.pdf', $f_date);
+
+// création éventuelle du répertoire au nom de l'utlilisateur
+$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
+
+if (!(file_exists($chemin)))
+    mkdir ($chemin, 0700, true);
+
+$html2pdf->Output($chemin.$nomFichier, 'D');
+
+// echo sprintf("inc/download.php?type=pfN&amp;f=/%s/%s", $module, $nomFichier);

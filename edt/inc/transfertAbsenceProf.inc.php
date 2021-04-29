@@ -22,6 +22,9 @@ $module = $Application->getModule(2);
 $abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
 $startDate = isset($_POST['startDate']) ? $_POST['startDate'] : Null;
 $endDate = isset($_POST['endDate']) ? $_POST['endDate'] : Null;
+$statutAbs = isset($_POST['statutAbs']) ? $_POST['statutAbs'] : Null;
+if (!(in_array($statutAbs, array('ABS', 'indisponible'))))
+    die('tricheur');
 
 // les dates au format YYYY-MM-JJ
 $dateStart = Application::dateMySQL($startDate);
@@ -45,6 +48,6 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
 $Edt = new Edt();
 
-$nb = $Edt->transfertListeAbsences($abreviation, $arrayDates);
+$nb = $Edt->transfertListeAbsences($abreviation, $arrayDates, $statutAbs);
 
 echo $nb;

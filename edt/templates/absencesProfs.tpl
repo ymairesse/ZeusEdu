@@ -193,6 +193,47 @@
 
         sessionStorage.clear();
 
+        $('body').on('click', '#btn-chargeEduc', function(){
+            var date = $('#choixDate').val();
+            $.post('inc/choixEducateurs.inc.php', {
+                date: date
+            }, function(resultat){
+                $('#modal').html(resultat);
+                $('#modalSelectEduc').modal('show');
+            })
+        })
+        $('#modal').on('click', '#btn-saveEducs', function(){
+            var formulaire = $('#formEduc').serialize();
+            $.post('inc/saveEducs.inc.php', {
+                formulaire: formulaire
+            }, function(nbSave){
+                var date = $('#choixDate').val();
+                $.post('inc/getAbsences4date.inc.php', {
+                    date: date
+                }, function(resultat){
+                    $('#gestionAbs').html(resultat);
+                    $('#modalSelectEduc').modal('hide');
+                    bootbox.alert({
+                        title: 'Enregistrement',
+                        message: "<strong>" + nbSave + "</strong> information(s) enregistrée(s)"
+                    })
+                })
+            })
+        })
+
+        $('body').on('click', '.btn-educ', function(){
+            var laPeriode = $(this).data('periode');
+            var date = $('#choixDate').val();
+            $.post('inc/choixEducateurs.inc.php', {
+                date: date,
+                laPeriode: laPeriode
+            }, function(resultat){
+                $('#modal').html(resultat);
+                $('#modalSelectEduc').modal('show');
+                $('input.educs').eq(3).focus();
+            })
+        })
+
         $('body').on('click', '.btn-viewProf', function(){
             var acronyme = $(this).closest('th').data('acronyme');
             $.post('inc/modalViewProf.inc.php', {
@@ -203,6 +244,7 @@
                 $('#modalViewProf').modal('show');
             })
         })
+
 
 
         $(document).ajaxStart(function() {
@@ -375,16 +417,44 @@
         $('#modal').on('keyup', '#acronyme', function(){
             var abreviation = $(this).val().toUpperCase();
             if (abreviation != '')
-                $('#listeProfs option[value="' + abreviation + '"]').prop('selected', true);
+                $('#modalListeProfs option[value="' + abreviation + '"]').prop('selected', true);
         })
         $('#modal').on('blur', '#acronyme', function(){
             var abreviation = $(this).val().toUpperCase();
             if (abreviation != '') {
-                var exists = 0 != $('#listeProfs option[value=' + abreviation + ']').length;
+                var exists = 0 != $('#modalListeProfs option[value=' + abreviation + ']').length;
                 if (!exists)
-                    $('#listeProfs option[value=""]').prop('selected', true);
+                    $('#modalListeProfs option[value=""]').prop('selected', true);
                 }
         })
+
+// ********************************
+
+
+        $('#modal').on('keyup', '.educs', function(){
+            var abreviation = $(this).val().toUpperCase();
+            var periode = $(this).data('periode');
+            if (abreviation != '')
+                $.post('inc/searchProf.inc.php', {
+                    abreviation: abreviation
+                }, function(resultat){
+                    $('.nomProf[data-periode="' + periode +'"]').text(resultat);
+                })
+        })
+        $('#modal').on('blur', '.educs', function(){
+            var abreviation = $(this).val();
+            var periode = $(this).data('periode');
+            $.post('inc/getAcronyme.inc.php', {
+                abreviation: abreviation
+            }, function(resultat){
+                $('.educs[data-periode="' + periode + '"]').val(resultat);
+            })
+        })
+
+
+// ********************************
+
+
 
         $('#modal').on('change', '#listeProfs', function(){
             var abreviation = $(this).val();
@@ -538,6 +608,15 @@
             var change = $(this).data('change');
             var date = $('#choixDate').val();
             var dateEn = dateFr2En(date);
+            var d = new Date(dateEn);
+            // quel jour de la semaine?
+            var j = d.getDay();
+            // si lundi et -1 jour
+            if ((change == -1) && (j == 1))
+                change = -3;
+            // si vendredi et +1 jour
+            if ((change == +1) && (j == 5))
+                change = +3;
             var laDateEn = moment(dateEn).add(change, 'days');
             laDate = new Date(laDateEn).toLocaleDateString();
             $('#choixDate').val(laDate);
@@ -685,10 +764,12 @@
                 var acronyme = $('#listeProfs').val();
                 var startDate = $('#start').val();
                 var endDate = $('#end').val();
+                var statutAbs = $('.statutAbs:checked').val();
                 $.post('inc/transfertAbsenceProf.inc.php', {
                     acronyme: acronyme,
                     startDate: startDate,
-                    endDate: endDate
+                    endDate: endDate,
+                    statutAbs: statutAbs
                 }, function(nb){
                     $('#selectDates').modal('hide');
                     bootbox.alert({

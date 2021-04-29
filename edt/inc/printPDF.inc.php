@@ -28,6 +28,9 @@ $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
 $Edt = new Edt();
 
+// date avec nom du jour en français (locale)
+$unixTime = strtotime($dateSQL);
+$laDate = strftime("%A %d/%m/%Y", $unixTime);
 
 // la liste des périodes de cours avec début et fin des cours
 $periodes = $Edt->getPeriodesCours(true, true);
@@ -86,7 +89,7 @@ $smarty->assign('listeRetards', $listeRetards);
 $smarty->assign('periodes', $periodes);
 $smarty->assign('nbPeriodes', $nbPeriodes);
 $smarty->assign('periodeWidth', $periodeWidth);
-$smarty->assign('laDate', $date);
+$smarty->assign('laDate', $laDate);
 
 $abs4PDF =  $smarty->fetch('ABScalendarPDF.tpl');
 

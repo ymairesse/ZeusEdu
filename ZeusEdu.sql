@@ -1216,6 +1216,14 @@ ALTER TABLE `didac_EDTprofsICal`
 ALTER TABLE `didac_EDTprofsStatut`
     ADD PRIMARY KEY (`statut`,`acronyme`,`date`,`heure`);
 
+CREATE TABLE `didac_EDTeducs` (
+  `date` date NOT NULL COMMENT 'Date du jour',
+  `periode` tinyint NOT NULL COMMENT 'Période de la journée',
+  `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Acronyme de l''éducateur en charge'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Éducateurs en charge par période de la journée';
+
+ALTER TABLE `didac_EDTeducs`
+  ADD PRIMARY KEY (`date`,`periode`);
 
 CREATE TABLE `didac_presencesEleves` (
     `id` int(11) NOT NULL,

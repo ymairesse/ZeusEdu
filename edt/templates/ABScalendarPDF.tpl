@@ -1,8 +1,14 @@
 <style media="print">
+
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;
   font-size: 8pt;
+}
+
+.void {
+    height: 30px;
+    border: 1px solid #999;
 }
 
 {include file='../edt.css'}
@@ -20,8 +26,8 @@ table, th, td {
 
 <table class="table" style="width:100%">
     <tr>
-        <th style="width:67%" colspan="2">Infos du jour</th>
-        <th style="width:33%">Retards du jour</th>
+        <th style="width:67%;" colspan="2">Infos du jour</th>
+        <th style="width:33%;">Retards du jour</th>
     </tr>
 
     <tr>
@@ -34,9 +40,9 @@ table, th, td {
 
 <table class="table table-condensed" style="width:100%">
     <tr>
-        <th style="width:6%">&nbsp;</th>
+        <th style="width:{$periodeWidth}%">&nbsp;</th>
         {foreach from=$periodes key=periode item=data}
-            <th style="text-align:center;width:{$periodeWidth}%;">{$periode}<br>{$data.debut}{$periodeWidth}</th>
+            <th style="text-align:center;width:{$periodeWidth}%;">{$periode}<br>{$data.debut}</th>
         {/foreach}
     </tr>
 
@@ -72,6 +78,16 @@ table, th, td {
 
             {/foreach}
 
+        </tr>
+    {/foreach}
+
+    {foreach from=array(1,2) item=wtf}
+
+        <tr>
+            <th class="void">&nbsp;</th>
+            {foreach from=$periodes key=periode item=wtf}
+            <td>&nbsp;</td>
+            {/foreach}
         </tr>
     {/foreach}
 

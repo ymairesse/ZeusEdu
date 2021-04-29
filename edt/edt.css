@@ -122,3 +122,10 @@ table.table-absences td {
   position: absolute;
   display: none;
 }
+
+tr.indisponible > th {
+    text-decoration: line-through;
+    font-weight: normal;
+    background-color: #ccc;
+
+}

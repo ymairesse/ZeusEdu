@@ -1,7 +1,7 @@
 <div class="btn-group">
     <button type="button" class="btn btn-default" id="btn-resetMove">Annuler</button>
     <button type="button" class="btn btn-primary" id="btn-saveMove" disabled>Enregistrer les mouvements</button>
-    <button type="button" class="btn btn-success" id="btn-printPDF"><i class="fa fa-file-pdf-o"></i> Imprimer</button>
+    <a class="btn btn-success" type="button" href="inc/print2pdf.php?date={$laDate}"><i class="fa fa-file-pdf-o"></i> Imprimer</a>
 </div>
 
 <div id="ajaxLoader" class="hidden">
@@ -10,7 +10,7 @@
 
 <table class="table table-condensed" id="tableInfos">
     <tr>
-        <th style="width:67%" colspan="2">Infos du jour <button type="button" class="btn btn-success btn-xs" id="btn-addInfo" data-type="info"><i class="fa fa-plus"></i></button></th>
+        <th style="width:67%;" colspan="2">Infos du jour <button type="button" class="btn btn-success btn-xs" id="btn-addInfo" data-type="info"><i class="fa fa-plus"></i></button></th>
         <th>Retards du jour <button type="button" class="btn btn-danger btn-xs" id="btn-addRetard" data-type="retard"><i class="fa fa-plus"></i></button></th>
     </tr>
 
@@ -23,14 +23,19 @@
 </table>
 
 <table class="table table-condensed table-absences">
+
     <tr>
-        <th>&nbsp;</th>
+        <th>
+            <button type="button" class="btn btn-info btn-block" id="btn-chargeEduc">Éducateurs <i class="fa fa-arrow-right"></i> </button>
+        </th>
         {foreach from=$periodes key=periode item=data}
-            <th style="width:10%; text-align:center;"><span class="micro">{$periode}</span><br>{$data.debut}</th>
+            <th style="width:{$periodeWidth}%"; text-align:center;"><span class="micro">{$periode}</span><br>{$data.debut}
+                <button type="button" class="btn btn-xs pull-right btn-info btn-educ" data-periode="{$periode}" name="button">{$listeEducs.$periode.acronyme|default:'XXXXX'}</button></th>
         {/foreach}
     </tr>
+
     {foreach from=$absences4day key=acronyme item=dataProf}
-        <tr data-acronyme="{$acronyme}">
+        <tr data-acronyme="{$acronyme}" class="{$dataProf.statutAbs}">
 
             {assign var=nomProf value=$listeNomsProfs.$acronyme}
 
@@ -92,6 +97,7 @@
                                 {$dataProf.$heure.local|escape:html}
                             </div>
                         </div>
+
                         <a href="#" class="badge badge-success badge-xs pull-left opacity0 btn-edit"><i class="fa fa-edit"></i></a>
                         <div style="font-size: 1rem; text-align:right">
                         {if $dataProf.$heure.eduProf != ''}<i class="fa fa-graduation-cap fa-xs" title="{$dataProf.$heure.eduProf}"></i> {/if}

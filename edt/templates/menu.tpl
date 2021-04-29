@@ -24,6 +24,7 @@
 				Absences <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=absencesProfs">Gestion des absences</a></li>
+					<li><a href="index.php?action=test">TEst</a></li>
 				</ul>
 			</li>
 			{/if}
