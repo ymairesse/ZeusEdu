@@ -27,12 +27,19 @@
               </div>
 
                 <div class="col-xs-3">
-                    <input type="text" class="form-control" name="eduprof" id="acronyme" value="{$absence.eduProf}" placeholder="Abrev." style="text-transform:uppercase" tabindex="6">
+                    <input type="text"
+                        class="form-control"
+                        name="eduprof"
+                        id="acronyme"
+                        value="{$absence.eduProf}"
+                        placeholder="Abrev."
+                        style="text-transform:uppercase"
+                        tabindex="6">
                 </div>
                 <div class="col-xs-9">
                     <div class="form-group">
                         <label for="prof" class="sr-only">Responsable</label>
-                        <select class="form-control" id="listeProfs" tabindex="7">
+                        <select class="form-control" id="modalListeProfs" tabindex="7">
                             <option value="">Sélectionner un professeur/éducateur</option>
                             {foreach from=$listeProfs key=abreviation item=data}
                             <option value="{$abreviation}"{if $absence.eduProf == $abreviation} selected{/if}>{$data.nom} {$data.prenom}</option>

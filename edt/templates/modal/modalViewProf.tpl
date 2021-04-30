@@ -1,6 +1,6 @@
 <div id="modalViewProf" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewProfLabel" aria-hidden="true" data-acronyme="{$acronyme}">
   <div class="modal-dialog">
-    <div class="modal-content" style="width:300px">
+    <div class="modal-content" style="width:500px">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -10,9 +10,7 @@
       <div class="modal-body" id="calendar">
 
       </div>
-      {* <div class="modal-footer">
-        ...
-      </div> *}
+
     </div>
   </div>
 </div>

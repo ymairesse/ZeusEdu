@@ -29,8 +29,14 @@
             <button type="button" class="btn btn-info btn-block" id="btn-chargeEduc">Éducateurs <i class="fa fa-arrow-right"></i> </button>
         </th>
         {foreach from=$periodes key=periode item=data}
-            <th style="width:{$periodeWidth}%"; text-align:center;"><span class="micro">{$periode}</span><br>{$data.debut}
-                <button type="button" class="btn btn-xs pull-right btn-info btn-educ" data-periode="{$periode}" name="button">{$listeEducs.$periode.acronyme|default:'XXXXX'}</button></th>
+            <th style="width:{$periodeWidth}%; text-align:center;">
+                <span class="micro">{$periode}</span><br>{$data.debut}
+                <button type="button" class="btn btn-xs pull-right btn-info btn-educ"
+                    data-periode="{$periode}"
+                    title="{$listeEducs.$periode.prenom} {$listeEducs.$periode.nom}">
+                    {$listeEducs.$periode.acronyme|default:'XXXXX'}
+                </button>
+            </th>
         {/foreach}
     </tr>
 

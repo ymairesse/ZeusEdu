@@ -29,6 +29,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-xs-12">
+                        Statut de l'absence
+                        <label class="radio-inline"><input type="radio" name="statutAbs" value="ABS" checked class="statutAbs">Absence</label>
+                        <label class="radio-inline"><input type="radio" name="statutAbs" value="indisponible" class="statutAbs">Indisponibilité</label>
+                    </div>
                     <div class="clearfix"></div>
 
                 </form>
@@ -72,7 +77,6 @@
             todayHighlight: true,
             daysOfWeekDisabled: '06',
         });
-
 
     })
 </script>

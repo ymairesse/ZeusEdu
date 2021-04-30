@@ -40,7 +40,12 @@ $absences4day = $Edt->getAbsences4date($dateSQL, $periodes);
 $listeStatuts = array();
 foreach ($absences4day as $abreviation => $dataJour){
     foreach ($dataJour as $heure => $dataHeure){
+        // on retient le statut d'absence de la période de cours pour statut global
+        // pour cette absence du jour (ABS ou indisponible)
+        $absences4day[$abreviation]['statutAbs'] = $dataHeure['statutAbs'];
+        // $statuts élèves: licencie,...
         $statuts = $Edt->getStatuts4periode($abreviation, $dateSQL, $heure);
+
         // réorganisation des statuts 'move' et "normal"
         foreach ($statuts AS $unStatut) {
             if (($unStatut == 'movedFrom') || ($unStatut == 'movedTo'))
@@ -86,13 +91,15 @@ $smarty->assign('listeInfos1', $listeInfos1);
 $smarty->assign('listeInfos2', $listeInfos2);
 $smarty->assign('listeRetards', $listeRetards);
 
+$listeEducs = $Edt->getEducs4date($dateSQL);
+$smarty->assign('listeEducs', $listeEducs);
+
 $smarty->assign('periodes', $periodes);
 $smarty->assign('nbPeriodes', $nbPeriodes);
 $smarty->assign('periodeWidth', $periodeWidth);
 $smarty->assign('laDate', $laDate);
 
 $abs4PDF =  $smarty->fetch('ABScalendarPDF.tpl');
-
 
 require INSTALL_DIR.'/vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
@@ -102,14 +109,6 @@ $html2pdf = new Html2Pdf('L', 'A4', 'fr');
 $html2pdf->WriteHTML($abs4PDF);
 
 $f_date = str_replace('/', '-', $date);
-$nomFichier = sprintf('abs_%s.pdf', $f_date);
+$nomFichier = sprintf('absences_%s.pdf', $f_date);
 
-// création éventuelle du répertoire au nom de l'utlilisateur
-$chemin = INSTALL_DIR.$ds.'upload'.$ds.$acronyme.$ds.$module.$ds;
-
-if (!(file_exists($chemin)))
-    mkdir ($chemin, 0700, true);
-
-$html2pdf->Output($chemin.$nomFichier, 'D');
-
-// echo sprintf("inc/download.php?type=pfN&amp;f=/%s/%s", $module, $nomFichier);
+$html2pdf->Output($nomFichier, 'D');

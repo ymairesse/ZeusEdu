@@ -49,6 +49,7 @@ foreach ($absences4day as $abreviation => $dataJour){
         $absences4day[$abreviation]['statutAbs'] = $dataHeure['statutAbs'];
         // $statuts élèves: licencie,...
         $statuts = $Edt->getStatuts4periode($abreviation, $dateSQL, $heure);
+
         // réorganisation des statuts 'move' et "normal"
         foreach ($statuts AS $unStatut) {
             if (($unStatut == 'movedFrom') || ($unStatut == 'movedTo'))

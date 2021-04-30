@@ -439,7 +439,7 @@ class Edt {
 	 *
 	 * @return int nombre d'enregistrements
 	 */
-	public function transfertListeAbsences($acronyme, $arrayDates) {
+	public function transfertListeAbsences($acronyme, $arrayDates, $statutAbs) {
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		// recherche du modèle de semaine du prof
 		$sql = 'SELECT jour, startTime, endTime, local, matiere, profs, classes, parties, ';
@@ -472,10 +472,12 @@ class Edt {
 		// enregistrement pour chacune des dates d'absence et pour chaque période de cours
 		$sql = 'INSERT INTO '.PFX.'EDTprofsABS ';
 		$sql .= 'SET acronyme = :acronyme, startTime = :startTime, endTime = :endTime, heure = :heure, date = :date, ';
-		$sql .= 'local = :local, matiere = :matiere, profs = :profs, classes = :classes, parties = :parties ';
+		$sql .= 'statutAbs = :statutAbs, local = :local, matiere = :matiere, profs = :profs, classes = :classes, parties = :parties ';
 		$sql .= 'ON DUPLICATE KEY UPDATE endTime = :endTime, local = :local, ';
 		$sql .= 'matiere = :matiere, profs = :profs, classes = :classes, parties = :parties ';
 		$requete = $connexion->prepare($sql);
+
+		$requete->bindParam(':statutAbs', $statutAbs, PDO::PARAM_STR, 12);
 
 		$nb = 0;
 		foreach ($listeAbsences as $wtf => $data){
@@ -520,7 +522,7 @@ class Edt {
 	 */
 	 public function getAbsences4date($laDate){
  		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
- 		$sql = 'SELECT abs.acronyme, startTime, endTime, heure, date, ';
+ 		$sql = 'SELECT abs.acronyme, startTime, endTime, heure, date, statutAbs, ';
  		$sql .= 'local, matiere, profs, classes, parties, eduProf, remarque, ';
  		$sql .= 'sexe, nom, prenom ';
  		$sql .= 'FROM '.PFX.'EDTprofsABS AS abs ';
@@ -1216,6 +1218,159 @@ class Edt {
 		Application::deconnexionPDO($connexion);
 
 		return $info;
+	}
+
+	/**
+	 * recherche la liste des éducs en charge pour une date donnée
+	 *
+	 * @param string $date (au format SQL)
+	 *
+	 * @return array
+	 */
+	public function getEducs4date($dateSQL){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'SELECT date, periode, educs.acronyme, nom, prenom ';
+		$sql .= 'FROM '.PFX.'EDTeducs AS educs ';
+		$sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = educs.acronyme ';
+		$sql .= 'WHERE date = :date ';
+		$sql .= 'ORDER BY periode ';
+		$requete = $connexion->prepare($sql);
+
+		$requete->bindParam(':date', $dateSQL, PDO::PARAM_STR, 10);
+
+		$liste = array();
+		$resultat = $requete->execute();
+		if ($resultat){
+			$requete->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $requete->fetch()){
+				$periode = $ligne['periode'];
+				$liste[$periode] = $ligne;
+			}
+		}
+
+		Application::deconnexionPDO($connexion);
+
+		return $liste;
+	}
+
+	/**
+	 * enregistre l'affectation des éducs depuis la liste par période de cours donnée
+	 * entre les dates $start et $end (au format SQL)
+	 *
+	 * @param array $listeEducs : liste d'affectation par période de cours
+	 * @param string $start
+	 * @param string $end
+	 *
+	 * @return int
+	 */
+	public function saveEducs($listeEducs, $startSQL, $endSQL){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'INSERT INTO '.PFX.'EDTeducs ';
+		$sql .= 'SET date = :date, periode = :periode, acronyme = :acronyme ';
+		$sql .= 'ON DUPLICATE KEY update acronyme = :acronyme ';
+		$requete = $connexion->prepare($sql);
+
+		$startSQL = new DateTime($startSQL);
+		$endSQL = new DateTime($endSQL);
+		$endSQL = $endSQL->modify( '+1 day' );
+
+		$listeDates = new DatePeriod(
+		     $startSQL,
+		     new DateInterval('P1D'),
+		     $endSQL
+			);
+
+		$n = 0;
+		foreach ($listeDates as $wtf => $value) {
+			$uneDate = $value->format('Y-m-d');
+			// détermination du jour de la semaine
+			$date = new DateTime($uneDate);
+			$timestamp = $date->getTimestamp();
+			$dw = date( "w", $timestamp);
+			// ne pas enregistrer les samedis et dimanches
+			if (($dw != 0) && ($dw != 6)) {
+				$requete->bindParam(':date', $uneDate, PDO::PARAM_STR, 10);
+				foreach ($listeEducs as $periode => $acronyme){
+					$requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+					$requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR);
+					$resultat = $requete->execute();
+					$n += $requete->rowCount();
+				}
+			}
+		}
+
+		Application::deconnexionPDO($connexion);
+
+		return $n;
+	}
+
+	/**
+     * retourne le nom complet du prof dont on fournit l'abréviation.
+     *
+     * @param string $acronyme
+     *
+     * @return string : le nom du prof ou une chaîne vide si abréviation pas trouvée
+     */
+    public function abr2name($acronyme)
+    {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT nom, prenom, sexe ';
+        $sql .= 'FROM '.PFX.'profs ';
+        $sql .= 'WHERE acronyme LIKE :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $nomPrenom = $acronyme;
+        $acronyme = '%'.$acronyme.'%';
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 9);
+        $resultat = $requete->execute();
+
+		$laListe = array();
+        if ($resultat) {
+			$requete->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $requete->fetch()){
+	            if ($ligne != ''){
+					$nomPrenom = sprintf('%s %s', $ligne['prenom'], $ligne['nom']);
+					$laListe[] = $nomPrenom;
+					}
+        		}
+			}
+        Application::DeconnexionPDO($connexion);
+
+		// renvoyer éventuellement le dernier $nomPrenom vu dans la boucle
+		return (count($laListe) == 1) ? $nomPrenom : '???';
+    }
+
+	/**
+	 * renvoie, si possible, l'acronyme complet correspondant à une amorce
+	 *
+	 * @param string $amorce
+	 *
+	 * @return string
+	 */
+	public function getFullAcronyme($amorce){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'SELECT acronyme ';
+		$sql .= 'FROM '.PFX.'profs ';
+		$sql .= 'WHERE acronyme LIKE :acronyme ';
+		$requete = $connexion->prepare($sql);
+
+		$amorce = '%'.$amorce.'%';
+
+		$requete->bindParam(':acronyme', $amorce, PDO::PARAM_STR, 9);
+        $resultat = $requete->execute();
+
+		$liste = array();
+		if ($resultat){
+			$requete->setFetchMode(PDO::FETCH_ASSOC);
+			while ($ligne = $requete->fetch()){
+				$acronyme = $ligne['acronyme'];
+				$liste[] = $acronyme;
+			}
+		}
+
+		Application::deconnexionPDO($connexion);
+
+		return (($liste != Null) && (count($liste) == 1)) ? $acronyme : Null;
 	}
 
 }

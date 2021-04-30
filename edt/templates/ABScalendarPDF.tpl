@@ -42,16 +42,20 @@ table, th, td {
     <tr>
         <th style="width:{$periodeWidth}%">&nbsp;</th>
         {foreach from=$periodes key=periode item=data}
-            <th style="text-align:center;width:{$periodeWidth}%;">{$periode}<br>{$data.debut}</th>
+            <th style="text-align:center;width:{$periodeWidth}%">
+                {$periode}<br>{$data.debut}
+                <span class="pull-right" data-periode="{$periode}">
+                    {$listeEducs.$periode.acronyme|default:'XXXXX'}
+                </span>
+            </th>
         {/foreach}
     </tr>
 
     {foreach from=$absences4day key=acronyme item=dataProf}
-        <tr>
-
+        <tr style="text-align:center">
             {assign var=nomProf value=$listeNomsProfs.$acronyme}
 
-            <th style="text-align:center;">
+            <th style="text-align:center;{if $dataProf.statutAbs == 'indisponible'}text-decoration:line-through; background:#999;{/if}">
                 {$acronyme}
             </th>
 
