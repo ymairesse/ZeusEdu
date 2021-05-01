@@ -1,6 +1,6 @@
 <?php
 
-$bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : PERIODEENCOURS;
+$bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : PERIODETQ;
 $etape = isset($_REQUEST['etape']) ? $_REQUEST['etape'] : null;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 $classe = isset($_REQUEST['classe']) ? $_REQUEST['classe'] : null;
@@ -8,7 +8,7 @@ $classe = isset($_REQUEST['classe']) ? $_REQUEST['classe'] : null;
 // liste des classes dont le prof utilisateur est titulaire
 $listeTitus = $BullTQ->tituTQ($acronyme);
 if (!(in_array($classe, $listeTitus))) {
-    if (count($listeTitus == 1)) {
+    if (count($listeTitus) == 1) {
         $classe = current($listeTitus);
     } else {
         $classe = '';
@@ -19,9 +19,9 @@ $smarty->assign('listeClasses', $listeTitus);
 $smarty->assign('matricule', $matricule);
 $smarty->assign('classe', $classe);
 $smarty->assign('bulletin', $bulletin);
-$smarty->assign('nbBulletins', NBPERIODES);
-$smarty->assign('PERIODESDELIBES', explode(',', PERIODESDELIBES));
-$smarty->assign('listePeriodes', $Application->listePeriodes(NBPERIODES));
+$smarty->assign('nbBulletins', NBPERIODESTQ);
+$smarty->assign('DELIBESTQ', explode(',', DELIBESTQ));
+$smarty->assign('listePeriodes', $Application->listePeriodes(NBPERIODESTQ));
 
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);

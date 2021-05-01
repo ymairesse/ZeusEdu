@@ -15,8 +15,8 @@
 
 {include file="menu.tpl"}
 
-<div class="container">
-	
+<div class="container-fluid">
+
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
@@ -46,10 +46,10 @@
 {include file="../../templates/footer.tpl"}
 
 <script type="text/javascript">
-	
+
 window.setTimeout(function() {
     $(".auto-fadeOut").fadeTo(500, 0).slideUp(500, function(){
-        $(this).remove(); 
+        $(this).remove();
 	    });
 	}, 3000);
 
@@ -61,18 +61,18 @@ $(document).ready (function() {
 		$("#corpsPage form input:visible:enabled").not('.datepicker').first().focus();
 		else
 		$("form input:visible:enabled").not('.datepicker').first().focus();
-		
+
 	$("*[title]").tooltip();
-	
+
 	$(".pop").popover({
 		trigger:'hover'
 		});
 	$(".pop").click(function(){
 		$(".pop").not(this).popover("hide");
 		})
-		
+
 	$("input").not(".autocomplete").attr("autocomplete","off");
-	
+
 })
 
 </script>

@@ -19,5 +19,6 @@ $smarty->assign('annee', $annee);
 
 $smarty->assign('signature', $signature);
 $smarty->assign('DIRECTION', DIRECTION);
+$smarty->assign('BASEDIR', BASEDIR);
 
 $smarty->assign('corpsPage','templates/direction/resultatsEprExterne');

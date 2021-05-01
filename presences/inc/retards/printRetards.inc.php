@@ -28,13 +28,10 @@ $smarty->assign('BASEDIR', BASEDIR);
 
 define('PAGEWIDTH', 600);
 
-require_once INSTALL_DIR.$ds.'html2PDF/vendor/autoload.php';
-
+require INSTALL_DIR.'/vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
-use Spipu\Html2Pdf\Exception\Html2PdfException;
-use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-$html2pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'A5', 'fr');
+$html2pdf = new Html2Pdf('L', 'A5', 'fr');
 
 foreach ($_POST['toPrint'] as $data) {
 

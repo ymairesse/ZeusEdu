@@ -1,6 +1,6 @@
-<div class="container">
+<div class="container-fluid">
 
-<div class="table-responsive">
+<div class="table table-responsive">
 
 	<table class="tableauAdmin table table-hover" style="width:100%">
 	<tr>

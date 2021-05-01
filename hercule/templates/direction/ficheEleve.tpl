@@ -61,7 +61,7 @@
 				<div class="tab-pane" id="tabs-8">
 					{include file="direction/pad/tabEleve8.inc.tpl"}
 				</div>
-
+				
 				<div class="tab-pane" id="tabs-10">
 					{include file="direction/pad/visitesInfirmerie.tpl"}
 				</div>

@@ -34,8 +34,14 @@ $smarty->assign('BASEDIR', BASEDIR);
 
 require_once INSTALL_DIR."/inc/classes/class.Athena.php";
 $Athena = new Athena();
-$listeDemandes = $Athena->getDemandesSuivi();
-$smarty->assign('listeDemandes', $listeDemandes);
+// $listeDemandes = $Athena->getDemandesSuivi();
+// $smarty->assign('listeDemandes', $listeDemandes);
+
+$listeDemandesProfs = $Athena->getDemandesSuivi();
+$smarty->assign('listeDemandesProfs', $listeDemandesProfs);
+
+$listeDemandesEleves = $Athena->getDemandeAideEleves();
+$smarty->assign('listeDemandesEleves', $listeDemandesEleves);
 
 switch ($action) {
     case 'ficheEleve':
@@ -62,6 +68,10 @@ switch ($action) {
 
     case 'eleves':
         require 'inc/eleves/eleves.inc.php';
+        break;
+
+    case 'remediations':
+        require 'inc/remediations/indexRem.php';
         break;
 
     default:

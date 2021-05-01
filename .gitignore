@@ -2,7 +2,7 @@
 *.js.php
 *.sty.php
 *.html.php
-*.csv
+# *.csv
 *.pdf
 *.bak
 *.zip
@@ -10,8 +10,4 @@
 *~
 photos/[0-9]+.jpg
 photosProfs/[a-zA-Z]+.jpg
-agenda
-edt
 adm
-gestMail
-

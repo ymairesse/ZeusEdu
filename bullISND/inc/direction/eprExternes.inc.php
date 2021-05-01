@@ -16,6 +16,7 @@ if (isset($coursGrp)) {
     $listeSituationsBulletin = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, NBPERIODES);
     $smarty->assign('listeSituations', $listeSituationsBulletin);
     $smarty->assign('NBPERIODES', NBPERIODES);
+    $smarty->assign('BASEDIR', BASEDIR);
     $smarty->assign('listeEleves', $listeEleves);
     $smarty->assign('listeCotes', $listeCotes);
     $smarty->assign('etape', 'enregistrer');

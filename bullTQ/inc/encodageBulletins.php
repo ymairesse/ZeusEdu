@@ -1,9 +1,10 @@
 <?php
 
 $coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
-$bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin']:PERIODEENCOURS;
+$bulletin = isset($_REQUEST['bulletin'])?$_REQUEST['bulletin'] : PERIODEENCOURS;
 $matricule = isset($_REQUEST['matricule'])?$_REQUEST['matricule']:Null;
 $smarty->assign('matricule',$matricule);
+
 if ($mode == 'enregistrer') {
     $data = $BullTQ->organiserData($_POST);
     $nb = $BullTQ->enregistrer($data, $coursGrp, $bulletin);
@@ -39,6 +40,7 @@ $listeCours = $user->listeCoursProf("'TQ'");
 $smarty->assign('listeCours',$listeCours);
 $smarty->assign('coursGrp',$coursGrp);
 $smarty->assign('nbBulletins', NBPERIODES);
+$smarty->assign('listeBulletins', range(1, NBPERIODES));
 $smarty->assign('bulletin', $bulletin);
 
 $smarty->assign('action',$action);

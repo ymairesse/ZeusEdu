@@ -6,7 +6,7 @@
 
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Voir et modifier les pondérations par périodes</h3>
+					Voir et modifier les pondérations par périodes
 				</div>
 				<div class="panel-body">
 					<h4>{$intituleCours.coursGrp} | {$intituleCours.nomCours} {$intituleCours.nbheures}h {$intituleCours.statut} ({$listeClasses})</h4>

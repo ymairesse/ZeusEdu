@@ -34,14 +34,15 @@ $signature = isset($_POST['signature']) ? $_POST['signature'] : null;
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../templates';
-$smarty->compile_dir = '../templates_c';
+$smarty->template_dir = '../../templates';
+$smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('acronyme', $acronyme);
 $smarty->assign('classe', $classe);
 $smarty->assign('mois', $mois);
 $smarty->assign('annee', $annee);
 $smarty->assign('DIRECTION', DIRECTION);
+$smarty->assign('BASEDIR', BASEDIR);
 $smarty->assign('signature', $signature);
 $smarty->assign('pathImages','../../');
 
@@ -55,7 +56,7 @@ $resultatsExternes = $Bulletin->getResultatsExternes($classe, ANNEESCOLAIRE);
 // une page d'entête pour la classe
 $smarty->assign('classe', $classe);
 $smarty->assign('titreDoc', 'Synthèse des épreuves externes');
-$doc4PDF = $smarty->fetch('../../templates/direction/entetePageClasse2pdf.tpl');
+$doc4PDF = $smarty->fetch('direction/entetePageClasse2pdf.tpl');
 $html2pdf->WriteHTML($doc4PDF);
 
 foreach ($resultatsExternes as $matricule => $unEleve) {
@@ -65,7 +66,7 @@ foreach ($resultatsExternes as $matricule => $unEleve) {
     $smarty->assign('nomEleve', $nom);
     $classe = current($unEleve)['classe'];
     $smarty->assign('classe', $classe);
-    $doc4PDF = $smarty->fetch('../../templates/direction/eprExt2pdf.tpl');
+    $doc4PDF = $smarty->fetch('direction/eprExt2pdf.tpl');
     $html2pdf->WriteHTML($doc4PDF);
 }
 
@@ -80,5 +81,5 @@ if (!(file_exists($chemin))) {
 $html2pdf->Output($chemin.$nomFichier, 'F');
 
 $smarty->assign('nomFichier', 'bulletin/'.$nomFichier);
-$link = $smarty->fetch('../../templates/direction/lienDocument.tpl');
+$link = $smarty->fetch('direction/lienDocument.tpl');
 echo $link;

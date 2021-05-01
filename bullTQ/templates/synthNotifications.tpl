@@ -1,5 +1,5 @@
-<div class="container">
-	
+<div class="container-fluid">
+
 <h3>Notifications des décisions de délibération {$classe} <a type="button" class="btn btn-primary pull-right" href="index.php?action=delibe&amp;mode=notifications">Retour à la classe</a></h3>
 
 {if $listeSynthDecisions != Null}
@@ -9,14 +9,13 @@
 			<tr>
 				<th>Nom de l'élève</th>
 				<th>Décision</th>
-				<th>Restrictions</th>
 				<th>Notification</th>
 				<th>Mail</th>
 				<th>Adresse mail</th>
 				<th>Quand</th>
 			</tr>
 		</thead>
-		
+
 		{foreach from=$listeSynthDecisions key=matricule item=decision}
 		<tr>
 			<td class="pop"
@@ -28,7 +27,6 @@
 				{$decision.nom} {$decision.prenom}
 			</td>
 			<td>{$decision.decision}</td>
-			<td>{$decision.restriction}</td>
 			<td>
 			{if $decision.notification != Null}
 				{if $decision.notification == 1}
@@ -68,9 +66,9 @@
 			<td>{$decision.quand}</td>
 		</tr>
 		{/foreach}
-		
+
 	</table>
-	
+
 	{else}
 	<p>Aucune nouvelle décision n'a été prise.</p>
 {/if}

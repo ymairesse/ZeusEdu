@@ -1,25 +1,33 @@
 <div id="selecteur" class="noprint" style="clear:both">
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
 
-		Bulletin n°
-		<select name="bulletin" id="bulletin">
-			{section name=bulletins start=1 loop=$nbBulletins+1}
-			<option value="{$smarty.section.bulletins.index}" {if $smarty.section.bulletins.index eq $bulletin} selected{/if}>
-				{$smarty.section.bulletins.index}
-			</option>
-			{/section}
-		</select>
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 
-		<select name="classe" id="selectClasse">
-			<option value="">Classe</option>
-			{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}" {if $uneClasse eq $classe} selected="selected" {/if}>{$uneClasse}</option>
-			{/foreach}
-		</select>
+		<div class="form-group">
+			<label for="bulletin">Bulletin n°</label>
+			<select name="bulletin" id="bulletin" class="form-control">
+				{section name=bulletins start=1 loop=$nbBulletins+1}
+				<option value="{$smarty.section.bulletins.index}" {if $smarty.section.bulletins.index eq $bulletin} selected{/if}>
+					{$smarty.section.bulletins.index}
+				</option>
+				{/section}
+			</select>
+		</div>
+
+
+		<div class="form-group">
+			<select name="classe" id="selectClasse" class="form-control">
+				<option value="">Classe</option>
+				{foreach from=$listeClasses item=uneClasse}
+				<option value="{$uneClasse}" {if $uneClasse eq $classe} selected="selected" {/if}>{$uneClasse}</option>
+				{/foreach}
+			</select>
+		</div>
+
 		<span id="choixEleve">
 			{include file="listeEleves.tpl"}
 		</span>
-		<button type="submit" class="btn btn-primary btn-xs" id="envoi" {if !(isset($matricule))}style="display: none" {/if}>OK</button>
+
+		<button type="submit" class="btn btn-primary" id="envoi" {if !(isset($matricule))}style="display: none" {/if}>OK</button>
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="showEleve">

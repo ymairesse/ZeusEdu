@@ -135,12 +135,7 @@ $(document).ready(function(){
 	})
 
 	$('#edt').click(function(){
-		var matricule = $('#matricule').val();
-		$.post('inc/suivi/edt.inc.php', {
-			matricule: matricule
-		}, function(resultat){
-			$('#tabs-8').html(resultat);
-		})
+
 	})
 
 	$('#scolaire').click(function(){
@@ -164,10 +159,10 @@ $(document).ready(function(){
 		$(".onglet").val(no-1);
 		});
 
-	$(".delete").click(function(){
-		if (!(confirm("Veuillez confirmer l'effacement définitif de cet item")))
-			return false;
-		})
+	// $(".delete").click(function(){
+	// 	if (!(confirm("Veuillez confirmer l'effacement définitif de cet item")))
+	// 		return false;
+	// 	})
 
 })
 

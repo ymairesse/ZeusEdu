@@ -1,3 +1,4 @@
+
 <div class="container-fluid hidden-print">
 
 	<nav class="navbar navbar-default" role="navigation">
@@ -25,18 +26,29 @@
 		<ul class="nav navbar-nav">
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Élèves à suivre
 				{if in_array($userStatus, array('admin', 'educ'))}
-				<span class="badge badge-error">{$listeDemandes|@count|default:0}</span>
+				<span class="badge badge-error">{$listeDemandesProfs|@count|default:0}</span>
+				<span class="badge badge-success">{$listeDemandesEleves|@count|default:0}</span>
 				{/if} <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=eleves&amp;mode=adresser">Demander un suivi</a></li>
 					{if in_array($userStatus, array('admin', 'educ'))}
-					<li><a href="index.php?action=eleves&amp;mode=priseEnCharge">Prise en charge <span class="badge badge-error">{$listeDemandes|@count|default:0}</span></a></li>
+					<li><a href="index.php?action=eleves&amp;mode=priseEnCharge">Demandes de suivi
+						<span class="badge badge-error">{$listeDemandesProfs|@count|default:0}</span>&nbsp;
+						<span class="badge badge-success">{$listeDemandesEleves|@count|default:0}</span>
+						</a>
+					</li>
 					{/if}
 				</ul>
 			</li>
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Élèves suivis <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=bib">Sélection d'élèves</a></li>
+				</ul>
+			</li>
+
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Remédiations <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="index.php?action=remediations">Offres de remédiations</a></li>
 				</ul>
 			</li>
 		</ul>

@@ -72,8 +72,8 @@ switch ($action) {
 	case 'synthese':
 		require('inc/synthese.inc.php');
 		break;
-	case 'news':
-		require('inc/news.inc.php');
+	default:
+		require('inc/news.php');
 		break;
 	}
 
@@ -88,23 +88,6 @@ if ($smarty->getTemplateVars('selecteur') == Null) {
 	$smarty->assign('selecteur', 'selectClasseEleve');
 }
 
-require_once INSTALL_DIR.'/inc/classes/classFlashInfo.inc.php';
-$FlashInfo = new FlashInfo();
-
-$listeFlashInfos = $FlashInfo->listeFlashInfos($module);
-$smarty->assign('module', $module);
-$smarty->assign('userStatus', $userStatus);
-$smarty->assign('listeFlashInfos', $listeFlashInfos);
-
-
-// // si rien n'a encore été assigné au corps de page, on présente le corps par défaut.
-// if ($smarty->getTemplateVars('corpsPage') == Null) {
-// 	require_once (INSTALL_DIR."/inc/classes/classFlashInfo.inc.php");
-// 	$flashInfo = new flashInfo();
-// 	$appli = $Application->repertoireActuel();
-// 	$smarty->assign('flashInfos', $flashInfo->listeFlashInfos ($appli));
-// 	$smarty->assign('corpsPage', 'news');
-// 	}
 
 //
 // ----------------------------------------------------------------------------

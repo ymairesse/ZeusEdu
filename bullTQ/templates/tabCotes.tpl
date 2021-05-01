@@ -5,7 +5,7 @@
 		<tr>
 			<th>&nbsp;</th>
 			{foreach from=$listeCoursGrp key=coursGrp item=data}
-			<th class="pop"
+			<th
 				data-container="body"
 				data-html="true"
 				title="{$data.libelle}<br>{$listeProfsCoursGrp.$coursGrp}">
@@ -19,7 +19,7 @@
 	<tr>
 		<th>{$bulletin}</th>
 		{foreach from=$listeCoursGrp key=coursGrp item=data}
-
+		
 		<td	class="pop"
 			data-container="body"
 			data-original-title="{$listeProfsCoursGrp.$coursGrp}"
@@ -29,7 +29,7 @@
 				{$syntheseCotes.$bulletin.$coursGrp|default:'&nbsp;'}
 		 </td>
 		{/foreach}
-		<td class="cote"><strong>{$listeMentions.$bulletin|default:'&nbsp;'}</strong></td>
+		<td class="cote"><strong>{$listeMentions.$bulletin|default:'&nbsp;'}</strong></td> 
 	</tr>
 	{/foreach}
 </table>

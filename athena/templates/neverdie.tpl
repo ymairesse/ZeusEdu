@@ -5,14 +5,14 @@
 
     var time = new Date().getTime();
 
-    if ($('#coeur').text() == '') {
-        var heure = time.getHours() + ":" + time.getMinutes();
-        $('#coeur').text(heure);
-    }
+    // if ($('#coeur').text() == '') {
+    //     var heure = time.getHours() + ":" + time.getMinutes();
+    //     $('#coeur').text(heure);
+    // }
 
     function refresh() {
         var newTime = new Date().getTime() - time;
-        if (newTime >= 5000) {
+        if (newTime >= 50000) {
             // envoyer un nombre aléatoire en paramètre pour éviter l'effet de cache
             var param = Math.random()*1e9;
         	$.post('inc/refreshNeverDie.inc.php', {

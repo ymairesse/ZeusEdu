@@ -482,6 +482,8 @@ switch ($mode) {
         break;
 
     case 'titulaires':
+        $SECTIONS = explode(',', SECTIONS);
+        $smarty->assign('sections', $SECTIONS);
         switch ($etape) {
             case 'supprimer':
                 if (isset($_POST['listeAcronymes'])) {

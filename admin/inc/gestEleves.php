@@ -139,6 +139,12 @@ switch ($mode) {
         $smarty->assign('listeClasses', $listeClasses);
         $smarty->assign('corpsPage', 'eleves/printPwd');
         break;
+
+    case 'MS':
+        require_once INSTALL_DIR.'/admin/inc/MS/gestMS.php';
+
+        break;
+
     default:
         die('missing mode');
         break;

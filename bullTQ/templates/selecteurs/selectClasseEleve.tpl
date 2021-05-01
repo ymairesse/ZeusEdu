@@ -1,23 +1,28 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
-	<form name="selecteur" id="formSelecteur" method="POST" action="index.php">
-		<select name="classe" id="selectClasse">
-			<option value="">Classe</option>
-			{foreach from=$listeClasses item=uneClasse}
-			<option value="{$uneClasse}" {if isset($classe) && ($uneClasse eq $classe)} selected="selected" {/if}>{$uneClasse}</option>
-			{/foreach}
-		</select>
+	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 
-		<span id="choixEleve">
-			<select name="matricule" id="selectEleve">
-				<option value="">Choisir un élève</option>
-				{if isset($listeEleves)} {* key = matric car $matricule est passé en argument *} {foreach from=$listeEleves key=matric item=eleve}
-				<option value="{$matric}" {if isset($matricule) && ($matric eq $matricule)} selected{/if} title="{$matricule}">
-					{$eleve.nom} {$eleve.prenom}</option>
-				{/foreach} {/if}
+		<div class="form-group">
+			<select name="classe" id="selectClasse" class="form-control">
+				<option value="">Classe</option>
+				{foreach from=$listeClasses item=uneClasse}
+				<option value="{$uneClasse}" {if isset($classe) && ($uneClasse eq $classe)} selected="selected" {/if}>{$uneClasse}</option>
+				{/foreach}
 			</select>
-		</span>
-		<button type="submit" class="btn btn-primary btn-xs">OK</button>
+		</div>
+
+
+		<div class="form-group" id="choixEleve">
+				<select name="matricule" id="selectEleve" class="form-control">
+					<option value="">Choisir un élève</option>
+					{if isset($listeEleves)} {* key = matric car $matricule est passé en argument *} {foreach from=$listeEleves key=matric item=eleve}
+					<option value="{$matric}" {if isset($matricule) && ($matric eq $matricule)} selected{/if} title="{$matricule}">
+						{$eleve.nom} {$eleve.prenom}</option>
+					{/foreach} {/if}
+				</select>
+		</div>
+
+		<button type="submit" class="btn btn-primary">OK</button>
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 	</form>
@@ -41,7 +46,7 @@
 			// la fonction listeEleves.inc.php renvoie la liste déroulante
 			// des élèves de la classe sélectionnée
 			$.post("inc/listeEleves.inc.php", {
-						'classe': classe
+						classe: classe
 					},
 					function(resultat) {
 						$("#choixEleve").html(resultat)

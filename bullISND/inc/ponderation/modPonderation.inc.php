@@ -1,4 +1,5 @@
 <?php
+
 require_once("../../../config.inc.php");
 
 session_start();
@@ -17,8 +18,8 @@ $listePonderations = $Bulletin->getPonderations($coursGrp)[$coursGrp][$matricule
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
-$smarty->template_dir = "../templates";
-$smarty->compile_dir = "../templates_c";
+$smarty->template_dir = "../../templates";
+$smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('listePonderations', $listePonderations);
 $smarty->assign('NOMSPERIODES', explode(',', NOMSPERIODES));
@@ -26,4 +27,4 @@ $smarty->assign('matricule', $matricule);
 $smarty->assign('coursGrp', $coursGrp);
 $smarty->assign('bulletin', $bulletin);
 
-$smarty->display('../../templates/ponderation/formPonderation.tpl');
+$smarty->display('ponderation/formPonderation.tpl');

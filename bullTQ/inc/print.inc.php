@@ -1,26 +1,34 @@
 <?php
 
+$section = 'TQ';
+
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
 $classe = (isset($_POST['classe'])) ? $_POST['classe'] : null;
-$bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : PERIODEENCOURS;
+$bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : PERIODETQ;
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
+
 $smarty->assign('bulletin', $bulletin);
-$smarty->assign('nbBulletins', NBPERIODES);
+$smarty->assign('nbBulletins', NBPERIODESTQ);
 $smarty->assign('acronyme', $acronyme);
 
-$listeClasses = $Ecole->listeGroupes(array('TQ'));
+$listeClasses = $Ecole->listeGroupes(array($section));
 $smarty->assign('listeClasses', $listeClasses);
+if (!in_array($classe, $listeClasses))
+    $classe = Null;
 $smarty->assign('classe', $classe);
 
 switch ($mode) {
     case 'indivEcran':
         $smarty->assign('selecteur', 'selecteurs/selectBulletinClasseEleve');
-        $listeEleves = isset($classe) ? $Ecole->listeEleves($classe, 'groupe') : null;
-        $smarty->assign('listeElevesClasse', $listeEleves);
-        $smarty->assign('matricule', $matricule);
+        if (!in_array($classe, $listeClasses))
+            $classe = Null;
 
+        $listeEleves = ($classe != Null) ? $Ecole->listeEleves($classe, 'groupe') : null;
+        $smarty->assign('listeElevesClasse', $listeEleves);
+
+        $smarty->assign('matricule', $matricule);
         if (($etape == 'showEleve') && ($listeEleves != null)) {
             $eleve = new Eleve($matricule);
             $infoPersoEleve = $eleve->getDetailsEleve();
@@ -38,7 +46,6 @@ switch ($mode) {
                 $smarty->assign('listeCompetences', $listeCompetences);
 
                 $listeCotesGlobales = $BullTQ->listeCotesGlobales($listeCoursGrp, $bulletin);
-
                 if ($listeCotesGlobales != null) {
                     $smarty->assign('cotesGlobales', $listeCotesGlobales[$bulletin]);
                 } else {
@@ -51,12 +58,6 @@ switch ($mode) {
                 $listeCommentaires = $BullTQ->listeCommentaires($matricule, $listeCoursGrp);
                 $smarty->assign('commentaires', $listeCommentaires);
 
-                $listeEpreuvesQualif = $BullTQ->listeEpreuvesQualif();
-                $smarty->assign('listeEpreuvesQualif', $listeEpreuvesQualif);
-
-                $qualification = $BullTQ->mentionsQualif($matricule);
-                $smarty->assign('qualification', $qualification);
-
                 $remarqueTitu = $BullTQ->remarqueTitu($matricule, $bulletin);
                 $smarty->assign('remarqueTitu', $remarqueTitu);
                 $smarty->assign('corpsPage', 'bulletinEcran');
@@ -66,7 +67,9 @@ switch ($mode) {
         break;
     case 'indivPDF':
         $smarty->assign('selecteur', 'selecteurs/selectBulletinClasseEleve');
-        $listeEleves = $Ecole->listeEleves($classe, 'groupe');
+
+        $listeEleves = isset($classe) ? $Ecole->listeEleves($classe, 'groupe') : null;
+
         $smarty->assign('listeElevesClasse', $listeEleves);
         $smarty->assign('matricule', $matricule);
         if ($etape == 'showEleve') {

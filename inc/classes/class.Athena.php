@@ -200,9 +200,9 @@ class athena
     }
 
     /**
-     * supprime un item d'une liste de suivis d'élèversion_compare.
+     * supprime un item d'une liste de suivis d'élève.
      *
-     * @param $post : données provenant du formulaire d'effacement
+     * @param array $post : données provenant du formulaire d'effacement
      *
      * @return int : nombre de suppressions (normalement, 1)
      */
@@ -220,6 +220,65 @@ class athena
         }
 
         return $nb;
+    }
+
+    /**
+     * suppression d'un RV d'élève avec $acronyme et dont on fournit l'id
+     *
+     * @param int $id
+     * @param string $acronyme
+     *
+     * @return
+     */
+    public function delRVsuivi($id, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'athena ';
+        $sql .= 'WHERE id = :id AND proprietaire = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * supprime une demande de suivi d'élève (après prise en charge)
+     *
+     * @param int $id
+     *
+     * @return
+     */
+    public function delDemandeEleve($id){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'athenaElevesMedia ';
+        $sql .= 'WHERE id = :id ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $resulat = $requete->execute();
+
+        $sql = 'DELETE FROM '.PFX.'athenaElevesObjet ';
+        $sql .= 'WHERE id = :id ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $resulat = $requete->execute();
+
+        $sql = 'DELETE FROM '.PFX.'athenaEleves ';
+        $sql .= 'WHERE id = :id ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $resulat = $requete->execute();
+
+        Application::DeconnexionPDO($connexion);
+
+        return $resultat;
     }
 
      /**
@@ -316,7 +375,7 @@ class athena
          if ($resultat){
             $requete->setFetchMode(PDO::FETCH_ASSOC);
             $ligne = $requete->fetch();
-             $listeTroubles['memo'] = $ligne['memo'];
+            $listeTroubles['memo'] = $ligne['memo'];
             };
 
          Application::deconnexionPDO($connexion);
@@ -667,24 +726,26 @@ class athena
          $date = isset($post['date']) ? $post['date'] : Null;
          $date = Application::dateMySQL($date);
          $motif = isset($post['motif']) ? $post['motif'] : Null;
+         $proprietaire = isset($post['proprietaire']) ? $post['proprietaire'] : Null;
 
          $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
          if ($id == Null) {
             $sql = 'INSERT INTO '.PFX.'athena ';
             $sql .= 'SET matricule = :matricule, envoyePar = :envoyePar, anneeScolaire = :anneeScolaire, ';
-            $sql .= 'proprietaire = "", date = NOW(), heure = "", motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
+            $sql .= 'proprietaire = :proprietaire, date = NOW(), heure = "", motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
             $requete = $connexion->prepare($sql);
          }
         else {
             $sql = 'UPDATE '.PFX.'athena ';
             $sql .= 'SET matricule = :matricule, envoyePar = :envoyePar, anneeScolaire = :anneeScolaire, ';
-            $sql .= 'proprietaire = "", heure = "", date = :date, motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
+            $sql .= 'proprietaire = :proprietaire, heure = "", date = :date, motif = :motif, traitement = "", prive = 0, aSuivre = "" ';
             $sql .= 'WHERE id = :id ';
             $requete = $connexion->prepare($sql);
         }
 
         $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
-        $requete->bindParam(':envoyePar', $envoyePar, PDO::PARAM_STR, 7);
+        $requete->bindParam(':envoyePar', $envoyePar, PDO::PARAM_STR, 30);
+        $requete->bindParam(':proprietaire', $proprietaire, PDO::PARAM_STR, 7);
         $requete->bindParam(':anneeScolaire', $anneeScolaire, PDO::PARAM_STR, 9);
         $requete->bindParam(':motif', $motif, PDO::PARAM_STR);
 
@@ -764,7 +825,7 @@ class athena
           }
 
     /**
-     * recherche les détails d'une demande de suivi dont on fournit l'id
+     * recherche les détails d'une demande de suivi par un prof et dont on fournit l'id
      *
      * @param int $id
      *
@@ -792,6 +853,133 @@ class athena
 
         return $demande;
     }
+
+
+    /**
+     * recherche l'ensemble des demandes de suivi générées par les élèves dans Thot
+     *
+     * @param void
+     *
+     * @return array
+     */
+    public function getDemandeAideEleves(){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, athena.matricule, GSM, mail, commentaire, date, adopte, cache, ';
+        $sql .= 'DATE_FORMAT(date, "%d/%m/%Y") AS laDate, SUBSTR(DATE_FORMAT(date, "%T"), 1, 5) AS heure, ';
+        $sql .= 'nom, prenom, groupe ';
+        $sql .= 'FROM '.PFX.'athenaEleves AS athena ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON el.matricule = athena.matricule ';
+        $sql .= 'ORDER BY date ';
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+
+        $liste = array();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $id = $ligne['id'];
+                $liste[$id] = $ligne;
+            }
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * recherche les caractéristiques de la demande d'aide $id d'un élève
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public function getDemandeAideEleve($id) {
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, athena.matricule, GSM, mail, commentaire, date, adopte, cache, ';
+        $sql .= 'DATE_FORMAT(date, "%d/%m/%Y") AS laDate, SUBSTR(DATE_FORMAT(date, "%T"), 1, 5) AS heure, ';
+        $sql .= 'nom, prenom, groupe ';
+        $sql .= 'FROM '.PFX.'athenaEleves AS athena ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON el.matricule = athena.matricule ';
+        $sql .= 'WHERE id = :id ';
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+        $ligne = Null;
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            $ligne = $requete->fetch();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $ligne;
+    }
+
+    /**
+     * recherche les objets de la demandes d'aide $id d'un élève
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public function getObjets4id($id){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, objet ';
+        $sql .= 'FROM '.PFX.'athenaElevesObjet ';
+        $sql .= 'WHERE id = :id ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = $ligne['objet'];
+                }
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * recherche les médias souhaités pour la demande d'aide $id d'un élève
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public function getMedias4id($id){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT id, media ';
+        $sql .= 'FROM '.PFX.'athenaElevesMedia ';
+        $sql .= 'WHERE id = :id ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $liste[] = $ligne['media'];
+                }
+            }
+
+        Application::deconnexionPDO($connexion);
+
+        return $liste;
+    }
+
 
     /**
      * renvoie la liste des intervenants qui ont déjà pris l'élève $matricule en charge
@@ -851,6 +1039,32 @@ class athena
         $requete = $connexion->prepare($sql);
         $requete->bindParam(':id', $id, PDO::PARAM_INT);
 
+        $resultat = $requete->execute();
+
+        Application::deconnexionPDO($connexion);
+
+        return $resultat;
+    }
+
+    /**
+     * indique la prise en charge de la demande d'un élève par le coach $acronyme
+     * pour la demande d'élève $id
+     *
+     * @param int $id : id de la demande
+     * @param string $acronyme
+     *
+     * @return void
+     */
+    public function adopterDemandeEleve($id, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'athenaEleves ';
+        $sql .= 'SET adopte = :acronyme ';
+        $sql .= 'WHERE id = :id ';
+        $requete = $connexion->prepare($sql);
+// echo $sql;
+        $requete->bindParam(':id', $id, PDO::PARAM_INT);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+// Application::afficher(array($id, $acronyme), true);
         $resultat = $requete->execute();
 
         Application::deconnexionPDO($connexion);

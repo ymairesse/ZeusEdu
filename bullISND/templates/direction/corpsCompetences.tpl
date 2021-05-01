@@ -48,7 +48,7 @@
     </tr>
     {if $signature == 1}
     <tr>
-        <td style="width:60%"><img src="../../images/sceauECOLE.png" width="240" border="0" alt="Sceau de l'École"></td>
+        <td style="width:60%"><img src="{$BASEDIR}/images/sceauECOLE.png" width="240" border="0" alt="Sceau de l'École"></td>
         <td style="width:40%"><img src="../../images/direction.jpg" width="200" border="0" alt="Signature"></td>
     </tr>
     {/if}

@@ -61,7 +61,7 @@ switch ($mode) {
             ));
         $getDataEleve = true;
         break;
-        
+
     case 'enregistrer':
         $nb = $athena->saveSuiviEleve($_POST);
         $smarty->assign('message', array(
@@ -84,6 +84,14 @@ if ($getDataEleve == true) {
 
     // Élèves à besoins spécifiques
     $infoEBS = $athena->getEBSeleve($matricule);
+
+    // si le module "EDT" est installée
+    if (is_dir('../edt')) {
+        require_once INSTALL_DIR.'/edt/inc/classes/classEDT.inc.php';
+        $Edt = new Edt();
+        $imageEDT = $Edt->getEdtEleve($matricule);
+        $smarty->assign('imageEDT', $imageEDT);
+    }
 
     $listeTroubles = $athena->getTroublesEBS();
     $listeAmenagements = $athena->getAmenagementsEBS();

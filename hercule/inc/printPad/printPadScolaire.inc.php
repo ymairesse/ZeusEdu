@@ -55,8 +55,16 @@ $smarty->assign('ceb', $Bulletin->getCEB($matricule));
 
 // recherche des cotes de situation et délibé éventuelle pour toutes les périodes de l'année en cours
 $listeCoursActuelle = $Bulletin->listeFullCoursGrpActuel($matricule);
-if ($listeCoursActuelle != Null)
+
+if ($listeCoursActuelle != Null){
     $listeCoursActuelle = $listeCoursActuelle[$matricule];
+    // suppression de l'année sous le forme "5 GT", par exemple, pour raccourcir
+    foreach($listeCoursActuelle as $unCours => $dataCours) {
+        $coursLong = $dataCours['cours'];
+        $coursCourt = explode(':', $coursLong)[1];
+        $listeCoursActuelle[$unCours]['cours'] = $coursCourt;
+        }
+    }
 $smarty->assign('listeCoursGrp', $listeCoursActuelle);
 
 // recherche des correspondances entre acronyme et nom des profs

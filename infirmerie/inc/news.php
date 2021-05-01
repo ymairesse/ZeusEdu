@@ -1,9 +1,16 @@
 <?php
 
-require_once (INSTALL_DIR."/inc/classes/classFlashInfo.inc.php");
-$flashInfo = new flashInfo();
+$User = $_SESSION[APPLICATION];
+$acronyme = $User->getAcronyme();
 
-$appli = $Application->repertoireActuel();
-$smarty->assign('flashInfos', $flashInfo->listeFlashInfos ($appli));
-$smarty->assign('corpsPage', 'news');
-?>
+require_once INSTALL_DIR.'/widgets/flashInfo/inc/classes/class.FlashInfo.php';
+$FlashInfo = new FlashInfo();
+
+$userStatus = $User->userStatus($module);
+$smarty->assign('userStatus', $userStatus);
+
+$listeFlashInfos = $FlashInfo->listeFlashInfos($module);
+
+$smarty->assign('listeFlashInfos', $listeFlashInfos);
+
+$smarty->assign('corpsPage', 'news/news');

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <div class="row">
 
@@ -28,7 +28,7 @@
 				<div class="panel-footer">
 					<div class="btn-group pull-right">
 						<button class="btn btn-default" type="reset">Annuler</button>
-						<button class="btn btn-primary" type="submit" id="btnSavePwd">Modifier</button>
+						<button class="btn btn-primary" type="button" id="btnSavePwd">Modifier</button>
 					</div>
 				</div>
 			</div>
@@ -64,7 +64,6 @@
 </div>
 
 <script type="text/javascript ">
-	{literal}
 
 	function countLettres(chaine) {
 		return (chaine.match(/[a-zA-Z]/g) == null) ? 0 : chaine.match(/[a-zA-Z]/g).length;
@@ -86,7 +85,6 @@
 		return this.optional(element) || testOK;
 	}, "Complexité insuffisante");
 
-	{/literal}
 
 		$(document).ready(function() {
 
@@ -103,24 +101,26 @@
 				}
 			});
 
-			$("#formPasswd").submit(function(event) {
+			$('#btnSavePwd').click(function(){
 				var passwd1 = $("#mdp1").val();
 				var passwd2 = $("#mdp2").val();
-				if (passwd1 == passwd2) {
+				var title = 'Enregistrement du mot de passe';
+				var message;
+				if (passwd1 == passwd2){
 					$.post('inc/savePasswd.inc.php', {
-							passwd1: passwd1,
-							passwd2: passwd2
-						},
-						function(resultat) {
-							if (resultat == 1) {
-								$("#mdp1, #mdp2").val('');
-								alert('Votre mot de passe a été changé')
-							}
-							else alert(resultat);
+						passwd1: passwd1,
+						passwd2: passwd2
+					}, function(resultat){
+						if (resultat == 1)
+							message = 'Votre mot de passe a été changé';
+							else message = "Votre mot de passe n\'a pas été modifié";
+						bootbox.alert({
+							title: title,
+							message: message
 						})
+					})
 				}
-				event.preventDefault();
 			})
 
-		})
+			})
 </script>

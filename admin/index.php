@@ -39,11 +39,8 @@ if ($_SESSION[APPLICATION]->userStatus($module) == 'admin') {
 		case 'autres':
 			include ("inc/adminAutres.php");
 			break;
-		case 'news':
-			include ("inc/news.php");
-			break;
 		default:
-			// wtf
+			include ("inc/news.php");
 			break;
 		}
 	// si rien n'est décidé, présenter la page d'accueil

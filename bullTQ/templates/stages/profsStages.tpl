@@ -22,28 +22,6 @@
 
         </div>
 
-
-        <div class="col-md-4 col-sm-12">
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Liste des élèves de la classe</h3>
-                </div>
-                <div class="panel-body">
-                    <button type="button" class="btn btn-primary btn-block" id="associer">Associer les élèves et le professeur >></button>
-                    <select id="selectEleves" class="form-control" size="{$listeEleves|@count}" multiple>
-                        {foreach from=$listeEleves key=matricule item=unEleve}
-                            <option value="{$matricule}" data-matricule="{$matricule}">{$unEleve.nom} {$unEleve.prenom}</option>
-                        {/foreach}
-                    </select>
-                </div>
-                <div class="panel-footer">
-                    Sélectionner un ou plusieurs élèves
-                </div>
-            </div>
-
-        </div>
-
         <div class="col-md-4 col-sm-12">
 
             <div class="panel panel-default">
@@ -55,6 +33,27 @@
                 </div>
                 <div class="panel-footer">
                     Sélectionner un élève pour le supprimer
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4 col-sm-12">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Liste des élèves de la classe</h3>
+                </div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-primary btn-block" id="associer"><< Associer les élèves et le professeur</button>
+                    <select id="selectEleves" class="form-control" size="{$listeEleves|@count}" multiple>
+                        {foreach from=$listeEleves key=matricule item=unEleve}
+                            <option value="{$matricule}" data-matricule="{$matricule}">{$unEleve.nom} {$unEleve.prenom}</option>
+                        {/foreach}
+                    </select>
+                </div>
+                <div class="panel-footer">
+                    Sélectionner un ou plusieurs élèves
                 </div>
             </div>
 

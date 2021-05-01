@@ -27,11 +27,8 @@ $acronyme = $User->getAcronyme();
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
-// fonctions à passer dans la class Bulletin
-// require_once 'fonctionsBulletin.inc.php';
-
 $unAn = time() + 365 * 24 * 3600;
-$classe = Application::postOrCookie('classe', $unAn);
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 
 // année d'étude actuelle (année de fin de degré)
 $anneeEtude = $Ecole->anneeDeClasse($classe);
@@ -50,11 +47,14 @@ $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
+$smarty->assign('BASEDIR', BASEDIR);
+
 $listeEleves = $Ecole->listeElevesClasse($classe);
 
 // informations pour l'année scolaire en cours
 // On prend les résultats de la dernière période de cours de l'année scolaire (= NBPERIODES)
 $infoAnneeScolaire = $Bulletin->resultatsTousCours($listeEleves, NBPERIODES);
+
 $infoEprExterne = $Bulletin->getResultatsExternes($classe, $anneeScolaire);
 $infoMentions = $Bulletin->listeSimpleMentions($listeEleves, NBPERIODES, $anneeScolaire);
 $listeDecisions = $Bulletin->listeDecisions($listeEleves);
@@ -73,7 +73,7 @@ foreach ($anneesScolairesPrecedentes as $matricule => $data) {
 // une page d'entête pour la classe
 $smarty->assign('classe', $classe);
 $smarty->assign('titreDoc', 'Récapitulatif du degré');
-$doc4PDF = $smarty->fetch('../../templates/direction/entetePageClasse2pdf.tpl');
+$doc4PDF = $smarty->fetch('direction/entetePageClasse2pdf.tpl');
 $html2pdf->WriteHTML($doc4PDF);
 
 $smarty->assign('anneeEtude', $anneeEtude);

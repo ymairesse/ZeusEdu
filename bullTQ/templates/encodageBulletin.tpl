@@ -1,28 +1,43 @@
-<div class="container">
+<div class="container-fluid">
 
 {assign var="ancre" value=$matricule}
 <h2 title="{$libelleCours.coursGrp}">Bulletin {$bulletin} - {$libelleCours.cours} {$libelleCours.libelle} {$libelleCours.nbheures}h </h2>
 
 <form name="formBulletin" id="formBulletin" action="index.php" method="POST" role="form" class="form-vertical">
 
-	<p id="ouvrirTout" class="btn btn-primary noprint">Déplier/replier toutes les remarques</p>
-	<div class="btn-group">
-		<button type="submit" class="btn btn-primary noprint enregistrer" name="submit" id="enregistrer">Enregistrer tout</button>
-		<button type="reset" class="btn btn-default noprint" name="annuler" id="annuler">Annuler</button>
-	</div>
 	<input type="hidden" name="action" value="bulletin">
 	<input type="hidden" name="mode" value="enregistrer">
 	<input type="hidden" name="bulletin" value="{$bulletin}">
 	<input type="hidden" name="coursGrp" value="{$coursGrp}">
 
-	<select name="selectEleve" id="selectEleve">
-		<option value=''>Sélectionner un élève</option>
-		{foreach from=$listeEleves key=matricule item=unEleve}
-		<option value="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
-		{/foreach}
-	</select>
+	<div class="row">
 
-	<hr>
+		<div class="col-xs-8">
+
+			<button type="button" class="btn btn-primary noprint"id="ouvrirTout">Déplier/replier toutes les remarques</button>
+
+			<div class="btn-group pull-right">
+				<button type="reset" class="btn btn-default noprint" name="annuler" id="annuler">Annuler</button>
+				<button type="submit" class="btn btn-primary noprint enregistrer" name="submit" id="enregistrer">Enregistrer tout</button>
+			</div>
+
+		</div>
+
+		<div class="col-xs-4">
+
+			<div class="form-group">
+				<select name="selectEleve" id="selectEleve" class="form-control">
+					<option value=''>Sélectionner un élève</option>
+					{foreach from=$listeEleves key=matricule item=unEleve}
+					<option value="{$matricule}" class="select">{$unEleve.nom} {$unEleve.prenom}</option>
+					{/foreach}
+				</select>
+			</div>
+
+		</div>
+
+	</div>
+
 	{foreach from=$listeEleves key=matricule item=unEleve}
 
 	<div class="row" style="padding:2em 0">
@@ -30,17 +45,6 @@
 		<div class="col-md-2 col-sm-12 blocGaucheBulletin">
 
 			<div style="text-align:center;">
-
-				<div class="pull-rigth">
-					{if isset($listeElevesSuivPrec.$matricule.prev) && ($listeElevesSuivPrec.$matricule.prev != Null)}
-						<a href="#el{$listeElevesSuivPrec.$matricule.prev}">
-							<span class="glyphicon glyphicon-chevron-up" title="Précédent"></span></a>
-					{/if}
-					{if isset($listeElevesSuivPrec.$matricule.next) && ($listeElevesSuivPrec.$matricule.next != Null)}
-						<a href="#el{$listeElevesSuivPrec.$matricule.next}">
-							<span class="glyphicon glyphicon-chevron-down" title="Suivant"></a>
-					{/if}
-				</div>
 
 				<p id="el{$matricule}"><strong>{$unEleve.nom} {$unEleve.prenom}</strong></p>
 
@@ -58,41 +62,33 @@
 
 			<h3>Mentions Globales</h3>
 			<table class="tableauBull table table-condensed">
+
 				<tr style="height:2em; background-color: #FECF69; font-weight:bolder; text-align:right">
-					<td style="width:12%">TJ</td>
-					<td style="width:12%; text-align: center">
-						<div class="input-group input-group-sm">
-							<input class="form-control majuscule" type="text" name="TJ-{$matricule}" value="{$cotesGlobales.$matricule.Tj|default:''}" maxlength="5">
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-default crochet">[]</button>
-							</span>
+					<td style="width:15%">TJ</td>
+					<td style="width:10%; text-align: center">
+						<div class="form-group">
+							<input class="majuscules form-control" type="text" name="TJ-{$matricule}" id="TJ-{$matricule}" value="{$cotesGlobales.$matricule.Tj|default:''}" maxlength="4" size="2">
 						</div>
 					</td>
-					<td style="width:12%">Examen</td>
-					<td style="width:12%; text-align: center">
-						<div class="input-group input-group-sm">
-							<input class="form-control majuscule" type="text" name="EX-{$matricule}" value="{$cotesGlobales.$matricule.Ex|default:''}" maxlength="5">
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-default crochet">[]</button>
-							</span>
+
+					<td style="width:15%">Examen</td>
+					<td style="width:10%; text-align: center">
+						<div class="form-group">
+							<input class="majuscules form-control" type="text" name="EX-{$matricule}" value="{$cotesGlobales.$matricule.Ex|default:''}" maxlength="4" size="2">
 						</div>
 					</td>
-					<td style="width:12%">Période</td>
-					<td style="width:12%; text-align: center">
-						<div class="input-group input-group-sm">
-							<input class="form-control majuscule" type="text" name="PERIODE-{$matricule}" value="{$cotesGlobales.$matricule.periode|default:''}" maxlength="5">
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-default crochet">[]</button>
-							</span>
+
+					<td style="width:15%">Période</td>
+					<td style="width:10%; text-align: center">
+						<div class="form-group">
+							<input class="majuscules form-control" type="text" name="PERIODE-{$matricule}" value="{$cotesGlobales.$matricule.periode|default:''}" maxlength="4" size="2">
 						</div>
 					</td>
-					<td style="width:12%">Global</td>
-					<td style="width:12%; text-align: center">
-						<div class="input-group input-group-sm">
-							<input class="form-control majuscule" type="text" name="GLOBAL-{$matricule}" value="{$cotesGlobales.$matricule.global|default:''}" maxlength="5">
-							<span class="input-group-btn">
-								<button type="button" class="btn btn-default crochet">[]</button>
-							</span>
+
+					<td style="width:15%">Global</td>
+					<td style="width:10%; text-align: center">
+						<div class="form-group">
+							<input class="majuscules form-control" type="text" name="GLOBAL-{$matricule}" value="{$cotesGlobales.$matricule.global|default:''}" maxlength="4" size="2">
 						</div>
 					</td>
 				</tr>
@@ -118,13 +114,19 @@
 								<td style="text-align:right" data-container="body" title="comp_{$idComp}"> {$uneCompetence.libelle}</td>
 
 								<td style="width:6em; text-align:center">
-								<input type="text" name="coteTJ-{$matricule}-comp_{$idComp}"
-									value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Tj|default:''}" maxlength="5" size="2" class="cote majuscule form-control">
+										<input type="text"
+											name="coteTJ-{$matricule}-comp_{$idComp}"
+											value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Tj|default:''}"
+											maxlength="5"
+											class="cote majuscule form-control">
 								</td>
 
 								<td style="width:8em; text-align:center">
-								<input type="text" name="coteEX-{$matricule}-comp_{$idComp}-Ex"
-									value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Ex|default:''}" maxlength="5" size="2" class="cote majuscule form-control">
+									<input type="text"
+											name="coteEX-{$matricule}-comp_{$idComp}-Ex"
+											value="{$cotesCoursGeneraux.$matricule.$coursGrp.$idComp.Ex|default:''}"
+											maxlength="5"
+											class="cote majuscule form-control">
 								</td>
 
 							</tr>
@@ -135,7 +137,7 @@
 
 			{/if}
 
-			<h3>Remarque pour la période {$bulletin}</h3>
+			<h3>Commentaire pour la période {$bulletin}</h3>
 				<textarea{if isset($blocage.$coursGrp) && ($blocage.$coursGrp > 0)} readonly="readonly"{/if} class="remarque form-control" rows="8"
 				name="COMMENTAIRE-{$matricule}">{$listeCommentaires.$bulletin.$coursGrp.$matricule|default:Null}</textarea>
 
@@ -192,22 +194,10 @@ $(document).ready(function(){
 
 	$().UItoTop({ easingType: 'easeOutQuart' });
 
-	$('.crochet').attr('title', 'Mettre la cote entre crochets');
-
 	$(".ouvrir").prepend("[+]").next().hide();
 	$(".ouvrir").css("cursor","pointer").attr("title",show);
 	$("#ouvrirTout").css("cursor","pointer");
 
-	$('.crochet').click(function(){
-		var input = $(this).closest('.input-group').find('input');
-		var leTexte = input.val();
-		var sansCrochet = leTexte.replace('[', '').replace(']','');
-		if (leTexte == sansCrochet)
-			leTexte = '[' + leTexte.toUpperCase() + ']';
-			else leTexte = sansCrochet;
-		input.val(leTexte);
-		modification();
-	})
 
 	$(".ouvrir").click(function(){
 		$(this).next().toggle("fast");
@@ -253,15 +243,16 @@ $(document).ready(function(){
 			}
 		}
 
-	$("input, textarea").keyup(function(event){
+	$("input, textarea").keyup(function(e){
 		var readonly = $(this).attr("readonly");
 		if (!(readonly)) {
-			var key = event.charCode || event.keyCode;
-			if ((key > 31) || (key == 8)) {
-				modification();
-				}
+		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+		if ((key > 31) || (key == 8)) {
+			modification();
 			}
+		}
 	})
+
 
 	$(".enregistrer, #annuler").hide();
 
@@ -308,10 +299,12 @@ $(document).ready(function(){
 		goToByScroll("el"+matricule);
 		})
 
-	$(".majuscule").change(function(){
-		var texte = $(this).val();
-		$(this).val(texte.toUpperCase());
-		})
+	$("input.majuscules").keyup(function(e) {
+		var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+		if ((key > 31) || (key == 8)) {
+			$(this).val($(this).val().toUpperCase());
+		}
+	})
 
 });
 

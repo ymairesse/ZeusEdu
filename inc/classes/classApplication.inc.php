@@ -397,6 +397,7 @@ class Application
         $sql = 'SELECT ordre, size, label, parametre, valeur, signification ';
         $sql .= 'FROM '.PFX.'config ';
         $sql .= 'ORDER BY ordre, label ';
+
         $resultat = $connexion->query($sql);
         $listeParametres = array();
         if ($resultat) {

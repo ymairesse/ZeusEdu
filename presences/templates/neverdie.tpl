@@ -1,4 +1,5 @@
 <img src="../images/coeur.gif" alt="coeur" style="width:14px" title="Staying alive" data-param="{$param|default:0}">
+
 {$heure|default:"00:00"}
 <script type="text/javascript">
 

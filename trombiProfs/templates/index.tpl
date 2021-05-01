@@ -12,11 +12,11 @@
 
 </head>
 <body>
-	
+
 {include file="menu.tpl"}
 
-<div class="container">
-	
+<div class="container-fluid">
+
 	{if isset($selecteur)}
 		{include file="$selecteur.tpl"}
 	{/if}
@@ -48,7 +48,7 @@
 <script type="text/javascript">
 
 $(document).ready (function() {
-	
+
 	// selectionner le premier champ de formulaire dans le corps de page ou dans le sélecteur si pas de corps de page; sauf les datepickers
 	if ($("#corpsPage form").length != 0)
 		$("#corpsPage form input:visible:enabled").not('.datepicker').first().focus();
@@ -56,16 +56,16 @@ $(document).ready (function() {
 		$("form input:visible:enabled").not('.datepicker').first().focus();
 
 	$("*[title]").tooltip();
-	
+
 	$(".pop").popover({
 		trigger:'hover'
 		});
 	$(".pop").click(function(){
 		$(".pop").not(this).popover("hide");
 		})
-		
+
 	$("input").not(".autocomplete").attr("autocomplete","off");
-	
+
 })
 
 </script>

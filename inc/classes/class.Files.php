@@ -1972,51 +1972,52 @@ class Files
      * enregistre le résultat de l'évaluation d'un travail pour un élève.
      *
      * @param $post : array contenant les informations à enregistrer
-     * @param $acronyme : identifiant de l'utilisateur courant (sécurité)
+     * @param $evaluation : texte de la remarque pour cette évaluation
      *
      * @return string : date d'enregistrement
      */
     public function saveEvaluation($post, $evaluation)
     {
+        // Application::afficher(array($post, $evaluation), true);
         $idTravail = isset($post['idTravail']) ? $post['idTravail'] : null;
         $matricule = isset($post['matricule']) ? $post['matricule'] : null;
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        // informations générales sur l'évaluation
+        // remarque générale du professeur sur l'évaluation (texte)
         $sql = 'INSERT INTO '.PFX.'thotTravauxRemis ';
-        $sql .= 'SET idTravail=:idTravail, matricule=:matricule, ';
-        $sql .= 'evaluation=:evaluation ';
+        $sql .= 'SET idTravail = :idTravail, matricule = :matricule, ';
+        $sql .= 'evaluation = :evaluation ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'evaluation=:evaluation ';
+        $sql .= 'evaluation = :evaluation ';
 
         $requete = $connexion->prepare($sql);
-        $data = array(
-                ':idTravail' => $idTravail,
-                ':matricule' => $matricule,
-                ':evaluation' => $evaluation,
-            );
-        $resultat = $requete->execute($data);
+
+        $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':evaluation', $evaluation, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
 
         // enregistrement des cotes par compétence
         $sql = 'INSERT INTO '.PFX.'thotTravauxEvaluations ';
-        $sql .= 'SET matricule=:matricule, idTravail=:idTravail, idCompetence=:idCompetence, cote=:cote ';
+        $sql .= 'SET matricule = :matricule, idTravail = :idTravail, idCompetence = :idCompetence, cote = :cote ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= 'cote=:cote ';
+        $sql .= 'cote = :cote ';
 
         $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idTravail', $idTravail, PDO::PARAM_INT);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+
         // on passe tous les champs en revue, à la recherche des cote_xxxxx
         foreach ($post as $field => $value) {
             if (substr($field, 0, 5) == 'cote_') {
                 $field = explode('_', $field);
                 $idCompetence = $field[1];
                 $value = Application::sansVirg($value);
-                $data = array(
-                    ':idTravail' => $idTravail,
-                    ':matricule' => $matricule,
-                    ':idCompetence' => $idCompetence,
-                    ':cote' => $value,
-                );
-                $resultat = $requete->execute($data);
+                $requete->bindParam(':idCompetence', $idCompetence, PDO::PARAM_INT);
+                $requete->bindParam(':cote', $value, PDO::PARAM_STR, 4);
+                $resultat = $requete->execute();
             }
         }
 
@@ -2807,6 +2808,7 @@ class Files
         // s'il s'agit d'une édition, il n'y aura, de toute façon, qu'un seul $notifId
         // dans la liste
         $notifId = current($listeNotifId);
+
         // la liste des documents joints au formulaire
         $files = $post['files'];
         // arrive avec la liste des documents joints (à l'exception de ceux qui ont
@@ -2821,6 +2823,7 @@ class Files
         // ils ont déjà un $shareId, c'est OK pour eux.
         // si ce n'est pas une édition, $linkedFiles revient vide
         $linkedFiles = $this->getFileNames4notifId($notifId, $acronyme);
+        // Application::afficher(array($post['files'], $linkedFiles), true);
         // Exemple: $shareId|//|$path|//|$fileName
         // array (
         //   0 => '4877|//|/img/|//|1587981840.gif',
@@ -2851,7 +2854,6 @@ class Files
         // rechercher les fileIds pour les fichiers à lier
         // ou les créer s'ils n'existent pas encore
         $fileIds = $this->findFileId4FileList($newFiles, $acronyme);
-
         // où $post['leType'] désigne groupe de destinataires ou, éventuellement, 'eleves' isolés
         $leType = $post['leType']; // groupe, coursGrp, cours, classe, niveau, ecole...
 
@@ -2879,6 +2881,7 @@ class Files
             //
             // établir la liste des shareIds pour les fichiers relatifs à ces notifications $listeNotifsIds
             $listeShareIds[$notifId] = $this->setShareIds4FileIds($fileIds, $leType, $groupe, $destinataire, 'annonce', $post['dateDebut']);
+            // Application::afficher($listeShareIds, true);
         }
 
         $nb = $this->linkFilesNotifInBD($listeShareIds);

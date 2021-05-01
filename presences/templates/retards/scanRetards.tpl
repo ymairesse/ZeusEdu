@@ -4,7 +4,9 @@
 
   <li class="active"><a data-toggle="tab" href="#retards">Retards</a></li>
 
-  <li><a data-toggle="tab" href="#neverdie"><img src="../images/coeur.gif" alt="coeur" style="width:14px" title="Staying alive" data-param="{$param|default:0}"></a></li>
+  <li>
+      <a data-toggle="tab" href="#neverdie"><img src="../images/coeur.gif" alt="coeur" style="width:14px" title="Staying alive" data-param="{$param|default:0}"></a>
+  </li>
 
 </ul>
 

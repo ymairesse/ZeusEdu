@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <form name="choixTitu" id="choixTitu" action="index.php" method="POST">
 	<h4>Choix du titulaire de {$groupe}</h4>

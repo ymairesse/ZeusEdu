@@ -1,7 +1,7 @@
 <?php
 
 // fonctions globales pour l'ensemble de l'application
-require_once INSTALL_DIR.'/inc/fonctions.inc.php';
+// require_once INSTALL_DIR.'/inc/fonctions.inc.php';
 
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
@@ -27,9 +27,10 @@ if (isset($user) && $user->getAlias() != null) {
 } else {
         $utilisateur = $user;
     }
-if (!($utilisateur) || !($utilisateur->islogged($utilisateur->acronyme(), $_SERVER['REMOTE_ADDR']))) {
+if (!($utilisateur)) {
     header('Location: ../accueil.php');
 }
+
 
 // Vérification de l'autorisation d'accès à l'application et au module en cours
 if (!($user->accesApplication(APPLICATION) && $user->accesModule(BASEDIR))) {
@@ -37,10 +38,10 @@ if (!($user->accesApplication(APPLICATION) && $user->accesModule(BASEDIR))) {
 }
 
 // fonctions pour l'application "en cours"; déprécié, remplacé par des classes spécifiques
-$file = INSTALL_DIR."/$module/inc/fonctions".ucfirst($module).'.inc.php';
-if (file_exists($file)) {
-    require_once $file;
-}
+// $file = INSTALL_DIR."/$module/inc/fonctions".ucfirst($module).'.inc.php';
+// if (file_exists($file)) {
+//     require_once $file;
+// }
 
 require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
@@ -60,8 +61,8 @@ $smarty->assign('INSTALL_DIR', INSTALL_DIR);
 $smarty->assign('identite', $user->identite());
 // toutes les informations d'identification réseau (adresse IP, jour et heure)
 $smarty->assign('identification', $user->identification());
-// liste des classes dont le prof est titulaire (prof principal)
 
+// liste des classes dont le prof est titulaire (prof principal)
 $sections = explode(',', SECTIONS);
 $sections = "'".implode("','", $sections)."'";
 $smarty->assign('titulaire', $user->listeTitulariats($sections));
@@ -72,11 +73,11 @@ $smarty->assign('userStatus', $userStatus);
 // configuration d'un alias éventuel
 $alias = $user->getAlias();
 if ($alias != '') {
-    $alias = $alias->identite();
+    $alias = $alias->identite()['acronyme'];
 } else {
         $alias = null;
     }
-$smarty->assign('alias', $alias['acronyme']);
+$smarty->assign('alias', $alias);
 
 // récupération de 'action' et 'mode' qui définissent toujours l'action principale à prendre
 // d'autres paramètres peuvent être récupérés plus loin

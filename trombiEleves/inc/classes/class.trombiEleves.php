@@ -12,7 +12,7 @@ class TrombiEleves
     }
 
     /**
-     * Création du fichier PDF du trombinoscope des élèves
+     * Création du fichier CSV du trombinoscope des élèves
      * @param  string $cible
      * @param  string $groupe : la classe ou le coursGrp
      *
@@ -20,14 +20,16 @@ class TrombiEleves
      */
     function getFichierCSV($cible, $groupe) {
     	$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-    	$sql = 'SELECT matricule, groupe, nom, prenom, DateNaiss, nomResp, telephone1, telephone2, telephone3 ';
-    	$sql .= 'FROM '.PFX.'eleves ';
+    	$sql = 'SELECT de.matricule, groupe, nom, prenom, DateNaiss, nomResp, telephone1, telephone2, telephone3, ';
+        $sql .= 'CONCAT(user, "@", mailDomain) AS mail ';
+    	$sql .= 'FROM '.PFX.'eleves AS de ';
+        $sql .= 'JOIN '.PFX.'passwd AS pwd ON pwd.matricule = de.matricule ';
         if ($cible == 'classe') {
-            $sql .= 'WHERE matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe = :groupe) ';
+            $sql .= 'WHERE de.matricule IN (SELECT matricule FROM '.PFX.'eleves WHERE groupe = :groupe) ';
             $sql .= 'AND section != "PARTI" ';
             }
             else {
-            $sql .= 'WHERE matricule IN (SELECT matricule FROM '.PFX.'elevesCours WHERE coursGrp = :groupe) ';
+            $sql .= 'WHERE de.matricule IN (SELECT matricule FROM '.PFX.'elevesCours WHERE coursGrp = :groupe) ';
             $sql .= 'AND section != "PARTI" ';
             }
     	$sql .= "ORDER BY REPLACE(REPLACE(REPLACE(nom,' ',''),'-',''),'\'',''), prenom, groupe ";
@@ -38,7 +40,7 @@ class TrombiEleves
     	$resultat = $requete->execute();
     	$texteCSV = '';
     	if ($resultat) {
-    		$texteCSV = "\"Matricule\", \"Classe\",\"Nom\",\"Prénom\",\"Date de Naissance\", \"Responsable\",\"telephone1\",\"telephone2\",\"telephone3\"".chr(10);
+    		$texteCSV = "\"Matricule\", \"Classe\",\"Nom\",\"Prénom\",\"Date de Naissance\", \"Responsable\",\"telephone1\",\"telephone2\",\"telephone3\",\"mail\"".chr(10);
     		while ($ligne = $requete->fetch()) {
     			$matricule = $ligne['matricule'];
     			$groupe = $ligne['groupe'];
@@ -49,7 +51,8 @@ class TrombiEleves
     			$telephone1 = $ligne['telephone1'];
     			$telephone2 = $ligne['telephone2'];
     			$telephone3 = $ligne['telephone3'];
-    			$texteCSV .= "\"$matricule\",\"$groupe\",\"$nom\",\"$prenom\", \"$dateNaissance\", \"$nomResp\",\"$telephone1\",\"$telephone2\",\"$telephone3\"".chr(10);
+                $mail = $ligne['mail'];
+    			$texteCSV .= "\"$matricule\",\"$groupe\",\"$nom\",\"$prenom\", \"$dateNaissance\", \"$nomResp\",\"$telephone1\",\"$telephone2\",\"$telephone3\",\"$mail\"".chr(10);
     			}
     		}
 

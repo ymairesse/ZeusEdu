@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <h2>Certificat récapitulatif du degré d'étude</h2>
 
@@ -6,48 +6,65 @@
 
         <div class="col-md-4 col-xs-12">
 
-            <form class="form-vertical" id="formRecap">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Sélection des classes
+                </div>
+                <div class="panel-body">
+                    <form class="form-vertical" id="formRecap">
 
-                <div id="ajaxLoader" class="hidden">
-                    <p>Veuillez patienter</p>
-                    <img src="../images/ajax-loader.gif" alt="loading" class="center-block">
+                        <div class="form-group">
+                            <label for="selectDegre">Degré d'étude</label>
+                            <select class="form-control" name="degre" id="selectDegre">
+                            <option value="">Degré d'étude</option>
+                            {foreach $listeDegres key=wtf item=unDegre}
+                                <option value="{$unDegre}" {if ($unDegre == $degre) || ($listeDegres|count == 1)} selected{/if}>{$unDegre}e année</option>
+                            {/foreach}
+                            </select>
+                            <p class="help-block">Pour quel niveau d'étude</p>
+                        </div>
+
+                        <div id="listeClasses">
+
+                            {include file='direction/listeClasses.tpl'}
+
+                        </div>
+
+                        <div class="btn-group pull-right">
+                          <button type="reset" class="btn btn-default">Annuler</button>
+                          <button type="button" class="btn btn-primary" id="print">Générer le document</button>
+                        </div>
+
+                        <div class="clearfix"></div>
+                    </form>
                 </div>
 
-                <div class="form-group">
-                    <label for="selectDegre">Degré d'étude</label>
-                    <select class="form-control" name="degre" id="selectDegre">
-                    <option value="">Degré d'étude</option>
-                    {foreach $listeDegres key=wtf item=unDegre}
-                        <option value="{$unDegre}" {if ($unDegre == $degre) || ($listeDegres|count == 1)} selected{/if}>{$unDegre}</option>
-                    {/foreach}
-                    </select>
-                    <p class="help-block">Pour quel niveau d'étude</p>
-                </div>
-
-                <div id="listeClasses">
-
-                    {include file='direction/listeClasses.tpl'}
-
-                </div>
-
-                <div class="btn-group pull-right">
-                  <button type="reset" class="btn btn-default">Annuler</button>
-                  <button type="button" class="btn btn-primary" id="print">Générer le document</button>
-                </div>
-
-            <div class="clearfix"></div>
-            </form>
+            </div>
 
         </div>
 
-        <div class="col-md-5 col-xs-12" id="documents">
+        <div class="col-md-5 col-xs-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Documents
+                </div>
+                <div class="panel-body" id="documents">
+                </div>
+                <div class="panel-footer">
+                    <div id="ajaxLoader" class="hidden">
+                        <p>Veuillez patienter</p>
+                        <img src="../images/ajax-loader.gif" alt="loading" class="center-block">
+                    </div>
+                </div>
+
+            </div>
 
         </div>
 
         <div class="col-md-3 col-xs-12">
             <div class="panel panel-info">
-                <div class="panel-title">
-                    <h3>Information</h3>
+                <div class="panel-heading">
+                    Information
                 </div>
                 <div class="panel-body">
                     <p>Sélectionnez le degré et la classe dans la colonne de gauche.</p>

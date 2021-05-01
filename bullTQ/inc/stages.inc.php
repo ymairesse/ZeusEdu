@@ -10,9 +10,11 @@ $smarty->assign('selecteur', 'selecteurs/selectClasse');
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
+
 if ($classe != null) {
-    $listeProfs = $BullTQ->listeProfsSection('TQ');
+    $listeProfs = $BullTQ->listeProfsSection('TQ');	
     $listeEleves = $Ecole->listeEleves($classe, 'classe');
+    
     $smarty->assign('listeProfs', $listeProfs);
     $smarty->assign('listeEleves', $listeEleves);
     $smarty->assign('corpsPage', 'stages/profsStages');

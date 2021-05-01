@@ -4,7 +4,6 @@ require INSTALL_DIR.'/fpdf181/fpdf.php';
 require INSTALL_DIR.'/inc/classes/class.pdfrotate.php';
 require INSTALL_DIR.'/inc/classes/class.pdf.php';
 
-
 /*
  * class bullTQ
  */
@@ -284,7 +283,7 @@ class bullTQ
                     // on passe, ce champ n'est pas significatif
                     break;
             }
-        }
+        };
 
         return array('cotes' => $listeCotesParCompetences,
                      'periode' => $listeCotesPeriode,
@@ -326,13 +325,14 @@ class bullTQ
         $sql .= 'matricule=:matricule, coursGrp=:coursGrp, bulletin=:bulletin, TJ=:Tj, Ex=:Ex, periode=:periode, global=:global ';
         $sql .= 'ON DUPLICATE KEY UPDATE TJ=:Tj, Ex=:Ex, periode=:periode, global=:global ';
         $requete = $connexion->prepare($sql);
-
+// echo $sql;
         foreach ($cotesPeriode as $matricule => $data) {
             $Tj = $data['TJ'];
             $Ex = $data['EX'];
             $periode = $data['PERIODE'];
             $global = $data['GLOBAL'];
             $data = array(':matricule' => $matricule, ':coursGrp' => $coursGrp, ':bulletin' => $bulletin, ':Tj' => $Tj, ':Ex' => $Ex, ':periode' => $periode, ':global' => $global);
+            // Application::afficher($data, true);
             $nbResultats += $requete->execute($data);
         }
 
@@ -389,8 +389,8 @@ class bullTQ
         }
 
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, libelle, nbheures, type, ';
-        $sql .= PFX.'statutCours.statut, section, rang, matricule, nom, prenom, '.PFX.'profsCours.acronyme ';
+        $sql = 'SELECT DISTINCT '.PFX.'elevesCours.coursGrp, cours, libelle, nbheures, ';
+        $sql .= PFX.'statutCours.statut, section, rang, matricule, nom, prenom, '.PFX.'profsCours.acronyme, type ';
         $sql .= 'FROM '.PFX.'elevesCours ';
         $sql .= 'JOIN '.PFX.'cours ON ('.PFX."cours.cours = SUBSTR(coursGrp, 1,LOCATE('-',coursGrp)-1)) ";
         $sql .= 'JOIN '.PFX.'statutCours ON ('.PFX.'statutCours.cadre = '.PFX.'cours.cadre) ';
@@ -483,7 +483,7 @@ class bullTQ
         $sql .= 'FROM '.PFX.'bullTQTitus ';
         $sql .= "WHERE matricule IN ($listeElevesString) ";
         if ($bulletin != null) {
-            $sql .= "AND bulletin='$bulletin' ";
+            $sql .= "AND bulletin='$bulletin'";
         }
         $resultat = $connexion->query($sql);
         $listeRemarques = array();
@@ -581,19 +581,23 @@ class bullTQ
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT classe ';
         $sql .= 'FROM '.PFX.'titus ';
-        $sql .= "WHERE acronyme = '$acronyme' AND section = 'TQ' ";
+        $sql .= 'WHERE acronyme = :acronyme AND section = "TQ" ';
         $sql .= 'ORDER BY classe ';
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
         $liste = array();
+        $resultat = $requete->execute();
+
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $classe = $ligne['classe'];
                 $liste[$classe] = $classe;
             }
         }
         Application::DeconnexionPDO($connexion);
-        // suppression des entrées vides...
-        $liste = array_filter($liste);
 
         return $liste;
     }
@@ -753,9 +757,9 @@ class bullTQ
      */
     public function listePeriodes($delibes = false)
     {
-        $nomsPeriodes = array_combine(range(1, NBPERIODES), explode(',', NOMSPERIODES));
+        $nomsPeriodes = array_combine(range(1, NBPERIODESTQ), explode(',', NOMSPERIODES));
         if ($delibes) {
-            $periodesDelibes = explode(',', str_replace(' ', '', PERIODESDELIBES));
+            $periodesDelibes = explode(',', str_replace(' ', '', DELIBESTQ));
             foreach ($nomsPeriodes as $no => $unePeriode) {
                 if (!(in_array($no, $periodesDelibes))) {
                     unset($nomsPeriodes[$no]);
@@ -936,7 +940,7 @@ class bullTQ
                     if (in_array($epreuve, $typesAutorises)) {
                         $sql = 'INSERT INTO '.PFX.'bullTQQualif ';
                         $sql .= "SET matricule='$matricule', epreuve='$epreuve', mention='$value' ";
-                        $sql .= "ON DUPLICATE KEY UPDATE epreuve='$epreuve',mention='$value' ";
+                        $sql .= "ON DUPLICATE KEY UPDATE epreuve='$epreuve',mention='$value'";
                         $resultat = $connexion->exec($sql);
                         ++$nb;
                     }
@@ -963,16 +967,19 @@ class bullTQ
     {
         $listePeriodesString = implode(',', array_keys($listePeriodes));
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT cg.coursGrp, cg.matricule, cg.bulletin, global, ';
+        $sql = 'SELECT cg.coursGrp, cg.matricule, SUBSTR(de.groupe,1,1) as annee, cg.bulletin, global, ';
         $sql .= "SUBSTR(cg.coursGrp, 1, LOCATE('-',cg.coursGrp)-1) AS cours, libelle, nbheures, sc.statut, ";
         $sql .= 'p.acronyme, p.nom, p.prenom ';
         $sql .= 'FROM '.PFX.'bullTQCotesGlobales AS cg ';
         $sql .= 'JOIN '.PFX.'profsCours AS pc ON (pc.coursGrp = cg.coursGrp) ';
         $sql .= 'JOIN '.PFX.'profs AS p ON (p.acronyme = pc.acronyme) ';
+        $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = cg.matricule ';
         $sql .= 'JOIN '.PFX."cours AS c ON (c.cours = SUBSTR(cg.coursGrp, 1, LOCATE('-',cg.coursGrp)-1)) ";
         $sql .= 'JOIN '.PFX.'statutCours AS sc ON (sc.cadre = c.cadre) ';
         $sql .= "WHERE cg.matricule = '$matricule' AND bulletin IN ($listePeriodesString) ";
+        $sql .= 'AND (SUBSTR(cg.coursGrp,1,1) = annee) ';
         $sql .= 'ORDER BY cg.bulletin, statut, nbheures, libelle, rang ';
+
         $resultat = $connexion->query($sql);
         $cotesEleve = array();
         if ($resultat) {
@@ -1115,7 +1122,7 @@ class bullTQ
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT epreuve, mention ';
         $sql .= 'FROM '.PFX.'bullTQQualif ';
-        $sql .= "WHERE matricule='$matricule' ";
+        $sql .= "WHERE matricule='$matricule'";
         $resultat = $connexion->query($sql);
         $mentionsQualif = array();
         while ($ligne = $resultat->fetch()) {
@@ -1209,7 +1216,7 @@ class bullTQ
         if (!(file_exists("pdf/$acronyme"))) {
             mkdir("pdf/$acronyme");
         }
-        $pdf->Output('D', "pdf/$acronyme/$classe.pdf");
+        $pdf->Output("pdf/$acronyme/$classe.pdf");
     }
 
     /**
@@ -1452,41 +1459,10 @@ class bullTQ
     }
 
     /**
-     * impression des mentions de qualification.
-     *
-     * @param $listeEpreuvesQualif : liste des épreuves prévues
-     * @param $mentionsQualif : mentions acquises par l'élève
-     */
-    private function qualifPDF($pdf, $listeEpreuvesQualif, $mentionsQualif)
-    {
-        $pdf->SetLineWidth(0.2);
-        $pdf->SetFont('Arial', '', 10);
-        $texte = $this->utf8('Évaluations des stages');
-        $pdf->Cell(0, 5, $texte, 1, 1, 'C', true);
-        $pdf->SetFont('Arial', '', 7);
-
-        $pdf->Cell(20, 5, $this->utf8('Année'), 1, 0, 'C', true);
-        $pdf->Cell(130, 5, $this->utf8('Épreuve'), 1, 0, 'L', true);
-        $pdf->Cell(44, 5, $this->utf8('Mention'), 1, 1, 'C', true);
-
-        foreach ($listeEpreuvesQualif as $wtf => $epreuve) {
-            $annee = $this->utf8($epreuve['annee'].'e année');
-            $sigle = $epreuve['sigle'];
-            $libelle = $this->utf8($epreuve['legende']);
-            $mention = isset($mentionsQualif[$sigle]) ? $mentionsQualif[$sigle] : '';
-            $pdf->Cell(20, 5, $annee, 1, 0, '', false);
-            $pdf->Cell(130, 5, $libelle, 1, 0, 'L', false);
-            $pdf->Cell(44, 5, $mention, 1, 1, 'C', false);
-        }
-        $pdf->Ln();
-    }
-
-    /**
      * impression des mentions obtenues (en périodes de délibés).
      *
      * @param $pdf : objet PDF
-     *
-     * @return array('option_final'=>..., 'global_final'=>...)
+     * @mentions array('option_final'=>..., 'global_final'=>...)
      */
     private function mentionsPDF($pdf, $mentions)
     {
@@ -1545,11 +1521,7 @@ class bullTQ
         $listeCotesGlobales = $this->listeCotesGlobales($listeCoursGrp, $bulletin);
         $listeCotesGeneraux = $this->toutesCotesCoursGeneraux($listeCoursGrp, $matricule, $bulletin);
         $listeCommentaires = $this->listeCommentaires($matricule, $listeCoursGrp);
-
-        $listeEpreuvesQualif = $this->listeEpreuvesQualif();
-        $mentionsQualif = $this->mentionsQualif($matricule);
-
-        $periodesDelibes = explode(',', str_replace(' ', '', PERIODESDELIBES));
+        $periodesDelibes = explode(',', str_replace(' ', '', DELIBESTQ));
         if (in_array($bulletin, $periodesDelibes)) {
             $mentions = $this->mentionsBulletin($matricule, $bulletin);
         } else {
@@ -1625,11 +1597,6 @@ class bullTQ
             } else {
                 $pdf->Ln(1);
             }
-        }
-
-        // mentions de qualification
-        if ($listeEpreuvesQualif != null) {
-            $this->qualifPDF($pdf, $listeEpreuvesQualif, $mentionsQualif);
         }
 
         // remarque du titulaire
@@ -1711,17 +1678,23 @@ class bullTQ
                 $resultat += $connexion->exec($sql);
             }
         }
+        $nbNew = 0;
         foreach ($dataNew as $libelle) {
-            $libelle = addslashes($libelle);
             if ($libelle != '') {
                 $sql = 'INSERT INTO '.PFX.'bullTQCompetences ';
-                $sql .= "SET libelle='$libelle', cours='$cours'";
-                $resultat += $connexion->exec($sql);
+                $sql .= "SET libelle = :libelle, cours = :cours ";
+                $requete = $connexion->prepare($sql);
+
+                $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 100);
+                $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+                $resultat = $requete->execute();
+                $nbNew += $requete->rowCount();
             }
         }
         Application::DeconnexionPDO($connexion);
 
-        return $resultat;
+        return $nbNew;
     }
 
     /**
@@ -1826,25 +1799,45 @@ class bullTQ
     public function enregistrerDecision($post)
     {
         $matricule = $post['matricule'];
-        $decision = $post['decision'];
+        $decision = ($post['decision'] == '') ? Null : $post['decision'];
+
         if ($decision == 'Restriction') {
             $restriction = $post['restriction'];
         } else {
             $restriction = '';
         }
-        $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
-        $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
+        if ($decision != Null) {
+            $mail = isset($post['mail']) && ($post['mail'] == true) ? 1 : 0;
+            $notification = isset($post['notification']) && ($post['notification'] == true) ? 1 : 0;
+            }
+            else {
+                $mail = 0;
+                $notification = 0;
+            }
+
         $mailEleve = $post['mailEleve'];
+
         $adresseMail = ($post['adresseMail'] != $mailEleve) ? $post['adresseMail'] : '';
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'INSERT INTO '.PFX.'bullDecisions ';
-        $sql .= "SET matricule='$matricule', decision='$decision', restriction='$restriction', mail='$mail', notification='$notification', ";
-        $sql .= "adresseMail='$adresseMail' ";
+        $sql .= 'SET matricule = :matricule, decision = :decision, restriction = :restriction, ';
+        $sql .= 'mail = :mail, notification = :notification, ';
+        $sql .= 'adresseMail = :adresseMail ';
         $sql .= 'ON DUPLICATE KEY UPDATE ';
-        $sql .= "decision='$decision', restriction='$restriction', mail='$mail', notification='$notification', ";
-        $sql .= "adresseMail='$adresseMail' ";
+        $sql .= 'decision = :decision, restriction = :restriction, mail = :mail, notification = :notification, ';
+        $sql .= 'adresseMail = :adresseMail ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->exec($sql);
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 20);
+        $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
+        $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
+        $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
+        $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
+
+        $resultat = $requete->execute();
+
         Application::DeconnexionPDO($connexion);
 
         return $resultat;
@@ -2020,23 +2013,28 @@ class bullTQ
     /**
      * retourne la liste des élèves suivis par le prof dont on fournit l'acronyme.
      *
-     * @param $acronyme
+     * @param string $acronyme
      *
      * @return array
      */
     public function listeStagesSuivis($acronyme)
     {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT st.matricule, nom, prenom ';
+        $sql = 'SELECT st.matricule, nom, prenom, groupe ';
         $sql .= 'FROM '.PFX.'bullTQstages AS st ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = st.matricule ';
-        $sql .= "WHERE acronyme='$acronyme' ";
+        $sql .= 'WHERE acronyme = :acronyme ';
         $sql .= 'ORDER BY groupe, nom, prenom ';
-        $resultat = $connexion->query($sql);
+
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
         $liste = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $matricule = $ligne['matricule'];
                 $liste[$matricule] = $ligne;
             }
@@ -2158,7 +2156,7 @@ class bullTQ
     /**
      * renvoie la iste des épreuves de qualification pour toutes les années d'étude.
      *
-     * @param void()
+     * @param void
      *
      * @return array
      */
@@ -2174,6 +2172,39 @@ class bullTQ
             $resultat->setFetchMode(PDO::FETCH_ASSOC);
             $liste = $resultat->fetchAll();
         }
+        Application::DeconnexionPDO($connexion);
+
+        return $liste;
+    }
+
+    /**
+     * renvoie la liste des niveaux d'étude pour une section donnée
+     *
+     * @param string $section
+     *
+     * @return array
+     *
+     */
+    function listeNiveaux4section($section){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'SELECT DISTINCT annee ';
+        $sql .= 'FROM '.PFX.'eleves ';
+        $sql .= 'WHERE section = :section ';
+        $sql .= 'ORDER BY annee ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':section', $section, PDO::PARAM_STR, 5);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()){
+                $annee = $ligne['annee'];
+                $liste[$annee] = $annee;
+            }
+        }
+
         Application::DeconnexionPDO($connexion);
 
         return $liste;

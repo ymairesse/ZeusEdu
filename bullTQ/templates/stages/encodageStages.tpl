@@ -1,3 +1,4 @@
+{debug}
 <div class="container">
 
     <div class="row">
@@ -10,42 +11,42 @@
 
         {assign var=annee value=substr($classe, 0, 1)}
 
-        <div class="col-md-6 col-sm-12">
-
             <table class="table table-condensed">
                 <thead>
                     <tr>
-                        <td>
+                        <th>
                             <h3>{$classe}</h3>
-                        </td>
-                        {foreach from=$listeEpreuves key=wtf item=dataEpreuve}
-                        <td>{$dataEpreuve.legende}</td>
+                        </th>
+
+                        {foreach from=$listeEpreuves item=dataEpreuve}
+                            <th style="text-align:center">{$dataEpreuve.legende}</th>
                         {/foreach}
                     </tr>
                 </thead>
+
                 <tbody>
+
                     {foreach from=$dataGroupe key=matricule item=dataEleve}
                         <tr data-matricule="{$matricule}">
                             <td>{$dataEleve.nom} {$dataEleve.prenom}</td>
                             {* liste des cotes *}
-                            {foreach from=$listeCotesQualifPargroupe.$matricule key=titre item=uneCote name=epreuve}
+                            {foreach from=$listeEpreuves key=i item=dataEpreuve}
+                                {assign var=titre value=$dataEpreuve.sigle}
                                 <td>
-                                    {assign var=i value=$smarty.foreach.epreuve.index}
                                     <input type="text"
                                         name="stage_{$matricule}_{$titre}"
-                                        value="{$uneCote}"
-                                        class="form-control"
+                                        value="{$listeCotesQualifPargroupe.$matricule.$titre|default:''}"
+                                        class="form-control majuscules"
                                         {if $listeEpreuves.$i.annee !== $annee}
                                         disabled
                                         {/if}>
                                 </td>
                             {/foreach}
+
                         </tr>
                     {/foreach}
                 </tbody>
             </table>
-
-        </div>
 
         {/foreach}
 
@@ -65,6 +66,16 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
+
+        $("input").keyup(function(e) {
+			var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+			if ((key > 31) || (key == 8)) {
+				// modification();
+				if ($(this).hasClass('majuscules')) {
+					$(this).val($(this).val().toUpperCase());
+				}
+			}
+		})
 
         $('#saveStages').click(function(){
             var formulaire = $('#formStages').serialize();

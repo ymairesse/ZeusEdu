@@ -1,14 +1,18 @@
-{* Permet de sélectionner un niveau d'étude puis un cours parmi ceux qui sont donnés à ce niveau*} {* demande une $listeNiveaux; la liste des cours est chargée en arrière-plan en fonction du niveau sélectionné *}
-
+{* Permet de sélectionner un niveau d'étude puis un cours parmi ceux qui sont donnés à ce niveau*}
+{* demande une $listeNiveaux; la liste des cours est chargée en arrière-plan en fonction du niveau sélectionné *}
 <div id="selecteur" class="noprint" style="clear:both" role="form" class="form-inline">
-	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php">
-		<select name="niveau" id="niveau">
-			<option value="">Niveau</option>
-			{foreach from=$listeNiveaux item=unNiveau}
-			<option value="{$unNiveau}" {if isset($niveau) && ($unNiveau eq $niveau)}selected{/if}>{$unNiveau}</option>
-			{/foreach}
-		</select>
-		<button type="submit" class="btn btn-primary btn-xs">OK</button>
+
+	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
+		<div class="form-group">
+			<select name="niveau" id="niveau" class="form-control">
+				<option value="">Niveau</option>
+				{foreach from=$listeNiveaux item=unNiveau}
+				<option value="{$unNiveau}" {if isset($niveau) && ($unNiveau eq $niveau)}selected{/if}>{$unNiveau}</option>
+				{/foreach}
+			</select>
+		</div>
+
+		<button type="submit" class="btn btn-primary">OK</button>
 		<input type="hidden" name="action" value="{$action}">
 		<input type="hidden" name="mode" value="{$mode}">
 		<input type="hidden" name="etape" value="show">

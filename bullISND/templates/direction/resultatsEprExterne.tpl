@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
     <div class="col-md-4 col-sm-6">
         <form class="form-vertical">
@@ -55,7 +55,9 @@
 
         <h4>Aperçu de l'entête</h4>
         <div class="apercu">
+
         {include file='direction/ext/titreExterne.tpl'}
+
         <p class="small">Voir le fichier templates/direction/ext/titreExterne.tpl</p>
             <img src="../images/ajax-loader.gif" class="hidden" id="ajaxLoader">
         </div>

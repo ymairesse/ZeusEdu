@@ -1,4 +1,4 @@
-<table class="table table-condensed">
+<table class="table table-condensed" id="tableRV">
 
     <thead>
         <tr>
@@ -18,8 +18,8 @@
 
     <tbody>
         {foreach from=$listeSuivi item=unItem}
-        <tr>
-            <td data-id="{$unItem.id}">
+        <tr data-id="{$unItem.id}">
+            <td>
                 {if $unItem.proprietaire == $acronyme}
                 <form action="index.php" method="POST" role="form" class="form-inline microform">
                     <input type="hidden" name="id" value="{$unItem.id}">
@@ -85,7 +85,13 @@
             </td>
             <td>
                 {if $unItem.proprietaire == $acronyme}
-                <button title="Supprimer cette ligne" class="btn btn-default btn-sm btn-delete" type="button"><i class="fa fa-times text-danger delete" data-id="{$unItem.id}"></i></button>
+                <button
+                    type="button"
+                    title="Supprimer cette ligne"
+                    class="btn btn-default btn-sm btn-delete"
+                    data-id="{$unItem.id}">
+                    <i class="fa fa-times text-danger delete"></i>
+                </button>
                 {/if}
             </td>
         </tr>
@@ -93,8 +99,10 @@
     </tbody>
 </table>
 
+<div id="modal"></div>
 
-<div id="modalDel" class="modal fade" role="dialog">
+
+{* <div id="modalDel" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
@@ -132,17 +140,10 @@
     </div>
 
   </div>
-</div>
+</div> *}
 
 
 <script type="text/javascript">
-
-function ellipse (texte, longueur) {
-    var txt = texte.substr(0,longueur);
-    if (texte.length > longueur)
-        return txt+'...';
-        else return txt;
-    }
 
 $(document).ready(function(){
 
@@ -154,22 +155,24 @@ $(document).ready(function(){
 		})
 
     $(".btn-delete").click(function(){
-        var parent = $(this).closest('tr');
-        var id = parent.find('td[data-id]').data('id');
-        var date = parent.find('td[data-date]').data('date');
-        var heure = parent.find('td[data-heure]').data('heure');
-        var motif = ellipse(parent.find('td[data-motif]').data('motif'),100);
-        var traitement = ellipse(parent.find('td[data-traitement]').data('traitement'),100);
-        var aSuivre = ellipse(parent.find('td[data-asuivre]').data('asuivre'),100);
+        var tr = $(this).closest('tr');
+        var id = $(this).data('id');
+        $.post('inc/suivi/modalDelRV.inc.php', {
+            id: id
+        }, function(resultat){
+            $('#modal').html(resultat);
+            $('#modalDel').modal('show');
+        })
 
-        $("#spDate").text(date);
-        $("#spHeure").text(heure);
-        $("#spMotif").text(motif)
-        $("#spTraitement").text(traitement);
-        $("#spAsuivre").text(aSuivre);
-        $("#id").val(id);
-
-        $('#modalDel').modal('show');
+    $('#modal').on('click', '#btnConfirmDelRV', function(){
+        var id = $(this).data('id');
+        $.post('inc/suivi/delRV.inc.php', {
+            id: id
+        }, function(resultat){
+            $('#tableRV tr[data-id="' + id + '"]').remove();
+            $('#modalDel').modal('hide');
+        })
+    })
 
     })
 

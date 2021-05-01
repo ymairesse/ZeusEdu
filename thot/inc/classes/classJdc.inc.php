@@ -1217,7 +1217,9 @@ class Jdc
             $sql = 'INSERT INTO '.PFX.'thotJdc ';
             $sql .= 'SET destinataire = :destinataire, type = :type, proprietaire = :proprietaire, idCategorie = :categorie, ';
             $sql .= 'title = :titre, enonce = :enonce, startDate = :startDate, endDate = :endDate, allDay = :allDay, lastModif = NOW() ';
-
+// Application::afficher($post);
+// Application::afficher(array($startDate, $endDate));
+// die($sql);
 
         } else {
             // simple mise à jour

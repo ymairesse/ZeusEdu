@@ -25,4 +25,5 @@ $smarty->compile_dir = '../templates_c';
 $randomParam = rand();
 $smarty->assign('param', $param);
 $smarty->assign('heure', date('H:i'));
+
 $smarty->display('neverdie.tpl');

@@ -57,7 +57,7 @@
 
     <table class="titre">
         <tr>
-            <td><img src="../../../images/logoEcole.png" style="margin-right:40px"></td>
+            <td><img src="{$BASEDIR}/images/logo1.jpg" style="margin-right:40px; width:150px"></td>
             <td style="text-align:center"><h1>Récapitulatif des résultats obtenus au premier degré par<br>
                 <strong>{$dataEleve.nom} {$dataEleve.prenom}</strong></h1></td>
         </tr>

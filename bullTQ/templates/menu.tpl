@@ -1,4 +1,4 @@
-<div class="container hidden-print">
+<div class="container-fluid hidden-print">
 
 <nav class="navbar navbar-default" role="navigation">
 
@@ -29,7 +29,7 @@
 			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Encodage Bulletin<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="index.php?action=bulletin">Encodage des bulletins</a></li>
-					<li><a href="index.php?action=stages">Évaluations des stages</a></li>
+					<li><a href="index.php?action=bulletin&amp;mode=stage">Encodage des stages</a></li>
 				</ul>
 			</li>
 

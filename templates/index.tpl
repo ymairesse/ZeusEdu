@@ -33,23 +33,11 @@
 			{foreach from=$applisDisponibles key=title item=appli}
 				<div class="sousPrg btn btn-primary" title="{$appli.nomLong}">
 					<a href="{$appli.URL}"><img src="images/{$appli.icone}" alt="{$titre}" style="float:left">
-						{if isset($messages.$title)}<span class="badge badge-menu">{$messages.$title|@count|default:''}</span>{/if}
 					<span class="titreSousPrg">{$appli.nomLong}</span></a>
 				</div>
 			{/foreach}
 
 			<div id="titreAppli" style="clear:both">{$titre}</div>
-			<div id="messages" class="hidden">
-				<ul class="list-unstyled">
-				{foreach from=$messages key=title item=listeMessages}
-					{foreach from=$listeMessages key=id item=unMessage}
-					<li class="msg"><img src="images/{$title}Ico.png" alt="{$title|truncate:1:''}"> [{$unMessage.acronyme}] {$unMessage.date|truncate:5:''} - {$unMessage.objet|truncate:80}</li>
-					{/foreach}
-				{/foreach}
-				</ul>
-			</div>
-
-			</div>
 
 		</div>  <!-- col-md... -->
 

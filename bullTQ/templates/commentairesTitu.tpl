@@ -3,6 +3,7 @@
 <h3 style="clear:both" title="{$infoPerso.matricule}">
 	{$infoPerso.nom} {$infoPerso.prenom} : {$infoPerso.classe} | Bulletin n° {$bulletin}</h3>
 
+
 <ul class="nav nav-tabs">
 	<li class="active"><a data-toggle="tab" href="#tabs-cotes">Cotes</a></li>
 	<li><a data-toggle="tab" href="#tabs-remarques">Remarques toutes périodes</a></li>
@@ -38,8 +39,8 @@
 
 			<div class="col-md-10 col-sm-12">
 				<h4>Avis du titulaire et du Conseil de Classe pour la période {$bulletin}</h4>
-				{if isset($listeMentions.$bulletin)}
-				<p>Mention accordée <strong>{$listeMentions.$bulletin}</strong>.</p>
+				{if isset($mentions.$matricule.$bulletin)}
+				<p>Mention accordée <strong>{$mentions.$matricule.$bulletin}</strong>.</p>
 				{/if}
 				<textarea name="commentaire" id="commentaire" rows="7" class="form-control">{$listeRemarquesTitu.$bulletin.$matricule|default:'&nbsp;'}</textarea>
 				<button type="submit" class="btn btn-primary pull-right">Enregistrer</button>

@@ -1,4 +1,4 @@
-<div class="container hidden-print">
+<div class="container-fluid hidden-print">
 
 	<nav class="navbar navbar-default" role="navigation">
 
@@ -15,7 +15,7 @@
 	</div>
 
 	<div class="collapse navbar-collapse" id="barreNavigation">
-		
+
 		<ul class="nav navbar-nav pull-right">
 			{if isset($alias)}
 			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>

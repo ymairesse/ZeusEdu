@@ -9,7 +9,11 @@
  * @author    Laurent MINGUET <webmaster@html2pdf.fr>
  * @copyright 2017 Laurent MINGUET
  */
-require_once dirname(__FILE__).'/../vendor/autoload.php';
+
+//  require INSTALL_DIR.'/vendor/autoload.php';
+// use Spipu\Html2Pdf\Html2Pdf;
+// echo getcwd();
+require_once '../../../autoload.php';
 
 use Spipu\Html2Pdf\Html2Pdf;
 use Spipu\Html2Pdf\Exception\Html2PdfException;

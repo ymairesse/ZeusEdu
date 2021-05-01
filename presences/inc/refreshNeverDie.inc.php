@@ -22,7 +22,9 @@ $smarty = new Smarty();
 $smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
+// paramètre aléatoire pour forcer le rafraîchissement côté serveur
 $randomParam = rand();
 $smarty->assign('param', $param);
 $smarty->assign('heure', date('h:i'));
+
 $smarty->display('../templates/neverdie.tpl');

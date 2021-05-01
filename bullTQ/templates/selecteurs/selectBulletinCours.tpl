@@ -1,20 +1,21 @@
 <div id="selecteur" class="noprint" style="clear:both">
 
-	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline" role="form">
-		<div class="input-group">
+	<form name="formSelecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
+
+		<div class="form-group">
 			<label for="bulletin">Bulletin n°</label>
-			<select name="bulletin" id="bulletin" class="form-control-inline>
-			{section name=boucleBulletin loop=$nbBulletins+1}
-			<option value="{$smarty.section.boucleBulletin.index}"
-					{if isset($bulletin) && $smarty.section.boucleBulletin.index == $bulletin}selected{/if}>
-				{$smarty.section.boucleBulletin.index}</option>
-			{/section}
+			<select name="bulletin" id="bulletin" class="form-control">
+			{foreach from=$listeBulletins item=noBulletin}
+				<option value="{$noBulletin}" {if isset($bulletin) && $noBulletin == $bulletin}selected{/if}>
+					{$noBulletin}
+				</option>
+			{/foreach}
 			</select>
 		</div>
 
-		<div class="input-group">
+		<div class="form-group">
 
-		<select name="coursGrp" id="coursGrp" class="form-control-inline">
+		<select name="coursGrp" id="coursGrp" class="form-control">
 			<option value="">Cours</option>
 			{if isset($listeCours)}
 			{foreach from=$listeCours key=unCoursGrp item=unCours}
@@ -26,7 +27,7 @@
 		</div>
 
 	{* si un cours est sélectionné, on présente le bouton OK *}
-	{if isset($coursGrp)}<button type="submit" class="btn btn-primary btn-xs">OK</button>{/if}
+	{if isset($coursGrp)}<button type="submit" class="btn btn-primary">OK</button>{/if}
 	<input type="hidden" name="action" value="{$action}">
 
 	</form>

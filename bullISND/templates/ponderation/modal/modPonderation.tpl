@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 class="modal-title" id="titleMod">Modifier les pondérations</h3>
+                <div id="titleMod">Modifier les pondérations</div>
             </div>
             <div class="modal-body">
                 Bulletin en cours: {$bulletin} <strong class="pull-right">

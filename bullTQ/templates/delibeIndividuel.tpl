@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 	{assign var=inputOK value=in_array($classe,$tituTQ)}
 
@@ -74,7 +74,7 @@
 				</div>
 
 
-				<table class="table table-condensed tableauBull">
+				<table class="table table-condensed">
 					<tr>
 						<th>Cours</th>
 						<th>h</th>
@@ -97,29 +97,9 @@
 						{/foreach}
 					{/foreach}
 
-{*
-ANCIEN
-					{foreach from=$listeCotes item=type}
-						{foreach from=$type item=unCours}
-						<tr class="{$unCours.statut}" data-container="body" data-html="true" title="{$unCours.nomProf}<br>[{$unCours.acronyme}]">
-							{assign var="nomProf" value=$unCours.nomProf}
-							<td>{$unCours.libelle}</td>
-							<td>{$unCours.nbheures} h</td>
-							{foreach from=$listePeriodes key=periode item=nomPeriode}
-								<td class="cote">{$unCours.global.$periode|default:'&nbsp;'}</td>
-							{/foreach}
-						</tr>
-					{/foreach}
-
-
-
-					<tr>
-						<td colspan="4" style="background-color: #ddd; height: 0.5em"></td>
-					</tr>
-					{/foreach} *}
 				</table>
 
-				<table class="table table-condensed tableauBull">
+				<table class="table table-condensed">
 					<tr>
 						<th colspan="6">Qualification</th>
 					</tr>
@@ -167,9 +147,10 @@ ANCIEN
 			{* ------------------------------------------------------------------ *}
 
 			<div class="col-md-6 col-sm-12">
-				{* on passe les périodes en revue *} {foreach from=$listePeriodes key=periode item=nomPeriode}
+				{* on passe les périodes en revue *}
+				{foreach from=$listePeriodes key=periode item=nomPeriode}
 
-				<table class="tableauBull" style="width:100%">
+				<table class="table table-condensed" style="width:100%">
 					<tr>
 						<th colspan="6">{$nomPeriode}</th>
 					</tr>
@@ -248,7 +229,7 @@ ANCIEN
 
 				{/foreach}
 
-				{if ($PERIODEENCOURS == $NBPERIODES)}
+				{if ($PERIODETQ == $NBPERIODESTQ)}
 				<h3>Décision du Conseil de Classe</h3>
 				<table class="table table-condensed" style="margin-top:1em; border: 2px solid red">
 

@@ -89,6 +89,8 @@ switch ($action) {
         break;
 }
 
+$listeCoursProf = $user->listeCoursProf();
+
 if ($matricule != Null) {
     $smarty->assign('matricule',$matricule);
     }
@@ -101,6 +103,7 @@ $smarty->assign('classe', $classe);
 $smarty->assign('selecteur','selecteurs/selectClasseEleve');
 $smarty->assign('listeClasses', $Ecole->listeGroupes());
 $smarty->assign('lesCours', $user->listeCoursProf());
+
 
 //
 // ----------------------------------------------------------------------------

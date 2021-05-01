@@ -1,4 +1,3 @@
-<!-- logo à adapter -->
 <p><img src="http://isnd.be/images/logoisnd.png" style="float:left" alt="ISND">Institut des Sœurs de Notre-Dame Rue de Veeweyde 40 1070 Bruxelles</p>
 <hr>
 <p style="padding-top:2em; font-size:0.8em">L'information et tous les fichiers éventuellement attachés que contient ce courrier électronique sont à l'usage exclusif du(es) destinataire(s) qui portera(ront) la responsabilité des copies et retransmission qu'il(s) en ferai(en)t. Ces informations peuvent être confidentielles et doivent alors être traitées comme telles.</p>

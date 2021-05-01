@@ -31,6 +31,7 @@
 					<li><a href="index.php?action=import&amp;table=bullCE1B">Résultats CEB primaire</a></li>
 					<li><a href="index.php?action=import&amp;table=infirmInfos">Informations médicales</a></li>
 					<li><a href="index.php?action=import&amp;table=passwd">Mots de passe élèves</a></li>
+					<li><a href="index.php?action=import&amp;table=csvMs">Micro$$oft</a></li>
 				</ul>
 			</li>
 
@@ -55,6 +56,7 @@
 					<li><a href="index.php?action=look&amp;table=bullCE1B">Résultats CE1B primaire</a></li>
 					<li><a href="index.php?action=look&amp;table=elevesEcoles">Élèves/écoles</a></li>
 					<li><a href="index.php?action=look&amp;table=infirmInfos">Informations médicales</a></li>
+					<li><a href="index.php?action=look&amp;table=csvMs">Micro$$oft</a></li>
 
 				</ul>
 		</li>
@@ -96,6 +98,8 @@
 				<li><a href="index.php?action=gestEleves&amp;mode=attribMdp">Attribuer des mots de passe</a></li>
 				<li><a href="index.php?action=gestEleves&amp;mode=printPwd">Imprimer les mots de passe</a></li>
 				<li><a href="index.php?action=maj&amp;table=anciens">Suppression anciens élèves</a></li>
+				<li class="divider"></li>
+				<li><a href="index.php?action=gestEleves&amp;mode=MS">Envoi des identifiants MS</a></li>
 			</ul>
 		</li>
 

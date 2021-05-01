@@ -1,7 +1,7 @@
 <script src="../dropzone/dropzone.js" charset="utf-8"></script>
 <link href="../dropzone/dropzone.css" type="text/css" rel="stylesheet">
 
-<div class="container">
+<div class="container-fluid">
 
 	<h2>Profil personnel</h2>
 

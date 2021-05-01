@@ -39,13 +39,10 @@ $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
-require_once INSTALL_DIR.$ds.'html2PDF/vendor/autoload.php';
-
+require INSTALL_DIR.'/vendor/autoload.php';
 use Spipu\Html2Pdf\Html2Pdf;
-use Spipu\Html2Pdf\Exception\Html2PdfException;
-use Spipu\Html2Pdf\Exception\ExceptionFormatter;
 
-$html2pdf = new \Spipu\Html2Pdf\Html2Pdf('P', 'A4', 'fr');
+$html2pdf = new Html2Pdf('P', 'A4', 'fr');
 
 $smarty->assign('listePeriodes', $listePeriodes);
 $smarty->assign('listeJustifications', $listeJustifications);

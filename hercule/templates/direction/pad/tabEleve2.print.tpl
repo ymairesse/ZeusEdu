@@ -1,7 +1,7 @@
 <style>
 
 td, th {
-	font-size: 7pt;
+	font-size: 6pt;
 }
 
 .mentionI {
@@ -80,7 +80,7 @@ th {
 </style>
 
 
-<page backtop="7mm" backbottom="7mm" backleft="20mm" backright="0mm">
+<page backtop="7mm" backbottom="7mm" backleft="10mm" backright="0mm">
     <page_header>
 		<span style="margin-left: 20mm">[[page_cu]]/[[page_nb]]</span>
     </page_header>

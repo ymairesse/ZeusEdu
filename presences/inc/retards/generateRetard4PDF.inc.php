@@ -56,8 +56,11 @@ define('PAGEWIDTH', 600);
 
 $billet4PDF = $smarty->fetch('retards/billetRetard4PDF.tpl');
 
-require_once INSTALL_DIR.'/html2pdf/html2pdf.class.php';
-$html2pdf = new Html2PDF('L', 'A5', 'fr');
+require INSTALL_DIR.'/vendor/autoload.php';
+use Spipu\Html2Pdf\Html2Pdf;
+
+$html2pdf = new Html2Pdf('L', 'A5', 'fr');
+
 $html2pdf->writeHTML($billet4PDF);
 
 $np = Application::simplifieNom($dataEleve['nom'].$dataEleve['prenom']);

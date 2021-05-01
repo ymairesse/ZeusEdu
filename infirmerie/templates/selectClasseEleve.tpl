@@ -103,7 +103,6 @@ $(document).ready (function() {
 		$("#prev, #next").fadeOut();
 		})
 
-
 	$("#nom").typeahead({
 		minLength: 2,
 		updater: function (item) {
