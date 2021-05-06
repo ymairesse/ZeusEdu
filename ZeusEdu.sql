@@ -2173,23 +2173,25 @@ CREATE TABLE `didac_thotAgendaPartages` (
 ALTER TABLE `didac_thotAgendaPartages`
   ADD PRIMARY KEY (`idAgenda`,`type`,`destinataire`);
 
-
-
 --
 -- Structure de la table `didac_thotForums`
 --
 CREATE TABLE `didac_thotForums` (
-  `idCategorie` int(11) NOT NULL COMMENT 'Identifiant numérique de la catégorie',
-  `libelle` varchar(40) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Libellé de la catégorie',
-  `parentId` int(11) DEFAULT NULL COMMENT 'Identifiant numérique de la catégorie parent',
-  `userStatus` enum('profs','eleves') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Accès libre pour...'
+    `idCategorie` int NOT NULL COMMENT 'Identifiant numérique de la catégorie',
+    `libelle` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Libellé de la catégorie',
+    `parentId` int DEFAULT NULL COMMENT 'Identifiant numérique de la catégorie parent',
+    `userStatus` enum('profs','eleves') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Accès libre pour...'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Catégories des sujets du forum';
 
-ALTER TABLE `didac_thotForums`
-  ADD PRIMARY KEY (`idCategorie`);
+INSERT INTO `didac_thotForums` (`idCategorie`, `libelle`, `parentId`, `userStatus`) VALUES
+  (1, 'Forums pour les profs', 0, 'profs'),
+  (2, 'Forums pour les élèves (et les profs)', 0, 'eleves');
 
 ALTER TABLE `didac_thotForums`
-  MODIFY `idCategorie` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique de la catégorie';
+    ADD PRIMARY KEY (`idCategorie`);
+
+ALTER TABLE `didac_thotForums`
+    MODIFY `idCategorie` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique de la catégorie', AUTO_INCREMENT=3;
 
   --
   -- Structure de la table `didac_thotForumsAccess`
