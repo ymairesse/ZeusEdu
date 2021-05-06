@@ -1154,7 +1154,7 @@ ALTER TABLE `didac_EDTeleves`
 CREATE TABLE `didac_EDTinfos` (
     `type` enum('info','retard') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'info' COMMENT 'Type d''information',
     `proprio` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Qui a encodé',
-    `idEDTinfo` tinyint NOT NULL COMMENT 'Identifiant de l''information',
+    `idEDTinfo` int(11) NOT NULL COMMENT 'Identifiant de l''information',
     `date` date NOT NULL COMMENT 'Date de l''info',
     `acronyme` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Acronyme du prof en retard',
     `info` varchar(80) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'texte d''information'
@@ -1451,6 +1451,49 @@ CREATE TABLE `didac_remediationCibles` (
 ALTER TABLE `didac_remediationCibles`
   ADD PRIMARY KEY (`idOffre`,`type`,`cible`);
 
+CREATE TABLE `didac_reservations` (
+    `idRessource` int NOT NULL COMMENT 'Identifiant numérique',
+    `description` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description matériel ou local',
+    `reference` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Identifiant unique (adresse MAC,n*série)',
+    `idType` smallint NOT NULL COMMENT 'Type d''objet (voir table des types)',
+    `localisation` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Localisation de la ressource',
+    `etat` blob COMMENT 'Description de l''état du matériel/local',
+    `hasCaution` tinyint NOT NULL DEFAULT '0' COMMENT 'Caution demandée?',
+    `caution` int DEFAULT NULL COMMENT 'Montant de la caution'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Prêt de matériel ou de locaux';
+
+ALTER TABLE `didac_reservations`
+    ADD PRIMARY KEY (`idRessource`,`reference`,`idType`) USING BTREE;
+
+ALTER TABLE `didac_reservations`
+    MODIFY `idRessource` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique';
+
+CREATE TABLE `didac_reservationsTypes` (
+  `idType` int NOT NULL COMMENT 'Identifiant du type',
+  `type` varchar(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Type de la ressource'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_reservationsTypes`
+  ADD PRIMARY KEY (`idType`);
+
+ALTER TABLE `didac_reservationsTypes`
+  MODIFY `idType` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du type';
+
+CREATE TABLE `didac_reservationsUser` (
+    `idReservation` int NOT NULL COMMENT 'Identifiant de la réservation',
+    `idRessource` int NOT NULL COMMENT 'Identifiant de la ressource réservée',
+    `user` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Utilisateur: matricule ou acronyme',
+    `dateDebut` datetime NOT NULL COMMENT 'Date de début du pêt/occupation',
+    `dateFin` datetime NOT NULL COMMENT 'Date de fin du prêt/occupation'
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_reservationsUser`
+    ADD PRIMARY KEY (`idReservation`),
+    ADD KEY `user` (`user`),
+    ADD KEY `idRessource` (`idRessource`);
+
+ALTER TABLE `didac_reservationsUser`
+    MODIFY `idReservation` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la réservation';
 
 CREATE TABLE IF NOT EXISTS `didac_EBSamenagements` (
   `idAmenagement` smallint(6) NOT NULL AUTO_INCREMENT,
