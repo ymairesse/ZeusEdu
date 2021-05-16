@@ -46,7 +46,6 @@
 						data-content="<img src='../photos/{$unEleve.photo}.jpg' style='width:100px'><br><small>{$matricule}</small>"
 						title="{$unEleve.nom|cat:' '|cat:$unEleve.prenom|truncate:20:'...'}"
 						{/if}>
-
 					<span class="visible-xs">{$unEleve.nom|truncate:10:'..'} {$unEleve.prenom|truncate:10:'.'}</span>
 					<span class="visible-sm visible-md visible-lg">{$unEleve.nom|truncate:20:'...'|default:'&nbsp;'} {$unEleve.prenom|default:'&nbsp;'}</span>
 

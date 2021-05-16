@@ -1,4 +1,5 @@
 	<h3>Critères de sélection</h3>
+
 	<div style="border: 1px solid grey; padding: 1em 0.5em">
 
 		<div class="form-group">

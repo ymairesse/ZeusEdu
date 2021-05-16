@@ -46,13 +46,14 @@ $listeRetards = $Presences->getListeSyntheseRetards($debut, $fin, $niveau, $clas
 
 if ($matricule != Null)
     $listeEleves = array($matricule);
-    else if ($classe != Null)
+    else if ($classe != Null) {
             $listeEleves = array_keys($Ecole->listeElevesClasse($classe));
+            }
             else if ($niveau != Null)
                     $listeEleves = array_keys($Ecole->listeElevesNiveaux($niveau));
                     else $listeEleves = array_keys($Ecole->listeElevesEcole());
 
-$allRetards = $Presences->getAllRetards($listeEleves);
+$allRetards = $Presences->getAllRetards($listeEleves, $debut, $fin);
 
 $smarty->assign('listeRetards', $listeRetards);
 $smarty->assign('allRetards', $allRetards);

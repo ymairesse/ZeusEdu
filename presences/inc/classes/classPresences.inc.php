@@ -1759,7 +1759,7 @@ public function incrementPrint($idTraitement){
     /**
      * liste des élèves pour vérification du retour des billets de sanctions retard
      *
-     * @param string $niveau : date de départ dete
+     * @param string $dateDebut : date de départ de la liste
      * @param string $dateFin : date de fin de la liste
      * @param int $niveau : niveau d'étude demandé
      * @param string $groupe : groupe classe (éventuellement vide)
@@ -1772,7 +1772,7 @@ public function incrementPrint($idTraitement){
         $sql .= 'JOIN '.PFX.'presencesIdTraitementLogs AS logs ON logs.idTraitement = pds.idTraitement ';
         $sql .= 'JOIN '.PFX.'presencesTraitement AS pt ON pt.idTraitement = pds.idTraitement ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = logs.matricule ';
-        $sql .= 'WHERE dateSanction BETWEEN :dateDebut AND :dateFin ';
+        $sql .= 'WHERE dateSanction BETWEEN :dateDebut AND :dateFin AND section != "PARTI" ';
         if ($niveau != Null)
             $sql .= 'AND SUBSTRING(groupe,1,1) = :niveau ';
         if ($groupe != '')
@@ -1819,21 +1819,26 @@ public function incrementPrint($idTraitement){
     }
 
     /**
-     * retourne la liste de tous les retards pour l'élève $matricule durant l'année scolaire
+     * retourne la liste de tous les retards pour l'élève $matricule durant la période indiquée
      *
      * @param int $matricule
+     * @param string $dateDebut
+     * @param string $dateFin
      *
      * @return array
      */
-    public function getAllRetards($listeEleves, $long=false) {
+    public function getAllRetards($listeEleves, $dateDebut, $dateFin) {
         $listeMatricules = implode(',', $listeEleves);
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT matricule, date, periode ';
-        $sql .= 'FROM '.PFX.'presencesEleves ';
-        $sql .= 'WHERE matricule IN ('.$listeMatricules.') AND statut = "retard" ';
+        $sql = 'SELECT pe.matricule, date, periode ';
+        $sql .= 'FROM '.PFX.'presencesEleves AS pe ';
+        $sql .= 'LEFT JOIN '.PFX.'eleves AS el ON pe.matricule = el.matricule ';
+        $sql .= 'WHERE pe.matricule IN ('.$listeMatricules.') AND statut = "retard" ';
+        $sql .= 'AND date BETWEEN :dateDebut AND :dateFin AND section != "PARTI" ';
         $requete = $connexion->prepare($sql);
 
-        $requete->bindParam(':matricule', $matricule, PDO::PARAM_STR, 10);
+        $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 10);
+        $requete->bindParam(':dateFin', $dateFin, PDO::PARAM_STR, 10);
 
         $resultat = $requete->execute();
         $liste = array();
@@ -1842,9 +1847,8 @@ public function incrementPrint($idTraitement){
             while ($ligne = $requete->fetch()){
                 $matricule = $ligne['matricule'];
                 $date = Application::datePHP($ligne['date']);
-                if ($long == false) {
-                    $date = substr($date, 0, 5);
-                }
+                $date = substr($date, 0, 5);
+
                 $periode = $ligne['periode'];
                 $liste[$matricule][] = sprintf('%s <strong>%se</strong> heure', $date, $periode);
             }

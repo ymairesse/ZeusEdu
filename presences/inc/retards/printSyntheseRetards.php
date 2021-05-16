@@ -57,11 +57,10 @@ if ($matricule != Null) {
                         $groupe = "Tous les élèves";
                     }
 
-$allRetards = $Presences->getAllRetards($listeEleves);
-
 $smarty->assign('debut', Application::datePHP($debut));
 $smarty->assign('fin', Application::datePHP($fin));
 
+$allRetards = $Presences->getAllRetards($listeEleves, $debut, $fin);
 
 $smarty->assign('listeRetards', $listeRetards);
 $smarty->assign('allRetards', $allRetards);

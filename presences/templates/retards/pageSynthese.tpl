@@ -4,7 +4,7 @@
 
         <form id="formSelect" method="POST" action="inc/retards/printSyntheseRetards.php">
 
-            <h2 class="col-xs-12">Synthèse des sanctions pour retards <button type="submit" name="button" class="btn btn-primary pull-right"><i class="fa fa-print fa-lg"></i> </button> </h2>
+            <h2 class="col-xs-12">Synthèse des sanctions pour retards <button type="submit" name="button" class="btn btn-success pull-right"><i class="fa fa-print fa-lg"></i> Imprimer</button> </h2>
 
             <div class="col-md-3 col-xs-12" id="selecteurEleves">
 
@@ -17,13 +17,9 @@
             </div>
 
             <div class="clearfix"></div>
-            
+
         </form>
     </div>
-</div>
-
-<div id="zonePDF">
-
 </div>
 
 <script type="text/javascript">
@@ -91,15 +87,15 @@
 			)
 			})
 
-        $('#btn-print').click(function(){
-            var formulaire = $('#formSelect').serialize();
-            $.post('inc/retards/printSyntheseRetards.inc.php', {
-                formulaire: formulaire
-                },
-            function (resultat){
-                $("#zonePDF").html(resultat);
-            })
-        })
+        // $('#btn-print').click(function(){
+        //     var formulaire = $('#formSelect').serialize();
+        //     $.post('inc/retards/printSyntheseRetards.inc.php', {
+        //         formulaire: formulaire
+        //         },
+        //     function (resultat){
+        //         $("#zonePDF").html(resultat);
+        //     })
+        // })
 	})
 
 </script>

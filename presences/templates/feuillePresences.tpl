@@ -58,9 +58,13 @@
 
 <script type="text/javascript">
 
+	var today = today = new Date().toLocaleDateString();
+	var userStatus = "{$userStatus}";
+
 	var modifie = false;
 	var confirmationBeforeUnload = "Vous allez perdre toutes les modifications. Annulez pour rester sur la page.";
 	var confirmationVerrou = "Souhaitez-vous vraiment déverrouiller cette période?\nÀ n'utiliser que pour noter une présence inattendue."
+	var erreurPresences = 'La prise des présences ne peut être modifiée après la date du jour. Adressez-vous à un éducateur pour toute rectification.'
 
 	function modification () {
 		if (!(modifie)) {
@@ -116,76 +120,90 @@ $(document).ready(function(){
 	});
 
 	$('#save').click(function(){
-		var formulaire = $('#presencesEleves').serialize();
-		var coursGrp = $('#coursGrp').val();
-		var classe = $('#classe').val();
-		var date = $('#date').val();
-		var periode = $('#periode').val();
-		$.post('inc/savePresences.inc.php', {
-			formulaire: formulaire
-		}, function(resultat){
-			modifie = false;
-			$("#oups").val(false);
-			window.onbeforeunload = function(){};
-			$.post('inc/refreshAfterSave.inc.php', {
-				coursGrp: coursGrp,
-				classe: classe,
-				date: date,
-				periode: periode
-			}, function(tableau){
-				$('#listeDouble').html(tableau);
-				bootbox.alert({
-					title: 'Enregistrement des présences',
-					message: resultat + ' enregistrements de présences'
+		var autorisation = ['admin', 'educ'];
+		if (today == $('#datePresences').val() || (autorisation.includes(userStatus))) {
+			var formulaire = $('#presencesEleves').serialize();
+			var coursGrp = $('#coursGrp').val();
+			var classe = $('#classe').val();
+			var date = $('#date').val();
+			var periode = $('#periode').val();
+			$.post('inc/savePresences.inc.php', {
+				formulaire: formulaire
+			}, function(resultat){
+				modifie = false;
+				$("#oups").val(false);
+				window.onbeforeunload = function(){};
+				$.post('inc/refreshAfterSave.inc.php', {
+					coursGrp: coursGrp,
+					classe: classe,
+					date: date,
+					periode: periode
+				}, function(tableau){
+					$('#listeDouble').html(tableau);
+					bootbox.alert({
+						title: 'Enregistrement des présences',
+						message: resultat + ' enregistrements de présences'
+					})
 				})
 			})
+		}
+		else bootbox.alert({
+			title: 'Enregistrement des présences',
+			message: erreurPresences
 		})
 	})
 
-
 	$('#listeDouble').on('click', '.tableauPresences td', function(e){
-		modification();
-		var ligne = $(this).closest('tr');
-		var cb = ligne.find('input:hidden');
-		// input 'disabled' si l'absence est connue
-		if (cb.attr('disabled') != 'disabled') {
-			if ($('#btnRetard').hasClass('active')) {
-				var statut = cb.val();
-				switch (statut) {
-					case 'retard':
-						cb.val('indetermine');
-						break;
-					default:
-						cb.val('retard');
-						break;
-					}
-				}
-				else {
+		// autorisés à accéder à la fonction?
+		var autorisation = ['admin', 'educ'];
+		if (today == $('#datePresences').val() || (autorisation.includes(userStatus))) {
+			modification();
+			var ligne = $(this).closest('tr');
+			var cb = ligne.find('input:hidden');
+			// input 'disabled' si l'absence est connue
+			if (cb.attr('disabled') != 'disabled') {
+				if ($('#btnRetard').hasClass('active')) {
 					var statut = cb.val();
 					switch (statut) {
-						case 'absent':
-							cb.val('present');
-							break;
-						case 'indetermine':
-							cb.val('absent');
-							break;
-						case 'present':
+						case 'retard':
 							cb.val('indetermine');
 							break;
-						case 'retard':
-							cb.val('absent');
+						default:
+							cb.val('retard');
 							break;
 						}
 					}
-				var newStatut = cb.val();
-			}
+					else {
+						var statut = cb.val();
+						switch (statut) {
+							case 'absent':
+								cb.val('present');
+								break;
+							case 'indetermine':
+								cb.val('absent');
+								break;
+							case 'present':
+								cb.val('indetermine');
+								break;
+							case 'retard':
+								cb.val('absent');
+								break;
+							}
+						}
+					var newStatut = cb.val();
+				}
 
-			ligne.find('button').removeClass().addClass('btn btn-large btn-block nomEleve clip').addClass(newStatut);
-			var periode = $("#periode").val()
-			ligne.find('td[data-periode="' + periode +'"]').removeClass().addClass(newStatut+' now');
+				ligne.find('button').removeClass().addClass('btn btn-large btn-block nomEleve clip').addClass(newStatut);
+				var periode = $("#periode").val()
+				ligne.find('td[data-periode="' + periode +'"]').removeClass().addClass(newStatut+' now');
 
-			// notification du nombre d'absents et de présents
-			notificationNombres();
+				// notification du nombre d'absents et de présents
+				notificationNombres();
+				}
+				else bootbox.alert({
+					title: 'Modification de la prise de présence',
+					message: erreurPresences
+				})
 			}
 		)
 
@@ -198,6 +216,8 @@ $(document).ready(function(){
 			}
 		})
 
+	// déverrouillage d'une période pour laquelle l'absence de l'élève est connue
+	// objectif: pouvoir indiquer présent un élève qui est en classe malgré tout
 	$("#unlock").click(function() {
 		var elt = $("#verrou").text();
 		periode = elt.split('-');
@@ -210,28 +230,35 @@ $(document).ready(function(){
 		})
 
 	$('#listeDouble').on('click', '.trash', function(){
-		var periodeActuelle = $("#periode").val();
-		var periodeTrash = $(this).data('periode');
-		// on ne travaille que si la période à réinitialiser est la période actuelle
-		if (periodeActuelle == periodeTrash) {
-			modification();
-			var colonneActuelle = $("td[data-periode='"+periodeActuelle+"']");
-			$("#oups").val(true);
-			// reset de la colonne actuelle à 'indéterminé'
-			$.each(colonneActuelle,function(){
-				if (!($(this).hasClass('lock'))) {
-					var input = $(this).find('input:hidden');
-					input.val('indetermine');
-					$(this).closest('td').removeClass().addClass('now indetermine');
-					$(this).closest('td').removeAttr('style');
-					var matricule = $(this).data('matricule');
-					// changer le statut du bouton "nomEleve"
-					$("#nomEleve-"+matricule).removeClass().addClass("btn btn-large btn-block nomEleve indetermine");
-					}
-				})
-			// notification du nombre d'absents et de présents
-			notificationNombres();
+		var autorisation = ['admin', 'educ'];
+		if (today == $('#datePresences').val() || (autorisation.includes(userStatus))) {
+			var periodeActuelle = $("#periode").val();
+			var periodeTrash = $(this).data('periode');
+			// on ne travaille que si la période à réinitialiser est la période actuelle
+			if (periodeActuelle == periodeTrash) {
+				modification();
+				var colonneActuelle = $("td[data-periode='"+periodeActuelle+"']");
+				$("#oups").val(true);
+				// reset de la colonne actuelle à 'indéterminé'
+				$.each(colonneActuelle,function(){
+					if (!($(this).hasClass('lock'))) {
+						var input = $(this).find('input:hidden');
+						input.val('indetermine');
+						$(this).closest('td').removeClass().addClass('now indetermine');
+						$(this).closest('td').removeAttr('style');
+						var matricule = $(this).data('matricule');
+						// changer le statut du bouton "nomEleve"
+						$("#nomEleve-"+matricule).removeClass().addClass("btn btn-large btn-block nomEleve indetermine");
+						}
+					})
+				// notification du nombre d'absents et de présents
+				notificationNombres();
+				}
 			}
+			else bootbox.alert({
+				title: 'Modification de la prise de présence',
+				message: erreurPresences
+			})
 		})
 
 	$('#listeDouble').on('click', '.horloge', function(){
