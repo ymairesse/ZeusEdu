@@ -71,9 +71,6 @@ switch ($mode) {
                         'titulaires' => $Ecole->titusDeGroupe($classe),
                         );
                 $link = $Bulletin->createPDFeleve($dataEleve, $bulletin, $acronyme);
-                // $smarty->assign('module', $module);
-                // $smarty->assign('link', $link);
-                // $smarty->assign('corpsPage', 'pdfLink');
             }
         }
         break;

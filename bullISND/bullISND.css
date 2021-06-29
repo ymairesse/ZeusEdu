@@ -670,10 +670,10 @@ th.cert, td.cert, .cert {
     padding: 0.5em;
 }
 
-.cote .fa {
+/* .cote .fa {
     font-size: 0.8em;
     color: #f3f;
-}
+} */
 
 .tdLock {
     cursor: pointer;
@@ -777,4 +777,9 @@ input[readonly], textarea[readonly] {
     background-color: #aaf;
     border: 1px solid #555;
     font-weight:bold;
+}
+
+.eprExterne {
+    background-color: #ff8989;
+    text-align:center;
 }

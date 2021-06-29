@@ -21,6 +21,7 @@ $smarty->assign('mode','individuel');
 
 switch ($etape) {
     case 'enregistrer':
+    Application::afficher($_POST);
         $nb = $Bulletin->enregistrerMentions($_POST);
         $nb = $Bulletin->enregistrerDecision($_POST);
         $smarty->assign('message', array(
@@ -31,8 +32,6 @@ switch ($etape) {
         // pas de break;
     case 'showEleve':
         // présélection des élèves avec mentions pour la période choisie
-        // $periodeSelect = isset($_COOKIE['periodeSelect']) ? $_COOKIE['periodeSelect'] : Null;
-        // $mentionsSelect = isset($_COOKIE['mentionsSelect']) ? $_COOKIE['mentionsSelect'] : Null;
         $listeSelectionEleves = $Bulletin->listeSelectDelibe(array_keys($listeEleves), $periodeSelect, $mentionsSelect, ANNEESCOLAIRE);
         $smarty->assign('listeSelectionEleves', $listeSelectionEleves);
 
@@ -61,6 +60,9 @@ switch ($etape) {
         // recherche toutes les mentions effectivement attribuées par le Conseil de Classe, durant l'année scolaire en cours pour l'élève concerné
         $listeMentions = $Bulletin->listeMentions($matricule,Null,$annee,ANNEESCOLAIRE);
 
+        // recherche de tous les résultats des épreuves externe pour cet élève
+        $listeResultatsExternes = $Bulletin->getResultatsExternes4eleve($matricule, ANNEESCOLAIRE);
+
         // recherche toutes les décisions prises en délibération, y compris les infos nécessaires à la notification de l'élève $matricule
         $decision = $Bulletin->listeDecisions($matricule);
         $decision = $decision[$matricule];
@@ -81,6 +83,7 @@ switch ($etape) {
         $smarty->assign('mentions',$mentionsJuinDec);
         $smarty->assign('decision',$decision);
         $smarty->assign('delibe',$moyenneSituations);
+        $smarty->assign('listeResultatsExternes', $listeResultatsExternes);
         $smarty->assign('mentionsAttribuees',$listeMentions);
         $smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
         $smarty->assign('NBPERIODES',NBPERIODES);

@@ -47,6 +47,6 @@ if (($etape == 'showCotes') && ($classe != null)) {
     $smarty->assign('listeMentions', $listeMentions);
     $smarty->assign('listeDecisions', $listeDecisions);
     $smarty->assign('listeEBS', $listeEBS);
-    
+
     $smarty->assign('corpsPage', 'delibe/feuilleDelibes');
 }

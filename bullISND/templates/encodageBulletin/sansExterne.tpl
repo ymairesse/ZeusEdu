@@ -16,11 +16,24 @@
     {/if}
 </td>
 
+
+
+
+
+
 {* ------------------------------------------------------ *}
 {*  Choix de la cote de délibé     ---------------------- *}
 {* ------------------------------------------------------ *}
 <td style="text-align:center">
     {if $blocage == 0}
+
+    <button type="button"
+        class="btn btn-info btn-sm btn-NE"
+        title="Non évalué"
+        data-matricule="{$matricule}"
+        {if $blocage > 0}disabled="disabled"{/if}>
+        NE
+    </button>
 
     {* ------------------------------------------------------ *}
     {* cote entre crochets? ----------------------------------*}

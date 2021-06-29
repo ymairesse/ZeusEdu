@@ -73,44 +73,48 @@ if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
 	$listeEBS = $Ecole->getEBS($coursGrp, 'coursGrp');
 	$smarty->assign('listeEBS', $listeEBS);
 
+	// ----------------------------------------------------------------------------------------------------
 	// recherche la liste des situations de tous les élèves du cours, pour tous les bulletins existants dans la BD
 	// cette liste doit être re-générée après l'enregistrement qui vient (éventuellement) d'avoir lieu
 	$listeSituations = $Bulletin->listeSituationsCours($listeEleves, $coursGrp, null, $isDelibe);
 
-
+	// ----------------------------------------------------------------------------------------------------
 	// recherche de la liste des cotes par élève, par compétence et par type (form ou cert) dans le bulletion indiqué
 	if (!(isset($listeCotes)))  // si on a enregistré, on a déjà la liste des cotes; alors, on saute cette étape
 		$listeCotes = $Bulletin->listeCotes($listeEleves, $coursGrp, $listeCompetences, $bulletin);
 
-	// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération	-----------------------------
+	// recherche de la liste des cotes globales pour la période, en tenant compte de la pondération
 	if (!(isset($listeGlobalPeriodePondere))) // si on a enregistré, on a déjà la liste des cotes; alors, on saute cette étape
 		$listeGlobalPeriodePondere = $Bulletin->listeGlobalPeriodePondere($listeCotes, $ponderations, $bulletin);
+	// ----------------------------------------------------------------------------------------------------
 
-
-	// ---------------------------------------------------------------------------------------------------------------------------
-	// cote étoilée: le certificatif est supérieur à l'ensemble formatif+certificatif --------------------------------------------
+	// ----------------------------------------------------------------------------------------------------
+	// cote étoilée: le certificatif est supérieur à l'ensemble formatif+certificatif
+	// ----------------------------------------------------------------------------------------------------
 	$listeSommesFormCert = $Bulletin->listeSommesFormCert($listeCotes);
 	$listeCotesEtoilees = $Bulletin->listeCotesEtoilees($listeSommesFormCert, $listeSituations, $coursGrp, $bulletin);
 	$smarty->assign('listeCotesEtoilees', $listeCotesEtoilees);
-	// ---------------------------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------
 
-	// ---------------------------------------------------------------------------------------------------------------------------
-	// calcul de la situation sans tenir compte de la première année du degré (uniquement pour les années d'études concernées) ---
+	// ----------------------------------------------------------------------------------------------------
+	// calcul de la situation sans tenir compte de la première année du degré (uniquement pour les années d'études concernées)
+	// ----------------------------------------------------------------------------------------------------
 	if (in_array($annee,explode(',',ANNEEDEGRE))
 		&& ($bulletin == NBPERIODES)) {  // uniquement pour la dernière période de l'année
 		$sitDeuxiemesAnnee = $Bulletin->situationsDeuxieme($listeEleves, $coursGrp, $bulletin);
 		}
 		else $sitDeuxiemesAnnee = Null;
 	$smarty->assign('sitDeuxiemes', $sitDeuxiemesAnnee);
-	// ---------------------------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------
 
-	// ---------------------------------------------------------------------------------------------------------------------------
-	// liste des cotes de l'épreuve externe pour ce cours  seulement en juin (dernière période de l'année)) ------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------
+	// liste des cotes de l'épreuve externe pour ce cours  seulement en juin (dernière période de l'année))
+	// ----------------------------------------------------------------------------------------------------
 	if ($bulletin == NBPERIODES)  // uniquement pour la dernière période de l'année scolaire
 		$listeCotesExternes = $Bulletin->listeCotesEprExterne($coursGrp, ANNEESCOLAIRE);
 		else $listeCotesExternes = Null;
 	$smarty->assign('listeCotesExternes',$listeCotesExternes);
-	// ---------------------------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------
 
 	// pour le premier degré seulement, classes de 1e et 2e
 	if ($annee < 3)  // À FAIRE: prévoir un point de configuration plutôt que ce forçage en dur

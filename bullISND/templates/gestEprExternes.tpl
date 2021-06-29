@@ -34,12 +34,18 @@
 					</td>
 
 					<td>
-						<input type="text" maxlength="6" name="cote_{$matricule}" class="form-control cote c{$matricule}"
+						{assign var=$cote value=$listeCotes.$matricule}
+						<input type="text"
+							maxlength="6"
+							name="cote_{$matricule}"
+							class="form-control cote c{$matricule}
+								{if $listeCotes.$matricule.coteExterne != '' && $listeCotes.$matricule.echec == true}echec{/if}"
 								{if isset($tableErreurs[$matricule])}
 									value="{$tableErreurs[$matricule]}"
 								{else}
 									value="{$listeCotes.$matricule.coteExterne|default:''}"
 								{/if}
+								{if $listeLocks.$matricule.$coursGrp > 0} disabled{/if}
 								tabIndex="{$tabIndexCotes}"
 								title="{$listeEleves.$matricule.prenom} {$listeEleves.$matricule.nom}"
 								data-container="body"

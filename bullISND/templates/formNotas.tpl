@@ -7,7 +7,7 @@
 			<h2>Notices des coordinateurs</h2>
 			<p>Notice pour le bulletin <strong>{$bulletin}</strong></p>
 			<p>Année d'étude <strong>{$niveau}</strong></p>
-			<form method="POST" action="index.php" name="notas" class="form-vertical" role="form">
+			<form id="notas">
 				<textarea name="notice" id="notice" class="summernote form-control">{$notice}</textarea><br>
 				<input type="hidden" name="bulletin" id="noBulletin" value="{$bulletin}">
 				<input type="hidden" name="niveau" id="niveau" value="{$niveau}">

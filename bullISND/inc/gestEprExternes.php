@@ -59,9 +59,15 @@ if ($coursGrp) {
     $smarty->assign('corpsPage', 'gestEprExternes');
 }
 
-// par défaut
+$listeLocks = array();
+// si nous sommes bien en dernière période de l'année scolaire
+if (PERIODEENCOURS == NBPERIODES) {
+    // vérifier si le cours a été verrouillé
+    $listeLocks = $Bulletin->listeLocksBulletin($listeEleves, $coursGrp, NBPERIODES);
+}
 
 $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 $smarty->assign('selecteur', 'selecteurs/selectCours');
+$smarty->assign('listeLocks', $listeLocks);
 $smarty->assign('action', 'gestEprExternes');

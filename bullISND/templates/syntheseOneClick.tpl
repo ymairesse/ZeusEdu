@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
 
 <h2>Synthèse {$coursGrp} à verser au bulletin {$bulletin}</h2>
 
@@ -32,7 +32,7 @@
 
 <form name="formTransfert" id="formTransfert" action="index.php" method="POST" role="form" class="form-vertical">
 
-	<a type="button" class="btn btn-primary" href="index.php?action=carnet&mode=gererCotes"><i class="fa fa-reply" style="color:blue;"></i> Retour Gestion des cotes</a>
+	<a type="button" class="btn btn-primary" href="index.php?action=carnet&amp;mode=gererCotes&amp;bulletin={$bulletin}"><i class="fa fa-reply" style="color:blue;"></i> Retour Gestion des cotes</a>
 
 	<div style="float:right">
 		Effacer le contenu existant du bulletin (conseillé)
@@ -40,7 +40,7 @@
 
 		<div class="btn-group">
 			<button type="reset" class="btn btn-default">Annuler <i class="fa fa-times" style="color:red"></i> </button>
-			<button class="btn btn-primary">Vers le bulletin <i class="fa fa-share" style="color:green;"></i></button>
+			<button type="submit" class="btn btn-primary">Vers le bulletin <i class="fa fa-share" style="color:green;"></i></button>
 		</div>
 
 	</div>
@@ -146,6 +146,7 @@
 
 	{/foreach}
 	</table>
+
 	<input type="hidden" name="bulletin" value="{$bulletin}">
 	<input type="hidden" name="coursGrp" value="{$coursGrp}">
 	<input type="hidden" name="action" value="carnet">

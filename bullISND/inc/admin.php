@@ -358,22 +358,8 @@ switch ($mode) {
         }
         $listeNiveaux = $Ecole->listeNiveaux();
         $smarty->assign('listeNiveaux', $listeNiveaux);
-        if (isset($niveau)) {
-            $smarty->assign('niveau', $niveau);
-            $listeCoursComp = $Bulletin->listeCoursNiveaux($niveau);
-            $smarty->assign('listeCoursComp', $listeCoursComp);
-        }
-
-        if (isset($cours)) {
-            $listeCompetences = $Bulletin->listeCompetencesListeCours($cours);
-            $listeUsedCompetences = $Bulletin->getUsedCompetences($listeCompetences[$cours]);
-            $smarty->assign('cours', $cours);
-            $smarty->assign('listeCompetences', $listeCompetences);
-            $smarty->assign('listeUsedCompetences', $listeUsedCompetences);
-            $smarty->assign('corpsPage', 'adminCompetences');
-        }
-
-        $smarty->assign('selecteur', 'selecteurs/selectNiveauCours');
+        $smarty->assign('niveau', $niveau);
+        $smarty->assign('corpsPage', 'adminCompetences');
         break;
 
     case 'situations':
@@ -548,6 +534,22 @@ switch ($mode) {
     case 'ponderations':
         require_once 'inc/init/viewPonderations.inc.php';
         break;
+
+    case 'config':
+        $listeConfig = $Application->lireParametres('bulletin');
+        $smarty->assign('listeConfig', $listeConfig);
+        $smarty->assign('corpsPage', 'admin/paramBulletin');
+        // Application::afficher($listeConfig);
+        break;
+
+    case 'uaa':
+        $listeUAA = $Bulletin->getListeUAA();
+        $listeGrappes = $Bulletin->getListeGrappes();
+        $smarty->assign('listeUAA', $listeUAA);
+        $smarty->assign('listeGrappes', $listeGrappes);
+        $smarty->assign('corpsPage', 'uaa/gestUaa');
+        break;
+
     default: 'missing mode';
         break;
     }

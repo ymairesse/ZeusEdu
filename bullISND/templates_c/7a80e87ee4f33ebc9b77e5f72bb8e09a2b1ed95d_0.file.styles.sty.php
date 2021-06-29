@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2021-02-09 18:08:39
+/* Smarty version 3.1.34-dev-7, created on 2021-06-20 21:09:43
   from '/home/yves/www/sio2/peda/styles.sty' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_6022c197b20ea8_23492502',
+  'unifunc' => 'content_60cf92774d03a1_41733532',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6022c197b20ea8_23492502 (Smarty_Internal_Template $_smarty_tpl) {
+function content_60cf92774d03a1_41733532 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 <link rel="stylesheet" href="../js/blockUI.css" type="text/css" media="screen">
 

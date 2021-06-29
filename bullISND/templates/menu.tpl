@@ -125,8 +125,12 @@
 				<li><a href="index.php?action=admin&amp;mode=programmeEleve">Attrib. cours aux élèves</a></li>
 				<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
 				<li class="divider"></li>
+				<li><a href="index.php?action=admin&amp;mode=uaa">Gestion des UAA</a></li>
+				<li class="divider"></li>
 				<li><a href="index.php?action=init">Initialisations</a></li>
 				<li><a href="index.php?action=admin&amp;mode=alias">Prendre un alias</a></li>
+				<li><a href="index.php?action=admin&amp;mode=config">Paramètres du bulletin</a></li>
+
 				{/if}
 			</ul>
 		</li>

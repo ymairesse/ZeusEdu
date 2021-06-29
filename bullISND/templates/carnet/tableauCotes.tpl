@@ -4,7 +4,7 @@
 
 <div id="barreOutils" class="noprint">
 
-	<a type="button" class="btn btn-primary pull-left" href="index.php?action=carnet&amp;mode=oneClick">Bulletin one click <i class="fa fa-thumbs-o-up fa-lg"></i></a>
+	<a type="button" class="btn btn-primary pull-left" href="index.php?action=carnet&amp;mode=oneClick&amp;bulletin={$bulletin}">Bulletin one click <i class="fa fa-thumbs-o-up fa-lg"></i></a>
 
 	<button type="button" class="btn btn-lightBlue" id="pdf" title="Enregistrer en PDF">PDF <i class="fa fa-file-pdf-o fa-lg" style="color:red"></i></button>
 

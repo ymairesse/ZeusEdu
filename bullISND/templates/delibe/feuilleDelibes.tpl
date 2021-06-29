@@ -1,3 +1,8 @@
+<!--
+
+{$delibe|print_r}
+
+-->
 <div class="container-fluid">
 
 <h2>Classe: | {$classe} | {$titusClasse|implode:','} -> Période: {$bulletin}</h2>
@@ -107,11 +112,16 @@
 			</td>
 			<td class="cote delibe">{$delibe.$matricule.mention|default:'&nbsp;'}</td>
 			<td class="delibe">{$listeMentions.$matricule.$ANNEESCOLAIRE.$annee.$bulletin|default:'&nbsp;'}</td>
-			<td class="cote{if $listeDecisions.$matricule.decision == 'Échec'} echec{/if}">
-				{if $listeDecisions.$matricule.decision == 'Échec'}
+			{assign var=decision value=$listeDecisions.$matricule.decision}
+			<td class="cote{if $decision == 'Échec'} echec{/if}">
+				{if $decision == 'Échec'}
 						<strong title="Échec">X</strong>
-					{elseif $listeDecisions.$matricule.decision == 'Restriction'}
+					{elseif $decision == 'Restriction'}
 						<strong title="Accès à {$listeDecisions.$matricule.restriction}" style="cursor:pointer">R</strong>
+					{elseif $decision == 'Ajournement'}
+						<strong title="Ajournement">Aj</strong>
+					{elseif $decision == 'Réussite'}
+						<strong title="Réussite"><i class="fa fa-smile-o"></i></strong>
 					{else}
 					-
 				{/if}

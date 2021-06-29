@@ -13,7 +13,7 @@ if (in_array($classe, $listeClasses)) {
     // établir la liste des décisions éventuelles pour cette liste d'élèves
     // (tous, même ceux pour lesquels aucune décision n'est prise maintenant)
     $listeDecisions = $Bulletin->listeDecisions($listeEleves);
-
+// Application::afficher($listeDecisions, true);
     // ajouter le texte qui figurera dans la BD pour accès par Thot
     $texteNotification = file_get_contents('templates/notification/templateNote.html');
     $texteNotification = str_replace(PHP_EOL, '', $texteNotification);    // suppression des /n

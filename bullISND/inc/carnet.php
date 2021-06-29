@@ -20,6 +20,7 @@ if (isset($_POST['tri'])) {
 $smarty->assign('tri', $tri);
 
 $bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : PERIODEENCOURS;
+
 $idCarnet = isset($_POST['idCarnet']) ? $_POST['idCarnet'] : null;
 
 $smarty->assign('action', $action);
@@ -37,6 +38,13 @@ $smarty->assign('listeCours', $listeCours);
 
 switch ($mode) {
     case 'gererCotes':
+        // par défaut, la période en cours, sinon GET voire POST finalement
+        $bulletin = PERIODEENCOURS;
+        if (isset($_GET['bulletin']))
+            $bulletin = $_GET['bulletin'];
+            else if (isset($_POST['bulletin']))
+                    $bulletin = $_POST['bulletin'];
+        $smarty->assign('bulletin', $bulletin);
         $smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
         if (isset($coursGrp) && in_array($coursGrp, array_keys($listeCours))) {
             $identite = $user->identite();
@@ -63,6 +71,7 @@ switch ($mode) {
             $smarty->assign('listeMoyennes', $listeMoyennes);
             $smarty->assign('listeCompetences', $listeCompetences);
             $smarty->assign('module', $module);
+            // $smarty->assign('bulletin', $bulletin);
             $smarty->assign('corpsPage', 'showCarnet');
         }
         break;
@@ -72,23 +81,26 @@ switch ($mode) {
         break;
 
     case 'oneClick':
+        // par défaut, la période en cours, sinon GET voire POST finalement
+        $bulletin = PERIODEENCOURS;
+        if (isset($_GET['bulletin']))
+            $bulletin = $_GET['bulletin'];
+            else if (isset($_POST['bulletin']))
+                    $bulletin = $_POST['bulletin'];
+
         $effaceDetails = isset($_POST['effaceDetails']) ? true : null;
+        $smarty->assign('bulletin', $bulletin);
         $smarty->assign('effaceDetails', $effaceDetails);
-        $smarty->assign('selecteur', 'selectBulletinCours');
+        $smarty->assign('selecteur', 'selecteurs/selectBulletinCours');
+
         switch ($etape) {
             case 'transfert':
                 $listeCompetences = $Bulletin->listeCompetences($coursGrp);
                 $erreur = false;
 
-                // vérifier que des poids ont été attribués aux compétences
-                // $listePoidsOK = $Bulletin->poidsCompetencesOK($coursGrp, $bulletin, $listeCompetences);
-                // if ($listePoidsOK['tutti'] == false) {
-                //     $smarty->assign('erreursPoids', $listePoidsOK['details']);
-                //     $erreur = true;
-                // }
-
                 // vérifier qu'il y a des pondérations pour ce cours
                 $ponderations = $Bulletin->getPonderationsBulletin($coursGrp, $bulletin);
+
                 if (!isset($ponderations[$coursGrp])
                         || (($ponderations[$coursGrp]['all']['form'] == null) && ($ponderations[$coursGrp]['all']['cert'] == null))) {
                     $smarty->assign('erreursPonderations', true);
@@ -136,6 +148,12 @@ switch ($mode) {
                 // pas de break;
             default:
 				$erreur = false;
+                // if (isset($_GET['bulletin']))
+                //     $bulletin = $_GET['bulletin'];
+                //     else if (isset($_POST['bulletin']))
+                //             $bulletin = $_POS['bulletin'];
+                //             else $bulletin = PERIODEENCOURS;
+
                 $listeColonnes = $Bulletin->colonnesCotesBulletin($coursGrp, $bulletin);
                 // s'il n'y a pas de cotes, on arrête là...
                 if (count($listeColonnes) == 0) {
@@ -169,34 +187,25 @@ switch ($mode) {
                 $smarty->assign('listeEleves', $Ecole->listeElevesCours($coursGrp, $tri));
                 $smarty->assign('tableauBulletin', $listeCotesBulletin);
                 $smarty->assign('sommesCotes', $sommesBrutesCotes);
+                // $smarty->assign('bulletin', $bulletin);
+
                 $smarty->assign('corpsPage', 'syntheseOneClick');
 
                 break;
             }
         break;
-    case 'poidsCompetences':
-        if ($etape == 'enregistrer') {
-            if ($coursGrp && in_array($coursGrp, array_keys($listeCours))) {
-                $nbResultats = $Bulletin->recordPoidsCompetences($_POST);
-                $smarty->assign('message', array(
-                    'title' => 'Enregistrement',
-                    'texte' => sprintf('%d poids enregistré(s)', $nbResultats),
-                    'urgence' => 'success', )
-                    );
-            }
-        }
-        $listePonderations = $Bulletin->sommesPonderations($coursGrp);
 
-        $listeTravaux = $Bulletin->listeTravaux($coursGrp, $bulletin);
+    case 'poidsCompetences':
+        $listePonderations = $Bulletin->sommesPonderations($coursGrp);
         $listeCompetences = current($Bulletin->listeCompetences($coursGrp));
         $tableauPoids = $Bulletin->listePoidsCompetences($coursGrp, $listeCompetences, NBPERIODES);
 
-        $listeCotes = ($listeTravaux != null) ? $Bulletin->listeCotesCarnet($listeTravaux) : null;
         $smarty->assign('ponderations', $listePonderations);
         $smarty->assign('listeCompetences', $listeCompetences);
         $smarty->assign('tableauPoids', $tableauPoids);
+
         $smarty->assign('selecteur', 'selecteurs/selectCours');
-        $smarty->assign('corpsPage', 'showPoidsCompetences');
+        $smarty->assign('corpsPage', 'carnet/showPoidsCompetences');
         break;
 
     }

@@ -7,7 +7,7 @@
 			<option value="{$unNiveau}"{if isset($niveau) && ($unNiveau == $niveau)}selected{/if}>{$unNiveau}</option>
 		{/foreach}
 	</select>
-
+xxx
 	<span id="choixCours">
 	{if $listeNiveaux}
 		{include file="selecteurs/listeCoursComp.tpl"}
@@ -35,7 +35,7 @@ $(document).ready (function() {
 
 	$("#niveau").change(function(){
 		var niveau = $(this).val();
-		$.post("inc/listeCours.inc.php", {
+		$.post("inc/listeCoursComp.inc.php", {
 			'niveau': niveau
 			},
 				function (resultat){

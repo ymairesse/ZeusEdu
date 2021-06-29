@@ -1,3 +1,4 @@
+{debug}
 {if isset($infoPerso)}
 <div class="container-fluid">
 
@@ -29,6 +30,12 @@
 		<div class="col-md-6 col-sm-12">
 			{if isset($sitPrecedentes.$matricule.$coursGrp.sit)}
 				<strong>Situation précédente: {$sitPrecedentes.$matricule.$coursGrp.sit} / {$sitPrecedentes.$matricule.$coursGrp.maxSit}</strong>
+
+				<strong style="float:right">
+					{if isset($sitActuelles.$matricule.$coursGrp.pourcent)}
+						Situation actuelle: {$sitActuelles.$matricule.$coursGrp.pourcent} / 100
+					{/if}
+				</strong>
 			{/if}
 		</div>
 		<div class="col-md-6 col-sm-12">
@@ -37,10 +44,10 @@
 				{assign var=sitActuelle value=$sitActuelles.$matricule.$coursGrp}
 
 				<strong>Situation actuelle: {$sitActuelle.sit} / {$sitActuelle.maxSit}</strong>
-				{if $sitActuelle.maxSit > 0}
+				{* {if $sitActuelle.maxSit > 0}
 					{assign var=sitAct value=100*$sitActuelle.sit/$sitActuelle.maxSit}
 					<span class="micro">soit {$sitAct|number_format:1}%</span>
-				{/if}
+				{/if} *}
 
 				{if isset($sitActuelle.sitDelibe) && $sitActuelle.sitDelibe != ''}
 					<strong class="pull-right">Délibé:
@@ -203,7 +210,9 @@
 					Informations de la direction et des coordinateurs
 				</div>
 				<div class="panel-body">
-					{$noticeDirection}
+					{if $noticeDirection != Null}
+					{$noticeDirection.remarque}
+					{/if}
 				</div>
 			</div>
 			{/if}

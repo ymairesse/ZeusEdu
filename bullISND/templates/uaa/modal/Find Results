@@ -1,0 +1,74 @@
+Searching 7 files for "["
+
+/home/yves/www/sio2/peda/bullISND/templates/uaa/gestUaa.tpl:
+  123                              // alert(resultatJSON);
+  124                              var resultat = JSON.parse(resultatJSON);
+  125:                             var nb = resultat['nb'];
+  126                              if (nb != 0) 
+  127:                                 $('#listeGrappes').html(resultat['html']);
+  128                                  else bootbox.alert({
+  129                                      title: title,
+  ...
+  162              }, function(resultatJSON){
+  163                  var resultat = JSON.parse(resultatJSON);
+  164:                 var nbDel = resultat['nbDel'];
+  165                  var title = "Suppression des UAA";
+  166                  if (nbDel > 0) {
+  167:                     $('#selectUAA').html(resultat['html']);
+  168                      bootbox.alert({
+  169                          title: title,
+  ...
+  193                          var resultat = JSON.parse(resultatJSON);
+  194                          var title = "Enregistrement";
+  195:                         if (resultat['nb'] == 0)
+  196                              message = "Aucune modification apportée. Cette UAA existerait-elle déjà?";
+  197                              else {
+  198                                  message = "Modification enregistrée";
+  199:                                 $('#listeUAA option[value="' + idUAA + '"]').text(newLibelle);
+  200                              }
+  201                          bootbox.alert({
+  ...
+  217                          var resultat = JSON.parse(resultatJSON);
+  218                          var title = 'Enregistrement';
+  219:                         if (resultat['idUAA'] == 0)
+  220                              message = "Aucune enregistrement possible. Cette UAA existerait-elle déjà?";
+  221                              else message = "Nouvelle UAA enregistrée";
+  222:                         $('#selectUAA').html(resultat['html']);
+  223                          bootbox.alert({
+  224                              title: title,
+
+/home/yves/www/sio2/peda/bullISND/templates/uaa/selectCoursGrappe.tpl:
+    3      <select class="form-control" name="coursGrappe" size="10" id="coursGrappe">
+    4        {foreach from=$listeCoursGrappe key=cours item=data}
+    5:         <option value="{$cours}">[{$cours} liés] {$data.statut} {$data.libelle} {$data.nbheures}</option>
+    6        {/foreach}
+    7      </select>
+
+/home/yves/www/sio2/peda/bullISND/templates/uaa/selectCoursNiveau.tpl:
+    1  <div class="form-group">
+    2      
+    3:     <select class="form-control" name="listeCours[]" id="listeCours" size="5" multiple>
+    4          {foreach from=$listeCours key=cours item=data}
+    5:         <option value="{$cours}">{$data.statut} {$data.libelle} {$data.nbheures}</option>
+    6          {/foreach}
+    7      </select>
+
+/home/yves/www/sio2/peda/bullISND/templates/uaa/selectGrappe.tpl:
+    1  <form id="formSelectGrappe">
+    2      <div class="form-group">
+    3:         <select class="form-control" name="listeGrappes[]" id="listeGrappes" size="20">
+    4              {foreach from=$listeGrappes key=idGrappe item=data}
+    5              <option value="{$idGrappe}"
+    6                  {if isset($grappeId) && ($grappeId == $idGrappe)}selected{/if}>
+    7:                 {$data.grappe} [{$data.nbCours}]
+    8              </option>
+    9              {/foreach}
+
+/home/yves/www/sio2/peda/bullISND/templates/uaa/selectUAA.tpl:
+    1  <form id="formSelectUAA">
+    2      <div class="form-group">
+    3:         <select class="form-control" name="listeUAA[]" id="listeUAA" multiple size="20">
+    4              {foreach from=$listeUAA key=idUAA item=libelle}
+    5              <option value="{$idUAA}" {if isset($UAA) && ($idUAA == $UAA)}selected{/if}>{$libelle}</option>
+
+14 matches across 5 files

@@ -129,6 +129,14 @@ $(document).ready(function(){
 
 	$().UItoTop({ easingType: 'easeOutQuart' });
 
+	$('.btn-NE').click(function(){
+		modification();
+		var matricule = $(this).data('matricule');
+		var ceci = $(this);
+		ceci.closest('tr').find('.sitDelibe').html('NE');
+		$('#sitDelibe-matricule_' + matricule).val('NE');
+	})
+
 	$(".ouvrir").prepend("[+]").next().hide();
 	$(".ouvrir").css("cursor","pointer").attr("title",show);
 	$("#ouvrirTout").css("cursor","pointer");

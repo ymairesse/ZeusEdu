@@ -4,11 +4,17 @@
 {assign var=coteExterne value=$listeCotesExternes.$matricule.coteExterne}
 
 
+
+
+
+
 <td class="cote{if isset($coteExterne) && ($coteExterne != '') && ($coteExterne < 50)} echec{/if}">
 
     <button
         type="button"
-        class="btn btn-primary externe {if $blocage == 1}disabled{/if}"
+        <!-- class="btn btn-primary externe {if $blocage == 1}disabled{/if}" -->
+        class="btn btn-primary externe"
+        disabled
         data-matricule="{$matricule}"
         data-cote="{$coteExterne}">
             {$coteExterne|cat:'%'}
@@ -21,6 +27,14 @@
 <td style="text-align:center">
     {if $blocage == 0}
 
+    <button type="button"
+        class="btn btn-info btn-sm btn-NE"
+        title="Non évalué"
+        data-matricule="{$matricule}"
+        {if $blocage > 0}disabled="disabled"{/if}>
+        NE
+    </button>
+
     {* ------------------------------------------------------ *}
     {* cote entre crochets? ----------------------------------*}
     {* Deux boutons: avec ou sans crochets -------------------*}
@@ -28,7 +42,7 @@
 
     {if isset($sitEleve.pourcent)}
 
-        <button class="btn btn-default btn-sm pop hook {if $coteExterne != ''} disabled{/if}"
+        <button class="btn btn-default btn-sm pop hook"
             type="button"
             name="btnHook-eleve_{$matricule}"
             tabIndex="{$tabIndexAutres+1}"
@@ -41,7 +55,7 @@
         [{$sitEleve.pourcent|default:''}]
         </button>
 
-        <button class="btn btn-default btn-sm btn-success pop nohook disabled"
+        <button class="btn btn-default btn-sm btn-success pop nohook"
             type="button"
             name="btnNohook-eleve_{$matricule}"
             tabIndex="{$tabIndexAutres+2}"

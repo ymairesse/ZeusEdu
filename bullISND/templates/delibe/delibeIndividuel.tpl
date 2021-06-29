@@ -21,10 +21,15 @@
 						<thead>
 							<tr>
 								<th>Cours</th>
-								<th>&nbsp;</th>
+								<th>
+									<i class="fa fa-clock-o" aria-hidden="true"></i>
+								</th>
 								{foreach from=$listePeriodes item=periode}
 								<th style="width:4em">Pér. {$periode}</th>
 								{/foreach}
+
+								<th style="width:4em" title="Épreuves externes" data-container="body">Ext.</th>
+
 								{foreach from=$listePeriodes item=periode}
 								<th style="width:30%">Remarques Période {$periode}</th>
 								{/foreach}
@@ -38,16 +43,19 @@
 
 						{foreach from=$listeCours key=coursGrp item=unCours}
 							<tr class="{$unCours.statut}">
-								<td style="width:30%" class="pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$unCours.libelle}<br><span class='discret'>{$coursGrp}</span>" data-html="true">
+								<td style="width:30%"
+									class="pop"
+									data-container="body"
+									data-original-title="{$unCours.prenom} {$unCours.nom}"
+									data-content="{$unCours.libelle}<br><span class='discret'>{$coursGrp}</span>"
+									data-html="true">
 									{$unCours.statut}: {$unCours.libelle}
 								</td>
-
 								<td>{$unCours.nbheures}h</td>
+
 								{foreach from=$listePeriodes item=periode}
 									{if isset($listeSituations.$coursGrp.$periode)}
-									<td class="cote {if ($listeSituations.$coursGrp.$periode.sitDelibe < 50)
-											&& ($listeSituations.$coursGrp.$periode.sitDelibe|trim != '')
-											&& ($listeSituations.$coursGrp.$periode.attributDelibe != 'hook')}echec{/if}"
+									<td class="cote {$listeSituations.$coursGrp.$periode.echec}"
 											{* si on a connaissance d une cote interne, en plus, on l indique en infobulle *}
 											{if isset($listeSituations.$coursGrp.$periode.pourcent)}
 												title="Situation interne {$listeSituations.$coursGrp.$periode.pourcent}%"
@@ -60,8 +68,19 @@
 								{/if}
 								{/foreach}
 
+								<td {if isset($listeResultatsExternes.$coursGrp)}class="eprExterne{if $listeResultatsExternes.$coursGrp.echecExterne == 1} echecExterne{/if}"{/if}>
+									{if isset($listeResultatsExternes.$coursGrp)}
+										{$listeResultatsExternes.$coursGrp.coteExterne|default:'-'}
+									{/if}
+								</td>
+
 								{foreach from=$listePeriodes item=periode}
-									<td class="remarqueDelibe pop" data-container="body" data-original-title="{$unCours.prenom} {$unCours.nom}" data-content="{$listeRemarques.$matricule.$coursGrp.$periode|default:''}" data-placement="top" data-html="true">
+									<td class="remarqueDelibe pop"
+										data-container="body"
+										data-original-title="{$unCours.prenom} {$unCours.nom}"
+										data-content="{$listeRemarques.$matricule.$coursGrp.$periode|default:''}"
+										data-placement="top"
+										data-html="true">
 										{$listeRemarques.$matricule.$coursGrp.$periode|default:'&nbsp;'|truncate:80}
 									</td>
 								{/foreach}
@@ -85,7 +104,7 @@
 									<strong>{$delibe.$periode.moyenne|default:'&nbsp;'}</strong>
 								</td>
 							{/foreach}
-							<td colspan="2">&nbsp;</td>
+							<td colspan="3">&nbsp;</td>
 						</tr>
 
 						<tr class="conclusionDelibe">
@@ -100,7 +119,7 @@
 								{/if}
 							</td>
 							{/foreach}
-							<td colspan="2">&nbsp;</td>
+							<td colspan="3">&nbsp;</td>
 						</tr>
 
 						<tr class="conclusionDelibe">
@@ -113,7 +132,7 @@
 									{else} &nbsp; {/if}
 								</td>
 							{/foreach}
-							<td colspan="2">&nbsp;</td>
+							<td colspan="3">&nbsp;</td>
 						</tr>
 
 						{foreach from=$listePeriodes item=periode}
@@ -122,7 +141,7 @@
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
-							<td colspan="2" style="font-size:0.8em">{if $delibe.$periode.nbHeuresEchec > 0}{$delibe.$periode.cours}{else}&nbsp;{/if}</td>
+							<td colspan="3" style="font-size:0.8em">{if $delibe.$periode.nbHeuresEchec > 0}{$delibe.$periode.cours}{else}&nbsp;{/if}</td>
 						</tr>
 						{/foreach}
 
@@ -134,7 +153,7 @@
 									<strong>{$mentions.$periode|default:'&nbsp;'}</strong>
 								</td>
 							{/foreach}
-							<td colspan="2">&nbsp;</td>
+							<td colspan="3">&nbsp;</td>
 						</tr>
 
 						<tr class="decisionDelibe">
@@ -151,7 +170,7 @@
 							</td>
 							{/foreach}
 
-							<td colspan="2">
+							<td colspan="3">
 								{if $estTitulaire}
 								<button type="button" class="btn btn-primary pop" data-container="body" data-content="Dé/verrouiller" data-placement="top"  id="lock">&nbsp;<i class="fa fa-lock"></i>&nbsp;</button>
 								{* <div class="pop" data-container="body" data-content="Dé/verrouiller" data-placement="top" style="font-size:2em; float:left;">
@@ -168,7 +187,7 @@
 						{*-------------------- décision de délibé --------------------*}
 						{if $bulletin == $NBPERIODES}
 						<tr class="decisionDelibe">
-							<td colspan="2">
+							<td colspan="3">
 								<div class="form-group pull-right">
 									<label for="decision" class="sr-only">Décision</label>
 									<select name="decision" id="decision" class="form-control" {if !($estTitulaire)} disabled{/if}>
@@ -180,7 +199,7 @@
 									</select>
 								</div>
 							</td>
-							<td colspan="4">
+							<td colspan="5">
 								<div class="form-group">
 									<label for="restriction" class="sr-only">Accès en</label>
 									<input type="text" name="restriction" maxlength="40" {if !($estTitulaire)} disabled{/if} id="restriction" value="{$decision.restriction|default:''}" class="form-control" placeholder="Accès en">

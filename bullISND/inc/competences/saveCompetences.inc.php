@@ -32,12 +32,14 @@ $Bulletin = new Bulletin();
 $nb = $Bulletin->saveCompetences($form);
 
 $listeCompetences = $Bulletin->listeCompetencesListeCours($cours);
-$listeUsedCompetences = $Bulletin->getUsedCompetences($listeCompetences[$cours]);
 
-require_once INSTALL_DIR.'/smarty/Smarty.class.php';
+$listeCompetences = (isset($listeCompetences[$cours])) ? $listeCompetences[$cours] : $listeCompetences;
+$listeUsedCompetences = $Bulletin->getUsedCompetences($listeCompetences);
+
+require_once INSTALL_DIR.$ds.'smarty/Smarty.class.php';
 $smarty = new Smarty();
-$smarty->template_dir = '../../templates';
-$smarty->compile_dir = '../../templates_c';
+$smarty->template_dir = INSTALL_DIR.$ds.$module.$ds.'templates';
+$smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds.'templates_c';
 
 $smarty->assign('listeCompetences', $listeCompetences);
 $smarty->assign('listeUsedCompetences', $listeUsedCompetences);
