@@ -578,20 +578,22 @@ ALTER TABLE `didac_bullCoursPrincipaux`
 
 
 
-CREATE TABLE IF NOT EXISTS didac_bullDetailsCotes (
-  matricule int(6) NOT NULL,
-  coursGrp varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  bulletin tinyint(2) unsigned NOT NULL,
-  idComp int(6) NOT NULL,
-  form varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  maxForm varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  cert varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  maxCert varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (matricule,coursGrp,bulletin,idComp),
-  KEY matricule (matricule),
-  KEY cours (coursGrp),
-  KEY bulletin (bulletin)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `didac_bullDetailsCotes` (
+    `matricule` int NOT NULL,
+    `coursGrp` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+    `bulletin` tinyint UNSIGNED NOT NULL,
+    `idComp` int NOT NULL,
+    `form` varchar(5) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+    `maxForm` varchar(5) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+    `cert` varchar(5) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+    `maxCert` varchar(5) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_bullDetailsCotes`
+    ADD PRIMARY KEY (`matricule`,`coursGrp`,`bulletin`,`idComp`),
+    ADD KEY `matricule` (`matricule`),
+    ADD KEY `cours` (`coursGrp`),
+    ADD KEY `bulletin` (`bulletin`);
 
 
 CREATE TABLE `didac_bullEducs` (
@@ -731,6 +733,34 @@ CREATE TABLE IF NOT EXISTS didac_bullTitus (
   remarque blob NOT NULL,
   PRIMARY KEY (matricule,bulletin)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `didac_bullUAA` (
+  `idUAA` int NOT NULL COMMENT 'id numérique unique ou laisser vide',
+  `libelle` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'libelle (tinyText)'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_bullUAA`
+  ADD PRIMARY KEY (`libelle`),
+  ADD KEY `id` (`idUAA`);
+
+ALTER TABLE `didac_bullUAA`
+  MODIFY `idUAA` int NOT NULL AUTO_INCREMENT COMMENT 'id numérique unique ou laisser vide';
+
+CREATE TABLE `didac_bullUAAGrappe` (
+    `idGrappe` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant texte de la grappe',
+    `cours` varchar(17) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant texte de la grappe'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `didac_bullUAAGrappe`
+    ADD PRIMARY KEY (`idGrappe`,`cours`);
+
+CREATE TABLE `didac_bullUAAlink` (
+  `idGrappe` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'identifiant texte de la grappe',
+  `idUAA` int NOT NULL COMMENT 'identifiant de l''UAA'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci COMMENT='Lien plusieurs à plusieurs grappe -> UAA';
+
+ALTER TABLE `didac_bullUAAlink`
+  ADD PRIMARY KEY (`idGrappe`,`idUAA`);
 
 
 CREATE TABLE IF NOT EXISTS didac_bullTQCommentProfs (
