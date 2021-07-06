@@ -576,8 +576,6 @@ INSERT INTO `didac_bullCoursPrincipaux` (`idCours`, `nomCours`) VALUES
 ALTER TABLE `didac_bullCoursPrincipaux`
   ADD PRIMARY KEY (`idCours`,`nomCours`);
 
-
-
 CREATE TABLE `didac_bullDetailsCotes` (
     `matricule` int NOT NULL,
     `coursGrp` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -1514,14 +1512,12 @@ CREATE TABLE `didac_reservationsUser` (
     `idReservation` int NOT NULL COMMENT 'Identifiant de la réservation',
     `idRessource` int NOT NULL COMMENT 'Identifiant de la ressource réservée',
     `user` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Utilisateur: matricule ou acronyme',
-    `dateDebut` datetime NOT NULL COMMENT 'Date de début du pêt/occupation',
-    `dateFin` datetime NOT NULL COMMENT 'Date de fin du prêt/occupation'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+    `dateDebut` datetime NOT NULL COMMENT 'Date de début de prêt/occupation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `didac_reservationsUser`
     ADD PRIMARY KEY (`idReservation`),
-    ADD KEY `user` (`user`),
-    ADD KEY `idRessource` (`idRessource`);
+    ADD KEY `idRessource` (`idRessource`,`user`,`dateDebut`);
 
 ALTER TABLE `didac_reservationsUser`
     MODIFY `idReservation` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la réservation';
