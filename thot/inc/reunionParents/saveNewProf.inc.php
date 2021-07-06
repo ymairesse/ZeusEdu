@@ -16,24 +16,31 @@ if (!(isset($_SESSION[APPLICATION]))) {
 
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
+
 $module = $Application->getModule(3);
 
-$userStatus = $User->userStatus($module);
+$idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
+$statut = isset($_POST['statut']) ? $_POST['statut'] : Null;
+$acronyme = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
 
-$idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
+require_once(INSTALL_DIR.'/inc/classes/classThot.inc.php');
+$Thot = new Thot();
 
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
-$Reservation = new Reservation();
 
-$listeRessources = $Reservation->getRessourceByType($idType);
+$nb = 0;
+if ($acronyme != Null) {
+    $listeHeures = $Thot->getHoraire4randomProf($idRP);
+    $nb = $Thot->addNewProf($acronyme, $statut, $listeHeures, $idRP);
+}
+
+$listeProfs = $Thot->listeProfsAvecRv($idRP);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeRessources', $listeRessources);
-$smarty->assign('userStatus', $userStatus);
+$smarty->assign('listeProfs', $listeProfs);
+$html = $smarty->fetch('reunionParents/listeProfs4admin.tpl');
 
-$smarty->display('ressources/selectRessource.tpl');
+echo json_encode(array('html' => $html, 'nb' => $nb));

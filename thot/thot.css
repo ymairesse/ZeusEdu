@@ -840,3 +840,12 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
     height: 6em;
     width: 8em;
     }
+
+#contextMenu {
+    position: absolute;
+    display: none;
+}
+
+.longTerme {
+    background: #ffdc72;
+}

@@ -15,23 +15,14 @@
         <div class="panel-heading">
             Liste des enseignants
         </div>
-        <div class="panel-body" style="max-height:40em; overflow:auto">
-            <ul class="list-unstyled">
-                {foreach from=$listeProfs key=abr item=data}
-                <li title="{$data.nom} {$data.prenom}">
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-block btn-prof{if (isset($acronyme)) && ($abr == $data.acronyme)} btn-success{else} btn-default{/if}"
-                        data-abreviation="{$data.acronyme}"
-                        data-nomprof="{$data.prenom} {$data.nom}"
-                        data-statut="{$data.statut}">
-                        {$data.nom} {$data.prenom}
-                    </button>
-                </li>
-                {/foreach}
-            </ul>
-        </div>
+        <div class="panel-body" style="max-height:40em; overflow:auto" id="listeProfsAdmin">
 
+            {include file="reunionParents/listeProfs4admin.tpl"}
+
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-success btn-block" id="btn-addProf" data-idrp="{$idRP}">Ajouter un professeur</button>
+        </div>
     </div>
 
 </div>  <!-- col-md-... -->
@@ -89,6 +80,36 @@ var titreErreur = "Erreur";
     $(document).ready(function() {
 
         $('[data-toggle="popover"]').popover();
+
+        $('#btn-addProf').click(function(){
+            var idRP = $(this).data('idrp');
+            $.post('inc/reunionParents/addProf.inc.php', {
+                idRP: idRP
+            }, function(resultat){
+                $('#modal').html(resultat);
+                $('#modalAddProf').modal('show');
+            })
+        })
+        $('#modal').on('click', '#btn-modalAddProf', function(){
+            var acronyme = $('#modalListeProfs').val();
+            var statut = $('#modal input.modalStatut:checked').val();
+            var idRP = $('#idRP').val();
+            if (acronyme != null) {
+                $.post('inc/reunionParents/saveNewProf.inc.php', {
+                    acronyme: acronyme,
+                    idRP: idRP,
+                    statut: statut
+                }, function(resultatJSON){
+                    var resultat = JSON.parse(resultatJSON);
+                    $('#listeProfsAdmin').html(resultat['html']);
+                    bootbox.alert({
+                        title: "Ajout d'un professeur",
+                        message: resultat['nb'] + " RV ajoutés"
+                    });
+                    $('#modalAddProf').modal('hide');
+                })
+            }
+        })
 
         $('#printProf').click(function() {
             var idRP = $(this).data('idrp');

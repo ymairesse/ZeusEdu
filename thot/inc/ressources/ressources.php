@@ -9,5 +9,6 @@ $listeHeuresCours = $Ecole->lirePeriodesCours();
 
 $smarty->assign('typeRessources', $typeRessources);
 $smarty->assign('listeHeuresCours', $listeHeuresCours);
+$smarty->assign('userStatus', $userStatus);
 
 $smarty->assign('corpsPage', 'ressources/ressources');

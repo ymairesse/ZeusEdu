@@ -72,7 +72,8 @@
                                 name="cote_{$idCompetence}"
                                 class="form-control input-sm cote"
                                 value="{$evaluationsTravail.cotes.$idCompetence.cote|default:''}"
-                                tabindex="{$smarty.foreach.boucle.iteration}">
+                                tabindex="{$smarty.foreach.boucle.iteration}"
+                                style="text-transform: uppercase">
                         </td>
                         <td>
                             <strong>/ {$data.max}</strong>
@@ -82,6 +83,7 @@
                     {assign var=n value=$smarty.foreach.boucle.iteration}
                     {/foreach}
                 {else}
+                    {assign var=n value=0}
                     <tr>
                         <td colspan="4">
                             <i class="fa fa-warning text-danger"></i> Vous n'avez pas encore indiqué les compétences exercées pour ce travail
@@ -91,6 +93,7 @@
             </tbody>
         </table>
     {assign var=n value=$n+1}
+
     <button type="button" tabindex="{$n}" class="btn btn-primary btn-block" id="saveEval">Enregistrer</button>
     {assign var=n value=$n+1}
     <div class="form-group">

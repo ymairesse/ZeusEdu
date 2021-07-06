@@ -20,20 +20,26 @@ $module = $Application->getModule(3);
 
 $userStatus = $User->userStatus($module);
 
-$idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
-
-$ds = DIRECTORY_SEPARATOR;
-require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
-$Reservation = new Reservation();
-
-$listeRessources = $Reservation->getRessourceByType($idType);
+$idRessource = isset($_POST['idRessource']) ? $_POST['idRessource'] : Null;
+$date = isset($_POST['date']) ? $_POST['date'] : Null;
+$heure = isset($_POST['heure']) ? $_POST['heure'] : Null;
+$abreviation = isset($_POST['abreviation']) ? $_POST['abreviation'] : Null;
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeRessources', $listeRessources);
-$smarty->assign('userStatus', $userStatus);
+$smarty->assign('idRessource', $idRessource);
+$smarty->assign('date', $date);
+$smarty->assign('heure', $heure);
 
-$smarty->display('ressources/selectRessource.tpl');
+if ($abreviation == $acronyme) {
+    $ds = DIRECTORY_SEPARATOR;
+    require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
+    $Reservation = new Reservation();
+
+    $abreviation = $Reservation->unReserveRessource($idRessource, $date, $heure, $acronyme);
+
+    $smarty->display('ressources/boutonLibre.tpl');
+}

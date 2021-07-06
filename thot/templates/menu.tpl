@@ -115,9 +115,7 @@
 					{/if}
 					<li><a href="index.php?action=bib&amp;mode=emprunt">Bibliothèque</a></li>
 					<li><a href="index.php?action=ressources&amp;mode=emprunt">Réservation matériel/local</a></li>
-					{if $userStatus == 'admin'}
-						<li><a href="index.php?action=ressources&amp;mode=admin">Gestion matériel/local</a></li>
-					{/if}
+
 				</ul>
 			</li>
 

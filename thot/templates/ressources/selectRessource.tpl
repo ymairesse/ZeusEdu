@@ -1,14 +1,69 @@
-<div class="form-group">
-    <label for="selRessource"></label>
+<div style="max-height:10em; overflow: auto">
 
-    <select class="form-control" name="selectRessource[]" id="selectRessource" multiple size="15">
-    {if !(isset($listeRessources))}
-        <option value="">Sélectionner d'abord un type</option>
-        {else}
+    {if isset($listeRessources)}
 
-        {foreach from=$listeRessources key=idRes item=data }
-        <option value="{$idRes}"{if (isset($idRessource)) && ($idRes == $idRessource)} selected{/if}>{$data.description}</option>
+    <table class="table table-condensed">
+        <tr>
+            <th>
+                <button type="button"
+                    class="btn btn-success btn-xs"
+                    id="selAllRessources"
+                    title="Inverser la sélection">
+                    <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i>
+                </button>
+
+            </th>
+            <th>
+                Ressources existantes <span class="badge badge-danger">{$listeRessources|count}</span>
+            </th>
+            <th>
+                <span class="badge badge-info" title="calendrier des réservations"><i class="fa fa-info"></i> </span>
+            </th>
+        </tr>
+        {foreach from=$listeRessources key=unIdRessource item=data }
+            <tr>
+                <td style="width: 2em;">
+
+                    <input type="checkbox"
+                        name="ressources[]"
+                        class="ressource"
+                        data-idressource="{$unIdRessource}"
+                        value="{$unIdRessource}"
+                        {if isset($idRessource) && ($idRessource == $unIdRessource)}checked{/if}
+                        {if (($data.longTermeBy != '') || ($data.indisponible == 1)) && ($userStatus != 'admin')} disabled{/if}>
+
+                </td>
+                <td {if ($data.longTermeBy != '') || ($data.indisponible == 1)}class="longTerme" title="Indisponible"{/if}>
+                    {$data.description}
+                </td>
+                <td style="width:2em;">
+                    <button type="button"
+                        class="btn btn-info btn-xs pull-right btn-infoRessource"
+                        data-idressource= "{$unIdRessource}"
+                        class="btn-infoRessource"
+                        title="Calendrier pour {$data.description}">
+                        <i class="fa fa-info"></i>
+                    </button>
+                </td>
+            </tr>
         {/foreach}
+
+    </table>
+
+    {else}
+        <p>Sélectionner un type de ressources d'abord</p>
     {/if}
-    </select>
+
 </div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        $('#selAllRessources').click(function(){
+            $('.ressource').trigger('click');
+        })
+
+    })
+
+</script>

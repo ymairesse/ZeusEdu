@@ -24,7 +24,7 @@ $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
 $idRV = isset($_POST['idRV']) ? $_POST['idRV'] : null;
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : null;
 // ne pas confondre avec l'acronyme de l'utilisateur!!!!!
-// 
+//
 $abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : $acronyme;
 $periode = isset($_POST['periode']) ? $_POST['periode'] : null;
 // $userName = isset($_POST['userName']) ? $_POST['userName'] : null;
@@ -36,6 +36,9 @@ DEFINE ("MAX", 3);
 
 require_once INSTALL_DIR.'/inc/classes/classThot.inc.php';
 $Thot = new Thot();
+
+
+Application::afficher($idRP, $idRV, $matricule, MAX);
 
 // max MAX rendez-vous
 $resultat = $Thot->inscriptionEleve($idRP, $idRV, $matricule, MAX);

@@ -20,20 +20,23 @@ $module = $Application->getModule(3);
 
 $userStatus = $User->userStatus($module);
 
-$idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
+$idRessource = isset($_POST['idRessource']) ? $_POST['idRessource'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
 $Reservation = new Reservation();
 
-$listeRessources = $Reservation->getRessourceByType($idType);
+$ressource = $Reservation->getRessourceById($idRessource);
+$longTermeBy = $ressource['longTermeBy'];
+
+$emprunteur = $Reservation->getUserName($longTermeBy);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeRessources', $listeRessources);
-$smarty->assign('userStatus', $userStatus);
+$smarty->assign('ressource', $ressource);
+$smarty->assign('emprunteur', $emprunteur);
 
-$smarty->display('ressources/selectRessource.tpl');
+$smarty->display('ressources/modal/modalLongTerme.tpl');

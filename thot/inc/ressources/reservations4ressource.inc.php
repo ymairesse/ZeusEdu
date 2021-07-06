@@ -18,22 +18,21 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
-$userStatus = $User->userStatus($module);
-
-$idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
+$idRessource = isset($_POST['idRessource']) ? $_POST['idRessource'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
 $Reservation = new Reservation();
 
-$listeRessources = $Reservation->getRessourceByType($idType);
+$listesReservations = $Reservation->getListeReservations4ressource($idRessource);
+$infoRessource = $Reservation->getRessourceById($idRessource);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('listeRessources', $listeRessources);
-$smarty->assign('userStatus', $userStatus);
+$smarty->assign('listesReservations', $listesReservations);
+$smarty->assign('infoRessource', $infoRessource);
 
-$smarty->display('ressources/selectRessource.tpl');
+$smarty->display('ressources/modal/modalConfirmDeleteRes.tpl');

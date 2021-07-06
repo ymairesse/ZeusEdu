@@ -44,7 +44,7 @@
 
                         <div class="btn-group pull-right">
                             <button type="reset" class="btn btn-default">Annuler</button>
-                            <button class="btn btn-primary" type="button" id="btn-page3" data-idrp="{$idRP|default:''}" disabled>Enregistrer</button>
+                            <button class="btn btn-primary" type="button" id="btn-page3" data-idrp="{$idRP|default:''}">Enregistrer</button>
                         </div>
 
                         <div class="clearfix"></div>

@@ -20,23 +20,23 @@ $module = $Application->getModule(3);
 
 $idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
 $idRessource = isset($_POST['idRessource']) ? $_POST['idRessource'] : Null;
+$addEditClone = isset($_POST['addEditClone']) ? $_POST['addEditClone'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
 $Reservation = new Reservation();
 
-$typeRessources = $Reservation->getTypesRessources();
-$nomType = $typeRessources[$idType];
-
-$ressource = $Reservation->getRessource($idType, $idRessource);
+$ressource = $Reservation->getRessourceById($idRessource);
+$listeTypes = $Reservation->getTypesRessources();
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
-$smarty->assign('nomType', $nomType);
+$smarty->assign('listeTypes', $listeTypes);
 $smarty->assign('idType', $idType);
 $smarty->assign('post', $ressource);
+$smarty->assign('addEditClone', $addEditClone);
 
-$smarty->display('ressources/modal/modalAddRessource.tpl');
+$smarty->display('ressources/modal/modalEditRessource.tpl');

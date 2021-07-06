@@ -51,7 +51,9 @@
 </div>
 <!-- container -->
 
-<div id="modal"></div>
+<div id="modal">
+
+</div>
 
 
 <script type="text/javascript">
@@ -191,11 +193,52 @@ var titreErreur = 'Erreur';
                     }
                 )
             } else {
-                $("#modalId").val(id);
-                $("#modalNomEleve").html(eleve);
-                $("#modalDelRV").modal('show');
+                // il s'agit d'une réservation prise par les parents, il faut réaliser la procédure complète
+                $.post('inc/reunionParents/delRVparent.inc.php', {
+                    idRV: idRV,
+                    idRP: idRP
+                }, function(resultat){
+                    $('#modal').html(resultat);
+                    $('#modalDelRV').modal('show');
+                })
             }
         })
+
+        $('#modal').on('click', '#modalConfirmDelRV', function(){
+            if ($('#form-confirmDel').valid()){
+                var raison = $('#modal #raisonDel').val();
+                var idRV = $('#modal #idRV').val();
+                var idRP = $('#modal #idRP').val();
+                var matricule = $('#modal #matricule').val();
+                $.post('inc/reunionParents/delConfirmRVparent.inc.php', {
+                    raison: raison,
+                    idRV: idRV,
+                    idRP: idRP,
+                    matricule: matricule
+                }, function(resultatJSON){
+                    var resultat = JSON.parse(resultatJSON);
+
+                    if (resultat['nb'] == 1)
+                        var message = 'Le rendez-vous a été supprimé';
+                        else var message = 'Le rendez-vous n\'a pas pu être supprimé';
+                    if (resultat['mailOK'] == true)
+                        message += '<br> mail envoyé';
+                        else message += '<br>Le mail de confirmation n\'a pas pu être envoyé';
+                    $('#modalDelRV').modal('hide');
+                    $.post('inc/reunionParents/listeRVprofesseur.inc.php', {
+                        idRP: idRP,
+                        droit: true
+                        }, function(resultat){
+                            $('#listeRV').html(resultat);
+                            bootbox.alert({
+                                title: "Suppression d'un RV",
+                                message: message
+                                })
+                            })
+                        })
+                    }
+                })
+
 
         $('body').on('click', '#listeAttente', function() {
             var matricule = $('.btn-eleve.btn-success').data('matricule');

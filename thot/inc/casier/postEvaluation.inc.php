@@ -24,7 +24,7 @@ $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
 
-$evaluation = isset($form['evaluation']) ? $form['evaluation'] : null;
+$evaluation = isset($form['evaluation']) ? strtoupper($form['evaluation']) : null;
 $idTravail = isset($form['idTravail']) ? $form['idTravail'] : Null;
 
 // la fonction verifProprietaireTravail renvoie l'id du travail s'il est bien attribué à $acronyme

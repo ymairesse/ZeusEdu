@@ -30,14 +30,19 @@ $reference = isset($form['reference']) ? $form['reference'] : Null;
 $idType = isset($form['idType']) ? $form['idType'] : Null;
 $idRessource = isset($form['idRessource']) ? $form['idRessource'] : Null;
 
+// s'agit-il d'une mise à jour, d'un clonage, d'une nouvelle ressource?
+$addEditClone = isset($form['addEditClone']) ? $form['addEditClone'] : Null;
+
 $html = Null;
 // cette référence existe déjà pour ce type de ressources
-// et ce n'est pas une édition (pas encore de idRessource)
-if ($Reservation->referenceExiste($idType, $reference) && $idRessource == Null) {
+// et c'est un clonage ou une nouvelle ressource
+// dans ce cas, on n'enregistre rien et la procédure appelante expliquera le problème
+if ($Reservation->referenceExiste($idType, $reference) && in_array($addEditClone, array('add', 'clone'))) {
     $idRessource = Null;
     }
     else {
         $idRessource = $Reservation->saveRessource($form);
+        // recharger la liste des ressources
         $listeRessources = $Reservation->getRessourceByType($idType);
 
         require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -50,4 +55,4 @@ if ($Reservation->referenceExiste($idType, $reference) && $idRessource == Null) 
         $html = $smarty->fetch('ressources/selectRessource.tpl');
     }
 
-echo json_encode(array('idRessource' => $idRessource, 'html' => $html));
+echo json_encode(array('addEditClone' => $addEditClone, 'idRessource' => $idRessource, 'html' => $html));

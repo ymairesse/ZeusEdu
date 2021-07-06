@@ -7,7 +7,7 @@
 			{if isset($listeDates)}
 				{foreach from=$listeDates item=uneDate}
 				<option value="{$uneDate.idRP}" {if isset($idRP) && ($uneDate.idRP==$idRP)} selected="selected" {/if}>
-					Réunion du {$uneDate.date} [{$uneDate.typeRP}]
+					Réunion du {$uneDate.date} [{$uneDate.typeRP}] -> {$uneDate.motif|default:'...'}
 				</option>
 				{/foreach}
 			{/if}

@@ -9,6 +9,9 @@ $smarty->assign('listeDates', $listeReunions);
 $idRP = isset($_POST['idRP']) ? $_POST['idRP'] : Null;
 $typeRP = Null;
 
+$acronyme = $user->getAcronyme();
+$smarty->assign('acronyme', $acronyme);
+
 if ($idRP != Null) {
     // récupérer les caractéristiques de la RP sélectionnée
     $smarty->assign('idRP', $idRP);

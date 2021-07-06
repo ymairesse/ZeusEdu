@@ -2,7 +2,7 @@
 
     <form id="formPage1">
 
-    <div class="col-md-3 col-sm-4">
+    <div class="col-md-2 col-sm-4">
 
         <div class="panel panel-default">
 
@@ -69,12 +69,17 @@
                     <p class="help-block">Heure de fin</p>
                 </div>
 
-
                 <div class="form-group">
                     <label for="duree" class="sr-only">Intervalle</label>
                     <input type="text" class="form-control" id="duree" name="duree" placeholder="Durée"
                     {if isset($infoRP) && $infoRP.date != ''} value='-' disabled{/if}>
                     <p class="help-block">Durée d'un entretien (en minutes)</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="motif" class="sr-only">Motif de la RP</label>
+                    <input type="text" class="form-control" name="motif" value="{$infoRP.motif|default:''}" placeholder="Motif de la RP" maxlength="20">
+                    <p class="help-block">Bulletin, Consultation copies, Recours,... (20 caractères max)</p>
                 </div>
 
                 <div class="clearfix"></div>
@@ -97,7 +102,7 @@
     </div>
     <!-- col-md-... -->
 
-    <div class="col-md-6 col-sm-8">
+    <div class="col-md-7 col-sm-8">
         {if isset($readonly) && ($readonly == 1)}
         <div class="alert alert-info">
             Cette page n'est plus modifiable après enregistrement.

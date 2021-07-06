@@ -19,6 +19,7 @@ $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
 $idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
+$addEditClone = isset($_POST['addEditClone']) ? $_POST['addEditClone'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
@@ -34,5 +35,6 @@ $nomType = $typeRessources[$idType];
 
 $smarty->assign('nomType', $nomType);
 $smarty->assign('idType', $idType);
+$smarty->assign('addEditClone', $addEditClone);
 
 $smarty->display('ressources/modal/modalAddRessource.tpl');
