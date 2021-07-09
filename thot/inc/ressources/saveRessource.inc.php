@@ -18,6 +18,8 @@ $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 $module = $Application->getModule(3);
 
+$userStatus = $User->userStatus($module);
+
 $formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
 $form = array();
 parse_str($formulaire, $form);
@@ -52,6 +54,7 @@ if ($Reservation->referenceExiste($idType, $reference) && in_array($addEditClone
 
         $smarty->assign('idRessource', $idRessource);
         $smarty->assign('listeRessources', $listeRessources);
+        $smarty->assign('userStatus', $userStatus);
         $html = $smarty->fetch('ressources/selectRessource.tpl');
     }
 

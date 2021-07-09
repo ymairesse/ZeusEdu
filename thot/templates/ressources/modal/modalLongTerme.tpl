@@ -112,19 +112,36 @@
 
     $(document).ready(function(){
 
-        $('#indisponible').change(function(){
-            var checked = $(this).is(':checked');
-            $('#longTermeBy').val('').attr('readonly', checked);
-            if (checked) {
-                $('#longTermeBy').text('');
+        var validator = $('#formLongTerme').validate({
+            rules: {
+                idType: { required: true},
+                caution: {
+                    required: function(){
+                        return $('#hasCaution').is(':checked');
+                    }
+                },
+                // longTermeBy: {
+                //     required: function(){
+                //         return $('#indisponible').is(':checked');
+                //     }
+                // },
+                description: { required: true },
+                reference: { required: true },
+                localisation: { required: true }
             }
-        })
+        });
+
+        // $('#indisponible').change(function(){
+        //     var checked = $(this).is(':checked');
+        //     $('#longTermeBy').val('').attr('readonly', checked);
+        //     if (checked) {
+        //         $('#longTermeBy').text('');
+        //     }
+        // })
 
         $('#longTermeBy').blur(function(){
             var qui = $(this).val();
             if (qui == '') {
-                $('#indisponible').prop('checked', false);
-                $('#longTermeBy').attr('disabled', true);
                 $('#emprunteur').text('');
                 validator.resetForm();
             }

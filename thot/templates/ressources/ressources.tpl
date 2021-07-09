@@ -132,15 +132,18 @@
 
 <script type="text/javascript">
 
-    function refreshListeRessources(idType){
+    function refreshListeRessources(idType, idRessource){
         $.post('inc/ressources/getRessourceByType.inc.php', {
-            idType: idType
+            idType: idType,
+            idRessource: idRessource
         }, function(resultat){
             $('#resDispo').html(resultat);
             $('#btn-delRessource').attr('disabled', true);
             $('#btn-cloneRessource').attr('disabled', true);
             $('#btn-editRessource').attr('disabled', true);
             $('#btn-selectRessources').attr('disabled', true);
+            if (idRessource != undefined)
+                $('.afterDel').attr('disabled', false);
         })
     }
 
@@ -204,6 +207,7 @@
                 var formulaire = $('#formLongTerme').serialize();
                 var description = $('#description').val();
                 var idType = $('#idType').val();
+                var idRessource = $('#idRessource').val();
                 $.post('inc/ressources/saveModalLongTerme.inc.php', {
                     formulaire: formulaire
                 }, function(resultat){
@@ -213,7 +217,7 @@
                         callback: function(){
                             $('#modalLongTerme').modal('hide');
                             // rafraîchir la liste des ressources disponibles pour ce type
-                            refreshListeRessources(idType);
+                            refreshListeRessources(idType, idRessource);
                         }
                     })
                 })

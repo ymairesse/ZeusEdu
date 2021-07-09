@@ -30,7 +30,9 @@
                         data-idressource="{$unIdRessource}"
                         value="{$unIdRessource}"
                         {if isset($idRessource) && ($idRessource == $unIdRessource)}checked{/if}
-                        {if (($data.longTermeBy != '') || ($data.indisponible == 1)) && ($userStatus != 'admin')} disabled{/if}>
+                        {if $userStatus != 'admin'}
+                            {if (($data.longTermeBy != '') || ($data.indisponible == 1))} disabled{/if}
+                        {/if}>
 
                 </td>
                 <td {if ($data.longTermeBy != '') || ($data.indisponible == 1)}class="longTerme" title="Indisponible"{/if}>

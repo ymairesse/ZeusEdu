@@ -42,7 +42,9 @@
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group">
                         <label for="reference">Référence</label>
-                        <input type="text" name="reference" id="reference" value="{$post.reference|default:''}" {if isset($post.idRessource)}readonly{/if} class="form-control" maxlength="32">
+                        <input type="text"
+                        name="reference" id="reference" value="{$post.reference|default:''}"
+                        class="form-control" maxlength="32">
                        <div class="help-block">
                         {if isset($post.idRessource)}
                            La référence ne peut être modifiée
@@ -90,8 +92,7 @@
                             id="longTermeBy"
                             value="{$post.longTermeBy|default:''}"
                             class="form-control"
-                            placeholder="Matricule ou acronyme"
-                            {if $post.longTermeBy == ''}disabled{/if}>
+                            placeholder="Matricule ou acronyme">
                         <div class="help-block">Emprunt à long terme <span id="emprunteur" style="color: red">
                             {if $post.groupe != Null}{$post.groupe} {$post.nomEleve} {$post.prenomEleve}{/if}
                             {if $post.nomProf != Null}{$post.prenomProf} {$post.nomProf}{/if}
@@ -137,30 +138,30 @@
                         return $('#hasCaution').is(':checked');
                     }
                 },
-                longTermeBy: {
-                    required: function(){
-                        return $('#indisponible').is(':checked');
-                    }
-                },
+                // longTermeBy: {
+                //     required: function(){
+                //         return $('#indisponible').is(':checked');
+                //     }
+                // },
                 description: { required: true },
                 reference: { required: true },
                 localisation: { required: true }
             }
         });
 
-        $('#indisponible').change(function(){
-            var checked = $(this).is(':checked');
-            $('#longTermeBy').val('').attr('disabled', !checked);
-            if (!checked) {
-                $('#emprunteur').text('');
-            }
-        })
+        // $('#indisponible').change(function(){
+        //     var checked = $(this).is(':checked');
+        //     $('#longTermeBy').val('').attr('disabled', !checked);
+        //     if (!checked) {
+        //         $('#emprunteur').text('');
+        //     }
+        // })
 
         $('#longTermeBy').blur(function(){
             var qui = $(this).val();
             if (qui == '') {
-                $('#indisponible').prop('checked', false);
-                $('#longTermeBy').attr('disabled', true);
+                // $('#indisponible').prop('checked', false);
+                // $('#longTermeBy').attr('disabled', true);
                 $('#emprunteur').text('');
                 validator.resetForm();
             }
