@@ -1487,12 +1487,14 @@ CREATE TABLE `didac_reservations` (
     `idType` smallint NOT NULL COMMENT 'Type d''objet (voir table des types)',
     `localisation` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Localisation de la ressource',
     `etat` blob COMMENT 'Description de l''état du matériel/local',
-    `hasCaution` tinyint NOT NULL DEFAULT '0' COMMENT 'Caution demandée?',
-    `caution` int DEFAULT NULL COMMENT 'Montant de la caution'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Prêt de matériel ou de locaux';
+    `hasCaution` tinyint DEFAULT NULL COMMENT 'Caution demandée?',
+    `caution` int DEFAULT NULL COMMENT 'Montant de la caution',
+    `indisponible` tinyint(1) DEFAULT '0' COMMENT 'Ressource indisponible?',
+    `longTermeBy` varchar(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Emprunt à long terme par...'
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Prêt de matériel ou de locaux';
 
 ALTER TABLE `didac_reservations`
-    ADD PRIMARY KEY (`idRessource`,`reference`,`idType`) USING BTREE;
+    ADD PRIMARY KEY (`idRessource`) USING BTREE;
 
 ALTER TABLE `didac_reservations`
     MODIFY `idRessource` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant numérique';
