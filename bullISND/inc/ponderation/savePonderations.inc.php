@@ -19,28 +19,38 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(3);
 
-$matricule = isset($_POST['matricule'])?$_POST['matricule']:Null;
-$coursGrp = isset($_POST['coursGrp'])?$_POST['coursGrp']:Null;
-$bulletin = isset($_POST['bulletin'])?$_POST['bulletin']:Null;
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$form = array();
+parse_str($formulaire, $form);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.'/inc/classes/classBulletin.inc.php';
 $Bulletin = new Bulletin();
 
-$listePonderations = $Bulletin->getPonderations($coursGrp)[$coursGrp][$matricule];
-$listePonderations = (isset($listePonderations[$matricule])) ? $listePonderations[$matricule] : $listePonderations['all'];
+// $nb = nombre d'enregistrements réalisés
+$nb = $Bulletin->enregistrementPonderations($form);
+
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
+
+// rechargement de la liste des pondérations
+$coursGrp = $form['coursGrp'];
+$ponderations = $Bulletin->getPonderations($coursGrp)[$coursGrp];
+$listeEleves = $Ecole->listeElevesCours($coursGrp);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
 $smarty = new Smarty();
 $smarty->template_dir = INSTALL_DIR.$ds.$module.$ds."templates";
 $smarty->compile_dir = INSTALL_DIR.$ds.$module.$ds."templates_c";
 
-$smarty->assign('listePonderations', $listePonderations);
-$smarty->assign('NOMSPERIODES', explode(',', NOMSPERIODES));
-$smarty->assign('NBPERIODES', NBPERIODES);
-$smarty->assign('listePeriodes', range(1, NBPERIODES));
-$smarty->assign('matricule', $matricule);
 $smarty->assign('coursGrp', $coursGrp);
-$smarty->assign('bulletin', $bulletin);
+$smarty->assign('ponderations', $ponderations);
+$smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('nbPeriodes', NBPERIODES);
+$smarty->assign('listePeriodes', range(1, NBPERIODES));
+$smarty->assign('NOMSPERIODES', explode(',', NOMSPERIODES));
+$smarty->assign('bulletin', PERIODEENCOURS);
 
-$smarty->display('ponderation/formPonderation.tpl');
+$html = $smarty->fetch('ponderation/tablePonderation.tpl');
+
+echo json_encode(array('nb' => $nb, 'html' => $html));

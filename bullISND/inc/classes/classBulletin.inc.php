@@ -75,8 +75,8 @@ class Bulletin
      * si la pondération contient un matricule, c'est qu'il y a un cas particulier
      * pour l'élève dont le matricule est renvoyé; sinon, c'est 'all'.
      *
-     * @param $coursGrp
-     * @param $bulletin
+     * @param string|array $listeCoursGrp
+     * @param int $bulletin : numéro de la période
      *
      * @return array
      */
@@ -90,20 +90,27 @@ class Bulletin
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $sql = 'SELECT coursGrp, periode, matricule, form, cert ';
         $sql .= 'FROM '.PFX.'bullPonderations ';
-        $sql .= "WHERE coursGrp IN ($listeCoursGrpString) ";
+        $sql .= 'WHERE coursGrp IN ('.$listeCoursGrpString.') ';
         if ($bulletin != null) {
-            $sql .= "AND periode = '$bulletin' ";
+            $sql .= 'AND periode = :bulletin ';
         }
         $sql .= 'ORDER BY matricule, periode ASC ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':bulletin', $bulletin, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
         $listePonderations = array();
-        while ($ligne = $resultat->fetch()) {
-            $matricule = $ligne['matricule'];
-            $periode = $ligne['periode'];
-            $coursGrp = $ligne['coursGrp'];
-            $listePonderations[$coursGrp][$matricule][$periode] = array('form' => $ligne['form'], 'cert' => $ligne['cert']);
+        if ($resultat){
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $matricule = $ligne['matricule'];
+                $periode = $ligne['periode'];
+                $coursGrp = $ligne['coursGrp'];
+                $listePonderations[$coursGrp][$matricule][$periode] = array('form' => $ligne['form'], 'cert' => $ligne['cert']);
+            }
         }
+
         Application::DeconnexionPDO($connexion);
 
         return $listePonderations;
@@ -442,7 +449,7 @@ class Bulletin
     /**
      * enregistrement de la pondération provenant du formulaire ad-hoc.
      *
-     * @param $post
+     * @param array $post : le contenu du formulaire de la boîte modale
      *
      * @return int : nombre de modifications dans la BD
      */
@@ -482,6 +489,42 @@ class Bulletin
         Application::DeconnexionPDO($connexion);
 
         return $nbInsertions;
+    }
+
+    /**
+     * clonage de la pondération globale $ponderation
+     * pour l'élève $matricule du cours $coursGrp
+     *
+     * @param array $ponderations
+     * @param int $matricule
+     * @param string $coursGrp
+     *
+     * @return int : nombre d'enregistrements
+     */
+    public function clonePonderation4eleve($ponderations, $matricule, $coursGrp){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'bullPonderations ';
+        $sql .= 'SET matricule = :matricule, coursGrp = :coursGrp, periode = :periode, ';
+        $sql .= 'form = :form, cert = :cert ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
+        $requete->bindParam(':coursGrp', $coursGrp, PDO::PARAM_STR, 20);
+        $nb = 0;
+        foreach ($ponderations AS $periode => $data){
+            $requete->bindParam(':periode', $periode, PDO::PARAM_INT);
+            $form = ($data['form'] != '') ? $data['form'] : Null;
+            $requete->bindParam(':form', $form, PDO::PARAM_INT);
+            $cert = ($data['cert'] != '') ? $data['cert'] : Null;
+            $requete->bindParam(':cert', $cert, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
     }
 
     /**
@@ -5617,9 +5660,7 @@ class Bulletin
                 $poids[$coursGrp][$idComp][$type][$bulletin] = $this->sansVirg($value);
             }
         }
-        // Application::afficher($post);
-        // Application::afficher($listeLocks);
-        // Application::afficher($poids);
+
         $nbResultats = 0;
         $nbRefus = 0;
         foreach ($post as $variable => $value) {
