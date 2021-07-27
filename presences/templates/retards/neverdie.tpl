@@ -10,7 +10,7 @@
 
     function refresh() {
         var newTime = new Date().getTime() - time;
-        if (new Date().getTime() - time >= 5000) {
+        if (new Date().getTime() - time >= 60000) {
             var param = Math.random()*1e9;
         	$.post('inc/refreshNeverDie.inc.php', {
                 param: param
@@ -18,9 +18,9 @@
                 $('#neverdie').html(resultat);
             })
         }
-        else setTimeout(refresh, 5000);
+        else setTimeout(refresh, 60000);
     	}
 
-    setTimeout(refresh, 5000);
+    setTimeout(refresh, 60000);
 
 </script>
