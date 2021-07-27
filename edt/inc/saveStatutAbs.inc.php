@@ -32,12 +32,15 @@ $listeStatuts = isset($form['listeStatuts']) ? $form['listeStatuts'] : Null;
 $eduprof = isset($form['eduprof']) ? strtoupper($form['eduprof']) : Null;
 $startTime = isset($form['startTime']) ? $form['startTime'] : Null;
 
+// statut d'absence: 'ABS' ou 'indisponible'
+$statutAbs = isset($form['statutAbs']) ? $form['statutAbs'] : Null;
+
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
 $Edt = new Edt();
 
 // enregistrement des détails (remplaçant, remarque)
-$nb1 = $Edt->saveDataPeriodeAbs($abreviation, $dateSQL, $heure, $remarque, $eduprof);
+$nb1 = $Edt->saveDataPeriodeAbs($abreviation, $dateSQL, $heure, $remarque, $eduprof, $statutAbs);
 
 // enregistrement des statuts
 $nb2 = $Edt->setStatuts4periode4prof($abreviation, $dateSQL, $heure, $startTime, $listeStatuts);

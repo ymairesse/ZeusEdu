@@ -32,7 +32,7 @@
                         <div id="calendrier">
                             {if isset($acronyme)}
                             <div id="EDTcalendar"
-                                data-editable="{$editable|default:"false"}"
+                                data-editable="{$editable|default:'false'}"
                                 data-acronyme="{$acronyme|default:''}"
                                 data-viewstate="agendaWeek">
                             </div>
@@ -416,8 +416,9 @@
 
         $('#modal').on('keyup', '#acronyme', function(){
             var abreviation = $(this).val().toUpperCase();
-            if (abreviation != '')
+            if (abreviation != '' && ($('#modalListeProfs option[value="'+abreviation+'"]').length == 1))
                 $('#modalListeProfs option[value="' + abreviation + '"]').prop('selected', true);
+                else $('#modalListeProfs').val('');
         })
         $('#modal').on('blur', '#acronyme', function(){
             var abreviation = $(this).val().toUpperCase();
@@ -427,9 +428,12 @@
                     $('#modalListeProfs option[value=""]').prop('selected', true);
                 }
         })
+        $('#modal').on('change', '#modalListeProfs', function(){
+            var abreviation = $(this).val();
+            $('#acronyme').val(abreviation);
+        })
 
 // ********************************
-
 
         $('#modal').on('keyup', '.educs', function(){
             var abreviation = $(this).val().toUpperCase();
@@ -453,8 +457,6 @@
 
 
 // ********************************
-
-
 
         $('#modal').on('change', '#listeProfs', function(){
             var abreviation = $(this).val();

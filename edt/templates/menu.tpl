@@ -39,6 +39,18 @@
 			{/if}
 
 		</ul>  <!-- nav navbar-nav -->
+		<ul class="nav navbar-nav pull-right">
+			{if isset($alias)}
+			<li><a href="../aliasOut.php"><img src="../images/alias.png" alt="Alias">{$alias}</a></li>
+			{/if}
+			<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{$identite.prenom} {$identite.nom}
+			{if $titulaire}[{','|implode:$titulaire}]{/if}<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a href="../profil/index.php"><span class="glyphicon glyphicon-user"></span> Modifiez votre profil</a></li>
+					<li><a href="../logout.php"><span class="glyphicon glyphicon-off"></span> Déconnexion</a></li>
+				</ul>
+			</li>
+		</ul>
 
 	</div>  <!-- collapse -->
 

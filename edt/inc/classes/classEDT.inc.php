@@ -570,7 +570,7 @@ class Edt {
 	 */
 	public function getAbsence4periode($acronyme, $date, $heure){
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = 'SELECT abs.acronyme, startTime, heure, date, local, matiere, profs, classes, parties, ';
+		$sql = 'SELECT abs.acronyme, startTime, heure, statutAbs, date, local, matiere, profs, classes, parties, ';
 		$sql .= 'eduProf, remarque, sexe, nom, prenom ';
 		$sql .= 'FROM '.PFX.'EDTprofsABS AS abs ';
 		$sql .= 'LEFT JOIN '.PFX.'profs AS profs ON profs.acronyme = abs.acronyme ';
@@ -729,10 +729,10 @@ class Edt {
 	 *
 	 * @return int
 	 */
-	public function saveDataPeriodeAbs($acronyme, $dateSQL, $heure, $remarque, $eduprof){
+	public function saveDataPeriodeAbs($acronyme, $dateSQL, $heure, $remarque, $eduprof, $statutAbs){
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
 		$sql = 'UPDATE '.PFX.'EDTprofsABS ';
-		$sql .= 'SET remarque = :remarque, eduprof = :eduprof ';
+		$sql .= 'SET remarque = :remarque, eduprof = :eduprof, statutAbs = :statutAbs ';
 		$sql .= 'WHERE acronyme = :acronyme AND date = :dateSQL AND heure = :heure ';
 		$requete = $connexion->prepare($sql);
 
@@ -741,6 +741,7 @@ class Edt {
 		$requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
 		$requete->bindParam(':remarque', $remarque, PDO::PARAM_STR, 80);
 		$requete->bindParam(':eduprof', $eduprof, PDO::PARAM_STR, 7);
+		$requete->bindParam(':statutAbs', $statutAbs, PDO::PARAM_STR, 12);
 
 		$resultat = $requete->execute();
 		$nb = $requete->rowCount();
@@ -1205,9 +1206,9 @@ class Edt {
 		$sql .= 'FROM '.PFX.'EDTinfos ';
 		$sql .= 'WHERE idEDTinfo = :id ';
 		$requete = $connexion->prepare($sql);
-
+/*echo $sql;*/
 		$requete->bindParam(':id', $id, PDO::PARAM_INT);
-
+/*die($id);*/
 		$info = Null;
 		$resultat = $requete->execute();
 		if ($resultat){

@@ -47,6 +47,11 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-xs-12">
+                    Statut de l'absence
+                    <label class="radio-inline"><input type="radio" name="statutAbs" value="ABS" {if $statutAbs == 'ABS'}checked{/if} class="statutAbs">Absence</label>
+                    <label class="radio-inline"><input type="radio" name="statutAbs" value="indisponible" {if $statutAbs == 'indisponible'}checked{/if} class="statutAbs">Indisponibilité</label>
+                </div>
 
                 <input type="hidden" name="acronyme" value="{$acronyme}">
                 <input type="hidden" name="date" value="{$date}">

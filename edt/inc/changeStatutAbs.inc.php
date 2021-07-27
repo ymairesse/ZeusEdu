@@ -30,8 +30,10 @@ $Edt = new Edt();
 
 $dateSQL = Application::dateMySQL($date);
 $absence = $Edt->getAbsence4periode($abreviation, $dateSQL, $heure);
+// statut d'absence pour le prof: 'ABS' ou 'indisponible'
+$statutAbs = $absence['statutAbs'];
 
-// liste des statuts déjà activés pour cette période
+// liste des statuts de prise en charge déjà activés pour cette période
 $Statuts = $Edt->getStatuts4periode($abreviation, $dateSQL, $heure);
 
 // réorganisation "normal" et "move"
@@ -57,6 +59,7 @@ $smarty->assign('listeStatuts', $listeStatuts);
 $smarty->assign('heure', $heure);
 $smarty->assign('date', $date);
 $smarty->assign('acronyme', $abreviation);
+$smarty->assign('statutAbs', $statutAbs);
 $smarty->assign('listeProfs', $listeProfs);
 $smarty->assign('startTime', $startTime);
 

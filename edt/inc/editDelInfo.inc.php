@@ -30,6 +30,7 @@ require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
 $Edt = new Edt();
 
 $info = $Edt->getInfo($id);
+// Application::afficher($info, true);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';

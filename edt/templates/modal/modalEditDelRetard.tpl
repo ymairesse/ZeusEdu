@@ -16,7 +16,7 @@
             </div>
             <div class="col-xs-9 {if $type=='info'}hidden{/if}">
                 <div class="form-group">
-                    <select class="form-control" name="listeProfs" id="listeProfs" {if $type=='info'}disabled{/if} tabindex="2">
+                    <select class="form-control" name="listeProfs" id="modalListeProfs" {if $type=='info'}disabled{/if} tabindex="2">
                         <option value="">Sélection du prof</option>
                         {if isset($listeProfs)}
                         {foreach from=$listeProfs key=unAcronyme item=data}
@@ -48,7 +48,7 @@
         {elseif $info == Null}
             <button type="button" class="btn btn-primary" id="btn-modalSaveRetard" data-id="{$info.idEDTinfo}" tabindex="4">Enregistrer</button>
         {else}
-            Vous n'êtes pas propriétaire de cette information
+            {$info.proprio} est propriétaire de cette information
         {/if}
       </div>
     </div>
