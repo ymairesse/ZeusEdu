@@ -340,17 +340,20 @@
 			locked = !(locked);
 		})
 
+		$('#envoiMail').change(function(){
+			var ceci = $(this);
+			if (ceci.is(':checked'))
+				$('#adresseMail').attr('disabled', false);
+				else $('#adresseMail').attr('disabled', true);
+		})
 
 		$("#decision").change(function() {
 			if ($(this).val() != 'Restriction') {
-				$("#restriction").val('');
-			} else $("#restriction").focus();
+				$("#restriction").val('').attr('disabled', true);
+			} else $("#restriction").focus().attr('disabled', false);
 		});
 
-		$("#restriction").focus(function() {
-			if ($("#decision").val() != 'Restriction')
-				$("#decision").val('Restriction');
-		})
+
 
 		$("input").keyup(function(e) {
 			if (!(locked)) {

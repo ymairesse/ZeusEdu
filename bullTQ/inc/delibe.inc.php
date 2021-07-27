@@ -20,7 +20,6 @@ if (isset($_POST['matricule'])) {
 	}
 $smarty->assign('matricule', $matricule);
 
-$bulletin = isset($_POST['bulletin']) ? $_POST['bulletin'] : null;
 $etape = isset($_POST['etape']) ? $_POST['etape'] : null;
 
 $smarty->assign('classe', $classe);
@@ -31,6 +30,7 @@ $smarty->assign('action', $action);
 $smarty->assign('mode', $mode);
 
 $listePeriodes = $BullTQ->listePeriodes(true);
+
 $listeClasses = $Ecole->listeGroupes(array('TQ'));
 $smarty->assign('listeClasses', $listeClasses);
 $smarty->assign('listePeriodes', $listePeriodes);
@@ -53,6 +53,7 @@ switch ($mode) {
 	case 'individuel':
 		include 'delibe/individuel.inc.php';
 		break;
+
 	case 'parClasse':
 		include 'delibe/parClasse.inc.php';
 		break;

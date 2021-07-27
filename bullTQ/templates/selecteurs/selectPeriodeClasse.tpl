@@ -3,7 +3,7 @@
 	<form name="selecteur" id="formSelecteur" method="POST" action="index.php" class="form-inline">
 
 		<div class="form-group">
-			<label for="bulletin">Bulletin n°</label>
+			<label for="bulletin">Bulletin</label>
 			<select name="bulletin" id="bulletin" class="form-control">
 				{foreach from=$listePeriodes key=no item=nomPeriode}
 					<option value="{$no}" {if $no eq $bulletin}selected{/if}>

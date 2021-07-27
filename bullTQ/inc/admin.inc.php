@@ -44,8 +44,8 @@ switch ($mode) {
 		$smarty->assign('cours',$cours);
 		$listeCompetences = $BullTQ->listeCompetencesListeCours($cours);
 		$smarty->assign('listeCompetences', $listeCompetences);
-		$smarty->assign('corpsPage', 'adminCompetences');
-		$smarty->assign('selecteur', 'selecteurs/selectNiveauCours');
+		$smarty->assign('corpsPage', 'admin/adminCompetences');
+		// $smarty->assign('selecteur', 'selecteurs/selectNiveauCours');
 		break;
 
 	case 'typologie':
@@ -109,6 +109,11 @@ switch ($mode) {
 		require_once 'inc/stages.inc.php';
 		break;
 
+	case 'config':
+        $listeConfig = $Application->lireParametres('bullTQ');
+        $smarty->assign('listeConfig', $listeConfig);
+        $smarty->assign('corpsPage', 'admin/paramBulletin');
+        break;
 
 	default:
 		break;

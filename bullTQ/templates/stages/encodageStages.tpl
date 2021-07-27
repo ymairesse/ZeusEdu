@@ -1,4 +1,3 @@
-{debug}
 <div class="container">
 
     <div class="row">

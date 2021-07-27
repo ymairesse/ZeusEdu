@@ -325,14 +325,14 @@ class bullTQ
         $sql .= 'matricule=:matricule, coursGrp=:coursGrp, bulletin=:bulletin, TJ=:Tj, Ex=:Ex, periode=:periode, global=:global ';
         $sql .= 'ON DUPLICATE KEY UPDATE TJ=:Tj, Ex=:Ex, periode=:periode, global=:global ';
         $requete = $connexion->prepare($sql);
-// echo $sql;
+
         foreach ($cotesPeriode as $matricule => $data) {
             $Tj = $data['TJ'];
             $Ex = $data['EX'];
             $periode = $data['PERIODE'];
             $global = $data['GLOBAL'];
             $data = array(':matricule' => $matricule, ':coursGrp' => $coursGrp, ':bulletin' => $bulletin, ':Tj' => $Tj, ':Ex' => $Ex, ':periode' => $periode, ':global' => $global);
-            // Application::afficher($data, true);
+
             $nbResultats += $requete->execute($data);
         }
 
@@ -633,6 +633,7 @@ class bullTQ
         $sql .= 'FROM '.PFX.'bullTQCompetences ';
         $sql .= "WHERE cours IN ($listeCoursString) ";
         $sql .= 'ORDER BY ordre ';
+
         $resultat = $connexion->query($sql);
         $listeCompetences = array();
         if ($resultat) {
@@ -646,6 +647,152 @@ class bullTQ
         Application::DeconnexionPDO($connexion);
 
         return $listeCompetences;
+    }
+
+    /**
+     * enregistre l'ensemble des informations figurant au formulaire de gestion des compétences
+     *
+     * @param array $post
+     *
+     * @return int
+     */
+    public function saveCompetences($post){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'bullTQCompetences ';
+        $sql .= 'SET cours = :cours, libelle = :libelle, ordre = :ordre ';
+        $sql .= 'WHERE id = :idComp ';
+        $requete = $connexion->prepare($sql);
+
+        $cours = $post['cours'];
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+
+        // on n'a plus besoin du cours pour l'analyse des autres champs
+        unset($post['cours']);
+
+        $liste = array();
+        foreach ($post as $field => $value) {
+            $champ = explode('_', $field);
+            $idComp = $champ[1];
+            if ($champ[0] == 'libelle')
+                $liste[$idComp]['libelle'] = $value;
+
+            if ($champ[0] == 'ordre')
+                $liste[$idComp]['ordre'] = $value;
+            }
+
+        $nb = 0;
+        foreach ($liste as $idComp => $data) {
+            $libelle = $data['libelle'];
+            $ordre = $data['ordre'];
+            $requete->bindParam(':idComp', $idComp, PDO::PARAM_INT);
+            $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 100);
+            $requete->bindParam(':ordre', $ordre, PDO::PARAM_INT);
+
+            $resultat = $requete->execute();
+            $nb += $requete->rowCount();
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * Enregistrement d'une nouvelle compétence dans la table des compétences
+     *
+     * @param string $cours
+     *
+     * @return int
+     */
+    public function addCompetence($cours, $libelle){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'INSERT IGNORE INTO '.PFX.'bullTQCompetences ';
+        $sql .= 'SET cours = :cours, ordre = 0, libelle = :libelle ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+        $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 100);
+
+        $resultat = $requete->execute();
+
+        if($resultat)
+            $idComp = $connexion->lastInsertId();
+            else $idComp = -1;
+
+        Application::DeconnexionPDO($connexion);
+
+        return $idComp;
+    }
+
+    /**
+     * Suppression de la compétences $idComp pour le cours $cours
+     *
+     * @param int $idComp
+     * @param string $cours
+     *
+     * @return int
+     */
+    public function delCompetence($idComp, $cours){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'DELETE FROM '.PFX.'bullTQCompetences ';
+        $sql .= 'WHERE id = :idComp AND cours = :cours ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
+        $requete->bindParam(':idComp', $idComp, PDO::PARAM_INT);
+
+        $resultat = $requete->execute();
+
+        $nb = $requete->rowCount();
+
+        Application::deconnexionPDO($connexion);
+
+        return $nb;
+    }
+
+    /**
+     * recherche la liste des compétences utilisées dans la liste des compétences passée en argument
+     *
+     * @param array $listeCompetences
+     *
+     * @return array
+     */
+    public function getUsedCompetences($listeCompetences) {
+        $listeString = implode(",", array_keys($listeCompetences));
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        // compétences utilisées dans le bulletin
+        $sql = 'SELECT DISTINCT idComp ';
+        $sql .= 'FROM '.PFX.'bullTQCotesCompetences ';
+        $sql .= 'WHERE idComp IN ('.$listeString.') ';
+        $requete = $connexion->prepare($sql);
+
+        $liste = array();
+        $resultat = $requete->execute();
+        if ($resultat) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
+                $idComp = $ligne['idComp'];
+                $liste[$idComp] = $idComp;
+            }
+        }
+
+        // $sql = 'SELECT DISTINCT idComp ';
+        // $sql .= 'FROM '.PFX.'bullCarnetCotes ';
+        // $sql .= 'WHERE idComp IN ('.$listeString.') ';
+        // $requete = $connexion->prepare($sql);
+        //
+        // $resultat = $requete->execute();
+        // if ($resultat) {
+        //     $requete->setFetchMode(PDO::FETCH_ASSOC);
+        //     while ($ligne = $requete->fetch()) {
+        //         $idComp = $ligne['idComp'];
+        //         $liste[$idComp] = $idComp;
+        //     }
+        // }
+
+        APPLICATION::deconnexionPDO($connexion);
+
+        return $liste;
     }
 
     /**
@@ -751,13 +898,15 @@ class bullTQ
     /**
      * renvoie la liste des périodes (de délibés) et leur nom.
      *
-     * @param $delibe : boolean souhaite-t-on uniquement les périodes de délibé (true) ou toutes
+     * @param bool $delibe : boolean souhaite-t-on uniquement les périodes de délibé (true) ou toutes
      *
      * @return array
      */
-    public function listePeriodes($delibes = false)
-    {
-        $nomsPeriodes = array_combine(range(1, NBPERIODESTQ), explode(',', NOMSPERIODES));
+    public function listePeriodes($delibes = false) {
+        $arrayNomsPeriodes = explode(',', NOMSPERIODES);
+        $nbPeriodes = count($arrayNomsPeriodes);
+        $nomsPeriodes = array_combine(range(1, $nbPeriodes), $arrayNomsPeriodes);
+
         if ($delibes) {
             $periodesDelibes = explode(',', str_replace(' ', '', DELIBESTQ));
             foreach ($nomsPeriodes as $no => $unePeriode) {

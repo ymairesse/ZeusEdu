@@ -55,8 +55,10 @@
 					<li><a href="index.php?action=admin&amp;mode=imagesCours">Initialiser images des noms des cours</a></li>
 					<li><a href="index.php?action=admin&amp;mode=typologie">Typologie des cours</a></li>
 					<li><a href="index.php?action=admin&amp;mode=competences">Gestion des compétences</a></li>
-					<li><a href="index.php?action=admin&amp;mode=initialiser">Initialiser les bulletins</a></li>
-					<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats</a></li>
+					<li><a href="index.php?action=admin&amp;mode=titulaires">Titulariats TQ</a></li>
+					<li class="divider"></li>
+					<li><a href="index.php?action=admin&amp;mode=initialiser">Initialiser les bulletins TQ</a></li>
+					<li><a href="index.php?action=admin&amp;mode=config">Paramètres du bulletin TQ</a></li>
 				</ul>
 			</li>
 			{/if}
