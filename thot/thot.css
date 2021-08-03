@@ -846,6 +846,10 @@ div.treeview ul:first-child:before, .treeviewPost ul:first-children:before {
     display: none;
 }
 
+#contextMenu a[disabled] {
+    display: none;
+}
+
 .longTerme {
     background: #ffdc72;
 }

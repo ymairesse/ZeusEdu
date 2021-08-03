@@ -11,7 +11,7 @@
 
                         <div class="form-group" id="typeRessources">
 
-                            {include file="ressources/selectTypeRessource.tpl"}
+                            {* include file="ressources/selectTypeRessource.tpl" *}
 
                         </div>
                         <div id="ajaxLoader" class="hidden">
@@ -56,7 +56,7 @@
                                 <div class="panel-body" style="height: auto;">
                                     <div id="resDispo">
 
-                                    {include file="ressources/selectRessource.tpl"}
+                                    {* include file="ressources/selectRessource.tpl" *}
 
                                     </div>
                                 </div>
@@ -96,7 +96,7 @@
 
                     <div class="col-xs-12 col-md-8" id="detailsRessources">
 
-                        {include file="ressources/detailsRessources.html"}
+                        {* include file="ressources/detailsRessources.html" *}
 
                     </div>
 
@@ -127,22 +127,20 @@
 </div>
 
 
-
-
 <script type="text/javascript">
 
     function refreshListeRessources(idType, ){
-        $.post('inc/ressources/getRessourceByType.inc.php', {
-            idType: idType
-        }, function(resultat){
-            $('#resDispo').html(resultat);
-        })
+        // $.post('inc/ressources/getRessourceByType.inc.php', {
+        //     idType: idType
+        // }, function(resultat){
+        //     $('#resDispo').html(resultat);
+        // })
     }
 
     $(document).ready(function(){
 
         var idType = Cookies.get('idType');
-        if (idType != undefined) {
+        if (idType != '') {
             $('#typeRessource').val(idType);
             $('#btn-delRessourceType').attr('disabled', false);
             refreshListeRessources(idType);
@@ -159,22 +157,19 @@
         });
 
         // rafraîchissement des boutons d'action sur les ressources (edit, clone, del)
-        var idRessources = Cookies.get('idRessources');
-        if (idRessources != undefined) {
-            idRessources = $.parseJSON(idRessources);
-            if (idRessources.length == 1) {
-                var idRessource = idRessources[0];
-                $('#btn-cloneRessources').attr('disabled', false).data('idressource', idRessource);
-                $('#btn-editRessources').attr('disabled', false).data('idressource', idRessource);
-                $('#btn-delRessources').attr('disabled', false).data('idressource', idRessource);
-                }
-                else {
-                    $('#btn-cloneRessources').attr('disabled', true).data('idressource', '');
-                    $('#btn-editRessources').attr('disabled', true).data('idressource', '');
-                    $('#btn-delRessources').attr('disabled', true).data('idressource', '');
-                }
-        }
-
+        var idRessources = $.parseJSON(Cookies.get('idRessources'));
+        var nb = idRessources.length;
+        if (nb == 1) {
+            var idRessource = idRessources[0];
+            $('#btn-cloneRessources').attr('disabled', false).data('idressource', idRessource);
+            $('#btn-editRessources').attr('disabled', false).data('idressource', idRessource);
+            $('#btn-delRessources').attr('disabled', false).data('idressource', idRessource);
+            }
+            else {
+                $('#btn-cloneRessources').attr('disabled', true).data('idressource', '');
+                $('#btn-editRessources').attr('disabled', true).data('idressource', '');
+                $('#btn-delRessources').attr('disabled', true).data('idressource', '');
+            }
 
 
         // changement du type des ressources souhaitées
@@ -556,11 +551,6 @@
                         $('#reserverPeriode').attr('disabled', false);
                         $('#supprimerPeriode').attr('disabled', true);
                         $('#attribuerRessource').attr('disabled', true);
-                    }
-                    else if ($(this).hasClass('btn-attribue')) {
-                        $('#reserverPeriode').attr('disabled', true);
-                        $('#supprimerPeriode').attr('disabled', true);
-                        $('#attribuerRessource').attr('disabled', false);
                     }
                     else {
                         $('#reserverPeriode').attr('disabled', false);

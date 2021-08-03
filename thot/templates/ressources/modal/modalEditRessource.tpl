@@ -1,3 +1,4 @@
+{debug}
 <div id="modalEditRessource" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditRessourceLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -43,8 +44,13 @@
                     <div class="form-group">
                         <label for="reference">Référence</label>
                         <input type="text"
-                        name="reference" id="reference" value="{$post.reference|default:''}"
-                        class="form-control" maxlength="32">
+                        name="reference"
+                        id="reference"
+                        {if $addEditClone == 'edit'}readonly{/if}
+                        {if $addEditClone == 'clone'}placeholder='clone de {$post.reference|escape:"html"}'{/if}
+                        value="{if $addEditClone == 'edit'}{$post.reference}{else}{/if}"
+                        class="form-control"
+                        maxlength="32">
                        <div class="help-block">
                         {if isset($post.idRessource)}
                            La référence ne peut être modifiée

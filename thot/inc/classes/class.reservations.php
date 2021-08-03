@@ -326,15 +326,17 @@ class Reservation
     public function getPlanOccupation($listePeriodesWanted, $listeRessources){
         $listePeriodes = array();
         foreach ($listePeriodesWanted as $oneDay => $arrayPeriodes) {
-            foreach ($arrayPeriodes as $unePeriode){
+            foreach ($arrayPeriodes as $unePeriode =>  $wtf){
+                // Application::afficher($unePeriode);
                 $listePeriodes[] = sprintf('%s %s', $oneDay, $unePeriode);
             }
         }
+
         $listePeriodes = '"'.implode('","', $listePeriodes).'"';
 
         // recherche des réservations déjà faites pour les périodes indiquées
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT idRessource, idReservation, user, ';
+        $sql = 'SELECT idRessource, idReservation, user, attribue, ';
         $sql .= 'DATE_FORMAT(dateDebut, "%H:%i") AS heure, DATE_FORMAT(dateDebut, "%Y-%m-%d") AS date,';
         $sql .= 'DATE_FORMAT(dateDebut, "%d-%m-%Y") AS dateFR, sexe, nom, prenom ';
         $sql .= 'FROM '.PFX.'reservationsUser AS res ';
@@ -359,7 +361,7 @@ class Reservation
         $planOccupation = array();
         foreach ($listeRessources as $idRessource) {
             foreach ($listePeriodesWanted AS $date => $lesHeures) {
-                foreach ($lesHeures as $uneHeure) {
+                foreach ($lesHeures as $uneHeure => $wtf) {
                     if (isset($listeOccupation[$idRessource][$date][$uneHeure]))
                         $planOccupation[$idRessource][$date][$uneHeure] = $listeOccupation[$idRessource][$date][$uneHeure];
                         else $planOccupation[$idRessource][$date][$uneHeure] = Null;
@@ -388,8 +390,8 @@ class Reservation
     }
 
     /**
-     * rechercher la liste des périodes de demande de réservation entre la date/heure de début
-     * et la date/heure de fin (FORMAT: "2021-05-03 08:15")
+     * rechercher la liste des périodes de demande de réservation entre la date de début
+     * et la date de fin (FORMAT: "2021-05-03")
      *
      * @param string $startSQL
      * @param string $endSQL
@@ -397,12 +399,8 @@ class Reservation
      * @return array
      */
     public function getListePeriodes2dates($startSQL, $endSQL){
-        // $start et $endSQL sont des tableaux contenant la date et l'heure de la réservation
-        $startSQL = explode(' ', $startSQL);
-        $endSQL = explode(' ', $endSQL);
-        // isoler la date seule sans l'heure
-        $startSQLdate = new DateTime($startSQL[0]);
-        $endSQLdate = new DateTime($endSQL[0]);
+        $startSQLdate = new DateTime($startSQL);
+        $endSQLdate = new DateTime($endSQL);
         // le dernier jour n'est pas compris => on ajoute un jour
         $endSQLdate->modify('+1 day');
         // construire la liste des jours entre les deux dates
@@ -411,7 +409,6 @@ class Reservation
 
         // conversion en simple array de jours sans le week-ends
         $listeJoursArray = array();
-
         foreach ($listeJours as $uneDate){
             // nom du jour en trois lettres EN
             $curr = $uneDate->format('D');
@@ -419,57 +416,15 @@ class Reservation
                 $listeJoursArray[] =  $uneDate->format('Y-m-d');
         }
 
-        // heure au format hh:mm de début et de fin de réservation
-        $startHeure = $startSQL[1];
-        $endHeure = $endSQL[1];
-
         // la liste des périodes de cours dans la journée
         $listePeriodes = $this->getPeriodesCours();
 
-        // recherche de l'indice de l'heure de début dans la liste des périodes
-        // $listeHeuresDebut contient uniquement les heures de début de période
-        $listeHeuresDebut = array_column($listePeriodes, 'debut');
-
-        $premierePeriode = array_search($startHeure, $listeHeuresDebut);
-        $dernierePeriode = array_search($endHeure, $listeHeuresDebut);
-
         // construction de la liste des périodes de réservation
         $listePeriodesReservation = array();
-
-        $nbJours = count($listeJoursArray);
-
         foreach ($listeJoursArray as $n => $uneDate){
-            switch($n) {
-                // premier jour de la réservation
-                case 0:
-                    // s'il n'y a qu'un seul jour
-                    if ($nbJours == 1) {
-                        for($periode = $premierePeriode-1; $periode < $dernierePeriode; ++$periode){
-                            $heure = $listePeriodes[$periode+1]['debut'];
-                            $listePeriodesReservation[$uneDate][$heure] = $heure;
-                        }
-                    }
-                    else
-                        for($periode = $premierePeriode-1; $periode < count($listePeriodes)-1; ++$periode) {
-                            $heure = $listePeriodes[$periode+1]['debut'];
-                            $listePeriodesReservation[$uneDate][$heure] = $heure;
-                        }
-                    break;
-                // dernier jour de la réservation
-                case count($listeJoursArray)-1:
-                    for($periode = 0; $periode <= $dernierePeriode; ++$periode) {
-                        $heure = $listePeriodes[$periode]['debut'];
-                        $listePeriodesReservation[$uneDate][$heure] = $heure;
-                    }
-                    break;
-                // un autre jour complet de la réservation
-                default:
-                    // toutes les périodes de la journée
-                    foreach ($listePeriodes as $periode => $data){
-                        $heure = $listePeriodes[$periode]['debut'];
-                        $listePeriodesReservation[$uneDate][$heure] = $heure;
-                    }
-                    break;
+            // toutes les périodes de la journée
+            foreach ($listePeriodes as $wtf => $periode){
+                $listePeriodesReservation[$uneDate][$periode] = Null;
             }
         }
 
@@ -485,18 +440,16 @@ class Reservation
      */
     public function getPeriodesCours() {
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT debut, fin ';
-        $sql = "SELECT DATE_FORMAT(debut,'%H:%i') as debut, DATE_FORMAT(fin,'%H:%i') as fin ";
+        $sql = 'SELECT DATE_FORMAT(debut,"%H:%i") as debut ';
         $sql .= 'FROM '.PFX.'presencesHeures ';
-        $sql .= 'ORDER BY debut, fin';
+        $sql .= 'ORDER BY debut ';
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $resultat = $requete->execute();
         $listePeriodes = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
-                $debut = $ligne['debut'];
-                $fin = $ligne['fin'];
-                $listePeriodes[] = array('debut' => $debut, 'fin' => $fin);
+            while ($ligne = $requete->fetch()) {
+                $listePeriodes[] = $ligne['debut'];
             }
         }
         Application::deconnexionPDO($connexion);
@@ -536,6 +489,53 @@ class Reservation
         if ($nb > 0)
             return $acronyme;
             else return Null;
+    }
+
+    /**
+     * attribue la ressource $diRessource à la date $date et à l'heure $heure
+     * à l'utilisateur $acronyme qui en devient responsable
+     *
+     * @param int $idRessource
+     * @param string $date
+     * @param string $heure
+     * @param string $acronyme
+     *
+     * @return string : l'acronyme de l'utilisateur si réussi
+     */
+    public function attribueRessource($idRessource, $date, $heure, $acronyme){
+        $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+        $sql = 'UPDATE '.PFX.'reservationsUser ';
+        $sql .= 'SET attribue = NOT(attribue) ';
+        $sql .= 'WHERE idRessource = :idRessource AND dateDebut = :dateDebut AND user = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $dateDebut = sprintf('%s %s', $date, $heure);
+
+        $requete->bindParam(':idRessource', $idRessource, PDO::PARAM_INT);
+        $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 20);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+
+        $sql = 'SELECT attribue ';
+        $sql .= 'FROM '.PFX.'reservationsUser ';
+        $sql .= 'WHERE idRessource = :idRessource AND dateDebut = :dateDebut AND user = :acronyme ';
+        $requete = $connexion->prepare($sql);
+
+        $requete->bindParam(':idRessource', $idRessource, PDO::PARAM_INT);
+        $requete->bindParam(':dateDebut', $dateDebut, PDO::PARAM_STR, 20);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+
+        $resultat = $requete->execute();
+        $attribue = false;
+        if ($resultat) {
+            $ligne = $requete->fetch();
+            $attribue = $ligne['attribue'];
+        }
+
+        Application::deconnexionPDO($connexion);
+
+        return $attribue;
     }
 
     /**
@@ -704,7 +704,7 @@ class Reservation
             }
         }
 
-        Application::afficher($listeModifs, true);
+        // Application::afficher($listeModifs, true);
     }
 
     /**
@@ -771,7 +771,8 @@ class Reservation
         $resultat = $requete->execute();
         if ($resultat){
             $ligne = $requete->fetch();
-            $nom = sprintf('%s %s %s', $ligne['nom'], $ligne['prenom'], $ligne['groupe']);
+            if ($ligne != Null)
+                $nom = sprintf('%s %s %s', $ligne['nom'], $ligne['prenom'], $ligne['groupe']);
         }
 
         if ($nom == Null) {

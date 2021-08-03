@@ -29,7 +29,6 @@
                         class="ressource"
                         data-idressource="{$unIdRessource}"
                         value="{$unIdRessource}"
-                        {if isset($idRessource) && ($idRessource == $unIdRessource)}checked{/if}
                         {if $userStatus != 'admin'}
                             {if (($data.longTermeBy != '') || ($data.indisponible == 1))} disabled{/if}
                         {/if}>
@@ -62,9 +61,15 @@
 
     $(document).ready(function(){
 
-        $('#selAllRessources').click(function(){
-            $('.ressource').trigger('click');
-        })
+        // restauration de la sélection dans la liste des ressources
+        var idRessources = Cookies.get('idRessources');
+        if (idRessources != undefined) {
+            var idRessources = $.parseJSON(Cookies.get('idRessources'));
+
+            $.each(idRessources, function(index, value){
+                $('input.ressource[data-idressource="' + value +'"]').prop('checked', true)
+            })
+        }
 
     })
 

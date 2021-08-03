@@ -21,7 +21,7 @@ $module = $Application->getModule(3);
 $userStatus = $User->userStatus($module);
 
 $idType = isset($_POST['idType']) ? $_POST['idType'] : Null;
-$idRessource = isset($_POST['idRessource']) ? $_POST['idRessource'] : Null;
+$listeChecked = isset($_POST['listeChecked']) ? $_POST['listeChecked'] : Null;
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.reservations.php';
@@ -35,7 +35,7 @@ $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
 $smarty->assign('listeRessources', $listeRessources);
-$smarty->assign('idRessource', $idRessource);
+$smarty->assign('listeChecked', $listeChecked);
 $smarty->assign('userStatus', $userStatus);
 
 $smarty->display('ressources/selectRessource.tpl');

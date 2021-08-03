@@ -27,9 +27,7 @@ parse_str($formulaire, $form);
 // Le formulaire arrive avec la liste des ressources souhaitées et les dates projetées d'emprunt
 // array (
 //   'dateStart' => '01/05/2021',
-//   'startTime' => '08:15',
 //   'dateEnd' => '01/05/2021',
-//   'endTime' => '09:05',
 //   'selectRessource' =>
 //   array (
 //     0 => '1',
@@ -49,10 +47,13 @@ $dateEndSQL = Application::dateMysql($dateEnd);
 
 $listeRessources = $form['ressources'];
 
-$dateDebut = sprintf('%s %s', Application::dateMysql($form['dateStart']), $form['startTime']);
-$dateFin = sprintf('%s %s', Application::dateMysql($form['dateEnd']), $form['endTime']);
+$dateDebut = Application::dateMysql($form['dateStart']);
+$dateFin = Application::dateMysql($form['dateEnd']);
 
+// liste de toutes les périodes de cours pour l'intervalle de dates sélectionnées
 $listePeriodesWanted = $Reservation->getListePeriodes2dates($dateDebut, $dateFin);
+
+// plan d'occupation pour les périodes sélectionnées
 $planOccupation = $Reservation->getPlanOccupation($listePeriodesWanted, $listeRessources);
 
 $ressources = array();
@@ -60,9 +61,7 @@ foreach ($listeRessources as $idRessource) {
     $ressources[$idRessource] = $Reservation->getRessourceById($idRessource);
 }
 
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
-$listeHeuresCours = $Ecole->lirePeriodesCours();
+$listeHeuresCours = $Reservation->getPeriodesCours();
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
