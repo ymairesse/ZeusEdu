@@ -1511,18 +1511,19 @@ ALTER TABLE `didac_reservationsTypes`
   MODIFY `idType` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant du type';
 
 CREATE TABLE `didac_reservationsUser` (
-    `idReservation` int NOT NULL COMMENT 'Identifiant de la réservation',
-    `idRessource` int NOT NULL COMMENT 'Identifiant de la ressource réservée',
-    `user` varchar(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Utilisateur: matricule ou acronyme',
-    `dateDebut` datetime NOT NULL COMMENT 'Date de début de prêt/occupation'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `idReservation` int(11) NOT NULL COMMENT 'Identifiant de la réservation',
+    `idRessource` int(11) NOT NULL COMMENT 'Identifiant de la ressource réservée',
+    `user` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Utilisateur: matricule ou acronyme',
+    `dateDebut` datetime NOT NULL COMMENT 'Date de début de prêt/occupation',
+    `attribue` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'La ressource a été confiée à l''utilisateur'
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `didac_reservationsUser`
     ADD PRIMARY KEY (`idReservation`),
     ADD KEY `idRessource` (`idRessource`,`user`,`dateDebut`);
 
 ALTER TABLE `didac_reservationsUser`
-    MODIFY `idReservation` int NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la réservation';
+    MODIFY `idReservation` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant de la réservation';
 
 CREATE TABLE IF NOT EXISTS `didac_EBSamenagements` (
   `idAmenagement` smallint(6) NOT NULL AUTO_INCREMENT,
