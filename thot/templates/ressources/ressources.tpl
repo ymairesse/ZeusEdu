@@ -121,7 +121,10 @@
             <a tabindex="-1" href="javascript:void(0)" id="supprimerPeriode"><i class="fa fa-times"></i> Supprimer la réservation</a>
         </li>
         <li>
-            <a tabindex="-1" href="javascript:void(0)" id="attribuerRessource"<i class="fa fa-handshake-o"> Attribution/remise</i></a>
+            <a tabindex="-1" href="javascript:void(0)" id="attribuerRessource"<i class="fa fa-hand-pointer-o"> Attribution/remise</i></a>
+        </li>
+        <li>
+            <a tabindex="-1" href="javascript:void(0)" id="attribuerRessourcePeriode"<i class="fa fa-hand-grab-o"> Attribution tout/remise tout</i></a>
         </li>
     </ul>
 </div>
@@ -538,6 +541,33 @@
                 }, function(resultat){
                     td.html(resultat);
                 })
+            })
+
+            $('#attribuerRessourcePeriode').click(function(){
+                var date = $(this).closest('div').data('date');
+                var heure = $(this).closest('div').data('heure');
+                var abreviation = $(this).closest('div').data('acronyme');
+
+                var listeBoutons = $('button[data-heure="' + heure +'"][data-acronyme="' + abreviation + '"]');
+
+                $(listeBoutons).each(function() {
+                    var idRessource = $(this).data('idressource');
+                    var date = $(this).data('date');
+                    var td = $('button[data-date="'+date+'"][data-heure="'+heure+'"][data-idressource="'+idRessource+'"]').closest('td');
+                    $.post('inc/ressources/attribuerRessource.inc.php', {
+                        idRessource: idRessource,
+                        date: date,
+                        heure: heure,
+                        abreviation: abreviation
+                    }, function(resultat){
+                        td.html(resultat);
+                    })
+                });
+
+
+
+
+
             })
 
 
