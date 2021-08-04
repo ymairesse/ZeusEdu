@@ -124,7 +124,7 @@
             <a tabindex="-1" href="javascript:void(0)" id="attribuerRessource"<i class="fa fa-hand-pointer-o"> Attribution/remise</i></a>
         </li>
         <li>
-            <a tabindex="-1" href="javascript:void(0)" id="attribuerRessourcePeriode"<i class="fa fa-hand-grab-o"> Attribution tout/remise tout</i></a>
+            <a tabindex="-1" href="javascript:void(0)" id="attribuerRessourcePeriode"<i class="fa fa-hand-grab-o"> Attribution/remise <span id="ctHeure">heure</span></i></a>
         </li>
     </ul>
 </div>
@@ -549,7 +549,6 @@
                 var abreviation = $(this).closest('div').data('acronyme');
 
                 var listeBoutons = $('button[data-heure="' + heure +'"][data-acronyme="' + abreviation + '"]');
-
                 $(listeBoutons).each(function() {
                     var idRessource = $(this).data('idressource');
                     var date = $(this).data('date');
@@ -563,20 +562,17 @@
                         td.html(resultat);
                     })
                 });
-
-
-
-
-
             })
 
 
             $('body').on('contextmenu', '#detailsRessources .btn', function(event){
                 $('#contextMenu').data('date', $(this).data('date'));
-                $('#contextMenu').data('heure', $(this).data('heure'));
+                var heure = $(this).data('heure');
+                $('#contextMenu').data('heure', heure);
                 $('#contextMenu').data('idressource', $(this).data('idressource'));
                 var acronyme = $(this).data('acronyme');
                 $('#contextMenu').data('acronyme', acronyme);
+                $('span#ctHeure').text(heure);
                 if ($(this).hasClass('btn-reserved')) {
                         $('#reserverPeriode').attr('disabled', true);
                         $('#supprimerPeriode').attr('disabled', false);
