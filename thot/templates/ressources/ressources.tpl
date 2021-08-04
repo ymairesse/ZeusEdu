@@ -410,7 +410,7 @@
             $('#formAddRessource').trigger('reset');
         })
 
-        $('#btn-addRessource').click(function(){
+        $('#btn-addRessources').click(function(){
             var idType = $('#typeRessource').val();
             $.post('inc/ressources/editRessource.inc.php', {
                 idType: idType,
