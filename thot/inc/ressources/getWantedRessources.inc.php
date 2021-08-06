@@ -27,10 +27,10 @@ parse_str($formulaire, $form);
 // Le formulaire arrive avec la liste des ressources souhaitées et les dates projetées d'emprunt
 // array (
 //   'dateStart' => '01/05/2021',
-//   'dateEnd' => '01/05/2021',
+//   'dateEnd' => '04/05/2021',
 //   'selectRessource' =>
 //   array (
-//     0 => '1',
+//     0 => '19',
 //     1 => '2',
 //   ),
 // )
@@ -72,6 +72,6 @@ $smarty->assign('planOccupation', $planOccupation);
 $smarty->assign('listeRessources', $ressources);
 $smarty->assign('listeHeuresCours', $listeHeuresCours);
 $smarty->assign('userStatus', $userStatus);
-$smarty->assign('acronyme', $acronyme);
+$smarty->assign('acronyme', $acronyme); 
 
 $smarty->display('ressources/pageReservation.tpl');

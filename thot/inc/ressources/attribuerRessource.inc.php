@@ -39,6 +39,7 @@ $smarty->assign('idRessource', $idRessource);
 $smarty->assign('date', $date);
 $smarty->assign('heure', $heure);
 $smarty->assign('abreviation', $abreviation);
+$smarty->assign('acronyme', $acronyme);
 $smarty->assign('nom', $nom);
 
 if ($attribue)

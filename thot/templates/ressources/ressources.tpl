@@ -361,7 +361,6 @@
 
             var dateEnd = $('#dateEnd').val().split('/');
             var dateFin = new Date(dateEnd[2], dateEnd[1]-1, dateEnd[0]);
-            // var dateFin = new Date(dateEnd);
 
             var n = $('.ressource:checked').length;
             if ((dateDebut <= dateFin) && n > 0) {

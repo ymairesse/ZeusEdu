@@ -1,5 +1,5 @@
 <button type="button"
-    class="btn btn-warning btn-xs btn-block btn-attribue {if $userStatus != 'admin' && ($abreviation == $acronyme)}btn-blue{/if}"
+    class="btn btn-warning btn-xs btn-block btn-attribue {if $abreviation == $acronyme}btn-blue{/if}"
     data-acronyme="{$abreviation}"
     data-heure="{$heure}"
     data-date="{$date}"
