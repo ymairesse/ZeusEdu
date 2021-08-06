@@ -38,6 +38,7 @@ $smarty->assign('idRessource', $idRessource);
 $smarty->assign('date', $date);
 $smarty->assign('heure', $heure);
 $smarty->assign('abreviation', $acronyme);
+$smarty->assign('acronyme', $acronyme);
 $smarty->assign('nom', $nom);
 
 $smarty->display('ressources/boutonOccupe.tpl');
