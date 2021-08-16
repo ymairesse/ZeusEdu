@@ -9,10 +9,10 @@ $smarty->assign('titulaires', $titulaires);
 
 // informations médicales
 require_once INSTALL_DIR.'/infirmerie/inc/classes/classInfirmerie.inc.php';
-$infirmerie = new eleveInfirmerie($matricule);
+$Infirmerie = new Infirmerie();
 
-$smarty->assign('medicEleve', $infirmerie->getMedicEleve($matricule));
-$smarty->assign('consultEleve', $infirmerie->getVisitesEleve($matricule));
+$smarty->assign('medicEleve', $Infirmerie->getMedicEleve($matricule));
+$smarty->assign('consultEleve', $Infirmerie->getVisitesEleve($matricule));
 
 $smarty->assign('noBulletin', PERIODEENCOURS);
 $smarty->assign('listeBulletins', range(0, PERIODEENCOURS));
