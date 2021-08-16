@@ -1,4 +1,3 @@
-{if isset($listeEleves)}
 
 <div class="form-group">
 	<label for="selectEleve">Élèves</label>
@@ -9,5 +8,3 @@
 		{/foreach}
 	</select>
 </div>
-
-{/if}

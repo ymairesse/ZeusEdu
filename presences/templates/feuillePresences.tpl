@@ -58,7 +58,7 @@
 
 <script type="text/javascript">
 
-	var today = today = new Date().toLocaleDateString();
+	var today = new Date().toLocaleDateString();
 	var userStatus = "{$userStatus}";
 
 	var modifie = false;
@@ -121,7 +121,7 @@ $(document).ready(function(){
 
 	$('#save').click(function(){
 		var autorisation = ['admin', 'educ'];
-		if (today == $('#datePresences').val() || (autorisation.includes(userStatus))) {
+		if (today <= $('#datePresences').val() || (autorisation.includes(userStatus))) {
 			var formulaire = $('#presencesEleves').serialize();
 			var coursGrp = $('#coursGrp').val();
 			var classe = $('#classe').val();
@@ -156,7 +156,7 @@ $(document).ready(function(){
 	$('#listeDouble').on('click', '.tableauPresences td', function(e){
 		// autorisés à accéder à la fonction?
 		var autorisation = ['admin', 'educ'];
-		if (today == $('#datePresences').val() || (autorisation.includes(userStatus))) {
+		if (today <= $('#datePresences').val() || (autorisation.includes(userStatus))) {
 			modification();
 			var ligne = $(this).closest('tr');
 			var cb = ligne.find('input:hidden');

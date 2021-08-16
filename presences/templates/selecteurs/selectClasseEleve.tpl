@@ -30,6 +30,21 @@
 
 	$(document).ready(function(){
 
+		var matricule = Cookies.get('matricule');
+		if (matricule != undefined){
+			$.post('inc/absences/getClasseEleve.inc.php', {
+				matricule: matricule
+			}, function(resultat){
+				$('#selectClasse').val(resultat);
+				$.post('inc/absences/getListeEleves.inc.php', {
+					matricule: matricule
+				}, function(resultat){
+					$('#choixEleve').html(resultat);
+					$('#selectEleve').trigger('change');
+				})
+			})
+		}
+
 		$("#selectClasse").change(function(){
 			// on a choisi une classe dans la liste déroulante
 			var classe = $(this).val();

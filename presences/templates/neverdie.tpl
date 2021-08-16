@@ -5,7 +5,7 @@
 
     var time = new Date().getTime();
     // temps entre les rafraîchissements
-    var refreshTime = 5000;
+    var refreshTime = 60000;
 
     $(document.body).bind("mousemove keypress", function(e) {
     	time = new Date().getTime();

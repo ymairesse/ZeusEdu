@@ -94,10 +94,18 @@
 			<th style="width:30px" class="hidden-md">&nbsp;</th>
 			<th style="max-width:240px">&nbsp;</th>
 		{foreach from=$lesPeriodes item=noPeriode}
-			<th class="trash {if $noPeriode != $periode} disabled{/if}"
+			<th style="text-align:center;">
+				<button type="button"
+					class="btn btn-xs btn-primary btn-block trash{if $noPeriode != $periode} disabled{/if}"
+					data-periode="{$noPeriode}">
+						<i class="fa fa-trash"></i>
+				</button>
+
+			</th>
+			{* <th class="trash {if $noPeriode != $periode} disabled{/if}"
 				data-periode="{$noPeriode}">
 				<i class="fa fa-trash"></i>
-			</th>
+			</th> *}
 		{/foreach}
 		</tr>
 	</tfoot>
