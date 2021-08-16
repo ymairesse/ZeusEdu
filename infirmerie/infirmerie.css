@@ -19,9 +19,9 @@
     -moz-border-radius-bottomright: 20px;
     -moz-border-radius-bottomleft: 20px;
   }
-  
+
 .legendePhoto {
-	background-color: #aaa; 
+	background-color: #aaa;
 	color:white;
 	padding: 5px 2px 5px 2px;
 	display: block;
@@ -53,8 +53,8 @@
 }
 
 fieldset p {
-	background-color: #eee; 
-	padding: 0.5em; 
+	background-color: #eee;
+	padding: 0.5em;
 	margin:0}
 
 .microForm {
@@ -68,4 +68,8 @@ fieldset p {
 
 .ui-tabs .infoMedic {
     background: red;
+}
+
+tr.selected {
+    background-color: orange !important;;
 }

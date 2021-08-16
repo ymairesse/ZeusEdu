@@ -12,16 +12,16 @@
 </div>
 
 <script type="text/javascript">
-{literal}
+
 	$(document).ready (function() {
-	
+
 		$("#selectClasse").change(function(){
 			if ($(this).val() != '') {
 				$("#wait").css("z-index","999").show();
 				$("#formSelecteur").submit();
 			}
 		})
-		
+
 		$("#formSelecteur").submit(function(){
 			if ($("#selectClasse").val() == '')
 				return false;
@@ -31,5 +31,5 @@
 					}
 		})
 	})
-{/literal}
+
 </script>

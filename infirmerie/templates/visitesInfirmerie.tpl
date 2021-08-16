@@ -1,12 +1,3 @@
-<form name="modifVisite" method="POST" action="index.php" class="microForm">
-	<input type="hidden" name="action" value="modifier">
-	<input type="hidden" name="mode" value="visite">
-	<input type="hidden" name="matricule" value="{$matricule}">
-	<button class="btn btn-primary pull-right" type="submit" name="submit">Nouvelle visite</button>
-	<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
-</form>
-
-<div class="table-responsive">
 <table class="tableauAdmin table table-striped table-condensed">
 	<thead>
 		<tr>
@@ -21,7 +12,7 @@
 		</tr>
 	</thead>
 {foreach from=$consultEleve key=ID item=uneVisite}
-	<tr>
+	<tr data-consultid="{$uneVisite.consultID}" {if $uneVisite.consultID == $consultID}class="selected"{/if}>
 		<td>{$uneVisite.acronyme|default:'&nbsp;'}</td>
 		<td>{$uneVisite.date|default:'&nbsp;'}</td>
 		<td>{$uneVisite.heure|default:'&nbsp;'|truncate:5:''}</td>
@@ -50,51 +41,45 @@
 			data-content="{$uneVisite.aSuivre}">
 			{$uneVisite.aSuivre|truncate:30:"..."|default:'&nbsp;'}
 		</td>
-		<td data-container="body"
-			title="Modifier">
-			<form name="modifier" method="POST" action="index.php" class="microForm noborder">
-				<input type="hidden" name="consultID" value="{$uneVisite.consultID}">
-				<input type="hidden" name="matricule" value="{$eleve.matricule}">
-				<input type="hidden" name="classe" value = "{$eleve.classe}">
-				<input type="hidden" name="action" value="modifier">
-				<input type="hidden" name="mode" value="visite">
-				<button type="submit" class="btn btn-default" name="submit">
-					<span class="glyphicon glyphicon-edit" style="color:green">	</span>
-				</button>
-				<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
-			</form>
+		<td>
+			<button type="button" class="btn btn-success btn-xs btn-editVisite"
+				data-consultid="{$uneVisite.consultID}"
+				data-matricule="{$dataEleve.matricule}"
+				{if $noButtons == true}disabled{/if}>
+				<span class="fa fa-edit"></span>
+			</button>
 		</td>
-		<td data-container="body"
-			title="Supprimer">
-			<form name="modifier" method="POST" action="index.php" class="microForm noborder">
-				<input type="hidden" name="consultID" value="{$uneVisite.consultID}">
-				<input type="hidden" name="matricule" value="{$eleve.matricule}">
-				<input type="hidden" name="classe" value = "{$eleve.classe}">
-				<input type="hidden" name="action" value="supprimer">
-				<input type="hidden" name="mode" value="visite">
-				<button class="btn btn-default delete" type="submit">
-					<span class="glyphicon glyphicon-remove" style="color:red"></span>
-				</button>
-				<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
-			</form>
+		<td>
+			<button type="button" class="btn btn-danger btn-xs btn-delVisite"
+				data-consultid="{$uneVisite.consultID}"
+				data-matricule="{$dataEleve.matricule}"
+				{if $noButtons == true}disabled{/if}>
+				<span class="fa fa-times"></span>
+			</button>
 		</td>
 	</tr>
 {/foreach}
+<tr>
+	<td colspan="8">
+		<button class="btn btn-primary btn-block" type="button" id="btn-newVisite" data-matricule="{$dataEleve.matricule}">
+			Nouvelle visite
+		</button>
+	</td>
+</tr>
 </table>
 
-</div>  <!-- table-responsive -->
 
 <script type="text/javascript">
-	
+
 	$(document).ready(function(){
-		
+
 	$(".popover-eleve").mouseover(function(){
 		$(this).popover('show');
 		})
 	$(".popover-eleve").mouseout(function(){
 		$(this).popover('hide');
 		})
-		
+
 	})
-	
+
 </script>

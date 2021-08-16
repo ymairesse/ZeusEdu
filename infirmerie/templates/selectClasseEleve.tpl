@@ -48,96 +48,96 @@
 
 $(document).ready (function() {
 
-	$('#formSelecteur').submit(function(){
-		if ($("#matricule").val() != '') {
-			$('#wait').show();
-			$.blockUI();
-			}
-			else return false;
-		})
-
-	$("#selectClasse").change(function(){
-		// on a choisi une classe dans la liste déroulante
-		var classe = $(this).val();
-		if (classe != '') {
-			$('#envoi').show();
-			$('#next, #prev').hide();
-			}
-		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
-		$.post('inc/listeEleves.inc.php',{
-			'classe': classe},
-				function (resultat){
-					$("#choixEleve").html(resultat)
-				}
-			)
-	});
-
-	$('#choixEleve').on('change','#selectEleve', function(){
-		var matricule = $(this).val();
-		if (matricule > 0) {
-			$("#matricule").val(matricule);
-			$('#formSelecteur').submit();
-			$('#envoi').show();
-		}
-			else $("#envoi").hide();
-		})
-
-	$('#prev').click(function(){
-		var matrPrev = $("#matrPrev").val();
-		$('#matricule').val(matrPrev);
-		$("#selectEleve").val(matrPrev);
-		$('#formSelecteur').submit();
-	})
-
-	$('#next').click(function(){
-		var matrNext = $("#matrNext").val();
-		$('#matricule').val(matrNext);
-		$("#selectEleve").val(matrNext);
-		$('#formSelecteur').submit();
-	})
-
-	$('#nom').on('keydown', function(){
-		$('#selectEleve').fadeOut().val('');
-		$("#choixEleve").html('');
-		$('#selectClasse').val('');
-		$("#prev, #next").fadeOut();
-		})
-
-	$("#nom").typeahead({
-		minLength: 2,
-		updater: function (item) {
-			return item;
-		},
-		afterSelect: function(item){
-			$.ajax({
-				url: 'inc/searchMatricule.php',
-				type: 'POST',
-				data: 'query=' + item,
-				dataType: 'text',
-				async: true,
-				success: function(data){
-					if (data != '') {
-						$("#matricule").val(data);
-						$("#formSelecteur").submit();
-						}
-					}
-				})
-			},
-		source: function(query, process){
-			$.ajax({
-				url: 'inc/searchNom.php',
-				type: 'POST',
-				data: 'query=' + query,
-				dataType: 'JSON',
-				async: true,
-				success: function (data) {
-					$("#matricule").val('');
-					process(data);
-					}
-				}
-				)
-			}
-		})
+	// $('#formSelecteur').submit(function(){
+	// 	if ($("#matricule").val() != '') {
+	// 		$('#wait').show();
+	// 		$.blockUI();
+	// 		}
+	// 		else return false;
+	// 	})
+	//
+	// $("#selectClasse").change(function(){
+	// 	// on a choisi une classe dans la liste déroulante
+	// 	var classe = $(this).val();
+	// 	if (classe != '') {
+	// 		$('#envoi').show();
+	// 		$('#next, #prev').hide();
+	// 		}
+	// 	// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
+	// 	$.post('inc/listeEleves.inc.php',{
+	// 		'classe': classe},
+	// 			function (resultat){
+	// 				$("#choixEleve").html(resultat)
+	// 			}
+	// 		)
+	// });
+	//
+	// $('#choixEleve').on('change','#selectEleve', function(){
+	// 	var matricule = $(this).val();
+	// 	if (matricule > 0) {
+	// 		$("#matricule").val(matricule);
+	// 		$('#formSelecteur').submit();
+	// 		$('#envoi').show();
+	// 	}
+	// 		else $("#envoi").hide();
+	// 	})
+	//
+	// $('#prev').click(function(){
+	// 	var matrPrev = $("#matrPrev").val();
+	// 	$('#matricule').val(matrPrev);
+	// 	$("#selectEleve").val(matrPrev);
+	// 	$('#formSelecteur').submit();
+	// })
+	//
+	// $('#next').click(function(){
+	// 	var matrNext = $("#matrNext").val();
+	// 	$('#matricule').val(matrNext);
+	// 	$("#selectEleve").val(matrNext);
+	// 	$('#formSelecteur').submit();
+	// })
+	//
+	// $('#nom').on('keydown', function(){
+	// 	$('#selectEleve').fadeOut().val('');
+	// 	$("#choixEleve").html('');
+	// 	$('#selectClasse').val('');
+	// 	$("#prev, #next").fadeOut();
+	// 	})
+	//
+	// $("#nom").typeahead({
+	// 	minLength: 2,
+	// 	updater: function (item) {
+	// 		return item;
+	// 	},
+	// 	afterSelect: function(item){
+	// 		$.ajax({
+	// 			url: 'inc/searchMatricule.php',
+	// 			type: 'POST',
+	// 			data: 'query=' + item,
+	// 			dataType: 'text',
+	// 			async: true,
+	// 			success: function(data){
+	// 				if (data != '') {
+	// 					$("#matricule").val(data);
+	// 					$("#formSelecteur").submit();
+	// 					}
+	// 				}
+	// 			})
+	// 		},
+	// 	source: function(query, process){
+	// 		$.ajax({
+	// 			url: 'inc/searchNom.php',
+	// 			type: 'POST',
+	// 			data: 'query=' + query,
+	// 			dataType: 'JSON',
+	// 			async: true,
+	// 			success: function (data) {
+	// 				$("#matricule").val('');
+	// 				process(data);
+	// 				}
+	// 			}
+	// 			)
+	// 		}
+	// 	})
 
 })
 

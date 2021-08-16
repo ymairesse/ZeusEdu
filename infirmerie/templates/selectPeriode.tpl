@@ -26,15 +26,6 @@ $("document").ready(function(){
 
 	$('#dateDebut').focus();
 
-	$( "#dateDebut").datepicker({
-		format: "dd/mm/yyyy",
-		clearBtn: true,
-		language: "fr",
-		calendarWeeks: true,
-		autoclose: true,
-		todayHighlight: true
-		})
-
 	$( "#dateFin").datepicker({
 		format: "dd/mm/yyyy",
 		clearBtn: true,
@@ -44,6 +35,15 @@ $("document").ready(function(){
 		todayHighlight: true
 		});
 
+
+	$( "#dateDebut").datepicker({
+		format: "dd/mm/yyyy",
+		clearBtn: true,
+		language: "fr",
+		calendarWeeks: true,
+		autoclose: true,
+		todayHighlight: true
+		})
 
 	$("#formSelecteur").submit(function(){
 

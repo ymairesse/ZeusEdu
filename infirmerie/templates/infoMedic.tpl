@@ -1,95 +1,77 @@
 <div class="row">
 
-	<div class="col-md-2 col-sm-4">
-		<form name="modifInfo" id="modifInfo" role="form" class="form-inline" action="index.php" method="POST">
-			{if isset($medicEleve.info) && ($medicEleve.info != '')}
-			<button class="btn btn-primary btn-lg" type="submit" name="submit">Modifier <span class="glyphicon glyphicon-chevron-right"></span></button>
-			{else}
-			<button class="btn btn-primary" type="submit" name="submit">Ajouter <span class="glyphicon glyphicon-chevron-right"></span></button>
-			{/if}
-			<input type="hidden" name="action" value="modifier">
-			<input type="hidden" name="mode" value="infoMedicale">
-			<input type="hidden" name="infoMedicale" value="{$medicEleve.info|default:''}">
-			<input type="hidden" name="classe" value="{$eleve.classe}">
-			<input type="hidden" name="matricule" value="{$matricule}">
-			<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
-		</form>
+<form id="form-infoMedic">
+
+	<div class="col-xs-10 panel panel-success">
+			<div class="panel-heading">
+				<i class="fa fa-user"></i> Information médicale importante
+			</div>
+			<div class="panel-body">
+				<div class="input-group">
+					<input type="text" name="medicEleve" id="input-medicEleve" class="form-control" disabled value="{$medicEleve.info|default:''}">
+					<div class="input-group-btn">
+						<button type="button" class="btn btn-danger" id="btn-enable" disabled>
+							<i class="fa fa-pencil"></i>
+						</button>
+					</div>
+				</div>
+
+			</div>
 	</div>
 
-	<div class="col-md-10 col-sm-8">
-		{if isset($medicEleve.info) && ($medicEleve.info != '')}
-		<div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign" style="font-size:200%"></span> {$medicEleve.info|default:''}</div>
-		{else}
-		<div class="alert alert-info">Information médicale importante: néant</div>
-		{/if}
+	<div class="col-xs-2">
+		<button type="button" class="btn btn-primary btn-block" id="btn-editMedic">Modifier</button>
+		<button type="button" class="btn btn-success btn-block hidden btn-medic" id="btn-saveMedic">Enregistrer</button>
+		<button type="reset" class="btn btn-default btn-block hidden btn-medic" id="btn-resetMedic">Annuler</button>
 	</div>
 
-</div>
+	<div class="col-xs-12 col-md-6 panel">
+			<div class="panel-body">
+				<div class="form-group">
+					<label for="medecin">Nom du médecin traitant</label>
+					<input type="text" class="form-control" readonly name="medecin" id="medecin" value="{$medicEleve.medecin|default:''}">
+				</div>
+				<div class="form-group">
+					<label for="telephone">Téléphone</label>
+					<input type="text" class="form-control" readonly name="telMedecin" id="telephone" value="{$medicEleve.telephone|default:''}">
+				</div>
+			</div>
+	</div>
 
+	<div class="col-xs-12 col-md-6 panel panel-default">
+		<div class="panel-body">
+			<div class="form-group">
+				<label for="situation">Situation de famille</label>
+				<input type="text" class="form-control" readonly name="sitFamiliale" id="sitFamiliale" value="{$medicEleve.sitFamiliale|default:''}">
+			</div>
+			<div class="form-group">
+				<label for="anamnese">Anamnèse</label>
+				<input type="text" class="form-control" readonly name="anamnese" id="anamnese" value="{$medicEleve.anamnese|default:''}">
+			</div>
+		</div>
+	</div>
 
-	<form name="modifMedical" method="POST" action="index.php" class="microForm form-vertical" role="form">
-		<button class="btn btn-primary pull-right" type="submit" name="submit">Modifier</button>
-		<input type="hidden" name="action" value="modifier">
-		<input type="hidden" name="mode" value="medical">
-		<input type="hidden" name="classe" value="{$eleve.classe}">
-		<input type="hidden" name="matricule" value="{$matricule}">
-		<input type="hidden" name="onglet" class="onglet" value="{$onglet|default:0}">
-	</form>
+	<div class="col-xs-12 panel panel-default">
+		<div class="panel-body">
+			<div class="form-group">
+				<label for="medical">Particularités médicales</label>
+				<input type="text" class="form-control" readonly name="medical" id="medical" value="{$medicEleve.medical|default:''}">
+			</div>
+			<div class="form-group">
+				<label for="traitement">Traitement</label>
+				<input type="text" class="form-control" readonly name="traitement" id="traitement" value="{$medicEleve.traitement|default:''}">
+			</div>
+			<div class="form-group">
+				<label for="psy">Psy</label>
+				<input type="text" class="form-control" readonly name="psy" id="psy" value="{$medicEleve.psy|default:''}">
+			</div>
+		</div>
+	</div>
 
 	<div class="clearfix"></div>
 
-	<div class="row">
+	<input type="hidden" name="matricule" value="{$dataEleve.matricule}">
 
-		<div class="col-md-4 col-sm-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3>Médecin traitant</h3>
-				</div>
-				<div class="panel-body">
-					<dl>
-						<dt>Nom</dt>
-							<dd>{$medicEleve.medecin|default:'-'}</dd>
+</form>
 
-						<dt>Téléphone</dt>
-							<dd>{$medicEleve.telMedecin|default:'-'}</dd>
-					</dl>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-4 col-sm-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3>Situation personnelle</h3>
-				</div>
-				<div class="panel-body">
-					<dl>
-						<dt>Situation de famille</dt>
-							<dd>{$medicEleve.sitFamiliale|default:'-'}</dd>
-						<dt>Anamnèse</dt>
-							<dd>{$medicEleve.anamnese|default:'-'}</dd>
-					</dl>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="col-md-4 col-sm-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3>Particularités</h3>
-				</div>
-				<div class="panel-body">
-					<dl>
-						<dt>Médicales</dt>
-							<dd>{$medicEleve.medical|default:'-'}</dd>
-						<dt>Traitement</dt>
-							<dd>{$medicEleve.traitement|default:'-'}</dd>
-						<dt>Psy</dt>
-							<dd>{$medicEleve.psy|default:'&nbsp;'}</dd>
-					</dl>
-				</div>
-			</div>
-		</div>
-
-	</div>  <!-- row -->
+</div>
