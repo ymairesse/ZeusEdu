@@ -19,5 +19,4 @@ $smarty = new Smarty();
 $smarty->template_dir = "../templates";
 $smarty->compile_dir = "../templates_c";
 $smarty->assign("listeEleves", $listeEleves);
-$smarty->display("listeEleves.tpl"); 
-?>
+$smarty->display("listeEleves.tpl");

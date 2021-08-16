@@ -27,4 +27,3 @@ if (isset($matricule)) {
 	$mode = 'wtf';
 	$smarty->assign('corpsPage', 'ficheEleve');
 }
-?>

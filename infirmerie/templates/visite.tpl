@@ -174,7 +174,6 @@
 			$('#input-medicEleve').prop('disabled', false);
 		})
 
-
 		$("#selectClasse").change(function(){
 			// on a choisi une classe dans la liste déroulante
 			var classe = $(this).val();

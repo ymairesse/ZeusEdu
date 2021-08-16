@@ -9,6 +9,7 @@
 			<th>A suivre</th>
 			<th style="width:32px">&nbsp;</th>
 			<th style="width:32px">&nbsp;</th>
+			<th style="width:32px">&nbsp;</th>
 		</tr>
 	</thead>
 {foreach from=$consultEleve key=ID item=uneVisite}
@@ -57,10 +58,17 @@
 				<span class="fa fa-times"></span>
 			</button>
 		</td>
+		<td>
+			<a href="../presences/index.php?action=signaler&mode=speed"
+				target="_blank"
+				class="btn btn-info btn-xs"
+				title="Module Présences"
+				{if !$okPresences}disabled{/if}>P</a>
+		</td>
 	</tr>
 {/foreach}
 <tr>
-	<td colspan="8">
+	<td colspan="9">
 		<button class="btn btn-primary btn-block" type="button" id="btn-newVisite" data-matricule="{$dataEleve.matricule}">
 			Nouvelle visite
 		</button>

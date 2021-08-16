@@ -34,6 +34,13 @@ $Infirmerie = new Infirmerie();
 
 $nb = $Infirmerie->saveVisite($form);
 
+// liste des applications activées et accessibles pour savoir si les "présences" sont OK
+$applisActives = $Application->listeApplis(true);
+$statutPresence = $User->getStatus4appli('presences');
+// accès à la "justification speed"
+$liste = (array('admin','educ','accueil'));
+$okPresences = (in_array('presences', array_keys($applisActives))) && (in_array($statutPresence, $liste));
+
 $consultEleve = $Infirmerie->getVisitesEleve($matricule);
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");
@@ -43,6 +50,7 @@ $smarty->compile_dir = "../templates_c";
 
 $smarty->assign('matricule', $matricule);
 $smarty->assign('dataEleve', $dataEleve);
-
 $smarty->assign('consultEleve', $consultEleve);
+$smarty->assign('okPresences', $okPresences);
+
 $smarty->display('visitesInfirmerie.tpl');
