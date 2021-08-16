@@ -25,9 +25,9 @@ if (isset($matricule) && ($matricule != '')
 
     // informations médicales
     require_once INSTALL_DIR.'/infirmerie/inc/classes/classInfirmerie.inc.php';
-    $infirmerie = new eleveInfirmerie($matricule);
-    $smarty->assign('medicEleve', $infirmerie->getMedicEleve($matricule));
-    $smarty->assign('consultEleve', $infirmerie->getVisitesEleve($matricule));
+    $Infirmerie = new Infirmerie();
+    $smarty->assign('medicEleve', $Infirmerie->getMedicEleve($matricule));
+    $smarty->assign('consultEleve', $Infirmerie->getVisitesEleve($matricule));
 
 
     // initialisation des données ADES dans le bloc-notes
