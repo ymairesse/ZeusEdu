@@ -8,7 +8,7 @@
 			<div class="panel-body">
 				<dl>
 					<dt>Responsable</dt><dd>{$dataEleve.nomResp}</dd>
-					<dt>e-mail</dt><dd><dd><a href="mailto:{$dataEleve.courriel}">{$dataEleve.courriel}</a></</dd>>
+					<dt>e-mail</dt><dd><a href="mailto:{$dataEleve.courriel}">{$dataEleve.courriel}</a></dd>
 					<dt>Téléphone</dt><dd>{$dataEleve.telephone1}</dd>
 					<dt>GSM</dt><dd>{$dataEleve.telephone2}</dd>
 					<dt>Téléphone bis</dt><dd>{$dataEleve.telephone3}</dd>
