@@ -1310,7 +1310,7 @@ CREATE TABLE `didac_presencesJustifications` (
   `background` varchar(7) COLLATE utf8_unicode_ci NOT NULL,
   `accesProf` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Mention accessible aux profs',
   `obligatoire` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Obligatoire dans toutes les configurations',
-  `speed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'sélection spéciale possible',
+  `accesEduc` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'sélection spéciale possible',
   `sms` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Justifications d''absences possibles';
 
