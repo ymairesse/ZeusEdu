@@ -60,7 +60,7 @@ class Infirmerie {
 			$requete->setFetchMode(PDO::FETCH_ASSOC);
 			while ($ligne = $requete->fetch()) {
 				$consultID = $ligne['consultID'];
-				$date = Application::datePHP($ligne['date']);
+				$ligne['date'] = Application::datePHP($ligne['date']);
 				$listeVisites[$consultID] = $ligne;
 				}
 			}
