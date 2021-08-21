@@ -1,4 +1,3 @@
-
 <div class="container-fluid hidden-print">
 
 	<nav class="navbar navbar-default" role="navigation">
