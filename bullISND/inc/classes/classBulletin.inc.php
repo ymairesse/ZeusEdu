@@ -5917,14 +5917,14 @@ class Bulletin
          $sql .= 'decision = :decision, restriction = :restriction, mail = :mail, notification = :notification, ';
          $sql .= 'adresseMail = :adresseMail ';
          $requete = $connexion->prepare($sql);
-echo $sql;
+
          $requete->bindParam(':matricule', $matricule, PDO::PARAM_INT);
          $requete->bindParam(':decision', $decision, PDO::PARAM_STR, 20);
          $requete->bindParam(':restriction', $restriction, PDO::PARAM_STR, 80);
          $requete->bindParam(':mail', $mail, PDO::PARAM_INT);
          $requete->bindParam(':notification', $notification, PDO::PARAM_INT);
          $requete->bindParam(':adresseMail', $adresseMail, PDO::PARAM_STR, 30);
-Application::afficher($post, true);
+
          $resultat = $requete->execute();
 
          Application::DeconnexionPDO($connexion);

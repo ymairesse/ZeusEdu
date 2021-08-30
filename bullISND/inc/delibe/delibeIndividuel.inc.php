@@ -21,7 +21,6 @@ $smarty->assign('mode','individuel');
 
 switch ($etape) {
     case 'enregistrer':
-    Application::afficher($_POST);
         $nb = $Bulletin->enregistrerMentions($_POST);
         $nb = $Bulletin->enregistrerDecision($_POST);
         $smarty->assign('message', array(
