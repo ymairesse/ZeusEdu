@@ -1317,18 +1317,18 @@ CREATE TABLE `didac_presencesJustifications` (
 ALTER TABLE `didac_presencesJustifications`
   ADD PRIMARY KEY (`justif`);
 
-INSERT INTO `didac_presencesJustifications` (`justif`, `shortJustif`, `ordre`, `libelle`, `color`, `background`, `accesProf`, `obligatoire`, `speed`, `sms`) VALUES
-('indetermine', 'NP', 1, 'Indéterminé', '#000000', '#dddddd', 1, 1, 1, 0),
-('present', 'PRES', 2, 'Présent', '#000000', '#77FF77', 1, 1, 0, 0),
-('absent', 'ABS', 3, 'Absent', '#000000', '#ff7777', 1, 1, 0, 1),
-('retard', 'RET', 4, 'Retard', '#ffffff', '#B1419B', 1, 1, 0, 0),
-('suivi', 'SUI', 5, 'Suivi (PMS, CAS)', '#f7ff10', '#ff0000', 0, 0, 0, 0),
-('ecarte', 'ECAR', 6, 'Écarté', '#ffffff', '#102457', 0, 0, 0, 0),
-('renvoi', 'RENV', 7, 'Renvoyé', '#fffe00', '#000000', 0, 0, 0, 0),
-('signale', 'SIGN', 8, 'Signalé', '#000000', '#ff5500', 0, 0, 0, 0),
-('sortie', 'SORT', 9, 'Sortie autorisée', '#000000', '#ff00ff', 0, 0, 1, 0),
-('justifie', 'JUST', 10, 'Justifié', '#000000', '#27bdf1', 0, 0, 0, 0),
-('stage', 'STAG', 11, 'Stage', '#ffffff', '#0a7135', 0, 0, 0, 0);
+  INSERT INTO `didac_presencesJustifications` (`justif`, `shortJustif`, `ordre`, `libelle`, `color`, `background`, `accesProf`, `obligatoire`, `accesEduc`, `sms`) VALUES
+  ('indetermine', 'NP', 1, 'Indéterminé', '#000000', '#dddddd', 1, 1, 1, 0),
+  ('present', 'PRES', 2, 'Présent', '#000000', '#77FF77', 1, 1, 0, 0),
+  ('absent', 'ABS', 3, 'Absent', '#000000', '#ff7777', 1, 1, 0, 1),
+  ('retard', 'RET', 4, 'Retard', '#ffffff', '#B1419B', 1, 1, 0, 0),
+  ('suivi', 'SUI', 5, 'Suivi (PMS, CAS)', '#f7ff10', '#ff0000', 0, 0, 0, 0),
+  ('ecarte', 'ECAR', 6, 'Écarté', '#ffffff', '#102457', 0, 0, 0, 0),
+  ('renvoi', 'RENV', 7, 'Renvoyé', '#fffe00', '#000000', 0, 0, 0, 0),
+  ('signale', 'SIGN', 8, 'Signalé', '#000000', '#ff5500', 0, 0, 0, 0),
+  ('sortie', 'SORT', 9, 'Sortie autorisée', '#000000', '#ff00ff', 0, 0, 1, 0),
+  ('justifie', 'JUST', 10, 'Justifié', '#000000', '#27bdf1', 0, 0, 0, 0),
+  ('stage', 'STAG', 11, 'Stage', '#ffffff', '#0a7135', 0, 0, 0, 0);
 
 CREATE TABLE `didac_presencesTraitement` (
   `idTraitement` int(11) NOT NULL COMMENT 'Référence du traitement du retard (id)',
