@@ -12,7 +12,11 @@
                 <ul class="nav nav-tabs">
                     {foreach from=$sharesList key=groupe item=groupShares name=onglets}
                     <li {if ($smarty.foreach.onglets.index == 0)}class="active"{/if}>
-                        <a data-toggle="tab" href="#tabs-{$smarty.foreach.onglets.index}">{$dicoShareGroups.$groupe}</a>
+                        <a data-toggle="tab"
+                            data-onglet = {$smarty.foreach.onglets.index}
+                            href="#tabs-{$smarty.foreach.onglets.index}">
+                            {$dicoShareGroups.$groupe}
+                        </a>
                     </li>
                     {/foreach}
                 </ul>
@@ -41,23 +45,38 @@
 
                                     <table class="table table-condensed shareGroup">
                                         <tr>
+                                            <th style="width:1em">
+                                                <button type="button"
+                                                    title="Sélectionner tout"
+                                                    class="btn btn-xs btn-danger selectAll">
+                                                    <i class="fa fa-arrow-down"></i>
+                                                </button>
+                                            </th>
                                             <th style="width:2em">&nbsp;</th>
                                             <th>Chemin</th>
                                             <th>Nom du fichier</th>
                                             <th style="width:2em">&nbsp;</th>
                                             <th>Commentaire</th>
                                             <th>Partagé avec</th>
-                                            <th style="width:2em">
+                                            {* <th style="width:2em">
                                                 <button type="button"
                                                     class="btn btn-danger btn-xs btn-unShare"
                                                     data-id="id-{$smarty.foreach.onglets.index}_{$smarty.foreach.groupe.index}"
                                                     title="Supprimer tous les partages de cette page">
                                                     <i class="fa fa-share-alt"></i> <i class="fa fa-arrow-down"></i>
                                                 </button>
-                                            </th>
+                                            </th> *}
                                         </tr>
                                         {foreach from=$shareData key=shareId item=file}
                                         <tr data-shareid="{$shareId}" data-fileid="{$file.fileId}" class="{$file.dirOrFile}">
+                                            <td>
+                                                <input type="checkbox"
+                                                    class="cbShare"
+                                                    value="{$file.shareId}"
+                                                    data-shareId="{$file.shareId}"
+                                                    data-onglet = {$smarty.foreach.onglets.index}
+                                                    data-groupe="{$smarty.foreach.groupe.index}">
+                                            </td>
                                             <td>
                                                 <button
                                                     type="button"
@@ -91,7 +110,7 @@
                                             </td>
                                             <td class="commentaire">{$file.commentaire}</td>
                                             <td>{$file.libelle}</td>
-                                            <td><button
+                                            {* <td><button
                                                     type="button"
                                                     class="btn btn-danger btn-xs unShare pull-right"
                                                     data-fileid="{$file.fileId}"
@@ -100,14 +119,26 @@
                                                     title="Arrêter le partage">
                                                     <i class="fa fa-share-alt"></i>
                                                 </button>
-                                            </td>
+                                            </td> *}
                                         </tr>
 
                                         {/foreach}
 
+                                        <tr>
+                                            <td colspan="7">
+                                                <button type="button"
+                                                    class="btn btn-delAllSelected btn-danger"
+                                                    data-onglet={$smarty.foreach.onglets.index}
+                                                    data-groupe={$smarty.foreach.groupe.index}>
+                                                    Supprimer le partage de la sélection
+                                                </button>
+                                            </td>
+                                        </tr>
+
                                     </table>
 
                                 </div>
+
                             {/foreach}
 
                         </div>
@@ -156,6 +187,32 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
+
+        $('.selectAll').click(function(){
+            $(this).closest('.tab-pane').find('.cbShare').each(function(index, element){
+                element.checked = !element.checked;
+            })
+        })
+
+        $('.btn-delAllSelected').click(function(){
+            var onglet = $(this).data('onglet');
+            var groupe = $(this).data('groupe');
+            var toDelete = $('.cbShare[data-onglet="'+onglet+'"][data-groupe="'+groupe+'"]:checked');
+            bootbox.confirm({
+                title: 'Arrêt de partages',
+                message: 'Veuillez confirmer l\'arrêt de <strong>'+toDelete.length+' partage(s)</strong>',
+                callback: function(result){
+                    toDelete.each(function(index, item){
+                        var shareId = item.value;
+                        $.post('inc/files/unShareFile.inc.php', {
+                            shareId: shareId
+                        }, function(resultat) {
+                            $("tr[data-shareid='" + shareId + "']").remove();
+                        })
+                    })
+                }
+            })
+        })
 
         $(".btnFolder").click(function(){
             var shareId = $(this).data('shareid');
