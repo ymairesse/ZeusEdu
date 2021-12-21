@@ -19,8 +19,14 @@ $acronyme = $User->getAcronyme();
 
 $module = $Application->getModule(2);
 
+$ds = DIRECTORY_SEPARATOR;
+require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/classEDT.inc.php';
+$Edt = new Edt();
+
 $abreviation = isset($_POST['acronyme']) ? $_POST['acronyme'] : Null;
 $laDate = isset($_POST['laDate']) ? $_POST['laDate'] : Null;
+$dateSQL = $Application::dateMysql($laDate);
+$statutAbs = $Edt->getFirstStatutAbs($abreviation, $dateSQL);
 
 $ds = DIRECTORY_SEPARATOR;
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -35,5 +41,6 @@ $nomProf = $Ecole->abr2name($abreviation);
 $smarty->assign('acronyme', $abreviation);
 $smarty->assign('nomProf', $nomProf);
 $smarty->assign('laDate', $laDate);
+$smarty->assign('statutAbs', $statutAbs);
 
 $smarty->display('modal/selectDatesAdd.tpl');

@@ -798,10 +798,13 @@
                 var acronyme = $('#modalAcronyme').val();
                 var startDate = $('#start').val();
                 var endDate = $('#end').val();
+                var statutAbs = $('.statutAbs:checked').val();
+
                 $.post('inc/transfertAbsenceProf.inc.php', {
                     acronyme: acronyme,
                     startDate: startDate,
-                    endDate: endDate
+                    endDate: endDate,
+                    statutAbs: statutAbs
                 }, function(nb){
                     $('#selectDates').modal('hide');
                     bootbox.alert({

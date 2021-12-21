@@ -121,7 +121,7 @@ class Edt {
 		$nomImage = 'No image';
 		if ($resultat) {
 			$ligne = $requete->fetch();
-			$nomImage = $ligne['nomImage'];
+			$nomImage = isset($ligne['nomImage']) ? $ligne['nomImage'] : Null;
 		}
 
 		Application::DeconnexionPDO($connexion);
@@ -181,7 +181,7 @@ class Edt {
 
 		$dash = '-'; $col = ':';
 		$nb = 0;
-
+// echo $sql;
 		// on ne retient que la colonne "début" de la liste des périodes
 		$listeDebutsCours = array_column($listePeriodes, 'debut');
 		// on ne retient que la colonne "end" de la liste des périodes
@@ -195,6 +195,7 @@ class Edt {
 			$DTSTART = explode('T', $event['DTSTART']);
 			$startDate = SUBSTR($DTSTART[0], 0, 4).$dash.SUBSTR($DTSTART[0], 4, 2).$dash.SUBSTR($DTSTART[0],6, 2);
 			$startTime = (SUBSTR($DTSTART[1], 0, 2)).$col.SUBSTR($DTSTART[1], 2, 2).$col.SUBSTR($DTSTART[1], 4, 2);
+
 			// correction pour la timeZone de EDT + 1 heure
 			$timestamp = strtotime($startTime) + 60*60;
 			$startTime = date('H:i', $timestamp);
@@ -203,6 +204,7 @@ class Edt {
 			$DTEND = explode('T', $event['DTEND']);
 			$endDate = SUBSTR($DTEND[0], 0, 4).$dash.SUBSTR($DTEND[0], 4, 2).$dash.SUBSTR($DTEND[0],6, 2);
 			$endTime = (SUBSTR($DTEND[1], 0, 2)).$col.SUBSTR($DTEND[1], 2, 2).$col.SUBSTR($DTEND[1], 4, 2);
+
 			// correction pour la timeZone de EDT + 1 heure
 			$timestamp = strtotime($endTime) + 60*60;
 			$endTime = date('H:i', $timestamp);
@@ -210,6 +212,7 @@ class Edt {
 
 			// le jour de la semaine
 			$dayofweek = date('w', strtotime($start));
+
 			// l'heure en heures et minutes du début de la séance
 			// (éventuellement plusieurs périodes)
 			$heure = SUBSTR($startTime, 0, 5);
@@ -269,7 +272,7 @@ class Edt {
 			$requete->bindParam(':classes', $classes, PDO::PARAM_STR, 60);
 			$requete->bindParam(':parties', $parties, PDO::PARAM_STR, 60);
 			$requete->bindParam(':exportDate', $exportDate, PDO::PARAM_STR, 20);
-
+// Application::afficher(array($acronyme, $dayofweek, $local, $matiere, $profs, $classes, $parties, $exportDate));
 			// traitement des cours sur plusieurs périodes ********************
 			// recherche du numéro de la période de cours dans la liste des périodes existantes
 			$noPeriode = array_search($heure, $listeDebutsCours);
@@ -286,7 +289,7 @@ class Edt {
 
 				$requete->bindParam(':startTime', $startTime, PDO::PARAM_STR, 8);
 				$requete->bindParam(':endTime', $endTime, PDO::PARAM_STR, 8);
-
+// Application::afficher(array($startTime, $endTime), true);
 				$resultat = $requete->execute();
 
 				// encore une période pour ce cours?
@@ -557,6 +560,38 @@ class Edt {
 
  		return $liste;
  	}
+
+	/**
+	 * recherche le premier statutAbs ("ABS" ou "indisponible")
+	 * pour le prof $acronyme à la date $date
+	 *
+	 * @param string $acronyme
+	 * @param string $date
+	 *
+	 * @return string
+	 */
+	public function getFirstStatutAbs($acronyme, $date){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'SELECT statutAbs ';
+		$sql .= 'FROM '.PFX.'EDTprofsABS ';
+		$sql .= 'WHERE acronyme LIKE :acronyme AND date LIKE :date LIMIT 1 ';
+		$requete = $connexion->prepare($sql);
+
+		$requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR, 7);
+		$requete->bindParam(':date', $date, PDO::PARAM_STR, 10);
+
+		$statutAbs = Null;
+		$resultat = $requete->execute();
+		if ($resultat){
+			$requete->setFetchMode(PDO::FETCH_ASSOC);
+			$ligne = $requete->fetch();
+			$statutAbs = $ligne['statutAbs'];
+		}
+
+		Application::deconnexionPDO($connexion);
+
+		return $statutAbs;
+	}
 
 	/**
 	 * recherche les informations relatives à l'absence du prof $acronyme
@@ -1372,6 +1407,22 @@ class Edt {
 		Application::deconnexionPDO($connexion);
 
 		return (($liste != Null) && (count($liste) == 1)) ? $acronyme : Null;
+	}
+
+	/**
+	 * nettoyage de la table $table avant ré-importation des données
+	 *
+	 * @param string $table
+	 *
+	 * @return void
+	 */
+	public function truncateTable($table){
+		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
+		$sql = 'TRUNCATE '.$table;
+		$requete = $connexion->prepare($sql);
+		$resultat = $requete->execute();
+
+		Application::deconnexionPDO($connexion);
 	}
 
 }
