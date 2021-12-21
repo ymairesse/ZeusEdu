@@ -1,3 +1,4 @@
+{debug}
 <div class="btn-group">
     <button type="button" class="btn btn-default" id="btn-resetMove">Annuler</button>
     <button type="button" class="btn btn-primary" id="btn-saveMove" disabled>Enregistrer les mouvements</button>
@@ -33,7 +34,7 @@
                 <span class="micro">{$periode}</span><br>{$data.debut}
                 <button type="button" class="btn btn-xs pull-right btn-info btn-educ"
                     data-periode="{$periode}"
-                    title="{$listeEducs.$periode.prenom} {$listeEducs.$periode.nom}">
+                    title="{if isset($listeEducs.$periode.acronyme)}{$listeEducs.$periode.prenom|default:''} {$listeEducs.$periode.nom|default:''}{/if}">
                     {$listeEducs.$periode.acronyme|default:'XXXXX'}
                 </button>
             </th>
