@@ -1,4 +1,3 @@
-{debug}
 <div class="btn-group">
     <button type="button" class="btn btn-default" id="btn-resetMove">Annuler</button>
     <button type="button" class="btn btn-primary" id="btn-saveMove" disabled>Enregistrer les mouvements</button>
