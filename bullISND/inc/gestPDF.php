@@ -40,8 +40,28 @@ switch ($mode) {
             $smarty->assign('periodes', $Bulletin->listePeriodes4anScol($anneeScolaire));
 
             $smarty->assign('classeArchive', $classeArchive);
-            $smarty->assign('corpsPage', 'bulletinsArchive');
+            $smarty->assign('corpsPage', 'pdf/bulletinsArchive');
             }
+        break;
+
+    case 'archiverBulletins':
+        $listeNiveaux = $Ecole->listeNiveaux();
+        $listePeriodes = range(1, PERIODEENCOURS);
+
+        $niveau = isset($_COOKIE['niveau']) ? $_COOKIE['niveau'] : 1;
+        $periode = isset($_COOKIE['periode']) ? $_COOKIE['periode'] : 1;
+
+        $listeClasses = $Ecole->listeClassesNiveau($niveau, 'groupe', LISTESECTIONSBULL);
+        $directory = $Bulletin->flatDirectoryArchive('archives/'.ANNEESCOLAIRE, $niveau);
+
+        $smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
+        $smarty->assign('listeNiveaux', $listeNiveaux);
+        $smarty->assign('niveau', $niveau);
+        $smarty->assign('listePeriodes', $listePeriodes);
+        $smarty->assign('periode', $periode);
+        $smarty->assign('directory', $directory);
+        $smarty->assign('listeClasses', $listeClasses);
+        $smarty->assign('corpsPage', 'pdf/archiverBulletins');
         break;
 
     case 'bulletinIndividuel':

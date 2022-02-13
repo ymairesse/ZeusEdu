@@ -69,7 +69,7 @@
 
         <td class="cote">
             <button type="button"
-            class="btn btn-sm btn-primary btn-block modPonderation"
+            class="btn btn-sm btn-primary btn-block editPonderation"
             title="Modifier pour {if $matricule == 'all'}tous les élèves{else}cet élève{/if}" data-matricule="{$matricule}"
             data-coursgrp="{$coursGrp}"
             data-bulletin="{$bulletin}">

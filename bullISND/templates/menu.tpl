@@ -31,7 +31,11 @@
 				<li><a href="index.php?action=pdf&amp;mode=bulletinIndividuel">Bulletins individuels PDF</a></li>
 				<li><a href="index.php?action=pdf&amp;mode=bulletinClasse">Bulletins par classe PDF</a></li>
 				<li><a href="index.php?action=pdf&amp;mode=niveau">Bulletins par niveaux</a></li>
-				<li><a href="index.php?action=pdf&amp;mode=archive">Archives des bulletins</a></li>
+				<li class="divider"></li>
+				<li><a href="index.php?action=pdf&amp;mode=archive">Accès aux archives des bulletins</a></li>
+				{if $userStatus eq 'admin'}
+				<li><a href="index.php?action=pdf&amp;mode=archiverBulletins">Archiver les bulletins</a></li>
+				{/if}
 			</ul>
 		</li>
 

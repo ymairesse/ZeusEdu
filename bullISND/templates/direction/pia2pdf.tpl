@@ -12,7 +12,7 @@
 	<img src="../../images/gradientISND2.jpg" alt="entête" style="width:100%">
 
 	<br><br><br>
-	
+
 	<!-- entête du document de l'élève -->
 <table style="width:100%; margin: 2cm 0;">
 	<tr>
@@ -95,11 +95,11 @@
 		</tr>
 		<tr>
 			<td>Cotes obtenues</td>
-			<td class="cote">{$eleve.ceb.fr}</td>
-			<td class="cote">{$eleve.ceb.math}</td>
-			<td class="cote">{$eleve.ceb.sc}</td>
-			<td class="cote">{$eleve.ceb.hg}</td>
-			<td class="cote">{$eleve.ceb.l2}</td>
+			<td class="cote">{$eleve.ceb.fr|default:'-'}</td>
+			<td class="cote">{$eleve.ceb.math|default:'-'}</td>
+			<td class="cote">{$eleve.ceb.sc|default:'-'}</td>
+			<td class="cote">{$eleve.ceb.hg|default:'-'}</td>
+			<td class="cote">{$eleve.ceb.l2|default:'-'}</td>
 		</tr>
 	</table>
 	{/if}

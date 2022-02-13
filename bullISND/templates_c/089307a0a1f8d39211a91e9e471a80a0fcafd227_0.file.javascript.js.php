@@ -1,11 +1,11 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2021-06-20 21:09:43
+/* Smarty version 3.1.34-dev-7, created on 2021-08-24 13:04:53
   from '/home/yves/www/sio2/peda/javascript.js' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_60cf92774cd980_75082534',
+  'unifunc' => 'content_6124d255390180_50290618',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_60cf92774cd980_75082534 (Smarty_Internal_Template $_smarty_tpl) {
+function content_6124d255390180_50290618 (Smarty_Internal_Template $_smarty_tpl) {
 echo '<script'; ?>
  type="text/javascript" src="../js/jquery-2.1.3.min.js"><?php echo '</script'; ?>
 >

@@ -2965,7 +2965,7 @@ class Bulletin
         $sql .= 'LEFT JOIN '.PFX.'bullDecisions AS dbd ON dbd.matricule = dp.matricule ';
         $sql .= 'JOIN '.PFX.'eleves AS de ON de.matricule = dp.matricule ';
         $sql .= "WHERE dp.matricule IN ($listeElevesString) ";
-// echo $sql;
+
         $resultat = $connexion->query($sql);
         $listeDecisions = array();
         if ($resultat) {
@@ -3816,13 +3816,13 @@ class Bulletin
             $sql .= 'SET cours = :cours, nbheures = :nbheures, libelle = :libelle, cadre = :cadre, section = :section ';
             $sql .= 'ON DUPLICATE KEY UPDATE libelle= :libelle, nbheures = :nbheures, cadre = :cadre, section = :section ';
             $requete = $connexion->prepare($sql);
-// echo $sql;
+
             $requete->bindParam(':cours', $cours, PDO::PARAM_STR, 17);
             $requete->bindParam(':nbheures', $nbheures, PDO::PARAM_INT);
             $requete->bindParam(':libelle', $libelle, PDO::PARAM_STR, 60);
             $requete->bindParam(':cadre', $cadre, PDO::PARAM_INT);
             $requete->bindParam(':section', $section, PDO::PARAM_STR);
-// Application::afficher(array($cours, $nbheures, $libelle, $cadre, $section), true);
+
             $resultat = $requete->execute();
 
             $nb = $requete->rowCount();
@@ -5684,7 +5684,6 @@ class Bulletin
                 if (isset($listeLocks[$matricule][$coursGrp]) && $listeLocks[$matricule][$coursGrp] == 0) {
                     switch ($type) {
                         case 'form':
-                            // echo $sqlForm;
                             $data = array(
                                 ':matricule' => $matricule,    ':coursGrp' => $coursGrp,
                                 ':type' => $type,              ':idComp' => $idComp,
@@ -6073,6 +6072,152 @@ class Bulletin
         return $listeAnnees;
     }
 
+    /**
+     * renvoie le contenu d'un répertoire d'archive des bulletins
+     *
+     * @param string $dir : le répertoire, y compris le path
+     * @param int $anneeEtude : l'année d'étude
+     *
+     * @return array : liste des fichiers commençant par les répertoires
+     */
+    public function flatDirectoryArchive($dir, $anneeEtude) {
+        $ds = DIRECTORY_SEPARATOR;
+        $listePeriodes = range(1, PERIODEENCOURS);
+        $listFiles = array();
+
+        foreach ($listePeriodes as $periode) {
+            $results = scandir($dir.$ds.$periode);
+            foreach ($results as $entry) {
+                if ($entry != '.' && $entry != '..') {
+                    if ($entry[0] == $anneeEtude){
+                        // ne retenir que ce qui précède le premier "-" dans le nom du fichier PDF
+                        $classe = explode('-', $entry)[0];
+                        $listFiles[$periode][$classe] = array(
+                            'fileName' => $entry,
+                            'size' => $this->unitFilesize(filesize($dir.$ds.$periode.$ds.$entry)),
+                            'dateTime' => strftime('%x %X', filemtime($dir.$ds.$periode.$ds.$entry))
+                        );
+                    }
+                }
+            }
+        }
+
+        return $listFiles;
+    }
+
+    /**
+     * convertit les tailles de fichiers en valeurs usuelles avec les unités.
+     *
+     * @param int $bytes : la taille en bytes
+     *
+     * @return string : la taille en unités usuelles
+     */
+    public function unitFilesize($size) {
+        $precision = ($size > 1024) ? 2 : 0;
+        $units = array('octet(s)', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo');
+        $power = $size > 0 ? floor(log($size, 1024)) : 0;
+
+        return number_format($size / pow(1024, $power), $precision, '.', ',').' '.$units[$power];
+    }
+
+    /**
+     * création du document PDF de bulletin pour l'ensemble d'une classe pour archivage
+     * le bulletin d'une classe est formé de la somme des bulletins individuels de chaque élève.
+     *
+     * @param array  $listeEleves : liste de tous les élèves de la classe
+     * @param string $classe:     la classe concernée
+     * @param int    $periode    : le numéro du bulletin
+     *
+     * @return string fichier PDF à télécharger
+     */
+    public function createPDFclasse4archive($listeEleves, $classe, $periode)
+    {
+        $pdf = new PDF_HTML('P', 'mm', 'A4');
+
+        $pdf->AddPage('P');
+        $pdf->SetFont('Arial', 'B', 72);
+        $this->resetFondGris($pdf);
+
+        $pdf->SetY(100);
+        $pdf->Cell(0, 72, $classe, 0, 0, 'C');
+
+        $Ecole = new Ecole();
+        $annee = $Ecole->anneeDeClasse($classe);
+        $degre = $Ecole->degreDeClasse($classe);
+        $titulaires = $Ecole->titusDeGroupe($classe);
+
+        $noticeDirection = $this->noteDirection($annee, $periode);
+        $noticeDirection = isset($noticeDirection['remarque']) ? $noticeDirection['remarque'] : Null;
+
+        // tous les cours donnés dans la classe (certains élèves ne suivent pas certains cours; tenir compte de l'historique)
+        $listeTousCoursGrp = $this->listeCoursGrpEleves($listeEleves, $periode, true);
+        $module = Application::getModule(3);
+
+        foreach ($listeEleves as $matricule => $dataEleve) {
+            $listeCoursGrpUnEleve = isset($listeTousCoursGrp[$matricule]) ? $listeTousCoursGrp[$matricule] : null;
+
+            // s'il n'y a pas de cours défini pour cet élève, on ne compose pas le bulletin...
+            if ($listeCoursGrpUnEleve != null) {
+                $eleve = new Eleve($matricule);
+                $infoPerso = $eleve->getDetailsEleve();
+                $listeProfsCoursGrp = $Ecole->listeProfsListeCoursGrp($listeCoursGrpUnEleve);
+
+                $listeSituations = $this->listeSituationsCours($matricule, array_keys($listeCoursGrpUnEleve), null, true);
+                $sitPrecedentes = $this->situationsPrecedentes($listeSituations, $periode);
+                $sitActuelles = $this->situationsPeriode($listeSituations, $periode);
+
+                $listeCompetences = $this->listeCompetencesListeCoursGrp($listeCoursGrpUnEleve);
+
+                $listeCotes = $this->listeCotes($matricule, $listeCoursGrpUnEleve, $listeCompetences, $periode);
+                $ponderations = $this->getPonderations($listeCoursGrpUnEleve, $periode);
+                $cotesPonderees = self::listeGlobalPeriodePondere($listeCotes, $ponderations, $periode);
+
+                $commentairesCotes = $this->listeCommentairesTousCours($matricule, $periode);
+                $mention = $this->listeMentions($matricule, $periode, $annee);
+
+                $epreuvesExternes = $this->getResultatsExternes4eleve($matricule, ANNEESCOLAIRE);
+
+                $ficheEduc = $this->listeCommentairesEduc($matricule, $periode);
+
+                $remarqueTitulaire = $this->remarqueTitu($matricule, $periode);
+                // tableau des attitudes seulement au premier degré.
+                $tableauAttitudes = $degre == 1 ? $this->tableauxAttitudes($matricule, $periode) : null;
+
+                // notice relative au parcours scolaire
+                $noticeParcours = $this->getNoticesParcours($matricule, $annee);
+                $noticeParcours = ($noticeParcours != Null) ? $noticeParcours : Null;
+                $noticeParcours = isset($noticeParcours[$annee]) ? $noticeParcours[$annee] : Null;
+
+                $detailsBulletin = array(
+                    'annee' => $annee,                          'degre' => $degre,
+                    'titulaires' => $titulaires,                'listeCoursEleve' => $listeCoursGrpUnEleve,
+                    'listeProfs' => $listeProfsCoursGrp,        'baremes' => $ponderations,
+                    'infoPerso' => $infoPerso,                  'sitPrec' => $sitPrecedentes,
+                    'sitActuelles' => $sitActuelles,            'detailCotes' => $listeCotes,
+                    'listeCompetences' => $listeCompetences,    'cotesPonderees' => $cotesPonderees,
+                    'listeProfs' => $listeProfsCoursGrp,        'commentairesCotes' => $commentairesCotes,
+                    'ficheEduc' => $ficheEduc,                  'attitudes' => $tableauAttitudes,
+                    'remTitu' => $remarqueTitulaire,            'mention' => $mention,
+                    'noticeDirection' => $noticeDirection,      'externe' => $epreuvesExternes,
+                    'noticeParcours' => $noticeParcours,
+                    );
+                $this->createBulletinEleve($pdf, $detailsBulletin, $periode);
+                unset($eleve);
+            }
+        }
+
+        $ds = DIRECTORY_SEPARATOR;
+
+        // création éventuelle du répertoire
+        if (!(file_exists(INSTALL_DIR.$ds.$module.$ds.'archives'.$ds.ANNEESCOLAIRE.$ds.$periode))) {
+            mkdir(INSTALL_DIR.$ds.$module.$ds.'archives'.$ds.ANNEESCOLAIRE.$ds.$periode, 0700, true);
+        }
+
+        $pdf->Output('F', INSTALL_DIR.$ds.$module.$ds.'archives'.$ds.ANNEESCOLAIRE.$ds.$periode.$ds.$classe.'-'.$periode.'.pdf');
+
+        return;
+    }
+
     public function listeNotesFiches($listeEleves)
     {
         $listeElevesString = implode(', ', array_keys($listeEleves));
@@ -6425,7 +6570,7 @@ class Bulletin
         $pdf->AddPage('P');
         $pdf->SetFont('Arial', 'B', 72);
         $this->resetFondGris($pdf);
-        // $pdf->SetFillColor(230, 230, 230);
+
         $pdf->SetY(100);
         $pdf->Cell(0, 72, $classe, 0, 0, 'C');
 
@@ -6434,7 +6579,8 @@ class Bulletin
         $degre = $Ecole->degreDeClasse($classe);
         $titulaires = $Ecole->titusDeGroupe($classe);
 
-        $noticeDirection = $this->noteDirection($annee, $bulletin)['remarque'];
+        $noticeDirection = $this->noteDirection($annee, $bulletin);
+        $noticeDirection = isset($noticeDirection['remarque']) ? $noticeDirection['remarque'] : Null;
 
         // tous les cours donnés dans la classe (certains élèves ne suivent pas certains cours; tenir compte de l'historique)
         $listeTousCoursGrp = $this->listeCoursGrpEleves($listeEleves, $bulletin, true);
@@ -6462,7 +6608,7 @@ class Bulletin
                 $commentairesCotes = $this->listeCommentairesTousCours($matricule, $bulletin);
                 $mention = $this->listeMentions($matricule, $bulletin, $annee);
 
-                $epreuvesExternes = $this->getResultatsExternes4eleve($matricule, $anScol);
+                $epreuvesExternes = $this->getResultatsExternes4eleve($matricule, ANNEESCOLAIRE);
 
                 $ficheEduc = $this->listeCommentairesEduc($matricule, $bulletin);
 
@@ -6529,7 +6675,8 @@ class Bulletin
         $x = 10;
         $y = 12;
         $pdf->SetLineWidth(0.2);
-        $pdf->Image('../images/logo1.jpg', 12, 8, 25);
+        // echo getcwd(); die();
+        $pdf->Image(BASEDIR.'/images/logo1.jpg', 12, 8, 25);
 
         $pdf->SetXY($x + 30, $y - 2);
         $pdf->SetFont('Arial', 'B', 14);

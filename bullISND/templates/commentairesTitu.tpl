@@ -67,12 +67,15 @@
 
 				<div class="col-md-6 col-sm-12">
 					<h4>Poursuite du parcours scolaire</h4>
+					{if $bulletin != $NBPERIODES}
+					<p class="avertissement">Rubrique disponible au bulletin final</p>
+					{else}
 					<textarea
 						name="parcours"
 						id="parcours"
 						rows="5"
-						class="form-control"
-						{if $bulletin != NBPERIODES} disabled{/if}>{$noticeParcours|default:''}</textarea>
+						class="form-control">{$noticeParcours|default:''}</textarea>
+					{/if}
 			 	</div>
 
 				<input type="hidden" name="bulletin" value="{$bulletin}">

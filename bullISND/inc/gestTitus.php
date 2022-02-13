@@ -137,7 +137,8 @@ switch ($mode) {
 
 				// pas d'indication de numéro de bulletin afin de les avoir tous
 				$tableauAttitudes = $Bulletin->tableauxAttitudes($matricule, Null);
-				$smarty->assign('ANNEESCOLAIRE',ANNEESCOLAIRE);
+				$smarty->assign('ANNEESCOLAIRE', ANNEESCOLAIRE);
+				$smarty->assign('NBPERIODES', NBPERIODES);
 				$smarty->assign('bulletin', $bulletin);
 				$smarty->assign('matricule', $matricule);
 				$smarty->assign('infoPerso', $infoPersoEleve);

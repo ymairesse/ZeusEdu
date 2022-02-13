@@ -27,6 +27,7 @@
 			<thead>
 
 			<tr>
+				<th style="width:1em;">&nbsp;</th>  <!-- ajouté pour le n° d'ordre -->
 				<th width="20">&nbsp;</th>
 				<th>&nbsp;</th>
 				{assign var=counter value=1}
@@ -56,6 +57,7 @@
 			</tr>
 
 			<tr>
+				<th class="micro">n°</th>  <!-- ajouté -->
 				<th>Classe</th>
 				<th>Nom</th>
 				{assign var=counter value=1}
@@ -91,9 +93,10 @@
 			{assign var=tabIndex value=1}
 			{assign var=nbEleves value=$listeEleves|@count}
 			{assign var=nbTravaux value=$listeTravaux|@count}
-			{foreach from=$listeEleves key=matricule item=unEleve}
+			{foreach from=$listeEleves key=matricule item=unEleve name=boucle}
 
 			<tr>
+			<td class="micro" style="text-align:center">{$smarty.foreach.boucle.iteration}</td>  <!-- ajouté -->
 			<td>{$unEleve.classe}</td>
 			{assign var=nomPrenom value=$unEleve.nom|cat:' '|cat:$unEleve.prenom}
 			<td	style="cursor:pointer"

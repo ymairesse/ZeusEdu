@@ -28,6 +28,7 @@ $module = $Application->getModule(3);
 $bulletin = PERIODEENCOURS;
 
 require_once INSTALL_DIR.'/infirmerie/inc/classes/classInfirmerie.inc.php';
+$Infirmerie = new Infirmerie();
 require_once (INSTALL_DIR.'/inc/classes/classEleve.inc.php');
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
@@ -47,14 +48,14 @@ foreach ($listeEleves as $matricule) {
     $detailsEleve = $Eleve->getDetailsEleve();
     $degre = $Ecole->degreDeClasse($detailsEleve['groupe']);
     $ceb = ($degre == 1) ? $Bulletin->getCEB($matricule) : null;
-    $infirmerie = new eleveInfirmerie($matricule);
-    $infosMedic = $infirmerie->getInfoMedic($matricule);
+    $infosMedic = $Infirmerie->getInfoMedic($matricule);
     $resultatsPre = $Bulletin->syntheseToutesAnnees($matricule);
     $listeCoursGrp = $Bulletin->listeCoursGrpEleves($matricule, $bulletin);
     $listeCoursGrp = $listeCoursGrp[$matricule];
     $listeProfs = $Ecole->listeProfsListeCoursGrp($listeCoursGrp);
 
-    if ($resultatsPre != null) {
+    if ($resultatsPre != Null) {
+        Application::afficher($resultatsPre, true);
         //millésimes de l'année précédente
         $anPrec = array_keys($resultatsPre);
         $anPrec = $anPrec[0];
@@ -82,8 +83,8 @@ foreach ($listeEleves as $matricule) {
         'anScolaire' => $anScolaire,
         'listeCoursActuelle' => $listeCoursGrp,
         'infosMedic' => $infosMedic,
-        'resultats' => $resultatsPrec['resultats'],
-        'listeCours' => $resultatsPrec['listeCours'],
+        'resultats' => ($resultatsPrec != Null) ? $resultatsPrec['resultats'] : Null,
+        'listeCours' => ($resultatsPrec != Null) ? $resultatsPrec['listeCours'] : Null,
         'listeProfs' => $listeProfs,
         'mentions' => $mentions,
         );

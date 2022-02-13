@@ -97,7 +97,7 @@
 		$('body').on('click', '.btnPlus', function() {
 			var matricule = $(this).closest('tr').find('select').val();
 			var coursGrp = $(this).data('coursgrp');
-			// pé&riode en cours (n° du bulletin)
+			// période en cours (n° du bulletin)
 			var bulletin = $(this).data('bulletin');
 
 			// noter les valeurs de pondérations dans le formulaire de la boîte modale
@@ -112,11 +112,11 @@
 				});
 		})
 
-		$('body').on('click', '.modPonderation', function() {
+		$('body').on('click', '.editPonderation', function() {
 			// matricule de l'élève concerné ou "all" si tous les élèves
 			var matricule = $(this).data('matricule');
 			var coursGrp = $(this).data('coursgrp');
-			// pé&riode en cours (n° du bulletin)
+			// période en cours (n° du bulletin)
 			var bulletin = $(this).data('bulletin');
 
 			// noter les valeurs de pondérations dans le formulaire de la boîte modale
