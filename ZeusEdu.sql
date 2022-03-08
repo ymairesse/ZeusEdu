@@ -1859,7 +1859,8 @@ CREATE TABLE `didac_thotParents` (
   `mail` varchar(60) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Adresse mail du parent',
   `lien` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Lien de parenté',
   `md5pwd` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  `confirme` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''adresse mail a été confirmée'
+  `confirme` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'L''adresse mail a été confirmée',
+  `notifications` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Le parent accepte les notifications par mail'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table des parents';
 
 ALTER TABLE `didac_thotParents`
