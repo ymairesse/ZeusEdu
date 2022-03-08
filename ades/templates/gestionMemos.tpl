@@ -2,61 +2,78 @@
 
 <h2>Gestion des textes enregistrés</h2>
 
-<div id="success"></div>
-
 <div class="row">
 
 	<div class="col-md-9 col-sm-12">
 		{if $listeMemos == array()}
 			<p class="avertissement">Rien à traiter...</p>
-			{else}
+		{else}
 
-				{foreach from=$listeMemos key=titre item=listeTextes}
-					<table class="table table-hover ">
-					<thead>
-						<tr>
-							<th colspan="3"><h3>{$titre}</h3></th>
-						<tr>
-					</thead>
-					<tr>
-						<th style="width:4em">Proprio</th>
-						<th>Texte</th>
-						<th style="width:2em">&nbsp</th>
-					</tr>
-						{foreach from=$listeTextes key=id item=lesItems}
-						<tr>
-							<td>{$lesItems.user}</td>
-							<td>
-								{if $acronyme == $lesItems.user}
-								<form class="form-inline microForm" role="form">
-									<div class="form-group">
-										<label class="sr-only" for="texte_{$titre}_{$id}">Texte</label>
-										<input type="text" class="form-control input-sm record" id="texte_{$titre}_{$id}" name="texte_{$titre}_{$id}" value="{$lesItems.texte}" maxlength="150" size="80"  title="Cliquer pour modifier">
-									</div>
-
-									<div class="form-group">
-										<a href="#" class="btn btn-default oki" style="display: none"><span class="glyphicon glyphicon-floppy-disk" title="Enregistrer"></a>
-									</div>
-
-									<input type="hidden" name="id_{$titre}_{$id}" value="{$id}" class="id">
-									<input type="hidden" name="user_{$lesItems.user}" value="{$lesItems.user}" class="user">
-									<input type="hidden" name="champ_{$titre}_{$id}" value="{$titre}" class="champ">
-								</form>
-								{else}
-								{$lesItems.texte}
-								{/if}
-							</td>
-							<td class="delete" title="Effacer ce texte">
-								{if $acronyme == $lesItems.user}
-									<button type="button" class="btn btn-default btn-sm suppr"><span class="glyphicon glyphicon-remove" style="color:red; font-size:130%; cursor:pointer"></span></button>
-									{else}
-									&nbsp;
-								{/if}
-							</td>
-						</tr>
-						{/foreach}
-					</table>
+			<ul class="nav nav-tabs">
+				{foreach from=$listeMemos key=champ item=listeTextes name=boucle}
+					<li {if $smarty.foreach.boucle.index == 0}class="active"{/if}>
+						<a data-toggle="tab" href="#{$champ}">{$champ}</a>
+					</li>
 				{/foreach}
+			</ul>
+
+			<div class="tab-content">
+				{foreach from=$listeMemos key=champ item=listeTextes name=boucle}
+					<div id="{$champ}" class="tab-pane fade {if $smarty.foreach.boucle.index == 0}in active{/if}">
+						<table class="table table-hover ">
+						<tr>
+							<th style="width:4em">Propriétaire</th>
+							<th>Texte</th>
+							<th style="width:2em">&nbsp;</th>
+							<th style="width:2em">&nbsp;</th>
+						</tr>
+							{foreach from=$listeTextes key=id item=lesItems}
+							<tr data-id="{$id}">
+								<td>
+									<span class="btn btn-sm {if $lesItems.free == 1}btn-info{else}btn-default{/if} btn-share"
+									type="button"
+									data-id="{$id}">
+										{$lesItems.user}
+									</span>
+								</td>
+								<td>
+									<div class="input-group">
+										<input type="text" class="form-control input-sm record"
+											data-id="{$id}"
+											value="{$lesItems.texte}"
+											maxlength="150"
+											{if $acronyme != $lesItems.user}disabled{/if}>
+										<span class="input-group-btn">
+											<button type="button" class="btn btn-success btn-sm oki" data-id="{$id}" title="Enregistrer">
+											<i class="fa fa-save"></i>
+											</button>
+										</span>
+									</div>
+
+								</td>
+								<td>
+									{if $acronyme == $lesItems.user}
+										<button type="button"
+										class="btn btn-sm {if $lesItems.free == 1}btn-info{else}btn-default{/if} btn-share"
+ 										data-id="{$id}"
+										title="Partager ce texte">
+											<i class="fa fa-share"></i>
+										</button>
+									{/if}
+								</td>
+								<td>
+									{if $acronyme == $lesItems.user}
+										<button type="button" class="btn btn-danger btn-sm suppr" title="Effacer ce texte">
+											<i class="fa fa-times"></i>
+										</button>
+									{/if}
+								</td>
+							</tr>
+							{/foreach}
+						</table>
+					</div>
+				{/foreach}
+			</div>
 
 		{/if}
 	</div>
@@ -71,8 +88,6 @@
 
 </div>
 
-
-
 </div>
 
 
@@ -80,47 +95,55 @@
 
 	$(document).ready(function(){
 
-	$(".record").click(function(){
-		$(this).parent().next().find('.oki').fadeIn();
-		})
-
-	$(".oki").click(function(){
-		var oki = $(this);
-		var okiForm = $(this).closest('form');
-		var texte = okiForm.find('input.record').val();
-		var id= okiForm.find('input.id').val();
-		var champ = okiForm.find('input.champ').val()
-		var user = okiForm.find('input.user').val()
+	$('.oki').click(function(){
+		var id = $(this).data('id');
+		var texte = $('input:text[data-id="'+id+'"]').val();
 
 		if (texte != '') {
-			$.post("inc/saveTexte.inc.php", {
-				'texte': texte,
-				 'qui': user,
-				 'champ': champ,
-				 'id': id,
-				 'user': user
-				 },
-					function (resultat) {
-						oki.fadeOut();
-						$("#success").html(resultat);
-						}
-					);
-			}
+		 	$.post("inc/saveTexte.inc.php", {
+		 		'texte': texte,
+				'id': id,
+		 		 },
+				function (resultat) {
+					if (resultat == 1)
+						bootbox.alert({
+							title: 'Enregistrement',
+							message: 'Enregistrement de <strong>'+texte+'</strong>'
+						})
+					}
+				);
+		 	}
 		})
 
-	$(".suppr").click(function(){
-		var sup = $(this);
-		var id=$(this).parent().prev().find(".id").val();
-		if (id != '' && confirm('Voulez-vous vraiment supprimer ce texte?')) {
-			$.post('inc/delTexte.inc.php', {
-				'id': id
-				},
-				function (resultat) {
-					sup.parent().parent().remove();
-					$("#success").html(resultat);
+	$('.suppr').click(function(){
+		var id = $(this).closest('tr').data('id');
+		var texte = $('input:text[data-id="' + id +'"]').val();
+		bootbox.confirm({
+			title: 'Suppression',
+			message: 'Veuillez confirmer l\'effacement du texte <br><strong>'+texte+'</strong>',
+			callback: function(result){
+				if (result == true) {
+					$.post('inc/delTexte.inc.php', {
+						'id': id
+						},
+						function () {
+							$('tr[data-id="'+id+'"]').remove();
+							}
+						)
 					}
-				)
-			}
+				}
+			})
+		})
+
+		$('.btn-share').click(function(){
+			var id = $(this).closest('tr').data('id');
+			$.post('inc/shareTexte.inc.php', {
+				id: id
+			}, function(resultat){
+				if (resultat == 1)
+					$('.btn-share[data-id="'+id+'"]').removeClass('btn-default').addClass('btn-info');
+					else $('.btn-share[data-id="'+id+'"]').removeClass('btn-info').addClass('btn-default');
+			})
 		})
 
 	})

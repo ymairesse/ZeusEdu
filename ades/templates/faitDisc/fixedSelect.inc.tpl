@@ -1,4 +1,3 @@
-{strip}
 {if $prototype.structure.typeRetenue != 0}
 	<!-- Nous sommes dans le cas d'une retenue => ancienne valeur du idretenue (en cas d'édition) -->
 	<input type="hidden" name="oldIdretenue" value="{$fait.idretenue|default:''}">
@@ -26,4 +25,3 @@
 	</div>  <!-- col-sm-... -->
 
 </div>  <!-- row -->
-{/strip}

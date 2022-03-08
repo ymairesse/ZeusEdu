@@ -6,7 +6,7 @@
 
 <h4>Type: {$infosRetenue.titreFait} Nombre: <span id="nbRetenues">{$listeRetenues|@count}</span></h4>
 
-<button type="button" class="btn btn-primary" id="cache" title="Montrer les retenues cachées">Cacher/Montrer</button>
+<button type="button" class="btn btn-primary" id="cache" title="Montrer les retenues cachées">Bascule Cacher|Montrer</button>
 
 <div class="table-responsive">
 

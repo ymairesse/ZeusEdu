@@ -17,9 +17,10 @@ require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
 $Ecole = new Ecole();
 
 $classe = isset($_POST['classe']) ? $_POST['classe'] : null;
-if ($classe == null) {
-    die();
-}
+$matricule = isset($_POST['matricule']) ? $_POST['matricule'] : null;
+
+setcookie('classe', $classe);
+setcookie('matricule', $matricule);
 
 $listeEleves = $Ecole->listeEleves($classe, 'groupe');
 
@@ -29,4 +30,5 @@ $smarty->template_dir = '../templates';
 $smarty->compile_dir = '../templates_c';
 
 $smarty->assign('listeEleves', $listeEleves);
+$smarty->assign('matricule', $matricule);
 $smarty->display('selecteurs/listeEleves.tpl');

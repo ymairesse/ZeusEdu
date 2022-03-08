@@ -37,12 +37,14 @@ $nomExpediteur = sprintf('%s %s. %s - %s',$formule, substr($nomExpediteur['preno
 
 $objet = ECOLE.' - Document disciplinaire';
 
+
 // ajout de la signature
 $signature = file_get_contents('../../templates/signature.tpl');
 $signature = str_replace('##expediteur##', $nomExpediteur, $signature);
 $signature = str_replace('##mailExpediteur##', $mailExpediteur, $signature);
+$signature = str_replace('##SITEWEB##', $SITEWEB);
 $texteMail .= $signature;
-
+die($signature);
 // ajout du disclaimer
 $disclaimer = "<div style='font-size:small'><a href='".DISCLAIMER."'>Clause de non responsabilité</a></div>";
 $texteMail .= "<hr> $disclaimer";

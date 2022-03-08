@@ -37,7 +37,9 @@ $dataRetenue = array(
 
 $newId = $Retenue->saveRetenue($dataRetenue);
 $dataRetenue['idretenue'] = $newId;
-
+// new ---------------------------------------------------------
+$dataRetenue['dateRetenue'] = $Application::datePHP($datePlus7);
+// new ---------------------------------------------------------
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = "../../templates";
@@ -45,6 +47,3 @@ $smarty->compile_dir = "../../templates_c";
 
 $smarty->assign('uneRetenue', $dataRetenue);
 echo $smarty->fetch('../templates/retenues/retenueDeListe.tpl');
-
-// uniquement php 5.4
-// echo json_encode($res, JSON_UNESCAPED_SLASHES);

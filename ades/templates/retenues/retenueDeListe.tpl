@@ -41,17 +41,19 @@
         data-placement="bottom">
         <button type="button" class="btn btn-success btn-xs edit"
             data-idretenue="{$uneRetenue.idretenue}"
-            data-typeretenue="{$typeRetenue}">
+            data-typeretenue="{$uneRetenue.typeRetenue}">
             <i class="fa fa-edit"></i>
         </button>
     </td>
 
     <td style="text-align:center"
-        title="Cloner"
+        title="Cloner dans une semaine"
         data-container="body"
         data-toggle="tooltip"
         data-placement="bottom">
-        <button type="button" class="btn btn-primary btn-xs cloner" data-idretenue="{$uneRetenue.idretenue}">
+        <button type="button"
+            class="btn btn-primary btn-xs cloner"
+            data-idretenue="{$uneRetenue.idretenue}">
             <i class="fa fa-copy"></i>
         </button>
     </td>

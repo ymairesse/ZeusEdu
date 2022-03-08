@@ -1,9 +1,9 @@
-<h2>{$Eleve.nom} {$Eleve.prenom} | {$Eleve.groupe}</h2>
+<h2 style="color:{$prototype.structure.couleurTexte}; background-color:{$prototype.structure.couleurFond}">{$Eleve.nom} {$Eleve.prenom} | {$Eleve.groupe}</h2>
 
 {assign var=contexte value='formulaire'}
 {assign var="tabIndex" value="1" scope="global"}
 
-		<h3 style="color:{$prototype.structure.couleurTexte}; background-color:{$prototype.structure.couleurFond}">{$prototype.structure.titreFait}</h3>
+		<h3>{$prototype.structure.titreFait}</h3>
 
 		<form role="form" id="editFaitDisc" class="form-vertical">
 
@@ -49,12 +49,10 @@
 
 			<div class="clearfix"></div>
 
-			<input type="hidden" name="anneeScolaire" value="{$fait.anneeScolaire}">
-			<input type="hidden" name="classe" value="{$Eleve.groupe}">
-			<input type="hidden" name="idfait" value="{$idfait|default:''}">
-			<input type="hidden" name="oldIdretenue" value="{$fait.idretenue|default:0}">
-			{* <input type="hidden" name="action" value="fait">
-			<input type="hidden" name="mode" value="enregistrer"> *}
+			<input type="hidden" id="anneescolaire" name="anneeScolaire" value="{$fait.anneeScolaire}">
+			<input type="hidden" id="classe" name="classe" value="{$Eleve.groupe}">
+			<input type="hidden" id="idfait" name="idfait" value="{$idfait|default:''}">
+			<input type="hidden" id="oldIdreteneu" name="oldIdretenue" value="{$fait.idretenue|default:0}">
 
 		</form>
 

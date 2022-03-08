@@ -71,7 +71,8 @@
 				<li><strong>##motif##</strong> le motif de la retenue</li>
 				<li><strong>##materiel##</strong> le matériel à apporter</li>
 				<li><strong>##travail##</strong> le travail à effectuer</li>
-				<li><strong>##professeur##</strong> le nom du sanctionnateur</li>
+				<li><strong>##professeur##</strong> l'abréviation du sanctionnateur</li>
+				<li><strong>##nomProf##</strong> le nom du professeur sanctionnateur</li>
 			</ul>
 			<p>
 				Toutes ces mentions seront remplacées par leur valeur dans le billet de retenue.

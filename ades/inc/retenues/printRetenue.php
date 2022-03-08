@@ -34,18 +34,26 @@ foreach ($infosFait as $key => $chaine) {
 }
 $matricule = $infosFait['matricule'];
 
+// retrouver les informations concernant l'élève sanctionné
 require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 $Eleve = new Eleve($matricule);
 $Eleve = $Eleve->getDetailsEleve();
 
+// retrouver l'identifiant de la retenue contenue dans le table $infosFait
 $idretenue = $infosFait['idretenue'];
 $infosRetenue = $Ades->infosRetenue($idretenue);
+
+// retrouver le nom du prof à l'origine de la retenue
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
+$infosRetenue['nomProf'] = $Ecole->abr2name($infosFait['professeur']);
 
 require_once INSTALL_DIR.'/smarty/Smarty.class.php';
 $smarty = new Smarty();
 $smarty->template_dir = '../../templates';
 $smarty->compile_dir = '../../templates_c';
 
+// Informations générales concernant l'école
 $smarty->assign('ECOLE', ECOLE);
 $smarty->assign('ADRESSE', ADRESSE);
 $smarty->assign('TELEPHONE', TELEPHONE);
@@ -56,6 +64,7 @@ $smarty->assign('BASEDIR', BASEDIR);
 foreach ($infosFait as $key => $value) {
     $smarty->assign("$key", $value);
 }
+
 foreach ($Eleve as $key => $value) {
     $smarty->assign("$key", $value);
 }
@@ -68,8 +77,10 @@ if ($idretenue != 0) {
         $smarty->assign("$key", $value);
     }
 
+    $ds = DIRECTORY_SEPARATOR;
+    $formatFile = INSTALL_DIR.$ds.$module.'/templates/retenues/format.json';
     // chargement de la présentation du billet de retenue
-    $format = json_decode(file_get_contents('../../templates/retenues/format.json'), true);
+    $format = json_decode(file_get_contents($formatFile), true);
 
     $orientation = ($format['orientation'] == 'portrait') ? 'P' : 'L';
     $page = ($format['page'] == 'A5') ? 'A5' : 'A4';

@@ -1,7 +1,7 @@
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<td style="text-align:left; width:30%"><p><br></p></td>
+			<td style="text-align:left; width:30%"><p><img style="width: 110px;" src="{$BASEDIR}/images/logoEcole.png"><br></p></td>
 			<td style="text-align:right; width:70%">
 			<h3>{$ECOLE}</h3>
 			<strong>{$ADRESSE}<br>
@@ -35,9 +35,9 @@ a mérité une retenue de {$duree} h le {$dateRetenue} à {$heure} (local {$loca
 			<td style="text-align:center; width:33%">Les parents</td>
 		</tr>
 		<tr>
-			<td style="text-align:center">{$professeur}</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
+			<td style="text-align:center">{$nomProf}</td>
+			<td> </td>
+			<td> </td>
 		</tr>
 	</tbody>
 </table>

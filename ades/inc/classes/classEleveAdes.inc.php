@@ -180,8 +180,7 @@ class EleveAdes
      *
      * @return int : nombre de fiches enregistrées (normalement, une seule)
      */
-    public function enregistrerFaitDisc($post, $prototype, $retenue, $acronyme)
-    {
+    public function enregistrerFaitDisc($post, $prototype, $retenue, $acronyme) {
         if ($prototype['structure']['typeRetenue'] != 0) {
             // c'est une retenue
 

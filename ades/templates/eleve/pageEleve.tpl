@@ -1,12 +1,8 @@
 <div class="container-fluid">
 
-    <div id="trombinoscope">
+    <div id="resultat">
 
     </div>
-    <div id="ficheEleve">
-
-    </div>
-
 
 </div>
 
@@ -29,7 +25,7 @@
                     matricule: matricule
                     },
                 function(resultat){
-                    $("#ficheEleve").show().html(resultat);
+                    $("#resultat").show().html(resultat);
                     bootbox.alert('Fait disciplinaire enregistré');
                 })
             })
@@ -83,7 +79,8 @@
             $.post('inc/retenues/printRetenue.inc.php', {
                     idfait: idfait
                 },
-                function(resultat) {}
+                function(resultat) {
+                }
             )
         })
 
@@ -106,7 +103,7 @@
                 },
             function(resultat){
                 $("#trombinoscope").hide();
-                $("#ficheEleve").html(resultat).show();
+                $("#resultat").html(resultat).show();
             })
         })
     })

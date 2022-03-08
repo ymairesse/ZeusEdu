@@ -15,11 +15,8 @@ $User = $_SESSION[APPLICATION];
 
 $acronyme = $User->getAcronyme();
 
-$champ = isset($_POST['champ']) ? $_POST['champ'] : Null;
-$texte = isset($_POST['texte']) ? $_POST['texte'] : Null;
 $id = isset($_POST['id']) ? $_POST['id'] : Null;
-$free = isset($_POST['free']) ? $_POST['free'] : 0;
 
-$nb = $Ades->saveTexte($id, $acronyme, $free, $texte, $champ);
+$status = $Ades->toggleShareStatus($id, $acronyme);
 
-echo $nb;
+echo $status;

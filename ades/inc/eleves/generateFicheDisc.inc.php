@@ -24,15 +24,15 @@ $module = $Application->getModule(3);
 require_once INSTALL_DIR."/$module/inc/classes/classAdes.inc.php";
 $Ades = new Ades();
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
+$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : Null;
 $form = array();
 parse_str($formulaire, $form);
 
 $debut = $form['debut'];
 $fin = $form['fin'];
-$matricule = isset($form['matricule']) ? $form['matricule'] : null;
-$niveau = isset($form['niveau']) ? $form['niveau'] : null;
-$classe = isset($form['classe']) ? $form['classe'] : null;
+$matricule = isset($form['matricule']) ? $form['matricule'] : Null;
+$niveau = isset($form['niveau']) ? $form['niveau'] : Null;
+$classe = isset($form['classe']) ? $form['classe'] : Null;
 
 // détermination des types de faits à imprimer
 $aImprimer = array();

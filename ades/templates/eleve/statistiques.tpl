@@ -2,7 +2,9 @@
 
 	<div class="row">
 
-		<h2>Statistiques</h2>
+		<div class="col-xs-12">
+			<h1>Statistiques</h1>
+		</div>
 
 		<div class="col-md-3 col-xs-12">
 
@@ -12,6 +14,7 @@
 
 		<div class="col-md-9 col-xs-12" id="zoneSynthese">
 
+			<p class="avertissement">Sélectionner dates / niveau / classe / élève à gauche</p>
 		</div>
 
 	</div>

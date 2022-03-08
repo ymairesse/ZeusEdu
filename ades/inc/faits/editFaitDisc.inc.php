@@ -9,9 +9,6 @@ $Application = new Application();
 // répertoire du module actuel
 $module = $Application->getModule(3);
 
-// durée de validité pour les Cookies
-$unAn = time() + 365 * 24 * 3600;
-
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 
@@ -72,4 +69,4 @@ $smarty->assign('listeRetenues', $listeRetenues);
 // les textes enregistrés pour les textarea
 $smarty->assign('listeMemos', $Ades->listeMemos($acronyme));
 
-$smarty->display('faitDisc/editFaitDisciplinaire.tpl');
+$smarty->display('faitDisc/modal/modalEditFait.tpl');

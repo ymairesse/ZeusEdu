@@ -38,7 +38,7 @@
 
 	<div class="row">
 
-		<div class="col-md-10 col-sm-10">
+		<div class="col-md-10 col-sm-10" style="height:45em; overflow:auto;">
 
 			<!-- Tabs fiches disciplinaires -->
 			<div class="tab-content">

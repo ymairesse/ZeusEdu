@@ -29,7 +29,7 @@
 				<div class="form-group bootstrap-timepicker">
 					<label for="timepicker">Heure</label>
 					<div class="input-group">
-						<input type="text" id="heure" value="{$retenue.heure}" name="heure" class="timepicker form-control">
+						<input type="text" id="heure" value="{$retenue.heure|default:''}" name="heure" class="timepicker form-control">
 						<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
 					</div>
 					<p class="help-block">Choisissez l'heure de la retenue</p>
@@ -43,22 +43,22 @@
 					<label for="duree">Durée</label>
 					<select name="duree" id="duree" class="form-control">
 						<option value=''>Durée</option>
-						<option value='1'{if $retenue.duree == 1} selected="selected"{/if}>1h</option>
-						<option value='2'{if $retenue.duree == 2} selected="selected"{/if}>2h</option>
-						<option value='3'{if $retenue.duree == 3} selected="selected"{/if}>3h</option>
+						<option value='1'{if isset($retenue.duree) && $retenue.duree == 1} selected="selected"{/if}>1h</option>
+						<option value='2'{if isset($retenue.duree) && $retenue.duree == 2} selected="selected"{/if}>2h</option>
+						<option value='3'{if isset($retenue.duree) && $retenue.duree == 3} selected="selected"{/if}>3h</option>
 					</select>
 					<p class="help-block">Choisissez la durée de la retenue</p>
 				</div>
 
 				<div class="form-group">
 					<label for="local">Local</label>
-					<input type="text" name="local" value="{$retenue.local}" maxlength="30" id="local" class="form-control" autocomplete="on">
+					<input type="text" name="local" value="{$retenue.local|default:''}" maxlength="30" id="local" class="form-control" autocomplete="on">
 					<p class="help-block">Choisissez un local</p>
 				</div>
 
 				<div class="form-group">
 					<label for="places">Places</label>
-					<input type="text" name="places" value="{$retenue.places}" maxlength="2" id="places" class="form-control">
+					<input type="text" name="places" value="{$retenue.places|default:0}" maxlength="2" id="places" class="form-control">
 					<p class="help-block">Nombre de places disponibles</p>
 				</div>
 
@@ -68,14 +68,16 @@
 
 				<div class="form-group">
 					<label>Occupation</label>
-					<p class="form-control-static">{$retenue.occupation}</p>
-					<input type="hidden" name="occupation" id="occupation" value="{$retenue.occupation}">
+					<p class="form-control-static">{$retenue.occupation|default:''}</p>
+
+					<input type="hidden" name="occupation" id="occupation" value="{$retenue.occupation|default:''}">
 					<p class="help-block">Occupation actuelle (non modifiable)</p>
 				</div>
 
 				<div class="form-group">
 					<label for="visible">Visible</label>
-					<input type="checkbox" id="visible" name="affiche" class="form-control-inline" value="O"{if $retenue.affiche == 'O'} checked="checked"{/if}>
+					<input type="checkbox" id="visible" name="affiche" class="form-control-inline" value="O"
+						{if isset($retenue.affiche) && ($retenue.affiche == 'O')} checked="checked"{/if}>
 					<p class="help-block">Cette retenue apparaît dans les listes?</p>
 				</div>
 
@@ -86,7 +88,7 @@
 							id="recurrence"
 							value="0"
 							class="form-control"
-							{if $retenue.idretenue != ''} disabled{/if}>
+							{if (isset($retenue.idretenue))} disabled{/if}>
 					<p class="help-block">Nombre de semaines successives pour la retenue</p>
 				</div>
 
@@ -99,7 +101,7 @@
 			</div>
 			<input type="hidden" name="action" value="retenues">
 			<input type="hidden" name="mode" value="Enregistrer">
-			<input type="hidden" name="idRetenue" value="{$retenue.idretenue}">
+			<input type="hidden" name="idRetenue" value="{$retenue.idretenue|default:''}">
 
 		</div>  <!-- row -->
 

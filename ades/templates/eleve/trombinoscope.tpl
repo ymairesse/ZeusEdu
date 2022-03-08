@@ -1,4 +1,6 @@
-<ul id="trombi">
+<h1>Trombinoscope de {$classe}</h1>
+
+<ul>
 
 	{foreach from=$tableauEleves key=matricule item=unEleve name=trombi}
 		<li class="unePhoto" data-matricule="{$matricule}" data-classe="{$classe}">
@@ -8,5 +10,5 @@
 			<p style="margin-top:0.5em">{$unEleve.classe} {$unEleve.prenom} {$unEleve.nom}</p>
 		</li>
 	{/foreach}
-	
+
 </ul>

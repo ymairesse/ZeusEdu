@@ -1,8 +1,8 @@
-{strip}
+
 <div class="col-xs-6">
 
 	<div class="form-group">
-		<input type="{$data.typeChamp}" 
+		<input type="{$data.typeChamp}"
 				name="{$unChamp}"
 				id="{$unChamp}" class="form-control {$data.classCSS}
 				{if ($data.autocomplete == 'O')} autocomplete{/if}
@@ -13,4 +13,3 @@
 	</div>   <!-- form-group -->
 
 </div>
-{/strip}

@@ -26,45 +26,49 @@ $Ades = new Ades();
 require_once INSTALL_DIR."/$module/inc/classes/classEleveAdes.inc.php";
 $EleveAdes = new EleveAdes();
 
-require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
+require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+$Ecole = new Ecole();
 
-$formulaire = isset($_POST['formulaire']) ? $_POST['formulaire'] : null;
-$form = array();
-parse_str($formulaire, $form);
+require_once INSTALL_DIR.'/inc/classes/classEleve.inc.php';
 
 $matricule = isset($_POST['matricule']) ? $_POST['matricule'] : Null;
 $classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 
-require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
-$memoEleve = new padEleve($matricule, 'ades');
+$listeEleves = $Ecole->listeEleves($classe, 'groupe');
+$listeMatricules = array_keys($listeEleves);
 
-$eleve = Eleve::staticGetDetailsEleve($matricule);
-$titulaires = Eleve::staticGetTitulaires($classe);
+if (in_array($matricule, $listeMatricules)) {
+    require_once INSTALL_DIR.'/inc/classes/classPad.inc.php';
+    $memoEleve = new padEleve($matricule, 'ades');
 
-require_once INSTALL_DIR."/smarty/Smarty.class.php";
-$smarty = new Smarty();
-$smarty->template_dir = "../../templates";
-$smarty->compile_dir = "../../templates_c";
+    $eleve = Eleve::staticGetDetailsEleve($matricule);
+    $titulaires = Eleve::staticGetTitulaires($classe);
 
-$smarty->assign('matricule', $matricule);
+    require_once INSTALL_DIR."/smarty/Smarty.class.php";
+    $smarty = new Smarty();
+    $smarty->template_dir = "../../templates";
+    $smarty->compile_dir = "../../templates_c";
 
-$userStatus = $User->userStatus($module);
-$smarty->assign('userStatus', $userStatus);
+    $smarty->assign('matricule', $matricule);
 
-$identite = $User->identite();
-$smarty->assign('identite', $identite);
+    $userStatus = $User->userStatus($module);
+    $smarty->assign('userStatus', $userStatus);
 
-$smarty->assign('eleve', $eleve);
-$smarty->assign('titulaires', $titulaires);
-$smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
-$smarty->assign('descriptionChamps', $Ades->listeChamps());
+    $identite = $User->identite();
+    $smarty->assign('identite', $identite);
 
-$smarty->assign('memoEleve', $memoEleve->getPads());
+    $smarty->assign('eleve', $eleve);
+    $smarty->assign('titulaires', $titulaires);
+    $smarty->assign('listeTypesFaits', $Ades->listeTypesFaits());
+    $smarty->assign('descriptionChamps', $Ades->listeChamps());
 
-$ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
-$listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
+    $smarty->assign('memoEleve', $memoEleve->getPads());
 
-$smarty->assign('listeTousFaits', $ficheDisciplinaire);
-$smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
+    $ficheDisciplinaire = $EleveAdes->getListeFaits($matricule);
+    $listeRetenuesEleve = $EleveAdes->getListeRetenuesEleve($matricule);
 
-echo $smarty->fetch('eleve/ficheEleve.tpl');
+    $smarty->assign('listeTousFaits', $ficheDisciplinaire);
+    $smarty->assign('listeRetenuesEleve', $listeRetenuesEleve);
+
+    echo $smarty->fetch('eleve/ficheEleve.tpl');
+    }

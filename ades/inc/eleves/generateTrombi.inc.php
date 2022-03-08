@@ -12,19 +12,21 @@ if (!(isset($_SESSION[APPLICATION]))) {
     exit;
 }
 
-require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
-$Ecole = new Ecole();
+$classe = isset($_POST['classe']) ? $_POST['classe'] : Null;
 
-// durée de validité pour les Cookies
-$unAn = time() + 365 * 24 * 3600;
-$classe = Application::postOrCookie('classe', $unAn);
-$listeElevesClasse = $Ecole->listeEleves($classe,'groupe');
+if ($classe != Null) {
+    require_once INSTALL_DIR.'/inc/classes/classEcole.inc.php';
+    $Ecole = new Ecole();
 
-require_once INSTALL_DIR."/smarty/Smarty.class.php";
-$smarty = new Smarty();
-$smarty->template_dir = "../../templates";
-$smarty->compile_dir = "../../templates_c";
+    $listeElevesClasse = $Ecole->listeEleves($classe, 'groupe');
 
-$smarty->assign('classe',$classe);
-$smarty->assign('tableauEleves', $listeElevesClasse);
-echo $smarty->fetch('eleve/trombinoscope.tpl');
+    require_once INSTALL_DIR."/smarty/Smarty.class.php";
+    $smarty = new Smarty();
+    $smarty->template_dir = "../../templates";
+    $smarty->compile_dir = "../../templates_c";
+
+    $smarty->assign('classe', $classe);
+    $smarty->assign('tableauEleves', $listeElevesClasse);
+
+    $smarty->display('eleve/trombinoscope.tpl');
+}

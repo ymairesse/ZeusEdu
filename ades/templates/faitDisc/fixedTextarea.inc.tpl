@@ -1,5 +1,3 @@
-{strip}
-
 <div class="form-group">
 	<label for="{$unChamp}" class="sr-only">{$data.label}</label>
 	{strip}
@@ -13,5 +11,3 @@
 	{/strip}
 
 </div>  <!-- form-group -->
-
-{/strip}

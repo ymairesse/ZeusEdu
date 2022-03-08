@@ -26,26 +26,38 @@
 </div>
 
 <script type="text/javascript">
-	
-		function showEleve(matricule) {
-		$.post('inc/eleves/generateFicheEleve.inc.php', {
-			matricule: matricule
-			},
-		function(resultat){
-			$("#ficheEleve").show().html(resultat);
-			})
-		}
+
+	var classe = Cookies.get('classe');
+	var matricule = Cookies.get('matricule');
+
+	function showEleve(matricule) {
+	$.post('inc/eleves/generateFicheEleve.inc.php', {
+		matricule: matricule
+		},
+	function(resultat){
+		$("#ficheEleve").show().html(resultat);
+		})
+	}
 
 $(document).ready (function() {
+
+	$('#nom').val('');
+
+	if (matricule != undefined) {
+		showEleve(matricule);
+	}
 
 	$("#selectClasse").change(function(){
 		// on a choisi une classe dans la liste déroulante
 		var classe = $(this).val();
+		Cookies.set('classe', classe, { expires: 7 });
 		// la fonction listeEleves.inc.php renvoie la liste déroulante des élèves de la classe sélectionnée
 		$.post('inc/listeEleves.inc.php',{
-			classe: classe},
+			classe: classe,
+			matricule: matricule
+			},
 			function (resultat){
-				$("#choixEleve").html(resultat);
+				$("#resultat").html(resultat);
 				}
 			)
 		});
@@ -58,6 +70,7 @@ $(document).ready (function() {
 
 	$('#choixEleve').on('change','#selectEleve', function(){
 		var matricule = $(this).val();
+		Cookies.set('matricule', matricule, { expires: 7 });
 		if (matricule > 0) {
 			showEleve(matricule);
 			}
@@ -74,6 +87,7 @@ $(document).ready (function() {
 				async: true,
 				success: function(matricule){
 					if (matricule != '') {
+						Cookies.set('matricule', matricule, { expires: 7 });
 						// générer la fiche de l'élève
 						$.post('inc/eleves/generateFicheEleve.inc.php', {
 							matricule: matricule
@@ -88,11 +102,11 @@ $(document).ready (function() {
 									matricule: matricule
 								}, function(groupe){
 									$('#selectClasse').val(groupe);
+									Cookies.set('classe', groupe);
 								});
 							})
 							});
-						// compléter le sélecteur avec la classe, la liste d'élèves
-						// à faire...
+
 						}
 					}
 				})

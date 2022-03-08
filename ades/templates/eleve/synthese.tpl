@@ -2,12 +2,12 @@
 
 	{foreach from=$listeFaits key=classe item=tousLesEleves}
 		{if $tousLesEleves|count > 1}
-			<h1 class="classeEntete">{$classe}</h1>
+			<h1>{$classe}</h1>
 		{/if}
 
 		{foreach from=$tousLesEleves key=matricule item=ficheEleve}
 
-			<div class="row ombre" style="border: 1px solid #555">
+			<div class="ombre" style="border: 1px solid #555">
 
 				<div class="col-xs-10">
 					<h2 class="eleveEntete">{$listeEleves.$matricule.nom} {$listeEleves.$matricule.prenom} {$listeEleves.$matricule.classe}</h2>

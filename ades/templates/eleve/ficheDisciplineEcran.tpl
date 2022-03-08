@@ -2,7 +2,10 @@
 
     <div class="row">
 
-        <h2>Fiches de comportement</h2>
+        <div class="col-xs-12">
+            <h1>Fiches de comportement</h1>
+        </div>
+
 
         <div class="col-md-3 col-xs-12">
 

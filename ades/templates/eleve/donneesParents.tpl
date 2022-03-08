@@ -2,13 +2,13 @@
 
 	<div class="col-md-10 col-sm-10">
 
-		<div class="row table-row">
+		<div class="row">
 
 			<div class="col-md-4 col-sm-12">
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
-					<h3 class="panel-title">Coordonnées de la personne responsable</h3>
+					<p class="panel-title">Personne responsable</hp>
 					</div>
 					<div class="panel-body">
 					  <dl>
@@ -38,7 +38,7 @@
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title">Coordonnées du père de l'élève</h3>
+						<p class="panel-title">Père de l'élève</p>
 					</div>
 					<div class="panel-body">
 					  <dl style="list-unstyled">
@@ -60,7 +60,7 @@
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title">Coordonnées de la mère de l'élève</h3>
+						<p class="panel-title">Mère de l'élève</p>
 					</div>
 					<div class="panel-body">
 						<dl>

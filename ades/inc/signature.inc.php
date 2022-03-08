@@ -1,7 +1,9 @@
 <?php
 
+
 if ($etape == 'enregistrer') {
     $signature = $_POST['signature'];
+    // enregistrer la signature
     $nb = file_put_contents('templates/signature.tpl', $signature);
     if ($nb != false) {
         $title = SAVE;
@@ -17,8 +19,10 @@ if ($etape == 'enregistrer') {
             'texte' => $texte,
             'urgence' => $urgence, ));
 } else {
+    // charger le modèle de signature actif
     $signature = file_get_contents('templates/signature.tpl');
 }
+
 $smarty->assign('action', $action);
 $smarty->assign('mode', 'editSignature');
 $smarty->assign('etape', 'enregistrer');

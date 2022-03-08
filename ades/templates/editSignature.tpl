@@ -33,6 +33,7 @@
 					<ul class="list-unstyled">
 						<li>La mention <strong>##expediteur##</strong> sera automatiquement remplacée par le nom de l'utilisateur</li>
 						<li>La mention <strong>##mailExpediteur##</strong> sera remplacée par son adresse de courrier électronique</li>
+						<li>La mention <strong>##SITEWEB##</strong> sera remplacée par l'adresse du site web de l'école</li>
 					</ul>
 				</div>
 

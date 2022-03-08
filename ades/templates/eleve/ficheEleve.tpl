@@ -3,6 +3,8 @@
 {assign var=leMemo value=$memo.$idProprio}
 <div class="container-fluid">
 
+	<h1>Fiche disciplinaire</h1>
+
 	<h2>{$eleve.nom} {$eleve.prenom} : {$eleve.classe}</h2>
 
 	<ul id="tabs" class="nav nav-tabs hidden-print" data-tabs="tabs">
@@ -67,8 +69,8 @@
 <!-- container -->
 <script type="text/javascript">
 
-	// quel est l'onglet actif?
-	var onglet = {$onglet|default:''}
+	var onglet = Cookies.get('onglet');
+
 	// activer l onglet dont le numéro a été passé
 	$(".nav-tabs li a[href='#tabs-" + onglet + "']").tab('show');
 
@@ -80,6 +82,7 @@
 		$("#tabs li a").click(function() {
 			var ref = $(this).attr("href").split("-")[1];
 			$(".onglet").val(ref);
+			Cookies.set('onglet', ref);
 		});
 
 		$(".close").click(function(){
