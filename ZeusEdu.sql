@@ -166,32 +166,32 @@ INSERT INTO `didac_adesChamps` (`champ`, `label`, `contextes`, `typeDate`, `type
   ALTER TABLE `didac_adesChampsFaits`
    ADD PRIMARY KEY (`typeFait`,`champ`);
 
-   CREATE TABLE `didac_adesFaits` (
-     `idfait` int(11) NOT NULL,
-     `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
-     `type` smallint(6) NOT NULL DEFAULT '0',
-     `matricule` int(11) NOT NULL DEFAULT '0',
-     `ladate` date DEFAULT NULL,
-     `motif` text COLLATE utf8_unicode_ci NOT NULL,
-     `professeur` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-     `idretenue` smallint(4) DEFAULT NULL,
-     `present` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève était-il présent à la retenue',
-     `signe` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'L''élève a-t-il présenté un billet de retenue signé',
-     `travail` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
-     `materiel` varchar(120) COLLATE utf8_unicode_ci DEFAULT NULL,
-     `sanction` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-     `nopv` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-     `qui` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
-     `supprime` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N'
-   ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `didac_adesFaits` (
+ `idfait` int(11) NOT NULL,
+ `anneeScolaire` varchar(9) COLLATE utf8_unicode_ci NOT NULL,
+ `type` smallint(6) NOT NULL DEFAULT 0,
+ `matricule` int(11) NOT NULL DEFAULT 0,
+ `ladate` date DEFAULT NULL,
+ `motif` text COLLATE utf8_unicode_ci DEFAULT NULL,
+ `professeur` varchar(30) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+ `idretenue` smallint(4) DEFAULT NULL,
+ `present` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'L''élève était-il présent à la retenue',
+ `signe` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'L''élève a-t-il présenté un billet de retenue signé',
+ `travail` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `materiel` varchar(120) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `sanction` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `nopv` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `qui` varchar(7) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+ `supprime` enum('O','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'N'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-   ALTER TABLE `didac_adesFaits`
-     ADD PRIMARY KEY (`idfait`),
-     ADD KEY `ideleve` (`matricule`),
-     ADD KEY `date` (`ladate`);
+ALTER TABLE `didac_adesFaits`
+ ADD PRIMARY KEY (`idfait`),
+ ADD KEY `ideleve` (`matricule`),
+ ADD KEY `date` (`ladate`);
 
-   ALTER TABLE `didac_adesFaits`
-     MODIFY `idfait` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `didac_adesFaits`
+ MODIFY `idfait` int(11) NOT NULL AUTO_INCREMENT;
 
 CREATE TABLE `didac_adesMemo` (
     `matricule` int(4) NOT NULL,
