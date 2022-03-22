@@ -260,7 +260,8 @@
             $.post('inc/ressources/reserveAllPeriode.inc.php', {
                 heure: heure,
                 formulaire: formulaire
-            }, function(resultat){
+            }, function(){
+                // cliquer le bouton pour rafraîchir la grille des réservations
                 $('#btn-selectRessources').trigger('click');
             })
         })
@@ -271,7 +272,8 @@
             $.post('inc/ressources/reserveAll4date.inc.php', {
                 idRessource: idRessource,
                 date: date
-            }, function(resultat){
+            }, function(){
+                // cliquer le bouton pour rafraîchir la grille des réservations
                 $('#btn-selectRessources').trigger('click');
             })
         })

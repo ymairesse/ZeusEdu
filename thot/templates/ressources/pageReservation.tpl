@@ -85,3 +85,7 @@
     <button type="button" class="btn btn-xs btn-lightBlue">Réservé par moi</button>
     <button type="button" class="btn btn-xs btn-blue">En ma possession</button>
 </p>
+<hr class="clearfix">
+{if $userStatus == 'admin'}
+<p class="micro">Clic droit pour <strong>Attribution</strong> et <strong>Remise</strong> de la ressource (fonction "Admin")</p>
+{/if}

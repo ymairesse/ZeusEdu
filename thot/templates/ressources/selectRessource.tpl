@@ -1,4 +1,3 @@
-{debug}
 <div style="max-height:10em; overflow: auto">
 
     {if isset($listeRessources)}
