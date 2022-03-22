@@ -611,7 +611,7 @@ class Reservation
         $listePeriodes = $this->getPeriodesCours();
         $listeDatesDebut = array();
         foreach ($listePeriodes as $periode => $data){
-            $listeDatesDebut[] = sprintf('%s %s:00', $date, $data['debut']);
+            $listeDatesDebut[] = sprintf('%s %s:00', $date, $data);
         }
 
         // on enlève les dates déjà réservées de la liste de toutes les périodes possibles

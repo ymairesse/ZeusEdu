@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div class="panel-footer">
-                                    <p><span class="pull-right micro" id="nbRes">0 Sélectionné(s)</span></p>
+                                    <p><span class="pull-right micro" id="nbRes"><span>0</span> Sélectionné(s)</span></p>
                                 </div>
                             </div>
 
@@ -134,7 +134,7 @@
 
 <script type="text/javascript">
 
-    function refreshListeRessources(idType, ){
+    function refreshListeRessources(idType){
         $.post('inc/ressources/getRessourceByType.inc.php', {
             idType: idType
         }, function(resultat){
@@ -143,6 +143,14 @@
     }
 
     $(document).ready(function(){
+
+        // restauration du nombre de ressources sélectionnées
+        var idRessources = Cookies.get('idRessources');
+        if (idRessources != undefined) {
+            var nbCheckedRessources = $.parseJSON(Cookies.get('idRessources')).length;
+            $('#nbRes span').html(nbCheckedRessources);
+        }
+
 
         var idType = Cookies.get('idType');
         if (idType != undefined) {
@@ -177,7 +185,6 @@
                     $('#btn-delRessources').attr('disabled', true).data('idressource', '');
                 }
         }
-
 
 
         // changement du type des ressources souhaitées
@@ -509,6 +516,12 @@
                 }
             })
         })
+
+        $('body').on('click', '#selAllRessources', function(){
+            var isChecked = !$(this).closest('table').find('.ressource').first().is(':checked');
+            $('.ressource').prop('checked', isChecked);
+        })
+
 
         {if ($userStatus == 'admin')}
             // userStatus == admin

@@ -1,3 +1,4 @@
+{debug}
 <div style="max-height:10em; overflow: auto">
 
     {if isset($listeRessources)}
@@ -65,9 +66,8 @@
         var idRessources = Cookies.get('idRessources');
         if (idRessources != undefined) {
             var idRessources = $.parseJSON(Cookies.get('idRessources'));
-
             $.each(idRessources, function(index, value){
-                $('input.ressource[data-idressource="' + value +'"]').prop('checked', true)
+                $('input.ressource[data-idressource="' + value +'"]').prop('checked', true);
             })
         }
 
