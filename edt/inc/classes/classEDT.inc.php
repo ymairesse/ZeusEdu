@@ -161,43 +161,42 @@ class Edt {
     }
 
 	/**
-	 * enregistrement des événements du fichier iCal exporté de EDT
+	 * enregistrement des événements du fichier iCal d'un prof exporté de EDT
 	 *
 	 * @param string $acronyme : du prof dont on examine le calendrier iCal
-	 * @param array $profEvents
+	 * @param array $profEvents : contenu du fichier iCal pour un prof
+	 * @param array $listePeriodes: liste des périodes de cours (début et fin)
+	 * issue de la prise des présences
 	 *
 	 * @return int : nombre d'enregistrements  dans la BD
 	 */
 	public function saveProfEvents($acronyme, $profEvents, $listePeriodes){
 		$connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
-		$sql = 'INSERT INTO '.PFX.'EDTprofsICal ';
+		$sql = 'INSERT IGNORE INTO '.PFX.'EDTprofsICal ';
 		$sql .= 'SET acronyme = :acronyme, ';
-		$sql .= 'jour = :jour, startTime = :startTime, endTime = :endTime, local = :local, ';
-		$sql .= 'matiere = :matiere, profs = :profs, classes = :classes, parties = :parties, exportDate = :exportDate ';
-		$sql .= 'ON DUPLICATE KEY UPDATE ';
-		$sql .= 'jour = :jour, startTime = :startTime, endTime = :endTime, local = :local, ';
-		$sql .= 'matiere = :matiere, profs = :profs, classes = :classes, parties = :parties, exportDate = :exportDate ';
+		$sql .= 'jour = :jour, startTime = :startTime, endTime = :endTime, local = :local, matiere = :matiere, ';
+		$sql .= 'profs = :profs, classes = :classes, parties = :parties, exportDate = :exportDate, clef = :clef ';
 		$requete = $connexion->prepare($sql);
 
 		$dash = '-'; $col = ':';
 		$nb = 0;
-// echo $sql;
+
 		// on ne retient que la colonne "début" de la liste des périodes
 		$listeDebutsCours = array_column($listePeriodes, 'debut');
 		// on ne retient que la colonne "end" de la liste des périodes
 		$listeFinsCours = array_column($listePeriodes, 'fin');
 
-		// (SUBSTR($DTSTART[1], 0, 2)+1) : +1 pour corriger la timezone de EDT
 		foreach ($profEvents AS $id => $event) {
 			// $profEvents = liste des cours donnés par un prof durant sa semaine
 			// certains cours sont formés par plusieurs périodes qu'il faudra séparer
 			// un $event est une série de 1 à n périodes consécutives
 			$DTSTART = explode('T', $event['DTSTART']);
 			$startDate = SUBSTR($DTSTART[0], 0, 4).$dash.SUBSTR($DTSTART[0], 4, 2).$dash.SUBSTR($DTSTART[0],6, 2);
+			// (SUBSTR($DTSTART[1], 0, 2)+1) : +1 pour corriger la timezone de EDT
 			$startTime = (SUBSTR($DTSTART[1], 0, 2)).$col.SUBSTR($DTSTART[1], 2, 2).$col.SUBSTR($DTSTART[1], 4, 2);
 
-			// correction pour la timeZone de EDT + 1 heure
-			$timestamp = strtotime($startTime) + 60*60;
+			// correction pour la timeZone de EDT + 2 heures
+			$timestamp = strtotime($startTime) + 2*(60*60);
 			$startTime = date('H:i', $timestamp);
 			$start = sprintf('%s %s', $startDate, $startTime);
 
@@ -205,8 +204,8 @@ class Edt {
 			$endDate = SUBSTR($DTEND[0], 0, 4).$dash.SUBSTR($DTEND[0], 4, 2).$dash.SUBSTR($DTEND[0],6, 2);
 			$endTime = (SUBSTR($DTEND[1], 0, 2)).$col.SUBSTR($DTEND[1], 2, 2).$col.SUBSTR($DTEND[1], 4, 2);
 
-			// correction pour la timeZone de EDT + 1 heure
-			$timestamp = strtotime($endTime) + 60*60;
+			// correction pour la timeZone de EDT + 2 heures
+			$timestamp = strtotime($endTime) + 2*(60*60);
 			$endTime = date('H:i', $timestamp);
 			$end = sprintf('%s %s', $endDate, $endTime);
 
@@ -219,7 +218,7 @@ class Edt {
 
 			$DTSTAMP = explode('T', $event['DTSTAMP']);
 			$creationDate = SUBSTR($DTSTAMP[0], 0, 4).$dash.SUBSTR($DTSTAMP[0], 4, 2).$dash.SUBSTR($DTSTAMP[0],6, 2);
-			$creationTime = (SUBSTR($DTSTAMP[1], 0, 2)+1).$col.SUBSTR($DTSTAMP[1], 2, 2).$col.SUBSTR($DTSTAMP[1], 4, 2);
+			$creationTime = (SUBSTR($DTSTAMP[1], 0, 2)).$col.SUBSTR($DTSTAMP[1], 2, 2).$col.SUBSTR($DTSTAMP[1], 4, 2);
 			$exportDate = $creationDate.' '.$creationTime;
 
 			$matiere = isset($event['SUMMARY;LANGUAGE=fr']) ? trim($event['SUMMARY;LANGUAGE=fr']) : Null;
@@ -272,33 +271,34 @@ class Edt {
 			$requete->bindParam(':classes', $classes, PDO::PARAM_STR, 60);
 			$requete->bindParam(':parties', $parties, PDO::PARAM_STR, 60);
 			$requete->bindParam(':exportDate', $exportDate, PDO::PARAM_STR, 20);
-// Application::afficher(array($acronyme, $dayofweek, $local, $matiere, $profs, $classes, $parties, $exportDate));
-			// traitement des cours sur plusieurs périodes ********************
-			// recherche du numéro de la période de cours dans la liste des périodes existantes
-			$noPeriode = array_search($heure, $listeDebutsCours);
-			// heure de fin de la séance de cours (éventuellement plusieurs périodes)
-			$endPeriode = SUBSTR($endTime, 0, 5);
 
-			while ($noPeriode != -1){
+			// traitement des cours sur plusieurs périodes ********************
+			//
+			// recherche du numéro des périodes de cours dans la liste des périodes existantes
+			// Première période de la liste
+			$noPeriodeDebut = array_search($startTime, $listeDebutsCours);
+			// dernière période de la liste
+			$noPeriodeFin = array_search($endTime, $listeFinsCours);
+
+			foreach (range($noPeriodeDebut, $noPeriodeFin) as $noPeriode) {
 				// recherche du début de la période dans la liste des périodes
 				$heureDebut = $listeDebutsCours[$noPeriode];
 				$heureFin = $listeFinsCours[$noPeriode];
-
-				$startTime =  sprintf('%s:00', $heureDebut);
+				// rajouter les secondes
+				$startTime = sprintf('%s:00', $heureDebut);
 				$endTime = sprintf('%s:00', $heureFin);
+				// clef pour éviter l'enregistrement de plusieurs occurrences du même cours
+				$clef = $acronyme.$dayofweek.$startTime.$endTime;
 
 				$requete->bindParam(':startTime', $startTime, PDO::PARAM_STR, 8);
 				$requete->bindParam(':endTime', $endTime, PDO::PARAM_STR, 8);
-// Application::afficher(array($startTime, $endTime), true);
+				$requete->bindParam(':clef', $clef, PDO::PARAM_STR, 40);
+
 				$resultat = $requete->execute();
-
-				// encore une période pour ce cours?
-				$noPeriode = ($endPeriode != $heureFin) ? $noPeriode + 1 : -1;
-
 				$nb += $requete->rowCount();
 			}
 		}
-// echo "</table>";
+
 		Application::deconnexionPDO($connexion);
 
 		return $nb;

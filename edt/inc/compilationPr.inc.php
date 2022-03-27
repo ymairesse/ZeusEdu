@@ -35,6 +35,10 @@ require_once INSTALL_DIR.$ds.$module.$ds.'inc/classes/class.iCalReader.php';
 $nbCours = 0;
 $nbProfs = 0;
 $listeProfs = array();
+
+// nettoyage de la base de données profs
+$n = $Edt->truncateTable(PFX.'EDTprofsICal');
+
 // parcours de tous les fichiers ICal dans le répertoire "ICal"
 foreach ($listICalFiles as $wtf => $icalFile) {
 
@@ -49,6 +53,7 @@ foreach ($listICalFiles as $wtf => $icalFile) {
         // rechercher l'abréviation du prof de ce fichier; elle se trouve dans une description
         // dans le champ "Professeur" (au singulier)
         $acronyme = $Edt->searchAcronyme($profEvents);
+        // compter un prof de plus s'il n'a pas déjà été traité pour une autre heure de cours
         if (!in_array($acronyme, $listeProfs))
             $listeProfs[] = $acronyme;
         // si on a trouvé l'abréviation du prof, on enregistre les données
