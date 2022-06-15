@@ -12,7 +12,6 @@
 
     <button
         type="button"
-        <!-- class="btn btn-primary externe {if $blocage == 1}disabled{/if}" -->
         class="btn btn-primary externe"
         disabled
         data-matricule="{$matricule}"
