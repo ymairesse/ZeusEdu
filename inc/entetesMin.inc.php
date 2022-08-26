@@ -16,7 +16,6 @@ $Application = new Application();
 require_once (INSTALL_DIR."/inc/classes/classChrono.inc.php");
 $chrono = new chrono();
 
-$Application->Normalisation();
 $module = $Application->repertoireActuel();
 
 require_once(INSTALL_DIR."/smarty/Smarty.class.php");

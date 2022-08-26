@@ -28,14 +28,19 @@ class Application
 
         // lecture dans la table PFX."config" de la BD
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT parametre, valeur ';
+        $sql = 'SELECT parametre, valeur, label, signification, domaine ';
         $sql .= 'FROM '.PFX.'config ';
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        $resultat = $requete->execute();
+        $liste = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $key = $ligne['parametre'];
                 $valeur = $ligne['valeur'];
                 define("$key", $valeur);
+                $liste[$key] = $ligne;
             }
         } else {
             die('config table not present');
@@ -71,13 +76,13 @@ class Application
      */
     public function Normalisation()
     {
-        // si magic_quotes est "ON",
-        if (get_magic_quotes_gpc()) {
-            $_POST = self::Normaliser($_POST);    // normaliser les $_POST
-            $_GET = self::Normaliser($_GET);        // normaliser les $_GET
-            $_REQUEST = self::Normaliser($_REQUEST);    // normaliser les $_REQUEST
-            $_COOKIE = self::Normaliser($_COOKIE);    // normaliser les $_COOKIE
-        }
+        // // si magic_quotes est "ON",
+        // if (get_magic_quotes_gpc()) {
+        //     $_POST = self::Normaliser($_POST);    // normaliser les $_POST
+        //     $_GET = self::Normaliser($_GET);        // normaliser les $_GET
+        //     $_REQUEST = self::Normaliser($_REQUEST);    // normaliser les $_REQUEST
+        //     $_COOKIE = self::Normaliser($_COOKIE);    // normaliser les $_COOKIE
+        // }
     }
 
     /**
@@ -391,23 +396,33 @@ class Application
      *
      * @return array $listeParametres
      */
-    public function lireParametres()
+    public function lireParametres($domaine=Null)
     {
         $connexion = self::connectPDO(SERVEUR, BASE, NOM, MDP);
-        $sql = 'SELECT ordre, size, label, parametre, valeur, signification ';
+        $sql = 'SELECT ordre, size, label, parametre, valeur, signification, domaine ';
         $sql .= 'FROM '.PFX.'config ';
+        if ($domaine != Null)
+            $sql .= 'WHERE domaine = :domaine ';
         $sql .= 'ORDER BY ordre, label ';
 
-        $resultat = $connexion->query($sql);
+        $requete = $connexion->prepare($sql);
+
+        if ($domaine != Null)
+            $requete->bindParam(':domaine', $domaine, PDO::PARAM_STR, 20);
+
+        $resultat = $requete->execute();
+
         $listeParametres = array();
         if ($resultat) {
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $parametre = $ligne['parametre'];
                 $listeParametres[$parametre]['ordre'] = $ligne['ordre'];
                 $listeParametres[$parametre]['label'] = $ligne['label'];
                 $listeParametres[$parametre]['valeur'] = $ligne['valeur'];
                 $listeParametres[$parametre]['signification'] = $ligne['signification'];
                 $listeParametres[$parametre]['size'] = $ligne['size'];
+                $listeParametres[$parametre]['domaine'] = $ligne['domaine'];
             }
         }
         self::DeconnexionPDO($connexion);
@@ -418,7 +433,7 @@ class Application
     /**
      * enregistre les paramètres généraux de l'application et renvoie le nombre de paramètres enregistrés.
      *
-     * @param post
+     * @param array post
      *
      * @return $nb : nombre de modificaitons
      */
@@ -433,20 +448,22 @@ class Application
         while ($ligne = $resultat->fetch()) {
             $listeParametres[] = $ligne['parametre'];
         }
-        $sql = 'INSERT INTO '.PFX.'config ';
-        $sql .= 'SET parametre=:parametre, valeur=:valeur ';
-        $sql .= 'ON DUPLICATE KEY UPDATE valeur=:valeur ';
+        $sql = 'UPDATE '.PFX.'config ';
+        $sql .= 'SET valeur = :valeur ';
+        $sql .= 'WHERE parametre = :parametre ';
         $requete = $connexion->prepare($sql);
         $n = 0;
         foreach ($post as $parametre => $valeur) {
             if (in_array($parametre, $listeParametres)) {
-                $data = array(':valeur' => $valeur, ':parametre' => $parametre);
-                $resultat = $requete->execute($data);
-                if ($resultat > 0) {
-                    ++$n;
+                $requete->bindParam(':valeur', $valeur, PDO::PARAM_STR);
+                $requete->bindParam(':parametre', $parametre, PDO::PARAM_STR);
+                $resultat = $requete->execute();
+
+                $rc = $requete->rowCount();
+                $n = $n + $rc;
                 }
             }
-        }
+
         self::DeconnexionPDO($connexion);
 
         return $n;

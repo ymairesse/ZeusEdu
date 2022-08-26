@@ -1,8 +1,5 @@
 <?php
 
-// fonctions globales pour l'ensemble de l'application
-// require_once INSTALL_DIR.'/inc/fonctions.inc.php';
-
 // définition de la class USER utilisée en variable de SESSION
 require_once INSTALL_DIR.'/inc/classes/classUser.inc.php';
 
@@ -14,7 +11,6 @@ $Application = new Application();
 require_once INSTALL_DIR.'/inc/classes/classChrono.inc.php';
 $chrono = new Chrono();
 
-$Application->Normalisation();
 $module = $Application->repertoireActuel();
 
 session_start();
