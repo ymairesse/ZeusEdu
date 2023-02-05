@@ -89,7 +89,7 @@ class user
     /**
      * recherche de la liste des classes dont le professeur est titulaire (prof principal).
      *
-     * @param $sections: les sections éventuelles dans lesquelles chercher
+     * @param 
      *
      * @return array : tableau des classes dont l'utilisateur est titulaire
      */
