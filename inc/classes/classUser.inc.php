@@ -87,30 +87,32 @@ class user
     }
 
     /**
-     *r echerche de la liste des classes dont le professeur est titulaire (prof principal).
+     * recherche de la liste des classes dont le professeur est titulaire (prof principal).
      *
      * @param $sections: les sections éventuelles dans lesquelles chercher
      *
      * @return array : tableau des classes dont l'utilisateur est titulaire
      */
-    public function listeTitulariats($sections = null)
+    public function listeTitulariats()
     {
+
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $acronyme = $this->getAcronyme();
+        echo $acronyme;
         $sql = 'SELECT classe ';
         $sql .= 'FROM '.PFX.'titus ';
-        $sql .= "WHERE acronyme='$acronyme' ";
-
-        if ($sections != null) {
-            $sql .= "AND section IN ($sections) ";
-        }
+        $sql .= 'WHERE acronyme= :acronyme ';
         $sql .= 'ORDER BY classe ';
+        
+        $requete = $connexion->prepare($sql);
 
-        $resultat = $connexion->query($sql);
+        $requete->bindParam(':acronyme', $acronyme, PDO::PARAM_STR);
+
+        $resultat = $requete->execute();
         $titulariats = array();
         if ($resultat) {
-            $resultat->setFetchMode(PDO::FETCH_ASSOC);
-            while ($ligne = $resultat->fetch()) {
+            $requete->setFetchMode(PDO::FETCH_ASSOC);
+            while ($ligne = $requete->fetch()) {
                 $classe = $ligne['classe'];
                 $titulariats[$classe] = $ligne['classe'];
             }
