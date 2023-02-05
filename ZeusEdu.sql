@@ -870,15 +870,15 @@ INSERT INTO `didac_bullTQdetailsStages` (`annee`, `sigle`, `legende`) VALUES
 (6, 'JURY', 'Jury'),
 (6, 'TOTAL', 'Total');
 
-
 CREATE TABLE `didac_config` (
   `ordre` tinyint(4) DEFAULT NULL,
-  `parametre` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `label` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Label',
+  `parametre` varchar(20) NOT NULL,
+  `label` varchar(40) DEFAULT NULL COMMENT 'Label',
   `size` smallint(6) DEFAULT NULL,
-  `valeur` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-  `signification` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `valeur` varchar(60) NOT NULL,
+  `signification` varchar(80) DEFAULT NULL,
+  `domaine` enum('admin','bulletin','bullTQ') DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 ALTER TABLE `didac_config`
   ADD PRIMARY KEY (`parametre`);
