@@ -17,7 +17,7 @@ if (!(isset($_SESSION[APPLICATION]))) {
 $User = $_SESSION[APPLICATION];
 $acronyme = $User->getAcronyme();
 
-$module = $Application::getmodule(2);
+$module = $Application->getmodule(2);
 
 $indice = isset($_POST['indice']) ? $_POST['indice'] : null;
 $table = isset($_POST['table']) ? $_POST['table'] : null;
