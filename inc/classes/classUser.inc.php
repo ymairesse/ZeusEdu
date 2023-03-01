@@ -95,10 +95,8 @@ class user
      */
     public function listeTitulariats()
     {
-
         $connexion = Application::connectPDO(SERVEUR, BASE, NOM, MDP);
         $acronyme = $this->getAcronyme();
-        echo $acronyme;
         $sql = 'SELECT classe ';
         $sql .= 'FROM '.PFX.'titus ';
         $sql .= 'WHERE acronyme= :acronyme ';
@@ -125,7 +123,7 @@ class user
     /**
      * vérifie que l'utilisateur dont on fournit l'acronyme existe dans la table des profs.
      *
-     * @param $acronyme
+     * @param string $acronyme
      *
      * @return array : l'acronyme effectivement trouvé dans la BD ou rien si pas trouvé
      */
@@ -159,7 +157,7 @@ class user
     /**
      * retourne l'acronyme éventuel de l'admin qui utilise un alias.
      *
-     * @param void()
+     * @param void
      *
      * @return string
      */
